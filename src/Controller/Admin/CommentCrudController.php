@@ -32,7 +32,7 @@ class CommentCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Comment')
             ->setEntityLabelInPlural('Comment')
-            ->setSearchFields(['commentaire', 'id']);
+            ->setSearchFields(['comment', 'id']);
     }
 
     public function configureFields(string $pageName): iterable
@@ -42,19 +42,19 @@ class CommentCrudController extends AbstractCrudController
         $user = AssociationField::new('user')->autocomplete();
         $createdAt = DateTimeField::new('createdAt');
         $updatedAt = DateTimeField::new('updatedAt');
-        $approuve = BooleanField::new('approuve');
-        $commentaire = TextareaField::new('commentaire');
+        $approved = BooleanField::new('approved');
+        $comment = TextareaField::new('comment');
         $parent = AssociationField::new('parent')->autocomplete();
         $reponses = AssociationField::new('reponses')->autocomplete();
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $createdAt, $event, $user, $approuve];
+            return [$id, $createdAt, $event, $user, $approved];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $commentaire, $approuve, $createdAt, $updatedAt, $user, $event, $parent, $reponses];
+            return [$id, $comment, $approved, $createdAt, $updatedAt, $user, $event, $parent, $reponses];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$event, $user, $approuve, $commentaire];
+            return [$event, $user, $approved, $comment];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$event, $user, $createdAt, $updatedAt, $approuve, $commentaire];
+            return [$event, $user, $createdAt, $updatedAt, $approved, $comment];
         }
 
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));

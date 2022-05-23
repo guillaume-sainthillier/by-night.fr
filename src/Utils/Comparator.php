@@ -73,13 +73,13 @@ class Comparator
             ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId()) ||
             (!$a->getCity() && !$b->getCity() && !$a->getZipCity() && !$b->getZipCity() && $a->getCountry() && $b->getCountry() && $a->getCountry()->getId() === $b->getCountry()->getId())) {
             $matchingScoreNom = $this->getMatchingScoreTextWithoutCity(
-                $a->getNom(), $a->getCity(), $a->getZipCity(),
-                $b->getNom(), $b->getCity(), $b->getZipCity()
+                $a->getName(), $a->getCity(), $a->getZipCity(),
+                $b->getName(), $b->getCity(), $b->getZipCity()
             );
 
             // Même rue & ~ même nom
             if ($matchingScoreNom >= 80 &&
-                $this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 90
+                $this->getMatchingScoreRue($a->getStreet(), $b->getStreet()) >= 90
             ) {
                 return 100;
             }

@@ -26,7 +26,7 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
 {
     #[ORM\Column(type: 'string', length: 2)]
     #[ORM\Id]
-    #[Serializer\Groups(['list_event', 'list_user', 'list_city'])]
+    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 63, unique: true)]
@@ -39,15 +39,15 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     private ?string $locale = null;
 
     #[ORM\Column(type: 'string', length: 63)]
-    #[Serializer\Groups(['list_city'])]
+    #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 63)]
-    #[Serializer\Groups(['list_city'])]
+    #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $displayName = null;
 
     #[ORM\Column(type: 'string', length: 63)]
-    #[Serializer\Groups(['list_city'])]
+    #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $atDisplayName = null;
 
     #[ORM\Column(type: 'string', length: 63)]

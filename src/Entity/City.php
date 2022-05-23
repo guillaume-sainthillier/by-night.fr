@@ -24,10 +24,11 @@ use JMS\Serializer\Annotation\Groups;
 class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     #[ORM\ManyToOne(targetEntity: AdminZone::class, fetch: 'EAGER')]
-    #[Groups(['list_city'])]
+    #[Groups(['elasticsearch:city:details'])]
     protected ?AdminZone $parent = null;
 
-    #[Groups(['list_city'])]
+    #[Groups(['elasticsearch:city:details'])]
+    #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     protected ?Country $country = null;
 
     #[ORM\OneToMany(targetEntity: ZipCity::class, fetch: 'EXTRA_LAZY', mappedBy: 'parent')]
@@ -73,32 +74,26 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
     }
 
-    /**
-     * Get parent.
-     */
-    public function getParent(): ?AdminZone
-    {
-        return $this->parent;
-    }
-
-    /**
-     * Set parent.
-     */
-    public function setParent(AdminZone $parent = null): self
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
     public function getCountry(): ?Country
     {
         return $this->country;
     }
 
-    public function setCountry(?Country $country): AdminZone
+    public function setCountry(?Country $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    public function getParent(): ?AdminZone
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?AdminZone $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

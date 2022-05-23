@@ -25,7 +25,7 @@ abstract class OAuth implements Stringable
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    protected ?int $id = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_id = null;

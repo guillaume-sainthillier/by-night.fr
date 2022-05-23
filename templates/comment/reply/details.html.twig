@@ -3,8 +3,8 @@
 {% set username = comment.user.username %}
 {% block success_confirmation_message 'Vous avez bien répondu au commentaire de ' ~ username %}
 
-{% block form_commentaire %}
-    {{ form_row(form.commentaire, {'attr' : {'placeholder': 'Répondez à ' ~ username}}) }}
+{% block form_comment %}
+    {{ form_row(form.comment, {'attr' : {'placeholder': 'Répondez à ' ~ username}}) }}
 {% endblock %}
 
 {% block comment_reponses '' %}

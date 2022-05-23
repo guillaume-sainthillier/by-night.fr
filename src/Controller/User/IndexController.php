@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route(path: '/membres')]
-class DefaultController extends BaseController
+class IndexController extends BaseController
 {
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
@@ -40,10 +40,10 @@ class DefaultController extends BaseController
 
         return $this->render('user/index.html.twig', [
             'user' => $user,
-            'next_events' => $eventRepository->findAllNextEvents($user),
-            'previous_events' => $eventRepository->findAllNextEvents($user, false),
-            'etablissements' => $eventRepository->findAllPlaces($user),
-            'count_favoris' => $eventRepository->getCountFavorites($user),
+            'nextEvents' => $eventRepository->findAllNextEvents($user),
+            'previousEvents' => $eventRepository->findAllNextEvents($user, false),
+            'places' => $eventRepository->findAllUserPlaces($user),
+            'favoriteEventsCount' => $eventRepository->getUserFavoriteEventsCount($user),
         ]);
     }
 

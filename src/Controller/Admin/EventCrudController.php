@@ -42,7 +42,7 @@ class EventCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Event')
             ->setEntityLabelInPlural('Events')
-            ->setSearchFields(['id', 'externalId', 'slug', 'nom', 'descriptif', 'adresse', 'typeManifestation', 'categorieManifestation', 'themeManifestation', 'phoneContacts', 'mailContacts', 'websiteContacts', 'fromData', 'name', 'url', 'facebookEventId', 'facebookOwnerId', 'source', 'placeName', 'placeStreet', 'placeCity', 'placePostalCode', 'placeExternalId', 'placeFacebookId', 'image.name', 'imageSystem.name']);
+            ->setSearchFields(['id', 'externalId', 'slug', 'nom', 'descriptif', 'adresse', 'type', 'category', 'theme', 'phoneContacts', 'mailContacts', 'websiteContacts', 'fromData', 'name', 'url', 'facebookEventId', 'facebookOwnerId', 'source', 'placeName', 'placeStreet', 'placeCity', 'placePostalCode', 'placeExternalId', 'placeFacebookId', 'image.name', 'imageSystem.name']);
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -62,20 +62,20 @@ class EventCrudController extends AbstractCrudController
         $externalId = TextField::new('externalId');
         $slug = TextField::new('slug');
         $nom = TextField::new('nom');
-        $dateDebut = DateField::new('dateDebut');
-        $dateFin = DateField::new('dateFin');
+        $startDate = DateField::new('startDate');
+        $endDate = DateField::new('endDate');
         $horaires = TextField::new('horaires');
         $descriptif = TextareaField::new('descriptif');
         $externalUpdatedAt = DateTimeField::new('externalUpdatedAt');
-        $modificationDerniereMinute = TextField::new('modificationDerniereMinute');
-        $typeManifestation = TextField::new('typeManifestation');
-        $categorieManifestation = TextField::new('categorieManifestation');
-        $themeManifestation = TextField::new('themeManifestation');
+        $status = TextField::new('status');
+        $type = TextField::new('type');
+        $category = TextField::new('category');
+        $theme = TextField::new('theme');
         $phoneContacts = CollectionField::new('phoneContacts');
         $mailContacts = CollectionField::new('mailContacts');
         $websiteContacts = CollectionField::new('websiteContacts');
         $tarif = TextField::new('tarif');
-        $brouillon = BooleanField::new('brouillon');
+        $draft = BooleanField::new('draft');
         $archive = BooleanField::new('archive');
         $panel2 = FormField::addPanel('Lieu');
         $place = AssociationField::new('place')->autocomplete();
@@ -119,16 +119,16 @@ class EventCrudController extends AbstractCrudController
         $imageSystemSize = IntegerField::new('imageSystem.size');
         $imageSystemDimensions = ArrayField::new('imageSystem.dimensions');
         $userEvents = AssociationField::new('userEvents')->autocomplete();
-        $commentaires = AssociationField::new('commentaires')->autocomplete();
+        $comments = AssociationField::new('comments')->autocomplete();
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $createdAt, $updatedAt, $fromData, $nom, $place, $user];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $externalId, $slug, $nom, $descriptif, $externalUpdatedAt, $dateDebut, $dateFin, $horaires, $modificationDerniereMinute, $latitude, $longitude, $adresse, $typeManifestation, $categorieManifestation, $themeManifestation, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $fromData, $parserVersion, $imageHash, $imageSystemHash, $name, $url, $brouillon, $tweetPostId, $facebookEventId, $tweetPostSystemId, $fbPostId, $fbPostSystemId, $facebookOwnerId, $fbParticipations, $fbInterets, $participations, $interets, $source, $archive, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $createdAt, $updatedAt, $imageName, $imageOriginalName, $imageMimeType, $imageSize, $imageDimensions, $imageSystemName, $imageSystemOriginalName, $imageSystemMimeType, $imageSystemSize, $imageSystemDimensions, $user, $userEvents, $commentaires, $place, $placeCountry];
+            return [$id, $externalId, $slug, $nom, $descriptif, $externalUpdatedAt, $startDate, $endDate, $horaires, $status, $latitude, $longitude, $adresse, $type, $category, $theme, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $fromData, $parserVersion, $imageHash, $imageSystemHash, $name, $url, $draft, $tweetPostId, $facebookEventId, $tweetPostSystemId, $fbPostId, $fbPostSystemId, $facebookOwnerId, $fbParticipations, $fbInterets, $participations, $interets, $source, $archive, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $createdAt, $updatedAt, $imageName, $imageOriginalName, $imageMimeType, $imageSize, $imageDimensions, $imageSystemName, $imageSystemOriginalName, $imageSystemMimeType, $imageSystemSize, $imageSystemDimensions, $user, $userEvents, $comments, $place, $placeCountry];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$panel1, $user, $externalId, $nom, $dateDebut, $dateFin, $horaires, $descriptif, $modificationDerniereMinute, $typeManifestation, $categorieManifestation, $themeManifestation, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $brouillon, $archive, $panel2, $place, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $placeCountry, $latitude, $longitude, $adresse, $panel3, $url, $imageName, $imageSystemName, $panel4, $fromData, $parserVersion, $source];
+            return [$panel1, $user, $externalId, $nom, $startDate, $endDate, $horaires, $descriptif, $status, $type, $category, $theme, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $draft, $archive, $panel2, $place, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $placeCountry, $latitude, $longitude, $adresse, $panel3, $url, $imageName, $imageSystemName, $panel4, $fromData, $parserVersion, $source];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$panel1, $user, $createdAt, $updatedAt, $externalId, $slug, $nom, $dateDebut, $dateFin, $horaires, $descriptif, $externalUpdatedAt, $modificationDerniereMinute, $typeManifestation, $categorieManifestation, $themeManifestation, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $brouillon, $archive, $panel2, $place, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $placeCountry, $latitude, $longitude, $adresse, $panel3, $url, $imageName, $imageSystemName, $panel4, $fromData, $parserVersion, $source];
+            return [$panel1, $user, $createdAt, $updatedAt, $externalId, $slug, $nom, $startDate, $endDate, $horaires, $descriptif, $externalUpdatedAt, $status, $type, $category, $theme, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $draft, $archive, $panel2, $place, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $placeCountry, $latitude, $longitude, $adresse, $panel3, $url, $imageName, $imageSystemName, $panel4, $fromData, $parserVersion, $source];
         }
 
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));

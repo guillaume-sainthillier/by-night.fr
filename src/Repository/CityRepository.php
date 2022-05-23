@@ -139,12 +139,12 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
     public function findAllSitemapTags(): iterable
     {
         return parent::createQueryBuilder('c')
-            ->select('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
+            ->select('c.slug, e.type, e.category, e.theme')
             ->join('App:Place', 'p', 'WITH', 'p.city = c')
             ->join('App:Event', 'e', 'WITH', 'e.place = p')
-            ->where('e.dateFin >= :from')
+            ->where('e.endDate >= :from')
             ->setParameter('from', date('Y-m-d'))
-            ->groupBy('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
+            ->groupBy('c.slug, e.type, e.category, e.theme')
             ->getQuery()
             ->toIterable();
     }

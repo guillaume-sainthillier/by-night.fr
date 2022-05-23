@@ -63,7 +63,7 @@ class SearchType extends AbstractType
                 'label' => 'Rayon (KM)',
                 'attr' => ['placeholder' => 'Quand quel rayon cherchez-vous ?'],
             ])
-            ->add('type_manifestation', ChoiceType::class, [
+            ->add('type', ChoiceType::class, [
                 'choices' => $options['types_manif'],
                 'label' => 'Quoi ?',
                 'multiple' => true,

@@ -22,10 +22,10 @@ class UserEvent implements Stringable
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
     #[ORM\Column(type: 'boolean')]
-    private bool $participe = false;
+    private bool $going = false;
 
     #[ORM\Column(type: 'boolean')]
-    private bool $interet = false;
+    private bool $wish = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userEvents')]
     #[ORM\JoinColumn(nullable: false)]
@@ -40,26 +40,26 @@ class UserEvent implements Stringable
         return '#' . $this->id ?: '?';
     }
 
-    public function getParticipe(): ?bool
+    public function getGoing(): ?bool
     {
-        return $this->participe;
+        return $this->going;
     }
 
-    public function setParticipe(bool $participe): self
+    public function setGoing(bool $going): self
     {
-        $this->participe = $participe;
+        $this->going = $going;
 
         return $this;
     }
 
-    public function getInteret(): ?bool
+    public function getWish(): ?bool
     {
-        return $this->interet;
+        return $this->wish;
     }
 
-    public function setInteret(bool $interet): self
+    public function setWish(bool $wish): self
     {
-        $this->interet = $interet;
+        $this->wish = $wish;
 
         return $this;
     }
@@ -88,13 +88,13 @@ class UserEvent implements Stringable
         return $this;
     }
 
-    public function isParticipe(): ?bool
+    public function isGoing(): ?bool
     {
-        return $this->participe;
+        return $this->going;
     }
 
-    public function isInteret(): ?bool
+    public function isWish(): ?bool
     {
-        return $this->interet;
+        return $this->wish;
     }
 }

@@ -43,15 +43,15 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setExternalId($dto->externalId);
         $entity->setExternalOrigin($dto->externalOrigin);
         $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
-        if ($entity->getDateDebut()?->getTimestamp() !== $dto->startDate?->getTimestamp()) {
-            $entity->setDateDebut($dto->startDate);
+        if ($entity->getStartDate()?->getTimestamp() !== $dto->startDate?->getTimestamp()) {
+            $entity->setStartDate($dto->startDate);
         }
 
-        if ($entity->getDateFin()?->getTimestamp() !== $dto->endDate?->getTimestamp()) {
-            $entity->setDateFin($dto->endDate);
+        if ($entity->getEndDate()?->getTimestamp() !== $dto->endDate?->getTimestamp()) {
+            $entity->setEndDate($dto->endDate);
         }
 
-        $entity->setAdresse($dto->address);
+        $entity->setAddress($dto->address);
         if ($entity->getCreatedAt()?->getTimestamp() !== $dto->createdAt?->getTimestamp()) {
             $entity->setCreatedAt($dto->createdAt);
         }
@@ -63,13 +63,13 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setImage($dto->image);
         $entity->setImageFile($dto->imageFile);
         $entity->setFromData($dto->fromData);
-        $entity->setCategorieManifestation($dto->category);
+        $entity->setCategory($dto->category);
         $entity->setName($dto->name);
-        $entity->setNom($dto->name);
+        $entity->setName($dto->name);
         $entity->setDescriptif($dto->description);
-        $entity->setHoraires($dto->hours);
-        $entity->setTarif($dto->prices);
-        $entity->setModificationDerniereMinute($dto->status);
+        $entity->setHours($dto->hours);
+        $entity->setPrices($dto->prices);
+        $entity->setStatus($dto->status);
         $entity->setMailContacts($dto->emailContacts);
         $entity->setPhoneContacts($dto->phoneContacts);
         $entity->setWebsiteContacts($dto->websiteContacts);

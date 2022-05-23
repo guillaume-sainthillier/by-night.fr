@@ -21,8 +21,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
 use Serializable;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -38,7 +36,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[UniqueEntity(fields: ['username'], message: 'Un utilisateur existe déjà pour ce nom')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ExclusionPolicy('all')]
+#[ORM\Table(name: '`user`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
@@ -46,8 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[Serializer\Groups(['list_event', 'list_user'])]
-    #[Expose]
+    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details'])]
     private ?int $id = null;
 
     #[Assert\Length(max: 180)]
@@ -82,14 +79,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Serializer\Groups(['list_user'])]
-    #[Expose]
+    #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $firstname = null;
 
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Serializer\Groups(['list_user'])]
-    #[Expose]
+    #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $lastname = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -150,7 +145,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private ?string $imageSystemMainColor = null;
 
     #[ORM\Column(type: 'boolean')]
-    private bool $isVerified = false;
+    private bool $verified = false;
 
     public function __construct()
     {
@@ -596,14 +591,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function isVerified(): bool
+    public function verified(): bool
     {
-        return $this->isVerified;
+        return $this->verified;
     }
 
-    public function setIsVerified(bool $isVerified): self
+    public function setVerified(bool $verified): self
     {
-        $this->isVerified = $isVerified;
+        $this->verified = $verified;
 
         return $this;
     }
@@ -615,9 +610,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getIsVerified(): ?bool
+    public function getVerified(): ?bool
     {
-        return $this->isVerified;
+        return $this->verified;
     }
 
     public function getImageMainColor(): ?string
@@ -661,6 +656,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function isIsVerified(): ?bool
     {
-        return $this->isVerified;
+        return $this->verified;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->verified;
     }
 }

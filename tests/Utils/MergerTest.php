@@ -30,15 +30,15 @@ class MergerTest extends ContainerTestCase
     public function testPlaceMerge()
     {
         // Simple places
-        $persistedPlace = (new Place())->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000');
-        $parsedPlace = (new Place())->setNom('La Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setLatitude(43.6)->setUrl('https://www.google.com')->setFacebookId('FB ID');
+        $persistedPlace = (new Place())->setId(1)->setName('Dynamo')->setCityName('Toulouse')->setCityPostalCode('31000');
+        $parsedPlace = (new Place())->setName('La Dynamo')->setCityName('Toulouse')->setCityPostalCode('31000')->setLatitude(43.6)->setUrl('https://www.google.com')->setFacebookId('FB ID');
 
         $this->merger->mergePlace($persistedPlace, $parsedPlace);
 
         $this->assertEquals($persistedPlace->getId(), 1);
-        $this->assertEquals($persistedPlace->getNom(), 'Dynamo');
-        $this->assertEquals($persistedPlace->getVille(), 'Toulouse');
-        $this->assertEquals($persistedPlace->getCodePostal(), '31000');
+        $this->assertEquals($persistedPlace->getName(), 'Dynamo');
+        $this->assertEquals($persistedPlace->getCityName(), 'Toulouse');
+        $this->assertEquals($persistedPlace->getCityPostalCode(), '31000');
         $this->assertEquals($persistedPlace->getLatitude(), 43.6);
         $this->assertEquals($persistedPlace->getUrl(), 'https://www.google.com');
         $this->assertEquals($persistedPlace->getFacebookId(), 'FB ID');
@@ -46,30 +46,30 @@ class MergerTest extends ContainerTestCase
 
     public function testEventMerge()
     {
-        $persistedEvent = (new Event())->setId(1)->setNom('My Event')->setDescriptif('Event description');
-        $parsedEvent = (new Event())->setId(2)->setNom('My Event V2')->setDescriptif('Event description V2');
+        $persistedEvent = (new Event())->setId(1)->setName('My Event')->setDescriptif('Event description');
+        $parsedEvent = (new Event())->setId(2)->setName('My Event V2')->setDescriptif('Event description V2');
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
         $this->assertEquals($persistedEvent->getId(), 1); // ID is intact
-        $this->assertEquals($persistedEvent->getNom(), 'My Event V2'); // Newest field
+        $this->assertEquals($persistedEvent->getName(), 'My Event V2'); // Newest field
         $this->assertEquals($persistedEvent->getDescriptif(), 'Event description V2'); // Newest field
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('now');
 
-        $persistedEvent = (new Event())->setDateDebut($databaseDate);
-        $parsedEvent = (new Event())->setDateDebut($parsedDate);
+        $persistedEvent = (new Event())->setStartDate($databaseDate);
+        $parsedEvent = (new Event())->setStartDate($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getDateDebut(), $databaseDate); // DateTime have not changed (prevents ORM panic)
+        $this->assertEquals($persistedEvent->getStartDate(), $databaseDate); // DateTime have not changed (prevents ORM panic)
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('tomorrow');
 
-        $persistedEvent = (new Event())->setDateDebut($databaseDate);
-        $parsedEvent = (new Event())->setDateDebut($parsedDate);
+        $persistedEvent = (new Event())->setStartDate($databaseDate);
+        $parsedEvent = (new Event())->setStartDate($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getDateDebut(), $parsedDate); // DateTime have changed because it's not same day
+        $this->assertEquals($persistedEvent->getStartDate(), $parsedDate); // DateTime have changed because it's not same day
     }
 }

@@ -21,10 +21,10 @@ class ParserHistory
 {
     use EntityIdentityTrait;
     #[ORM\Column(type: 'datetime')]
-    private DateTimeInterface $dateDebut;
+    private DateTimeInterface $startDate;
 
     #[ORM\Column(type: 'datetime')]
-    private DateTimeInterface $dateFin;
+    private DateTimeInterface $endDate;
 
     #[ORM\Column(type: 'string', length: 127)]
     private ?string $fromData = null;
@@ -40,14 +40,14 @@ class ParserHistory
 
     public function __construct()
     {
-        $this->dateDebut = new DateTime();
-        $this->dateFin = new DateTime();
+        $this->startDate = new DateTime();
+        $this->endDate = new DateTime();
     }
 
     #[ORM\PrePersist]
-    public function majDateFin(): void
+    public function majEndDate(): void
     {
-        $this->dateFin = new DateTime();
+        $this->endDate = new DateTime();
     }
 
     /**
@@ -55,17 +55,17 @@ class ParserHistory
      */
     public function getDuree(): int
     {
-        return $this->dateFin->getTimestamp() - $this->dateDebut->getTimestamp();
+        return $this->endDate->getTimestamp() - $this->startDate->getTimestamp();
     }
 
-    public function getDateDebut(): ?DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
-        return $this->dateDebut;
+        return $this->startDate;
     }
 
-    public function setDateDebut(DateTimeInterface $dateDebut): self
+    public function setStartDate(DateTimeInterface $startDate): self
     {
-        $this->dateDebut = $dateDebut;
+        $this->startDate = $startDate;
 
         return $this;
     }
@@ -82,14 +82,14 @@ class ParserHistory
         return $this;
     }
 
-    public function getDateFin(): ?DateTimeInterface
+    public function getEndDate(): ?DateTimeInterface
     {
-        return $this->dateFin;
+        return $this->endDate;
     }
 
-    public function setDateFin(DateTimeInterface $dateFin): self
+    public function setEndDate(DateTimeInterface $endDate): self
     {
-        $this->dateFin = $dateFin;
+        $this->endDate = $endDate;
 
         return $this;
     }

@@ -53,7 +53,7 @@ class ProfileController extends AbstractController
             foreach ($userEvents as $userEvent) {
                 /** @var UserEvent $userEvent */
                 $event = $userEvent->getEvent();
-                if ($userEvent->getParticipe()) {
+                if ($userEvent->getGoing()) {
                     $event->setParticipations($event->getParticipations() - 1);
                 } else {
                     $event->setInterets($event->getInterets() - 1);

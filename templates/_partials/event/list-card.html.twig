@@ -8,11 +8,11 @@
     {{ fos_httpcache_tag(tags('place', event.place)) }}
     <div class="card scroll-item" {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
         <div class="row align-items-center g-0 event">
-            {% if event.modificationDerniereMinute %}
+            {% if event.status %}
                 <div class="col-12">
                     <div class="alert alert-warning mb-0">
                         <i class="fa fa-warning"></i>
-                        <span {% if microdata %}itemprop="eventStatus"{% endif %}> {{ event.modificationDerniereMinute }}</span>
+                        <span {% if microdata %}itemprop="eventStatus"{% endif %}> {{ event.status }}</span>
                     </div>
                 </div>
             {% endif %}
@@ -28,7 +28,7 @@
                             <span class="number">{{ event.fbParticipations }}</span>
                         </span>
                     {% endif %}
-                    <a class="image-gallery" href="{{ original }}" title="{{ event.nom }}">
+                    <a class="image-gallery" href="{{ original }}" title="{{ event.name }}">
                         {{ macros.eventLazyThumb(event, 320) }}
                     </a>
                 </div>
@@ -36,41 +36,41 @@
             <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-9 col-lg-8{% endif %} description_evenement">
                 <div class="card-body">
                     <h3 class="h5">
-                        <a title="Tous les détails de {{ event.nom }} "
+                        <a title="Tous les détails de {{ event.name }} "
                            href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
                            {% if microdata %}itemprop="url"{% endif %}>
-                            <span {% if microdata %}itemprop="name"{% endif %}>{{ event.nom }}</span>
+                            <span {% if microdata %}itemprop="name"{% endif %}>{{ event.name }}</span>
                         </a>
                     </h3>
                     <div class="detail-item">
-                        {% set dateDebut = event.dateDebut|date('d/m/Y') %}
-                        {% set dateFin = event.dateFin|date('d/m/Y') %}
+                        {% set startDate = event.startDate|date('d/m/Y') %}
+                        {% set endDate = event.endDate|date('d/m/Y') %}
 
                         <i class="fa fa-calendar-days"></i>
                         <span>
-                        {% if event.dateFin == null or ( event.dateFin != null and event.dateDebut == event.dateFin) %}
-                            {% if microdata %}
-                                <meta itemprop="endDate" content="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}" />
+                            {% if event.endDate == null or event.startDate == event.endDate %}
+                                {% if microdata %}
+                                    <meta itemprop="endDate" content="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}" />
+                                {% endif %}
+
+                                <time {% if microdata %}itemprop="startDate"{% endif %}
+                                      datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
+                                    {{ startDate }}
+                                </time>
+                            {% else %}
+                                <time {% if microdata %}itemprop="startDate"{% endif %}
+                                      datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
+                                    {{ startDate }}
+                                </time>
+                                -
+
+                                <time {% if microdata %}itemprop="endDate"{% endif %}
+                                      datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">
+                                    {{ endDate }}
+                                </time>
                             {% endif %}
-
-                            <time {% if microdata %}itemprop="startDate"{% endif %}
-                                  datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">
-                                {{ dateDebut }}
-                        </time>
-                        {% else %}
-                            <time {% if microdata %}itemprop="startDate"{% endif %}
-                                  datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">
-                                {{ dateDebut }}
-                            </time>
-                            -
-
-                            <time {% if microdata %}itemprop="endDate"{% endif %}
-                                  datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">
-                                {{ dateFin }}
-                            </time>
-                        {% endif %}
-                            <small class="text-muted">{% if event.horaires %} - {{ event.horaires }}{% endif %}</small>
-                    </span>
+                                <small class="text-muted">{% if event.hours %} - {{ event.hours }}{% endif %}</small>
+                        </span>
                     </div>
                     {% set place = event.place %}
                     {% if event.placeName %}
@@ -106,10 +106,10 @@
                             {% endif %}
                         </div>
                     {% endif %}
-                    {% if event.tarif %}
+                    {% if event.prices %}
                         <div class="detail-item">
                             <i class="fa fa-ticket"></i>
-                            <span>{{ event.tarif }}</span>
+                            <span>{{ event.prices }}</span>
                         </div>
                     {% endif %}
                     {% if event.user %}

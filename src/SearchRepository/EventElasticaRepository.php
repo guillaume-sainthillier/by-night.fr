@@ -54,7 +54,7 @@ class EventElasticaRepository extends Repository
         $mainQuery = new BoolQuery();
 
         $mainQuery->addFilter(new Term([
-            'brouillon' => false,
+            'draft' => false,
         ]));
 
         $location = null;
@@ -79,7 +79,7 @@ class EventElasticaRepository extends Repository
 
         if (null !== $search->getFrom()) {
             if (null === $search->getTo()) {
-                $mainQuery->addFilter(new Range('date_fin', [
+                $mainQuery->addFilter(new Range('end_date', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));
             } else {
@@ -95,33 +95,33 @@ class EventElasticaRepository extends Repository
                 // Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery();
                 $cas1
-                    ->addMust(new Range('date_debut', [
+                    ->addMust(new Range('start_date', [
                             'lte' => $search->getFrom()->format('Y-m-d'),
                         ])
                     )
-                    ->addMust(new Range('date_fin', [
+                    ->addMust(new Range('end_date', [
                         'gte' => $search->getTo()->format('Y-m-d'),
                     ]));
 
                 // Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
                 $cas2 = new BoolQuery();
                 $cas2
-                    ->addMust(new Range('date_debut', [
+                    ->addMust(new Range('start_date', [
                             'gte' => $search->getFrom()->format('Y-m-d'),
                         ])
                     )
-                    ->addMust(new Range('date_fin', [
+                    ->addMust(new Range('end_date', [
                         'lte' => $search->getTo()->format('Y-m-d'),
                     ]));
 
                 // Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new Range('date_debut', [
+                $cas3 = new Range('start_date', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
 
                 // Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new Range('date_fin', [
+                $cas4 = new Range('end_date', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
@@ -144,9 +144,9 @@ class EventElasticaRepository extends Repository
                 ->setQuery($search->getTerm())
                 ->setFields([
                     'nom', 'descriptif',
-                    'type_manifestation', 'theme_manifestation', 'categorie_manifestation',
-                    'place.nom', 'place.rue', 'place.ville', 'place.code_postal',
-                    'place_name', 'place_street', 'place_city', 'place_postal_code',
+                    'type', 'theme', 'category',
+                    'place.nom', 'place.rue', 'place.city.name', 'place.city.postal_code',
+                    'place_name', 'place_street', 'place_city_name', 'place_city_postal_code',
                 ]);
             $mainQuery->addMust($query);
         }
@@ -155,21 +155,21 @@ class EventElasticaRepository extends Repository
             $query = new MultiMatch();
             $query
                 ->setQuery($search->getTag())
-                ->setFields(['type_manifestation', 'theme_manifestation', 'categorie_manifestation']);
+                ->setFields(['type', 'theme', 'category']);
             $mainQuery->addFilter($query);
         }
 
-        if ([] !== $search->getTypeManifestation()) {
-            $communeTypeManifestationQuery = new MatchQuery();
-            $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
-            $mainQuery->addFilter($communeTypeManifestationQuery);
+        if ([] !== $search->getType()) {
+            $communeTypeQuery = new MatchQuery();
+            $communeTypeQuery->setField('type', implode(' ', $search->getType()));
+            $mainQuery->addFilter($communeTypeQuery);
         }
 
         // Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
 
         if (!$sortByScore) {
-            $finalQuery->addSort(['date_fin' => 'asc']);
+            $finalQuery->addSort(['end_date' => 'asc']);
 
             if ($location) {
                 $finalQuery->addSort(['_geo_distance' => [

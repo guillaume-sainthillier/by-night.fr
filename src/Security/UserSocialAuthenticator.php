@@ -65,7 +65,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
                 ->setPassword('notused')
                 ->setFromLogin(false)
-                ->setIsVerified(true)
+                ->setVerified(true)
                 ->setEmail($datas['email']);
 
             // Avoir duplicate exception

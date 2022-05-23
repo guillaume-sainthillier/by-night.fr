@@ -2,7 +2,7 @@
 {% do fos_httpcache_tag(tags('location', location)) %}
 
 {%- block meta_title -%}
-{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.cityName -}}{% endif %}
 {% elseif tag is not null %}{{- tag|capitalize -}}
 {% elseif type == 'exposition' %}Expositions
 {% elseif type == 'concert' %}Concerts
@@ -15,7 +15,7 @@
 {%- endblock -%}
 
 {%- block titre -%}
-{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.ville -}}
+{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.cityName -}}
 {% elseif tag is not null %}{{- tag|capitalize -}}
 {% elseif type == 'exposition' %}Expositions
 {% elseif type == 'concert' %}Concerts

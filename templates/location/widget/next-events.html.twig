@@ -3,7 +3,7 @@
 {% block titre %}{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small>{% endblock %}
 {% block icon %}fa-home{% endblock %}
 {% block body %}
-    {{ render_esi(path('app_widget_next_events', {
+    {{ render_esi(path('app_widget_nextEvents', {
         'slug': event.slug,
         'id': event.id,
         'location': event.locationSlug

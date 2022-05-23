@@ -24,6 +24,8 @@ use App\Repository\UserEventRepository;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,7 +71,7 @@ class EventController extends BaseController
 
             $userEvent = (new UserEvent())
                 ->setUser($user)
-                ->setParticipe(true);
+                ->setGoing(true);
             $event->addUserEvent($userEvent);
             $em = $this->getEntityManager();
 
@@ -78,7 +80,7 @@ class EventController extends BaseController
                 $event = $form->getData();
                 $comment = new Comment();
                 $comment
-                    ->setCommentaire($form->get('comment')->getData())
+                    ->setComment($form->get('comment')->getData())
                     ->setEvent($event)
                     ->setUser($user);
                 $em->persist($comment);
@@ -100,8 +102,9 @@ class EventController extends BaseController
 
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
     #[IsGranted('edit', subject: 'event')]
-    public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
+    public function edit(SerializerInterface $serializer, Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
+        dd(json_decode($serializer->serialize($event, 'json', SerializationContext::create()->setGroups(['elasticsearch:event:details'])), true));
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTime());
         }
@@ -138,26 +141,26 @@ class EventController extends BaseController
         return $this->redirectToRoute('app_event_list');
     }
 
-    #[Route(path: '{id<%patterns.id%>}/annuler', name: 'app_event_annuler', methods: ['POST'])]
+    #[Route(path: '{id<%patterns.id%>}/cancel', name: 'app_event_cancel', methods: ['POST'])]
     #[IsGranted('edit', subject: 'event')]
-    public function annuler(Request $request, Event $event): Response
+    public function cancel(Request $request, Event $event): Response
     {
-        $annuler = $request->request->get('annuler', 'true');
-        $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
-        $event->setModificationDerniereMinute($modificationDerniereMinute);
+        $cancel = $request->request->get('cancel', 'true');
+        $status = ('true' === $cancel ? 'ANNULÉ' : null);
+        $event->setStatus($status);
         $em = $this->getEntityManager();
         $em->flush();
 
         return new JsonResponse(['success' => true]);
     }
 
-    #[Route(path: '{id<%patterns.id%>}/brouillon', name: 'app_event_brouillon', methods: ['POST'])]
+    #[Route(path: '{id<%patterns.id%>}/draft', name: 'app_event_draft', methods: ['POST'])]
     #[IsGranted('edit', subject: 'event')]
-    public function brouillon(Request $request, Event $event): Response
+    public function draft(Request $request, Event $event): Response
     {
-        $brouillon = $request->request->get('brouillon', 'true');
-        $isBrouillon = 'true' === $brouillon;
-        $event->setBrouillon($isBrouillon);
+        $draft = $request->request->get('draft', 'true');
+        $isDraft = 'true' === $draft;
+        $event->setDraft($isDraft);
         $em = $this->getEntityManager();
         $em->flush();
 
@@ -179,7 +182,7 @@ class EventController extends BaseController
         }
 
         $isLike = 'true' === $request->request->get('like', 'true');
-        $userEvent->setParticipe($isLike);
+        $userEvent->setGoing($isLike);
         $em->flush();
         $participations = $eventRepository->getParticipationTrendsCount($event);
         $interets = $eventRepository->getInteretTrendsCount($event);

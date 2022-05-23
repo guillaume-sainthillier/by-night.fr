@@ -34,7 +34,7 @@ class CommentRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('c')
-            ->where('c.event = :event AND c.parent IS NULL AND c.approuve = true')
+            ->where('c.event = :event AND c.parent IS NULL AND c.approved = true')
             ->setParameters([':event' => $event])
             ->orderBy('c.createdAt', 'DESC')
             ->getQuery();
@@ -60,7 +60,7 @@ class CommentRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('c')
-            ->where('c.parent = :parent AND c.approuve = true')
+            ->where('c.parent = :parent AND c.approved = true')
             ->setParameters([':parent' => $comment])
             ->orderBy('c.createdAt', 'DESC')
             ->getQuery();

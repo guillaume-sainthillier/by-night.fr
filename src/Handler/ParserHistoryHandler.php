@@ -66,7 +66,7 @@ class ParserHistoryHandler
     public function stop(): ParserHistory
     {
         $this->parserHistory
-            ->setDateFin(new DateTime())
+            ->setEndDate(new DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())
             ->setUpdateSoirees($this->getNbUpdates())
@@ -97,7 +97,7 @@ class ParserHistoryHandler
 
     public function start(): void
     {
-        $this->parserHistory = (new ParserHistory())->setDateDebut(new DateTime());
+        $this->parserHistory = (new ParserHistory())->setStartDate(new DateTime());
     }
 
     public function reset(): void

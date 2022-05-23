@@ -61,19 +61,19 @@ class ComparatorTest extends ContainerTestCase
             [(new Place()), (new Place())->setCity($toulouse), 0],
             [(new Place())->setCity($toulouse), (new Place()), 0],
             [(new Place())->setCity($toulouse), (new Place())->setCity($toulouse), 0],
-            [(new Place())->setCity($toulouse), (new Place())->setCity($toulouse)->setNom('Secret place'), 0],
-            [(new Place())->setCity($toulouse)->setNom('Secret place'), (new Place())->setCity($toulouse), 0],
-            [(new Place())->setCity($toulouse)->setNom('Bikini')->setRue('3 Rue Théodore Monod'), (new Place())->setCity($toulouse)->setNom('Le bikini')->setRue('rue theodore monod'), 100],
-            [(new Place())->setCity($toulouse)->setNom('Bikini'), (new Place())->setCity($toulouse)->setNom('Le bikini'), 90],
+            [(new Place())->setCity($toulouse), (new Place())->setCity($toulouse)->setName('Secret place'), 0],
+            [(new Place())->setCity($toulouse)->setName('Secret place'), (new Place())->setCity($toulouse), 0],
+            [(new Place())->setCity($toulouse)->setName('Bikini')->setStreet('3 Rue Théodore Monod'), (new Place())->setCity($toulouse)->setName('Le bikini')->setStreet('rue theodore monod'), 100],
+            [(new Place())->setCity($toulouse)->setName('Bikini'), (new Place())->setCity($toulouse)->setName('Le bikini'), 90],
 
             // By country check
             [(new Place()), (new Place())->setCountry($france), 0],
             [(new Place())->setCountry($france), (new Place()), 0],
             [(new Place())->setCountry($france), (new Place())->setCountry($france), 0],
-            [(new Place())->setCountry($france), (new Place())->setCountry($france)->setNom('Secret place'), 0],
-            [(new Place())->setCountry($france)->setNom('Secret place'), (new Place())->setCountry($france), 0],
-            [(new Place())->setCountry($france)->setNom('Bikini')->setRue('3 Rue Théodore Monod'), (new Place())->setCountry($france)->setNom('Le bikini')->setRue('rue theodore monod'), 100],
-            [(new Place())->setCountry($france)->setNom('Bikini'), (new Place())->setCountry($france)->setNom('Le bikini'), 90],
+            [(new Place())->setCountry($france), (new Place())->setCountry($france)->setName('Secret place'), 0],
+            [(new Place())->setCountry($france)->setName('Secret place'), (new Place())->setCountry($france), 0],
+            [(new Place())->setCountry($france)->setName('Bikini')->setStreet('3 Rue Théodore Monod'), (new Place())->setCountry($france)->setName('Le bikini')->setStreet('rue theodore monod'), 100],
+            [(new Place())->setCountry($france)->setName('Bikini'), (new Place())->setCountry($france)->setName('Le bikini'), 90],
         ];
     }
 
@@ -85,10 +85,10 @@ class ComparatorTest extends ContainerTestCase
         $original = $place;
         $place = $this->comparator->getBestPlace($places, $place);
         if (null === $expectedId) {
-            $this->assertNull($place, 'Original : ' . $original->getNom());
+            $this->assertNull($place, 'Original : ' . $original->getName());
         } else {
-            $this->assertNotNull($place, 'Original : ' . $original->getNom());
-            $this->assertEquals($expectedId, $place->getId(), 'Original : ' . $original->getNom());
+            $this->assertNotNull($place, 'Original : ' . $original->getName());
+            $this->assertEquals($expectedId, $place->getId(), 'Original : ' . $original->getName());
         }
     }
 
@@ -99,27 +99,27 @@ class ComparatorTest extends ContainerTestCase
         $toulouseZip = (new ZipCity())->setId(1)->setName('Toulouse')->setPostalCode('31000')->setParent($toulouse);
         $toulouseZip2 = (new ZipCity())->setId(2)->setName('Toulouse')->setPostalCode('31500')->setParent($toulouse);
 
-        $dynamo = (new Place())->setId(1)->setNom('Dynamo')->setRue('6 rue Amélie')->setZipCity(clone $toulouseZip)->setCity($toulouse);
-        $bikini = (new Place())->setId(2)->setNom('Le bikini')->setZipCity($toulouseZip)->setCity($toulouse);
-        $moloko = (new Place())->setId(3)->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip)->setCity($toulouse);
+        $dynamo = (new Place())->setId(1)->setName('Dynamo')->setStreet('6 rue Amélie')->setZipCity(clone $toulouseZip)->setCity($toulouse);
+        $bikini = (new Place())->setId(2)->setName('Le bikini')->setZipCity($toulouseZip)->setCity($toulouse);
+        $moloko = (new Place())->setId(3)->setName('Moloko')->setStreet('6 Rue Joutx Aigues')->setZipCity($toulouseZip)->setCity($toulouse);
         $moloko2 = clone $moloko;
         $moloko2->setId(4);
 
-        $macdo = (new Place())->setId(5)->setNom("McDonald's Capitole")->setRue('Place du Capitole')->setZipCity(clone $toulouseZip)->setCity($toulouse);
+        $macdo = (new Place())->setId(5)->setName("McDonald's Capitole")->setStreet('Place du Capitole')->setZipCity(clone $toulouseZip)->setCity($toulouse);
 
         return [
-            [1, (new Place())->setNom('La Dynamo')->setRue('6 rue Amelie')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
-            [1, (new Place())->setNom('La Dynamo')->setRue('6 rue Amelie')->setZipCity($toulouseZip2)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
-            [1, (new Place())->setNom('La Dynamo')->setRue('6 rue Amelie')->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
+            [1, (new Place())->setName('La Dynamo')->setStreet('6 rue Amelie')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
+            [1, (new Place())->setName('La Dynamo')->setStreet('6 rue Amelie')->setZipCity($toulouseZip2)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
+            [1, (new Place())->setName('La Dynamo')->setStreet('6 rue Amelie')->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
 
-            [2, (new Place())->setNom('Bikini, Toulouse')->setCity($toulouse), [$moloko, $dynamo, $macdo, $bikini]],
+            [2, (new Place())->setName('Bikini, Toulouse')->setCity($toulouse), [$moloko, $dynamo, $macdo, $bikini]],
 
-            [3, (new Place())->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip2)->setCity($toulouse), [$dynamo, $bikini, $moloko, $macdo, $moloko2]],
-            [4, (new Place())->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip2)->setCity($toulouse), [$dynamo, $bikini, $moloko2, $macdo, $moloko]],
+            [3, (new Place())->setName('Moloko')->setStreet('6 Rue Joutx Aigues')->setZipCity($toulouseZip2)->setCity($toulouse), [$dynamo, $bikini, $moloko, $macdo, $moloko2]],
+            [4, (new Place())->setName('Moloko')->setStreet('6 Rue Joutx Aigues')->setZipCity($toulouseZip2)->setCity($toulouse), [$dynamo, $bikini, $moloko2, $macdo, $moloko]],
 
-            [null, (new Place())->setNom("McDonald's Esquirol")->setRue('43444 Place Esquirol')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $dynamo, $macdo]],
-            [null, (new Place())->setNom('La gouaille')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
-            [null, (new Place())->setNom('Autre Lieu Que La Dynamo')->setRue('6 rue Amélie')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
+            [null, (new Place())->setName("McDonald's Esquirol")->setStreet('43444 Place Esquirol')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $dynamo, $macdo]],
+            [null, (new Place())->setName('La gouaille')->setStreet('6 Rue Joutx Aigues')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
+            [null, (new Place())->setName('Autre Lieu Que La Dynamo')->setStreet('6 rue Amélie')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
         ];
     }
 

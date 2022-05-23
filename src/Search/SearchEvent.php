@@ -28,7 +28,7 @@ class SearchEvent
 
     private ?string $tag = null;
 
-    protected array $type_manifestation = [];
+    protected array $type = [];
 
     protected array $lieux = [];
 
@@ -105,14 +105,14 @@ class SearchEvent
         return $this;
     }
 
-    public function getTypeManifestation(): array
+    public function getType(): array
     {
-        return $this->type_manifestation;
+        return $this->type;
     }
 
-    public function setTypeManifestation(array $type_manifestation): self
+    public function setType(array $type): self
     {
-        $this->type_manifestation = $type_manifestation;
+        $this->type = $type;
 
         return $this;
     }

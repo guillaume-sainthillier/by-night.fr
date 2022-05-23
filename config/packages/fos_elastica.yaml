@@ -26,9 +26,34 @@ fos_elastica:
                         french_stemmer:
                             type: "stemmer"
                             language: "light_french"
-
+                        nGram:
+                            type: "edge_ngram"
+                            min_gram: 3
+                            max_gram: 10
                     analyzer:
+                        autocomplete:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "french_elision"
+                                - "icu_folding"
+                                - "lowercase"
+                                - "french_stop"
                         french_heavy:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "french_elision"
+                                - "icu_folding"
+                                - "lowercase"
+                                - "french_stop"
+                                - "french_stemmer"
+                                - "nGram"
+                        french_heavy_natural:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
+                                - "nGram"
+                        french_heavy_description:
                             tokenizer: "icu_tokenizer"
                             char_filter:
                                 - "html_strip"
@@ -61,78 +86,93 @@ fos_elastica:
             serializer:
                 groups: [ list_event ]
             properties:
-                nom: { boost: 5, type: "text", analyzer: french_heavy, search_analyzer: french_heavy  }
-                descriptif: { analyzer: french_heavy, search_analyzer: french_heavy }
-                date_debut: { type: "date", format: 'yyyy-MM-dd' }
-                date_fin: { type: "date", format: 'yyyy-MM-dd' }
+                name: { boost: 5, type: "text", analyzer: french_heavy, search_analyzer: autocomplete }
+                description: { analyzer: french_heavy_description, search_analyzer: autocomplete }
+                start_date: { type: "date", format: 'yyyy-MM-dd' }
+                end_date: { type: "date", format: 'yyyy-MM-dd' }
                 place:
                     type: "object"
                     properties:
-                        nom: { boost: 3, type: "text", analyzer: french_heavy, search_analyzer: french_heavy }
-                        rue: { analyzer: french_heavy, search_analyzer: french_heavy }
-                        ville: { boost: 2, type: "text", analyzer: french_heavy, search_analyzer: french_heavy }
+                        name: { boost: 3, type: "text", analyzer: french_heavy_natural, search_analyzer: autocomplete }
+                        street: { analyzer: french_heavy_natural, search_analyzer: autocomplete }
+                        city_name: { boost: 2, type: "text", analyzer: french_heavy_natural, search_analyzer: autocomplete }
                         city:
                             type: "object"
                             properties:
-                                location: {type: "geo_point"}
+                                location: { type: "geo_point" }
 
         city:
             settings:
                 analysis:
-                    tokenizer:
-                        nGram_city:
-                            type:     nGram
-                            min_gram: 3
-                            max_gram: 4
                     filter:
-                        elision:
-                            type:     elision
-                            articles: [l, m, t, qu, n, s, j, d]
+                        nGram:
+                            type: edge_ngram
+                            min_gram: 1
+                            max_gram: 20
+                        french_elision:
+                            type: "elision"
+                            articles_case: true
+                            articles: [ "l", "m", "t", "qu", "n", "s", "j", "d", "c", "jusqu", "quoiqu", "lorsqu", "puisqu" ]
                     analyzer:
+                        autocomplete:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
                         city_analyzer:
-                            type: custom
-                            tokenizer: nGram_city
-                            filter: [lowercase, asciifolding, elision]
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "french_elision"
+                                - "icu_folding"
+                                - "lowercase"
+                                - "nGram"
 
             serializer:
-                groups: [list_city]
+                groups: [ list_city ]
             properties:
-                name: { type: "text", boost: 3, analyzer: city_analyzer, search_analyzer: city_analyzer }
+                name: { type: "text", boost: 3, analyzer: city_analyzer, search_analyzer: autocomplete }
                 country:
                     type: "object"
                     properties:
-                        name: { boost: 5, type: "text" }
+                        name: { boost: 5, type: "text", analyzer: city_analyzer, search_analyzer: autocomplete }
                 parent:
                     type: "object"
                     properties:
-                        name: { type: "text" }
+                        name: { type: "text", analyzer: city_analyzer, search_analyzer: autocomplete }
             persistence:
                 driver: orm
-                model:  App\Entity\City
+                model: App\Entity\City
                 repository: App\SearchRepository\CityElasticaRepository
                 provider:
                     batch_size: 500
         user:
             settings:
                 analysis:
-                    tokenizer:
-                        nGram_user:
-                            type:     edge_ngram
-                            min_gram: 5
-                            max_gram: 8
+                    filter:
+                        nGram:
+                            type: edge_ngram
+                            min_gram: 3
+                            max_gram: 20
                     analyzer:
+                        autocomplete:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
                         user_analyzer:
-                            type: custom
-                            tokenizer: nGram_user
-                            filter: [asciifolding, lowercase]
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
+                                - "nGram"
             serializer:
-                groups: [list_user]
+                groups: [ 'elasticsearch:user:details' ]
             properties:
-                username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
-                firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
-                lastname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: autocomplete }
+                firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: autocomplete }
+                lastname: { boost: 3, type: "text", analyzer: user_analyzer, search_analyzer: autocomplete }
             persistence:
-                model:  App\Entity\User
+                model: App\Entity\User
                 repository: App\SearchRepository\UserElasticaRepository
                 provider:
                     batch_size: 1000

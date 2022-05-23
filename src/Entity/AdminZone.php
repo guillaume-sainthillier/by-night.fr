@@ -37,7 +37,7 @@ abstract class AdminZone implements Stringable
 {
     #[ORM\Column(type: 'integer')]
     #[ORM\Id]
-    #[Groups(['list_event', 'list_city', 'list_user'])]
+    #[Groups(['elasticsearch:event:details', 'elasticsearch:city:details', 'elasticsearch:user:details'])]
     protected ?int $id = null;
 
     #[ORM\Column(length: 200, unique: true)]
@@ -46,7 +46,7 @@ abstract class AdminZone implements Stringable
     protected ?string $slug = null;
 
     #[ORM\Column(type: 'string', length: 200)]
-    #[Groups(['list_city'])]
+    #[Groups(['elasticsearch:city:details'])]
     protected ?string $name = null;
 
     #[ORM\Column(type: 'float')]
@@ -74,7 +74,7 @@ abstract class AdminZone implements Stringable
      *
      * @psalm-return array{lat: float, lon: float}
      */
-    #[Groups(['list_city', 'list_event'])]
+    #[Groups(['elasticsearch:city:details', 'elasticsearch:event:details'])]
     #[Expose]
     #[VirtualProperty]
     #[SerializedName('location')]

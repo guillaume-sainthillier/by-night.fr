@@ -5,19 +5,19 @@
     {% set title = 'Recherche' %}
     {% set description = 'Recherche d\'événements, concerts, spectacles et membres' %}
     {% set result = {count: (events.totalItemCount + users.totalItemCount), label: 'résultat'} %}
-    {% set nom = 'Tout' %}
+    {% set name = 'Tout' %}
 {% elseif type == 'evenements' %}
     {% set titre = 'Recherche d\'événements' %}
     {% set title = 'Recherche d\'événements' %}
     {% set description = 'Recherche d\'événements, concerts, spectacles, sorties' %}
     {% set result = {count: events.totalItemCount, label: 'événement'} %}
-    {% set nom = 'Événements' %}
+    {% set name = 'Événements' %}
 {% elseif type == 'membres' %}
     {% set titre = 'Recherche de membres' %}
     {% set title = 'Recherche de membres' %}
     {% set result = {count: users.totalItemCount, label: 'membre'} %}
     {% set description = titre %}
-    {% set nom = 'Membres' %}
+    {% set name = 'Membres' %}
 {% endif %}
 
 {% if term %}{% set title = term %}{% endif %}
@@ -26,7 +26,7 @@
     {% do menu.addItem('Recherche', url('app_search_index')) %}
 
     {% if type %}
-        {% do menu.addItem(nom, url('app_search_index', {'type': type})) %}
+        {% do menu.addItem(name, url('app_search_index', {'type': type})) %}
     {% endif %}
 
     {% if term %}

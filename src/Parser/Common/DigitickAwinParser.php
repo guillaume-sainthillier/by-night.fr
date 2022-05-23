@@ -62,13 +62,13 @@ class DigitickAwinParser extends AbstractAwinParser
 
         $startDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['event_date']);
         $endDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['event_date']);
-        $horaires = sprintf('À %s', $startDate->format('H\hi'));
+        $hours = sprintf('À %s', $startDate->format('H\hi'));
 
         $event = new EventDto();
         $event->externalId = sprintf('DGT-%s', $data['merchant_product_id']);
         $event->startDate = $startDate;
         $event->endDate = $endDate;
-        $event->hours = $horaires;
+        $event->hours = $hours;
         $event->source = $data['aw_deep_link'];
         $event->name = $data['event_name'];
         $event->type = 'Expo' === $data['merchant_category'] ? 'Exposition' : $data['merchant_category'];

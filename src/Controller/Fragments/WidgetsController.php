@@ -61,8 +61,8 @@ class WidgetsController extends BaseController
         if (null !== $user) {
             $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $userEvent) {
-                $participer = $userEvent->getParticipe();
-                $interet = $userEvent->getInteret();
+                $participer = $userEvent->getGoing();
+                $interet = $userEvent->getWish();
             }
         }
 
@@ -74,7 +74,7 @@ class WidgetsController extends BaseController
         $eventProfile = $eventProfilePicture->getOriginalPicture($event);
         $page = new Page([
             'url' => $link,
-            'title' => $event->getNom(),
+            'title' => $event->getName(),
             'text' => $event->getDescriptif(),
             'image' => $eventProfile,
         ]);

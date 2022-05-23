@@ -32,22 +32,22 @@
                     {% for event in events %}
                         <tr>
                             <td>
-                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" title="Accéder à l'événement">{{ event.nom }}</a>
+                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" title="Accéder à l'événement">{{ event.name }}</a>
                             </td>
                             <td>{{ event.placeName }}</td>
                             <td>{{ event.placeCity }}</td>
                             <td>
-                                {{ macros.dates(event.dateDebut, event.dateFin) }}
+                                {{ macros.dates(event.startDate, event.endDate) }}
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input brouillon" data-href="{{ path('app_event_brouillon', {'id': event.id}) }}" type="checkbox" {{ not event.brouillon ? 'checked' }} id="draft-event-{{ event.id }}">
+                                    <input class="form-check-input draft" data-href="{{ path('app_event_draft', {'id': event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
                                     <label class="form-check-label" for="draft-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input annuler" data-href="{{ path('app_event_annuler', {'id': event.id}) }}" type="checkbox" {{ event.modificationDerniereMinute ? 'checked' }} id="cancel-event-{{ event.id }}">
+                                    <input class="form-check-input cancel" data-href="{{ path('app_event_annuler', {'id': event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
                                     <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>

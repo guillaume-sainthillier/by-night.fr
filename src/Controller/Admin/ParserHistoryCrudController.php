@@ -45,22 +45,22 @@ class ParserHistoryCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        $dateDebut = DateTimeField::new('dateDebut');
+        $startDate = DateTimeField::new('startDate');
         $fromData = TextField::new('fromData');
-        $dateFin = DateTimeField::new('dateFin');
+        $endDate = DateTimeField::new('endDate');
         $nouvellesSoirees = IntegerField::new('nouvellesSoirees');
         $updateSoirees = IntegerField::new('updateSoirees');
         $explorations = IntegerField::new('explorations');
         $id = IdField::new('id', 'ID');
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $dateDebut, $fromData, $dateFin, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$id, $startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $dateDebut, $fromData, $dateFin, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$id, $startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$dateDebut, $fromData, $dateFin, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$dateDebut, $fromData, $dateFin, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
         }
 
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));

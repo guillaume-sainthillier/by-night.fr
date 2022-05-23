@@ -1,7 +1,7 @@
 {% extends 'layouts/stretch.html.twig' %}
 
 {% import "form/macros.html.twig" as macros %}
-{% set nomSoiree = event_seo.getEventShortTitle(event) %}
+{% set nameSoiree = event_seo.getEventShortTitle(event) %}
 {% set horaires = event_seo.getEventDateTime(event) %}
 {% set descriptionSoiree = event.descriptif|parse_tags|raw %}
 {% set original = eventProfilePicture.originalPicture(event) %}
@@ -22,7 +22,7 @@
     {% endif %}
 
     {% do menu.addItem(event.placeName, url('app_agenda_by_place', {'location': location.slug, 'slug': place.slug})) %}
-    {% do menu.addItem(nomSoiree, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
+    {% do menu.addItem(nameSoiree, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
@@ -41,13 +41,13 @@
     {% endfor %}
 {% endblock %}
 
-{% block og_title nomSoiree %}
+{% block og_title nameSoiree %}
 {% block og_url url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) %}
 {% block og_image original %}
 
 {% block body -%}
     {{ fos_httpcache_tag(tags('event', event) ) }}
-    {% if event.brouillon %}
+    {% if event.draft %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
             Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
@@ -55,16 +55,16 @@
     {% else %}
         <div class="card" id="event">
             <div class="row g-0">
-                {% if event.modificationDerniereMinute %}
+                {% if event.status %}
                     <div class="col-12">
                         <div class="alert alert-warning mb-0">
                             <i class="fa fa-warning"></i>
-                            <span itemprop="eventStatus"}>Informations de dernière minute : {{ event.modificationDerniereMinute }}</span>
+                            <span itemprop="eventStatus"}>Informations de dernière minute : {{ event.status }}</span>
                         </div>
                     </div>
                 {% endif %}
                 <div class="col-lg-7">
-                    <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}">
+                    <a class="image-gallery" href="{{ original }}" title="{{ nameSoiree }}">
                         {{ macros.eventThumb(event, 1200, {
                             placeholderPriority: true,
                             attr: {
@@ -79,27 +79,27 @@
                         <div class="detail-item">
                             <i class="fa fa-calendar-days"></i>
                             <h2>
-                                {% set dateDebut = event.dateDebut|date('d/m/Y') %}
-                                {% set dateFin = event.dateFin|date('d/m/Y') %}
+                                {% set dateDebut = event.startDate|date('d/m/Y') %}
+                                {% set dateFin = event.endDate|date('d/m/Y') %}
 
-                                {% if event.dateFin == null or event.dateDebut == event.dateFin %}
+                                {% if event.endDate == null or event.startDate == event.endDate %}
                                     Le
                                     <time itemprop="startDate"
-                                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|format_date('full') }}</time>
+                                          datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
                                 {% else %}
                                     Du
                                     <time itemprop="startDate"
-                                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|format_date('full') }}</time>
+                                          datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
                                     au
                                     <time itemprop="endDate"
-                                          datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|format_date('full') }}</time>
+                                          datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">{{ event.endDate|format_date('full') }}</time>
                                 {% endif %}
                             </h2>
                         </div>
-                        {% if event.horaires %}
+                        {% if event.hours %}
                             <div class="detail-item">
                                 <i class="fa fa-clock-o"></i>
-                                <p>{{ event.horaires }}</p>
+                                <p>{{ event.hours }}</p>
                             </div>
                         {% endif %}
 
@@ -156,10 +156,10 @@
                             {% endif %}
                         </div>
 
-                        {% if event.tarif %}
+                        {% if event.prices %}
                             <div class="detail-item">
                                 <i class="fa fa-ticket"></i>
-                                <p>{{ event.tarif }}</p>
+                                <p>{{ event.prices }}</p>
                             </div>
                         {% endif %}
 
@@ -278,7 +278,7 @@
 
                         {% set maPatisserieDisplayed = false %}
                         {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'gateau', 'gâteau', 'atelier culinaire'] %}
-                            {% if not maPatisserieDisplayed and (word in event.descriptif|lower or word in event.nom|lower) %}
+                            {% if not maPatisserieDisplayed and (word in event.descriptif|lower or word in event.name|lower) %}
                                 {% set maPatisserieDisplayed = true %}
                                 <div class="detail-item">
                                     <i class="fa fa-birthday-cake"></i>

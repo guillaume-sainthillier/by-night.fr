@@ -102,7 +102,7 @@ class AgendaController extends BaseController
 
         return $this->render('location/agenda/index.html.twig', [
             'location' => $location,
-            'placeName' => (null !== $place) ? $place->getNom() : null,
+            'placeName' => (null !== $place) ? $place->getName() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
             'place' => $place,
             'tag' => $tag,
@@ -160,26 +160,26 @@ class AgendaController extends BaseController
 
     private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location)
     {
-        $key = 'categories_evenements.' . $location->getSlug();
+        $key = 'event_categories.' . $location->getSlug();
 
         return $cache->get($key, function (ItemInterface $item) use ($repo, $location) {
-            $events_type_manifestation = $repo->getEventTypes($location);
-            $type_manifestation = [];
+            $eventTypes = $repo->getEventTypes($location);
+            $types = [];
 
-            foreach ($events_type_manifestation as $event_type_manifestation) {
-                $types_manifestation = explode(',', $event_type_manifestation);
-                foreach ($types_manifestation as $type) {
+            foreach ($eventTypes as $eventType) {
+                $eventType = explode(',', $eventType);
+                foreach ($eventType as $type) {
                     $type = array_map('trim', explode('//', $type))[0];
-                    if (!\in_array($type, $type_manifestation, true) && '' !== $type) {
-                        $type_manifestation[$type] = $type;
+                    if (!\in_array($type, $types, true) && '' !== $type) {
+                        $types[$type] = $type;
                     }
                 }
             }
 
-            ksort($type_manifestation);
+            ksort($types);
             $item->expiresAfter(24 * 60 * 60);
 
-            return $type_manifestation;
+            return $types;
         });
     }
 }

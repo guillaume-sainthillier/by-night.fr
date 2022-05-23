@@ -24,7 +24,7 @@ class ZipCity
     #[ORM\Column(type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue('AUTO')]
-    #[Serializer\Groups(['list_event', 'list_city', 'list_user'])]
+    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:city:details', 'elasticsearch:user:details'])]
     #[Serializer\Expose]
     private ?int $id = null;
 
@@ -42,10 +42,10 @@ class ZipCity
     private ?string $name = null;
 
     #[ORM\Column(type: 'float')]
-    protected float $latitude = 0.0;
+    private float $latitude = 0.0;
 
     #[ORM\Column(type: 'float')]
-    protected float $longitude = 0.0;
+    private float $longitude = 0.0;
 
     #[ORM\Column(name: 'admin1_code', type: 'string', length: 20)]
     private ?string $admin1Code = null;

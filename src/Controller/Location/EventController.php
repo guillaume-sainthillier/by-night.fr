@@ -58,7 +58,7 @@ class EventController extends BaseController
         $eventProfile = $eventProfilePicture->getOriginalPicture($event);
         $page = new Page([
             'url' => $link,
-            'title' => $event->getNom(),
+            'title' => $event->getName(),
             'text' => $event->getDescriptif(),
             'image' => $eventProfile,
         ]);

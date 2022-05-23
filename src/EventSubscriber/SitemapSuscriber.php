@@ -88,7 +88,7 @@ class SitemapSuscriber implements EventSubscriberInterface
                 $cache = [];
             }
 
-            $tags = $event['categorieManifestation'] . ',' . $event['typeManifestation'] . ',' . $event['themeManifestation'];
+            $tags = $event['category'] . ',' . $event['type'] . ',' . $event['theme'];
             $tags = array_unique(array_map('trim', array_map('ucfirst', array_filter(preg_split('#[,/]#', $tags)))));
 
             foreach ($tags as $tag) {
@@ -169,8 +169,8 @@ class SitemapSuscriber implements EventSubscriberInterface
                         'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
                     ],
                     DateTime::createFromImmutable($event['updatedAt']),
-                    $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : UrlConcrete::CHANGEFREQ_DAILY,
-                    $event['dateFin'] < $this->now ? 0.1 : 1.0
+                    $event['endDate'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : UrlConcrete::CHANGEFREQ_DAILY,
+                    $event['endDate'] < $this->now ? 0.1 : 1.0
                 );
             }
         }

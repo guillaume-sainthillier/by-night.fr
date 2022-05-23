@@ -27,7 +27,7 @@ use Stringable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table]
-#[ORM\Index(name: 'place_nom_idx', columns: ['nom'])]
+#[ORM\Index(name: 'place_name_idx', columns: ['name'])]
 #[ORM\Index(name: 'place_slug_idx', columns: ['slug'])]
 #[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
 #[ORM\Entity]
@@ -39,7 +39,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\Column(type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?int $id = null;
 
@@ -53,21 +53,21 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     private ?string $externalId = null;
 
     #[ORM\Column(type: 'string', length: 127, nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
-    private ?string $ville = null;
+    private ?string $cityName = null;
 
     #[ORM\Column(type: 'string', length: 7, nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
-    private ?string $codePostal = null;
+    private ?string $cityPostalCode = null;
 
     #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $facebookId = null;
 
     #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?City $city = null;
 
@@ -75,7 +75,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?Country $country = null;
 
@@ -89,28 +89,28 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     private ?Location $location = null;
 
     #[ORM\Column(type: 'string', length: 127, nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
-    private ?string $rue = null;
+    private ?string $street = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?float $latitude = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?float $longitude = null;
 
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['list_event'])]
+    #[Groups(['elasticsearch:event:details'])]
     #[Expose]
-    private ?string $nom = null;
+    private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Gedmo\Slug(fields: ['nom'], unique: false)]
+    #[Gedmo\Slug(fields: ['name'], unique: false)]
     private ?string $slug = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -225,7 +225,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     public function __toString(): string
     {
         return sprintf('%s (#%s)',
-            $this->nom,
+            $this->name,
             $this->id
         );
     }
@@ -254,26 +254,26 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         return $this;
     }
 
-    public function getRue(): ?string
+    public function getStreet(): ?string
     {
-        return $this->rue;
+        return $this->street;
     }
 
-    public function setRue(?string $rue): self
+    public function setStreet(?string $street): self
     {
-        $this->rue = $rue;
+        $this->street = $street;
 
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getName(): ?string
     {
-        return $this->nom;
+        return $this->name;
     }
 
-    public function setNom(?string $nom): self
+    public function setName(?string $name): self
     {
-        $this->nom = $nom;
+        $this->name = $name;
 
         return $this;
     }
@@ -314,26 +314,26 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         return $this;
     }
 
-    public function getVille(): ?string
+    public function getCityName(): ?string
     {
-        return $this->ville;
+        return $this->cityName;
     }
 
-    public function setVille(?string $ville): self
+    public function setCityName(?string $cityName): self
     {
-        $this->ville = $ville;
+        $this->cityName = $cityName;
 
         return $this;
     }
 
-    public function getCodePostal(): ?string
+    public function getCityPostalCode(): ?string
     {
-        return $this->codePostal;
+        return $this->cityPostalCode;
     }
 
-    public function setCodePostal(?string $codePostal): self
+    public function setCityPostalCode(?string $cityPostalCode): self
     {
-        $this->codePostal = $codePostal;
+        $this->cityPostalCode = $cityPostalCode;
 
         return $this;
     }

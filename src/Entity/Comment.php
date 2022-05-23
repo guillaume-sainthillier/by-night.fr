@@ -25,20 +25,20 @@ class Comment implements Stringable
     #[Assert\Length(min: 3, minMessage: 'Le commentaire doit faire au moins {{ limit }} caractères')]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     #[ORM\Column(type: 'text')]
-    private ?string $commentaire = null;
+    private ?string $comment = null;
 
     #[ORM\Column(type: 'boolean')]
-    protected bool $approuve = true;
+    private bool $approved = true;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'commentaires')]
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'reponses')]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Comment $parent = null;
 
@@ -47,11 +47,11 @@ class Comment implements Stringable
      */
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
-    protected Collection $reponses;
+    private Collection $children;
 
     public function __construct()
     {
-        $this->reponses = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -59,14 +59,26 @@ class Comment implements Stringable
         return sprintf('#%s', $this->id ?: '?');
     }
 
-    public function getCommentaire(): ?string
+    public function getComment(): ?string
     {
-        return $this->commentaire;
+        return $this->comment;
     }
 
-    public function setCommentaire(string $commentaire): self
+    public function setComment(?string $comment): self
     {
-        $this->commentaire = $commentaire;
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function isApproved(): ?bool
+    {
+        return $this->approved;
+    }
+
+    public function setApproved(?bool $approved): self
+    {
+        $this->approved = $approved;
 
         return $this;
     }
@@ -95,37 +107,6 @@ class Comment implements Stringable
         return $this;
     }
 
-    /**
-     * @psalm-return Collection<int, self>
-     */
-    public function getReponses(): Collection
-    {
-        return $this->reponses;
-    }
-
-    public function addReponse(self $reponse): self
-    {
-        if (!$this->reponses->contains($reponse)) {
-            $this->reponses[] = $reponse;
-            $reponse->setParent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReponse(self $reponse): self
-    {
-        if ($this->reponses->contains($reponse)) {
-            $this->reponses->removeElement($reponse);
-            // set the owning side to null (unless already changed)
-            if ($reponse->getParent() === $this) {
-                $reponse->setParent(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getParent(): ?self
     {
         return $this->parent;
@@ -138,20 +119,33 @@ class Comment implements Stringable
         return $this;
     }
 
-    public function getApprouve(): ?bool
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getChildren(): Collection
     {
-        return $this->approuve;
+        return $this->children;
     }
 
-    public function setApprouve(bool $approuve): self
+    public function addChild(self $child): self
     {
-        $this->approuve = $approuve;
+        if (!$this->children->contains($child)) {
+            $this->children[] = $child;
+            $child->setParent($this);
+        }
 
         return $this;
     }
 
-    public function isApprouve(): ?bool
+    public function removeChild(self $child): self
     {
-        return $this->approuve;
+        if ($this->children->removeElement($child)) {
+            // set the owning side to null (unless already changed)
+            if ($child->getParent() === $this) {
+                $child->setParent(null);
+            }
+        }
+
+        return $this;
     }
 }

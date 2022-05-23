@@ -51,13 +51,13 @@ class PlaceEntityFactory implements EntityFactoryInterface
             throw new UncreatableEntityException('Place has no name');
         }
 
-        $entity->setNom($dto->name);
+        $entity->setName($dto->name);
         $entity->setLatitude($dto->latitude ?? $entity->getLatitude());
         $entity->setLongitude($dto->longitude ?? $entity->getLongitude());
-        $entity->setRue($dto->street ?? $entity->getRue());
-        $entity->setCodePostal($dto->city?->postalCode ?? $entity->getCodePostal());
+        $entity->setStreet($dto->street ?? $entity->getStreet());
+        $entity->setCityPostalCode($dto->city?->postalCode ?? $entity->getCityPostalCode());
         $entity->setCountryName($dto->country?->name ?? $entity->getCountryName());
-        $entity->setVille($dto->city?->name ?? $entity->getVille());
+        $entity->setCityName($dto->city?->name ?? $entity->getCityName());
 
         if (null !== $dto->city) {
             $cityEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->city::class);

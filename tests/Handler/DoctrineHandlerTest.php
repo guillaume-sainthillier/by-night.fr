@@ -83,7 +83,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Mauvais CP + mauvaise ville + mauvais pays
         yield [
-            (new Place())->setCodePostal('99999')->setVille('LoremIpsum')->setCountryName('LoremIpsum'),
+            (new Place())->setCityPostalCode('99999')->setCityName('LoremIpsum')->setCountryName('LoremIpsum'),
             null,
             null,
             null,
@@ -99,7 +99,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Mauvais CP + mauvaise ville + bon pays
         yield [
-            (new Place())->setCodePostal('99999')->setVille('LoremIpsum')->setCountryName('France'),
+            (new Place())->setCityPostalCode('99999')->setCityName('LoremIpsum')->setCountryName('France'),
             'FR',
             null,
             null,
@@ -107,7 +107,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Mauvais CP + bonne ville + bon pays
         yield [
-            (new Place())->setCodePostal('99999')->setVille('St Germain En Laye')->setCountryName('France'),
+            (new Place())->setCityPostalCode('99999')->setCityName('St Germain En Laye')->setCountryName('France'),
             'FR',
             'Saint-Germain-en-Laye',
             null,
@@ -115,7 +115,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Mauvais CP + ville doublon + bon pays
         yield [
-            (new Place())->setCodePostal('31000')->setVille('Roques')->setCountryName('France'),
+            (new Place())->setCityPostalCode('31000')->setCityName('Roques')->setCountryName('France'),
             'FR',
             'Toulouse',
             '31000',
@@ -123,7 +123,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // CP doublon + pas de ville + bon pays
         yield [
-            (new Place())->setCodePostal('31470')->setCountryName('France'),
+            (new Place())->setCityPostalCode('31470')->setCountryName('France'),
             'FR',
             null,
             null,
@@ -131,7 +131,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Pas de CP + ville doublon + bon pays
         yield [
-            (new Place())->setVille('Roques')->setCountryName('France'),
+            (new Place())->setCityName('Roques')->setCountryName('France'),
             'FR',
             null,
             null,
@@ -139,7 +139,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Pas de CP + bonne ville + bon pays
         yield [
-            (new Place())->setVille('toulouse')->setCountryName('France'),
+            (new Place())->setCityName('toulouse')->setCountryName('France'),
             'FR',
             'Toulouse',
             null,
@@ -147,7 +147,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Monaco
         yield [
-            (new Place())->setNom('Centre Hospitalier Princesse Grace')->setRue('1 Avenue Pasteur')->setCodePostal('98000')->setVille('Monaco')->setCountryName('Monaco'),
+            (new Place())->setName('Centre Hospitalier Princesse Grace')->setStreet('1 Avenue Pasteur')->setCityPostalCode('98000')->setCityName('Monaco')->setCountryName('Monaco'),
             'MC',
             'Monaco',
             '98000',
@@ -155,7 +155,7 @@ class DoctrineHandlerTest extends ContainerTestCase
         ];
         // Bonnes coordonnées + mauvais pays
         yield [
-            (new Place())->setNom('10, Av Princesse Grace')->setLongitude(7.4314023071828)->setLatitude(43.743460394373),
+            (new Place())->setName('10, Av Princesse Grace')->setLongitude(7.4314023071828)->setLatitude(43.743460394373),
             null,
             null,
             null,

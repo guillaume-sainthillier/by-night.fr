@@ -75,17 +75,17 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     }
 
     /**
-     * User in types.event.persistence.provider.query_builder_method (fos_elastica.yaml)
+     * User in types.event.persistence.provider.query_builder_method (fos_elastice.yaml)
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
     {
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);
 
-        $qb = $this->createElasticaQueryBuilder('a');
+        $qb = $this->createElasticaQueryBuilder('e');
 
         return $qb
-            ->where('a.dateFin >= :from')
+            ->where('e.endDate >= :from')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
             ]);
@@ -120,10 +120,10 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     public function findSiteMap(int $page, int $resultsPerPage): iterable
     {
         return $this
-            ->createQueryBuilder('a')
+            ->createQueryBuilder('e')
             ->addSelect('c3')
             ->join('p.country', 'c3')
-            ->select('a.slug, a.id, a.updatedAt, a.dateFin, c.slug AS city_slug, c3.slug AS country_slug')
+            ->select('e.slug, e.id, e.updatedAt, e.endDate, c.slug AS city_slug, c3.slug AS country_slug')
             ->setFirstResult($page * $resultsPerPage)
             ->setMaxResults($resultsPerPage)
             ->getQuery()
@@ -133,7 +133,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     public function getSiteMapCount(): int
     {
         return (int) $this
-            ->createQueryBuilder('a')
+            ->createQueryBuilder('e')
             ->addSelect('c3')
             ->join('p.country', 'c3')
             ->select('COUNT(a) as nb')
@@ -148,10 +148,10 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         $this
             ->_em
-            ->createQuery('UPDATE App:Event a
-            SET a.archive = true
-            WHERE a.dateFin < :from
-            AND a.archive = false')
+            ->createQuery('UPDATE App:Event e
+            SET e.archived = true
+            WHERE e.endDate < :from
+            AND e.archived = false')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
             ])
@@ -165,22 +165,22 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $from->modify(Event::INDEX_FROM);
 
         return $this
-            ->createElasticaQueryBuilder('a')
-            ->where('a.archive = false')
-            ->andWhere('a.dateFin < :from')
+            ->createElasticaQueryBuilder('e')
+            ->where('e.archived = false')
+            ->andWhere('e.endDate < :from')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
             ])
-            ->addOrderBy('a.id');
+            ->addOrderBy('e.id');
     }
 
     public function findAllByUser(UserInterface $user): Query
     {
         return $this
-            ->createQueryBuilder('a')
-            ->where('a.user = :user')
+            ->createQueryBuilder('e')
+            ->where('e.user = :user')
             ->setParameters(['user' => $user])
-            ->orderBy('a.id', 'DESC')
+            ->orderBy('e.id', 'DESC')
             ->getQuery();
     }
 
@@ -190,11 +190,11 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         return $this->_em
             ->createQueryBuilder()
-            ->select('c.displayName, c.atDisplayName, c.slug, COUNT(a.id) AS events')
-            ->from('App:Event', 'a')
-            ->join('a.place', 'p')
+            ->select('c.displayName, c.atDisplayName, c.slug, COUNT(e.id) AS events')
+            ->from($this->_entityName, 'e')
+            ->join('e.place', 'p')
             ->join('p.country', 'c')
-            ->where('a.dateFin >= :from')
+            ->where('e.endDate >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('events', 'DESC')
             ->groupBy('c.id')
@@ -211,10 +211,10 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         $datas = $this->_em
             ->createQueryBuilder()
-            ->select(sprintf('%s(a.dateFin) as group', $groupByFunction))
-            ->addSelect('count(a.id) as events')
-            ->from($this->_entityName, 'a')
-            ->join('a.userEvents', 'c')
+            ->select(sprintf('%s(e.endDate) as group', $groupByFunction))
+            ->addSelect('count(e.id) as events')
+            ->from($this->_entityName, 'e')
+            ->join('e.userEvents', 'c')
             ->join('c.user', 'u')
             ->where('u.id = :user')
             ->setParameters([':user' => $user->getId()])
@@ -230,16 +230,16 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         return $ordered;
     }
 
-    public function findAllPlaces(User $user, $limit = 5): array
+    public function findAllUserPlaces(User $user, $limit = 5): array
     {
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u) as nbEtablissements, p.nom')
-            ->from('App:UserEvent', 'c')
-            ->leftJoin('c.user', 'u')
-            ->leftJoin('c.event', 'a')
-            ->join('a.place', 'p')
-            ->where('c.user = :user')
+            ->from('App:UserEvent', 'ue')
+            ->leftJoin('e.user', 'u')
+            ->leftJoin('e.event', 'e')
+            ->join('e.place', 'p')
+            ->where('ue.user = :user')
             ->groupBy('p.nom')
             ->orderBy('nbEtablissements', 'DESC')
             ->setParameters([':user' => $user->getId()])
@@ -252,19 +252,19 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     public function findAllNextEvents(User $user, bool $isNext = true, $page = 1, $limit = 3): array
     {
         return $this
-            ->createQueryBuilder('a')
-            ->join('a.userEvents', 'cal')
+            ->createQueryBuilder('e')
+            ->join('e.userEvents', 'cal')
             ->where('cal.user = :user')
-            ->andWhere('a.dateFin ' . ($isNext ? '>=' : '<') . ' :date_debut')
-            ->orderBy('a.dateFin', $isNext ? 'ASC' : 'DESC')
-            ->setParameters([':user' => $user->getId(), 'date_debut' => date('Y-m-d')])
+            ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
+            ->orderBy('e.endDate', $isNext ? 'ASC' : 'DESC')
+            ->setParameters([':user' => $user->getId(), 'start_date' => date('Y-m-d')])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
     }
 
-    public function getCountFavorites(User $user): int
+    public function getUserFavoriteEventsCount(User $user): int
     {
         return (int) $this
             ->_em
@@ -327,7 +327,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return $this
             ->getFindAllSimilarsBuilder($event)
-            ->orderBy('a.nom', 'ASC')
+            ->orderBy('e.nom', 'ASC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -337,11 +337,11 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     private function getFindAllSimilarsBuilder(Event $event): QueryBuilder
     {
         $qb = $this
-            ->createQueryBuilder('a')
-            ->where('a.dateDebut = :from')
-            ->andWhere('a.id != :id')
+            ->createQueryBuilder('e')
+            ->where('e.startDate = :from')
+            ->andWhere('e.id != :id')
             ->setParameters([
-                ':from' => $event->getDateDebut()->format('Y-m-d'),
+                ':from' => $event->getStartDate()->format('Y-m-d'),
                 ':id' => $event->getId(),
             ]);
 
@@ -362,7 +362,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return (int) $this
             ->getFindAllSimilarsBuilder($event)
-            ->select('count(a.id)')
+            ->select('count(e.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -372,10 +372,10 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $from = new DateTime();
 
         return $this
-            ->createQueryBuilder('a')
-            ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
-            ->orderBy('a.dateFin', 'ASC')
-            ->setParameters([':date_fin' => $from->format('Y-m-d'), ':id' => $event->getId(), ':place' => $event->getPlace()->getId()])
+            ->createQueryBuilder('e')
+            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place')
+            ->orderBy('e.endDate', 'ASC')
+            ->setParameters([':end_date' => $from->format('Y-m-d'), ':id' => $event->getId(), ':place' => $event->getPlace()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -389,10 +389,10 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         return (int) $this
             ->_em
             ->createQueryBuilder()
-            ->select('count(a.id)')
-            ->from('App:Event', 'a')
-            ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
-            ->setParameters([':date_fin' => $from->format('Y-m-d'), ':id' => $event->getId(), ':place' => $event->getPlace()->getId()])
+            ->select('count(e.id)')
+            ->from($this->_entityName, 'e')
+            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place')
+            ->setParameters([':end_date' => $from->format('Y-m-d'), ':id' => $event->getId(), ':place' => $event->getPlace()->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -401,7 +401,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return (int) $this
             ->getTopEventBuilder($location)
-            ->select('count(a.id)')
+            ->select('count(e.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -412,8 +412,8 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $au = new DateTime('sunday this week');
 
         $qb = $this
-            ->createQueryBuilder('a')
-            ->where('a.dateFin BETWEEN :from AND :to');
+            ->createQueryBuilder('e')
+            ->where('e.endDate BETWEEN :from AND :to');
 
         if ($location->isCity()) {
             $qb
@@ -434,8 +434,8 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return $this
             ->getTopEventBuilder($location)
-            ->orderBy('a.dateFin', 'ASC')
-            ->addOrderBy('a.participations', 'DESC')
+            ->orderBy('e.endDate', 'ASC')
+            ->addOrderBy('e.participations', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -447,11 +447,11 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $from = new DateTime();
 
         $qb = $this
-            ->createQueryBuilder('a')
-            ->where('a.dateFin >= :from')
+            ->createQueryBuilder('e')
+            ->where('e.endDate >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('a.dateFin', 'ASC')
-            ->addOrderBy('a.participations', 'DESC');
+            ->orderBy('e.endDate', 'ASC')
+            ->addOrderBy('e.participations', 'DESC');
 
         $this->buildLocationParameters($qb, $location);
 
@@ -481,11 +481,11 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         $qb = $this->_em
             ->createQueryBuilder()
-            ->select('a.categorieManifestation')
-            ->from('App:Event', 'a')
-            ->join('a.place', 'p')
-            ->where("a.categorieManifestation != ''")
-            ->andWhere('a.dateFin >= :from');
+            ->select('e.category')
+            ->from($this->_entityName, 'e')
+            ->join('e.place', 'p')
+            ->where("e.category != ''")
+            ->andWhere('e.endDate >= :from');
 
         if ($location->isCity()) {
             $qb->andWhere('p.city = :city')
@@ -498,8 +498,8 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         $results = $qb
             ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy('a.categorieManifestation')
-            ->orderBy('a.categorieManifestation', 'DESC')
+            ->groupBy('e.category')
+            ->orderBy('e.category', 'DESC')
             ->getQuery()
             ->getArrayResult();
 

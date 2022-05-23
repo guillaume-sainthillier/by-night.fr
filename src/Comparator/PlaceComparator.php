@@ -45,7 +45,7 @@ class PlaceComparator extends AbstractComparator
         }
 
         // ~ Même rue & ~ même nom
-        if ($this->getStreetMatchingConfidence($entity->getRue(), $dto->street) >= 90.0) {
+        if ($this->getStreetMatchingConfidence($entity->getStreet(), $dto->street) >= 90.0) {
             return new Matching($entity, 100.00);
         }
 
@@ -55,15 +55,15 @@ class PlaceComparator extends AbstractComparator
 
     private function getNameMatchingConfidence(Place $entity, PlaceDto $dto): float
     {
-        if (null === $entity->getNom() || null === $dto->name) {
+        if (null === $entity->getName() || null === $dto->name) {
             return 0.0;
         }
 
-        if ($this->getStringMatchingConfidence($entity->getNom(), $dto->name) >= 100.0) {
+        if ($this->getStringMatchingConfidence($entity->getName(), $dto->name) >= 100.0) {
             return 100.0;
         }
 
-        $entityPlaceName = $entity->getNom();
+        $entityPlaceName = $entity->getName();
         if (null !== $entity->getCity()) {
             $entityPlaceName = str_ireplace($entity->getCity()->getName(), '', $entityPlaceName);
         } elseif (null !== $entity->getZipCity()) {
