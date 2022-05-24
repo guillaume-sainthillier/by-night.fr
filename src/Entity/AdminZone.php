@@ -55,6 +55,7 @@ abstract class AdminZone implements Stringable
     protected float $longitude = 0.0;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['elasticsearch:city:details'])]
     protected int $population = 0;
 
     #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]

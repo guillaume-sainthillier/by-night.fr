@@ -17,8 +17,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,16 +25,6 @@ class SearchType extends AbstractType
 {
     public function __construct(private DateRangeBuilder $dateRangeBuilder)
     {
-    }
-
-    public function onPreSubmit(FormEvent $event): void
-    {
-        $data = $event->getData();
-        if (empty($data['range'])) {
-            $data['range'] = 25;
-        }
-
-        $event->setData($data);
     }
 
     /**
@@ -69,19 +57,16 @@ class SearchType extends AbstractType
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
+                'placeholder' => 'Tous les types',
                 'attr' => [
-                    'title' => 'Tous',
-                    'data-live-search' => true,
+                    'placeholder' => 'Tous les types',
                     'size' => 1,
                 ], ])
             ->add('term', TextType::class, [
                 'required' => false,
                 'label' => 'Mot-clés',
                 'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'], ])
-            ->addEventListener(
-                FormEvents::PRE_SUBMIT,
-                [$this, 'onPreSubmit']
-            );
+            ;
     }
 
     /**

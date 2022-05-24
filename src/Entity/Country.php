@@ -43,11 +43,9 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 63)]
-    #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $displayName = null;
 
     #[ORM\Column(type: 'string', length: 63)]
-    #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $atDisplayName = null;
 
     #[ORM\Column(type: 'string', length: 63)]

@@ -87,6 +87,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         return $qb
             ->where('e.endDate >= :from')
+            ->andWhere('e.draft = false')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
             ]);
@@ -309,12 +310,11 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->_em
             ->createQueryBuilder()
             ->select('u')
-            ->addSelect('c')
+            ->addSelect('ue')
             ->addSelect('COUNT(u.id) AS nb_events')
             ->from('App:User', 'u')
-            ->join('u.userEvents', 'c')
-            ->leftJoin('u.userEvents', 'c2')
-            ->where('ueevent = :event')
+            ->join('u.userEvents', 'ue')
+            ->where('ue.event = :event')
             ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id')
             ->setParameters([':event' => $event->getId()])

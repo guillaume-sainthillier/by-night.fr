@@ -52,11 +52,6 @@ class EventElasticaRepository extends Repository
     public function findWithSearch(SearchEvent $search, bool $sortByScore = false): PaginatorAdapterInterface
     {
         $mainQuery = new BoolQuery();
-
-        $mainQuery->addFilter(new Term([
-            'draft' => false,
-        ]));
-
         $location = null;
         if ([] !== $search->getLieux()) {
             $mainQuery->addFilter(
@@ -142,12 +137,8 @@ class EventElasticaRepository extends Repository
             $query = new MultiMatch();
             $query
                 ->setQuery($search->getTerm())
-                ->setFields([
-                    'nom', 'descriptif',
-                    'type', 'theme', 'category',
-                    'place.nom', 'place.rue', 'place.city.name', 'place.city.postal_code',
-                    'place_name', 'place_street', 'place_city_name', 'place_city_postal_code',
-                ]);
+                // ->setFields(['*', 'place.*', 'place.city.*'])
+            ;
             $mainQuery->addMust($query);
         }
 
@@ -167,7 +158,7 @@ class EventElasticaRepository extends Repository
 
         // Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
-
+        $finalQuery->setSource([]); // Grab only id as we don't need other fields
         if (!$sortByScore) {
             $finalQuery->addSort(['end_date' => 'asc']);
 

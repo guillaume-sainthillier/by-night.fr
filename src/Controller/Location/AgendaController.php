@@ -83,7 +83,7 @@ class AgendaController extends BaseController
             'types_manif' => $types_manif,
         ]);
         // Bind du formulaire avec la requête courante
-        $form->handleRequest($request);
+        $form->submit($request->query->all(), false);
         if (!$form->isSubmitted() || $form->isValid()) {
             $isValid = true;
 

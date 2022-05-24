@@ -36,7 +36,7 @@ class EventDtoFactory
         $event->address = $entity->getAddress();
         $event->category = $entity->getCategory();
         $event->name = $entity->getName();
-        $event->description = $entity->getDescriptif();
+        $event->description = $entity->getDescription();
         $event->hours = $entity->getHours();
         $event->prices = $entity->getPrices();
         $event->status = $entity->getStatus();

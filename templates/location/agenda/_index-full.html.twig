@@ -31,7 +31,7 @@
         {% do menu.addItem(location.country.displayName, url('app_location_index', {'location': location.country.slug})) %}
     {% else %}
         {% do menu.addItem(location.city.country.displayName, url('app_location_index', {'location': location.city.country.slug})) %}
-        {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.city.slug})) %}
+        {% do menu.addItem('Sortir ' ~ location.atName, url('app_location_index', {'location': location.city.slug})) %}
     {% endif %}
     {% do menu.addItem('Agenda', url('app_agenda_index', {'location': location.slug})) %}
 

@@ -1,5 +1,3 @@
-import '../../scss/pages/espace_perso_event.scss';
-
 import $ from 'jquery';
 import 'summernote/dist/summernote-bs5.css';
 import 'summernote/dist/summernote-bs5';

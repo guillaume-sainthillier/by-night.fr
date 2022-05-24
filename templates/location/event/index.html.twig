@@ -3,7 +3,7 @@
 {% import "form/macros.html.twig" as macros %}
 {% set nameSoiree = event_seo.getEventShortTitle(event) %}
 {% set horaires = event_seo.getEventDateTime(event) %}
-{% set descriptionSoiree = event.descriptif|parse_tags|raw %}
+{% set descriptionSoiree = event.description|parse_tags|raw %}
 {% set original = eventProfilePicture.originalPicture(event) %}
 {% set distinctTags = event.distinctTags %}
 
@@ -98,7 +98,7 @@
                         </div>
                         {% if event.hours %}
                             <div class="detail-item">
-                                <i class="fa fa-clock-o"></i>
+                                <i class="fa fa-clock"></i>
                                 <p>{{ event.hours }}</p>
                             </div>
                         {% endif %}
@@ -215,7 +215,7 @@
                         {% endfor %}
                         {% for mailContact in event.mailContacts %}
                             <div class="detail-item">
-                                <i class="fa fa-envelope-o"></i>
+                                <i class="fa fa-envelope"></i>
                                 <p class="one-line">
                                     <a href="mailto:{{ mailContact }}">{{ mailContact }}</a>
                                 </p>
@@ -278,7 +278,7 @@
 
                         {% set maPatisserieDisplayed = false %}
                         {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'gateau', 'gâteau', 'atelier culinaire'] %}
-                            {% if not maPatisserieDisplayed and (word in event.descriptif|lower or word in event.name|lower) %}
+                            {% if not maPatisserieDisplayed and (word in event.description|lower or word in event.name|lower) %}
                                 {% set maPatisserieDisplayed = true %}
                                 <div class="detail-item">
                                     <i class="fa fa-birthday-cake"></i>

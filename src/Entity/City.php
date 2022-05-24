@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 #[ORM\Entity(repositoryClass: CityRepository::class, readOnly: true)]
 #[ExclusionPolicy('NONE')]
@@ -31,8 +32,9 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     protected ?Country $country = null;
 
+    /** @var Collection<int, ZipCity> */
     #[ORM\OneToMany(targetEntity: ZipCity::class, fetch: 'EXTRA_LAZY', mappedBy: 'parent')]
-    protected ?Collection $zipCities = null;
+    protected Collection $zipCities;
 
     public function __construct()
     {
@@ -72,6 +74,18 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         $parts[] = $this->getCountry()->getName();
 
         return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
+    }
+
+    #[Groups(['elasticsearch:city:details'])]
+    #[VirtualProperty(name: 'postalCodes')]
+    public function getPostalCodes(): array
+    {
+        $postalCodes = [];
+        foreach ($this->zipCities as $zipCity) {
+            $postalCodes[] = $zipCity->getPostalCode();
+        }
+
+        return $postalCodes;
     }
 
     public function getCountry(): ?Country

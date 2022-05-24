@@ -33,6 +33,15 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         parent::__construct($registry, City::class);
     }
 
+    public function createElasticaQueryBuilder(string $alias, $indexBy = null): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder($alias, $indexBy)
+            ->addSelect('zipCities')
+            ->leftJoin($alias . '.zipCities', 'zipCities')
+        ;
+    }
+
     public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
     {
         return parent::createQueryBuilder($alias, $indexBy)

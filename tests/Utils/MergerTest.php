@@ -46,13 +46,13 @@ class MergerTest extends ContainerTestCase
 
     public function testEventMerge()
     {
-        $persistedEvent = (new Event())->setId(1)->setName('My Event')->setDescriptif('Event description');
-        $parsedEvent = (new Event())->setId(2)->setName('My Event V2')->setDescriptif('Event description V2');
+        $persistedEvent = (new Event())->setId(1)->setName('My Event')->setDescription('Event description');
+        $parsedEvent = (new Event())->setId(2)->setName('My Event V2')->setDescription('Event description V2');
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
         $this->assertEquals($persistedEvent->getId(), 1); // ID is intact
         $this->assertEquals($persistedEvent->getName(), 'My Event V2'); // Newest field
-        $this->assertEquals($persistedEvent->getDescriptif(), 'Event description V2'); // Newest field
+        $this->assertEquals($persistedEvent->getDescription(), 'Event description V2'); // Newest field
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('now');

@@ -72,7 +72,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
     #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    private ?string $descriptif = null;
+    private ?string $description = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $externalUpdatedAt = null;
@@ -341,6 +341,10 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function isIndexable(): bool
     {
+        if (false !== $this->draft) {
+            return false;
+        }
+
         $from = new DateTime();
         $from->modify(self::INDEX_FROM);
 
@@ -519,14 +523,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getDescriptif(): ?string
+    public function getDescription(): ?string
     {
-        return $this->descriptif;
+        return $this->description;
     }
 
-    public function setDescriptif(?string $descriptif): self
+    public function setDescription(?string $description): self
     {
-        $this->descriptif = $descriptif;
+        $this->description = $description;
 
         return $this;
     }

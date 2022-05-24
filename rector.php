@@ -31,6 +31,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     // define sets of rules
     $rectorConfig->sets([
+        DoctrineSetList::DOCTRINE_CODE_QUALITY,
         DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
         SymfonyLevelSetList::UP_TO_SYMFONY_54,
         SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
