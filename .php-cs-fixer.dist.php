@@ -17,9 +17,13 @@ with this source code in the file LICENSE.
 EOF;
 
 $finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__ . '/public')
+    ->in(__DIR__ . '/config')
+    ->in(__DIR__ . '/lib')
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/tests')
-    ->in(__DIR__ . '/migrations');
+    ->in(__DIR__ . '/migrations')
+;
 
 $config = new PhpCsFixer\Config();
 
