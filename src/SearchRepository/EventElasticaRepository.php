@@ -139,7 +139,6 @@ class EventElasticaRepository extends Repository
                 ->setFuzziness('auto')
                 ->setOperator('AND')
                 ->setQuery($search->getTerm())
-                // ->setFields(['*', 'place.*', 'place.city.*'])
             ;
             $mainQuery->addMust($query);
         }

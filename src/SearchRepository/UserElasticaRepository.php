@@ -22,7 +22,11 @@ class UserElasticaRepository extends Repository
         $query = new BoolQuery();
 
         $match = new MultiMatch();
-        $match->setQuery($q ?? '');
+        $match
+            ->setQuery($q ?? '')
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+        ;
 
         $query->addFilter($match);
 

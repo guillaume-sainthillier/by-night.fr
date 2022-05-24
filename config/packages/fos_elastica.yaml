@@ -31,22 +31,21 @@ fos_elastica:
                             min_gram: 2
                             max_gram: 10
                     analyzer:
-                        autocomplete:
+                        french_title_heavy:
                             tokenizer: "icu_tokenizer"
                             filter:
                                 - "french_elision"
                                 - "icu_folding"
                                 - "lowercase"
                                 - "french_stop"
-                        french_text_heavy:
-                            tokenizer: "icu_tokenizer"
-                            filter:
-                                - "french_elision"
-                                - "icu_folding"
-                                - "lowercase"
-                                - "french_stop"
-                                - "french_stemmer"
                                 - "nGram"
+                        french_title_light:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "french_elision"
+                                - "icu_folding"
+                                - "lowercase"
+                                - "french_stop"
                         french_natural_heavy:
                             tokenizer: "icu_tokenizer"
                             filter:
@@ -58,7 +57,13 @@ fos_elastica:
                             filter:
                                 - "icu_folding"
                                 - "lowercase"
-                        french_description:
+                        french_literal_light:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
+                                - "french_stemmer"
+                        french_description_heavy:
                             tokenizer: "icu_tokenizer"
                             char_filter:
                                 - "html_strip"
@@ -67,7 +72,13 @@ fos_elastica:
                                 - "icu_folding"
                                 - "lowercase"
                                 - "french_stop"
-                                - "french_stemmer"
+                        french_description_light:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "french_elision"
+                                - "icu_folding"
+                                - "lowercase"
+                                - "french_stop"
 
             persistence:
                 model: App\Entity\Event
@@ -82,24 +93,24 @@ fos_elastica:
             serializer:
                 groups: [ 'elasticsearch:event:details' ]
             properties:
-                name: { boost: 5, type: "text", analyzer: french_text_heavy, search_analyzer: autocomplete }
-                description: { analyzer: french_description, search_analyzer: autocomplete }
+                name: { boost: 5, type: "text", analyzer: french_title_heavy, search_analyzer: french_title_light }
+                description: { analyzer: french_description_heavy, search_analyzer: french_description_light }
                 start_date: { type: "date", format: 'yyyy-MM-dd' }
                 end_date: { type: "date", format: 'yyyy-MM-dd' }
                 draft: { type: "boolean" }
-                place_name: { boost: 3, type: "text", analyzer: french_natural_heavy, search_analyzer: autocomplete }
-                place_street: { analyzer: french_natural_heavy, search_analyzer: autocomplete }
-                place_city: { boost: 2, type: "text", analyzer: french_natural_heavy, search_analyzer: autocomplete }
-                place_postal_code: { type: "text", analyzer: french_natural_light, search_analyzer: autocomplete }
-                theme: { type: "text", analyzer: french_natural_light, search_analyzer: autocomplete }
-                type: { type: "text", analyzer: french_natural_light, search_analyzer: autocomplete }
+                place_name: { boost: 3, type: "text", analyzer: french_natural_heavy, search_analyzer: french_natural_light }
+                place_street: { analyzer: french_natural_heavy, search_analyzer: french_natural_light }
+                place_city: { boost: 2, type: "text", analyzer: french_natural_heavy, search_analyzer: french_natural_light }
+                place_postal_code: { type: "text", analyzer: french_natural_light }
+                theme: { type: "text", analyzer: french_literal_light }
+                type: { type: "text", analyzer: french_literal_light }
                 place:
                     type: "object"
                     properties:
-                        name: { boost: 3, type: "text", analyzer: french_natural_heavy, search_analyzer: autocomplete }
-                        street: { analyzer: french_natural_heavy, search_analyzer: autocomplete }
-                        city_name: { boost: 2, type: "text", analyzer: french_natural_heavy, search_analyzer: autocomplete }
-                        city_postal_code: { boost: 2, type: "text", analyzer: french_natural_light, search_analyzer: autocomplete }
+                        name: { boost: 3, type: "text", analyzer: french_natural_heavy, search_analyzer: french_natural_light }
+                        street: { analyzer: french_natural_heavy, search_analyzer: french_natural_light }
+                        city_name: { boost: 2, type: "text", analyzer: french_natural_heavy, search_analyzer: french_natural_light }
+                        city_postal_code: { boost: 2, type: "text", analyzer: french_natural_light }
                         city:
                             type: "object"
                             properties:
@@ -107,7 +118,7 @@ fos_elastica:
                 country:
                     type: "object"
                     properties:
-                        id: { type: "text", analyzer: french_natural_light, search_analyzer: autocomplete }
+                        id: { type: "text", analyzer: french_natural_light, search_analyzer: french_natural_light }
 
         city:
             settings:
@@ -122,33 +133,31 @@ fos_elastica:
                             articles_case: true
                             articles: [ "l", "m", "t", "qu", "n", "s", "j", "d", "c", "jusqu", "quoiqu", "lorsqu", "puisqu" ]
                     analyzer:
-                        autocomplete:
+                        text_analyzer_heavy:
                             tokenizer: "icu_tokenizer"
                             filter:
-                                - "icu_folding"
-                                - "lowercase"
-                        city_analyzer:
-                            tokenizer: "icu_tokenizer"
-                            filter:
-                                - "french_elision"
                                 - "icu_folding"
                                 - "lowercase"
                                 - "nGram"
-
+                        text_analyzer_light:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
             serializer:
                 groups: [ 'elasticsearch:city:details' ]
             properties:
-                name: { type: "text", boost: 3, analyzer: city_analyzer, search_analyzer: autocomplete }
-                postal_codes: { type: "text", analyzer: autocomplete, search_analyzer: autocomplete }
+                name: { type: "text", boost: 3, analyzer: text_analyzer_heavy, search_analyzer: text_analyzer_light }
+                postal_codes: { type: "text", analyzer: text_analyzer_light }
                 population: { type: "double" }
                 country:
                     type: "object"
                     properties:
-                        name: { boost: 5, type: "text", analyzer: city_analyzer, search_analyzer: autocomplete }
+                        name: { boost: 5, type: "text", analyzer: text_analyzer_heavy, search_analyzer: text_analyzer_light }
                 parent:
                     type: "object"
                     properties:
-                        name: { type: "text", analyzer: city_analyzer, search_analyzer: autocomplete }
+                        name: { type: "text", analyzer: text_analyzer_heavy, search_analyzer: text_analyzer_light }
             persistence:
                 driver: orm
                 model: App\Entity\City
@@ -165,23 +174,23 @@ fos_elastica:
                             min_gram: 3
                             max_gram: 20
                     analyzer:
-                        autocomplete:
-                            tokenizer: "icu_tokenizer"
-                            filter:
-                                - "icu_folding"
-                                - "lowercase"
-                        user_analyzer:
+                        text_analyzer_heavy:
                             tokenizer: "icu_tokenizer"
                             filter:
                                 - "icu_folding"
                                 - "lowercase"
                                 - "nGram"
+                        text_analyzer_light:
+                            tokenizer: "icu_tokenizer"
+                            filter:
+                                - "icu_folding"
+                                - "lowercase"
             serializer:
                 groups: [ 'elasticsearch:user:details' ]
             properties:
-                username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: autocomplete }
-                firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: autocomplete }
-                lastname: { boost: 3, type: "text", analyzer: user_analyzer, search_analyzer: autocomplete }
+                username: { boost: 5, type: "text", analyzer: text_analyzer_heavy, search_analyzer: text_analyzer_light }
+                firstname: { boost: 1, type: "text", analyzer: text_analyzer_heavy, search_analyzer: text_analyzer_light }
+                lastname: { boost: 3, type: "text", analyzer: text_analyzer_heavy, search_analyzer: text_analyzer_light }
             persistence:
                 model: App\Entity\User
                 repository: App\SearchRepository\UserElasticaRepository

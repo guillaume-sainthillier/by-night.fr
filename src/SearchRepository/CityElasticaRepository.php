@@ -24,6 +24,8 @@ class CityElasticaRepository extends Repository
     {
         $query = new MultiMatch();
         $query
+            ->setFuzziness('auto')
+            ->setOperator('AND')
             ->setQuery($q ?? '')
         ;
 

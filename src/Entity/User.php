@@ -56,6 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[Assert\Length(max: 180)]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $username = null;
 
     #[ORM\Column(type: 'boolean')]

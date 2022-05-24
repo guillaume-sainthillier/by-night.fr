@@ -48,6 +48,7 @@ class SearchType extends AbstractType
         $this->dateRangeBuilder->addShortcutDateFields($builder, 'from', 'to');
         $builder
             ->add('range', NumberType::class, [
+                'html5' => true,
                 'label' => 'Rayon (KM)',
                 'attr' => ['placeholder' => 'Quand quel rayon cherchez-vous ?'],
             ])
