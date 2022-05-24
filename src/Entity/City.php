@@ -23,7 +23,7 @@ use JMS\Serializer\Annotation\Groups;
 #[ExclusionPolicy('NONE')]
 class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
-    #[ORM\ManyToOne(targetEntity: AdminZone::class, fetch: 'EAGER')]
+    #[ORM\ManyToOne(targetEntity: AdminZone::class)]
     #[Groups(['elasticsearch:city:details'])]
     protected ?AdminZone $parent = null;
 

@@ -26,7 +26,6 @@ use JMS\Serializer\Annotation\Groups;
 use Stringable;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Table]
 #[ORM\Index(name: 'place_name_idx', columns: ['name'])]
 #[ORM\Index(name: 'place_slug_idx', columns: ['slug'])]
 #[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
@@ -65,7 +64,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $facebookId = null;
 
-    #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EAGER')]
+    #[ORM\ManyToOne(targetEntity: City::class)]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]

@@ -38,8 +38,8 @@ $(document).ready(function () {
     function initLieux() {
         var morris_data = [];
 
-        $.each(window.datas, function (i, etablissement) {
-            morris_data.push({ label: etablissement.nom || '', value: etablissement.nbEtablissements });
+        $.each(window.datas, function (i, datum) {
+            morris_data.push({ label: datum.name || '', value: datum.eventsCount });
         });
 
         Morris.Donut({

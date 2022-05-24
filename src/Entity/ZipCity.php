@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
-#[ORM\Table]
 #[ORM\Index(name: 'zip_city_postal_code_name_idx', columns: ['country_id', 'postal_code', 'name'])]
 #[ORM\Entity(repositoryClass: ZipCityRepository::class, readOnly: true)]
 #[Serializer\ExclusionPolicy('ALL')]

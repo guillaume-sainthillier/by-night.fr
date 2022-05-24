@@ -24,7 +24,6 @@ use Stringable;
 /**
  * OAuth.
  */
-#[ORM\Table]
 #[ORM\Index(name: 'admin_zone_type_name_idx', columns: ['type', 'name'])]
 #[ORM\Index(name: 'admin_zone_type_population_idx', columns: ['type', 'population'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]

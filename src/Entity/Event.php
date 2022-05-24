@@ -33,7 +33,6 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[Vich\Uploadable]
-#[ORM\Table]
 #[ORM\Index(name: 'event_slug_idx', columns: ['slug'])]
 #[ORM\Index(name: 'event_start_date_idx', columns: ['start_date'])]
 #[ORM\Index(name: 'event_theme_idx', columns: ['theme'])]
@@ -43,6 +42,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Index(name: 'event_top_soiree_idx', columns: ['end_date', 'participations'])]
 #[ORM\Index(name: 'event_external_id_idx', columns: ['external_id', 'external_origin'])]
 #[ORM\Entity(repositoryClass: EventRepository::class)]
+#[ORM\Table(name: '`event`')]
 #[ORM\HasLifecycleCallbacks]
 class Event implements Stringable, ExternalIdentifiableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
@@ -226,7 +226,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $facebookOwnerId = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['elasticsearch:event:details'])]
     private ?int $fbParticipations = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]

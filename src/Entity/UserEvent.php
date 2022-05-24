@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
 #[ORM\Entity(repositoryClass: UserEventRepository::class)]
-#[ORM\Table]
+
 #[ORM\UniqueConstraint(name: 'user_event_unique', columns: ['user_id', 'event_id'])]
 class UserEvent implements Stringable
 {

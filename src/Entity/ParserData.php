@@ -16,7 +16,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ParserDataRepository::class)]
-#[ORM\Table]
+
 #[ORM\Index(name: 'parser_data_idx', columns: ['external_id', 'external_origin'])]
 class ParserData
 {

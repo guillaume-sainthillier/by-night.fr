@@ -90,6 +90,11 @@ fos_elastica:
                 description: { analyzer: french_heavy_description, search_analyzer: autocomplete }
                 start_date: { type: "date", format: 'yyyy-MM-dd' }
                 end_date: { type: "date", format: 'yyyy-MM-dd' }
+                draft: { type: "boolean" }
+                place_name: { boost: 3, type: "text", analyzer: french_heavy_natural, search_analyzer: autocomplete }
+                place_street: { analyzer: french_heavy_natural, search_analyzer: autocomplete }
+                place_city: { boost: 2, type: "text", analyzer: french_heavy_natural, search_analyzer: autocomplete }
+                place_postal_code: { type: "text", analyzer: french_heavy_natural, search_analyzer: autocomplete }
                 place:
                     type: "object"
                     properties:

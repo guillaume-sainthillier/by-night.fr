@@ -14,7 +14,6 @@ use App\Repository\OAuthRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
-#[ORM\Table]
 #[ORM\Index(name: 'recherche_info_idx', columns: ['facebook_id', 'twitter_id', 'google_id'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]

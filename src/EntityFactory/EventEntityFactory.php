@@ -65,7 +65,6 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setFromData($dto->fromData);
         $entity->setCategory($dto->category);
         $entity->setName($dto->name);
-        $entity->setName($dto->name);
         $entity->setDescriptif($dto->description);
         $entity->setHours($dto->hours);
         $entity->setPrices($dto->prices);

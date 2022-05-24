@@ -15,6 +15,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Entity\User;
+use App\Entity\UserEvent;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
@@ -214,8 +215,8 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->select(sprintf('%s(e.endDate) as group', $groupByFunction))
             ->addSelect('count(e.id) as events')
             ->from($this->_entityName, 'e')
-            ->join('e.userEvents', 'c')
-            ->join('c.user', 'u')
+            ->join('e.userEvents', 'ue')
+            ->join('ue.user', 'u')
             ->where('u.id = :user')
             ->setParameters([':user' => $user->getId()])
             ->groupBy('group')
@@ -234,14 +235,14 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return $this->_em
             ->createQueryBuilder()
-            ->select('COUNT(u) as nbEtablissements, p.nom')
-            ->from('App:UserEvent', 'ue')
-            ->leftJoin('e.user', 'u')
-            ->leftJoin('e.event', 'e')
+            ->select('COUNT(e) as eventsCount, p.name')
+            ->from(UserEvent::class, 'ue')
+            ->leftJoin('ue.user', 'u')
+            ->leftJoin('ue.event', 'e')
             ->join('e.place', 'p')
             ->where('ue.user = :user')
-            ->groupBy('p.nom')
-            ->orderBy('nbEtablissements', 'DESC')
+            ->groupBy('p.name')
+            ->orderBy('eventsCount', 'DESC')
             ->setParameters([':user' => $user->getId()])
             ->setFirstResult(0)
             ->setMaxResults($limit)
@@ -270,9 +271,9 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
-            ->from('App:UserEvent', 'c')
-            ->leftJoin('c.user', 'u')
-            ->where('c.user = :user')
+            ->from(UserEvent::class, 'ue')
+            ->leftJoin('ue.user', 'u')
+            ->where('ue.user = :user')
             ->setParameters([':user' => $user->getId()])
             ->getQuery()
             ->getSingleScalarResult();
@@ -293,11 +294,11 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         return (int) $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
-            ->from('App:UserEvent', 'c')
-            ->leftJoin('c.user', 'u')
-            ->where('c.event = :event')
-            ->andWhere(($isParticipation ? 'c.participe' : 'c.interet') . ' = :vrai')
-            ->setParameters([':event' => $event->getId(), 'vrai' => true])
+            ->from(UserEvent::class, 'ue')
+            ->leftJoin('ue.user', 'u')
+            ->where('ue.event = :event')
+            ->andWhere(($isParticipation ? 'ue.going' : 'ue.wish') . ' true')
+            ->setParameters([':event' => $event->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -313,7 +314,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->from('App:User', 'u')
             ->join('u.userEvents', 'c')
             ->leftJoin('u.userEvents', 'c2')
-            ->where('c.event = :event')
+            ->where('ueevent = :event')
             ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id')
             ->setParameters([':event' => $event->getId()])
@@ -327,7 +328,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return $this
             ->getFindAllSimilarsBuilder($event)
-            ->orderBy('e.nom', 'ASC')
+            ->orderBy('e.name', 'ASC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
