@@ -11,6 +11,7 @@ declare(strict_types=1);
  */
 
 use Rector\Config\RectorConfig;
+use Rector\Doctrine\Rector\Property\ImproveDoctrineCollectionDocTypeInEntityRector;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Set\ValueObject\LevelSetList;
@@ -31,7 +32,6 @@ return static function (RectorConfig $rectorConfig): void {
 
     // define sets of rules
     $rectorConfig->sets([
-        DoctrineSetList::DOCTRINE_CODE_QUALITY,
         DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
         SymfonyLevelSetList::UP_TO_SYMFONY_54,
         SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
@@ -39,6 +39,8 @@ return static function (RectorConfig $rectorConfig): void {
         LevelSetList::UP_TO_PHP_80,
         SetList::CODING_STYLE,
     ]);
+
+    $rectorConfig->rule(ImproveDoctrineCollectionDocTypeInEntityRector::class);
 
     $rectorConfig->skip([
         ClassPropertyAssignToConstructorPromotionRector::class => [

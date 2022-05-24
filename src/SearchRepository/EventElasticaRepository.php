@@ -136,6 +136,8 @@ class EventElasticaRepository extends Repository
         if ($search->getTerm()) {
             $query = new MultiMatch();
             $query
+                ->setFuzziness('auto')
+                ->setOperator('AND')
                 ->setQuery($search->getTerm())
                 // ->setFields(['*', 'place.*', 'place.city.*'])
             ;
