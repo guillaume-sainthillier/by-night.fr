@@ -2,6 +2,7 @@
 import 'moment/locale/fr';
 import 'daterangepicker';
 import { isTouchDevice } from '../utils/utils';
+import moment from 'moment';
 
 //CSS
 import '../../scss/lazy-components/_datepicker.scss';
@@ -12,9 +13,6 @@ export default function init(container = document) {
         var input = this;
         var fromInput = $('#' + $(this).data('from'));
         var toInput = $('#' + $(this).data('to'));
-
-        var moment = require('moment');
-
         var ranges = {};
         $.each($(input).data('ranges'), function (label, values) {
             ranges[label] = [moment(values[0]), values[1] === null ? null : moment(values[1])];

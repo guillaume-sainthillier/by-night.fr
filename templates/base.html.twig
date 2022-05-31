@@ -83,11 +83,19 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- ./CSS -->
 
     <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-TXB7VR2');</script>
+    <script>(function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-TXB7VR2');</script>
     <!-- End Google Tag Manager -->
     <script data-ad-client="ca-pub-2072406985754187" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
@@ -102,6 +110,8 @@ _______     __  _   _ _____ _____ _    _ _______
                 "query-input": "required name=search_term_string"
             }
         }
+
+
 
     </script>
     {% block head_js_layout %}{% endblock %}
@@ -119,17 +129,14 @@ _______     __  _   _ _____ _____ _    _ _______
         <!-- ./Menu -->
 
         {% block breadcrumb_widget %}
-        <div id="bread">
-            <div class="container d-flex">
-                <button type="button" class="btn btn-light d-lg-none">
-                    <i class="fa fa-chevron-down"></i>
-                </button>
-                {% do menu.addItem('By Night', url('app_index')) %}
+            <div id="bread">
+                <div class="container">
+                    {% do menu.addItem('By Night', url('app_index')) %}
 
-                {% block breadcrumb %}{% endblock %}
-                {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb collapsed', itemClass: 'breadcrumb-item'}) }}
+                    {% block breadcrumb %}{% endblock %}
+                    {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
+                </div>
             </div>
-        </div>
         {% endblock %}
     </header>
 
@@ -163,28 +170,28 @@ _______     __  _   _ _____ _____ _    _ _______
 {{ encore_entry_script_tags('app') }}
 {%- block js -%}{%- endblock -%}
 <script>
-    on(window, 'load', function () {
-        App.run({{ {
-            'environment': app.environment,
-            'locale': app.request.locale,
-            'release': app_version,
-            'dsn': sentry_dsn,
-            'user' : (app.user ? {'id': app.user.id, 'username': app.user.username, 'email': app.user.email} : null)
-        }|json_encode|raw }});
-    });
+  on(window, 'load', function () {
+    App.run({{ {
+        'environment': app.environment,
+        'locale': app.request.locale,
+        'release': app_version,
+        'dsn': sentry_dsn,
+        'user' : (app.user ? {'id': app.user.id, 'username': app.user.username, 'email': app.user.email} : null)
+    }|json_encode|raw }});
+  });
 </script>
 <script type="text/javascript">
-    $(document).ready(function () {
-        $.cookieBar({
-            message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
-            acceptText: 'J\'ai compris',
-            bottom: true,
-            fixed: true,
-            policyButton: true,
-            policyText: 'En savoir plus',
-            policyURL: '{{ path('app_main_cookie') }}'
-        });
+  $(document).ready(function () {
+    $.cookieBar({
+      message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
+      acceptText: 'J\'ai compris',
+      bottom: true,
+      fixed: true,
+      policyButton: true,
+      policyText: 'En savoir plus',
+      policyURL: '{{ path('app_main_cookie') }}'
     });
+  });
 </script>
 <!-- ./JS -->
 </body>

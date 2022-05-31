@@ -27,6 +27,7 @@ Modal.prototype.setErreur = function (msg) {
     this.setBody(msg);
     this.hideButtons();
 };
+
 Modal.prototype.setLittleErreur = function (msg) {
     const element = $(this._element);
 

@@ -4,7 +4,8 @@
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~@fortawesome/fontawesome-free/scss/brands';
-@import '~bootstrap/scss/bootstrap';
+@import 'ui/bootstrap';
+@import 'ui/tabler';
 
 //Components
 @import 'components/alert';
@@ -92,17 +93,15 @@ h1 {
     bottom: 2%;
     right: 2%;
     z-index: 100;
+    width: 4rem;
+    height: 4rem;
 
-    @include media-breakpoint-down(md) {
-        width: 4rem;
-        height: 4rem;
+    @include media-breakpoint-up(lg) {
+        width: 3rem;
+        height: 3rem;
     }
 }
 
 .bloc_config {
     margin-top: 40px;
-}
-
-.hidden {
-    display: none !important;
 }

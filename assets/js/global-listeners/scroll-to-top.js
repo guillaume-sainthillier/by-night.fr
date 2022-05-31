@@ -10,7 +10,6 @@ export default () => {
         easingType: 'linear',
     };
 
-    var toTopHidden = true;
     const toTop = $('#' + settings.containerID);
 
     if (!toTop.length) {
@@ -22,6 +21,7 @@ export default () => {
         $('html, body').animate({ scrollTop: 0 }, settings.scrollSpeed, settings.easingType);
     });
 
+    var toTopHidden = true;
     $(window).scroll(
         debounce(
             function () {

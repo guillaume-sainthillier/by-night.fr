@@ -3,9 +3,12 @@
 
     #event {
         a.image-gallery {
-            display: block;
-            height: 100%;
-            border-right: 1px solid $card-border-color;
+            border-bottom: 1px solid $card-border-color;
+
+            @include media-breakpoint-up(lg) {
+                border-bottom: none;
+                border-right: 1px solid $card-border-color;
+            }
         }
 
         .event-details {

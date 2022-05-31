@@ -12,6 +12,15 @@
         font-size: 0.875rem;
     }
 
+    .offcanvas.show {
+        background: $primary;
+        color: $navbar-dark-brand-color;
+
+        .offcanvas-header {
+            border-bottom: 1px solid $navbar-dark-color;
+        }
+    }
+
     .nav-link strong {
         font-weight: normal;
     }
@@ -60,7 +69,7 @@
         input {
             height: 100%;
             width: 100%;
-            padding-left: 3rem;
+            padding-left: 2.5rem;
             color: $navbar-dark-color;
             background-color: transparent;
             border-color: transparent;
@@ -72,9 +81,8 @@
         .btn {
             font-size: 1.25rem;
             position: absolute;
-            left: 0.5rem;
-            top: 50%;
-            margin-top: -1rem;
+            left: 0;
+            top: 5px;
             z-index: 1;
         }
 

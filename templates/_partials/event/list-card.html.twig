@@ -6,34 +6,26 @@
 {% for i, event in events %}
     {{ fos_httpcache_tag(tags('event', event)) }}
     {{ fos_httpcache_tag(tags('place', event.place)) }}
-    <div class="card scroll-item" {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
-        <div class="row align-items-center g-0 event">
-            {% if event.status %}
-                <div class="col-12">
-                    <div class="alert alert-warning mb-0">
-                        <i class="fa fa-warning"></i>
-                        <span {% if microdata %}itemprop="eventStatus"{% endif %}> {{ event.status }}</span>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-3 col-lg-4{% endif %} image_soiree">
+    <div class="card card-event card-event-horizontal scroll-item" {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
+        {% if event.status %}
+            <div class="alert alert-warning mb-0">
+                <i class="fa fa-warning"></i>
+                <span {% if microdata %}itemprop="eventStatus"{% endif %}>{{ event.status }}</span>
+            </div>
+        {% endif %}
+        <div class="card-event-body-container">
+            <div class="col-md-auto card-img-container">
                 {% set original = eventProfilePicture.originalPicture(event) %}
                 {% if microdata %}
                     <meta itemprop="image" content="{{ original }}" />
                 {% endif %}
                 <div class="image-container">
-                    {% if event.fbParticipations %}
-                        <span class="badge bg-warning">
-                            <i class="fab fa-facebook-f"></i>
-                            <span class="number">{{ event.fbParticipations }}</span>
-                        </span>
-                    {% endif %}
                     <a class="image-gallery" href="{{ original }}" title="{{ event.name }}">
                         {{ macros.eventLazyThumb(event, 320) }}
                     </a>
                 </div>
             </div>
-            <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-9 col-lg-8{% endif %} description_evenement">
+            <div class="card-body-container">
                 <div class="card-body">
                     <h3 class="h5">
                         <a title="Tous les détails de {{ event.name }} "
@@ -53,6 +45,7 @@
                                     <meta itemprop="endDate" content="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}" />
                                 {% endif %}
 
+
                                 <time {% if microdata %}itemprop="startDate"{% endif %}
                                       datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
                                     {{ startDate }}
@@ -63,6 +56,7 @@
                                     {{ startDate }}
                                 </time>
                                 -
+
 
                                 <time {% if microdata %}itemprop="endDate"{% endif %}
                                       datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">

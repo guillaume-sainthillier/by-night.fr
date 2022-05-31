@@ -30,7 +30,7 @@ class App {
     constructor() {
         this._di = null;
         this._listeners = [
-            breadcrumb,
+            //breadcrumb,
             headerSearch,
             imagePreviews,
             lazyload,
