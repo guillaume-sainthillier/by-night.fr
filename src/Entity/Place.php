@@ -11,123 +11,163 @@
 namespace App\Entity;
 
 use App\App\Location;
+use App\Contracts\ExternalIdentifiableInterface;
+use App\Contracts\ExternalIdentifiablesInterface;
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Reject\Reject;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
+use Stringable;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="place_nom_idx", columns={"nom"}),
- *     @ORM\Index(name="place_slug_idx", columns={"slug"}),
- *     @ORM\Index(name="place_external_id_idx", columns={"external_id"})
- * })
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
- * @ExclusionPolicy("all")
- * @ORM\Entity
- */
-class Place
+#[ORM\Index(name: 'place_name_idx', columns: ['name'])]
+#[ORM\Index(name: 'place_slug_idx', columns: ['slug'])]
+#[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ExclusionPolicy('all')]
+class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
     private ?int $id = null;
 
     /**
-     * @ORM\Column(type="string", length=127, nullable=true)
+     * @var Collection<int, PlaceMetadata>
      */
+    #[ORM\OneToMany(targetEntity: PlaceMetadata::class, mappedBy: 'place', cascade: ['persist', 'remove'])]
+    private Collection $metadatas;
+
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $externalId = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $ville = null;
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $codePostal = null;
-    /**
-     * @ORM\Column(type="string", length=256, nullable=true)
-     */
+
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
+    private ?string $cityName = null;
+
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
+    private ?string $cityPostalCode = null;
+
+    #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $facebookId = null;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
-     * @ORM\JoinColumn(nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+
+    #[ORM\ManyToOne(targetEntity: City::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
     private ?City $city = null;
+
     private ?ZipCity $zipCity = null;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
-     * @ORM\JoinColumn(nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+
+    #[ORM\ManyToOne(targetEntity: Country::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
     private ?Country $country = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $junk = null;
 
     private ?string $countryName = null;
+
     private ?Reject $reject = null;
+
     private ?Location $location = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $rue = null;
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
+    private ?string $street = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
     private ?float $latitude = null;
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
     private ?float $longitude = null;
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $nom = null;
-    /**
-     * @Gedmo\Slug(fields={"nom"})
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
+
+    #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Expose]
+    private ?string $name = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Gedmo\Slug(fields: ['name'], unique: false)]
     private ?string $slug = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $path = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $url = null;
 
-    public function getLocationSlug(): string
+    public function __construct()
+    {
+        $this->metadatas = new ArrayCollection();
+    }
+
+    public function getKeyPrefix(): string
+    {
+        return 'place';
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Collection<int, PlaceMetadata>
+     */
+    public function getExternalIdentifiables(): Collection
+    {
+        return $this->metadatas;
+    }
+
+    public function hasMetadata(ExternalIdentifiableInterface $externalIdentifiable): bool
+    {
+        if (null === $externalIdentifiable->getExternalOrigin() || null === $externalIdentifiable->getExternalId()) {
+            return false;
+        }
+
+        foreach ($this->getExternalIdentifiables() as $metadata) {
+            if ($metadata->getExternalId() === $externalIdentifiable->getExternalId() &&
+                $metadata->getExternalOrigin() === $externalIdentifiable->getExternalOrigin()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getLocationSlug(): string|null
     {
         return $this->getLocation()->getSlug();
     }
@@ -181,10 +221,10 @@ class Place
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('%s (#%s)',
-            $this->nom,
+            $this->name,
             $this->id
         );
     }
@@ -213,26 +253,26 @@ class Place
         return $this;
     }
 
-    public function getRue(): ?string
+    public function getStreet(): ?string
     {
-        return $this->rue;
+        return $this->street;
     }
 
-    public function setRue(?string $rue): self
+    public function setStreet(?string $street): self
     {
-        $this->rue = $rue;
+        $this->street = $street;
 
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getName(): ?string
     {
-        return $this->nom;
+        return $this->name;
     }
 
-    public function setNom(string $nom): self
+    public function setName(?string $name): self
     {
-        $this->nom = $nom;
+        $this->name = $name;
 
         return $this;
     }
@@ -242,7 +282,7 @@ class Place
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
 
@@ -273,26 +313,26 @@ class Place
         return $this;
     }
 
-    public function getVille(): ?string
+    public function getCityName(): ?string
     {
-        return $this->ville;
+        return $this->cityName;
     }
 
-    public function setVille(?string $ville): self
+    public function setCityName(?string $cityName): self
     {
-        $this->ville = $ville;
+        $this->cityName = $cityName;
 
         return $this;
     }
 
-    public function getCodePostal(): ?string
+    public function getCityPostalCode(): ?string
     {
-        return $this->codePostal;
+        return $this->cityPostalCode;
     }
 
-    public function setCodePostal(?string $codePostal): self
+    public function setCityPostalCode(?string $cityPostalCode): self
     {
-        $this->codePostal = $codePostal;
+        $this->cityPostalCode = $cityPostalCode;
 
         return $this;
     }
@@ -367,5 +407,40 @@ class Place
         $this->longitude = $longitude;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, PlaceMetadata>
+     */
+    public function getMetadatas(): Collection
+    {
+        return $this->metadatas;
+    }
+
+    public function addMetadata(PlaceMetadata $metadata): self
+    {
+        if (!$this->metadatas->contains($metadata)) {
+            $this->metadatas[] = $metadata;
+            $metadata->setPlace($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMetadata(PlaceMetadata $metadata): self
+    {
+        if ($this->metadatas->removeElement($metadata)) {
+            // set the owning side to null (unless already changed)
+            if ($metadata->getPlace() === $this) {
+                $metadata->setPlace(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isJunk(): ?bool
+    {
+        return $this->junk;
     }
 }

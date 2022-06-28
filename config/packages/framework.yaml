@@ -1,13 +1,13 @@
 framework:
+    ide: 'phpstorm://open?file=%%f&line=%%l'
     secret: '%env(APP_SECRET)%'
     default_locale: fr
     #csrf_protection: ~
     #http_method_override: true
 
     session:
-        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
-        cookie_secure: auto
-        cookie_samesite: lax
+        handler_id: 'session.handler.native_file'
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
 
     esi: true
     fragments: ~

@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use RuntimeException;
 
 abstract class OAuthCrudController extends AbstractCrudController
 {
@@ -59,5 +60,7 @@ abstract class OAuthCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$facebookId, $facebookAccessToken, $facebookRefreshToken, $facebookEmail, $facebookExpires, $facebookRealname, $facebookProfilePicture, $googleId, $googleAccessToken, $googleRefreshToken, $googleEmail, $googleExpires, $googleRealname, $googleProfilePicture, $twitterId, $twitterAccessToken, $twitterRefreshToken, $twitterEmail, $twitterExpires, $twitterNickname, $twitterRealname, $twitterProfilePicture];
         }
+
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

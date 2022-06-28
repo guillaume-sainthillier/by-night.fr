@@ -3,4 +3,4 @@
 {% set message = "Oups! Vous êtes perdu." %}
 {% set description = "La page que vous demandez est introuvable." %}
 
-{% include "bundles/TwigBundle/Exception/errorXXX.html.twig" with({ 'title': title, 'code' : code, 'message' : message, 'description': description }) %}
+{% include 'bundles/TwigBundle/Exception/errorXXX.html.twig' with({ 'title': title, 'code' : code, 'message' : message, 'description': description }) %}

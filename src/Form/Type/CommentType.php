@@ -18,10 +18,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CommentType extends AbstractType
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('commentaire', TextareaType::class, [
+            ->add('comment', TextareaType::class, [
                 'label' => false,
                 'attr' => [
                     'placeholder' => 'Laissez un message',
@@ -30,6 +35,11 @@ class CommentType extends AbstractType
             ]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

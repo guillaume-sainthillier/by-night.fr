@@ -23,7 +23,7 @@ final class Version20181124140452 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('DROP INDEX agenda_slug_idx ON Agenda');
         $this->addSql('DROP INDEX agenda_nom_idx ON Agenda');
@@ -39,7 +39,7 @@ final class Version20181124140452 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('DROP INDEX agenda_fb_participations ON Agenda');
         $this->addSql('DROP INDEX agenda_search_idx ON Agenda');

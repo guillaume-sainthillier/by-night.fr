@@ -10,6 +10,8 @@
 
 namespace App\Repository;
 
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\PlaceDto;
 use App\Entity\Place;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,19 +22,78 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Place[]    findAll()
  * @method Place[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PlaceRepository extends ServiceEntityRepository
+class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
+    use DtoFindableTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Place::class);
     }
 
-    public function findSiteMap()
+    /**
+     * {@inheritDoc}
+     *
+     * @return Place[]
+     */
+    public function findAllByDtos(array $dtos): array
     {
-        return $this->createQueryBuilder('p')
+        $qb = $this
+            ->createQueryBuilder('p')
+            ->addSelect('metadatas')
+            ->addSelect('city')
+            ->addSelect('country')
+            ->addSelect('cityCountry')
+            ->leftJoin('p.metadatas', 'metadatas')
+            ->leftJoin('p.city', 'city')
+            ->leftJoin('p.country', 'country')
+            ->leftJoin('city.country', 'cityCountry');
+
+        $cityWheres = [];
+        $countryWheres = [];
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof PlaceDto);
+
+            if (null !== $dto->city && null !== $dto->city->entityId) {
+                $cityWheres[$dto->city->entityId] = true;
+            } elseif (null !== $dto->country && null !== $dto->country->entityId) {
+                $countryWheres[$dto->country->entityId] = true;
+            }
+        }
+
+        $wheres = [];
+        if (\count($cityWheres) > 0) {
+            $wheres[] = 'p.city IN(:cities)';
+            $qb->setParameter('cities', array_keys($cityWheres));
+        }
+
+        if (\count($countryWheres) > 0) {
+            $wheres[] = 'p.country IN(:countries) AND p.city IS NULL';
+            $qb->setParameter('countries', array_keys($countryWheres));
+        }
+
+        if (\count($wheres) > 0) {
+            $qb->andWhere(implode(' OR ', $wheres));
+        }
+
+        $this->addDtosToQueryBuilder($qb, 'metadatas', $dtos);
+
+        if (0 === \count($qb->getParameters())) {
+            return [];
+        }
+
+        return $qb
+            ->getQuery()
+            ->execute();
+    }
+
+    public function findAllSitemap(): iterable
+    {
+        return $this
+            ->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
             ->getQuery()
-            ->iterate();
+            ->toIterable();
     }
 }

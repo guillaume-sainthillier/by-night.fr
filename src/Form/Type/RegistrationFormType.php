@@ -23,12 +23,20 @@ class RegistrationFormType extends AbstractType
 {
     /**
      * Builds the embedded form representing the user.
+     *
+     * {@inheritDoc}
+     *
+     * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailType::class)
-            ->add('username', null)
+            ->add('email', EmailType::class, [
+                'label' => 'Adresse mail',
+            ])
+            ->add('username', null, [
+                'label' => "Nom d'utilisateur",
+            ])
             ->add('plainPassword', RepeatedType::class, [
                 'mapped' => false,
                 'type' => PasswordType::class,
@@ -46,9 +54,16 @@ class RegistrationFormType extends AbstractType
                 'second_options' => ['label' => 'Répéter le mot de passe'],
                 'invalid_message' => 'Les mots de passe doivent correspondre',
             ])
-            ->add('recaptcha', ReCaptchaType::class);
+            ->add('recaptcha', ReCaptchaType::class, [
+                'label' => 'Sécurité',
+            ]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

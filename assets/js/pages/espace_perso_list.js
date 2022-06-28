@@ -1,3 +1,26 @@
-import UserEventsList from '../components/UserEventsList';
+$(document).ready(function () {
+    $('.form-delete').submit(function () {
+        return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
+    });
 
-new UserEventsList().init();
+    $('.draft').change(function () {
+        var self = $(this);
+
+        self.attr('disabled', true);
+        $.post(self.data('href'), {
+            draft: !self.prop('checked'),
+        }).done(function () {
+            self.attr('disabled', false);
+        });
+    });
+
+    $('.cancel').change(function () {
+        var self = $(this);
+        self.attr('disabled', true);
+        $.post(self.data('href'), {
+            cancel: self.prop('checked'),
+        }).done(function () {
+            self.attr('disabled', false);
+        });
+    });
+});

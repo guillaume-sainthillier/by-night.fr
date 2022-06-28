@@ -10,80 +10,62 @@
 
 namespace App\Entity;
 
+use App\Repository\ParserHistoryRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\ParserHistoryRepository", readOnly=true)
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity(repositoryClass: ParserHistoryRepository::class, readOnly: true)]
+#[ORM\HasLifecycleCallbacks]
 class ParserHistory
 {
     use EntityIdentityTrait;
+    #[ORM\Column(type: 'datetime')]
+    private DateTimeInterface $startDate;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private DateTimeInterface $dateDebut;
+    #[ORM\Column(type: 'datetime')]
+    private DateTimeInterface $endDate;
 
-    /**
-     * @ORM\Column(type="string", length=127)
-     */
+    #[ORM\Column(type: 'string', length: 127)]
     private ?string $fromData = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private DateTimeInterface $dateFin;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $nouvellesSoirees = 0;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $updateSoirees = 0;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $explorations = 0;
 
     public function __construct()
     {
-        $this->dateDebut = new DateTime();
-        $this->dateFin = new DateTime();
+        $this->startDate = new DateTime();
+        $this->endDate = new DateTime();
     }
 
-    /**
-     * @ORM\PrePersist
-     */
-    public function majDateFin()
+    #[ORM\PrePersist]
+    public function majEndDate(): void
     {
-        $this->dateFin = new DateTime();
+        $this->endDate = new DateTime();
     }
 
     /**
      * Get duree.
-     *
-     * @return int
      */
-    public function getDuree()
+    public function getDuree(): int
     {
-        return $this->dateFin->getTimestamp() - $this->dateDebut->getTimestamp();
+        return $this->endDate->getTimestamp() - $this->startDate->getTimestamp();
     }
 
-    public function getDateDebut(): ?DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
-        return $this->dateDebut;
+        return $this->startDate;
     }
 
-    public function setDateDebut(DateTimeInterface $dateDebut): self
+    public function setStartDate(DateTimeInterface $startDate): self
     {
-        $this->dateDebut = $dateDebut;
+        $this->startDate = $startDate;
 
         return $this;
     }
@@ -100,14 +82,14 @@ class ParserHistory
         return $this;
     }
 
-    public function getDateFin(): ?DateTimeInterface
+    public function getEndDate(): ?DateTimeInterface
     {
-        return $this->dateFin;
+        return $this->endDate;
     }
 
-    public function setDateFin(DateTimeInterface $dateFin): self
+    public function setEndDate(DateTimeInterface $endDate): self
     {
-        $this->dateFin = $dateFin;
+        $this->endDate = $endDate;
 
         return $this;
     }

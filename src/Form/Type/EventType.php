@@ -10,17 +10,12 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Country;
-use App\Entity\Event;
+use App\Dto\EventDto;
 use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
-use App\Repository\CountryRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -34,36 +29,43 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
 {
-    private DoctrineEventHandler $doctrineEventHandler;
-
-    private DateRangeBuilder $dateRangeBuilder;
-
-    public function __construct(DoctrineEventHandler $doctrineEventHandler, DateRangeBuilder $dateRangeBuilder)
-    {
-        $this->doctrineEventHandler = $doctrineEventHandler;
-        $this->dateRangeBuilder = $dateRangeBuilder;
+    public function __construct(
+        private DoctrineEventHandler $doctrineEventHandler,
+        private DateRangeBuilder $dateRangeBuilder
+    ) {
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
         $this->dateRangeBuilder->finishView($view, $form);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->dateRangeBuilder->addDateFields($builder, 'dateDebut', 'dateFin');
+        $this->dateRangeBuilder->addDateFields($builder, 'startDate', 'endDate');
         $builder
-            ->add('nom', TextType::class, [
+            ->add('name', TextType::class, [
                 'label' => 'Titre',
                 'attr' => [
                     'placeholder' => 'Choisissez un titre accrocheur...',
                 ],
             ])
-            ->add('descriptif', TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'attr' => [
+                    'class' => 'wysiwyg',
                     'placeholder' => 'Décrivez votre événement...',
                 ],
             ])
@@ -72,72 +74,44 @@ class EventType extends AbstractType
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
             ])
-            ->add('horaires', TextType::class, [
+            ->add('hours', TextType::class, [
                 'label' => 'Horaires',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'A 20h, de 21h à minuit',
                 ],
             ])
-            ->add('tarif', TextType::class, [
+            ->add('prices', TextType::class, [
                 'label' => 'Tarif',
                 'required' => false,
                 'attr' => [
                     'placeholder' => '17€ avec préventes, 20€ sur place',
                 ],
             ])
-            ->add('categorieManifestation', TextType::class, [
+            ->add('category', TextType::class, [
                 'label' => 'Catégorie',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
                 ],
             ])
-            ->add('themeManifestation', TextType::class, [
+            ->add('theme', TextType::class, [
                 'label' => 'Thèmes',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
                 ],
             ])
-            ->add('adresse', TextType::class, [
+            ->add('address', TextType::class, [
                 'required' => false,
                 'label' => 'Adresse',
                 'attr' => [
                     'placeholder' => 'Tapez votre adresse ici pour remplir les champs ci-dessous',
                 ],
             ])
-            ->add('placeName', TextType::class, [
+            ->add('place', PlaceType::class, [
                 'required' => true,
-                'label' => 'Nom du lieu',
-                'attr' => [
-                    'placeholder' => 'Indiquez le nom du lieu',
-                ],
-            ])
-            ->add('placeStreet', TextType::class, [
-                'label' => 'Rue',
-                'required' => false,
-            ])
-            ->add('latitude', HiddenType::class, [
-                'required' => false,
-            ])
-            ->add('longitude', HiddenType::class, [
-                'required' => false,
-            ])
-            ->add('placeCity', TextType::class, [
-                'label' => 'Ville',
-                'required' => false,
-            ])
-            ->add('placePostalCode', TextType::class, [
-                'label' => 'Code Postal',
-                'required' => false,
-            ])
-            ->add('placeCountry', EntityType::class, [
-                'label' => 'Pays',
-                'placeholder' => '?',
-                'class' => Country::class,
-                'query_builder' => fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
-                'choice_label' => 'name',
+                'label' => false,
             ])
             ->add('websiteContacts', CollectionType::class, [
                 'entry_type' => UrlType::class,
@@ -145,8 +119,9 @@ class EventType extends AbstractType
                 'add_entry_label' => 'Ajouter un site',
                 'label' => 'Sites de réservation',
                 'entry_options' => [
-                    'label' => 'Site',
+                    'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
+                    'icon-prepend' => 'globe',
                     'attr' => [
                         'placeholder' => 'https://monsupersite.fr',
                     ],
@@ -158,21 +133,23 @@ class EventType extends AbstractType
                 'add_entry_label' => 'Ajouter un numéro',
                 'label' => 'Numéros de téléphone',
                 'entry_options' => [
-                    'label' => 'Téléphone',
+                    'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
+                    'icon-prepend' => 'phone',
                     'attr' => [
                         'placeholder' => '06 01 02 03 04',
                     ],
                 ],
             ])
-            ->add('mailContacts', CollectionType::class, [
+            ->add('emailContacts', CollectionType::class, [
                 'entry_type' => EmailType::class,
                 'required' => false,
                 'add_entry_label' => 'Ajouter un email',
                 'label' => 'Emails de contact',
                 'entry_options' => [
-                    'label' => 'Email',
+                    'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
+                    'icon-prepend' => 'envelope',
                     'attr' => [
                         'placeholder' => 'vousêtes@incroyable.fr',
                     ],
@@ -180,50 +157,53 @@ class EventType extends AbstractType
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
 
-        if (null !== $options['data'] && null === $options['data']->getId()) {
+        if (null !== $options['data'] && null === $options['data']->entityId) {
             $builder
                 ->add('comment', TextareaType::class, [
                     'label' => 'Commentaire',
                     'mapped' => false,
                     'required' => false,
                     'attr' => [
-                        'rows' => 8,
+                        'rows' => 5,
                         'placeholder' => 'Laisser un commentaire qui sera visible par les internautes',
                     ],
                 ]);
         }
-
-        $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            fn ($latitude) => (float) $latitude ?: null,
-            fn ($latitude) => (float) $latitude ?: null
-        ));
-
-        $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            fn ($latitude) => (float) $latitude ?: null,
-            fn ($latitude) => (float) $latitude ?: null
-        ));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function onSubmit(FormEvent $event)
     {
         $data = $event->getData();
 
-        if (!$data) {
+        if (!$data instanceof EventDto) {
             return;
         }
 
-        $data = $this->doctrineEventHandler->handleOne($data, false);
-        $event->setData($data);
+        if (null !== $data->place?->country && null !== $data?->place->city) {
+            $data->place->city->country = $data->place?->country;
+        }
+
+        $this->doctrineEventHandler->handleOne($data, false);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Event::class,
+            'data_class' => EventDto::class,
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix(): string
     {
         return 'app_event';
     }

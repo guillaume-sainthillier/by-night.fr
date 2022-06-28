@@ -26,13 +26,6 @@ old_sound_rabbit_mq:
             exchange_options: { name: 'purge-cdn-cache-urls', type: direct }
             class:            App\Producer\PurgeCdnCacheUrlProducer
 
-    consumers:
-        add_event:
-            connection:       default
-            exchange_options: { name: 'add-event', type: direct }
-            queue_options:    { name: 'add-event'}
-            callback:         App\Consumer\AddEventConsumer
-
     batch_consumers:
         add_event:
             connection:       default

@@ -1,17 +1,11 @@
+.hidden {
+    display: none !important;
+}
+
 .one-line {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-}
-
-.image-gallery {
-    display: inline-block;
-    height: 100%;
-
-    &:hover {
-        cursor: -webkit-zoom-in;
-        cursor: -moz-zoom-in;
-    }
 }
 
 .share {
@@ -47,18 +41,6 @@
     }
 }
 
-.icon {
-    display: inline-block;
-    margin-top: 10px;
-    border-radius: 50%;
-    padding: 30px;
-
-    & > span {
-        position: relative;
-        left: -10px;
-    }
-}
-
 .color-primary {
     color: $color-primary;
 }
@@ -80,38 +62,38 @@
 }
 
 .icon-red {
-    color: $red-a200;
-    border: 1px solid $red-a100;
+    color: $red-200;
+    border: 1px solid $red-100;
 }
 
 .icon-orange {
-    color: $orange-a200;
-    border: 1px solid $orange-a100;
+    color: $orange-200;
+    border: 1px solid $orange-100;
 }
 
 .icon-yellow {
-    color: $lime-a200;
-    border: 1px solid $lime-a100;
+    color: $yellow-200;
+    border: 1px solid $yellow-100;
 }
 
 .icon-green {
-    color: $light-green-a200;
-    border: 1px solid $light-green-a100;
+    color: $green-200;
+    border: 1px solid $green-100;
 }
 
 .icon-blue {
-    color: $blue-a200;
-    border: 1px solid $blue-a100;
+    color: $blue-200;
+    border: 1px solid $blue-100;
 }
 
 .icon-darkblue {
-    color: $deep-purple-a200;
-    border: 1px solid $deep-purple-a100;
+    color: $purple-200;
+    border: 1px solid $purple-100;
 }
 
 .icon-purple {
-    color: $purple-a400;
-    border: 1px solid $purple-a200;
+    color: $purple-400;
+    border: 1px solid $purple-200;
 }
 
 .big-icon {
@@ -121,4 +103,8 @@
             font-size: 2em;
         }
     }
+}
+
+.font-weight-normal {
+    font-weight: normal;
 }

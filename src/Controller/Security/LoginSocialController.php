@@ -10,31 +10,24 @@
 
 namespace App\Controller\Security;
 
+use App\Controller\AbstractController;
 use App\Entity\User;
 use App\OAuth\TwitterOAuth;
 use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-/**
- * @Route("/login-social")
- */
+#[Route(path: '/login-social')]
 class LoginSocialController extends AbstractController
 {
-    /**
-     * @Route("/check-{service<%patterns.social%>}", name="login_social_check", methods={"GET", "POST"})
-     */
+    #[Route(path: '/check-{service<%patterns.social%>}', name: 'login_social_check', methods: ['GET', 'POST'])]
     public function connectCheck(): Response
     {
         throw new Exception('This code should not be reach!');
     }
 
-    /**
-     * @Route("/{service<%patterns.social%>}", name="login_social_start", methods={"GET", "POST"})
-     */
+    #[Route(path: '/{service<%patterns.social%>}', name: 'login_social_start', methods: ['GET', 'POST'])]
     public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth): Response
     {
         switch ($service) {
@@ -45,11 +38,9 @@ class LoginSocialController extends AbstractController
                 $scopes = ['email', 'profile'];
                 break;
             case 'twitter':
-                return $twitterOAuth->redirect(
-                    $this->generateUrl('login_social_check', [
-                        'service' => $service,
-                    ], UrlGeneratorInterface::ABSOLUTE_URL)
-                );
+                return $this->redirectToRoute('login_social_check', [
+                    'service' => $service,
+                ]);
             default:
                 $scopes = [];
                 break;
@@ -60,9 +51,7 @@ class LoginSocialController extends AbstractController
             ->redirect($scopes, []);
     }
 
-    /**
-     * @Route("/success-{service<%patterns.social%>}", name="login_social_success", methods={"GET"})
-     */
+    #[Route(path: '/success-{service<%patterns.social%>}', name: 'login_social_success', methods: ['GET'])]
     public function success(): Response
     {
         /** @var User $user */
@@ -71,9 +60,9 @@ class LoginSocialController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('security/connect_success.html.twig', [
+        return $this->render('security/connect-success.html.twig', [
             'userInformation' => [
-                'name' => $user->getUsername(),
+                'name' => $user->getUserIdentifier(),
                 'email' => $user->getEmail(),
             ],
         ]);

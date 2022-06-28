@@ -17,17 +17,11 @@ use Exception;
 
 class Comparator
 {
-    private Util $util;
-
-    public function __construct(Util $util)
+    public function __construct(private Util $util)
     {
-        $this->util = $util;
     }
 
-    /**
-     * @return Place|null
-     */
-    public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90)
+    public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90): ?Place
     {
         if (null === $testedPlace) {
             return null;
@@ -55,7 +49,7 @@ class Comparator
         return $bestItem;
     }
 
-    public function isExactSamePlace(Place $a = null, Place $b = null)
+    public function isExactSamePlace(Place $a = null, Place $b = null): bool
     {
         if (null === $a || null === $b) {
             return false;
@@ -65,7 +59,7 @@ class Comparator
             ($a->getId() && $a->getId() === $b->getId());
     }
 
-    public function getMatchingScorePlace(Place $a = null, Place $b = null)
+    public function getMatchingScorePlace(Place $a = null, Place $b = null): int
     {
         if (null === $a || null === $b) {
             return 0;
@@ -79,18 +73,18 @@ class Comparator
             ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId()) ||
             (!$a->getCity() && !$b->getCity() && !$a->getZipCity() && !$b->getZipCity() && $a->getCountry() && $b->getCountry() && $a->getCountry()->getId() === $b->getCountry()->getId())) {
             $matchingScoreNom = $this->getMatchingScoreTextWithoutCity(
-                $a->getNom(), $a->getCity(), $a->getZipCity(),
-                $b->getNom(), $b->getCity(), $b->getZipCity()
+                $a->getName(), $a->getCity(), $a->getZipCity(),
+                $b->getName(), $b->getCity(), $b->getZipCity()
             );
 
-            //Même rue & ~ même nom
+            // Même rue & ~ même nom
             if ($matchingScoreNom >= 80 &&
-                $this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 90
+                $this->getMatchingScoreRue($a->getStreet(), $b->getStreet()) >= 90
             ) {
                 return 100;
             }
 
-            //~ Même nom
+            // ~ Même nom
             if ($matchingScoreNom >= 80) {
                 return 90;
             }
@@ -99,7 +93,7 @@ class Comparator
         return 0;
     }
 
-    private function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
+    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null): int|float
     {
         if ($a && $a === $b) {
             return 100;
@@ -123,7 +117,7 @@ class Comparator
         return $this->getMatchingScore($a, $b);
     }
 
-    public function sanitize($string)
+    public function sanitize(string $string): string
     {
         return Monitor::bench('Sanitize', function () use ($string) {
             $string = $this->util->deleteStopWords($string);
@@ -137,7 +131,7 @@ class Comparator
         });
     }
 
-    private function getMatchingScore($a, $b)
+    private function getMatchingScore(string $a, string $b): float|int
     {
         $pourcentage = 0;
         // = strlen > 0
@@ -151,7 +145,7 @@ class Comparator
             } else {
                 try {
                     $pourcentage = $this->getDiffPourcentage($a, $b);
-                } catch (Exception $ex) {
+                } catch (Exception) {
                 }
             }
         }
@@ -159,12 +153,12 @@ class Comparator
         return $pourcentage;
     }
 
-    private function getDiffPourcentage($a, $b)
+    private function getDiffPourcentage(string $a, string $b): int
     {
-        return (1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100;
+        return (int) ((1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100);
     }
 
-    private function getMatchingScoreRue($a, $b)
+    private function getMatchingScoreRue(?string $a, ?string $b): int|float
     {
         if ($a && $a === $b) {
             return 100;
@@ -176,7 +170,7 @@ class Comparator
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
-    public function sanitizeRue($string)
+    public function sanitizeRue(?string $string): string
     {
         $step1 = $this->util->utf8LowerCase($string);
         $step2 = $this->util->replaceAccents($step1);
@@ -185,12 +179,12 @@ class Comparator
         return trim($step3);
     }
 
-    public function sanitizeNumber($string)
+    public function sanitizeNumber(?string $string): ?string
     {
-        return preg_replace('/\D/', '', $string);
+        return preg_replace('#\D#', '', $string);
     }
 
-    public function sanitizeVille($string)
+    public function sanitizeVille(?string $string): string
     {
         $string = preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
         $string = str_replace(' ', '', $string);

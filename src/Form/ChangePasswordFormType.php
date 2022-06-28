@@ -20,6 +20,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ChangePasswordFormType extends AbstractType
 {
+    /**
+     * {@inheritDoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -32,15 +35,17 @@ class ChangePasswordFormType extends AbstractType
                         ]),
                         new Length([
                             'min' => 6,
-                            'minMessage' => 'Your password should be at least {{ limit }} characters',
+                            'minMessage' => 'Votre mot de passe doit comporter au moins {{ limit }} caractères',
                             // max length allowed by Symfony for security reasons
-                            'max' => 4_096,
+                            'max' => 255,
                         ]),
                     ],
-                    'label' => 'New password',
+                    'label' => 'Nouveau mot de passe',
+                    'icon-prepend' => 'lock',
                 ],
                 'second_options' => [
                     'label' => 'Répetez le mot  de passe',
+                    'icon-prepend' => 'lock',
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas',
                 // Instead of being set onto the object directly,
@@ -50,6 +55,9 @@ class ChangePasswordFormType extends AbstractType
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([]);

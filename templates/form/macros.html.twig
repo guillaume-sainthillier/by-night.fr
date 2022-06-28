@@ -1,0 +1,64 @@
+{% macro dates(du, au) %}
+    {% set dateDebut = du|date('d/m/Y') %}
+    {% set dateFin = au|date('d/m/Y') %}
+
+    {% if au == null or (au != null and dateDebut == dateFin) %}
+        Le
+        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|format_date('full') }}</time>
+    {% else %}
+        Du
+        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|format_date('full') }}</time>
+        au
+        <time itemprop="endDate" datetime="{{ au|date('Y-m-d\TH:i:sO') }}">{{ au|format_date('full') }}</time>
+    {% endif %}
+{% endmacro %}
+
+{% macro thumb(path, width, height, attrs) %}
+    <img class="img-fluid {{ attrs.class|default('') }}"
+         width="{{ width }}"
+         height="{{ height }}"
+         src="{{ thumbAsset(asset(path, 'local'), {'h': height, 'w': width}) }}"
+         srcset="{{ thumbAsset(asset(path, 'local'), {'h': height, 'w': width, 'dpr': 2}) }} 2x"
+    {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+{% endmacro %}
+
+{% macro userThumb(user, width, height, params = {}) %}
+    {{ image({
+        user: user,
+        loader: 'user',
+        width: width,
+        height: height,
+        fit: 'crop',
+        wrapperAttr: {
+            class: 'rounded-circle'
+        },
+        attr: {
+            alt: user.username,
+            title: user.username,
+        }|merge(params.attr|default({})),
+    }|merge(params|default({}))) }}
+{% endmacro %}
+
+{% macro userLazyThumb(user, width, height, params = {}) %}
+    {{ _self.userThumb(user, width, height, {placeholderPriority: true}|merge(params)) }}
+{% endmacro %}
+
+{% macro eventThumb(event, width, params = {}) %}
+    {{ image({
+        event: event,
+        loader: 'event',
+        width: width,
+        attr: {
+            alt: event_seo.eventShortTitle(event),
+            title: event_seo.eventShortTitle(event),
+        }|merge(params.attr|default({})),
+    }|merge(params|default({}))) }}
+{% endmacro %}
+
+{% macro eventLazyThumb(event, width, params = {}) %}
+    {{ _self.eventThumb(event, width, {placeholderPriority: true}|merge(params)) }}
+{% endmacro %}
+
+{% macro icon(name, class) %}
+    <i class="icon fa fa-{{ name }} {{ class|default(null) }}"></i>
+{% endmacro %}

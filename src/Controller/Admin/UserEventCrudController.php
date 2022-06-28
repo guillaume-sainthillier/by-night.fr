@@ -17,6 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use RuntimeException;
 
 class UserEventCrudController extends AbstractCrudController
 {
@@ -52,5 +53,7 @@ class UserEventCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$updatedAt, $event, $user, $participe, $interet];
         }
+
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

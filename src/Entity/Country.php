@@ -10,71 +10,73 @@
 
 namespace App\Entity;
 
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
+use App\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CountryRepository", readOnly=true)
- * @ExclusionPolicy("NONE")
- */
-class Country
+#[ORM\Entity(repositoryClass: CountryRepository::class, readOnly: true)]
+#[ExclusionPolicy('NONE')]
+class Country implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
-    /**
-     * @ORM\Column(type="string", length=2)
-     * @ORM\Id
-     * @Serializer\Groups({"list_event", "list_user", "list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 2)]
+    #[ORM\Id]
+    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
     private ?string $id = null;
 
-    /**
-     * @Gedmo\Slug(fields={"name"}, prefix="c--")
-     * @ORM\Column(length=63, unique=true)
-     * @Exclude
-     */
+    #[ORM\Column(length: 63, unique: true)]
+    #[Exclude]
+    #[Gedmo\Slug(fields: ['name'], prefix: 'c--')]
     private ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="string", length=5, nullable=true)
-     * @Exclude
-     */
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    #[Exclude]
     private ?string $locale = null;
 
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Serializer\Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 63)]
+    #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Serializer\Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 63)]
     private ?string $displayName = null;
 
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Serializer\Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 63)]
     private ?string $atDisplayName = null;
 
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Exclude
-     */
+    #[ORM\Column(type: 'string', length: 63)]
+    #[Exclude]
     private ?string $capital = null;
 
-    /**
-     * @ORM\Column(type="string", length=511, nullable=true)
-     * @Exclude
-     */
+    #[ORM\Column(type: 'string', length: 511, nullable: true)]
+    #[Exclude]
     private ?string $postalCodeRegex = null;
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return $this->name ?? '';
+    }
+
+    public function getKeyPrefix(): string
+    {
+        return 'country';
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s-id-%s',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
     }
 
     public function getId(): ?string
@@ -84,10 +86,8 @@ class Country
 
     /**
      * Set id.
-     *
-     * @return Country
      */
-    public function setId(string $id)
+    public function setId(string $id): self
     {
         $this->id = $id;
 

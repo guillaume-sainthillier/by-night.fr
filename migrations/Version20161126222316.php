@@ -21,7 +21,7 @@ class Version20161126222316 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Exploration ADD reason INT NOT NULL, DROP black_listed');
     }
@@ -29,7 +29,7 @@ class Version20161126222316 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
         $this->addSql('ALTER TABLE Exploration ADD black_listed TINYINT(1) DEFAULT NULL, DROP reason');
     }
 }

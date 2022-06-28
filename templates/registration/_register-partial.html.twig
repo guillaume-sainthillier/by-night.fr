@@ -1,0 +1,21 @@
+{% extends 'layouts/modal-form.html.twig' %}
+
+{% block titre 'Devenez membre de By Night' %}
+
+{% block body -%}
+    {% include 'registration/register-content.html.twig' with({'partial': true}) %}
+    <p class="mb-0">
+        Vous avez déjà un compte ?
+        <a class="connexion" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
+            Connectez-vous !
+        </a>
+    </p>
+{%- endblock %}
+
+{% block footer -%}
+    <button class="btn btn-primary" type="submit">
+        Créer mon profil
+    </button>
+{%- endblock %}
+
+{% block form_action path('app_register') %}

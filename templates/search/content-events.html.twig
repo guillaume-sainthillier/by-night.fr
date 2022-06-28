@@ -1,0 +1,9 @@
+{% include 'partials/event/_list-grid-vertical.html.twig' with({'events': events}) %}
+
+{% if events.paginationData.next is defined %}
+    <div class="text-center my-4">
+        <a class="btn btn-outline-primary more" href="{{ path('app_search_index', {'q' : term, 'page': events.paginationData.next, 'type' : 'evenements'}) }}">
+            Plus
+        </a>
+    </div>
+{% endif %}

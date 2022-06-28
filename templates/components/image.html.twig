@@ -1,0 +1,67 @@
+{% use 'components/image-helpers.html.twig' %}
+
+{# WRAPPER #}
+<div class="image-wrapper {{ layout == 'fluid' ? 'image-wrapper-fluid' }} {{ wrapper.attr.class|default('') }}" {% with {attr: wrapper.attr} %}{{ block('attributes') }}{% endwith %}>
+    {# SIZER #}
+    {% if layout == 'fullWidth' %}
+        <div aria-hidden="true" style="padding-bottom:{{ height / width * 100 }}%"></div>
+    {% elseif layout == 'fluid' %}
+        <div class="image-sizer-fluid" style="max-width: {{ width|round }}px">
+            <img
+                    alt=""
+                    role="presentation"
+                    aria-hidden="true"
+                    src="data:image/svg+xml;charset=utf-8,%3Csvg height='{{ height }}' width='{{ width }}' xmlns='http://www.w3.org/2000/svg' version='1.1'%3E%3C/svg%3E"
+            />
+        </div>
+    {% endif %}
+
+    {# PLACEHOLDER #}
+    {% if placeholder %}
+        <img
+                class="img-placeholder {{ loadingPlaceholder == 'lazy' ? 'lazy-image lazyload' : 'lazyloaded' }} {{ placeholder.attr.class|default('') }}"
+                {% if loadingPlaceholder == 'lazy' %}
+                    src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                    data-src="{{ placeholder.src }}"
+                {% else %}
+                    src="{{ placeholder.src }}"
+                {% endif %}
+                loading="{{ loadingPlaceholder }}"
+                decoding="async"
+                {% with {attr: placeholder.attr|filter((k, v) => k != 'class')} %}{{ block('attributes') }}{% endwith %}
+        />
+    {% endif %}
+
+    {% if sources|length > 0 %}
+        <picture>
+            {% for source in sources %}
+                <source
+                        type="{{ source.mimeType }}"
+                        size="{{ source.sizes|join(", \n") }}"
+                        {% if loading == 'lazy' %}
+                            data-srcset="{{ source.srcSet|join(", \n") }}"
+                        {% else %}
+                            srcset="{{ source.srcSet|join(", \n") }}"
+                        {% endif %}
+                >
+            {% endfor %}
+
+            {% if image %}
+                <img
+                        class="img-main {{ loading == 'lazy' ? 'lazy-image lazyload' : 'lazyloaded' }} {{ attr.class|default('') }}"
+                        sizes="{{ image.sizes|join(", \n") }}"
+                        {% if loading == 'lazy' %}
+                            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                            data-srcset="{{ image.srcSet|join(", \n") }}"
+                        {% else %}
+                            src="{{ image.src }}"
+                            srcset="{{ image.srcSet|join(", \n") }}"
+                        {% endif %}
+                        loading="{{ loading }}"
+                        decoding="async"
+                        {% with {attr: attr|filter((k, v) => k != 'class')} %}{{ block('attributes') }}{% endwith %}
+                >
+            {% endif %}
+        </picture>
+    {% endif %}
+</div>

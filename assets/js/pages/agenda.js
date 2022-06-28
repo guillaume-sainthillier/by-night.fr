@@ -1,15 +1,15 @@
-import 'bootstrap-select/dist/css/bootstrap-select.css';
-import 'daterangepicker/daterangepicker.css';
+import debounce from 'lodash/debounce';
 
-import 'bootstrap-select/js/bootstrap-select.js';
-import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
-import 'moment/locale/fr';
-import 'daterangepicker';
-import { debounce } from 'lodash';
+import initDates from '../lazy-listeners/dates';
+import initImagePreview from '../lazy-listeners/image-previews';
+import initSelects from '../lazy-listeners/selects';
 
 import Widgets from '../components/Widgets';
 
-$(function () {
+$(document).ready(function () {
+    initDates();
+    initImagePreview();
+    initSelects();
     init_custom_tab();
     init_criteres();
     load_infinite_scroll();

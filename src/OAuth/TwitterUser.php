@@ -14,11 +14,8 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class TwitterUser implements ResourceOwnerInterface
 {
-    private array $response;
-
-    public function __construct(array $response)
+    public function __construct(private array $response)
     {
-        $this->response = $response;
     }
 
     public function getId()
@@ -48,15 +45,13 @@ class TwitterUser implements ResourceOwnerInterface
 
     /**
      * Get user data as an array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->response;
     }
 
-    private function getResponseValue($key)
+    private function getResponseValue(string $key)
     {
         if (\array_key_exists($key, $this->response)) {
             return $this->response[$key];

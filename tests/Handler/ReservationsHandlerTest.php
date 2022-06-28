@@ -11,9 +11,9 @@
 namespace App\Tests\Handler;
 
 use App\Handler\ReservationsHandler;
-use App\Tests\ContainerTestCase;
+use App\Tests\AppKernelTestCase;
 
-class ReservationsHandlerTest extends ContainerTestCase
+class ReservationsHandlerTest extends AppKernelTestCase
 {
     private ReservationsHandler $reservationsHandler;
 
@@ -21,8 +21,7 @@ class ReservationsHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->reservationsHandler = new ReservationsHandler();
-        //$this->reservationsHandler = self::$container->get(ReservationsHandler::class);
+        $this->reservationsHandler = self::getContainer()->get(ReservationsHandler::class);
     }
 
     /**
@@ -31,7 +30,7 @@ class ReservationsHandlerTest extends ContainerTestCase
     public function testParseReservations(string $content, array $expectedInfos)
     {
         $infos = $this->reservationsHandler->parseReservations($content);
-        $this->assertEquals($expectedInfos, $infos);
+        self::assertEquals($expectedInfos, $infos);
     }
 
     public function getReservationsSample(): iterable
@@ -54,7 +53,7 @@ class ReservationsHandlerTest extends ContainerTestCase
             ],
         ];
 
-        //Website without protocol
+        // Website without protocol
         yield [
             'www.fnac.com www.sallenougaro.com',
             [

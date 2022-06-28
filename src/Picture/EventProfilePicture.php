@@ -10,134 +10,133 @@
 
 namespace App\Picture;
 
+use App\Dto\EventDto;
 use App\Entity\Event;
+use App\Helper\AssetHelper;
 use App\Parser\Common\DataTourismeParser;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\OpenAgendaParser;
 use App\Parser\Common\SowProgParser;
 use App\Parser\Toulouse\BikiniParser;
 use App\Parser\Toulouse\ToulouseParser;
-use App\Twig\AssetExtension;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class EventProfilePicture
 {
-    private UploaderHelper $helper;
-
-    private Packages $packages;
-
-    private AssetExtension $assetExtension;
-
-    public function __construct(UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
-    {
-        $this->assetExtension = $assetExtension;
-        $this->helper = $helper;
-        $this->packages = $packages;
+    public function __construct(
+        private UploaderHelper $helper,
+        private Packages $packages,
+        private AssetHelper $assetHelper
+    ) {
     }
 
-    public function getOriginalPicture(Event $event)
+    public function getOriginalPicture(Event|EventDto $event): string|null
     {
-        if ($event->getImage()->getName()) {
+        [
+            'path' => $path,
+            'source' => $source
+        ] = $this->getPicturePathAndSource($event);
+
+        if ('upload' === $source) {
             return $this->packages->getUrl(
-                $this->helper->asset($event, 'imageFile'),
+                $path,
                 'aws'
             );
         }
 
-        if ($event->getImageSystem()->getName()) {
-            return $this->packages->getUrl(
-                $this->helper->asset($event, 'imageSystemFile'),
-                'aws'
-            );
-        }
-
-        if ($event->getFromData() === BikiniParser::getParserName()) {
-            return $this->packages->getUrl('build/images/parsers/bikini.jpg');
-        }
-
-        if ($event->getFromData() === ToulouseParser::getParserName()) {
-            return $this->packages->getUrl('build/images/parsers/toulouse-tourisme.jpg');
-        }
-
-        if ($event->getFromData() === SowProgParser::getParserName()) {
-            return $this->packages->getUrl('build/images/parsers/sowprog.jpg');
-        }
-
-        if ($event->getFromData() === OpenAgendaParser::getParserName()) {
-            return $this->packages->getUrl('build/images/parsers/openagenda.jpg');
-        }
-
-        if ($event->getFromData() === DataTourismeParser::getParserName()) {
-            return $this->packages->getUrl('build/images/parsers/data-tourisme.jpg');
-        }
-
-        if ($event->getFromData() === DigitickAwinParser::getParserName()) {
-            return $this->packages->getUrl('build/images/parsers/digitick.jpg');
-        }
-
-        if ($event->getUrl()) {
-            return $event->getUrl();
-        }
-
-        return $this->packages->getUrl('build/images/empty_event.png');
+        return $this->packages->getUrl($path);
     }
 
-    public function getPicture(Event $event, array $params = [])
+    public function getPicture(Event|EventDto $event, array $params = []): string
     {
-        if ($event->getImage()->getName()) {
-            return $this->assetExtension->thumb($this->helper->asset($event, 'imageFile'), $params);
+        [
+            'path' => $path,
+            'source' => $source
+        ] = $this->getPicturePathAndSource($event);
+
+        if ('upload' === $source) {
+            return $this->assetHelper->getThumbUrl($path, $params);
         }
 
-        if ($event->getImageSystem()->getName()) {
-            return $this->assetExtension->thumb($this->helper->asset($event, 'imageSystemFile'), $params);
-        }
-
-        if ($event->getFromData() === BikiniParser::getParserName()) {
-            return $this->assetExtension->thumbAsset(
-                $this->packages->getUrl('build/images/parsers/bikini.jpg', 'local'),
-                $params
-            );
-        }
-
-        if ($event->getFromData() === ToulouseParser::getParserName()) {
-            return $this->assetExtension->thumbAsset(
-                $this->packages->getUrl('build/images/parsers/toulouse-tourisme.jpg', 'local'),
-                $params
-            );
-        }
-
-        if ($event->getFromData() === SowProgParser::getParserName()) {
-            return $this->assetExtension->thumbAsset(
-                $this->packages->getUrl('build/images/parsers/sowprog.jpg', 'local'),
-                $params
-            );
-        }
-
-        if ($event->getFromData() === OpenAgendaParser::getParserName()) {
-            return $this->assetExtension->thumbAsset(
-                $this->packages->getUrl('build/images/parsers/openagenda.jpg', 'local'),
-                $params
-            );
-        }
-
-        if ($event->getFromData() === DataTourismeParser::getParserName()) {
-            return $this->assetExtension->thumbAsset(
-                $this->packages->getUrl('build/images/parsers/data-tourisme.jpg', 'local'),
-                $params
-            );
-        }
-
-        if ($event->getFromData() === DigitickAwinParser::getParserName()) {
-            return $this->assetExtension->thumbAsset(
-                $this->packages->getUrl('build/images/parsers/digitick.jpg', 'local'),
-                $params
-            );
-        }
-
-        return $this->assetExtension->thumbAsset(
-            $this->packages->getUrl('build/images/empty_event.png', 'local'),
+        return $this->assetHelper->getThumbAssetUrl(
+            $path,
             $params
         );
+    }
+
+    public function getPicturePathAndSource(Event|EventDto $event): array
+    {
+        $image = $event instanceof EventDto
+            ? $event->image
+            : $event->getImage();
+
+        if ($image->getName()) {
+            return [
+                'path' => $this->helper->asset($event, 'imageFile'),
+                'source' => 'upload',
+            ];
+        }
+
+        $systemImage = $event instanceof EventDto
+            ? null
+            : $event->getImageSystem();
+        if ($systemImage?->getName()) {
+            return [
+                'path' => $this->helper->asset($event, 'imageSystemFile'),
+                'source' => 'upload',
+            ];
+        }
+
+        $fromData = $event instanceof EventDto
+            ? $event->fromData
+            : $event->getFromData();
+
+        if ($fromData === BikiniParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/bikini.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === ToulouseParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/toulouse-tourisme.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === SowProgParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/sowprog.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === OpenAgendaParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/openagenda.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === DataTourismeParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/data-tourisme.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === DigitickAwinParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/digitick.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        return [
+            'path' => $this->packages->getUrl('build/images/empty_event.png', 'local'),
+            'source' => 'local',
+        ];
     }
 }

@@ -19,14 +19,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SocialConverter implements ParamConverterInterface
 {
-    private SocialProvider $socialProvider;
-
-    public function __construct(SocialProvider $socialProvider)
+    public function __construct(private SocialProvider $socialProvider)
     {
-        $this->socialProvider = $socialProvider;
     }
 
-    public function apply(Request $request, ParamConverter $configuration)
+    /**
+     * {@inheritDoc}
+     */
+    public function apply(Request $request, ParamConverter $configuration): bool
     {
         $service = $request->attributes->get('service');
 
@@ -42,8 +42,13 @@ class SocialConverter implements ParamConverterInterface
         $request->attributes->set($configuration->getName(), $entity);
 
         $configuration->setClass(null);
+
+        return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(ParamConverter $configuration)
     {
         return Social::class === $configuration->getClass();

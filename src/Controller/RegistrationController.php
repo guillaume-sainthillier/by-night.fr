@@ -14,44 +14,39 @@ use App\Entity\User;
 use App\Form\Type\RegistrationFormType;
 use App\Security\EmailVerifier;
 use App\Security\UserFormAuthenticator;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
-
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(EntityManagerInterface $entityManager, private EmailVerifier $emailVerifier)
     {
-        $this->emailVerifier = $emailVerifier;
+        parent::__construct($entityManager);
     }
 
-    /**
-     * @Route("/inscription", name="app_register")
-     */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, UserFormAuthenticator $authenticator): Response
+    #[Route(path: '/inscription', name: 'app_register')]
+    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, GuardAuthenticatorHandler $guardHandler, UserFormAuthenticator $authenticator): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user
                 ->setFromLogin(true)
                 ->setPassword(
-                $passwordEncoder->encodePassword(
+                    $passwordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
                 )
             );
 
-            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $this->getEntityManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -72,15 +67,13 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/verifier-email", name="app_verify_email")
-     */
+    #[Route(path: '/verifier-email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request): Response
     {
         try {
-            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('error', $exception->getReason());
+            $this->emailVerifier->handleEmailConfirmation($request, $this->getAppUser());
+        } catch (VerifyEmailExceptionInterface $verifyEmailException) {
+            $this->addFlash('error', $verifyEmailException->getReason());
 
             return $this->redirectToRoute('app_register');
         }

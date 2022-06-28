@@ -1,14 +1,10 @@
-import 'bootstrap-select/dist/css/bootstrap-select.css';
-import 'daterangepicker/daterangepicker.css';
-
-import 'typeahead.js/dist/bloodhound';
-import 'typeahead.js/dist/typeahead.bundle';
-import 'bootstrap-select/js/bootstrap-select.js';
-import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
-import 'moment/locale/fr';
-import 'daterangepicker';
+import initDates from '../lazy-listeners/dates';
+import initTypeAHead from '../lazy-listeners/typeahead';
 
 $(document).ready(function () {
+    initDates();
+    initTypeAHead();
+
     $('.form-city-picker').each(function () {
         var form = $(this);
         var btn = form.find('.choose-city-action');

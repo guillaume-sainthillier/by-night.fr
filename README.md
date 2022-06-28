@@ -11,13 +11,27 @@ https://by-night.fr
 
 ## Stack technique
 
--   PHP 7.4
--   Symfony 5.1
--   MySQL 5.7
--   Elastic Search 6.8
+-   PHP 8.0
+-   Symfony 5.4
+-   MySQL 8.0
+-   Elastic Search 7
 -   Varnish 6
 -   Redis 5
 -   Sass
 -   Webpack
 -   Docker
 -   Amazon S3 / Cloudfront
+
+## Setup
+
+```bash
+bin/console rabbitmq:setup-fabric
+bin/console messenger:setup-transports
+```
+
+## Add events
+
+```bash
+bin/console app:events:import toulouse.opendata -vv
+bin/console rabbitmq:batch:consumer add_event -vv
+```

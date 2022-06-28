@@ -12,6 +12,7 @@ namespace App\OAuth;
 
 use Abraham\TwitterOAuth\TwitterOAuth as BaseClient;
 use Abraham\TwitterOAuth\TwitterOAuthException;
+use const JSON_THROW_ON_ERROR;
 use KnpU\OAuth2ClientBundle\Exception\InvalidStateException;
 use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -21,19 +22,18 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class TwitterOAuth
 {
-    private string $clientId;
-    private string $clientSecret;
-
-    private RequestStack $requestStack;
-
+    /**
+     * @var string
+     */
     private const OAUTH_TOKEN_SESSION_KEY = '_oauth_token';
+
+    /**
+     * @var string
+     */
     private const OAUTH_TOKEN_SECRET_SESSION_KEY = '_oauth_token_secret';
 
-    public function __construct(string $clientId, string $clientSecret, RequestStack $requestStack)
+    public function __construct(private string $clientId, private string $clientSecret, private RequestStack $requestStack)
     {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->requestStack = $requestStack;
     }
 
     public function redirect(string $redirectUri): RedirectResponse
@@ -69,15 +69,15 @@ class TwitterOAuth
         $givenOauthVerifier = $request->query->get('oauth_verifier');
 
         if ($givenOauthToken !== $oauthToken) {
-            throw new InvalidStateException('States don\'t match');
+            throw new InvalidStateException("States don't match");
         }
 
         $client = new BaseClient($this->clientId, $this->clientSecret, $givenOauthToken, $oauthTokenSecret);
 
         try {
             $access_token = $client->oauth('oauth/access_token', ['oauth_verifier' => $givenOauthVerifier]);
-        } catch (TwitterOAuthException $exception) {
-            throw new InvalidStateException($exception->getMessage(), $exception->getCode(), $exception);
+        } catch (TwitterOAuthException $twitteroAuthException) {
+            throw new InvalidStateException($twitteroAuthException->getMessage(), $twitteroAuthException->getCode(), $twitteroAuthException);
         }
 
         return new TwitterAccessToken([
@@ -92,7 +92,7 @@ class TwitterOAuth
         $client = new BaseClient($this->clientId, $this->clientSecret, $token->getToken(), $token->getTokenSecret());
         $content = $client->get('account/verify_credentials', ['include_email' => true]);
 
-        return new TwitterUser(json_decode(json_encode($content, \JSON_THROW_ON_ERROR), true, 512, \JSON_THROW_ON_ERROR));
+        return new TwitterUser(json_decode(json_encode($content, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR));
     }
 
     private function getCurrentSession(): SessionInterface

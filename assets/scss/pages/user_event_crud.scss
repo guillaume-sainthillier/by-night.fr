@@ -17,7 +17,7 @@
 }
 
 .note-editor {
-    @import '../../../node_modules/bootstrap/scss/buttons';
+    @import '~bootstrap/scss/buttons';
 
     .btn {
         margin: 0;

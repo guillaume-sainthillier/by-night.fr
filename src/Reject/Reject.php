@@ -10,42 +10,91 @@
 
 namespace App\Reject;
 
-use LogicException;
-
 class Reject
 {
+    /**
+     * @var int
+     */
     public const VALID = 1;
 
+    /**
+     * @var int
+     */
     public const BAD_EVENT_NAME = 2;
 
+    /**
+     * @var int
+     */
     public const BAD_EVENT_DATE = 4;
 
+    /**
+     * @var int
+     */
     public const BAD_EVENT_DATE_INTERVAL = 8;
 
+    /**
+     * @var int
+     */
     public const SPAM_EVENT_DESCRIPTION = 16;
 
+    /**
+     * @var int
+     */
     public const BAD_EVENT_DESCRIPTION = 32;
 
+    /**
+     * @var int
+     */
     public const NO_NEED_TO_UPDATE = 64;
 
+    /**
+     * @var int
+     */
     public const NO_PLACE_PROVIDED = 128;
 
+    /**
+     * @var int
+     */
     public const NO_PLACE_LOCATION_PROVIDED = 256;
 
+    /**
+     * @var int
+     */
     public const BAD_PLACE_NAME = 512;
 
+    /**
+     * @var int
+     */
     public const BAD_PLACE_LOCATION = 1_024;
 
+    /**
+     * @var int
+     */
     public const BAD_PLACE_CITY_NAME = 2_048;
 
+    /**
+     * @var int
+     */
     public const BAD_PLACE_CITY_POSTAL_CODE = 4_096;
 
+    /**
+     * @var int
+     */
     public const BAD_USER = 8_192;
 
+    /**
+     * @var int
+     */
     public const EVENT_DELETED = 16_384;
 
+    /**
+     * @var int
+     */
     public const NO_COUNTRY_PROVIDED = 131_072;
 
+    /**
+     * @var int
+     */
     public const BAD_COUNTRY = 262_144;
 
     protected int $reason = self::VALID;
@@ -57,9 +106,6 @@ class Reject
 
     public function setReason(int $reason): self
     {
-        if (null === $reason) {
-            throw new LogicException('Reason must be integer');
-        }
         $this->reason = $reason;
 
         return $this;
@@ -72,7 +118,7 @@ class Reject
         return $this;
     }
 
-    public function setValid()
+    public function setValid(): self
     {
         $this->reason = self::VALID;
 

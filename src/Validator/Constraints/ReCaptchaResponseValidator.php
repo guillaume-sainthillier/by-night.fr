@@ -17,17 +17,17 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class ReCaptchaResponseValidator extends ConstraintValidator
 {
-    private RequestStack $requestStack;
-    private CaptchaWrapper $captcha;
-
-    public function __construct(RequestStack $requestStack, CaptchaWrapper $captcha)
+    public function __construct(private RequestStack $requestStack, private CaptchaWrapper $captcha)
     {
-        $this->requestStack = $requestStack;
-        $this->captcha = $captcha;
     }
 
+    /**
+     * @return void
+     */
     public function validate($value, Constraint $constraint)
     {
+        \assert($constraint instanceof ReCaptchaResponse);
+
         $value ??= $this->requestStack->getCurrentRequest()->request->get('g-recaptcha-response');
 
         $isValid = $this->captcha->verify($value);

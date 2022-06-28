@@ -18,7 +18,7 @@ use App\Entity\Country;
 use App\Entity\ZipCity;
 use App\Repository\CountryRepository;
 use App\Utils\Monitor;
-use Doctrine\DBAL\DBALException;
+use const DIRECTORY_SEPARATOR;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -26,25 +26,21 @@ use ZipArchive;
 
 class CountryImporter
 {
+    /**
+     * @var int
+     */
     private const ZIP_CODES_PER_TRANSACTION = 500;
-    private const CITIES_PER_TRANSACTION = 50;
-
-    private EntityManagerInterface $em;
-
-    private string $dataDir;
-    private CountryRepository $countryRepository;
-
-    public function __construct(EntityManagerInterface $em, string $dataDir, CountryRepository $countryRepository)
-    {
-        $this->em = $em;
-        $this->dataDir = $dataDir;
-        $this->countryRepository = $countryRepository;
-    }
 
     /**
-     * @throws DBALException
+     * @var int
      */
-    public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null)
+    private const CITIES_PER_TRANSACTION = 50;
+
+    public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
+    {
+    }
+
+    public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null): void
     {
         /**
          * @var Country
@@ -71,6 +67,9 @@ class CountryImporter
         $this->deleteEmptyDatas($country);
     }
 
+    /**
+     * @return void
+     */
     private function createAdminZones(Country $country)
     {
         $filepath = $this->downloadAndExtractGeoname(
@@ -89,6 +88,7 @@ class CountryImporter
             if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
                 continue;
             }
+
             ++$i;
 
             if ('P' === $data[6]) {
@@ -124,21 +124,22 @@ class CountryImporter
                 $i = 0;
             }
         }
+
         $this->em->flush();
         fclose($fd);
     }
 
-    private function downloadAndExtractGeoname($zipUrl, $filename, $countryId)
+    private function downloadAndExtractGeoname(string $zipUrl, string $filename, ?string $countryId): string
     {
         // Create var/datas/<CountryCode>
-        $filedir = $this->dataDir . \DIRECTORY_SEPARATOR . $countryId;
-        $filepath = $filedir . \DIRECTORY_SEPARATOR . $filename;
+        $filedir = $this->dataDir . DIRECTORY_SEPARATOR . $countryId;
+        $filepath = $filedir . DIRECTORY_SEPARATOR . $filename;
         $fs = new Filesystem();
         $fs->mkdir($filedir);
 
         // Create /tmp/<CountryCode>
-        $tempdir = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $countryId;
-        $tempfile = $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.zip';
+        $tempdir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $countryId;
+        $tempfile = $tempdir . DIRECTORY_SEPARATOR . $countryId . '.zip';
         $fs = new Filesystem();
         $fs->mkdir($tempdir);
 
@@ -154,9 +155,9 @@ class CountryImporter
         $zip->extractTo($tempdir);
         $zip->close();
 
-        //move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
+        // move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
         $fs->rename(
-            $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.txt',
+            $tempdir . DIRECTORY_SEPARATOR . $countryId . '.txt',
             $filepath,
             true
         );
@@ -168,7 +169,7 @@ class CountryImporter
         return $filepath;
     }
 
-    private function formatAdminZoneCode($code)
+    private function formatAdminZoneCode(?string $code): ?string
     {
         if ('0' === $code || '00' === $code) {
             return $code;
@@ -183,27 +184,27 @@ class CountryImporter
         return $code;
     }
 
-    private function sanitizeAdminZone(AdminZone $entity)
+    private function sanitizeAdminZone(AdminZone $entity): void
     {
-        switch ($entity->getCountry()->getId()) {
-            case 'FR':
-                if ($entity instanceof AdminZone2) {
-                    $entity->setName(str_replace([
-                            "Département d'",
-                            "Département de l'",
-                            'Département de la ',
-                            'Département des ',
-                            'Département de ',
-                            'Département du ',
-                            'Territoire de ',
-                        ], '', $entity->getName())
-                    );
-                }
-
-                break;
+        if ('FR' == $entity->getCountry()->getId()) {
+            if ($entity instanceof AdminZone2) {
+                $entity->setName(str_replace([
+                        "Département d'",
+                        "Département de l'",
+                        'Département de la ',
+                        'Département des ',
+                        'Département de ',
+                        'Département du ',
+                        'Territoire de ',
+                    ], '', $entity->getName())
+                );
+            }
         }
     }
 
+    /**
+     * @return void
+     */
     private function createZipCities(Country $country)
     {
         $filepath = $this->downloadAndExtractGeoname(
@@ -212,7 +213,7 @@ class CountryImporter
             $country->getId()
         );
 
-        //Delete all zip cities
+        // Delete all zip cities
         $this->em->createQuery('
             DELETE FROM App:ZipCity zc
             WHERE zc.country = :country
@@ -230,6 +231,7 @@ class CountryImporter
             if (!$data[4] || !$data[6]) {
                 continue;
             }
+
             ++$i;
 
             $city = new ZipCity();
@@ -255,26 +257,24 @@ class CountryImporter
                 $i = 0;
             }
         }
+
         $this->em->flush();
         fclose($fd);
     }
 
-    /**
-     * @throws DBALException
-     */
-    private function cleanDatas(Country $country)
+    private function cleanDatas(Country $country): void
     {
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE admin_zone SET parent_id = NULL
             WHERE country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE zip_city SET parent_id = NULL
             WHERE country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE admin_zone as t1
             INNER JOIN admin_zone t2 ON (
                 t2.type = \'ADM2\'
@@ -286,7 +286,7 @@ class CountryImporter
             WHERE t1.type = \'PPL\' AND t1.country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE admin_zone as t1
             INNER JOIN admin_zone t2 ON (
                 t2.type = \'ADM1\'
@@ -297,7 +297,7 @@ class CountryImporter
             WHERE t1.type = \'ADM2\' AND t1.country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             update admin_zone as t1
             inner join admin_zone t2 ON (
                 t2.type = \'ADM1\'
@@ -309,8 +309,8 @@ class CountryImporter
             'country' => $country->getId(),
         ]);
 
-        //Delete doublon
-        $this->em->getConnection()->executeUpdate('
+        // Delete doublon
+        $this->em->getConnection()->executeStatement('
             DELETE FROM zip_city WHERE id IN (
                 SELECT * FROM (
                     SELECT a2.id FROM zip_city a2 GROUP BY a2.country_id, a2.postal_code, a2.name  HAVING(COUNT(a2.id)) > 1 AND a2.id <> MIN(a2.id)
@@ -319,8 +319,8 @@ class CountryImporter
             'country' => $country->getId(),
         ]);
 
-        //Delete doublon
-        $this->em->getConnection()->executeUpdate('
+        // Delete doublon
+        $this->em->getConnection()->executeStatement('
             DELETE a2
             FROM admin_zone AS a2
             JOIN (
@@ -339,7 +339,7 @@ class CountryImporter
             'country' => $country->getId(),
         ]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE zip_city as zc
             INNER JOIN admin_zone c ON (
                 c.type = \'PPL\'
@@ -355,7 +355,7 @@ class CountryImporter
 
         $this->fixDatas($country);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE zip_city as zc
             INNER JOIN admin_zone c ON (
                 c.type = \'PPL\'
@@ -370,14 +370,11 @@ class CountryImporter
         ]);
     }
 
-    /**
-     * @throws DBALException
-     */
-    private function fixDatas(Country $country)
+    private function fixDatas(Country $country): void
     {
         switch ($country->getId()) {
             case 'BE':
-                $this->em->getConnection()->executeUpdate('
+                $this->em->getConnection()->executeStatement('
                    update zip_city as zc
                     inner join admin_zone c ON (
                         c.type = \'PPL\'
@@ -425,7 +422,7 @@ class CountryImporter
                     'oostende' => 'mariakerke',
                     'mont-de-lenclus' => 'orroir',
                 ], $country);
-                $this->em->getConnection()->executeUpdate("
+                $this->em->getConnection()->executeStatement("
                     UPDATE zip_city zc
                     SET zc.parent_id = (
                       SELECT id
@@ -489,17 +486,14 @@ class CountryImporter
         }
     }
 
-    /**
-     * @throws DBALException
-     */
-    private function manualAssociation(array $associations, Country $country)
+    private function manualAssociation(array $associations, Country $country): void
     {
         foreach ($associations as $zipSlug => $citySlug) {
             if (is_numeric($zipSlug)) {
                 $zipSlug = $citySlug;
             }
 
-            $this->em->getConnection()->executeUpdate('
+            $this->em->getConnection()->executeStatement('
                 UPDATE zip_city zc
                 SET zc.parent_id = (
                   SELECT id
@@ -518,7 +512,7 @@ class CountryImporter
         }
     }
 
-    private function deleteEmptyDatas(Country $country)
+    private function deleteEmptyDatas(Country $country): void
     {
         $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
             'country' => $country->getId(),

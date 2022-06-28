@@ -19,61 +19,59 @@ use RuntimeException;
 class EchantillonHandler
 {
     public $newPlaces;
+
     public $fbPlaces;
-    /**
-     * @var Place[][]
-     */
-    private array $countryPlaces;
 
     /**
      * @var Place[][]
      */
-    private array $cityPlaces;
+    private array $countryPlaces = [];
+
+    /**
+     * @var Place[][]
+     */
+    private array $cityPlaces = [];
 
     /**
      * @var Event[]
      */
-    private array $events;
-    private PlaceRepository $placeRepository;
-    private EventRepository $eventRepository;
+    private array $events = [];
 
-    public function __construct(PlaceRepository $placeRepository, EventRepository $eventRepository)
+    public function __construct(private PlaceRepository $placeRepository, private EventRepository $eventRepository)
     {
         $this->init();
-        $this->placeRepository = $placeRepository;
-        $this->eventRepository = $eventRepository;
     }
 
-    private function init()
+    private function init(): void
     {
         $this->initEvents();
         $this->initPlaces();
     }
 
-    private function initEvents()
+    private function initEvents(): void
     {
         $this->events = [];
     }
 
-    private function initPlaces()
+    private function initPlaces(): void
     {
         $this->countryPlaces = [];
         $this->cityPlaces = [];
     }
 
-    public function clearEvents()
+    public function clearEvents(): void
     {
         unset($this->events);
         $this->initEvents();
     }
 
-    public function clearPlaces()
+    public function clearPlaces(): void
     {
         unset($this->newPlaces, $this->fbPlaces);
         $this->initPlaces();
     }
 
-    public function prefetchPlaceEchantillons(array $events)
+    public function prefetchPlaceEchantillons(array $events): void
     {
         $cityIds = [];
         $countryIds = [];
@@ -89,7 +87,7 @@ class EchantillonHandler
 
         $repoPlace = $this->placeRepository;
 
-        //On prend toutes les places déjà connues par leur city ID
+        // On prend toutes les places déjà connues par leur city ID
         if (\count($cityIds) > 0) {
             $places = $repoPlace->findBy([
                 'city' => array_keys($cityIds),
@@ -100,7 +98,7 @@ class EchantillonHandler
             }
         }
 
-        //On prend ensuite toutes les places selon leur localisation
+        // On prend ensuite toutes les places selon leur localisation
         if (\count($countryIds) > 0) {
             $places = $repoPlace->findBy([
                 'country' => array_keys($countryIds),
@@ -113,9 +111,9 @@ class EchantillonHandler
         }
     }
 
-    private function addPlace(Place $place)
+    private function addPlace(Place $place): void
     {
-        $key = $place->getId() ?: spl_object_hash($place);
+        $key = $place->getId() ?? spl_object_id($place);
 
         if (null !== $place->getCity()) {
             $this->cityPlaces[$place->getCity()->getId()][$key] = $place;
@@ -124,7 +122,7 @@ class EchantillonHandler
         }
     }
 
-    public function prefetchEventEchantillons(array $events)
+    public function prefetchEventEchantillons(array $events): void
     {
         $externalIds = [];
         foreach ($events as $event) {
@@ -150,7 +148,7 @@ class EchantillonHandler
         }
     }
 
-    private function addEvent(Event $event)
+    private function addEvent(Event $event): void
     {
         if ($event->getExternalId()) {
             $this->events[$event->getExternalId()] = $event;
@@ -160,7 +158,7 @@ class EchantillonHandler
     /**
      * @return Place[]
      */
-    public function getPlaceEchantillons(Event $event)
+    public function getPlaceEchantillons(Event $event): array
     {
         if (null !== $event->getPlace()) {
             $place = $this->searchPlaceByExternalId($event->getPlace()->getExternalId());
@@ -185,7 +183,7 @@ class EchantillonHandler
             return null;
         }
 
-        foreach (array_merge($this->cityPlaces, $this->countryPlaces) as $key => $places) {
+        foreach (array_merge($this->cityPlaces, $this->countryPlaces) as $places) {
             foreach ($places as $place) {
                 /** @var Place $place */
                 if ($place->getExternalId() === $placeExternalId) {
@@ -197,7 +195,12 @@ class EchantillonHandler
         return null;
     }
 
-    public function getEventEchantillons(Event $event)
+    /**
+     * @return Event[]
+     *
+     * @psalm-return array{0?: Event}
+     */
+    public function getEventEchantillons(Event $event): array
     {
         if ($event->getId() || ($event->getUser() && !$event->getExternalId())) {
             return [];
@@ -210,7 +213,7 @@ class EchantillonHandler
         return [];
     }
 
-    public function addNewEvent(Event $event)
+    public function addNewEvent(Event $event): void
     {
         $this->addEvent($event);
         if (null !== $event->getPlace()) {

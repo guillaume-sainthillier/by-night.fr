@@ -15,7 +15,7 @@ use Twig\TwigFilter;
 
 class UrlExtension extends Extension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('url_decode', 'urldecode'),

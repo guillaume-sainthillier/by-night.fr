@@ -22,20 +22,23 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventUrlCheckSubscriber implements EventSubscriberInterface
 {
-    private EventRepository $eventRepository;
-    private RequestStack $requestStack;
-    private UrlGeneratorInterface $router;
-
-    public function __construct(RequestStack $requestStack, UrlGeneratorInterface $router, EventRepository $eventRepository)
+    public function __construct(private RequestStack $requestStack, private UrlGeneratorInterface $router, private EventRepository $eventRepository)
     {
-        $this->requestStack = $requestStack;
-        $this->router = $router;
-        $this->eventRepository = $eventRepository;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            Events::CHECK_EVENT_URL => 'onEventCheck',
+        ];
     }
 
     public function onEventCheck(EventCheckUrlEvent $e): void
     {
-        //Old route handle
+        // Old route handle
         if (null === $e->getEventId()) {
             $event = $this->eventRepository->findOneBy(['slug' => $e->getEventSlug()]);
         } else {
@@ -67,14 +70,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
             return;
         }
 
-        //All is ok :-)
+        // All is ok :-)
         $e->setEvent($event);
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            Events::CHECK_EVENT_URL => 'onEventCheck',
-        ];
     }
 }

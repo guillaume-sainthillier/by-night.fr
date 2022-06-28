@@ -10,48 +10,25 @@
 
 namespace App\Social;
 
-use App\Entity\AppOAuth;
-use Facebook\FacebookClient;
-
 class FacebookAdmin extends Facebook
 {
-    private AppOAuth $appOAuth;
-    private bool $_isInitialized;
+    /**
+     * @var string
+     */
+    private const BASE_GRAPH_URL = 'https://graph.facebook.com';
 
-    protected function init()
-    {
-        parent::init();
-
-        if (!$this->_isInitialized) {
-            $this->_isInitialized = true;
-            $this->appOAuth = $this->socialManager->getAppOAuth();
-
-            if ($this->appOAuth && $this->appOAuth->getFacebookAccessToken()) {
-                $this->client->setDefaultAccessToken($this->appOAuth->getFacebookAccessToken());
-            }
-        }
-    }
-
-    public function getPageFromId($id_page, $params = [])
-    {
-        $this->init();
-        $accessToken = $this->appOAuth ? $this->appOAuth->getFacebookAccessToken() : null;
-        $request = $this->client->sendRequest('GET',
-            '/' . $id_page,
-            $params,
-            $accessToken
-        );
-
-        return $request->getGraphPage();
-    }
-
-    public function getUserImagesFromIds(array $ids_users)
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<string>
+     */
+    public function getUserImagesFromIds(array $ids_users): array
     {
         $urls = [];
         foreach ($ids_users as $id_user) {
             $urls[$id_user] = sprintf(
                 '%s/%s/picture?width=1500&height=1500',
-                FacebookClient::BASE_GRAPH_URL,
+                self::BASE_GRAPH_URL,
                 $id_user
             );
         }

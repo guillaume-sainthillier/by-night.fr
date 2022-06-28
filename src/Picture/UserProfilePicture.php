@@ -11,84 +11,106 @@
 namespace App\Picture;
 
 use App\Entity\User;
-use App\Twig\AssetExtension;
+use App\Helper\AssetHelper;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserProfilePicture
 {
-    private UploaderHelper $helper;
-
-    private Packages $packages;
-
-    private AssetExtension $assetExtension;
-
-    public function __construct(UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
-    {
-        $this->assetExtension = $assetExtension;
-        $this->helper = $helper;
-        $this->packages = $packages;
+    public function __construct(
+        private UploaderHelper $helper,
+        private Packages $packages,
+        private AssetHelper $assetHelper
+    ) {
     }
 
-    public function getOriginalProfilePicture(User $user)
+    public function getOriginalProfilePicture(User $user): string|null
     {
-        if ($user->getImage()->getName()) {
+        [
+            'path' => $path,
+            'source' => $source
+        ] = $this->getPicturePathAndSource($user);
+
+        if ('upload' === $source) {
             return $this->packages->getUrl(
-                $this->helper->asset($user, 'imageFile'),
+                $path,
                 'aws'
             );
         }
 
-        if ($user->getImageSystem()->getName()) {
-            return $this->packages->getUrl(
-                $this->helper->asset($user, 'imageSystemFile'),
-                'aws'
-            );
+        if ('local' === $source) {
+            return $this->packages->getUrl($path);
         }
 
-        $info = $user->getOAuth();
-        if (null !== $info) {
-            if (null !== $info->getFacebookProfilePicture()) {
-                return $info->getFacebookProfilePicture();
-            } elseif (null !== $info->getTwitterProfilePicture()) {
-                return $info->getTwitterProfilePicture();
-            } elseif (null !== $info->getGoogleProfilePicture()) {
-                return $info->getGoogleProfilePicture();
-            }
-        }
-
-        return $this->packages->getUrl('build/images/empty_user.png');
+        return $path;
     }
 
-    public function getProfilePicture(User $user, array $params = [])
+    public function getProfilePicture(User $user, array $params = []): string|null
     {
-        if ($user->getImage()->getName()) {
-            return $this->assetExtension->thumb($this->helper->asset($user, 'imageFile'), $params);
+        [
+            'path' => $path,
+            'source' => $source
+        ] = $this->getPicturePathAndSource($user);
+
+        if ('upload' === $source) {
+            return $this->assetHelper->getThumbUrl($path, $params);
         }
 
-        if ($user->getImageSystem()->getName()) {
-            return $this->assetExtension->thumb($this->helper->asset($user, 'imageSystemFile'), $params);
+        if ('local' === $source) {
+            return $this->assetHelper->getThumbAssetUrl($path, $params);
         }
 
-        $info = $user->getOAuth();
-        if (null !== $info) {
-            if (null !== $info->getFacebookProfilePicture()) {
-                return $info->getFacebookProfilePicture();
-            } elseif (null !== $info->getTwitterProfilePicture()) {
-                return $info->getTwitterProfilePicture();
-            } elseif (null !== $info->getGoogleProfilePicture()) {
-                return $info->getGoogleProfilePicture();
-            }
-        }
-
-        return $this->getDefaultProfilePicture($params);
+        // dist
+        return $path;
     }
 
-    public function getDefaultProfilePicture(array $params = [])
+    public function getDefaultProfilePicture(array $params = []): string
     {
-        return $this->assetExtension->thumbAsset(
+        return $this->assetHelper->getThumbAssetUrl(
             $this->packages->getUrl('build/images/empty_user.png', 'local'),
             $params
         );
+    }
+
+    public function getPicturePathAndSource(User $user): array
+    {
+        if ($user->getImage()->getName()) {
+            return [
+                'path' => $this->helper->asset($user, 'imageFile'),
+                'source' => 'upload',
+            ];
+        }
+
+        if ($user->getImageSystem()->getName()) {
+            return [
+                'path' => $this->helper->asset($user, 'imageSystemFile'),
+                'source' => 'upload',
+            ];
+        }
+
+        $info = $user->getOAuth();
+        if (null !== $info) {
+            if (null !== $info->getFacebookProfilePicture()) {
+                return [
+                    'path' => $info->getFacebookProfilePicture(),
+                    'source' => 'dist',
+                ];
+            } elseif (null !== $info->getTwitterProfilePicture()) {
+                return [
+                    'path' => $info->getTwitterProfilePicture(),
+                    'source' => 'dist',
+                ];
+            } elseif (null !== $info->getGoogleProfilePicture()) {
+                return [
+                    'path' => $info->getGoogleProfilePicture(),
+                    'source' => 'dist',
+                ];
+            }
+        }
+
+        return [
+            'path' => $this->packages->getUrl('build/images/empty_user.png', 'local'),
+            'source' => 'local',
+        ];
     }
 }

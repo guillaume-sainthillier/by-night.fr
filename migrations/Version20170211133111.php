@@ -25,7 +25,7 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE User ADD slug VARCHAR(128) DEFAULT ""');
     }
@@ -40,6 +40,7 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
             $user->setSlug(null);
             $em->persist($user);
         }
+
         $em->flush();
 
         $this->connection->executeQuery('ALTER TABLE User MODIFY slug VARCHAR(128) NOT NULL');
@@ -49,7 +50,7 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('DROP INDEX UNIQ_2DA17977989D9B62 ON User');
         $this->addSql('ALTER TABLE User DROP slug');

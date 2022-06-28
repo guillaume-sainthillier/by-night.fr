@@ -66,8 +66,6 @@ Encore
     .enableSassLoader()
     //.enableIntegrityHashes(Encore.isProduction())
 
-    // uncomment if you're having problems with a jQuery plugin
-    .autoProvidejQuery()
     .autoProvideVariables({
         $: 'jquery',
         jQuery: 'jquery',
@@ -80,7 +78,14 @@ Encore
             localesToKeep: ['fr'],
         })
     )
-    .addPlugin(
+    .addAliases({
+        jQuery: 'jquery', //Summernote
+        jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
+        $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
+    });
+
+if (Encore.isProduction()) {
+    Encore.addPlugin(
         new PurgecssPlugin({
             paths: glob.sync(
                 [
@@ -88,7 +93,6 @@ Encore
                     path.join(__dirname, 'assets/**/*.js'),
                     path.join(__dirname, 'src/**/*.php'),
                     path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
-                    path.join(__dirname, 'node_modules/bootstrap-material-design/js/*.js'),
                     path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
                     path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
                     path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
@@ -102,12 +106,8 @@ Encore
                 { nodir: true }
             ),
             whitelistPatterns: [/^custom-/],
-            whitelistPatternsChildren: [/^bmd-form-group/],
         })
-    )
-    .addAliases({
-        jquery: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
-        $: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
-    });
+    );
+}
 
 module.exports = Encore.getWebpackConfig();

@@ -21,14 +21,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class OAuthDataProvider
 {
-    private ClientRegistry $clientRegistry;
-
-    private TwitterOAuth $twitterOAuth;
-
-    public function __construct(ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth)
+    public function __construct(private ClientRegistry $clientRegistry, private TwitterOAuth $twitterOAuth)
     {
-        $this->clientRegistry = $clientRegistry;
-        $this->twitterOAuth = $twitterOAuth;
     }
 
     public function getDatasFromToken(string $serviceName, AccessToken $token): array
@@ -80,7 +74,7 @@ class OAuthDataProvider
                 throw new AuthenticationException(sprintf('Unable to guess how to find user for service "%s"', $serviceName));
         }
 
-        //So ugly...
+        // So ugly...
         if (empty($datas['email'])) {
             $datas['email'] = sprintf('john.doe-%s@by-night.fr', uniqid('', true));
         }

@@ -20,22 +20,16 @@ use League\Glide\Manipulators\Size;
  */
 class Thumb extends BaseManipulator
 {
-    /**
-     * Maximum image size in pixels.
-     */
-    private ?int $maxImageSize = null;
-
-    public function __construct(?int $maxImageSize = null)
-    {
-        $this->maxImageSize = $maxImageSize;
+    public function __construct(
+        /**
+         * Maximum image size in pixels.
+         */
+        private ?int $maxImageSize = null
+    ) {
     }
 
     /**
-     * Perform background image manipulation.
-     *
-     * @param Image $image the source image
-     *
-     * @return Image the manipulated image
+     * {@inheritDoc}
      */
     public function run(Image $image)
     {
@@ -46,11 +40,13 @@ class Thumb extends BaseManipulator
         $new = clone $image;
         $blur = new Blur();
         $blur->setParams(['blur' => 90]);
+
         $new = $blur->run($new);
         $size = new Size($this->maxImageSize);
         $size->setParams($this->params + ['fit' => 'stretch']);
+
         $new = $size->run($new);
 
-        return $new->insert($image, 'center-center', 0, 0);
+        return $new->insert($image, 'center-center');
     }
 }

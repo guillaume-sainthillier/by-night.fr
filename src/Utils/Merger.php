@@ -12,49 +12,69 @@ namespace App\Utils;
 
 use App\Entity\Event;
 use App\Entity\Place;
-use stdClass;
 
 class Merger
 {
+    /**
+     * @var string
+     */
     public const MERGE_LEFT = 'do_merge_left';
 
+    /**
+     * @var string
+     */
     public const MERGE_RIGHT = 'do_merge_right';
 
+    /**
+     * @var string
+     */
     public const MERGE_MAX = 'do_merge_max';
 
+    /**
+     * @var string
+     */
     public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
 
+    /**
+     * @var string
+     */
     public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
 
+    /**
+     * @var string
+     */
     public const FORCE_MERGE_LEFT = 'do_force_merge_left';
 
+    /**
+     * @var string
+     */
     public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
 
+    /**
+     * @var string
+     */
     public const DEFAULT_MERGE = self::MERGE_RIGHT;
 
-    private Comparator $comparator;
-
-    public function __construct(Comparator $comparator)
+    public function __construct(private Comparator $comparator)
     {
-        $this->comparator = $comparator;
     }
 
-    public function mergeEvent(Event $a = null, Event $b = null)
+    public function mergeEvent(Event $a = null, Event $b = null): object|null
     {
         return $this->merge($a, $b, [
-            'nom',
-            'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'descriptif',
-            'horaires',
-            'modification_derniere_minute',
-            'type_manifestation',
-            'categorie_manifestation',
-            'theme_manifestation',
+            'name',
+            'start_date' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'end_date' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'description',
+            'hours',
+            'status',
+            'type',
+            'category',
+            'theme',
             'phoneContacts',
             'mailContacts',
             'websiteContacts',
-            'tarif',
+            'prices',
             'url',
             'facebook_event_id',
             'facebook_owner_id',
@@ -69,17 +89,12 @@ class Merger
 
     /**
      * Merge les champs de b dans a s'ils sont jugés plus pertinents.
-     *
-     * @param stdClass $a
-     * @param stdClass $b
-     *
-     * @return stdClass
      */
-    private function merge($a = null, $b = null, array $fields = [])
+    private function merge(?object $a, ?object $b, array $fields = []): ?object
     {
-        //Un ou les deux est nul, pas la peine de merger
+        // Un ou les deux est nul, pas la peine de merger
         if (null === $a || null === $b) {
-            return $a ?: $b; //Retourne l'objet non nul s'il existe
+            return $a ?: $b; // Retourne l'objet non nul s'il existe
         }
 
         if ($a === $b) {
@@ -108,12 +123,12 @@ class Merger
         return $a;
     }
 
-    private function skakeToCamel($str)
+    private function skakeToCamel($str): string
     {
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
     }
 
-    private function getBestContent($valueA, $valueB, $mergeType)
+    private function getBestContent($valueA, $valueB, string $mergeType)
     {
         if (\is_callable($mergeType)) {
             return \call_user_func($mergeType, $valueA, $valueB);
@@ -153,16 +168,16 @@ class Merger
         return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 
-    public function mergePlace(Place $a = null, Place $b = null)
+    public function mergePlace(Place $a = null, Place $b = null): object|null
     {
         return $this->merge($a, $b, [
-            'nom' => self::MERGE_LEFT,
+            'name' => self::MERGE_LEFT,
             'latitude' => self::MERGE_LEFT,
             'longitude' => self::MERGE_LEFT,
-            'rue' => self::MERGE_LEFT,
+            'street' => self::MERGE_LEFT,
             'url' => self::MERGE_LEFT,
-            'ville' => self::MERGE_LEFT,
-            'codePostal' => self::MERGE_LEFT,
+            'cityName' => self::MERGE_LEFT,
+            'codePostalCode' => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
             'external_id' => self::MERGE_LEFT,
             'reject',

@@ -12,9 +12,7 @@ namespace App\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- */
+#[\Attribute]
 class EventConstraint extends Constraint
 {
     public string $badEventName = "Le nom de l'événement est incorrect.";
@@ -41,9 +39,9 @@ class EventConstraint extends Constraint
 
     public string $badPlacePostalCode = 'Le code postal du lieu est incorrect.';
 
-    public string $noCountryProvided = 'Le pays de l\'événement est obligatoire.';
+    public string $noCountryProvided = "Le pays de l'événement est obligatoire.";
 
-    public string $badCountryName = 'Le pays de l\'événement n\'est pas encore supporté par notre plateforme.';
+    public string $badCountryName = "Le pays de l'événement n'est pas encore supporté par notre plateforme.";
 
     public string $badUser = 'Un [link]événement[/link] similaire au vôtre a déjà été créé sur la plateforme.';
 

@@ -37,23 +37,9 @@ abstract class Social
 
     protected string $secret;
 
-    protected TokenStorageInterface $tokenStorage;
-
-    protected RouterInterface $router;
-
-    protected SessionInterface $session;
-
-    protected RequestStack $requestStack;
-
-    protected LoggerInterface $logger;
-
-    protected EventProfilePicture $eventProfilePicture;
-
-    protected SocialManager $socialManager;
-
     protected bool $isInitialized;
 
-    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager)
+    public function __construct(array $config, protected TokenStorageInterface $tokenStorage, protected RouterInterface $router, protected SessionInterface $session, protected RequestStack $requestStack, protected LoggerInterface $logger, protected EventProfilePicture $eventProfilePicture, protected SocialManager $socialManager)
     {
         if (!isset($config['id'])) {
             throw new SocialException("Le paramètre 'id' est absent");
@@ -66,13 +52,6 @@ abstract class Social
         $this->id = $config['id'];
         $this->secret = $config['secret'];
         $this->config = $config;
-        $this->tokenStorage = $tokenStorage;
-        $this->router = $router;
-        $this->session = $session;
-        $this->requestStack = $requestStack;
-        $this->logger = $logger;
-        $this->eventProfilePicture = $eventProfilePicture;
-        $this->socialManager = $socialManager;
         $this->isInitialized = false;
     }
 
@@ -80,29 +59,29 @@ abstract class Social
 
     abstract protected function getRoleName(): string;
 
-    public function connectSite(AppOAuth $info, array $datas)
+    public function connectSite(AppOAuth $info, array $datas): void
     {
         $this->connectInfo($info, $datas);
     }
 
-    public function disconnectSite(AppOAuth $info)
+    public function disconnectSite(AppOAuth $info): void
     {
         $this->disconnectInfo($info);
     }
 
-    public function connectUser(User $user, array $datas)
+    public function connectUser(User $user, array $datas): void
     {
         $user->addRole($this->getRoleName());
         $this->connectInfo($user->getOAuth(), $datas);
     }
 
-    public function disconnectUser(User $user)
+    public function disconnectUser(User $user): void
     {
         $user->removeRole($this->getRoleName());
         $this->disconnectInfo($user->getOAuth());
     }
 
-    protected function connectInfo(OAuth $info, array $datas)
+    protected function connectInfo(OAuth $info, array $datas): void
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();
         $propertyAccess = PropertyAccess::createPropertyAccessor();
@@ -111,13 +90,14 @@ abstract class Social
             if (empty($datas[$property])) {
                 continue;
             }
+
             $value = $datas[$property];
             $fullProperty = $propertyPrefix . ucfirst($property);
             $propertyAccess->setValue($info, $fullProperty, $value);
         }
     }
 
-    protected function disconnectInfo(OAuth $info)
+    protected function disconnectInfo(OAuth $info): void
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();
         $propertyAccess = PropertyAccess::createPropertyAccessor();
@@ -133,7 +113,7 @@ abstract class Social
         return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'email', 'profilePicture'];
     }
 
-    protected function init()
+    protected function init(): void
     {
         if (!$this->isInitialized) {
             $this->isInitialized = true;
@@ -141,5 +121,5 @@ abstract class Social
         }
     }
 
-    abstract protected function constructClient();
+    abstract protected function constructClient(): void;
 }

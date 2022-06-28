@@ -28,7 +28,7 @@ final class Version20191122135355 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda CHANGE is_archive archive TINYINT(1) NOT NULL');
         $this->addSql('ALTER TABLE Place CHANGE is_junk junk TINYINT(1) DEFAULT NULL');
@@ -38,7 +38,7 @@ final class Version20191122135355 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda CHANGE archive is_archive TINYINT(1) NOT NULL');
         $this->addSql('ALTER TABLE `Comment` CHANGE approuve is_approuve TINYINT(1) NOT NULL');

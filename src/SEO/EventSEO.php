@@ -16,9 +16,9 @@ use IntlDateFormatter;
 
 class EventSEO
 {
-    public function getEventDescription(Event $event)
+    public function getEventDescription(Event $event): string
     {
-        $description = sprintf('Découvrez %s.', $event->getNom());
+        $description = sprintf('Découvrez %s.', $event->getName());
 
         if ($event->getPlaceName() && $event->getPlaceCity()) {
             $description .= sprintf(' %s à %s.',
@@ -31,7 +31,7 @@ class EventSEO
 
         $tags = $event->getDistinctTags();
 
-        if ((is_countable($tags) ? \count($tags) : 0) > 0) {
+        if (\count($tags) > 0) {
             $description .= sprintf(' %s.', implode(', ', $tags));
         }
 
@@ -42,12 +42,12 @@ class EventSEO
         return $description;
     }
 
-    public function getEventDateTime(Event $event)
+    public function getEventDateTime(Event $event): string
     {
         $datetime = $this->getEventDate($event);
 
-        if ($event->getHoraires()) {
-            $datetime .= sprintf(' - %s', $event->getHoraires());
+        if ($event->getHours()) {
+            $datetime .= sprintf(' - %s', $event->getHours());
         }
 
         $datetime = trim($datetime);
@@ -55,28 +55,28 @@ class EventSEO
         return trim($datetime);
     }
 
-    public function getEventDate(Event $event)
+    public function getEventDate(Event $event): string
     {
-        if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
+        if (!$event->getEndDate() || $event->getStartDate() === $event->getEndDate()) {
             return sprintf('le %s',
-                $this->formatDate($event->getDateDebut(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
+                $this->formatDate($event->getStartDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
             );
         }
 
         return sprintf('du %s au %s',
-            $this->formatDate($event->getDateDebut(), IntlDateFormatter::FULL, IntlDateFormatter::NONE),
-            $this->formatDate($event->getDateFin(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
+            $this->formatDate($event->getStartDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE),
+            $this->formatDate($event->getEndDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
         );
     }
 
-    private function formatDate(DateTimeInterface $date, $dateFormat, $timeFormat)
+    private function formatDate(DateTimeInterface $date, int $dateFormat, int $timeFormat): string
     {
         $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
 
         return $formatter->format($date->getTimestamp());
     }
 
-    public function getEventFullTitle(Event $event)
+    public function getEventFullTitle(Event $event): ?string
     {
         $title = $this->getEventShortTitle($event);
 
@@ -87,11 +87,11 @@ class EventSEO
         return $title;
     }
 
-    public function getEventShortTitle(Event $event)
+    public function getEventShortTitle(Event $event): ?string
     {
-        $shortTitle = $event->getNom();
-        if ($event->getModificationDerniereMinute()) {
-            $shortTitle = sprintf('[%s] %s', $event->getModificationDerniereMinute(), $shortTitle);
+        $shortTitle = $event->getName();
+        if ($event->getStatus()) {
+            $shortTitle = sprintf('[%s] %s', $event->getStatus(), $shortTitle);
         }
 
         return $shortTitle;

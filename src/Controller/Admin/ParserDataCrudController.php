@@ -19,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use RuntimeException;
 
 class ParserDataCrudController extends AbstractCrudController
 {
@@ -60,5 +61,7 @@ class ParserDataCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
         }
+
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

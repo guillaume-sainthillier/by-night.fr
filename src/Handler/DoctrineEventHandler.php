@@ -10,124 +10,119 @@
 
 namespace App\Handler;
 
-use App\Entity\City;
+use App\Contracts\DependencyCatalogueInterface;
+use App\Contracts\DependencyProvidableInterface;
+use App\Contracts\DependencyRequirableInterface;
+use App\Contracts\DtoEntityIdentifierResolvableInterface;
+use App\Contracts\EntityProviderInterface;
+use App\Dependency\DependencyCatalogue;
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Entity\Place;
+use App\Exception\UncreatableEntityException;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
 use App\Repository\ZipCityRepository;
+use App\Utils\ChunkUtils;
 use App\Utils\Firewall;
+use App\Utils\MemoryUtils;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class DoctrineEventHandler
 {
-    public const BATCH_SIZE = 50;
-
-    private EntityManagerInterface $em;
-
-    private CityRepository $repoCity;
-
-    private ZipCityRepository $repoZipCity;
-
-    private CountryRepository $countryRepository;
-
-    private EventHandler $handler;
-
-    private Firewall $firewall;
-
-    private EchantillonHandler $echantillonHandler;
+    /**
+     * @var int
+     */
+    private const CHUNK_SIZE = 50;
 
     private ParserHistoryHandler $parserHistoryHandler;
 
-    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, CityRepository $cityRepository, ZipCityRepository $zipCityRepository, CountryRepository $countryRepository)
-    {
-        $this->em = $em;
-        $this->repoCity = $cityRepository;
-        $this->repoZipCity = $zipCityRepository;
-        $this->handler = $handler;
-        $this->firewall = $firewall;
-        $this->echantillonHandler = $echantillonHandler;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
+        private EventHandler $handler,
+        private Firewall $firewall,
+        private EntityProviderHandler $entityProviderHandler,
+        private EchantillonHandler $echantillonHandler,
+        private EntityFactoryHandler $entityFactoryHandler,
+        private CityRepository $repoCity,
+        private ZipCityRepository $repoZipCity,
+        private CountryRepository $countryRepository
+    ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
-        $this->countryRepository = $countryRepository;
     }
 
-    /**
-     * @return Event
-     */
-    public function handleOne(Event $event, bool $flush = true)
+    public function handleOne(EventDto $dto, bool $flush = true): void
     {
-        return $this->handleMany([$event], $flush)[0];
+        $this->handleMany([$dto], $flush);
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      *
-     * @return Event[]
+     * @psalm-return array<null|object>
      */
-    public function handleMany(array $events, bool $flush = true)
+    public function handleMany(array $dtos, bool $flush = true): void
     {
-        if (0 === \count($events)) {
-            return [];
+        if (0 === \count($dtos)) {
+            return;
         }
 
-        //On récupère toutes les explorations existantes pour ces événements
-        $this->loadParserDatas($events);
+        // On récupère toutes les explorations existantes pour ces événements
+        $this->loadExternalIdsData($dtos);
 
-        //Grace à ça, on peut déjà filtrer une bonne partie des événements
-        $this->doFilterAndClean($events);
+        // Grace à ça, on peut déjà filtrer une bonne partie des événements
+        $this->filterEvents($dtos);
 
-        //On met ensuite à jour le statut de ces explorations en base
-        $this->flushParserDatas();
+        // On met ensuite à jour le statut de ces explorations en base
+        $this->flushParserData();
 
-        $allowedEvents = $this->getAllowedEvents($events);
-        $notAllowedEvents = $this->getNotAllowedEvents($events);
-        $events = null; // Call GC
-        unset($events);
+        $allowedEvents = $this->getAllowedEvents($dtos);
+        $dtos = null; // Call GC
+        unset($dtos);
 
-        foreach ($notAllowedEvents as $notAllowedEvent) {
-            if ($notAllowedEvent->getId()) {
-                $this->em->detach($notAllowedEvent);
-            }
-        }
+        // Clean event data
+        $this->cleanEvents($allowedEvents);
 
-        if ($this->parserHistoryHandler->isStarted()) {
-            $nbNotAllowedEvents = \count($notAllowedEvents);
-            for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
-                $this->parserHistoryHandler->addBlackList();
-            }
-        }
-
-        return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
+        $this->mergeWithDatabase($allowedEvents);
     }
 
-    private function loadParserDatas(array $events)
+    /**
+     * @param EventDto[] $dtos
+     */
+    private function loadExternalIdsData(array $dtos): void
     {
-        $ids = $this->getParserDataIds($events);
+        $ids = $this->getAllExternalIds($dtos);
 
         if (\count($ids) > 0) {
-            $this->firewall->loadParserDatas($ids);
+            $this->firewall->loadExternalIdsData($ids);
         }
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      *
-     * @return int[]
+     * @return (int|string)[]
      */
-    private function getParserDataIds(array $events): array
+    private function getAllExternalIds(array $dtos): array
     {
         $ids = [];
-        foreach ($events as $event) {
-            if ($event->getExternalId()) {
-                $ids[$event->getExternalId()] = true;
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof EventDto);
+            if (null !== $dto->getExternalId()) {
+                $ids[$dto->getExternalId()] = true;
             }
 
-            if ($event->getPlaceExternalId()) {
-                $ids[$event->getPlaceExternalId()] = true;
+            if (null !== $dto->place && null !== $dto->place->getExternalId()) {
+                $ids[$dto->place->getExternalId()] = true;
             }
         }
 
@@ -135,117 +130,114 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      */
-    private function doFilterAndClean(array $events)
+    private function cleanEvents(array $dtos): void
     {
-        foreach ($events as $event) {
-            $event->setReject(new Reject())->setPlaceReject(new Reject());
+        foreach ($dtos as $dto) {
+            $this->handler->cleanEvent($dto);
+        }
+    }
 
-            $place = new Place();
-            $place
-                ->setNom($event->getPlaceName())
-                ->setRue($event->getPlaceStreet())
-                ->setVille($event->getPlaceCity())
-                ->setCodePostal($event->getPlacePostalCode())
-                ->setExternalId($event->getPlaceExternalId())
-                ->setCountryName($event->getPlaceCountryName())
-                ->setCountry($event->getPlaceCountry())
-                ->setReject(new Reject());
-            $event->setPlace($place);
+    /**
+     * @param EventDto[] $dtos
+     */
+    private function filterEvents(array $dtos): void
+    {
+        foreach ($dtos as $dto) {
+            $dto->reject = new Reject();
 
-            if ($event->getExternalId()) {
-                $exploration = $this->firewall->getExploration($event->getExternalId());
+            if (null !== $dto->place) {
+                $dto->place->reject = new Reject();
+            }
 
-                //Une exploration a déjà eu lieu
+            if (null !== $dto->getExternalId()) {
+                $exploration = $this->firewall->getExploration($dto->getExternalId());
+
+                // Une exploration a déjà eu lieu
                 if (null !== $exploration) {
-                    $this->firewall->filterEventExploration($exploration, $event);
+                    $this->firewall->filterEventExploration($exploration, $dto);
                     $reject = $exploration->getReject();
 
-                    //Celle-ci a déjà conduit à l'élimination de l'événement
-                    if (null === $reject->isValid()) {
-                        $event->getReject()->setReason($reject->getReason());
+                    // Celle-ci a déjà conduit à l'élimination de l'événement
+                    if (false === $reject->isValid()) {
+                        $dto->reject->setReason($reject->getReason());
 
                         continue;
                     }
                 }
             }
 
-            //Même algorithme pour le lieu
-            if ($event->getPlaceExternalId()) {
-                $exploration = $this->firewall->getExploration($event->getPlaceExternalId());
+            // Même algorithme pour le lieu
+            if (null !== $dto->place && null !== $dto->place->getExternalId()) {
+                $exploration = $this->firewall->getExploration($dto->place->getExternalId());
 
-                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration, $event) && !$exploration->getReject()->isValid()) {
-                    $event->getReject()->addReason($exploration->getReject()->getReason());
-                    $event->getPlaceReject()->setReason($exploration->getReject()->getReason());
+                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration, $dto) && !$exploration->getReject()->isValid()) {
+                    $dto->reject->addReason($exploration->getReject()->getReason());
+                    $dto->place->reject->setReason($exploration->getReject()->getReason());
 
                     continue;
                 }
             }
 
-            $this->firewall->filterEvent($event);
-            if ($this->firewall->isValid($event)) {
-                $this->guessEventLocation($event->getPlace());
-                $this->firewall->filterEventLocation($event);
-                $this->handler->cleanEvent($event);
-            }
+            $this->firewall->filterEvent($dto);
         }
     }
 
-    public function guessEventLocation(Place $place)
+    public function guessEventLocation(PlaceDto $dto): void
     {
-        //Pas besoin de trouver un lieu déjà blacklisté
-        if (null === $place->getReject()->isValid()) {
+        // Pas besoin de trouver un lieu déjà blacklisté
+        if (false === $dto->reject->isValid()) {
             return;
         }
 
-        $this->guessEventCity($place);
+        $this->guessPlaceCity($dto);
     }
 
-    private function guessEventCity(Place $place)
+    private function guessPlaceCity(PlaceDto $dto): void
     {
-        //Recherche du pays en premier lieu
-        if ($place->getCountryName() && (!$place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName())) {
-            $country = $this->countryRepository->findByName($place->getCountryName());
-            $place->setCountry($country);
+        // Recherche du pays en premier lieu
+        if (null !== $dto->country && null !== $dto->country->name && null === $dto->country->code) {
+            $country = $this->countryRepository->findOneByName($dto->country->name);
+            $dto->country->code = $country?->getId();
         }
 
-        //Pas de pays détecté -> next
-        if (null === $place->getCountry()) {
-            if ($place->getCountryName()) {
-                $place->getReject()->addReason(Reject::BAD_COUNTRY);
+        // Pas de pays détecté -> next
+        if (null === $dto->country || null === $dto->country->code) {
+            if ($dto->country?->name) {
+                $dto->reject->addReason(Reject::BAD_COUNTRY);
             } else {
-                $place->getReject()->addReason(Reject::NO_COUNTRY_PROVIDED);
+                $dto->reject->addReason(Reject::NO_COUNTRY_PROVIDED);
             }
 
             return;
         }
 
-        if (!$place->getCodePostal() && !$place->getVille()) {
+        if (!$dto->city?->postalCode && !$dto->city?->name) {
             return;
         }
 
-        //Location fournie -> Vérification dans la base des villes existantes
+        // Location fournie -> Vérification dans la base des villes existantes
         $zipCity = null;
         $city = null;
 
-        //Ville + CP
-        if ($place->getVille() && $place->getCodePostal()) {
-            $zipCity = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
+        // Ville + CP
+        if ($dto->city?->name && $dto->city?->postalCode) {
+            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->city?->postalCode, $dto->city?->name, $dto->country->code);
         }
 
-        //Ville
-        if (!$zipCity && $place->getVille()) {
-            $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-            if (1 === (is_countable($zipCities) ? \count($zipCities) : 0)) {
+        // Ville
+        if (!$zipCity && $dto->city?->name) {
+            $zipCities = $this->repoZipCity->findAllByCity($dto->city?->name, $dto->country->code);
+            if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
         }
 
-        //CP
-        if (!$zipCity && $place->getCodePostal()) {
-            $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-            if (1 === (is_countable($zipCities) ? \count($zipCities) : 0)) {
+        // CP
+        if (!$zipCity && $dto->city?->postalCode) {
+            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->city?->postalCode, $dto->country?->code);
+            if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
         }
@@ -254,146 +246,265 @@ class DoctrineEventHandler
             $city = $zipCity->getParent();
         }
 
-        //City
-        if (!$city && $place->getVille()) {
-            $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
-            if (1 === (is_countable($cities) ? \count($cities) : 0)) {
+        // City
+        if (!$city && $dto->city?->name) {
+            $cities = $this->repoCity->findAllByName($dto->city?->name, $dto->country?->code);
+            if (1 === \count($cities)) {
                 $city = $cities[0];
             }
         }
 
-        $place->setCity($city)->setZipCity($zipCity);
-        if ($city) {
-            $place->setCountry($city->getCountry());
+        $dto->city ??= new CityDto();
+        if (null !== $city) {
+            $dto->city->entityId = $city->getId();
+            $dto->country ??= new CountryDto();
+            $dto->country->code = $city->getCountry()->getId();
         } elseif (null !== $zipCity) {
-            $place->setCountry($zipCity->getCountry());
+            $dto->country ??= new CountryDto();
+            $dto->country->code = $zipCity->getCountry()->getId();
         }
 
-        if (null !== $place->getCity()) {
-            $place->getReject()->setReason(Reject::VALID);
+        if (null !== $dto->city) {
+            $dto->reject->setReason(Reject::VALID);
         }
     }
 
-    private function flushParserDatas()
+    private function flushParserData(): void
     {
-        $explorations = $this->firewall->getParserDatas();
+        $explorations = $this->firewall->getExplorations();
 
-        $batchSize = 500;
-        $nbBatches = ceil(\count($explorations) / $batchSize);
+        $chunks = array_chunk($explorations, 500);
+        unset($explorations); // Calls GC
+        $explorations = null;
 
-        for ($i = 0; $i < $nbBatches; ++$i) {
-            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
+        foreach ($chunks as $chunk) {
             /** @var ParserData $exploration */
-            foreach ($currentExplorations as $exploration) {
+            foreach ($chunk as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->parserHistoryHandler->addExploration();
-                $this->em->persist($exploration);
+                $this->entityManager->persist($exploration);
             }
-            $this->em->flush();
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
         }
-        $this->em->clear(ParserData::class);
+
         $this->firewall->flushParserDatas();
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      *
-     * @return Event[]
+     * @return EventDto[]
      */
-    private function getAllowedEvents(array $events)
+    private function getAllowedEvents(array $dtos): array
     {
-        return array_filter($events, fn (Event $event) => $this->firewall->isValid($event));
+        return array_filter($dtos, fn (EventDto $dto) => $this->firewall->isEventDtoValid($dto));
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      *
-     * @return Event[]
+     * @return EventDto[]
      */
-    private function getNotAllowedEvents(array $events)
+    private function getNotAllowedEvents(array $dtos): array
     {
-        return array_filter($events, fn ($event) => !$this->firewall->isValid($event));
+        return array_filter($dtos, fn (EventDto $dto) => !$this->firewall->isEventDtoValid($dto));
     }
 
     /**
-     * @param Event[] $events
-     *
-     * @return Event[]
+     * @param object[]                       $dtos
+     * @param DependencyCatalogueInterface[] $allCatalogues
+     * @param EntityProviderInterface[]      $allEntityProviders
+     * @param string[]                       $paths
      */
-    private function mergeWithDatabase(array $events, bool $flush)
-    {
-        if (0 === \count($events)) {
-            return [];
+    private function mergeWithDatabase(
+        array $dtos,
+        DependencyCatalogue $previousCatalogue = null,
+        array &$allCatalogues = [],
+        array &$allEntityProviders = [],
+        array $paths = []
+    ): void {
+        if (0 === \count($dtos)) {
+            return;
         }
 
-        Monitor::createProgressBar(\count($events));
+        $isRootTransaction = null === $previousCatalogue;
 
-        $chunks = $this->getChunks($events);
+        $chunks = ChunkUtils::getNestedChunksByClass($dtos, self::CHUNK_SIZE);
 
-        //Par localisation
-        foreach ($chunks as $chunk) {
-            $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
+        // Per DTO class
+        foreach ($chunks as $dtoClassName => $dtoChunks) {
+            $currentPaths = $paths;
+            $currentPaths[] = $dtoClassName;
+            $this->logger->info(sprintf(
+                '[%s] Traversing %d objects',
+                implode(' > ', $currentPaths),
+                \count($dtoChunks)
+            ));
 
-            //Par n événements
-            foreach ($chunk as $currentEvents) {
-                $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
+            $entityProvider = $this->entityProviderHandler->getEntityProvider($dtoClassName);
+            $entityFactory = $this->entityFactoryHandler->getFactory($dtoClassName);
 
-                //Par événement
-                foreach ($currentEvents as $i => $event) {
-                    /** @var Event $event */
-                    $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
-                    $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
+            if (!\in_array($entityProvider, $allEntityProviders, true)) {
+                $allEntityProviders[] = $entityProvider;
+            }
 
-                    $url = $event->getUrl();
-                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
-                    if (!$this->firewall->isValid($event)) {
-                        $this->parserHistoryHandler->addBlackList();
-                    } else {
-                        //Image URL has changed or never downloaded
-                        if ($event->getUrl() && (!$event->getImageSystem()->getName() || $event->getUrl() !== $url)) {
-                            $this->handler->handleDownload($event);
+            // Per BATCH_SIZE
+            foreach ($dtoChunks as $chunk) {
+                // Resolve current dependencies before persisting root objects
+                $requiredCatalogue = $this->computeRequiredCatalogue($chunk);
+                $allCatalogues[] = $requiredCatalogue;
+                $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
+
+                // Then perform a global SQL request to fetch entities by external ids
+                $entityProvider->prefetchEntities($chunk);
+
+                $rootEntities = [];
+                foreach ($chunk as $i => $dto) {
+                    $isObjectReference = null !== $previousCatalogue
+                        && $previousCatalogue->has($dto)
+                        && $previousCatalogue->get($dto)->isReference();
+
+                    // Fetch entity from previously prefetched ones
+                    $entity = $entityProvider->getEntity($dto);
+                    $isNewEntity = null === $entity;
+
+                    // Resolve id
+                    if (!$isNewEntity) {
+                        $dtosToResolve = [$dto];
+                        if ($previousCatalogue && $previousCatalogue->hasAliases($dto)) {
+                            $dtosToResolve = array_merge(
+                                $dtosToResolve,
+                                $previousCatalogue->getAliases($dto),
+                            );
                         }
 
-                        $this->em->persist($event);
-                        $this->echantillonHandler->addNewEvent($event);
-                        if (null !== $event->getId()) {
-                            $this->parserHistoryHandler->addUpdate();
-                        } else {
-                            $this->parserHistoryHandler->addInsert();
+                        foreach ($dtosToResolve as $dtoToResolve) {
+                            if (!$dtoToResolve instanceof DtoEntityIdentifierResolvableInterface) {
+                                continue;
+                            }
+
+                            $dtoToResolve->setIdentifierFromEntity($entity);
                         }
                     }
-                    Monitor::advanceProgressBar();
-                    $events[$i] = $event;
+
+                    // We don't create an empty entity into database if existing reference is not found
+                    if ($isObjectReference) {
+                        continue;
+                    }
+
+                    // Either create a new entity from scratch
+                    // Or merge dto with already existing one
+                    try {
+                        $entity = $entityFactory->create($entity, $dto);
+                    } catch (UncreatableEntityException) {
+                        continue;
+                    }
+
+                    $this->entityManager->persist($entity);
+
+                    if ($isRootTransaction) {
+                        $rootEntities[$i] = $entity;
+                    }
+
+                    // Add all new entities to current samples in order to prevent duplicate creates
+                    if ($isNewEntity) {
+                        $entityProvider->addEntity(
+                            $entity,
+                            $dto
+                        );
+                    }
                 }
 
-                if ($flush) {
-                    $this->commit();
-                    $this->clearEvents();
-                }
-            }
+                // Resolve current dependencies after persisting parent objects
+                $providedCatalogue = $this->computeProvidedCatalogue($chunk);
+                $allCatalogues[] = $providedCatalogue;
+                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
-            if ($flush) {
-                $this->clearPlaces();
+                if ($isRootTransaction) {
+                    $this->logger->info(sprintf(
+                        '[%s] FLUSH',
+                        implode(' > ', $currentPaths),
+                    ));
+                    $this->entityManager->flush();
+
+                    // Update post insert ids
+                    foreach ($chunk as $i => $dto) {
+                        if (!$dto instanceof DtoEntityIdentifierResolvableInterface) {
+                            continue;
+                        }
+
+                        if (empty($rootEntities[$i])) {
+                            continue;
+                        }
+
+                        $dto->setIdentifierFromEntity($rootEntities[$i]);
+                    }
+
+                    // Clear entity providers
+                    foreach ($allEntityProviders as $entityProviderToClear) {
+                        $entityProviderToClear->clear();
+                    }
+                    $allEntityProviders = [];
+
+                    // Clear catalogues
+                    foreach ($allCatalogues as $catalogue) {
+                        $catalogue->clear();
+                    }
+                    $allCatalogues = [];
+
+                    // Finally, clear EM
+                    $this->entityManager->clear();
+                    $this->logger->info(sprintf(
+                        'Memory usage after flush: %s - Memory peak usage: %s',
+                        MemoryUtils::getMemoryUsage(),
+                        MemoryUtils::getPeakMemoryUsage(),
+                    ));
+                }
             }
         }
-        Monitor::finishProgressBar();
+    }
 
-        return $events;
+    private function computeRequiredCatalogue(array $dtos): DependencyCatalogueInterface
+    {
+        $catalogue = new DependencyCatalogue();
+        foreach ($dtos as $dto) {
+            if (!$dto instanceof DependencyRequirableInterface) {
+                continue;
+            }
+
+            $catalogue->addCatalogue($dto->getRequiredCatalogue());
+        }
+
+        return $catalogue;
+    }
+
+    private function computeProvidedCatalogue(array $dtos): DependencyCatalogueInterface
+    {
+        $catalogue = new DependencyCatalogue();
+        foreach ($dtos as $dto) {
+            if (!$dto instanceof DependencyProvidableInterface) {
+                continue;
+            }
+
+            $catalogue->addCatalogue($dto->getProvidedCatalogue());
+        }
+
+        return $catalogue;
     }
 
     /**
-     * @param Event[] $events
-     *
-     * @return array
+     * @param EventDto[] $events
      */
-    private function getChunks(array $events)
+    private function getChunks(array $events): array
     {
         $chunks = [];
         foreach ($events as $i => $event) {
             if ($event->getPlace() && $event->getPlace()->getCity()) {
                 $key = 'city.' . $event->getPlace()->getCity()->getId();
             } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
-                $key = 'country.' . $event->getPlace()->getCountry()->getId();
+                $key = 'country.' . $event->getPlace()->country->code;
             } else {
                 $key = 'unknown';
             }
@@ -402,62 +513,48 @@ class DoctrineEventHandler
         }
 
         foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
+            $chunks[$i] = array_chunk($chunk, self::CHUNK_SIZE, true);
         }
 
         return $chunks;
     }
 
-    /**
-     * @return Event[]
-     */
-    private function unChunk(array $chunks)
-    {
-        $flat = [];
-        foreach ($chunks as $chunk) {
-            $flat = array_merge($flat, $chunk);
-        }
-
-        return $flat;
-    }
-
-    private function commit()
+    private function commit(): void
     {
         try {
-            $this->em->flush();
-        } catch (Exception $e) {
+            $this->entityManager->flush();
+        } catch (Exception $exception) {
             Monitor::writeln(sprintf(
                 '<error>%s</error>',
-                $e->getMessage()
+                $exception->getMessage()
             ));
         }
     }
 
-    private function clearEvents()
+    private function clearEvents(): void
     {
-        $this->em->clear(Event::class);
+        $this->entityManager->clear(Event::class);
         $this->echantillonHandler->clearEvents();
     }
 
-    private function clearPlaces()
+    private function clearPlaces(): void
     {
-        $this->em->clear(Place::class);
+        $this->entityManager->clear(Place::class);
         $this->echantillonHandler->clearPlaces();
     }
 
     /**
-     * @param Event[] $events
-     *
-     * @return Event[]
+     * @param EventDto[] $dtos
      */
-    public function handleManyCLI(array $events, bool $flush = true)
+    public function handleManyCLI(array $dtos, bool $flush = true): void
     {
         $this->parserHistoryHandler->start();
-        $events = $this->handleMany($events, $flush);
-
+        $this->handleMany($dtos, $flush);
         $parserHistory = $this->parserHistoryHandler->stop();
-        $this->em->persist($parserHistory);
-        $this->em->flush();
+
+        $this->entityManager->persist($parserHistory);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
 
         Monitor::writeln('');
         Monitor::displayStats();
@@ -469,7 +566,5 @@ class DoctrineEventHandler
         ]);
 
         $this->parserHistoryHandler->reset();
-
-        return $events;
     }
 }

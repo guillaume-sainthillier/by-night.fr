@@ -11,6 +11,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\OAuth\TwitterAccessToken;
 use App\OAuth\TwitterOAuth;
 use App\Repository\UserRepository;
 use App\Social\SocialProvider;
@@ -32,25 +33,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserSocialAuthenticator extends SocialAuthenticator
 {
-    private Security $security;
-    private ClientRegistry $clientRegistry;
-    private EntityManagerInterface $em;
-    private UrlGeneratorInterface $router;
-    private SocialProvider $socialProvider;
-    private UserRepository $userRepository;
-    private OAuthDataProvider $oAuthDataProvider;
-    private TwitterOAuth $twitterOAuth;
-
-    public function __construct(Security $security, ClientRegistry $clientRegistry, EntityManagerInterface $em, UrlGeneratorInterface $router, SocialProvider $socialProvider, OAuthDataProvider $oAuthDataProvider, TwitterOAuth $twitterOAuth, UserRepository $userRepository)
+    public function __construct(private Security $security, private ClientRegistry $clientRegistry, private EntityManagerInterface $em, private UrlGeneratorInterface $router, private SocialProvider $socialProvider, private OAuthDataProvider $oAuthDataProvider, private TwitterOAuth $twitterOAuth, private UserRepository $userRepository)
     {
-        $this->security = $security;
-        $this->clientRegistry = $clientRegistry;
-        $this->em = $em;
-        $this->router = $router;
-        $this->socialProvider = $socialProvider;
-        $this->userRepository = $userRepository;
-        $this->oAuthDataProvider = $oAuthDataProvider;
-        $this->twitterOAuth = $twitterOAuth;
     }
 
     public function supports(Request $request)
@@ -65,7 +49,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $social = $this->socialProvider->getSocial($service);
         $datas = $this->oAuthDataProvider->getDatasFromToken($service, $token);
 
-        //In case of adding new socials in profile
+        // In case of adding new socials in profile
         if (null !== $this->security->getUser()) {
             /** @var User $existingUser */
             $existingUser = $this->security->getUser();
@@ -81,16 +65,17 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
                 ->setPassword('notused')
                 ->setFromLogin(false)
-                ->setIsVerified(true)
+                ->setVerified(true)
                 ->setEmail($datas['email']);
 
-            //Avoir duplicate exception
-            $initialUsername = $existingUser->getUsername();
+            // Avoir duplicate exception
+            $initialUsername = $existingUser->getUserIdentifier();
             for ($i = 1;; ++$i) {
-                $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUsername()]);
+                $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUserIdentifier()]);
                 if (null === $persistedUser) {
                     break;
                 }
+
                 $existingUser->setUsername(sprintf('%s-%d', $initialUsername, $i));
             }
 
@@ -124,13 +109,14 @@ class UserSocialAuthenticator extends SocialAuthenticator
     {
         $service = $request->attributes->get('service');
 
-        //Still use Oauth 1.0...
+        // Still use Oauth 1.0...
         if (SocialProvider::TWITTER === $service) {
             return [
                 'service' => $service,
                 'token' => $this->fetchTwitterAccessToken(),
             ];
         }
+
         $client = $this->clientRegistry->getClient($service);
 
         return [
@@ -139,14 +125,14 @@ class UserSocialAuthenticator extends SocialAuthenticator
         ];
     }
 
-    private function fetchTwitterAccessToken()
+    private function fetchTwitterAccessToken(): TwitterAccessToken
     {
         try {
             return $this->twitterOAuth->getAccessToken();
-        } catch (MissingAuthorizationCodeException $e) {
+        } catch (MissingAuthorizationCodeException) {
             throw new NoAuthCodeAuthenticationException();
-        } catch (InvalidStateException $e) {
-            throw new InvalidStateAuthenticationException($e);
+        } catch (InvalidStateException $invalidStateException) {
+            throw new InvalidStateAuthenticationException($invalidStateException);
         }
     }
 

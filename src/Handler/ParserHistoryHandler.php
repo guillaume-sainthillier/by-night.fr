@@ -29,12 +29,12 @@ class ParserHistoryHandler
         ];
     }
 
-    public function addExploration()
+    public function addExploration(): self
     {
         return $this->add('nbExplorations');
     }
 
-    private function add($key): self
+    private function add(string $key): self
     {
         if ($this->isStarted()) {
             ++$this->stats[$key];
@@ -65,8 +65,9 @@ class ParserHistoryHandler
 
     public function stop(): ParserHistory
     {
-        $this->parserHistory
-            ->setDateFin(new DateTime())
+        $this
+            ->parserHistory
+            ->setEndDate(new DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())
             ->setUpdateSoirees($this->getNbUpdates())
@@ -95,14 +96,14 @@ class ParserHistoryHandler
         return $this->stats['nbUpdates'];
     }
 
-    public function start()
+    public function start(): void
     {
-        $this->parserHistory = (new ParserHistory())->setDateDebut(new DateTime());
+        $this->parserHistory = (new ParserHistory())->setStartDate(new DateTime());
     }
 
-    public function reset()
+    public function reset(): void
     {
-        //Call GC
+        // Call GC
         unset($this->parserHistory, $this->stats);
 
         $this->stats = [

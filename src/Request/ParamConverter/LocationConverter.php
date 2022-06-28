@@ -12,6 +12,7 @@ namespace App\Request\ParamConverter;
 
 use App\App\CityManager;
 use App\App\Location;
+use App\Entity\City;
 use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
@@ -23,38 +24,29 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LocationConverter implements ParamConverterInterface
 {
-    private CityManager $cityManager;
-    private CityRepository $cityRepository;
-    private CountryRepository $countryRepository;
-
-    public function __construct(CityManager $cityManager, CityRepository $cityRepository, CountryRepository $countryRepository)
+    public function __construct(private CityManager $cityManager, private CityRepository $cityRepository, private CountryRepository $countryRepository)
     {
-        $this->cityManager = $cityManager;
-        $this->cityRepository = $cityRepository;
-        $this->countryRepository = $countryRepository;
     }
 
-    public function apply(Request $request, ParamConverter $configuration)
+    /**
+     * {@inheritDoc}
+     */
+    public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $locationSlug = $request->attributes->get('location');
+        $location = null;
+        $locationSlug = $request->attributes->get('location', '');
 
         if (null === $locationSlug && !$configuration->isOptional()) {
             throw new InvalidArgumentException('Route attribute is missing');
         } elseif (null === $locationSlug) {
-            return;
+            return false;
         }
 
         if (\is_object($locationSlug)) {
-            return;
+            return false;
         }
 
         $location = new Location();
-        $entity = null;
-        if (0 !== strpos('c--', (string) $locationSlug)) {
-            $entity = $this->cityRepository
-                ->findBySlug($locationSlug);
-        }
-
         if ('unknown' === $locationSlug) {
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
@@ -62,27 +54,34 @@ class LocationConverter implements ParamConverterInterface
             $location->setCountry($noWhere);
             $request->attributes->set($configuration->getName(), $location);
 
-            return;
+            return false;
         }
 
-        if ($entity) {
+        if (!str_starts_with((string) $locationSlug, 'c--')) {
+            $entity = $this->cityRepository->findOneBySlug($locationSlug);
+        } else {
+            $entity = $this->countryRepository->findOneBy(['slug' => $locationSlug]);
+        }
+
+        if ($entity instanceof City) {
             $location->setCity($entity);
             $this->cityManager->setCurrentCity($entity);
             $request->attributes->set('_current_city', $locationSlug);
-        } else {
-            $entity = $this->countryRepository
-                ->findOneBy(['slug' => $locationSlug]);
+        } elseif ($entity instanceof Country) {
             $location->setCountry($entity);
-        }
-
-        if (!$entity) {
+        } else {
             throw new NotFoundHttpException(sprintf("La location '%s' est introuvable", $locationSlug));
         }
 
         $request->attributes->set($configuration->getName(), $location);
+
+        return true;
     }
 
-    public function supports(ParamConverter $configuration)
+    /**
+     * {@inheritDoc}
+     */
+    public function supports(ParamConverter $configuration): bool
     {
         return Location::class === $configuration->getClass();
     }

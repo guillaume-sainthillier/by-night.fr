@@ -10,52 +10,70 @@
 
 namespace App\Parser;
 
+use App\Contracts\ParserInterface;
+use App\Dto\EventDto;
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
-use JsonException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
 abstract class AbstractParser implements ParserInterface
 {
-    private EventProducer $eventProducer;
-
-    private LoggerInterface $logger;
-
-    protected ReservationsHandler $reservationsHandler;
-
     private int $parsedEvents = 0;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler)
-    {
-        $this->logger = $logger;
-        $this->eventProducer = $eventProducer;
-        $this->reservationsHandler = $reservationsHandler;
+    public function __construct(
+        private LoggerInterface $logger,
+        private EventProducer $eventProducer,
+        private EventHandler $eventHandler,
+        protected ReservationsHandler $reservationsHandler,
+    ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName(): string
     {
         return sprintf('%s v%s', static::getParserName(), static::getParserVersion());
     }
 
-    public function publish(array $item): void
+    /**
+     * {@inheritDoc}
+     */
+    public static function getParserVersion(): string
     {
-        $item['from_data'] = static::getParserName();
-        $item['parser_version'] = static::getParserVersion();
-        try {
-            $this->eventProducer->scheduleEvent($item);
-            ++$this->parsedEvents;
-        } catch (JsonException $e) {
-            $this->logException($e, ['item' => $item]);
-        }
+        return '1.0';
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function publish(EventDto $eventDto): void
+    {
+        $eventDto->parserName = static::getParserName();
+        $eventDto->parserVersion = static::getParserVersion();
+        $eventDto->externalOrigin = $this->getCommandName();
+
+        if (null !== $eventDto->place) {
+            $eventDto->place->externalOrigin = $eventDto->externalOrigin;
+        }
+
+        $this->sanitize($eventDto);
+        $this->eventHandler->cleanEvent($eventDto);
+        $this->eventProducer->scheduleEvent($eventDto);
+        ++$this->parsedEvents;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getParsedEvents(): int
     {
         return $this->parsedEvents;
     }
 
-    protected function logException(Throwable $exception, array $context = [])
+    protected function logException(Throwable $exception, array $context = []): void
     {
         $this->logger->error($exception->getMessage(), [
             'exception' => $exception,
@@ -63,8 +81,30 @@ abstract class AbstractParser implements ParserInterface
         ]);
     }
 
-    public static function getParserVersion(): string
+    private function sanitize(object $object): void
     {
-        return '1.0';
+        foreach ($object as $key => $value) {
+            $object->{$key} = $this->getSanitizedValue($value);
+        }
+    }
+
+    private function getSanitizedValue($value)
+    {
+        if (\is_object($value)) {
+            $this->sanitize($value);
+        } elseif (\is_array($value)) {
+            foreach ($value as $key => $itemValue) {
+                $itemValue = $this->getSanitizedValue($itemValue);
+                if (null !== $itemValue) {
+                    $value[$key] = $itemValue;
+                } else {
+                    unset($value[$key]);
+                }
+            }
+        } elseif (\is_string($value) && '' === trim($value)) {
+            $value = null;
+        }
+
+        return $value;
     }
 }

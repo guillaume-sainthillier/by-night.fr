@@ -1,0 +1,34 @@
+{% extends 'layouts/default-stretch.html.twig' %}
+
+{% block meta_title 'Connexion' %}
+{% block titre -%}
+    Connectez-vous sur <strong>By Night</strong>
+{%- endblock %}
+
+{% block breadcrumb -%}
+    {% do menu.addItem("Connexion", url('app_login')) %}
+{%- endblock %}
+
+{% block meta_description 'Connectez-vous sur By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
+
+{% block body %}
+    <form method="post" action="{{ path('app_login') }}">
+        <div class="card">
+            <div class="card-body">
+                {% include 'security/login-content.html.twig' with({'partial': false}) %}
+            </div>
+            <div class="card-footer text-center py-2">
+                <button class="btn btn-lg btn-primary" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+                    Connexion
+                </button>
+            </div>
+        </div>
+        <p>
+            Pas encore inscrit ?
+            <a class="register" href="{{ path('app_register') }}"
+               title="Rejoignez By Night en vous inscrivant">
+                Rejoignez-nous dès maintenant !
+            </a>
+        </p>
+    </form>
+{% endblock %}

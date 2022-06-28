@@ -10,10 +10,13 @@
 
 namespace App\Entity;
 
+use App\Contracts\ExternalIdentifiableInterface;
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
-use App\Validator\Constraints\EventConstraint;
+use App\Repository\EventRepository;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -21,391 +24,295 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type;
+use Stringable;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="event_slug_idx", columns={"slug"}),
- *     @ORM\Index(name="event_date_debut_idx", columns={"date_debut"}),
- *     @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
- *     @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
- *     @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
- *     @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
- *     @ORM\Index(name="event_top_soiree_idx", columns={"date_fin", "participations"}),
- *     @ORM\Index(name="event_external_id_idx", columns={"external_id"})
- * })
- * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
- * @ORM\HasLifecycleCallbacks
- * @ExclusionPolicy("all")
- * @Vich\Uploadable
- * @EventConstraint
- */
-class Event
+#[Vich\Uploadable]
+#[ORM\Index(name: 'event_slug_idx', columns: ['slug'])]
+#[ORM\Index(name: 'event_start_date_idx', columns: ['start_date'])]
+#[ORM\Index(name: 'event_theme_idx', columns: ['theme'])]
+#[ORM\Index(name: 'event_type_idx', columns: ['type'])]
+#[ORM\Index(name: 'event_category_idx', columns: ['category'])]
+#[ORM\Index(name: 'event_search_idx', columns: ['place_id', 'end_date', 'start_date'])]
+#[ORM\Index(name: 'event_top_soiree_idx', columns: ['end_date', 'participations'])]
+#[ORM\Index(name: 'event_external_id_idx', columns: ['external_id', 'external_origin'])]
+#[ORM\Entity(repositoryClass: EventRepository::class)]
+#[ORM\Table(name: '`event`')]
+#[ORM\HasLifecycleCallbacks]
+class Event implements Stringable, ExternalIdentifiableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
+
+    /**
+     * @var string
+     */
     public const INDEX_FROM = '-6 months';
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['elasticsearch:event:details'])]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $externalId = null;
 
-    /**
-     * @Gedmo\Slug(fields={"nom"})
-     * @ORM\Column(length=255)
-     */
+    #[ORM\Column(type: 'string', length: 63, nullable: true)]
+    private ?string $externalOrigin = null;
+
+    #[ORM\Column(length: 255)]
+    #[Gedmo\Slug(fields: ['name'], unique: false)]
     private ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="N'oubliez pas de nommer votre événement !")
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $nom = null;
+    #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     * @Assert\NotBlank(message="N'oubliez pas de décrire votre événement !")
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $descriptif = null;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $externalUpdatedAt = null;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
-     * @Groups({"list_event"})
-     * @Expose
-     * @Type("DateTime<'Y-m-d'>")
-     */
-    private ?DateTimeInterface $dateDebut = null;
+    #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Type("DateTimeInterface<'Y-m-d'>")]
+    private ?DateTimeInterface $startDate;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     * @Type("DateTime<'Y-m-d'>")
-     */
-    private ?DateTimeInterface $dateFin = null;
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    #[Type("DateTimeInterface<'Y-m-d'>")]
+    private ?DateTimeInterface $endDate = null;
 
-    /**
-     * @ORM\Column(type="string", length=256, nullable=true)
-     */
-    private ?string $horaires = null;
+    #[ORM\Column(type: 'string', length: 256, nullable: true)]
+    private ?string $hours = null;
 
-    /**
-     * @ORM\Column(type="string", length=16, nullable=true)
-     */
-    private ?string $modificationDerniereMinute = null;
+    #[ORM\Column(type: 'string', length: 16, nullable: true)]
+    private ?string $status = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?float $latitude = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?float $longitude = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $adresse = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $address = null;
 
-    /**
-     * @ORM\Column(type="string", length=128, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $typeManifestation = null;
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private ?string $type = null;
 
-    /**
-     * @ORM\Column(type="string", length=128, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $categorieManifestation = null;
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private ?string $category = null;
 
-    /**
-     * @ORM\Column(type="string", length=128, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private ?string $themeManifestation = null;
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private ?string $theme = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $phoneContacts = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $mailContacts = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $websiteContacts = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $reservationTelephone = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Email
-     */
+    /** @deprecated  */
+    #[Assert\Email]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $reservationEmail = null;
 
-    /**
-     * @ORM\Column(type="string", length=512, nullable=true)
-     * @Assert\Url
-     */
+    /** @deprecated  */
+    #[Assert\Url]
+    #[ORM\Column(type: 'string', length: 512, nullable: true)]
     private ?string $reservationInternet = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $tarif = null;
+    /** @deprecated  */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $prices = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $fromData = null;
 
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
     private ?string $parserVersion = null;
 
-    /**
-     * @Vich\UploadableField(mapping="event_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
-     * @Assert\Valid
-     * @Assert\File(maxSize="6M")
-     * @Assert\Image
-     */
+    #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
+    #[Assert\Valid]
+    #[Assert\File(maxSize: '6M')]
+    #[Assert\Image]
     private ?File $imageFile = null;
 
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $image;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageHash = null;
 
-    /**
-     * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageSystem.name", size="imageSystem.size", mimeType="imageSystem.mimeType", originalName="imageSystem.originalName", dimensions="imageSystem.dimensions")
-     * @Assert\Valid
-     * @Assert\Image(maxSize="6M")
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    private ?string $imageMainColor = null;
+
+    #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
+    #[Assert\Valid]
+    #[Assert\Image(maxSize: '6M')]
     private ?File $imageSystemFile = null;
 
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $imageSystem;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    private ?string $imageSystemMainColor = null;
+
+    #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $url = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    private bool $brouillon = false;
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['elasticsearch:event:details'])]
+    private bool $draft = false;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $tweetPostId = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $facebookEventId = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $tweetPostSystemId = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $fbPostId = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $fbPostSystemId = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @var Collection<int, UserEvent>
      */
-    protected Collection $userEvents;
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event', cascade: ['persist', 'merge', 'remove'], fetch: 'EXTRA_LAZY')]
+    private Collection $userEvents;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"createdAt": "DESC"})
+     * @var Collection<int, Comment>
      */
-    protected Collection $commentaires;
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', cascade: ['persist', 'merge', 'remove'], fetch: 'EXTRA_LAZY')]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
+    private Collection $comments;
 
-    /**
-     * @ORM\Column(type="string", length=31, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 31, nullable: true)]
     private ?string $facebookOwnerId = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $fbParticipations = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $fbInterets = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $participations = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $interets = null;
 
-    /**
-     * @ORM\Column(type="string", length=256, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $source = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"list_event"})
-     * @Expose
-     * @Assert\Valid
-     */
+    #[Assert\Valid]
+    #[ORM\ManyToOne(targetEntity: Place::class, cascade: ['persist', 'merge'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?Place $place = null;
 
     private ?Reject $reject = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $archive = false;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?string $placeName = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?string $placeStreet = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?string $placeCity = null;
 
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
     private ?string $placePostalCode = null;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $placeExternalId = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $placeFacebookId = null;
 
     private ?Reject $placeReject = null;
 
     private ?string $placeCountryName = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: Country::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Country $placeCountry = null;
 
     public function __construct()
     {
-        $this->dateDebut = new DateTime();
+        $this->startDate = new DateTime();
         $this->userEvents = new ArrayCollection();
-        $this->commentaires = new ArrayCollection();
+        $this->comments = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function getKeyPrefix(): string
+    {
+        return 'event';
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
+    }
+
+    public function hasImage(): bool
+    {
+        return (null !== $this->image->getName() && '' !== $this->image->getName())
+            || (null !== $this->imageSystem->getName() && '' !== $this->imageSystem->getName());
     }
 
     public function getReject(): ?Reject
@@ -432,22 +339,23 @@ class Event
         return $this;
     }
 
-    public function isIndexable()
+    public function isIndexable(): bool
     {
-        $from = new DateTime();
-        $from->modify(self::INDEX_FROM);
+        if (false !== $this->draft) {
+            return false;
+        }
 
-        return $this->dateFin >= $from;
+        return true;
     }
 
     public function isAffiliate(): bool
     {
-        return \in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
+        return \in_array($this->fromData, [
+            FnacSpectaclesAwinParser::getParserName(),
+            DigitickAwinParser::getParserName(),
+        ], true);
     }
 
-    /**
-     * @return File
-     */
     public function getImageFile(): ?File
     {
         return $this->imageFile;
@@ -473,9 +381,6 @@ class Event
         return $this;
     }
 
-    /**
-     * @return File
-     */
     public function getImageSystemFile(): ?File
     {
         return $this->imageSystemFile;
@@ -501,18 +406,16 @@ class Event
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function majDateFin()
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function majEndDate(): void
     {
-        if (null === $this->dateFin) {
-            $this->dateFin = $this->dateDebut;
+        if (null === $this->endDate) {
+            $this->endDate = $this->startDate;
         }
     }
 
-    public function getLocationSlug()
+    public function getLocationSlug(): ?string
     {
         if ($this->getPlace() && $this->getPlace()->getCity()) {
             return $this->getPlace()->getCity()->getSlug();
@@ -537,9 +440,14 @@ class Event
         return $this;
     }
 
-    public function getDistinctTags()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<int, string>
+     */
+    public function getDistinctTags(): array
     {
-        $tags = $this->categorieManifestation . ',' . $this->typeManifestation . ',' . $this->themeManifestation;
+        $tags = $this->category . ',' . $this->type . ',' . $this->theme;
 
         return array_unique(array_map('trim', array_map('ucfirst', array_filter(preg_split('#[,/]#', $tags)))));
     }
@@ -556,10 +464,10 @@ class Event
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('%s (#%s)',
-            $this->nom,
+            $this->name,
             $this->id
         );
     }
@@ -569,7 +477,7 @@ class Event
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): self
     {
         $this->id = $id;
 
@@ -600,26 +508,26 @@ class Event
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getName(): ?string
     {
-        return $this->nom;
+        return $this->name;
     }
 
-    public function setNom(?string $nom): self
+    public function setName(?string $name): self
     {
-        $this->nom = $nom;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getDescriptif(): ?string
+    public function getDescription(): ?string
     {
-        return $this->descriptif;
+        return $this->description;
     }
 
-    public function setDescriptif(?string $descriptif): self
+    public function setDescription(?string $description): self
     {
-        $this->descriptif = $descriptif;
+        $this->description = $description;
 
         return $this;
     }
@@ -636,98 +544,98 @@ class Event
         return $this;
     }
 
-    public function getDateDebut(): ?DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
-        return $this->dateDebut;
+        return $this->startDate;
     }
 
-    public function setDateDebut(?DateTimeInterface $dateDebut): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
-        $this->dateDebut = $dateDebut;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDateFin(): ?DateTimeInterface
+    public function getEndDate(): ?DateTimeInterface
     {
-        return $this->dateFin;
+        return $this->endDate;
     }
 
-    public function setDateFin(?DateTimeInterface $dateFin): self
+    public function setEndDate(?DateTimeInterface $endDate): self
     {
-        $this->dateFin = $dateFin;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
-    public function getHoraires(): ?string
+    public function getHours(): ?string
     {
-        return $this->horaires;
+        return $this->hours;
     }
 
-    public function setHoraires(?string $horaires): self
+    public function setHours(?string $hours): self
     {
-        $this->horaires = $horaires;
+        $this->hours = $hours;
 
         return $this;
     }
 
-    public function getModificationDerniereMinute(): ?string
+    public function getStatus(): ?string
     {
-        return $this->modificationDerniereMinute;
+        return $this->status;
     }
 
-    public function setModificationDerniereMinute(?string $modificationDerniereMinute): self
+    public function setStatus(?string $status): self
     {
-        $this->modificationDerniereMinute = $modificationDerniereMinute;
+        $this->status = $status;
 
         return $this;
     }
 
-    public function getAdresse(): ?string
+    public function getAddress(): ?string
     {
-        return $this->adresse;
+        return $this->address;
     }
 
-    public function setAdresse(?string $adresse): self
+    public function setAddress(?string $address): self
     {
-        $this->adresse = $adresse;
+        $this->address = $address;
 
         return $this;
     }
 
-    public function getTypeManifestation(): ?string
+    public function getType(): ?string
     {
-        return $this->typeManifestation;
+        return $this->type;
     }
 
-    public function setTypeManifestation(?string $typeManifestation): self
+    public function setType(?string $type): self
     {
-        $this->typeManifestation = $typeManifestation;
+        $this->type = $type;
 
         return $this;
     }
 
-    public function getCategorieManifestation(): ?string
+    public function getCategory(): ?string
     {
-        return $this->categorieManifestation;
+        return $this->category;
     }
 
-    public function setCategorieManifestation(?string $categorieManifestation): self
+    public function setCategory(?string $category): self
     {
-        $this->categorieManifestation = $categorieManifestation;
+        $this->category = $category;
 
         return $this;
     }
 
-    public function getThemeManifestation(): ?string
+    public function getTheme(): ?string
     {
-        return $this->themeManifestation;
+        return $this->theme;
     }
 
-    public function setThemeManifestation(?string $themeManifestation): self
+    public function setTheme(?string $theme): self
     {
-        $this->themeManifestation = $themeManifestation;
+        $this->theme = $theme;
 
         return $this;
     }
@@ -768,14 +676,14 @@ class Event
         return $this;
     }
 
-    public function getTarif(): ?string
+    public function getPrices(): ?string
     {
-        return $this->tarif;
+        return $this->prices;
     }
 
-    public function setTarif(?string $tarif): self
+    public function setPrices(?string $prices): self
     {
-        $this->tarif = $tarif;
+        $this->prices = $prices;
 
         return $this;
     }
@@ -788,18 +696,6 @@ class Event
     public function setFromData(?string $fromData): self
     {
         $this->fromData = $fromData;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(?string $name): self
-    {
-        $this->name = $name;
 
         return $this;
     }
@@ -953,7 +849,7 @@ class Event
         return $this->placeName;
     }
 
-    public function setPlaceName(string $placeName): self
+    public function setPlaceName(?string $placeName): self
     {
         $this->placeName = $placeName;
 
@@ -1033,7 +929,7 @@ class Event
     }
 
     /**
-     * @return Collection|UserEvent[]
+     * @return Collection<int, UserEvent>
      */
     public function getUserEvents(): Collection
     {
@@ -1064,30 +960,30 @@ class Event
     }
 
     /**
-     * @return Collection|Comment[]
+     * @return Collection<int, Comment>
      */
-    public function getCommentaires(): Collection
+    public function getComments(): Collection
     {
-        return $this->commentaires;
+        return $this->comments;
     }
 
-    public function addCommentaire(Comment $commentaire): self
+    public function addComment(Comment $comment): self
     {
-        if (!$this->commentaires->contains($commentaire)) {
-            $this->commentaires[] = $commentaire;
-            $commentaire->setEvent($this);
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setEvent($this);
         }
 
         return $this;
     }
 
-    public function removeCommentaire(Comment $commentaire): self
+    public function removeComment(Comment $comment): self
     {
-        if ($this->commentaires->contains($commentaire)) {
-            $this->commentaires->removeElement($commentaire);
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
             // set the owning side to null (unless already changed)
-            if ($commentaire->getEvent() === $this) {
-                $commentaire->setEvent(null);
+            if ($comment->getEvent() === $this) {
+                $comment->setEvent(null);
             }
         }
 
@@ -1106,14 +1002,14 @@ class Event
         return $this;
     }
 
-    public function getBrouillon(): ?bool
+    public function getDraft(): ?bool
     {
-        return $this->brouillon;
+        return $this->draft;
     }
 
-    public function setBrouillon(bool $brouillon): self
+    public function setDraft(bool $draft): self
     {
-        $this->brouillon = $brouillon;
+        $this->draft = $draft;
 
         return $this;
     }
@@ -1248,5 +1144,51 @@ class Event
         $this->websiteContacts = $websiteContacts;
 
         return $this;
+    }
+
+    public function getExternalOrigin(): ?string
+    {
+        return $this->externalOrigin;
+    }
+
+    public function setExternalOrigin(?string $externalOrigin): self
+    {
+        $this->externalOrigin = $externalOrigin;
+
+        return $this;
+    }
+
+    public function getImageMainColor(): ?string
+    {
+        return $this->imageMainColor;
+    }
+
+    public function setImageMainColor(?string $imageMainColor): self
+    {
+        $this->imageMainColor = $imageMainColor;
+
+        return $this;
+    }
+
+    public function getImageSystemMainColor(): ?string
+    {
+        return $this->imageSystemMainColor;
+    }
+
+    public function setImageSystemMainColor(?string $imageSystemMainColor): self
+    {
+        $this->imageSystemMainColor = $imageSystemMainColor;
+
+        return $this;
+    }
+
+    public function isDraft(): ?bool
+    {
+        return $this->draft;
+    }
+
+    public function isArchive(): ?bool
+    {
+        return $this->archive;
     }
 }

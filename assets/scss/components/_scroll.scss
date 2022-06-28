@@ -4,7 +4,7 @@
     &.scroll-area-horizontal {
         flex-direction: row;
         flex-wrap: nowrap;
-        overflow-x: scroll;
+        overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         padding-bottom: 0.5rem;
 
@@ -13,6 +13,7 @@
         }
 
         .card {
+            width: 100%;
             max-width: 280px;
             margin-right: 1rem;
             margin-bottom: 0;
@@ -21,7 +22,7 @@
 
     &.scroll-area-vertical {
         flex-direction: column;
-        overflow-y: scroll;
+        overflow-y: auto;
 
         @include media-breakpoint-up(md) {
             max-height: 500px;

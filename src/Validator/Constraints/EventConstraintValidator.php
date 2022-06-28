@@ -10,35 +10,28 @@
 
 namespace App\Validator\Constraints;
 
-use App\Entity\Event;
+use App\Dto\EventDto;
 use App\Reject\Reject;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class EventConstraintValidator extends ConstraintValidator
 {
-    private RouterInterface $router;
-
     private bool $checkIfUpdate = false;
 
-    public function __construct(RouterInterface $router)
-    {
-        $this->router = $router;
-    }
-
-    public function setUpdatabilityCkeck($checkIfUpdate)
+    public function setUpdatabilityCkeck(bool $checkIfUpdate): void
     {
         $this->checkIfUpdate = $checkIfUpdate;
     }
 
     /**
-     * @param Event           $event
-     * @param EventConstraint $constraint
+     * @return void
      */
-    public function validate($event, Constraint $constraint)
+    public function validate($value, Constraint $constraint)
     {
-        $reject = $event->getReject();
+        \assert($value instanceof EventDto);
+        \assert($constraint instanceof EventConstraint);
+        $reject = $value->reject;
 
         if ($reject && !$this->checkIfUpdate) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
@@ -55,23 +48,23 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadEventName()) {
-            $this->context->buildViolation($constraint->badEventName)->atPath('nom')->addViolation();
+            $this->context->buildViolation($constraint->badEventName)->atPath('name')->addViolation();
         }
 
         if ($reject->isBadEventDate()) {
-            $this->context->buildViolation($constraint->badEventDate)->atPath('dateDebut')->addViolation();
+            $this->context->buildViolation($constraint->badEventDate)->atPath('shortcut')->addViolation();
         }
 
         if ($reject->isBadEventDateInterval()) {
-            $this->context->buildViolation($constraint->badEventDateInterval)->atPath('dateDebut')->addViolation();
+            $this->context->buildViolation($constraint->badEventDateInterval)->atPath('shortcut')->addViolation();
         }
 
         if ($reject->isSpamEventDescription()) {
-            $this->context->buildViolation($constraint->spamEventDescription)->atPath('descriptif')->addViolation();
+            $this->context->buildViolation($constraint->spamEventDescription)->atPath('description')->addViolation();
         }
 
         if ($reject->isBadEventDescription()) {
-            $this->context->buildViolation($constraint->badEventDescrition)->atPath('descriptif')->addViolation();
+            $this->context->buildViolation($constraint->badEventDescrition)->atPath('description')->addViolation();
         }
 
         if ($reject->hasNoNeedToUpdate()) {
@@ -87,43 +80,27 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadPlaceName()) {
-            $this->context->buildViolation($constraint->badPlaceName)->atPath('placeName')->addViolation();
+            $this->context->buildViolation($constraint->badPlaceName)->atPath('place.name')->addViolation();
         }
 
         if ($reject->isBadPlaceLocation()) {
-            $this->context->buildViolation($constraint->badPlaceLocation)->atPath('placeCity')->addViolation();
+            $this->context->buildViolation($constraint->badPlaceLocation)->atPath('place.city.name')->addViolation();
         }
 
         if ($reject->isBadPlaceCityName()) {
-            $this->context->buildViolation($constraint->badPlaceCityName)->atPath('placeCity')->addViolation();
+            $this->context->buildViolation($constraint->badPlaceCityName)->atPath('place.city.name')->addViolation();
         }
 
         if ($reject->isBadPlaceCityPostalCode()) {
-            $this->context->buildViolation($constraint->badPlacePostalCode)->atPath('placePostalCode')->addViolation();
+            $this->context->buildViolation($constraint->badPlacePostalCode)->atPath('place.city.postalCode')->addViolation();
         }
 
         if ($reject->hasNoCountryProvided()) {
-            $this->context->buildViolation($constraint->noCountryProvided)->atPath('placeCountry')->addViolation();
+            $this->context->buildViolation($constraint->noCountryProvided)->atPath('place.country')->addViolation();
         }
 
         if ($reject->isBadCountryName()) {
-            $this->context->buildViolation($constraint->badCountryName)->atPath('placeCountry')->addViolation();
-        }
-
-        if ($reject->isBadUser()) {
-            $link = $this->router->generate('app_event_details', [
-                'slug' => $event->getSlug(),
-                'id' => $event->getId(),
-                'location' => $event->getLocationSlug(),
-            ]);
-            $message = str_replace([
-                '[link]',
-                '[/link]',
-            ], [
-                sprintf('<a href="%s">', $link),
-                '</a>',
-            ], $constraint->badUser);
-            $this->context->buildViolation($message)->addViolation();
+            $this->context->buildViolation($constraint->badCountryName)->atPath('place.country')->addViolation();
         }
 
         if (0 === \count($this->context->getViolations())) {

@@ -11,28 +11,24 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
+use App\Controller\AbstractController;
 use App\Entity\AppOAuth;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/info")
- */
+#[Route(path: '/info')]
 class InfoController extends AbstractController
 {
-    /**
-     * @Route("/", name="app_administration_info_index", methods={"GET"})
-     */
+    #[Route(path: '/', name: 'app_administration_info_index', methods: ['GET'])]
     public function list(SocialManager $socialManager): Response
     {
-        $info = $socialManager->getAppOAuth();
-
-        if (null === $info) {
+        if (false === $socialManager->hasAppOAuth()) {
             $info = new AppOAuth();
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->persist($info);
             $em->flush();
+        } else {
+            $info = $socialManager->getAppOAuth();
         }
 
         return $this->redirectToRoute('app_administration_info_edit', [
@@ -40,12 +36,10 @@ class InfoController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id<%patterns.id%>}", name="app_administration_info_edit", methods={"GET"})
-     */
+    #[Route(path: '/{id<%patterns.id%>}', name: 'app_administration_info_edit', methods: ['GET'])]
     public function view(AppOAuth $appOAuth): Response
     {
-        return $this->render('Admin/Social/view.html.twig', [
+        return $this->render('admin/social/view.html.twig', [
             'oAuth' => $appOAuth,
         ]);
     }

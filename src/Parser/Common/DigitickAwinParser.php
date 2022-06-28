@@ -10,53 +10,105 @@
 
 namespace App\Parser\Common;
 
-use DateTime;
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
+use DateTimeImmutable;
 
 class DigitickAwinParser extends AbstractAwinParser
 {
+    /**
+     * @var string
+     */
     private const DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/22739/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,Tickets%3Aevent_date,Tickets%3Avenue_name,Tickets%3Avenue_address,Tickets%3Aevent_name,Tickets%3Alongitude,Tickets%3Alatitude,is_for_sale/format/xml-tree/compression/gzip/';
 
+    /**
+     * {@inheritDoc}
+     */
+    public static function getParserName(): string
+    {
+        return 'SeeTickets (ex Digitick)';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCommandName(): string
+    {
+        return 'awin.digitick';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected function getAwinUrl(): string
     {
         return self::DATAFEED_URL;
     }
 
-    protected function getInfoEvents(array $datas): array
+    /**
+     * {@inheritDoc}
+     */
+    protected function arrayToDto(array $data): ?EventDto
     {
-        if ('0' === $datas['is_for_sale']) {
-            return [];
+        if ('0' === $data['is_for_sale']) {
+            return null;
         }
 
-        $fromDate = DateTime::createFromFormat('Y-m-d H:i:s', $datas['event_date']);
-        $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $datas['event_date']);
-        $horaires = sprintf('À %s', $fromDate->format('H\hi'));
-
-        if (!preg_match('#^(.+) (\d{5}) (.+)$#', $datas['venue_address'], $placeMatches)) {
-            return [];
+        if (!preg_match('#^(.+) (\d{5}) (.+)$#', $data['venue_address'], $placeMatches)) {
+            return null;
         }
 
-        return [
-            'external_id' => 'DGT-' . $datas['merchant_product_id'],
-            'date_debut' => $fromDate,
-            'date_fin' => $toDate,
-            'horaires' => $horaires,
-            'source' => $datas['aw_deep_link'],
-            'nom' => $datas['event_name'],
-            'descriptif' => nl2br(trim($this->replaceBBCodes($datas['description']))),
-            'url' => $datas['merchant_image_url'],
-            'tarif' => sprintf('%s€', $datas['search_price']),
-            'placeName' => $datas['venue_name'],
-            'placePostalCode' => $placeMatches[2],
-            'placeCity' => $placeMatches[3],
-            'placeStreet' => $placeMatches[1],
-            'placeCountryName' => 'France',
-            'latitude' => (float) $datas['latitude'],
-            'longitude' => (float) $datas['longitude'],
-            'type_manifestation' => 'Expo' === $datas['merchant_category'] ? 'Exposition' : $datas['merchant_category'],
-        ];
+        $startDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['event_date']);
+        $endDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['event_date']);
+        $hours = sprintf('À %s', $startDate->format('H\hi'));
+
+        $event = new EventDto();
+        $event->fromData = self::getParserName();
+        $event->externalId = sprintf('DGT-%s', $data['merchant_product_id']);
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
+        $event->hours = $hours;
+        $event->source = $data['aw_deep_link'];
+        $event->name = $data['event_name'];
+        $event->type = 'Expo' === $data['merchant_category'] ? 'Exposition' : $data['merchant_category'];
+        $event->description = nl2br(trim($this->replaceBBCodes($data['description'])));
+        $event->imageUrl = $data['merchant_image_url'];
+        $event->prices = sprintf('%s€', $data['search_price']);
+        $event->latitude = (float) $data['latitude'];
+        $event->longitude = (float) $data['longitude'];
+
+        $place = new PlaceDto();
+        $place->name = $data['venue_name'];
+        $place->street = $placeMatches[1];
+        $place->externalId = sha1(sprintf(
+            '%s %s %s %s',
+            $data['venue_name'],
+            $placeMatches[1],
+            $placeMatches[2],
+            $placeMatches[3],
+        ));
+
+        $city = new CityDto();
+        $city->postalCode = $placeMatches[2];
+        $city->name = $placeMatches[3];
+
+        $country = new CountryDto();
+        $country->code = 'FR';
+
+        $city->country = $country;
+
+        $place->country = $country;
+
+        $place->city = $city;
+
+        $event->place = $place;
+
+        return $event;
     }
 
-    private function replaceBBCodes($text)
+    private function replaceBBCodes($text): ?string
     {
         // BBcode array
         $find = [
@@ -82,10 +134,5 @@ class DigitickAwinParser extends AbstractAwinParser
         ];
         // Replacing the BBcodes with corresponding HTML tags
         return preg_replace($find, $replace, $text);
-    }
-
-    public static function getParserName(): string
-    {
-        return 'SeeTickets (ex Digitick)';
     }
 }

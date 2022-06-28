@@ -5,3 +5,13 @@
         font-weight: normal;
     }
 }
+
+a.badge {
+    &:hover {
+        color: white;
+    }
+
+    &.bg-info:hover {
+        background-color: darken($info, 10%) !important;
+    }
+}

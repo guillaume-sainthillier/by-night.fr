@@ -10,11 +10,10 @@
 
 namespace App\Entity;
 
+use App\Repository\AdminZone1Repository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\AdminZone1Repository", readOnly=true)
- */
+#[ORM\Entity(repositoryClass: AdminZone1Repository::class, readOnly: true)]
 class AdminZone1 extends AdminZone
 {
 }

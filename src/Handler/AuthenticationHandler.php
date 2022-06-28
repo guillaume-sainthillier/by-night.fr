@@ -23,34 +23,26 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-    protected TranslatorInterface $translator;
-
-    protected RouterInterface $router;
-
-    public function __construct(TranslatorInterface $translator, RouterInterface $router)
+    public function __construct(protected TranslatorInterface $translator, protected RouterInterface $router)
     {
-        $this->translator = $translator;
-        $this->router = $router;
     }
 
-    /**
-     * @return JsonResponse|RedirectResponse
-     */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse|RedirectResponse
     {
         if ($request->isXmlHttpRequest()) {
             $result = ['success' => true];
 
             return new JsonResponse($result);
         }
-        $key = '_security.main.target_path'; //where "main" is your firewall name
+
+        $key = '_security.main.target_path'; // where "main" is your firewall name
 
         if ($targetPath = $request->getSession()->get($key)) {
             $url = $targetPath;
         } elseif ($request->getSession()->has($key)) {
-            //set the url based on the link they were trying to access before being authenticated
+            // set the url based on the link they were trying to access before being authenticated
             $url = $request->getSession()->get($key);
-            //remove the session key
+            // remove the session key
             $request->getSession()->remove($key);
         } else {
             $user = $token->getUser();
@@ -58,17 +50,14 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             if ($user->getCity()) {
                 $url = $this->router->generate('app_agenda_index', ['location' => $user->getCity()->getSlug()]);
             } else {
-                $url = $this->router->generate('app_main_index');
+                $url = $this->router->generate('app_index');
             }
         }
 
         return new RedirectResponse($url);
     }
 
-    /**
-     * @return JsonResponse|RedirectResponse
-     */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse|RedirectResponse
     {
         if ($request->isXmlHttpRequest()) {
             $result = [

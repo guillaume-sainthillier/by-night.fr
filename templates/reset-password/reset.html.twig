@@ -5,12 +5,17 @@
 {% endblock %}
 
 {% block body %}
-    <p class="lead">Réinitialisez maintenant votre mot de passe :</p>
-
-    {{ form_start(resetForm) }}
-    {{ form_row(resetForm.plainPassword) }}
-    <div class="text-center">
-        <button class="btn btn-raised btn-primary" type="submit">Réinitialiser le mot de passe</button>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title h4 mb-0">Réinitialisez maintenant votre mot de passe</h2>
+        </div>
+        <div class="card-body">
+            {{ form_start(resetForm) }}
+            {{ form_row(resetForm.plainPassword) }}
+            <div class="text-center">
+                <button class="btn btn-raised btn-primary" type="submit">Réinitialiser le mot de passe</button>
+            </div>
+            {{ form_end(resetForm) }}
+        </div>
     </div>
-    {{ form_end(resetForm) }}
 {% endblock %}

@@ -26,7 +26,10 @@ class ParserHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, ParserHistory::class);
     }
 
-    public function findAll()
+    /**
+     * @return ParserHistory[]
+     */
+    public function findAll(): array
     {
         return $this->findBy([], ['id' => 'DESC']);
     }

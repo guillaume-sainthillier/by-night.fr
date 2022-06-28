@@ -1,5 +1,13 @@
-@import 'variables';
-@import '~bootstrap-material-design/scss/core';
+@import 'core';
+
+//Vendors
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import 'ui/bootstrap';
+@import 'ui/tabler';
+
+//Components
 @import 'components/alert';
 @import 'components/badge';
 @import 'components/breadcrumb';
@@ -9,7 +17,6 @@
 @import 'components/collections';
 @import 'components/comment';
 @import 'components/criteres';
-@import 'components/datepicker';
 @import 'components/event';
 @import 'components/footer';
 @import 'components/form';
@@ -22,15 +29,14 @@
 @import 'components/placeholder';
 @import 'components/print';
 @import 'components/scroll';
-@import 'components/select';
 @import 'components/social_icons';
 @import 'components/social_login';
 @import 'components/table';
-@import 'components/typeahead';
 @import 'components/typography';
 @import 'components/utilities';
 @import 'components/widgets';
 
+//Pages
 @import 'pages/en_savoir_plus';
 @import 'pages/erreurs';
 @import 'pages/event_details';
@@ -44,7 +50,6 @@ body {
 }
 
 body {
-    background-color: $bgColor;
     padding-top: 62px;
 }
 
@@ -62,16 +67,6 @@ h6,
 .h6 {
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 300;
-}
-
-//Liens
-a {
-    color: #222;
-
-    &:hover,
-    &:focus {
-        text-decoration: none;
-    }
 }
 
 h1 {
@@ -98,18 +93,15 @@ h1 {
     bottom: 2%;
     right: 2%;
     z-index: 100;
+    width: 4rem;
+    height: 4rem;
 
-    @include media-breakpoint-down(md) {
-        width: $bmd-btn-fab-size-sm;
-        height: $bmd-btn-fab-size-sm;
-        min-width: $bmd-btn-fab-size-sm;
+    @include media-breakpoint-up(lg) {
+        width: 3rem;
+        height: 3rem;
     }
 }
 
 .bloc_config {
     margin-top: 40px;
-}
-
-.hidden {
-    display: none !important;
 }

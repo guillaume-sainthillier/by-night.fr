@@ -10,6 +10,8 @@
 
 namespace App\Repository;
 
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\UserDto;
 use App\Entity\User;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -25,18 +27,24 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface, DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
-    public function loadUserByUsername($usernameOrEmail)
+    public function loadUserByUsername(string $username)
     {
-        return $this->createQueryBuilder('u')
+        return $this->loadUserByIdentifier($username);
+    }
+
+    public function loadUserByIdentifier(string $identifier): ?UserInterface
+    {
+        return $this
+            ->createQueryBuilder('u')
             ->where('u.username = :usernameOrEmail OR u.email = :usernameOrEmail')
-            ->setParameter('usernameOrEmail', $usernameOrEmail)
+            ->setParameter('usernameOrEmail', $identifier)
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -44,27 +52,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
-    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
+    public function upgradePassword(UserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
-        $user->setPassword($newEncodedPassword);
+        $user->setPassword($newHashedPassword);
         $this->_em->persist($user);
         $this->_em->flush();
     }
 
-    public function findSiteMap()
+    public function findAllSitemap(): iterable
     {
-        return $this->createQueryBuilder('u')
+        return $this
+            ->createQueryBuilder('u')
             ->getQuery()
-            ->iterate();
+            ->toIterable();
     }
 
-    public function getUserFbIdsCount(DateTimeInterface $from)
+    public function getUserFbIdsCount(DateTimeInterface $from): int
     {
-        return (int) $this->createQueryBuilder('u')
+        return (int) $this
+            ->createQueryBuilder('u')
             ->select('count(i.facebook_id)')
             ->join('u.oAuth', 'i')
             ->where('u.updatedAt >= :from')
@@ -75,9 +85,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getSingleScalarResult();
     }
 
-    public function getUsersWithInfo(DateTimeInterface $from, int $page, int $limit)
+    /**
+     * @return User[]
+     */
+    public function getUsersWithInfo(DateTimeInterface $from, int $page, int $limit): array
     {
-        return $this->createQueryBuilder('u')
+        return $this
+            ->createQueryBuilder('u')
             ->select('u', 'i')
             ->join('u.oAuth', 'i')
             ->where('u.updatedAt >= :from')
@@ -90,9 +104,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function findTopMembres($page = 1, $limit = 7)
+    /**
+     * @return User[]
+     */
+    public function findAllTopUsers(int $page = 1, int $limit = 7): array
     {
-        return $this->createQueryBuilder('u')
+        return $this
+            ->createQueryBuilder('u')
             ->select('u')
             ->addSelect('i')
             ->addSelect('COUNT(u.id) AS nb_events')
@@ -106,9 +124,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->execute();
     }
 
-    public function findMembresCount()
+    public function getCount(): int
     {
-        return $this->_em
+        return (int) $this->_em
             ->createQueryBuilder()
             ->select('count(u.id)')
             ->from('App:User', 'u')
@@ -130,5 +148,33 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->setMaxResults(1)
             ->getOneOrNullResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAllByDtos(array $dtos): array
+    {
+        $idsWheres = [];
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof UserDto);
+
+            if (null !== $dto->entityId) {
+                $idsWheres[$dto->entityId] = true;
+            }
+        }
+
+        if (0 === \count($idsWheres)) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('u')
+            ->where('u.id IN (:ids)')
+            ->setParameter('ids', array_keys($idsWheres))
+            ->getQuery()
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->execute();
     }
 }

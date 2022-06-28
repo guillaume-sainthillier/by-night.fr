@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use IntlDateFormatter;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -18,14 +19,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DateTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @psalm-return Generator<int, DateType::class, mixed, void>
+     */
     public static function getExtendedTypes(): iterable
     {
         yield DateType::class;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $format = fn (Options $options) => 'single_text' === $options['widget'] ? DateType::HTML5_FORMAT : IntlDateFormatter::SHORT;
+        $format = fn (Options $options): string|int => 'single_text' === $options['widget'] ? DateType::HTML5_FORMAT : IntlDateFormatter::SHORT;
 
         $resolver->setDefaults([
             'attr' => ['class' => 'widget_datepicker', 'autocomplete' => 'off'],

@@ -1,0 +1,21 @@
+{% if events.totalItemCount > 0 %}
+    <div class="row row-cards row-deck">
+        {% for i, event in events %}
+            <div class="col-sm-6 col-lg-4">
+                {% include 'partials/event/_item-card.html.twig' with({
+                    cardLayout: 'card-layout-vertical'
+                }) %}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if events.paginationData.next is defined %}
+        <div class="text-center my-4">
+            <a id="paginate"
+               class="btn btn-outline-primary"
+               href="{{ path(app.request.get('_route'), routeParams) }}">
+                Plus d'événements
+            </a>
+        </div>
+    {% endif %}
+{% endif %}

@@ -10,38 +10,33 @@
 
 namespace App\Controller\User;
 
+use App\Controller\AbstractController;
 use App\Entity\UserEvent;
 use App\Form\Type\ChangePasswordFormType;
 use App\Form\Type\ProfileFormType;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-/**
- * @Route("/profile")
- */
+#[Route(path: '/profile')]
 class ProfileController extends AbstractController
 {
-    /**
-     * @Route("/delete", name="app_user_delete", methods={"GET", "POST"})
-     */
+    #[Route(path: '/delete', name: 'app_user_delete', methods: ['GET', 'POST'])]
     public function delete(Request $request, EventRepository $eventRepository, CommentRepository $commentRepository): Response
     {
         $form = $this->createDeleteForm();
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
 
             $deleteEvents = $form->get('delete_events')->getData();
 
-            $user = $this->getUser();
+            $user = $this->getAppUser();
             $events = $eventRepository->findBy([
                 'user' => $user,
             ]);
@@ -58,11 +53,12 @@ class ProfileController extends AbstractController
             foreach ($userEvents as $userEvent) {
                 /** @var UserEvent $userEvent */
                 $event = $userEvent->getEvent();
-                if ($userEvent->getParticipe()) {
+                if ($userEvent->getGoing()) {
                     $event->setParticipations($event->getParticipations() - 1);
                 } else {
                     $event->setInterets($event->getInterets() - 1);
                 }
+
                 $em->remove($userEvent);
             }
 
@@ -70,16 +66,18 @@ class ProfileController extends AbstractController
             foreach ($comments as $comment) {
                 $em->remove($comment);
             }
+
             $em->flush();
 
-            //TODO: Optimize flush & check constraints
+            // TODO: Optimize flush & check constraints
             $em->remove($user);
             $em->flush();
 
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
 
-            return $this->redirectToRoute('app_main_index');
+            return $this->redirectToRoute('app_index');
         }
+
         $errors = $form->getErrors(true);
         foreach ($errors as $error) {
             $this->addFlash('error', $error);
@@ -88,17 +86,14 @@ class ProfileController extends AbstractController
         return $this->redirectToRoute('app_user_edit');
     }
 
-    /**
-     * @Route("/edit", name="app_user_edit", methods={"GET", "POST"})
-     */
-    public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    #[Route(path: '/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $user = $this->getUser();
-
+        $user = $this->getAppUser();
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->flush();
 
             $this->addFlash('success', 'Votre profil a été mis à jour');
@@ -108,12 +103,12 @@ class ProfileController extends AbstractController
         $formChangePassword->handleRequest($request);
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {
             $user->setPassword(
-                $passwordEncoder->encodePassword(
+                $passwordHasher->hashPassword(
                     $user,
                     $formChangePassword->get('plainPassword')->getData()
                 )
             );
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->flush();
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour');

@@ -15,23 +15,25 @@ use App\Repository\AppOAuthRepository;
 
 class SocialManager
 {
-    private string $facebookIdPage;
-
-    private string $twitterIdPage;
-
     private bool $_siteInfoInitialized = false;
+
     private ?AppOAuth $appOAuth = null;
 
-    private AppOAuthRepository $appOAuthRepository;
-
-    public function __construct($facebookIdPage, $twitterIdPage, AppOAuthRepository $appOAuthRepository)
+    public function __construct(private string $facebookIdPage, private string $twitterIdPage, private AppOAuthRepository $appOAuthRepository)
     {
-        $this->facebookIdPage = $facebookIdPage;
-        $this->twitterIdPage = $twitterIdPage;
-        $this->appOAuthRepository = $appOAuthRepository;
     }
 
-    public function getAppOAuth(): AppOAuth
+    public function hasAppOAuth(): bool
+    {
+        if (!$this->_siteInfoInitialized) {
+            $this->_siteInfoInitialized = true;
+            $this->appOAuth = $this->appOAuthRepository->findOneBy([]);
+        }
+
+        return null !== $this->appOAuth;
+    }
+
+    public function getAppOAuth(): AppOAuth|null
     {
         if (!$this->_siteInfoInitialized) {
             $this->_siteInfoInitialized = true;

@@ -29,11 +29,17 @@ use League\Glide\Manipulators\Watermark;
 
 class ServerFactory extends \League\Glide\ServerFactory
 {
+    /**
+     * {@inheritDoc}
+     */
     public static function create(array $config = [])
     {
         return (new self($config))->getServer();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getManipulators()
     {
         return [

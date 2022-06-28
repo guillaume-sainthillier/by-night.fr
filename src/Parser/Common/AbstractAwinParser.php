@@ -10,9 +10,12 @@
 
 namespace App\Parser\Common;
 
+use App\Dto\EventDto;
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use const DIRECTORY_SEPARATOR;
 use ForceUTF8\Encoding;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
@@ -21,21 +24,19 @@ use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
-    private string $awinApiKey;
-
-    private string $tempPath;
-
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $tempPath, string $awinApiKey)
+    public function __construct(
+        LoggerInterface $logger,
+        EventProducer $eventProducer,
+        EventHandler $eventHandler,
+        ReservationsHandler $reservationsHandler,
+        private string $tempPath, private string $awinApiKey)
     {
-        parent::__construct($logger, $eventProducer, $reservationsHandler);
-        $this->tempPath = $tempPath;
-        $this->awinApiKey = $awinApiKey;
+        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
     }
 
-    abstract protected function getAwinUrl(): string;
-
-    abstract protected function getInfoEvents(array $datas): array;
-
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
@@ -48,8 +49,8 @@ abstract class AbstractAwinParser extends AbstractParser
 
         while ('product' === $xml->name) {
             $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
-            $event = $this->getInfoEvents($event);
-            if (\count($event) > 0) {
+            $event = $this->arrayToDto($event);
+            if (null !== $event) {
                 $this->publish($event);
             }
 
@@ -57,6 +58,22 @@ abstract class AbstractAwinParser extends AbstractParser
             unset($event);
         }
     }
+
+    private function downloadFile(string $url): string
+    {
+        $client = HttpClient::create();
+        $response = $client->request('GET', $url);
+
+        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
+        $fileHandler = fopen($filePath, 'w');
+        foreach ($client->stream($response) as $chunk) {
+            fwrite($fileHandler, $chunk->getContent());
+        }
+
+        return $filePath;
+    }
+
+    abstract protected function getAwinUrl(): string;
 
     private function elementToArray(SimpleXMLElement $element): array
     {
@@ -68,17 +85,5 @@ abstract class AbstractAwinParser extends AbstractParser
         return $array;
     }
 
-    private function downloadFile(string $url): string
-    {
-        $client = HttpClient::create();
-        $response = $client->request('GET', $url);
-
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
-        $fileHandler = fopen($filePath, 'w');
-        foreach ($client->stream($response) as $chunk) {
-            fwrite($fileHandler, $chunk->getContent());
-        }
-
-        return $filePath;
-    }
+    abstract protected function arrayToDto(array $data): ?EventDto;
 }

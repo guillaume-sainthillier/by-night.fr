@@ -10,6 +10,9 @@
 
 namespace App\Entity;
 
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
+use App\Repository\UserRepository;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -18,180 +21,132 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
 use Serializable;
+use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ExclusionPolicy("all")
- * @Vich\Uploadable
- * @ORM\HasLifecycleCallbacks
- * @UniqueEntity(fields={"email"}, message="Un utilisateur existe déjà pour cet email")
- * @UniqueEntity(fields={"username"}, message="Un utilisateur existe déjà pour ce nom")
- */
-class User implements UserInterface, Serializable
+#[Vich\Uploadable]
+#[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cet email')]
+#[UniqueEntity(fields: ['username'], message: 'Un utilisateur existe déjà pour ce nom')]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: '`user`')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serializer\Groups({"list_event", "list_user"})
-     * @Expose
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details'])]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     * @Assert\Length(max=180)
-     */
+    #[Assert\Length(max: 180)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $salt = null;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     * @Assert\Length(max=180)
-     */
+    #[Assert\Length(max: 180)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $username = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $enabled = true;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $lastLogin;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $passwordRequestedAt = null;
 
-    /**
-     * @ORM\Column(type="array")
-     */
+    #[ORM\Column(type: 'array')]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     private ?string $password = null;
 
-    /**
-     * @Gedmo\Slug(fields={"username"})
-     * @ORM\Column(length=128, unique=true)
-     */
+    #[ORM\Column(length: 128, unique: true)]
+    #[Gedmo\Slug(fields: ['username'])]
     private ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Length(max=255)
-     * @Serializer\Groups({"list_user"})
-     * @Expose
-     */
+    #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $firstname = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Length(max=255)
-     * @Serializer\Groups({"list_user"})
-     * @Expose
-     */
+    #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $lastname = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserOAuth", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\OneToOne(targetEntity: UserOAuth::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
     private ?UserOAuth $oAuth;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="user")
+     * @var Collection<int, UserEvent>
      */
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
     private Collection $userEvents;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\City")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: City::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?City $city = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $fromLogin = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $showSocials = true;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Url
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Url]
+    #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $website = null;
 
-    /**
-     * @Vich\UploadableField(mapping="user_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
-     * @Assert\Valid
-     * @Assert\File(maxSize="6M")
-     * @Assert\Image
-     */
+    #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
+    #[Assert\Valid]
+    #[Assert\File(maxSize: '6M')]
+    #[Assert\Image]
     private ?File $imageFile = null;
 
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $image;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageHash = null;
 
-    /**
-     * @Vich\UploadableField(mapping="user_image", fileNameProperty="imageSystem.name", size="imageSystem.size", mimeType="imageSystem.mimeType", originalName="imageSystem.originalName", dimensions="imageSystem.dimensions")
-     * @Assert\Valid
-     * @Assert\Image(maxSize="6M")
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    private ?string $imageMainColor = null;
+
+    #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
+    #[Assert\Valid]
+    #[Assert\Image(maxSize: '6M')]
     private ?File $imageSystemFile = null;
 
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $imageSystem;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private bool $isVerified = false;
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    private ?string $imageSystemMainColor = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $verified = false;
 
     public function __construct()
     {
@@ -200,6 +155,30 @@ class User implements UserInterface, Serializable
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s-id-%s',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
+    }
+
+    public function getKeyPrefix(): string
+    {
+        return 'user';
+    }
+
+    public function hasImage(): bool
+    {
+        return (null !== $this->image->getName() && '' !== $this->image->getName())
+            || (null !== $this->imageSystem->getName() && '' !== $this->imageSystem->getName());
     }
 
     public function addRole(string $role): self
@@ -216,7 +195,7 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    public function removeRole($role): self
+    public function removeRole(string $role): self
     {
         if (false !== $key = array_search(strtoupper($role), $this->roles, true)) {
             unset($this->roles[$key]);
@@ -226,9 +205,6 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    /**
-     * @return File
-     */
     public function getImageFile(): ?File
     {
         return $this->imageFile;
@@ -254,9 +230,6 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    /**
-     * @return File
-     */
     public function getImageSystemFile(): ?File
     {
         return $this->imageSystemFile;
@@ -282,12 +255,17 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return ucfirst($this->username);
     }
 
-    public function __toString()
+    public function getUserIdentifier(): string
+    {
+        return $this->email ?? '';
+    }
+
+    public function __toString(): string
     {
         return sprintf('%s (#%s)', $this->username, $this->id);
     }
@@ -295,7 +273,7 @@ class User implements UserInterface, Serializable
     /**
      * @see UserInterface
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return $this->salt;
     }
@@ -303,7 +281,7 @@ class User implements UserInterface, Serializable
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
     }
@@ -326,17 +304,11 @@ class User implements UserInterface, Serializable
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function unserialize($data)
     {
-        $data = unserialize($serialized);
+        $data = unserialize($data);
 
-        list(
-            $this->password,
-            $this->username,
-            $this->enabled,
-            $this->id,
-            $this->email,
-            $this->salt) = $data;
+        [$this->password, $this->username, $this->enabled, $this->id, $this->email, $this->salt] = $data;
     }
 
     /**
@@ -359,11 +331,11 @@ class User implements UserInterface, Serializable
     }
 
     /**
-     * @see UserInterface
+     * {@inheritDoc}
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
-        return (string) $this->password;
+        return $this->password;
     }
 
     public function setPassword(string $password): self
@@ -475,7 +447,7 @@ class User implements UserInterface, Serializable
     }
 
     /**
-     * @return UserEvent[]
+     * @return Collection<int, UserEvent>
      */
     public function getUserEvents(): Collection
     {
@@ -620,15 +592,76 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    public function isVerified(): bool
+    public function verified(): bool
     {
-        return $this->isVerified;
+        return $this->verified;
     }
 
-    public function setIsVerified(bool $isVerified): self
+    public function setVerified(bool $verified): self
     {
-        $this->isVerified = $isVerified;
+        $this->verified = $verified;
 
         return $this;
+    }
+
+    public function setSalt(?string $salt): self
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
+    public function getVerified(): ?bool
+    {
+        return $this->verified;
+    }
+
+    public function getImageMainColor(): ?string
+    {
+        return $this->imageMainColor;
+    }
+
+    public function setImageMainColor(?string $imageMainColor): self
+    {
+        $this->imageMainColor = $imageMainColor;
+
+        return $this;
+    }
+
+    public function getImageSystemMainColor(): ?string
+    {
+        return $this->imageSystemMainColor;
+    }
+
+    public function setImageSystemMainColor(?string $imageSystemMainColor): self
+    {
+        $this->imageSystemMainColor = $imageSystemMainColor;
+
+        return $this;
+    }
+
+    public function isEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function isFromLogin(): ?bool
+    {
+        return $this->fromLogin;
+    }
+
+    public function isShowSocials(): ?bool
+    {
+        return $this->showSocials;
+    }
+
+    public function isIsVerified(): ?bool
+    {
+        return $this->verified;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->verified;
     }
 }

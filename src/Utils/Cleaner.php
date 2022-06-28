@@ -10,58 +10,66 @@
 
 namespace App\Utils;
 
-use App\Entity\Event;
-use App\Entity\Place;
-use DateTimeInterface;
+use App\Dto\CityDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 
 class Cleaner
 {
-    private Util $util;
-
-    public function __construct(Util $util)
+    public function __construct(private Util $util)
     {
-        $this->util = $util;
     }
 
-    public function cleanEvent(Event $event)
+    public function cleanEvent(EventDto $dto): void
     {
-        if (!$event->getDateFin() instanceof DateTimeInterface) {
-            $event->setDateFin($event->getDateDebut());
+        if (null === $dto->endDate) {
+            $dto->endDate = $dto->startDate;
         }
 
-        $event->setNom($this->clean($event->getNom()) ?: null)
-            ->setDescriptif($this->clean($event->getDescriptif()) ?: null)
-            ->setPhoneContacts($event->getPhoneContacts() ?: null)
-            ->setWebsiteContacts($event->getWebsiteContacts() ?: null)
-            ->setMailContacts($event->getMailContacts() ?: null)
-            ->setAdresse(mb_substr($event->getAdresse(), 0, 255) ?: null)
-            ->setCategorieManifestation(mb_substr($event->getCategorieManifestation(), 0, 128) ?: null)
-            ->setThemeManifestation(mb_substr($event->getThemeManifestation(), 0, 128) ?: null)
-            ->setTypeManifestation(mb_substr($event->getTypeManifestation(), 0, 128) ?: null)
-            ->setHoraires(mb_substr($event->getHoraires(), 0, 255) ?: null);
+        $dto->name = $this->clean($dto->name ?? '') ?: null;
+        $dto->description = $this->clean($dto->description ?? '') ?: null;
+        $dto->phoneContacts = $dto->phoneContacts ?: null;
+        $dto->websiteContacts = $dto->websiteContacts ?: null;
+        $dto->emailContacts = $dto->emailContacts ?: null;
+        $dto->address = mb_substr($dto->address ?? '', 0, 255) ?: null;
+        $dto->category = mb_substr($dto->category ?? '', 0, 128) ?: null;
+        $dto->theme = mb_substr($dto->theme ?? '', 0, 128) ?: null;
+        $dto->type = mb_substr($dto->type ?? '', 0, 128) ?: null;
+        $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
+        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
+        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
     }
 
-    private function clean($string)
+    private function clean(?string $string): string
     {
         return trim($string);
     }
 
-    public function cleanPlace(Place $place)
+    public function cleanPlace(PlaceDto $dto): void
     {
-        $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
-            ->setRue($this->cleanNormalString($place->getRue()) ?: null)
-            ->setLatitude((float) ($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
-            ->setLongitude((float) ($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)
-            ->setVille($this->cleanPostalString($place->getVille()) ?: null)
-            ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
+        $dto->name = $this->cleanNormalString($dto->name ?? '') ?: null;
+        $dto->street = $this->cleanNormalString($dto->street ?? '') ?: null;
+        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
+        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
     }
 
-    private function cleanNormalString($string)
+    public function cleanCity(CityDto $dto): void
+    {
+        $dto->postalCode = $this->util->replaceNonNumericChars($dto->postalCode) ?: null;
+        $dto->name = $this->cleanPostalString($dto->name ?? '') ?: null;
+    }
+
+    private function cleanNormalString(?string $string): string
     {
         return $this->cleanString($string, '');
     }
 
-    private function cleanString($string, $delimiters = [])
+    /**
+     * @param string|string[] $delimiters
+     *
+     * @psalm-param ''|array{0?: '-'} $delimiters
+     */
+    private function cleanString(string|null $string, array|string $delimiters = []): string
     {
         $step1 = $this->util->utf8TitleCase($string);
         $step2 = $this->util->deleteMultipleSpaces($step1);
@@ -70,7 +78,7 @@ class Cleaner
         return trim($step3);
     }
 
-    private function cleanPostalString($string)
+    private function cleanPostalString(?string $string): string
     {
         return $this->cleanString($string, ['-']);
     }

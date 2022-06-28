@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use RuntimeException;
 
 class AdminZoneCrudController extends AbstractCrudController
 {
@@ -56,5 +57,7 @@ class AdminZoneCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$slug, $name, $latitude, $longitude, $population, $admin1Code, $admin2Code, $country, $parent];
         }
+
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

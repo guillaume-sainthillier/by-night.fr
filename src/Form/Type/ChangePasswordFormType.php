@@ -21,6 +21,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ChangePasswordFormType extends AbstractType
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $constraintsOptions = [
@@ -57,6 +62,11 @@ class ChangePasswordFormType extends AbstractType
         ]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

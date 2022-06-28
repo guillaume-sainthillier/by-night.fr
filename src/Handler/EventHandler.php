@@ -10,14 +10,13 @@
 
 namespace App\Handler;
 
+use App\Dto\EventDto;
 use App\Entity\Event;
-use App\Entity\Place;
 use App\Exception\UnsupportedFileException;
 use App\File\DeletableFile;
 use App\Utils\Cleaner;
-use App\Utils\Comparator;
-use App\Utils\Merger;
-use App\Utils\Monitor;
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_BASENAME;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Mime\MimeTypes;
@@ -27,78 +26,83 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EventHandler
 {
-    private Cleaner $cleaner;
-
-    private Comparator $comparator;
-
-    private Merger $merger;
-
-    private LoggerInterface $logger;
-
     private HttpClientInterface $client;
 
-    private string $tempPath;
-
-    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, LoggerInterface $logger, string $tempPath)
-    {
-        $this->cleaner = $cleaner;
-        $this->comparator = $comparator;
-        $this->merger = $merger;
-        $this->logger = $logger;
+    public function __construct(
+        private Cleaner $cleaner,
+        private LoggerInterface $logger,
+        private string $tempPath
+    ) {
         $this->client = HttpClient::create();
-        $this->tempPath = $tempPath;
     }
 
-    public function cleanEvent(Event $event)
+    public function cleanEvent(EventDto $dto): void
     {
-        $this->cleaner->cleanEvent($event);
-        if (null !== $event->getPlace()) {
-            $this->cleaner->cleanPlace($event->getPlace());
+        $this->cleaner->cleanEvent($dto);
+        if (null !== $dto->place) {
+            $this->cleaner->cleanPlace($dto->place);
+            if (null !== $dto->place->city) {
+                $this->cleaner->cleanCity($dto->place->city);
+            }
         }
     }
 
-    public function handleDownload(Event $event)
+    /**
+     * @param Event[] $events
+     */
+    public function handleDownloads(array $events): void
     {
-        $url = $event->getUrl();
-        try {
-            $response = $this->client->request('GET', $url);
-            $content = $response->getContent();
-            $this->uploadFile($event, $content);
-        } catch (TransportExceptionInterface|HttpExceptionInterface $e) {
-            if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
-                return;
-            }
+        $imageUrls = array_filter(array_unique(array_map(fn (Event $event) => $event->getUrl(), $events)));
 
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
-                'extra' => [
-                    'event' => [
-                        'id' => $event->getId(),
-                        'url' => $url,
-                    ],
-                ],
+        $responses = [];
+        foreach ($imageUrls as $imageUrl) {
+            $response = $this->client->request('GET', $imageUrl, [
+                'user_data' => $imageUrl,
             ]);
-        } catch (UnsupportedFileException $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
-                'extra' => [
-                    'event' => [
-                        'id' => $event->getId(),
-                        'url' => $url,
+            $responses[] = $response;
+        }
+
+        foreach ($this->client->stream($responses) as $response => $chunk) {
+            $imageUrl = $response->getInfo('user_data');
+            $currentEvents = array_filter($events, fn (Event $event) => $event->getUrl() === $imageUrl);
+
+            try {
+                if ($chunk->isLast()) {
+                    foreach ($currentEvents as $event) {
+                        $this->uploadFile($event, $response->getContent());
+                    }
+                }
+            } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
+                if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
+                    continue;
+                }
+
+                $this->logger->error($e->getMessage(), [
+                    'exception' => $e,
+                    'extra' => [
+                        'event' => [
+                            'id' => array_map(fn (Event $event) => $event->getId(), $currentEvents),
+                            'url' => $imageUrl,
+                        ],
                     ],
-                ],
-            ]);
+                ]);
+            }
         }
     }
 
     /**
      * @throws UnsupportedFileException
      */
-    private function uploadFile(Event $event, string $content)
+    private function uploadFile(Event $event, string $content): void
     {
-        $tempFileBasename = ($event->getId() ?: uniqid());
-        $tempFilePath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFileBasename;
+        if ($content && md5($content) === $event->getImageSystemHash()) {
+            return;
+        }
+
+        $tempFileBasename = ($event->getId() ?? uniqid());
+        $tempFilePath = $this->tempPath . DIRECTORY_SEPARATOR . $tempFileBasename;
         $octets = file_put_contents($tempFilePath, $content);
+
         if (0 === $octets) {
             unlink($tempFilePath);
             $event->setImageSystemFile(null);
@@ -108,50 +112,15 @@ class EventHandler
 
         $mimeTypes = new MimeTypes();
         $contentType = $mimeTypes->guessMimeType($tempFilePath);
-        switch ($contentType) {
-            case 'image/gif':
-                $ext = 'gif';
-                break;
-            case 'image/png':
-                $ext = 'png';
-                break;
-            case 'image/jpg':
-            case 'image/jpeg':
-                $ext = 'jpeg';
-                break;
-            default:
-                throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType));
-        }
+        $ext = match ($contentType) {
+            'image/gif' => 'gif',
+            'image/png' => 'png',
+            'image/jpg', 'image/jpeg' => 'jpeg',
+            default => throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType)),
+        };
 
-        $originalName = pathinfo($event->getUrl(), \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
+        $originalName = pathinfo($event->getUrl(), PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
         $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
         $event->setImageSystemFile($file);
-    }
-
-    /**
-     * @return Event
-     */
-    public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
-    {
-        $place = Monitor::bench('Handle Place', fn () => $this->handlePlace($persistedPlaces, $event->getPlace()));
-        $event->setPlace($place);
-
-        return Monitor::bench('Handle Event', fn () => $this->handleEvent($persistedEvents, $event));
-    }
-
-    public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
-    {
-        $bestPlace = Monitor::bench('getBestPlace', fn () => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
-
-        //On fusionne la place existant avec celle découverte (même si NULL)
-        return Monitor::bench('mergePlace', fn () => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
-    }
-
-    public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
-    {
-        $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
-
-        //On fusionne l'event existant avec celui découvert (même si NULL)
-        return Monitor::bench('mergeEvent', fn () => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
     }
 }

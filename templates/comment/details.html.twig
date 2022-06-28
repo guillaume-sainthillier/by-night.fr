@@ -1,0 +1,7 @@
+{% if success is defined %}
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="fa fa-check"></i>
+        {% block success_confirmation_message 'Merci d\'avoir donné votre avis !' %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" title="Fermer"></button>
+    </div>
+{% endif %}

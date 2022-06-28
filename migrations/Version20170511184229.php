@@ -21,7 +21,7 @@ class Version20170511184229 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('CREATE TABLE admin_zone (id INT NOT NULL, country_id VARCHAR(2) DEFAULT NULL, parent_id INT DEFAULT NULL, slug VARCHAR(200) NOT NULL, name VARCHAR(200) NOT NULL, latitude DOUBLE PRECISION NOT NULL, longitude DOUBLE PRECISION NOT NULL, population INT NOT NULL, admin1_code VARCHAR(20) NOT NULL, admin2_code VARCHAR(80) NOT NULL, type VARCHAR(10) NOT NULL, UNIQUE INDEX UNIQ_80F242E7989D9B62 (slug), INDEX IDX_80F242E7F92F3E70 (country_id), INDEX IDX_80F242E7727ACA70 (parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE country (id VARCHAR(2) NOT NULL, slug VARCHAR(63) NOT NULL, locale VARCHAR(5) DEFAULT NULL, name VARCHAR(63) NOT NULL, capital VARCHAR(63) NOT NULL, UNIQUE INDEX UNIQ_5373C966989D9B62 (slug), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
@@ -34,7 +34,7 @@ class Version20170511184229 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE admin_zone DROP FOREIGN KEY FK_80F242E7727ACA70');
         $this->addSql('ALTER TABLE admin_zone DROP FOREIGN KEY FK_80F242E7F92F3E70');

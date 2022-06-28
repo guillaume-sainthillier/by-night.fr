@@ -1,21 +1,21 @@
 #bread {
     background-color: white;
     border-bottom: 1px solid #0000001a;
-
-    .btn .fa {
-        width: 14px;
-    }
 }
 
 .breadcrumb {
-    &.collapsed {
-        white-space: nowrap;
+    padding: 0.75rem 0;
+    flex-wrap: nowrap;
+
+    li {
         overflow: hidden;
-        flex-wrap: nowrap;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     a {
         color: $primary;
+        white-space: nowrap;
 
         &:hover,
         &:focus {
@@ -25,18 +25,7 @@
 }
 
 .breadcrumb-item {
-    max-width: 100%;
-    flex: 0 auto;
     display: inline-block;
-
-    &:first-child {
-        flex: 0 0 auto;
-        flex-shrink: 0.5;
-    }
-
-    &:last-child {
-        flex: 1 0 auto !important;
-    }
 }
 
 .breadcrumb > li + li:before {
@@ -45,29 +34,7 @@
 }
 
 @include media-breakpoint-down(md) {
-    #bread > .container {
-        padding: 0;
-    }
-
     .breadcrumb-item {
         font-size: $font-size-sm;
-    }
-}
-
-@include media-breakpoint-down(sm) {
-    .breadcrumb.collapsed .breadcrumb-item {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        &,
-        &:last-child::before {
-            display: none;
-        }
-
-        &:last-child {
-            padding-left: 0;
-            display: block;
-        }
     }
 }

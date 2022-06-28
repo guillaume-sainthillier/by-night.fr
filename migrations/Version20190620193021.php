@@ -28,7 +28,7 @@ final class Version20190620193021 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda DROP FOREIGN KEY FK_2CEDC877F6BD1646');
         $this->addSql('ALTER TABLE Place DROP FOREIGN KEY FK_B5DC7CC9F6BD1646');
@@ -45,9 +45,9 @@ final class Version20190620193021 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
-        $this->addSql('CREATE TABLE Site (id INT AUTO_INCREMENT NOT NULL, subdomain VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, nom VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, twitter_id_widget VARCHAR(127) DEFAULT NULL COLLATE utf8_unicode_ci, twitter_url_widget VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, is_actif TINYINT(1) NOT NULL, distance_max DOUBLE PRECISION NOT NULL, latitude DOUBLE PRECISION NOT NULL, longitude DOUBLE PRECISION NOT NULL, INDEX recherche_site_idx (subdomain), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = \'\' ');
+        $this->addSql("CREATE TABLE Site (id INT AUTO_INCREMENT NOT NULL, subdomain VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, nom VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, twitter_id_widget VARCHAR(127) DEFAULT NULL COLLATE utf8_unicode_ci, twitter_url_widget VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, is_actif TINYINT(1) NOT NULL, distance_max DOUBLE PRECISION NOT NULL, latitude DOUBLE PRECISION NOT NULL, longitude DOUBLE PRECISION NOT NULL, INDEX recherche_site_idx (subdomain), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = '' ");
         $this->addSql('ALTER TABLE Agenda ADD site_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE Agenda ADD CONSTRAINT FK_2CEDC877F6BD1646 FOREIGN KEY (site_id) REFERENCES Site (id)');
         $this->addSql('CREATE INDEX IDX_2B41CD41F6BD1646 ON Agenda (site_id)');

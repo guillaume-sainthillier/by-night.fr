@@ -19,15 +19,8 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class EmailVerifier
 {
-    private MailerManager $mailer;
-    private VerifyEmailHelperInterface $verifyEmailHelper;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(MailerManager $mailer, VerifyEmailHelperInterface $helper, EntityManagerInterface $manager)
+    public function __construct(private MailerManager $mailer, private VerifyEmailHelperInterface $verifyEmailHelper, private EntityManagerInterface $entityManager)
     {
-        $this->mailer = $mailer;
-        $this->verifyEmailHelper = $helper;
-        $this->entityManager = $manager;
     }
 
     public function sendEmailConfirmation(User $user): void
@@ -52,7 +45,7 @@ class EmailVerifier
     {
         $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
 
-        $user->setIsVerified(true);
+        $user->setVerified(true);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

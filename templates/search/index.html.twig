@@ -1,0 +1,7 @@
+{% set partial = app.request.xmlHttpRequest %}
+
+{% if partial %}
+    {% include 'search/_index-content.html.twig' %}
+{% else %}
+    {% include 'search/_index-full.html.twig' %}
+{% endif %}

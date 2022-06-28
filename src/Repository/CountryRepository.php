@@ -10,6 +10,8 @@
 
 namespace App\Repository;
 
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\CountryDto;
 use App\Entity\AdminZone1;
 use App\Entity\AdminZone2;
 use App\Entity\Country;
@@ -23,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Country[]    findAll()
  * @method Country[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CountryRepository extends ServiceEntityRepository
+class CountryRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -57,10 +59,11 @@ class CountryRepository extends ServiceEntityRepository
             ->getQuery()
             ->enableResultCache()
             ->useQueryCache(true)
+            ->setMaxResults(1)
             ->getOneOrNullResult();
     }
 
-    public function findByName($country)
+    public function findOneByName(?string $country): ?Country
     {
         return $this
             ->createQueryBuilder('c')
@@ -70,5 +73,48 @@ class CountryRepository extends ServiceEntityRepository
             ->enableResultCache()
             ->useQueryCache(true)
             ->getOneOrNullResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAllByDtos(array $dtos): array
+    {
+        $wheres = [];
+        $idsWheres = [];
+        $namesWheres = [];
+
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof CountryDto);
+
+            if (null !== $dto->code) {
+                $idsWheres[$dto->code] = true;
+            } elseif (null !== $dto->name) {
+                $namesWheres[strtolower($dto->name)] = true;
+            }
+        }
+
+        if (0 === \count($idsWheres) && 0 === \count($namesWheres)) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('c');
+
+        if (\count($idsWheres) > 0) {
+            $wheres[] = 'c.id IN (:ids)';
+            $qb->setParameter('ids', array_keys($idsWheres));
+        }
+
+        if (\count($namesWheres) > 0) {
+            $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR c.id IN(:names)';
+            $qb->setParameter('names', array_keys($namesWheres));
+        }
+
+        return $qb
+            ->where(implode(' OR ', $wheres))
+            ->getQuery()
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->execute();
     }
 }

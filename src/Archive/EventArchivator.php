@@ -20,26 +20,20 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 class EventArchivator
 {
+    /**
+     * @var int
+     */
     public const ITEMS_PER_TRANSACTION = 5_000;
 
-    private ObjectPersisterInterface $objectPersister;
-
-    private EntityManagerInterface $entityManager;
-
-    private EventRepository $eventRepository;
-
-    public function __construct(EntityManagerInterface $entityManager, ObjectPersisterInterface $objectPersister, EventRepository $eventRepository)
+    public function __construct(private EntityManagerInterface $entityManager, private ObjectPersisterInterface $objectPersister, private EventRepository $eventRepository)
     {
-        $this->entityManager = $entityManager;
-        $this->objectPersister = $objectPersister;
-        $this->eventRepository = $eventRepository;
     }
 
     /**
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function archive()
+    public function archive(): void
     {
         $repo = $this->eventRepository;
         $qb = $repo->findNonIndexablesBuilder();
@@ -63,6 +57,7 @@ class EventArchivator
             unset($events);
             $this->entityManager->clear();
         }
+
         $repo->updateNonIndexables();
         Monitor::finishProgressBar();
     }
@@ -70,7 +65,7 @@ class EventArchivator
     /**
      * @throws NonUniqueResultException
      */
-    private function countObjects(QueryBuilder $queryBuilder)
+    private function countObjects(QueryBuilder $queryBuilder): int
     {
         /* Clone the query builder before altering its field selection and DQL,
          * lest we leave the query builder in a bad state for fetchSlice().
@@ -78,7 +73,7 @@ class EventArchivator
         $qb = clone $queryBuilder;
         $rootAliases = $queryBuilder->getRootAliases();
 
-        return $qb
+        return (int) $qb
             ->select($qb->expr()->count($rootAliases[0]))
             // Remove ordering for efficiency; it doesn't affect the count
             ->resetDQLPart('orderBy')

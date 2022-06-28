@@ -20,19 +20,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SimpleEventSearchType extends AbstractType
 {
-    private DateRangeBuilder $dateRangeBuilder;
-
-    public function __construct(DateRangeBuilder $dateRangeBuilder)
+    public function __construct(private DateRangeBuilder $dateRangeBuilder)
     {
-        $this->dateRangeBuilder = $dateRangeBuilder;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
         $this->dateRangeBuilder->finishView($view, $form);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $this->dateRangeBuilder->addShortcutDateFields($builder, 'from', 'to');
@@ -42,6 +49,11 @@ class SimpleEventSearchType extends AbstractType
             ]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

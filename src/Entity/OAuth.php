@@ -10,134 +10,86 @@
 
 namespace App\Entity;
 
+use App\Repository\OAuthRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="recherche_info_idx", columns={"facebook_id", "twitter_id", "google_id"})
- * })
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"user": "UserOAuth", "site": "AppOAuth"})
- * @ORM\Entity(repositoryClass="App\Repository\OAuthRepository")
- */
-abstract class OAuth
+#[ORM\Index(name: 'recherche_info_idx', columns: ['facebook_id', 'twitter_id', 'google_id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['user' => 'UserOAuth', 'site' => 'AppOAuth'])]
+#[ORM\Entity(repositoryClass: OAuthRepository::class)]
+abstract class OAuth implements Stringable
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected ?int $id = null;
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_id = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_access_token = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_refresh_token = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_email = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $facebook_expires = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_realname = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_profile_picture = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_id = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_access_token = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_refresh_token = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_email = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $google_expires = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_realname = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_profile_picture = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_id = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_access_token = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_refresh_token = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_email = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $twitter_expires = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_nickname = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_realname = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_profile_picture = null;
 
     /**
@@ -148,7 +100,7 @@ abstract class OAuth
         return $this->id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return '#' . $this->id ?: '?';
     }

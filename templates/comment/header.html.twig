@@ -1,0 +1,7 @@
+<h4 class="heading">
+    {{ comments.totalItemCount }} Commentaire{{ comments.totalItemCount > 1 ? 's' }}
+    {% if comments.totalItemCount == 0 %}
+        |
+        <small>Soyez le premier à réagir</small>
+    {% endif %}
+</h4>

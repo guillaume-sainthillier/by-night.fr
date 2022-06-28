@@ -25,6 +25,7 @@ services:
             $memoryCache: "@redis.app_cache_pool"
             $secret: "%kernel.secret%"
             $webDir: "%kernel.project_dir%/public"
+            $publicDirectory: "%kernel.project_dir%/public"
             $tempPath: "%kernel.project_dir%/var/storage/temp"
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
@@ -38,10 +39,43 @@ services:
             $monitor: "%env(APP_MONITOR)%"
             $disableTwitterFeed: "%disable_polled_feeds%"
             $assetThumb: "@app.asset_thumb"
+            $dataDir: "%kernel.project_dir%/var/datas"
+            $parsers: !tagged_iterator app.parser
+            $entityProviders: !tagged_iterator app.entity_provider
+            $dtoConverters: !tagged_iterator app.dto_converter
+            $entityFactories: !tagged_iterator app.entity_factory
+            $comparators: !tagged_iterator app.comparator
+
+    _instanceof:
+        App\Contracts\ParserInterface:
+            tags: [ 'app.parser' ]
+        App\Contracts\EntityProviderInterface:
+            tags: [ 'app.entity_provider' ]
+        App\Contracts\EntityFactoryInterface:
+            tags: [ 'app.entity_factory' ]
+        App\Contracts\DtoConverterInterface:
+            tags: [ 'app.dto_converter' ]
+        App\Contracts\ComparatorInterface:
+            tags: [ 'app.comparator' ]
+        App\Contracts\ImageLoaderInterface:
+            tags: [ 'app.image.loader' ]
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Glide,Producer,Reject,Search}'
+        exclude:
+            - '../src/Admin/Filter'
+            - '../src/Annotation'
+            - '../src/Dependency'
+            - '../src/Dto'
+            - '../src/Entity'
+            - '../src/Exception'
+            - '../src/File'
+            - '../src/Kernel.php'
+            - '../src/Migrations'
+            - '../src/Glide'
+            - '../src/Producer'
+            - '../src/Reject'
+            - '../src/Search'
 
     App\Controller\:
         resource: '../src/Controller'
@@ -75,37 +109,26 @@ services:
 
     App\Archive\EventArchivator:
         arguments:
-            $objectPersister: "@fos_elastica.object_persister.event.event"
-
-    App\Command\AppEventsImportCommand:
-        arguments:
-            $parsers:
-                toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
-                toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
-                datatourisme: '@App\Parser\Common\DataTourismeParser'
-                openagenda: '@App\Parser\Common\OpenAgendaParser'
-                sowprog: '@App\Parser\Common\SowProgParser'
-                awin.fnac: '@App\Parser\Common\FnacSpectaclesAwinParser'
-                awin.digitick: '@App\Parser\Common\DigitickAwinParser'
-
-    App\Importer\CountryImporter:
-        arguments:
-            $dataDir: "%kernel.project_dir%/var/datas"
+            $objectPersister: "@fos_elastica.object_persister.event"
 
     App\Form\Type\ReCaptchaType:
         arguments:
             $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
 
-
     App\Validator\Constraints\EventConstraintValidator:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
-    App\EventListener\EventParserDataListener:
+    App\Doctrine\EventListener\EventParserDataListener:
         tags:
             - { name: doctrine.event_listener, event: preRemove }
 
-    App\EventListener\EntityTagger:
+    App\Doctrine\EventSubscriber\:
+        resource: '../src/Doctrine/EventSubscriber'
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    App\Doctrine\EventListener\EntityTagger:
         tags:
             - { name: doctrine.event_listener, event: postPersist }
             - { name: doctrine.event_listener, event: preUpdate }
@@ -161,3 +184,19 @@ services:
             -   source: '@assets.storage.reader'
                 cache: '@thumbs.storage'
                 driver: 'imagick'
+
+
+    App\Image\Loader\LoaderRegistry:
+        arguments:
+            - !tagged_iterator { tag: app.image.loader }
+
+    FOS\ElasticaBundle\Persister\AsyncPagerPersister:
+      arguments:
+        - '@fos_elastica.pager_persister_registry'
+        - '@fos_elastica.pager_provider_registry'
+        - '@Symfony\Component\Messenger\MessageBusInterface'
+      tags:
+        - { name: "fos_elastica.pager_persister", persisterName: "async" }
+
+    FOS\ElasticaBundle\Message\Handler\AsyncPersistPageHandler:
+      tags: [ messenger.message_handler ]

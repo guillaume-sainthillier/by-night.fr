@@ -1,0 +1,122 @@
+{% extends 'espace-perso/layout.html.twig' %}
+
+{% block titre 'Créer un nouvel événement' %}
+{% block meta_title 'Nouvel événement' %}
+
+{% block breadcrumb_espace -%}
+    {% do menu.addItem("Nouveau", url('app_event_new')) %}
+{%- endblock %}
+
+{% block body -%}
+    <div class="mb-4 mon_evenement">
+        {% block body_form %}
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="row">
+                <div class="col-md-6">
+                    {# Part 1 #}
+                    {% embed 'components/widget-card.html.twig' %}
+                        {% block header 'Votre événement' %}
+                        {% block icon 'fa-file' %}
+
+                        {% block body %}
+                            {{ form_row(form.name, {'icon_prepend': 'file-pen'}) }}
+                            {{ form_row(form.description) }}
+                            {{ form_row(form.imageFile) }}
+                        {% endblock %}
+
+                        {% block footer_widget '' %}
+                    {% endembed %}
+
+                    {# Part 4 #}
+                    {% embed 'components/widget-card.html.twig' %}
+                        {% block header 'Communiquez' %}
+                        {% block icon 'fa-bullhorn' %}
+
+                        {% block body %}
+                            {{ form_row(form.websiteContacts) }}
+                            {{ form_row(form.phoneContacts) }}
+                            {{ form_row(form.emailContacts) }}
+
+                            {% if form.comment is defined %}
+                                {{ form_row(form.comment) }}
+                            {% endif %}
+                        {% endblock %}
+
+                        {% block footer_widget '' %}
+                    {% endembed %}
+                </div>
+                <div class="col-md-6">
+                    {# Part 2 #}
+                    {% embed 'components/widget-card.html.twig' %}
+                        {% block header 'Informations' %}
+                        {% block icon 'fa-file-lines' %}
+
+                        {% block body %}
+                            {{ form_row(form.startDate) }}
+                            {{ form_row(form.endDate) }}
+                            {{ form_row(form.shortcut, {'label': 'Dates', 'icon_prepend': 'calendar'}) }}
+                            {{ form_row(form.hours, {'icon_prepend': 'clock'}) }}
+                            {{ form_row(form.category, {'icon_prepend': 'masks-theater'}) }}
+                            {{ form_row(form.theme, {'icon_prepend': 'vest'}) }}
+                            {{ form_row(form.prices, {'icon_prepend': 'ticket'}) }}
+                        {% endblock %}
+
+                        {% block footer_widget '' %}
+                    {% endembed %}
+
+                    {# Part 3 #}
+                    {% embed 'components/widget-card.html.twig' %}
+                        {% block header 'Lieux' %}
+                        {% block icon 'fa-map-location-dot' %}
+
+                        {% block body %}
+                            {{ form_errors(form.place) }}
+                            {{ form_row(form.place.name, {'icon_prepend': 'location-dot'}) }}
+                            {{ form_row(form.address, {'icon_prepend': 'location-crosshairs'}) }}
+
+                            <div class="ms-2 ms-sm-5 mb-5">
+                                {{ form_row(form.place.street) }}
+                                {{ form_errors(form.place.city) }}
+                                {{ form_row(form.place.city.postalCode) }}
+                                {{ form_row(form.place.city.name) }}
+                                {{ form_row(form.place.country) }}
+                            </div>
+
+                            <div id="map"></div>
+                        {% endblock %}
+
+                        {% block footer_widget '' %}
+                    {% endembed %}
+
+                </div>
+            </div>
+            <hr />
+            <div class="mt-2">
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
+                    <i class="fa fa-chevron-left"></i>
+                    Retour
+                </a>
+                <button type="submit" class="ms-2 btn btn-primary btn-raised">
+                    <i class="fa fa-save"></i>
+                    Sauvegarder
+                </button>
+            </div>
+
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+        {% endblock %}
+    </div>
+{%- endblock %}
+
+{% block css -%}
+    {{ encore_entry_link_tags('espace_perso_event') }}
+{%- endblock %}
+
+{% block head_js -%}
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={{ googleMapKey }}&language=fr&libraries=places"></script>
+{%- endblock %}
+
+{% block js -%}
+    {{ encore_entry_script_tags('espace_perso_event') }}
+{%- endblock %}

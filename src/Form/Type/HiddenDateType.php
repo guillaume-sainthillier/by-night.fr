@@ -18,12 +18,22 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HiddenDateType extends DateType
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
         $view->vars['type'] = 'hidden';
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);

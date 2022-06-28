@@ -19,24 +19,22 @@ use Psr\Log\LoggerInterface;
 
 class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    private CloudFrontClient $client;
-
-    private string $cloudFrontDistributionID;
-
-    public function __construct(LoggerInterface $logger, CloudFrontClient $client, string $cloudFrontDistributionID)
+    public function __construct(LoggerInterface $logger, private CloudFrontClient $client, private string $cloudFrontDistributionID)
     {
         parent::__construct($logger);
-
-        $this->client = $client;
-        $this->cloudFrontDistributionID = $cloudFrontDistributionID;
     }
 
-    public function batchExecute(array $messages)
+    /**
+     * {@inheritDoc}
+     *
+     * @psalm-return -1|1
+     */
+    public function batchExecute(array $messages): int
     {
         $paths = [];
 
         /** @var AMQPMessage $message */
-        foreach ($messages as $i => $message) {
+        foreach ($messages as $message) {
             $path = $message->getBody();
             $paths[] = $path;
         }
@@ -54,9 +52,9 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
             ]);
 
             return ConsumerInterface::MSG_ACK;
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'exception' => $exception,
                 'extra' => [
                     'paths' => $paths,
                 ],

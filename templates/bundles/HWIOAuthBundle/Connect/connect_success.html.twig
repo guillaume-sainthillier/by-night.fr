@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block titre 'Connexion réussie' %}
-{% block title 'Connexion réussie' %}
+{% block meta_title 'Connexion réussie' %}
 
 {% set userInfo = {
     'username' : userInformation.realName,
@@ -32,7 +32,7 @@
                 });
             window.close();
         } else {
-            document.location = "{{ path('app_main_index') }}";
+            document.location = "{{ path('app_index') }}";
         }
     </script>
 {% endblock %}

@@ -11,9 +11,8 @@
 namespace App\Controller\Fragments;
 
 use App\Annotation\ReverseProxy;
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
-use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
@@ -25,23 +24,25 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class WidgetsController extends BaseController
 {
+    /**
+     * @var int
+     */
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_membres", methods={"GET"})
      * @ReverseProxy(expires="6 hours")
      */
-    public function topMembres(UserRepository $userRepository, int $page = 1): Response
+    #[Route(path: '/top/membres/{page<%patterns.page%>}', name: 'app_agenda_top_users', methods: ['GET'])]
+    public function topUsers(UserRepository $userRepository, int $page = 1): Response
     {
-        $count = $userRepository->findMembresCount();
+        $count = $userRepository->getCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
-
-        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_membres', [
+        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_users', [
             'page' => $page + 1,
         ]) : null;
 
-        return $this->render('City/Hinclude/membres.html.twig', [
-            'membres' => $userRepository->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
+        return $this->render('location/hinclude/top-users.html.twig', [
+            'users' => $userRepository->findAllTopUsers($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,
@@ -49,21 +50,19 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_tendances", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
+    #[Route(path: '/_private/tendances/{id<%patterns.id%>}', name: 'app_event_trends', methods: ['GET'])]
+    public function trends(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
         $participer = false;
         $interet = false;
-
-        /** @var User $user */
         $user = $this->getUser();
-        if ($user) {
+        if (null !== $user) {
             $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $userEvent) {
-                $participer = $userEvent->getParticipe();
-                $interet = $userEvent->getInteret();
+                $participer = $userEvent->getGoing();
+                $interet = $userEvent->getWish();
             }
         }
 
@@ -72,19 +71,17 @@ class WidgetsController extends BaseController
             'id' => $event->getId(),
             'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
-
         $eventProfile = $eventProfilePicture->getOriginalPicture($event);
-
         $page = new Page([
             'url' => $link,
-            'title' => $event->getNom(),
-            'text' => $event->getDescriptif(),
+            'title' => $event->getName(),
+            'text' => $event->getDescription(),
             'image' => $eventProfile,
         ]);
 
-        return $this->render('City/Hinclude/tendances.html.twig', [
+        return $this->render('location/hinclude/trends.html.twig', [
             'event' => $event,
-            'tendances' => $eventRepository->findAllTendances($event),
+            'tendances' => $eventRepository->findAllTrends($event),
             'count' => $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),
             'participer' => $participer,
             'interet' => $interet,

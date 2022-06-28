@@ -19,29 +19,28 @@ use Psr\Log\LoggerInterface;
 
 class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    private Server $glide;
-
-    public function __construct(LoggerInterface $logger, Server $glide)
+    public function __construct(LoggerInterface $logger, private Server $glide)
     {
         parent::__construct($logger);
-
-        $this->glide = $glide;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function batchExecute(array $messages)
     {
         $result = [];
 
         /** @var AMQPMessage $message */
-        foreach ($messages as $i => $message) {
+        foreach ($messages as $message) {
             $path = $message->getBody();
 
             try {
                 $this->deleteThumbnails($path);
                 $result[$message->getDeliveryTag()] = ConsumerInterface::MSG_ACK;
-            } catch (Exception $e) {
-                $this->logger->error($e->getMessage(), [
-                    'exception' => $e,
+            } catch (Exception $exception) {
+                $this->logger->error($exception->getMessage(), [
+                    'exception' => $exception,
                     'extra' => [
                         'path' => $path,
                     ],
@@ -53,7 +52,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         return $result;
     }
 
-    private function deleteThumbnails(string $path)
+    private function deleteThumbnails(string $path): void
     {
         $this->glide->deleteCache($path);
     }

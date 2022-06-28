@@ -10,65 +10,82 @@
 
 namespace App\Entity;
 
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
+use App\Repository\CityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\VirtualProperty;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CityRepository", readOnly=true)
- * @ExclusionPolicy("NONE")
- */
-class City extends AdminZone
+#[ORM\Entity(repositoryClass: CityRepository::class, readOnly: true)]
+#[ExclusionPolicy('NONE')]
+class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone", fetch="EAGER")
-     * @Groups({"list_city"})
-     */
+    #[ORM\ManyToOne(targetEntity: AdminZone::class)]
+    #[Groups(['elasticsearch:city:details'])]
     protected ?AdminZone $parent = null;
 
-    /**
-     * @Groups({"list_city"})
-     */
+    #[Groups(['elasticsearch:city:details'])]
+    #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     protected ?Country $country = null;
 
-    public function __toString()
+    /** @var Collection<int, ZipCity> */
+    #[ORM\OneToMany(targetEntity: ZipCity::class, fetch: 'EXTRA_LAZY', mappedBy: 'parent')]
+    protected Collection $zipCities;
+
+    public function __construct()
+    {
+        $this->zipCities = new ArrayCollection();
+    }
+
+    public function __toString(): string
     {
         return $this->getFullName();
     }
 
-    public function getFullName()
+    public function getKeyPrefix(): string
+    {
+        return 'city';
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
+    }
+
+    public function getFullName(): string
     {
         $parts = [];
-        if ($this->getParent()) {
+        if (null !== $this->getParent()) {
             $parts[] = $this->getParent()->getName();
         }
+
         $parts[] = $this->getCountry()->getName();
 
         return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
     }
 
-    /**
-     * Get parent.
-     *
-     * @return AdminZone
-     */
-    public function getParent()
+    #[Groups(['elasticsearch:city:details'])]
+    #[VirtualProperty(name: 'postalCodes')]
+    public function getPostalCodes(): array
     {
-        return $this->parent;
-    }
+        $postalCodes = [];
+        foreach ($this->zipCities as $zipCity) {
+            $postalCodes[] = $zipCity->getPostalCode();
+        }
 
-    /**
-     * Set parent.
-     *
-     * @param AdminZone $parent
-     *
-     * @return City
-     */
-    public function setParent(AdminZone $parent = null)
-    {
-        $this->parent = $parent;
-
-        return $this;
+        return $postalCodes;
     }
 
     public function getCountry(): ?Country
@@ -76,9 +93,51 @@ class City extends AdminZone
         return $this->country;
     }
 
-    public function setCountry(?Country $country): AdminZone
+    public function setCountry(?Country $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    public function getParent(): ?AdminZone
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?AdminZone $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ZipCity>
+     */
+    public function getZipCities(): Collection
+    {
+        return $this->zipCities;
+    }
+
+    public function addZipCity(ZipCity $zipCity): self
+    {
+        if (!$this->zipCities->contains($zipCity)) {
+            $this->zipCities[] = $zipCity;
+            $zipCity->setParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeZipCity(ZipCity $zipCity): self
+    {
+        if ($this->zipCities->removeElement($zipCity)) {
+            // set the owning side to null (unless already changed)
+            if ($zipCity->getParent() === $this) {
+                $zipCity->setParent(null);
+            }
+        }
 
         return $this;
     }

@@ -10,36 +10,27 @@
 
 namespace App\Entity;
 
+use App\Repository\AdminZone2Repository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\AdminZone2Repository", readOnly=true)
- */
+#[ORM\Entity(repositoryClass: AdminZone2Repository::class, readOnly: true)]
 class AdminZone2 extends AdminZone
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone1", fetch="EXTRA_LAZY")
-     */
+    #[ORM\ManyToOne(targetEntity: AdminZone1::class, fetch: 'EXTRA_LAZY')]
     protected ?AdminZone1 $parent = null;
 
     /**
      * Get parent.
-     *
-     * @return AdminZone1
      */
-    public function getParent()
+    public function getParent(): ?AdminZone1
     {
         return $this->parent;
     }
 
     /**
      * Set parent.
-     *
-     * @param AdminZone1 $parent
-     *
-     * @return AdminZone2
      */
-    public function setParent(AdminZone1 $parent = null)
+    public function setParent(AdminZone1 $parent = null): self
     {
         $this->parent = $parent;
 

@@ -16,15 +16,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CheckboxTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * {@inheritDoc}
+     */
     public static function getExtendedTypes(): iterable
     {
         return [CheckboxType::class];
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'group_class' => 'checkbox',
+            'label_attr' => ['class' => 'checkbox-custom'],
         ]);
     }
 }

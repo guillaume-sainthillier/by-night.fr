@@ -10,25 +10,26 @@
 
 namespace App\Social;
 
-use Facebook\Facebook as Client;
-
 class Facebook extends Social
 {
-    protected Client $client;
-
-    protected function constructClient()
+    /**
+     * {@inheritDoc}
+     */
+    protected function constructClient(): void
     {
-        $this->client = new Client([
-            'app_id' => $this->id,
-            'app_secret' => $this->secret,
-        ]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getInfoPropertyPrefix(): ?string
     {
         return 'facebook';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getRoleName(): string
     {
         return 'ROLE_FACEBOOK';

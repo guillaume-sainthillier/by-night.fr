@@ -3,9 +3,12 @@
 
     #event {
         a.image-gallery {
-            display: block;
-            height: 100%;
-            border-right: 1px solid $card-border-color;
+            border-bottom: 1px solid $card-border-color;
+
+            @include media-breakpoint-up(lg) {
+                border-bottom: none;
+                border-right: 1px solid $card-border-color;
+            }
         }
 
         .event-details {
@@ -27,8 +30,9 @@
 }
 
 .detail-item {
-    position: relative;
-    margin-left: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    flex-flow: row;
 
     &:last-child {
         margin-bottom: 0;
@@ -38,14 +42,11 @@
         margin-bottom: 0;
     }
 
-    .fa {
-        position: absolute;
-        width: 1rem;
-        height: 1rem;
+    .fa,
+    .fab {
+        min-width: 1.25rem;
         text-align: center;
-        left: 0;
-        top: 0;
-        margin-top: 0.125rem;
-        margin-left: -1.25rem;
+        margin-top: 0.25rem;
+        margin-right: 0.25rem;
     }
 }

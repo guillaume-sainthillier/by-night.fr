@@ -16,10 +16,10 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% apply spaceless %}{% block full_title %}{% apply spaceless %}{%- block title -%}{%- endblock -%}{% endapply %} - {% block nom_site 'By Night' %}{% endblock %}{% endapply %}</title>
-    <meta name="title" content="{{ block('og_titre') }}">
+    <title>{% apply spaceless %}{%- block meta_title -%}{%- endblock -%}{% endapply %} - By Night</title>
+    <meta name="title" content="{{- block('meta_title') -}}">
     <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords %}{% endblock %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
-    <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}">
 
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=yyQOxPP629">
@@ -33,20 +33,20 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- ./Icons -->
 
     <!-- OpenGraph -->
-    <meta property="og:site_name" content="{{ block('nom_site') }}">
-    <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
-    <meta property="og:title" content="{% block og_titre %}{{ block('title') }}{% endblock %}">
-    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}{{ url('app_main_index') }}{% endblock %}">
+    <meta property="og:site_name" content="By Night">
+    <meta property="og:description" content="{% block og_description block('meta_description') %}">
+    <meta property="og:title" content="{% block og_title block('meta_title') %}">
+    <meta property="og:type" content="{% block og_type 'website' %}">
+    <meta property="og:url" content="{% block og_url url('app_index') %}">
     <meta property="og:locale" content="fr" />
-    <meta property="og:image" content="{% block og_image %}{{ asset('build/images/by-night.png') }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image asset('build/images/by-night.png') %}">
     <!-- ./OpenGraph -->
 
     <!-- Twitter -->
     {% if social_manager.twitterIdPage %}
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}" />
-        <meta name="twitter:title" content="{{ block('og_titre') }}" />
+        <meta name="twitter:title" content="{{ block('og_title') }}" />
         <meta name="twitter:description" content="{{ block('og_description') }}" />
         <meta name="twitter:image:src" content="{{ block('og_image') }}" />
     {% endif %}
@@ -66,7 +66,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
     <!-- DC -->
     <meta name="dc.description" content="{{ block('og_description') }}">
-    <meta name="dc.title" content="{{ block('og_titre') }}">
+    <meta name="dc.title" content="{{ block('og_title') }}">
     <meta name="dc.keywords" content="{{ block('meta_full_keywords') }}" />
     <!-- ./DC -->
 
@@ -75,31 +75,43 @@ _______     __  _   _ _____ _____ _    _ _______
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 
     <!-- CSS -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300|Roboto:300,400,500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     {{ encore_entry_link_tags('app') }}
     {% block css %}{% endblock %}
     <!-- ./CSS -->
 
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-TXB7VR2');</script>
+    <!-- End Google Tag Manager -->
     <script data-ad-client="ca-pub-2072406985754187" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-45716709-2"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-45716709-2');
-    </script>
 
     <script type="application/ld+json">
         {
             "@context": "http://schema.org",
             "@type": "WebSite",
-            "url": "{{ url('app_main_index') }}",
+            "url": "{{ url('app_index') }}",
             "potentialAction": {
                 "@type": "SearchAction",
-                "target": "{{ url('app_search_query', {'q': '{search_term_string}'})|url_decode }}",
+                "target": "{{ url('app_search_index', {'q': '{search_term_string}'})|url_decode }}",
                 "query-input": "required name=search_term_string"
             }
         }
+
+
 
     </script>
     {% block head_js_layout %}{% endblock %}
@@ -116,18 +128,15 @@ _______     __  _   _ _____ _____ _    _ _______
         {% endif %}
         <!-- ./Menu -->
 
-        {% block full_breadcrumb %}
-        <div id="bread">
-            <div class="container d-flex">
-                <button type="button" class="btn btn-secondary d-lg-none">
-                    <i class="fa fa-chevron-down"></i>
-                </button>
-                {% do menu.addItem('By Night', url('app_main_index')) %}
+        {% block breadcrumb_widget %}
+            <div id="bread">
+                <div class="container">
+                    {% do menu.addItem('By Night', url('app_index')) %}
 
-                {% block breadcrumb %}{% endblock %}
-                {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb collapsed', itemClass: 'breadcrumb-item'}) }}
+                    {% block breadcrumb %}{% endblock %}
+                    {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
+                </div>
             </div>
-        </div>
         {% endblock %}
     </header>
 
@@ -139,7 +148,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
 <!-- Modals -->
 <div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-hidden="true">
-    {% include "layouts/modal.html.twig" %}
+    {% include 'layouts/modal.html.twig' %}
 </div>
 {% block modals %}{% endblock %}
 <!-- ./Modals -->
@@ -161,28 +170,28 @@ _______     __  _   _ _____ _____ _    _ _______
 {{ encore_entry_script_tags('app') }}
 {%- block js -%}{%- endblock -%}
 <script>
-    on(window, 'load', function () {
-        App.run({{ {
-            'environment': app.environment,
-            'locale': app.request.locale,
-            'release': app_version,
-            'dsn': sentry_dsn,
-            'user' : (app.user ? {'id': app.user.id, 'username': app.user.username, 'email': app.user.email} : null)
-        }|json_encode|raw }});
-    });
+  on(window, 'load', function () {
+    App.run({{ {
+        'environment': app.environment,
+        'locale': app.request.locale,
+        'release': app_version,
+        'dsn': sentry_dsn,
+        'user' : (app.user ? {'id': app.user.id, 'username': app.user.username, 'email': app.user.email} : null)
+    }|json_encode|raw }});
+  });
 </script>
 <script type="text/javascript">
-    $(document).ready(function () {
-        $.cookieBar({
-            message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
-            acceptText: 'J\'ai compris',
-            bottom: true,
-            fixed: true,
-            policyButton: true,
-            policyText: 'En savoir plus',
-            policyURL: '{{ path('app_main_cookie') }}'
-        });
+  $(document).ready(function () {
+    $.cookieBar({
+      message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
+      acceptText: 'J\'ai compris',
+      bottom: true,
+      fixed: true,
+      policyButton: true,
+      policyText: 'En savoir plus',
+      policyURL: '{{ path('app_main_cookie') }}'
     });
+  });
 </script>
 <!-- ./JS -->
 </body>

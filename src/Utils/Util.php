@@ -48,19 +48,32 @@ class Util
         $this->stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
     }
 
-    public function replaceNonNumericChars($string)
+    public function replaceNonNumericChars(?string $string): string
     {
-        return trim(preg_replace('/[^\d.-]/u', '', $string));
+        if (null === $string) {
+            return '';
+        }
+
+        return trim(preg_replace('#[^\d.-]#u', '', $string));
     }
 
-    public function replaceNonAlphanumericChars($string)
+    public function replaceNonAlphanumericChars(?string $string): string
     {
-        return trim(preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
+        if (null === $string) {
+            return '';
+        }
+
+        return trim(preg_replace('#[^A-Za-z0-9 ]#u', '', $string));
     }
 
-    public function deleteSpaceBetween($string, $delimiters = '-')
+    /**
+     * @param string|string[] $delimiters
+     *
+     * @psalm-param ''|'-'|array{0?: '-'} $delimiters
+     */
+    public function deleteSpaceBetween(?string $string, array|string $delimiters = '-'): string
     {
-        if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
+        if (\is_string($delimiters) && isset($delimiters[0])) { // Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && \count($delimiters) > 0) {
             return trim(preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', fn ($matches) => $matches[1], $string));
@@ -69,39 +82,39 @@ class Util
         return trim($string);
     }
 
-    public function deleteStopWords($string)
+    public function deleteStopWords(?string $string): string
     {
         return trim(preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
-    public function deleteMultipleSpaces(?string $string)
+    public function deleteMultipleSpaces(?string $string): ?string
     {
         if (null === $string) {
             return null;
         }
 
-        return u($string)->collapseWhitespace()->trim();
+        return u($string)->collapseWhitespace()->trim()->toString();
     }
 
-    public function utf8TitleCase(?string $string)
+    public function utf8TitleCase(?string $string): string|null
     {
         if (null === $string) {
             return null;
         }
 
-        return u($string)->title(true)->trim();
+        return u($string)->title(true)->trim()->toString();
     }
 
-    public function utf8LowerCase(?string $string)
+    public function utf8LowerCase(?string $string): string|null
     {
         if (null === $string) {
             return null;
         }
 
-        return u($string)->lower()->trim();
+        return u($string)->lower()->trim()->toString();
     }
 
-    public function replaceAccents(?string $string)
+    public function replaceAccents(?string $string): string
     {
         $unwanted_array = [
             'Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',

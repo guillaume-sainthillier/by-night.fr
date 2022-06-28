@@ -2,56 +2,54 @@
 
 declare(strict_types=1);
 
-use Rector\CodeQuality\Rector\Array_\ArrayThisCallToThisMethodCallRector;
-use Rector\CodeQuality\Rector\Array_\CallableThisArrayToAnonymousFunctionRector;
-use Rector\Core\Configuration\Option;
-use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
-use Rector\Php71\Rector\List_\ListToArrayDestructRector;
+/*
+ * This file is part of By Night.
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+use Rector\Config\RectorConfig;
+use Rector\Doctrine\Rector\Property\ImproveDoctrineCollectionDocTypeInEntityRector;
+use Rector\Doctrine\Set\DoctrineSetList;
+use Rector\Php71\Rector\FuncCall\CountOnNullRector;
+use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
+use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Rector\Symfony\Rector\MethodCall\ContainerGetToConstructorInjectionRector;
+use Rector\Symfony\Set\SensiolabsSetList;
+use Rector\Symfony\Set\SymfonyLevelSetList;
+use Rector\Symfony\Set\SymfonySetList;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $parameters = $containerConfigurator->parameters();
-
-    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
-    $parameters->set(Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER, __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
-
-    $parameters->set(Option::AUTOLOAD_PATHS, [
-        __DIR__ . '/vendor/autoload.php',
-        __DIR__ . '/bin/.phpunit/phpunit/vendor/autoload.php',
-    ]);
-
-
-    $parameters->set(Option::PATHS, [
+return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->paths([
+        __DIR__ . '/migrations',
         __DIR__ . '/src',
         __DIR__ . '/tests',
     ]);
 
-    $parameters->set(Option::SETS, [
-        SetList::CODE_QUALITY,
-        SetList::PHP_70,
-        SetList::PHP_71,
-        SetList::PHP_72,
-        SetList::PHP_73,
-        SetList::PHP_74,
-        SetList::SYMFONY_40,
-        SetList::SYMFONY_41,
-        SetList::SYMFONY_42,
-        SetList::SYMFONY_43,
-        SetList::SYMFONY_44,
-        SetList::SYMFONY_50,
-        SetList::SYMFONY_50_TYPES,
-        SetList::SYMFONY_52,
+    $rectorConfig->symfonyContainerXml(__DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
+
+    // define sets of rules
+    $rectorConfig->sets([
+        DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
+        SymfonyLevelSetList::UP_TO_SYMFONY_54,
+        SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
+        SensiolabsSetList::FRAMEWORK_EXTRA_61,
+        LevelSetList::UP_TO_PHP_80,
+        SetList::CODING_STYLE,
     ]);
 
-    //"Syntax error, unexpected T_MATCH:136".
-    $parameters->set(Option::SKIP, [
-        __DIR__ . '/src/SearchRepository/EventElasticaRepository.php',
-        CallableThisArrayToAnonymousFunctionRector::class,
-        ArrayThisCallToThisMethodCallRector::class,
-        RemoveExtraParametersRector::class,
-        ListToArrayDestructRector::class,
-    ]);
+    $rectorConfig->rule(ImproveDoctrineCollectionDocTypeInEntityRector::class);
 
-    $parameters->set(Option::ENABLE_CACHE, true);
+    $rectorConfig->skip([
+        CountOnNullRector::class,
+        ClassPropertyAssignToConstructorPromotionRector::class => [
+            __DIR__ . '/src/Entity/*',
+        ],
+        ContainerGetToConstructorInjectionRector::class => [
+            __DIR__ . '/migrations',
+        ],
+    ]);
 };

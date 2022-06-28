@@ -23,11 +23,16 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ProfileFormType extends AbstractType
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('username', TextType::class, [
-                'label' => 'Nom d\'utilisateur',
+                'label' => "Nom d'utilisateur",
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Adresse email',
@@ -53,10 +58,17 @@ class ProfileFormType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
-                'thumb_params' => ['w' => 200, 'h' => 200, 'fit' => 'fill'],
+                'thumb_params' => [
+                    'height' => 200,
+                ],
             ]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

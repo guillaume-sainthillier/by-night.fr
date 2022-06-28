@@ -19,30 +19,19 @@ class CityManager
     private ?City $currentCity = null;
 
     private ?City $cookieCity = null;
+
     private bool $initCooky = false;
 
-    private RequestStack $requestStack;
-
-    private CityRepository $cityRepository;
-
-    public function __construct(RequestStack $requestStack, CityRepository $cityRepository)
+    public function __construct(private RequestStack $requestStack, private CityRepository $cityRepository)
     {
-        $this->requestStack = $requestStack;
-        $this->cityRepository = $cityRepository;
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCity()
+    public function getCity(): ?City
     {
         return $this->getCurrentCity() ?: $this->getCookieCity();
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCurrentCity()
+    public function getCurrentCity(): ?City
     {
         return $this->currentCity;
     }
@@ -50,17 +39,14 @@ class CityManager
     /**
      * @return $this
      */
-    public function setCurrentCity(City $city)
+    public function setCurrentCity(City $city): self
     {
         $this->currentCity = $city;
 
         return $this;
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCookieCity()
+    public function getCookieCity(): ?City
     {
         if (!$this->initCooky) {
             $this->computeCityFromCookie();
@@ -70,11 +56,11 @@ class CityManager
         return $this->cookieCity;
     }
 
-    private function computeCityFromCookie()
+    private function computeCityFromCookie(): void
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         if ($currentRequest->cookies->has('app_city')) {
-            $this->cookieCity = $this->cityRepository->findBySlug($currentRequest->cookies->get('app_city'));
+            $this->cookieCity = $this->cityRepository->findOneBySlug($currentRequest->cookies->get('app_city'));
         } else {
             $this->cookieCity = null;
         }

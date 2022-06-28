@@ -10,67 +10,56 @@
 
 namespace App\Entity;
 
+use App\Repository\UserEventRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserEventRepository")
- * @ORM\Table(uniqueConstraints={
- *     @ORM\UniqueConstraint(name="user_event_unique", columns={"user_id", "event_id"})
- * }
- * )
- */
-class UserEvent
+#[ORM\Entity(repositoryClass: UserEventRepository::class)]
+
+#[ORM\UniqueConstraint(name: 'user_event_unique', columns: ['user_id', 'event_id'])]
+class UserEvent implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
+    #[ORM\Column(type: 'boolean')]
+    private bool $going = false;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private bool $participe = false;
+    #[ORM\Column(type: 'boolean')]
+    private bool $wish = false;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private bool $interet = false;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userEvents")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userEvents')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="userEvents")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'userEvents')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
-    public function __toString()
+    public function __toString(): string
     {
         return '#' . $this->id ?: '?';
     }
 
-    public function getParticipe(): ?bool
+    public function getGoing(): ?bool
     {
-        return $this->participe;
+        return $this->going;
     }
 
-    public function setParticipe(bool $participe): self
+    public function setGoing(bool $going): self
     {
-        $this->participe = $participe;
+        $this->going = $going;
 
         return $this;
     }
 
-    public function getInteret(): ?bool
+    public function getWish(): ?bool
     {
-        return $this->interet;
+        return $this->wish;
     }
 
-    public function setInteret(bool $interet): self
+    public function setWish(bool $wish): self
     {
-        $this->interet = $interet;
+        $this->wish = $wish;
 
         return $this;
     }
@@ -97,5 +86,15 @@ class UserEvent
         $this->event = $event;
 
         return $this;
+    }
+
+    public function isGoing(): ?bool
+    {
+        return $this->going;
+    }
+
+    public function isWish(): ?bool
+    {
+        return $this->wish;
     }
 }

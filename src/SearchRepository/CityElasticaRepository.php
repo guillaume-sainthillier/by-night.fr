@@ -10,6 +10,7 @@
 
 namespace App\SearchRepository;
 
+use Elastica\Query;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
@@ -18,20 +19,21 @@ class CityElasticaRepository extends Repository
 {
     /**
      * @param string $q
-     *
-     * @return PaginatorAdapterInterface
      */
-    public function findWithSearch($q)
+    public function findWithSearch(?string $q): PaginatorAdapterInterface
     {
         $query = new MultiMatch();
         $query
-            ->setQuery($q)
-            ->setFields([
-                'name',
-                'parent.name',
-                'country.name',
-            ]);
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($q ?? '')
+        ;
 
-        return $this->createPaginatorAdapter($query);
+        $finalQuery = Query::create($query);
+        $finalQuery->setSource([]); // Grab only id as we don't need other fields
+        $finalQuery->addSort(['_score' => 'DESC']);
+        $finalQuery->addSort(['population' => 'DESC']);
+
+        return $this->createPaginatorAdapter($finalQuery);
     }
 }

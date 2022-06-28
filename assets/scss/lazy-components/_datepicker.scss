@@ -1,0 +1,11 @@
+@import '../core';
+@import '~daterangepicker/daterangepicker.css';
+
+.daterangepicker td.active,
+.daterangepicker td.active:hover {
+    background-color: $primary !important;
+}
+
+.daterangepicker .ranges li.active {
+    background-color: tint-color($primary, 10%) !important;
+}

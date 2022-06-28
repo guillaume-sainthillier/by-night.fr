@@ -17,9 +17,15 @@ with this source code in the file LICENSE.
 EOF;
 
 $finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__ . '/public')
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/tests')
-    ->in(__DIR__ . '/migrations');
+    ->in(__DIR__ . '/migrations')
+    ->append([
+        __FILE__,
+        __DIR__ . '/rector.php',
+    ])
+;
 
 $config = new PhpCsFixer\Config();
 
@@ -39,4 +45,4 @@ return $config
     ])
     ->setRiskyAllowed(true)
     ->setFinder($finder)
-    ->setCacheFile(__DIR__ . '/var/.php_cs.cache');
+    ->setCacheFile(__DIR__ . '/var/.php-cs-fixer.cache');

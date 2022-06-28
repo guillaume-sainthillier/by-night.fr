@@ -10,11 +10,14 @@
 
 namespace App\Form\Extension;
 
+use App\Dto\EventDto;
+use App\Dto\UserDto;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Picture\UserProfilePicture;
 use App\Twig\AssetExtension;
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -24,53 +27,45 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 
 class ImageTypeExtension extends AbstractTypeExtension
 {
-    private StorageInterface $storage;
-
-    private AssetExtension $assetExtension;
-
-    private UserProfilePicture $userProfilePicture;
-
-    private EventProfilePicture $eventProfilePicture;
-
-    public function __construct(StorageInterface $storage, AssetExtension $assetExtension, UserProfilePicture $userProfilePicture, EventProfilePicture $eventProfilePicture)
-    {
-        $this->storage = $storage;
-        $this->assetExtension = $assetExtension;
-        $this->userProfilePicture = $userProfilePicture;
-        $this->eventProfilePicture = $eventProfilePicture;
+    public function __construct(
+        private StorageInterface $storage,
+        private AssetExtension $assetExtension,
+        private UserProfilePicture $userProfilePicture,
+        private EventProfilePicture $eventProfilePicture
+    ) {
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $object = $form->getParent()->getData();
-        $view->vars['image_thumb_uri'] = null;
-        $view->vars['image_thumb_uri_retina'] = null;
-        $view->vars['image_thumb_params'] = $options['thumb_params'];
+        $view->vars['image_thumb_params'] = [];
 
         if (null !== $object) {
-            if ($object instanceof Event) {
+            if ($object instanceof Event || $object instanceof EventDto) {
                 $view->vars['download_uri'] = $this->eventProfilePicture->getOriginalPicture($object);
-                $view->vars['image_thumb_uri'] = $this->eventProfilePicture->getPicture($object, $options['thumb_params']);
-                $view->vars['image_thumb_uri_retina'] = $this->eventProfilePicture->getPicture($object, $options['thumb_params'] + ['dpr' => 2]);
-            } elseif ($object instanceof User) {
+                $view->vars['image_thumb_params'] = array_merge([
+                    'event' => $object,
+                    'loader' => 'event',
+                ], $options['thumb_params']);
+            } elseif ($object instanceof User || $object instanceof UserDto) {
                 $view->vars['download_uri'] = $this->userProfilePicture->getOriginalProfilePicture($object);
-                $view->vars['image_thumb_uri'] = $this->userProfilePicture->getProfilePicture($object, $options['thumb_params']);
-                $view->vars['image_thumb_uri_retina'] = $this->userProfilePicture->getProfilePicture($object, $options['thumb_params'] + ['dpr' => 2]);
-            } else {
-                $path = $this->storage->resolveUri($object, $form->getName(), null);
-                if (null !== $path) {
-                    $view->vars['image_thumb_uri'] = $this->assetExtension->thumbAsset($path, $options['thumb_params']);
-                    $view->vars['image_thumb_uri_retina'] = $this->assetExtension->thumbAsset($object, $options['thumb_params'] + ['dpr' => 2]);
-                }
+                $view->vars['image_thumb_params'] = array_merge([
+                    'user' => $object,
+                    'loader' => 'user',
+                ], $options['thumb_params']);
             }
         }
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -83,6 +78,8 @@ class ImageTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-return Generator<int, VichImageType::class, mixed, void>
      */
     public static function getExtendedTypes(): iterable
     {

@@ -17,30 +17,23 @@ use Twig\TwigFunction;
 
 class TagsExtension extends Extension
 {
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('tags', [$this, 'getTags']),
         ];
     }
 
-    public function getTags($type, $object = null)
+    public function getTags(string $type, $object = null): string
     {
-        switch ($type) {
-            case 'location':
-                return TagsInvalidator::getLocationTag($object);
-            case 'event':
-                return TagsInvalidator::getEventTag($object);
-            case 'place':
-                return TagsInvalidator::getPlaceTag($object);
-            case 'user':
-                return TagsInvalidator::getUserTag($object);
-            case 'tendances':
-                return TagsInvalidator::getTendanceTag($object);
-            case 'menu':
-                return TagsInvalidator::getMenuTag();
-        }
-
-        throw new RuntimeException(sprintf('No tags for %s', $type));
+        return match ($type) {
+            'location' => TagsInvalidator::getLocationTag($object),
+            'event' => TagsInvalidator::getEventTag($object),
+            'place' => TagsInvalidator::getPlaceTag($object),
+            'user' => TagsInvalidator::getUserTag($object),
+            'trends' => TagsInvalidator::getTrendTag($object),
+            'header' => TagsInvalidator::getHeaderTag(),
+            default => throw new RuntimeException(sprintf('No tags for %s', $type)),
+        };
     }
 }

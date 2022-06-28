@@ -1,7 +1,0 @@
-{% set partial = app.request.xmlHttpRequest %}
-
-{% if partial %}
-    {% include "City/Agenda/index_content.html.twig" %}
-{% else %}
-    {% include "City/Agenda/index_full.html.twig" %}
-{% endif %}

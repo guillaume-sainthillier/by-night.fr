@@ -22,20 +22,20 @@ use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 
 class UserUpdater extends Updater
 {
+    /**
+     * @var int
+     */
     private const PAGINATION_SIZE = 50;
 
-    protected UserHandler $userHandler;
-    private UserRepository $userRepository;
-
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, UserHandler $userHandler, UserRepository $userRepository)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, protected UserHandler $userHandler, private UserRepository $userRepository)
     {
         parent::__construct($entityManager, $logger, $facebookAdmin);
-
-        $this->userHandler = $userHandler;
-        $this->userRepository = $userRepository;
     }
 
-    public function update(DateTimeInterface $from)
+    /**
+     * {@inheritDoc}
+     */
+    public function update(DateTimeInterface $from): void
     {
         $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);
@@ -54,7 +54,12 @@ class UserUpdater extends Updater
         }
     }
 
-    private function extractFbIds(array $users)
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<string>
+     */
+    private function extractFbIds(array $users): array
     {
         return array_filter(array_unique(array_map(fn (User $user) => $user->getOAuth()->getFacebookId(), $users)));
     }
@@ -62,7 +67,7 @@ class UserUpdater extends Updater
     /**
      * @param User[] $users
      */
-    private function doUpdate(array $users, array $downloadUrls)
+    private function doUpdate(array $users, array $downloadUrls): void
     {
         $responses = [];
 
@@ -90,14 +95,14 @@ class UserUpdater extends Updater
                         $this->userHandler->uploadFile($user, $content, $contentType);
                     }
                 }
-            } catch (HttpExceptionInterface $e) {
-                $infos = $e->getResponse()->getInfo();
+            } catch (HttpExceptionInterface $httpException) {
+                $infos = $httpException->getResponse()->getInfo();
                 unset($infos['user_data']);
             }
         }
     }
 
-    private function doFlush()
+    private function doFlush(): void
     {
         $this->entityManager->flush();
         $this->entityManager->clear(User::class);

@@ -21,20 +21,10 @@ abstract class Updater
 {
     protected HttpClientInterface $client;
 
-    protected EntityManagerInterface $entityManager;
-
-    protected FacebookAdmin $facebookAdmin;
-
-    protected LoggerInterface $logger;
-
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin)
+    public function __construct(protected EntityManagerInterface $entityManager, protected LoggerInterface $logger, protected FacebookAdmin $facebookAdmin)
     {
-        $this->entityManager = $entityManager;
-        $this->logger = $logger;
-        $this->facebookAdmin = $facebookAdmin;
-
         $this->client = HttpClient::create();
     }
 
-    abstract public function update(DateTimeInterface $from);
+    abstract public function update(DateTimeInterface $from): void;
 }

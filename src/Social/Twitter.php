@@ -13,17 +13,21 @@ namespace App\Social;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\App\Location;
 use Exception;
+use const JSON_THROW_ON_ERROR;
 
 class Twitter extends Social
 {
     private ?TwitterOAuth $client = null;
 
-    public function constructClient()
+    /**
+     * {@inheritDoc}
+     */
+    protected function constructClient(): void
     {
         $this->client = new TwitterOAuth($this->id, $this->secret);
     }
 
-    public function getTimeline(Location $location, $max_id, $limit)
+    public function getTimeline(Location $location, ?int $max_id, int $limit): array
     {
         $this->init();
 
@@ -40,10 +44,10 @@ class Twitter extends Social
         }
 
         try {
-            return json_decode(json_encode($this->client->get('search/tweets', $params), \JSON_THROW_ON_ERROR), true, 512, \JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
+            return json_decode(json_encode($this->client->get('search/tweets', $params), JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'exception' => $exception,
                 'extra' => [
                     'params' => $params,
                 ],
@@ -53,16 +57,25 @@ class Twitter extends Social
         return [];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getInfoProperties(): array
     {
         return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'nickname', 'email', 'profilePicture'];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getInfoPropertyPrefix(): ?string
     {
         return 'twitter';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getRoleName(): string
     {
         return 'ROLE_TWITTER';

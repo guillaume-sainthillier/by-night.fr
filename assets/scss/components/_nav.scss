@@ -3,6 +3,11 @@
     padding-right: 0;
 }
 
+.nav .nav-link {
+    text-transform: uppercase;
+    font-size: 0.875rem;
+}
+
 .nav-tabs {
     flex-wrap: nowrap;
 }
