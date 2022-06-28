@@ -1,4 +1,4 @@
-{% include '_partials/event/list-card.html.twig' with({'events': events}) %}
+{% include 'partials/event/_list-grid-vertical.html.twig' with({'events': events}) %}
 
 {% if events.paginationData.next is defined %}
     <div class="text-center my-4">

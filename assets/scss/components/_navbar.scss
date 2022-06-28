@@ -47,13 +47,12 @@
     }
 
     .search-form {
+        display: flex;
+        align-items: center;
         width: 100%;
         max-width: 720px;
         position: relative;
         background: rgba(241, 243, 244, 0.24);
-        border: 1px solid transparent;
-        height: 48px;
-        line-height: 46px;
         transition: background 100ms ease-in, width 100ms ease-out;
 
         &,
@@ -62,38 +61,31 @@
             color: $navbar-dark-color;
         }
 
-        .bmd-form-group {
-            width: 100%;
-        }
-
         input {
             height: 100%;
             width: 100%;
-            padding-left: 2.5rem;
             color: $navbar-dark-color;
             background-color: transparent;
-            border-color: transparent;
-            border-style: solid;
-            border-width: 0 1px;
+            border: none;
             outline: none;
         }
 
         .btn {
+            color: $navbar-dark-color;
             font-size: 1.25rem;
-            position: absolute;
-            left: 0;
-            top: 5px;
-            z-index: 1;
         }
 
         &.focus {
             background: white;
-            border: 1px solid transparent;
 
             &,
             input,
             input::placeholder {
-                color: #5f6368;
+                color: $navbar-light-color;
+            }
+
+            .btn {
+                color: $navbar-light-color;
             }
         }
     }

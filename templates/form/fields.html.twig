@@ -68,3 +68,35 @@
         </div>
     {% endif %}
 {%- endblock -%}
+
+
+{%- block form_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    {%- set row_class = row_class|default(row_attr.class|default('form-group')|trim) -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
+    {%- if 'form-floating' in row_class -%}
+        {{- form_widget(form, widget_attr) -}}
+        {{- form_label(form) -}}
+    {%- else -%}
+        {{- form_label(form) -}}
+        {% if icon_prepend or icon_append %}
+            {% embed 'components/input-icon.html.twig' with({
+                iconPrepend: icon_prepend,
+                iconAppend: icon_append
+            }) %}
+                {% block body %}{{- form_widget(form, widget_attr) -}}{% endblock %}
+            {% endembed %}
+        {% else %}
+            {{- form_widget(form, widget_attr) -}}
+        {% endif %}
+    {%- endif -%}
+    {{- form_help(form) -}}
+    {{- form_errors(form) -}}
+    </{{ element|default('div') }}>
+{%- endblock form_row %}

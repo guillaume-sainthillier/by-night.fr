@@ -1,0 +1,8 @@
+{% if microdata is not defined %}
+    {% set microdata = true %}
+{% endif %}
+{{ fos_httpcache_tag('block-event') }}
+
+{% for i, event in events %}
+    {% include 'partials/event/_item-card.html.twig' %}
+{% endfor %}

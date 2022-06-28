@@ -1,0 +1,29 @@
+{% import 'form/macros.html.twig' as macros %}
+
+{{ fos_httpcache_tag(tags('user', user)) }}
+<div class="card card-user card-layout {{ cardLayout|default('') }} row g-0">
+    <div class="col-sm-3 col-lg-4 card-img-container">
+        {{ macros.userLazyThumb(user, 360, null, {
+            fit: null,
+            objectFit: 'contain',
+            aspectRatio: 16/9,
+            wrapperAttr: {
+                class: ''
+            }
+        }) }}
+    </div>
+    <div class="col-sm-9 col-lg-8 card-content">
+        <div class="card-body">
+            <h3 class="h5">
+                <a href="{{ path('app_user_index', {'id' : user.id, 'slug': user.slug}) }}">
+                    {{ user.username }}
+                </a>
+            </h3>
+            <p class="card-text">
+                Membre depuis le
+                <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
+            </p>
+            {% include 'partials/user/_socials.html.twig' %}
+        </div>
+    </div>
+</div>

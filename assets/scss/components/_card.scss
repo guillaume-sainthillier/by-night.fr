@@ -5,7 +5,8 @@
     box-shadow: $box-shadow;
 
     .card-header {
-        .fa {
+        .fa,
+        .icon {
             margin-right: 0.25em;
         }
     }
@@ -36,18 +37,22 @@
 }
 
 .card-event {
-    .card-img-container {
-        width: 100%;
-    }
-
-    .card-event-body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .detail-item {
+        margin-bottom: 0.125rem;
     }
 }
-.card-event-horizontal {
-    .card-event-body {
-        flex-direction: row;
+
+.card-layout {
+    flex-direction: row;
+
+    .card-content {
+        display: flex;
+    }
+
+    &.card-layout-vertical {
+        .card-img-container,
+        .card-content {
+            width: 100%;
+        }
     }
 }

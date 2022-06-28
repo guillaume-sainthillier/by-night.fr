@@ -38,7 +38,7 @@ class CommonController extends AbstractController
 
         $city ??= $cityManager->getCity();
 
-        return $this->render('fragments/menu.html.twig', [
+        return $this->render('fragments/header.html.twig', [
             'city' => $city,
         ]);
     }

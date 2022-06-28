@@ -30,7 +30,10 @@ class EventLoader extends AbstractImageLoader
 
         \assert($event instanceof Event || $event instanceof EventDto);
 
-        ['path' => $path, 'source' => $source] = $this->eventProfilePicture->getPicturePathAndSource($event);
+        [
+            'path' => $path,
+            'source' => $source
+        ] = $this->eventProfilePicture->getPicturePathAndSource($event);
         $params['path'] = $path;
         $defaultParams = [
             'aspectRatio' => 16 / 9,

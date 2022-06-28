@@ -92,7 +92,7 @@ class EventController extends BaseController
                 'Votre événement a bien été créé. Merci !'
             );
 
-            // return $this->redirectToRoute('app_event_list');
+            return $this->redirectToRoute('app_event_list');
         }
 
         return $this->render('espace-perso/new.html.twig', [

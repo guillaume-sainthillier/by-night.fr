@@ -1,12 +1,12 @@
-{% import 'utils/macros.html.twig' as macros %}
+{% import 'form/macros.html.twig' as macros %}
 <div class="input-icon">
-    {% if iconPrepend is defined %}
+    {% if iconPrepend is defined and iconPrepend %}
         <span class="input-icon-addon">
         {{ macros.icon(iconPrepend) }}
     </span>
     {% endif %}
     {% block body '' %}
-    {% if iconAppend is defined %}
+    {% if iconAppend is defined and iconAppend %}
         <span class="input-icon-addon">
         {{ macros.icon(iconAppend) }}
     </span>

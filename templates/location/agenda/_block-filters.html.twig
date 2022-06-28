@@ -12,10 +12,10 @@
                 {{ form_widget(form.to) }}
                 {{ form_errors(form.from) }}
                 {{ form_errors(form.to) }}
-                {{ form_row(form.shortcut, {'label': 'Quand ?'}) }}
+                {{ form_row(form.shortcut, {'label': 'Quand ?', 'icon_prepend': 'calendar-alt'}) }}
             </div>
             <div class="col-md-6 col-lg-8">
-                {{ form_row(form.term) }}
+                {{ form_row(form.term, {'icon_prepend': 'search'}) }}
             </div>
         </div>
         {% if search.term or search.range != 25 %}
@@ -33,7 +33,7 @@
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
                 <div class="col-md-9">
-                    {{ form_row(form.type) }}
+                    {{ form_row(form.type, {'icon_prepend': 'masks-theater'}) }}
                 </div>
                 <div class="col-md-3">
                     {{ form_row(form.range) }}

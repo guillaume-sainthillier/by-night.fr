@@ -41,9 +41,11 @@ class ChangePasswordFormType extends AbstractType
                         ]),
                     ],
                     'label' => 'Nouveau mot de passe',
+                    'icon-prepend' => 'lock',
                 ],
                 'second_options' => [
                     'label' => 'Répetez le mot  de passe',
+                    'icon-prepend' => 'lock',
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas',
                 // Instead of being set onto the object directly,

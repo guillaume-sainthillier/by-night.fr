@@ -1,5 +1,11 @@
+$input-icon-color: $primary;
+
 form {
-    margin-bottom: 0;
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 1rem;
 }
 
 .form-control[readonly].form-control-readonly {
@@ -10,14 +16,6 @@ form {
     .form-group {
         margin-top: 0;
     }
-}
-
-.form-group label.control-label {
-    margin-top: 0;
-}
-
-.form-group .help-block {
-    display: block;
 }
 
 .delete-image .checkbox {
@@ -33,4 +31,70 @@ form {
     flex: 1 1 auto;
     width: 1%;
     margin-bottom: 0;
+}
+
+/**
+Icon input
+ */
+.input-icon,
+.was-validated .input-icon {
+    position: relative;
+
+    .form-control:not(:first-child),
+    .form-select:not(:first-child),
+    .collection-item:not(:first-child) .form-control,
+    .collection-item:not(:first-child) .form-select,
+    .twitter-typeahead:not(:first-child) .form-control,
+    .twitter-typeahead:not(:first-child) .form-select,
+    .form-control:not(:first-child):invalid,
+    .form-select:not(:first-child):invalid,
+    .form-control.is-invalid:not(:first-child),
+    .form-select.is-invalid:not(:first-child),
+    .form-select:not(:first-child) ~ .select2 .select2-selection--single .select2-selection__rendered,
+    .form-select:not(:first-child) ~ .select2 .select2-selection--multiple {
+        padding-left: 2.5rem;
+    }
+
+    .form-control:not(:last-child),
+    .form-select:not(:last-child),
+    .collection-item:not(:last-child) .form-control,
+    .collection-item:not(:last-child) .form-select,
+    .twitter-typeahead:not(:last-child) .form-control,
+    .twitter-typeahead:not(:last-child) .form-select,
+    .select2:not(:last-child) .select2 .select2-selection--single .select2-selection__rendered,
+    .select2:not(:last-child) .select2 .select2-selection--multiple {
+        padding-right: 2.5rem;
+    }
+
+    .form-select,
+    .twitter-typeahead .form-control.is-invalid:last-of-type,
+    .twitter-typeahead .form-control:invalid:last-of-type {
+        background-image: none;
+    }
+}
+
+.input-icon-addon {
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    opacity: 0.85;
+    color: $input-icon-color;
+    pointer-events: none;
+    font-size: 1.125em;
+
+    &:last-child {
+        right: 0;
+        left: auto;
+    }
+
+    a,
+    .btn {
+        pointer-events: auto;
+    }
 }

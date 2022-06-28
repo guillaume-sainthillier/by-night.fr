@@ -52,9 +52,13 @@
             alt: event_seo.eventShortTitle(event),
             title: event_seo.eventShortTitle(event),
         }|merge(params.attr|default({})),
-    }) }}
+    }|merge(params|default({}))) }}
 {% endmacro %}
 
 {% macro eventLazyThumb(event, width, params = {}) %}
     {{ _self.eventThumb(event, width, {placeholderPriority: true}|merge(params)) }}
+{% endmacro %}
+
+{% macro icon(name, class) %}
+    <i class="icon fa fa-{{ name }} {{ class|default(null) }}"></i>
 {% endmacro %}

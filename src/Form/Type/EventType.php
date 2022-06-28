@@ -121,6 +121,7 @@ class EventType extends AbstractType
                 'entry_options' => [
                     'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
+                    'icon-prepend' => 'globe',
                     'attr' => [
                         'placeholder' => 'https://monsupersite.fr',
                     ],
@@ -134,6 +135,7 @@ class EventType extends AbstractType
                 'entry_options' => [
                     'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
+                    'icon-prepend' => 'phone',
                     'attr' => [
                         'placeholder' => '06 01 02 03 04',
                     ],
@@ -147,6 +149,7 @@ class EventType extends AbstractType
                 'entry_options' => [
                     'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
+                    'icon-prepend' => 'envelope',
                     'attr' => [
                         'placeholder' => 'vousêtes@incroyable.fr',
                     ],

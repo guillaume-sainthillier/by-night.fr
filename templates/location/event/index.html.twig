@@ -65,7 +65,7 @@
                 {% endif %}
                 <div class="col-lg-7">
                     <a class="image-gallery" href="{{ original }}" title="{{ nameSoiree }}">
-                        {{ macros.eventThumb(event, 1200, {
+                        {{ macros.eventThumb(event, 800, {
                             placeholderPriority: true,
                             attr: {
                                 class: 'img',
@@ -106,54 +106,58 @@
                         <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
                             <meta name="url" content="{{ path('app_agenda_by_place', {'slug': place.slug, 'location': place.locationSlug}) }}">
 
-                            {% set mapParameter = "place?q=" %}
-                            {% set mapValue = "" %}
                             {% if event.placeName %}
-                                {% set mapValue = event.placeName %}
                                 <i class="fa fa-location-dot"></i>
-                                <h2 class="mb-0">
-                                    <strong class="font-weight-normal" itemprop="name">{{ event.placeName }}</strong>
-                                </h2>
                             {% endif %}
-
-                            {% if event.placeCity %}
-                                <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                                    {% if event.place and event.place.city %}
-                                        <meta itemprop="addressCountry" content="{{ event.place.city.country.id }}" />
-                                    {% endif %}
-
-                                    {% if event.placeStreet %}
-                                        <div itemprop="streetAddress">{{ event.placeStreet }}</div>
-                                    {% endif %}
-
-                                    {% if event.placeCity or event.placePostalCode %}
-                                        <div>
-                                            {% if event.placePostalCode %}
-                                                <span itemprop="postalCode">{{ event.placePostalCode }}</span>
-                                            {% endif %}
-
-                                            {% if event.placeCity %}
-                                                {% set mapValue = mapValue ~ " " ~ event.placeCity %}
-                                                {% if event.place and event.place.city %}
-                                                    <meta name="url" content="{{ path('app_agenda_index', {'location': place.locationSlug}) }}">
-                                                    <strong class="font-weight-normal" itemprop="addressLocality">{{ event.placeCity }}</strong>
-                                                {% endif %}
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-
-                            {% if event.latitude and event.longitude %}
-                                <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                    <meta itemprop="latitude" content="{{ event.latitude }}" />
-                                    <meta itemprop="longitude" content="{{ event.longitude }}" />
-                                </span>
-                                {% if not place.city %}
-                                    {% set mapParameter = "place?q=" %}
-                                    {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
+                            <div>
+                                {% set mapParameter = "place?q=" %}
+                                {% set mapValue = "" %}
+                                {% if event.placeName %}
+                                    {% set mapValue = event.placeName %}
+                                    <h2 class="mb-0">
+                                        <strong class="font-weight-normal" itemprop="name">{{ event.placeName }}</strong>
+                                    </h2>
                                 {% endif %}
-                            {% endif %}
+
+                                {% if event.placeCity %}
+                                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                        {% if event.place and event.place.city %}
+                                            <meta itemprop="addressCountry" content="{{ event.place.city.country.id }}" />
+                                        {% endif %}
+
+                                        {% if event.placeStreet %}
+                                            <div itemprop="streetAddress">{{ event.placeStreet }}</div>
+                                        {% endif %}
+
+                                        {% if event.placeCity or event.placePostalCode %}
+                                            <div>
+                                                {% if event.placePostalCode %}
+                                                    <span itemprop="postalCode">{{ event.placePostalCode }}</span>
+                                                {% endif %}
+
+                                                {% if event.placeCity %}
+                                                    {% set mapValue = mapValue ~ " " ~ event.placeCity %}
+                                                    {% if event.place and event.place.city %}
+                                                        <meta name="url" content="{{ path('app_agenda_index', {'location': place.locationSlug}) }}">
+                                                        <strong class="font-weight-normal" itemprop="addressLocality">{{ event.placeCity }}</strong>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+
+                                {% if event.latitude and event.longitude %}
+                                    <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+                                        <meta itemprop="latitude" content="{{ event.latitude }}" />
+                                        <meta itemprop="longitude" content="{{ event.longitude }}" />
+                                    </span>
+                                    {% if not place.city %}
+                                        {% set mapParameter = "place?q=" %}
+                                        {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </div>
 
                         {% if event.prices %}
@@ -163,12 +167,14 @@
                             </div>
                         {% endif %}
 
-                        {% if event.affiliate %}
+                        {% if true or event.affiliate %}
                             <div class="detail-item">
-                                <p>
-                                    <a href="{{ event.source }}" class="btn btn-block btn-raised btn-primary" rel="sponsored">Je prends vite mes billets</a>
-                                </p>
-                                <small class="text-muted mt-2">Avec {{ event.fromData }}</small>
+                                <div>
+                                    <p>
+                                        <a href="{{ event.source }}" class="btn btn-block btn-raised btn-primary" rel="sponsored">Je prends vite mes billets</a>
+                                    </p>
+                                    <small class="text-muted mt-2">Avec {{ event.fromData }}XX</small>
+                                </div>
                             </div>
                         {% endif %}
                         {% if event.user %}

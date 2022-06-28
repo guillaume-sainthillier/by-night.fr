@@ -28,9 +28,9 @@ class TagsInvalidator
     {
     }
 
-    public static function getMenuTag(): string
+    public static function getHeaderTag(): string
     {
-        return 'menu';
+        return 'header';
     }
 
     public function addCity(City $city): void

@@ -298,7 +298,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->from(UserEvent::class, 'ue')
             ->leftJoin('ue.user', 'u')
             ->where('ue.event = :event')
-            ->andWhere(($isParticipation ? 'ue.going' : 'ue.wish') . ' true')
+            ->andWhere(($isParticipation ? 'ue.going' : 'ue.wish') . ' = true')
             ->setParameters([':event' => $event->getId()])
             ->getQuery()
             ->getSingleScalarResult();

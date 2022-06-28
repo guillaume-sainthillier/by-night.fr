@@ -28,8 +28,10 @@
         <div class="col-md-3">
             <div class="card fiche_profil">
                 <div class="card-body text-center">
-                    {{ macros.userLazyThumb(user, 200, 200, {'class': 'mx-auto mb-2'}) }}
-                    <h2>{{ username }}</h2>
+                    {{ macros.userLazyThumb(user, 200, 200, {
+                        class: 'mx-auto mb-2',
+                    }) }}
+                    <h2 class="mt-2">{{ username }}</h2>
                     {% if user.description %}
                         <hr />
                         <p class="text-muted">
@@ -65,7 +67,7 @@
                             Aucun événement de prévu pour {{ username }} !
                         </div>
                     {% else %}
-                        {% include '_partials/event/list-card.html.twig' with({'events' : nextEvents}) %}
+                        {% include 'partials/event/_list-card.html.twig' with({'events' : nextEvents}) %}
                     {% endif %}
                 </div>
                 <div class="tab-pane" id="passes">
@@ -75,7 +77,7 @@
                             Aucun événement passé pour {{ username }} !
                         </div>
                     {% else %}
-                        {% include '_partials/event/list-card.html.twig' with({'events' : previousEvents}) %}
+                        {% include 'partials/event/_list-card.html.twig' with({'events' : previousEvents}) %}
                     {% endif %}
                 </div>
             </div>

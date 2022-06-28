@@ -14,10 +14,10 @@
                     {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker m-0'} }) }}
                     {{ form_errors(autocomplete_form) }}
 
-                    {{ form_row(autocomplete_form.shortcut, {'label': 'Je veux sortir', 'attr': {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}}) }}
+                    {{ form_row(autocomplete_form.shortcut, {'label': 'Je veux sortir', 'attr': {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}, 'icon_prepend': 'calendar-alt'}) }}
                     {{ form_row(autocomplete_form.from) }}
                     {{ form_row(autocomplete_form.to) }}
-                    {{ form_row(autocomplete_form.name, {'label': 'À'}) }}
+                    {{ form_row(autocomplete_form.name, {'label': 'À', 'icon_prepend': 'location-dot'}) }}
                     <div class="text-center">
                         <button class="btn btn-primary btn-raised choose-city-action" type="submit" disabled>
                             C'est parti

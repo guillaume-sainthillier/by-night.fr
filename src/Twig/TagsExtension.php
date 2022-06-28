@@ -32,7 +32,7 @@ class TagsExtension extends Extension
             'place' => TagsInvalidator::getPlaceTag($object),
             'user' => TagsInvalidator::getUserTag($object),
             'trends' => TagsInvalidator::getTrendTag($object),
-            'menu' => TagsInvalidator::getMenuTag(),
+            'header' => TagsInvalidator::getHeaderTag(),
             default => throw new RuntimeException(sprintf('No tags for %s', $type)),
         };
     }

@@ -3,6 +3,7 @@ import CommentApp from '../components/CommentApp';
 
 $(document).ready(function () {
     new Widgets().init();
+
     new CommentApp().init();
 
     var gMap = $('#googleMap').attr('data-bs-toggled', '0');

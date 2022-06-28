@@ -331,7 +331,7 @@ class ImageHelper
                     'format' => $format,
                     'loaderOptions' => array_merge($loaderOptions, [
                         'fit' => $params['fit'] ?? null,
-                        'quality' => 20,
+                        'quality' => 80,
                     ]),
                 ])
             ), $imageSizes['sizes']);

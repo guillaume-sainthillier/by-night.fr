@@ -41,18 +41,6 @@
     }
 }
 
-.icon {
-    display: inline-block;
-    margin-top: 10px;
-    border-radius: 50%;
-    padding: 30px;
-
-    & > span {
-        position: relative;
-        left: -10px;
-    }
-}
-
 .color-primary {
     color: $color-primary;
 }
@@ -115,4 +103,8 @@
             font-size: 2em;
         }
     }
+}
+
+.font-weight-normal {
+    font-weight: normal;
 }

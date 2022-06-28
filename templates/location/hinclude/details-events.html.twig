@@ -4,10 +4,10 @@
     <p>Aucun événement prévu à {{ place.name }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
             un événement à {{ place.name }}</a> ?</p>
 {% else %}
-    {% include '_partials/event/list-card.html.twig' with({
-        "events": events,
-        "microdata" : false,
-        "forceCard": true
+    {% include 'partials/event/_list-card.html.twig' with({
+        events: events,
+        microdata: false,
+        cardLayout: "card-event-vertical"
     }) %}
     {% if hasNextLink %}
         <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}

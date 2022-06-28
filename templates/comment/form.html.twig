@@ -3,17 +3,15 @@
     {% if is_granted('ROLE_USER') %}
         {{ form_start(form) }}
 
-        <div class="row align-items-center">
-            <div class="col col-auto">
-                {{ macros.userLazyThumb(app.user, 115, 115) }}
-            </div>
-            <div class="col">
-                <strong class="ms-2">{{ app.user.username }}</strong>
-                {% block form_comment %}
-                    {{ form_row(form.comment) }}
-                {% endblock %}
-                <button type="submit" class="btn btn-primary btn-submit btn-raised">Poster</button>
-            </div>
+        <div class="col-user-profile">
+            {{ macros.userLazyThumb(app.user, 75, 75) }}
+            <strong class="ms-2">{{ app.user.username }}</strong>
+        </div>
+        <div>
+            {% block form_comment %}
+                {{ form_row(form.comment) }}
+            {% endblock %}
+            <button type="submit" class="btn btn-primary btn-submit btn-raised">Poster</button>
         </div>
         {{ form_rest(form) }}
         <hr />
