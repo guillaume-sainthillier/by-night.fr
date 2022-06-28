@@ -12,7 +12,6 @@ namespace App\Archive;
 
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
-use function count;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;

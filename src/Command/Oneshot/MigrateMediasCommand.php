@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Command;
+namespace App\Command\Oneshot;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -130,7 +130,12 @@ class MigrateMediasCommand extends Command
             $file->setSize($fakeFile->getSize());
             $file->setMimeType($fakeFile->getMimeType());
 
-            if (null !== $fakeFile->getMimeType() && str_contains($fakeFile->getMimeType(), 'image/') && 'image/svg+xml' !== $fakeFile->getMimeType() && false !== $dimensions = @getimagesize($tmp)) {
+            if (
+                null !== $fakeFile->getMimeType()
+                && str_contains($fakeFile->getMimeType(), 'image/')
+                && 'image/svg+xml' !== $fakeFile->getMimeType()
+                && false !== $dimensions = @getimagesize($tmp)
+            ) {
                 $file->setDimensions(array_splice($dimensions, 0, 2));
             }
 

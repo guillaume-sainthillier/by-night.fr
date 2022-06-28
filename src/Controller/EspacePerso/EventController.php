@@ -104,7 +104,7 @@ class EventController extends BaseController
     #[IsGranted('edit', subject: 'event')]
     public function edit(SerializerInterface $serializer, Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
-        dd(json_decode($serializer->serialize($event, 'json', SerializationContext::create()->setGroups(['elasticsearch:event:details'])), true));
+        // dd(json_decode($serializer->serialize($event, 'json', SerializationContext::create()->setGroups(['elasticsearch:event:details'])), true));
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTime());
         }

@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Command;
+namespace App\Command\Oneshot;
 
 use App\Entity\Event;
 use App\Handler\ReservationsHandler;

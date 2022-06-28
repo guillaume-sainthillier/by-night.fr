@@ -22,7 +22,7 @@
     {% endif %}
 
     {% do menu.addItem(event.placeName, url('app_agenda_by_place', {'location': location.slug, 'slug': place.slug})) %}
-    {% do menu.addItem(nameSoiree, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
+    {% do menu.addItem(event.name, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}

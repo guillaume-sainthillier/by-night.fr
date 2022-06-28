@@ -527,18 +527,20 @@ class ImageHelper
         $width = round($width);
 
         if (\count($breakpoints ?? []) > 0) {
+            $originalSizes = $breakpoints;
             $sizes = array_filter($breakpoints, fn (int $breakpoint) => $breakpoint <= $originalWidth);
-
-            // If a larger breakpoint has been filtered-out, add the actual image width instead
-            if (
-                \count((array) $sizes) < (is_countable($breakpoints) ? \count($breakpoints) : 0)
-                && !\in_array($originalWidth, $sizes, true)
-            ) {
-                $sizes[] = $originalWidth;
-            }
         } else {
             $sizes = array_map(fn (float $density) => round($density * $width), $densities);
+            $originalSizes = $sizes;
             $sizes = array_filter($sizes, fn (float $size) => $size <= $originalWidth);
+        }
+
+        // If a larger breakpoint has been filtered-out, add the actual image width instead
+        if (
+            \count($sizes) < \count($originalSizes)
+            && !\in_array($originalWidth, $sizes, true)
+        ) {
+            $sizes[] = $originalWidth;
         }
 
         if ('fluid' === $layout && !\in_array($width, $sizes, true)) {

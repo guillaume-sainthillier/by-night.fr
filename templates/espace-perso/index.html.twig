@@ -16,7 +16,7 @@
     {% if events|length > 0 %}
         <div class="card">
             <div class="table-responsive">
-                <table class="table table-striped mb-0">
+                <table class="table card-table mb-0">
                     <thead>
                     <tr>
                         <th>Nom</th>
@@ -47,7 +47,7 @@
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input cancel" data-href="{{ path('app_event_annuler', {'id': event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
+                                    <input class="form-check-input cancel" data-href="{{ path('app_event_cancel', {'id': event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
                                     <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>

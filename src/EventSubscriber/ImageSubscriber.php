@@ -54,20 +54,18 @@ class ImageSubscriber implements EventSubscriberInterface
     {
         // file become an instance of File just after upload, we have to track it before the change
         $file = $event->getMapping()->getFile($event->getObject());
-        if (!$file instanceof DeletableFile) {
-            return;
+        if ($file instanceof DeletableFile) {
+            $this->filesToDelete[] = $file;
         }
-
-        $this->filesToDelete[] = $file;
 
         // Extract metadatas
         $object = $event->getObject();
-        if ($object instanceof User || $object instanceof Event) {
+        if ($object instanceof User || $object instanceof \App\Entity\Event) {
             try {
                 [
                     'mainColor' => $mainColor,
                     'checksum' => $checksum
-                ] = $this->getImageMetadata($event->getMapping()->getFile($event->getObject()));
+                ] = $this->getImageMetadata($file);
 
                 if ('imageFile' === $event->getMapping()->getFilePropertyName()) {
                     $object
@@ -88,8 +86,12 @@ class ImageSubscriber implements EventSubscriberInterface
 
     public function onImageUploaded(): void
     {
+        if ([] === $this->filesToDelete) {
+            return;
+        }
+
+        $fs = new Filesystem();
         foreach ($this->filesToDelete as $file) {
-            $fs = new Filesystem();
             $fs->remove($file->getPathname());
         }
 
@@ -125,7 +127,8 @@ class ImageSubscriber implements EventSubscriberInterface
     private function getImageMetadata(File $file): array
     {
         return [
-            'checksum' => md5_file($file->getFilename()),
+            'checksum' => md5_file($file->getPathname()),
+            'mainColor' => null,
         ];
     }
 }
