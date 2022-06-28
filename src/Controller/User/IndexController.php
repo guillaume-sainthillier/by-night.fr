@@ -155,7 +155,7 @@ class IndexController extends BaseController
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
-            $minYear = (int) date('Y');
+            $minYear = (int) $user->getCreatedAt()->format('Y');
             $maxYear = (int) date('Y');
         }
 
