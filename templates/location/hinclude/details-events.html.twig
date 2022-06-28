@@ -7,7 +7,7 @@
     {% include 'partials/event/_list-card.html.twig' with({
         events: events,
         microdata: false,
-        cardLayout: "card-event-vertical"
+        cardLayout: "card-layout-vertical"
     }) %}
     {% if hasNextLink %}
         <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}

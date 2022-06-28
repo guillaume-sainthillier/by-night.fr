@@ -167,13 +167,13 @@
                             </div>
                         {% endif %}
 
-                        {% if true or event.affiliate %}
+                        {% if event.affiliate %}
                             <div class="detail-item">
                                 <div>
                                     <p>
                                         <a href="{{ event.source }}" class="btn btn-block btn-raised btn-primary" rel="sponsored">Je prends vite mes billets</a>
                                     </p>
-                                    <small class="text-muted mt-2">Avec {{ event.fromData }}XX</small>
+                                    <small class="text-muted mt-2">Avec {{ event.fromData }}</small>
                                 </div>
                             </div>
                         {% endif %}
