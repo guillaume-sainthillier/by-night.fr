@@ -90,17 +90,21 @@ class UserProfilePicture
 
         $info = $user->getOAuth();
         if (null !== $info) {
-            if (null !== $info->getFacebookProfilePicture()) {
+            if (null !== $info->getFacebookId()) {
                 return [
-                    'path' => $info->getFacebookProfilePicture(),
+                    'path' => sprintf('https://graph.facebook.com/%s/picture?type=large', $info->getFacebookId()),
                     'source' => 'dist',
                 ];
-            } elseif (null !== $info->getTwitterProfilePicture()) {
+            }
+
+            if (null !== $info->getTwitterProfilePicture()) {
                 return [
                     'path' => $info->getTwitterProfilePicture(),
                     'source' => 'dist',
                 ];
-            } elseif (null !== $info->getGoogleProfilePicture()) {
+            }
+
+            if (null !== $info->getGoogleProfilePicture()) {
                 return [
                     'path' => $info->getGoogleProfilePicture(),
                     'source' => 'dist',
