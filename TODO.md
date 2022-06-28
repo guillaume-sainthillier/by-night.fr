@@ -2,3 +2,4 @@
 -   Fix tests
 -   Remove dead code in Utils
 -   Check lastUpdatedAt time zones
+-   Check digitick images

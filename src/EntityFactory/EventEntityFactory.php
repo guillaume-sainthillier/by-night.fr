@@ -75,8 +75,8 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setImageFile($dto->imageFile);
 
         if ($entity->getUrl() !== $dto->imageUrl || null === $entity->getImageSystem()->getName()) {
-            $this->eventImageUploadSubscriber->handleEvent($entity);
             $entity->setUrl($dto->imageUrl);
+            $this->eventImageUploadSubscriber->handleEvent($entity);
         }
 
         $entity->setFromData($dto->fromData);
