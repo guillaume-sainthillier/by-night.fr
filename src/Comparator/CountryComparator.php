@@ -35,12 +35,17 @@ class CountryComparator extends AbstractComparator
             return new Matching($entity, 100.0);
         }
 
+        if (null === $dto->name || (null === $entity->getName() && null === $entity->getDisplayName())) {
+            return null;
+        }
+
         $dtoName = $this->sluggerUtils->generateSlug($dto->name);
-        if ($this->sluggerUtils->generateSlug($entity->getName()) === $dtoName) {
+
+        if (null !== $entity->getName() && $this->sluggerUtils->generateSlug($entity->getName()) === $dtoName) {
             return new Matching($entity, 100.0);
         }
 
-        if ($this->sluggerUtils->generateSlug($entity->getDisplayName()) === $dtoName) {
+        if (null !== $entity->getDisplayName() && $this->sluggerUtils->generateSlug($entity->getDisplayName()) === $dtoName) {
             return new Matching($entity, 100.0);
         }
 

@@ -174,7 +174,7 @@ class DataTourismeParser extends AbstractParser
 
         $categoriesManifestation = array_filter(array_unique($categoriesManifestation));
 
-        $country = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][0][isPartOfDepartment][0][isPartOfRegion][0][isPartOfCountry][0][rdfs:label][fr][0]');
+        $countryName = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][0][isPartOfDepartment][0][isPartOfRegion][0][isPartOfCountry][0][rdfs:label][fr][0]');
         $latitude = (float) $this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:latitude]');
         $longitude = (float) $this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:longitude]');
 
@@ -254,7 +254,7 @@ class DataTourismeParser extends AbstractParser
         $place->city = $city;
 
         $country = new CountryDto();
-        $country->name = $country;
+        $country->name = $countryName;
         $city->country = $country;
         $place->country = $country;
 

@@ -14,6 +14,7 @@ use App\Contracts\DependencyCatalogueInterface;
 use App\Contracts\DependencyProvidableInterface;
 use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
+use App\Contracts\EntityProviderInterface;
 use App\Dependency\DependencyCatalogue;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
@@ -312,11 +313,10 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param object[] $dtos
-     *
-     * @return (null|object)[]
-     *
-     * @psalm-return array<null|object>
+     * @param object[]                       $dtos
+     * @param DependencyCatalogueInterface[] $allCatalogues
+     * @param EntityProviderInterface[]      $allEntityProviders
+     * @param string[]                       $paths
      */
     private function mergeWithDatabase(
         array $dtos,
@@ -402,31 +402,11 @@ class DoctrineEventHandler
                         continue;
                     }
 
-                    if (!$isNewEntity && !$this->entityManager->contains($entity)) {
-                        dump($entity);
-                    }
-
                     $this->entityManager->persist($entity);
 
                     if ($isRootTransaction) {
                         $rootEntities[$i] = $entity;
                     }
-
-                    /*
-                    if ($entity instanceof Event) {
-                        if (
-                            null === $entity->getPlace()
-                            || null === $entity->getPlaceCountry()
-                            || null === $entity->getPlace()->getCountry()
-                        ) {
-                            $foo = $this->entityProviderHandler->getEntityProvider(PlaceDto::class);
-                            $bar = $dto->place;
-                            $bar2 = $foo->getObjectKeys($dto->place);
-                            $bar3 = $foo->getEntity($dto->place);
-                            dump($bar3);
-                        }
-                    }
-                    */
 
                     // Add all new entities to current samples in order to prevent duplicate creates
                     if ($isNewEntity) {
