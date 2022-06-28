@@ -43,10 +43,14 @@ class EventParserDataListener
             ;
         }
 
+        // Don't panic doctrine EM
+        if ($parserData->getLastUpdated()?->format('Y-m-d H:i:s') !== $entity->getExternalUpdatedAt()->format('Y-m-d H:i:s')) {
+            $parserData->setLastUpdated($entity->getExternalUpdatedAt());
+        }
+
         $parserData
             ->setFirewallVersion(Firewall::VERSION)
             ->setParserVersion($entity->getParserVersion())
-            ->setLastUpdated($entity->getExternalUpdatedAt())
             ->setReason(Reject::EVENT_DELETED);
 
         $entityManager->persist($parserData);

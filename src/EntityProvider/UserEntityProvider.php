@@ -13,13 +13,11 @@ namespace App\EntityProvider;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\UserDto;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class UserEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(EntityManagerInterface $entityManager, private UserRepository $userRepository)
+    public function __construct(private UserRepository $userRepository)
     {
-        parent::__construct($entityManager);
     }
 
     public function supports(string $dtoClassName): bool

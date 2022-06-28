@@ -1,3 +1,4 @@
 -   Test performances with [exists](https://www.doctrine-project.org/projects/doctrine-orm/en/2.9/reference/dql-doctrine-query-language.html) in place repository when places have origin / id
 -   Fix tests
 -   Remove dead code in Utils
+-   Check lastUpdatedAt time zones

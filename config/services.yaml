@@ -63,12 +63,15 @@ services:
     App\:
         resource: '../src/*'
         exclude:
+            - '../src/Admin/Filter'
             - '../src/Annotation'
+            - '../src/Dependency'
+            - '../src/Dto'
             - '../src/Entity'
             - '../src/Exception'
+            - '../src/File'
             - '../src/Kernel.php'
             - '../src/Migrations'
-            - '../src/Geolocalize'
             - '../src/Glide'
             - '../src/Producer'
             - '../src/Reject'
@@ -119,6 +122,11 @@ services:
     App\Doctrine\EventListener\EventParserDataListener:
         tags:
             - { name: doctrine.event_listener, event: preRemove }
+
+    App\Doctrine\EventSubscriber\:
+        resource: '../src/Doctrine/EventSubscriber'
+        tags:
+            - { name: doctrine.event_subscriber }
 
     App\Doctrine\EventListener\EntityTagger:
         tags:

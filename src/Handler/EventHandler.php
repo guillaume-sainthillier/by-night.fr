@@ -28,8 +28,11 @@ class EventHandler
 {
     private HttpClientInterface $client;
 
-    public function __construct(private Cleaner $cleaner, private LoggerInterface $logger, private string $tempPath)
-    {
+    public function __construct(
+        private Cleaner $cleaner,
+        private LoggerInterface $logger,
+        private string $tempPath
+    ) {
         $this->client = HttpClient::create();
     }
 
@@ -44,27 +47,46 @@ class EventHandler
         }
     }
 
-    public function handleDownload(Event $event): void
+    /**
+     * @param Event[] $events
+     */
+    public function handleDownloads(array $events): void
     {
-        $url = $event->getUrl();
-        try {
-            $response = $this->client->request('GET', $url);
-            $content = $response->getContent();
-            $this->uploadFile($event, $content);
-        } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
-            if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
-                return;
-            }
+        $imageUrls = array_filter(array_unique(array_map(fn (Event $event) => $event->getUrl(), $events)));
 
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
-                'extra' => [
-                    'event' => [
-                        'id' => $event->getId(),
-                        'url' => $url,
-                    ],
-                ],
+        $responses = [];
+        foreach ($imageUrls as $imageUrl) {
+            $response = $this->client->request('GET', $imageUrl, [
+                'user_data' => $imageUrl,
             ]);
+            $responses[] = $response;
+        }
+
+        foreach ($this->client->stream($responses) as $response => $chunk) {
+            $imageUrl = $response->getInfo('user_data');
+            $currentEvents = array_filter($events, fn (Event $event) => $event->getUrl() === $imageUrl);
+
+            try {
+                if ($chunk->isLast()) {
+                    foreach ($currentEvents as $event) {
+                        $this->uploadFile($event, $response->getContent());
+                    }
+                }
+            } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
+                if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
+                    continue;
+                }
+
+                $this->logger->error($e->getMessage(), [
+                    'exception' => $e,
+                    'extra' => [
+                        'event' => [
+                            'id' => array_map(fn (Event $event) => $event->getId(), $currentEvents),
+                            'url' => $imageUrl,
+                        ],
+                    ],
+                ]);
+            }
         }
     }
 
@@ -73,9 +95,14 @@ class EventHandler
      */
     private function uploadFile(Event $event, string $content): void
     {
-        $tempFileBasename = ($event->getId() ?: uniqid());
+        if ($content && md5($content) === $event->getImageSystemHash()) {
+            return;
+        }
+
+        $tempFileBasename = ($event->getId() ?? uniqid());
         $tempFilePath = $this->tempPath . DIRECTORY_SEPARATOR . $tempFileBasename;
         $octets = file_put_contents($tempFilePath, $content);
+
         if (0 === $octets) {
             unlink($tempFilePath);
             $event->setImageSystemFile(null);

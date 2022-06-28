@@ -11,6 +11,7 @@
 namespace App\EntityFactory;
 
 use App\Contracts\EntityFactoryInterface;
+use App\Doctrine\EventSubscriber\EventImageUploadSubscriber;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Entity\Place;
@@ -19,8 +20,10 @@ use App\Handler\EntityProviderHandler;
 
 class EventEntityFactory implements EntityFactoryInterface
 {
-    public function __construct(private EntityProviderHandler $entityProviderHandler)
-    {
+    public function __construct(
+        private EntityProviderHandler $entityProviderHandler,
+        private EventImageUploadSubscriber $eventImageUploadSubscriber,
+    ) {
     }
 
     /**
@@ -42,26 +45,40 @@ class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setExternalId($dto->externalId);
         $entity->setExternalOrigin($dto->externalOrigin);
-        $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
-        if ($entity->getStartDate()?->getTimestamp() !== $dto->startDate?->getTimestamp()) {
+
+        if ($entity->getExternalUpdatedAt()?->format('Y-m-d H:i:s') !== $dto->externalUpdatedAt?->format('Y-m-d H:i:s')) {
+            $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
+        }
+
+        if ($entity->getStartDate()?->format('Y-m-d H:i:s') !== $dto->startDate?->format('Y-m-d H:i:s')) {
             $entity->setStartDate($dto->startDate);
         }
 
-        if ($entity->getEndDate()?->getTimestamp() !== $dto->endDate?->getTimestamp()) {
+        if ($entity->getEndDate()?->format('Y-m-d H:i:s') !== $dto->endDate?->format('Y-m-d H:i:s')) {
             $entity->setEndDate($dto->endDate);
         }
 
         $entity->setAddress($dto->address);
-        if ($dto->createdAt && $entity->getCreatedAt()?->getTimestamp() !== $dto->createdAt?->getTimestamp()) {
+        if ($dto->createdAt && $entity->getCreatedAt()?->format('Y-m-d H:i:s') !== $dto->createdAt?->format('Y-m-d H:i:s')) {
             $entity->setCreatedAt($dto->createdAt);
         }
 
-        if ($dto->updatedAt && $entity->getUpdatedAt()?->getTimestamp() !== $dto->updatedAt?->getTimestamp()) {
+        if ($dto->updatedAt && $entity->getUpdatedAt()?->format('Y-m-d H:i:s') !== $dto->updatedAt?->format('Y-m-d H:i:s')) {
             $entity->setUpdatedAt($dto->updatedAt);
         }
 
-        $entity->setImage($dto->image);
+        $entity->getImage()->setDimensions($dto->image?->getDimensions());
+        $entity->getImage()->setMimeType($dto->image?->getMimeType());
+        $entity->getImage()->setName($dto->image?->getName());
+        $entity->getImage()->setOriginalName($dto->image?->getOriginalName());
+        $entity->getImage()->setSize($dto->image?->getSize());
         $entity->setImageFile($dto->imageFile);
+
+        if ($entity->getUrl() !== $dto->imageUrl || null === $entity->getImageSystem()->getName()) {
+            $this->eventImageUploadSubscriber->handleEvent($entity);
+            $entity->setUrl($dto->imageUrl);
+        }
+
         $entity->setFromData($dto->fromData);
         $entity->setSource($dto->source);
         $entity->setCategory($dto->category);

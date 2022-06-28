@@ -36,6 +36,8 @@ class Cleaner
         $dto->theme = mb_substr($dto->theme ?? '', 0, 128) ?: null;
         $dto->type = mb_substr($dto->type ?? '', 0, 128) ?: null;
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
+        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
+        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
     }
 
     private function clean(?string $string): string

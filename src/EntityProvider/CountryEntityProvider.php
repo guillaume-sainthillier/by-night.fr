@@ -14,13 +14,13 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CountryDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\CountryRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class CountryEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(EntityManagerInterface $entityManager, private CountryRepository $countryRepository, private ComparatorHandler $comparatorHandler)
-    {
-        parent::__construct($entityManager);
+    public function __construct(
+        private CountryRepository $countryRepository,
+        private ComparatorHandler $comparatorHandler
+    ) {
     }
 
     public function supports(string $dtoClassName): bool

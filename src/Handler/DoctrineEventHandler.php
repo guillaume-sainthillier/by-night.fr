@@ -83,7 +83,7 @@ class DoctrineEventHandler
         $this->filterEvents($dtos);
 
         // On met ensuite à jour le statut de ces explorations en base
-        $this->flushParserDatas();
+        $this->flushParserData();
 
         $allowedEvents = $this->getAllowedEvents($dtos);
         $dtos = null; // Call GC
@@ -269,26 +269,26 @@ class DoctrineEventHandler
         }
     }
 
-    private function flushParserDatas(): void
+    private function flushParserData(): void
     {
-        $explorations = $this->firewall->getParserDatas();
+        $explorations = $this->firewall->getExplorations();
 
-        $batchSize = 500;
-        $nbBatches = ceil(\count($explorations) / $batchSize);
+        $chunks = array_chunk($explorations, 500);
+        unset($explorations); // Calls GC
+        $explorations = null;
 
-        for ($i = 0; $i < $nbBatches; ++$i) {
-            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
+        foreach ($chunks as $chunk) {
             /** @var ParserData $exploration */
-            foreach ($currentExplorations as $exploration) {
+            foreach ($chunk as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->parserHistoryHandler->addExploration();
                 $this->entityManager->persist($exploration);
             }
 
             $this->entityManager->flush();
+            $this->entityManager->clear();
         }
 
-        $this->entityManager->clear(ParserData::class);
         $this->firewall->flushParserDatas();
     }
 
@@ -442,16 +442,19 @@ class DoctrineEventHandler
                         $dto->setIdentifierFromEntity($rootEntities[$i]);
                     }
 
-                    foreach ($allEntityProviders as $entityProvider) {
-                        $entityProvider->clear();
+                    // Clear entity providers
+                    foreach ($allEntityProviders as $entityProviderToClear) {
+                        $entityProviderToClear->clear();
                     }
+                    $allEntityProviders = [];
 
+                    // Clear catalogues
                     foreach ($allCatalogues as $catalogue) {
                         $catalogue->clear();
                     }
-
-                    $allEntityProviders = [];
                     $allCatalogues = [];
+
+                    // Finally, clear EM
                     $this->entityManager->clear();
                     $this->logger->info(sprintf(
                         'Memory usage after flush: %s - Memory peak usage: %s',
@@ -542,8 +545,6 @@ class DoctrineEventHandler
 
     /**
      * @param EventDto[] $dtos
-     *
-     * @return Event[]
      */
     public function handleManyCLI(array $dtos, bool $flush = true): void
     {
@@ -551,8 +552,9 @@ class DoctrineEventHandler
         $this->handleMany($dtos, $flush);
         $parserHistory = $this->parserHistoryHandler->stop();
 
-        // $this->entityManager->persist($parserHistory);
-        // $this->entityManager->flush();
+        $this->entityManager->persist($parserHistory);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
 
         Monitor::writeln('');
         Monitor::displayStats();

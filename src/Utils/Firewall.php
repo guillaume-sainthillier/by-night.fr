@@ -116,7 +116,7 @@ class Firewall
                 $this->addParserData($parserData);
             } else {
                 // Pas besoin de paniquer l'EM si les dates sont équivalentes
-                if ($parserData->getLastUpdated() !== $dto->getExternalUpdatedAt()) {
+                if ($parserData->getLastUpdated()?->format('Y-m-d H:i:s') !== $dto->getExternalUpdatedAt()?->format('Y-m-d H:i:s')) {
                     $parserData->setLastUpdated($dto->getExternalUpdatedAt());
                 }
 
@@ -273,7 +273,7 @@ class Firewall
     /**
      * @return ParserData[]
      */
-    public function getParserDatas(): array
+    public function getExplorations(): array
     {
         return $this->parserDatas;
     }

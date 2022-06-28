@@ -48,10 +48,11 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     // For vich form upload
     public ?DateTimeImmutable $updatedAt = null;
 
+    // When used by users
     #[UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     public ?File $imageFile = null;
 
-    public EmbeddedFile $image;
+    public ?EmbeddedFile $image = null;
 
     public ?DateTimeInterface $startDate = null;
 
@@ -63,6 +64,7 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
 
     public ?string $description = null;
 
+    // When used by parsers
     public ?string $imageUrl = null;
 
     public ?string $prices = null;

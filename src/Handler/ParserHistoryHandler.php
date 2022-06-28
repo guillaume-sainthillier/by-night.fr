@@ -65,7 +65,8 @@ class ParserHistoryHandler
 
     public function stop(): ParserHistory
     {
-        $this->parserHistory
+        $this
+            ->parserHistory
             ->setEndDate(new DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())

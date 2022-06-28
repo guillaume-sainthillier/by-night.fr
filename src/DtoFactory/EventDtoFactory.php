@@ -34,6 +34,7 @@ class EventDtoFactory
         $event->updatedAt = clone $entity->getUpdatedAt();
         $event->imageFile = $entity->getImageFile();
         $event->image = $entity->getImage();
+        $event->imageUrl = $entity->getUrl();
         $event->fromData = $entity->getFromData();
         $event->address = $entity->getAddress();
         $event->category = $entity->getCategory();
