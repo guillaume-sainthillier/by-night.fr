@@ -538,12 +538,12 @@ class ImageHelper
         // If a larger breakpoint has been filtered-out, add the actual image width instead
         if (
             \count($sizes) < \count($originalSizes)
-            && !\in_array($originalWidth, $sizes, true)
+            && !\in_array((float) $originalWidth, $sizes, true)
         ) {
             $sizes[] = $originalWidth;
         }
 
-        if ('fluid' === $layout && !\in_array($width, $sizes, true)) {
+        if ('fluid' === $layout && !\in_array((float) $width, $sizes, true)) {
             $sizes[] = $width;
         }
 

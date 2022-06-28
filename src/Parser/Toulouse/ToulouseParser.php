@@ -82,6 +82,7 @@ class ToulouseParser extends AbstractParser
             $event->externalId = $tab[0];
 
             $event->name = $nom;
+            $event->fromData = self::getParserName();
             $event->description = $tab[4];
             $event->startDate = $startDate;
             $event->endDate = $endDate;

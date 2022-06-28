@@ -59,6 +59,7 @@ class BikiniParser extends AbstractParser
         $placeParts = array_map('trim', $placeParts);
 
         $event = new EventDto();
+        $event->fromData = self::getParserName();
         $event->externalId = sprintf('BKN-%s', $data['id']);
         $event->name = $data['title'];
         $event->startDate = $startDate;

@@ -24,11 +24,11 @@ class UrlLoader extends AbstractImageLoader
 
     public function getDefaultParams(array $params): array
     {
-        return array_merge($params, [
+        return [
             'url' => null,
             'placeholder' => null,
             'outputPixelDensities' => [1],
             'formats' => [],
-        ]);
+        ];
     }
 }

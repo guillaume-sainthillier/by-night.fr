@@ -134,6 +134,7 @@ class SowProgParser extends AbstractParser
         }
 
         $event = new EventDto();
+        $event->fromData = self::getParserName();
         $event->name = $eventData['title'];
         $event->description = $eventData['description'];
         $event->source = 'https://www.sowprog.com/';

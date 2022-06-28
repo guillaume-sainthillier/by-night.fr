@@ -22,6 +22,8 @@ class EventDtoFactory
     public function create(Event $entity): EventDto
     {
         $event = new EventDto();
+        $event->fromData = $entity->getFromData();
+        $event->source = $entity->getSource();
         $event->entityId = $entity->getId();
         $event->externalId = $entity->getExternalId();
         $event->externalOrigin = $entity->getExternalOrigin();

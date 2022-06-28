@@ -185,6 +185,7 @@ class OpenAgendaParser extends AbstractParser
         $infos = $this->reservationsHandler->parseReservations($location['ticketLink'] ?? null);
 
         $event = new EventDto();
+        $event->fromData = self::getParserName();
         $event->name = $data['title']['fr'];
         $event->description = $description;
         $event->source = $data['link'];

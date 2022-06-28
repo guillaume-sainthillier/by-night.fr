@@ -44,11 +44,11 @@ class LocalAssetLoader extends AbstractImageLoader
             $originalHeight = $dimensions[1];
         }
 
-        return array_merge($params, [
+        return [
             'originalWidth' => $originalWidth,
             'originalHeight' => $originalHeight,
             'originalFormat' => $originalFormat,
-        ]);
+        ];
     }
 
     public function getUrl(array $params): string

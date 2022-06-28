@@ -80,12 +80,12 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
     #[ORM\Column(type: 'date', nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Type("DateTime<'Y-m-d'>")]
+    #[Type("DateTimeInterface<'Y-m-d'>")]
     private ?DateTimeInterface $startDate;
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Type("DateTime<'Y-m-d'>")]
+    #[Type("DateTimeInterface<'Y-m-d'>")]
     private ?DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: 'string', length: 256, nullable: true)]

@@ -45,7 +45,10 @@ class EventLoader extends AbstractImageLoader
         ];
 
         if ('local' === $source) {
-            return $this->localAssetLoader->getDefaultParams(array_merge($defaultParams, $params));
+            return array_merge(
+                $defaultParams,
+                $this->localAssetLoader->getDefaultParams(array_merge($defaultParams, $params))
+            );
         }
 
         [

@@ -67,8 +67,6 @@ class DoctrineEventHandler
     /**
      * @param EventDto[] $dtos
      *
-     * @return (null|object)[]
-     *
      * @psalm-return array<null|object>
      */
     public function handleMany(array $dtos, bool $flush = true): void
@@ -567,10 +565,10 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    public function handleManyCLI(array $dtos, bool $flush = true): array
+    public function handleManyCLI(array $dtos, bool $flush = true): void
     {
         $this->parserHistoryHandler->start();
-        $dtos = $this->handleMany($dtos, $flush);
+        $this->handleMany($dtos, $flush);
         $parserHistory = $this->parserHistoryHandler->stop();
 
         // $this->entityManager->persist($parserHistory);
@@ -586,7 +584,5 @@ class DoctrineEventHandler
         ]);
 
         $this->parserHistoryHandler->reset();
-
-        return $dtos;
     }
 }

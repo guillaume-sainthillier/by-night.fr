@@ -222,6 +222,7 @@ class DataTourismeParser extends AbstractParser
         $url = $this->getDataValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][0][ebucore:locator][0]');
 
         $event = new EventDto();
+        $event->fromData = self::getParserName();
         $event->externalUpdatedAt = $updatedAt;
         $event->name = $this->getDataValue($datas, '[rdfs:label][fr][0]');
         $event->description = $description;

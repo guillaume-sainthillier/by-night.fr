@@ -52,17 +52,18 @@ class EventEntityFactory implements EntityFactoryInterface
         }
 
         $entity->setAddress($dto->address);
-        if ($entity->getCreatedAt()?->getTimestamp() !== $dto->createdAt?->getTimestamp()) {
+        if ($dto->createdAt && $entity->getCreatedAt()?->getTimestamp() !== $dto->createdAt?->getTimestamp()) {
             $entity->setCreatedAt($dto->createdAt);
         }
 
-        if ($entity->getCreatedAt()?->getTimestamp() !== $dto->updatedAt?->getTimestamp()) {
-            $entity->setCreatedAt($dto->updatedAt);
+        if ($dto->updatedAt && $entity->getUpdatedAt()?->getTimestamp() !== $dto->updatedAt?->getTimestamp()) {
+            $entity->setUpdatedAt($dto->updatedAt);
         }
 
         $entity->setImage($dto->image);
         $entity->setImageFile($dto->imageFile);
         $entity->setFromData($dto->fromData);
+        $entity->setSource($dto->source);
         $entity->setCategory($dto->category);
         $entity->setName($dto->name);
         $entity->setDescription($dto->description);
