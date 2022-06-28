@@ -67,7 +67,13 @@ class EventHandler
             $currentEvents = array_filter($events, fn (Event $event) => $event->getUrl() === $imageUrl);
 
             try {
-                if ($chunk->isLast()) {
+                if ($chunk->isTimeout()) {
+                    $response->cancel();
+                    continue;
+                } elseif ($chunk->isFirst() && 200 !== $response->getStatusCode()) {
+                    $response->cancel();
+                    continue;
+                } elseif ($chunk->isLast()) {
                     foreach ($currentEvents as $event) {
                         $this->uploadFile($event, $response->getContent());
                     }
