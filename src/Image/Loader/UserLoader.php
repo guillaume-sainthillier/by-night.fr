@@ -34,6 +34,7 @@ class UserLoader extends AbstractImageLoader
             'path' => $path,
             'source' => $source,
         ] = $this->userProfilePicture->getPicturePathAndSource($user);
+
         $params['path'] = $path;
         $defaultParams = [
             'aspectRatio' => 1,

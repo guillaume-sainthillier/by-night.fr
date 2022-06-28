@@ -24,11 +24,22 @@ class UrlLoader extends AbstractImageLoader
 
     public function getDefaultParams(array $params): array
     {
+        [
+            'originalFormat' => $originalFormat,
+            'path' => $path
+        ] = $params;
+
+        if (null === $originalFormat && null !== $path) {
+            $originalFormat = $this->guessExtensionFromPath($path);
+        }
+
         return [
-            'url' => null,
+            'path' => null,
+            'url' => $params['path'] ?? null,
             'placeholder' => null,
             'outputPixelDensities' => [1],
             'formats' => [],
+            'originalFormat' => $originalFormat ?? 'jpg',
         ];
     }
 }
