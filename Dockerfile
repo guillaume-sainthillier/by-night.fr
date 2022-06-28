@@ -1,19 +1,23 @@
-# Dockerfile
-FROM node:14-alpine as builder
-
-ENV NODE_ENV=production
+# Install dependencies only when needed
+FROM node:16-alpine as deps
 WORKDIR /app
 
-ADD package.json webpack.config.js yarn.lock ./
-ADD assets ./assets
-ADD src ./src
-ADD templates ./templates
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --ignore-scripts
+
+# Rebuild the source code only when needed
+FROM node:16-alpine AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json webpack.config.js yarn.lock ./
+COPY assets ./assets
 
 RUN mkdir -p public && \
-    NODE_ENV=development yarn install && \
-    yarn run build
+    yarn build && \
+    yarn install --frozen-lockfile --ignore-scripts --production
 
-FROM php:7.4-fpm-alpine
+FROM php:8.0-fpm-alpine
 
 ARG APP_VERSION=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
@@ -28,7 +32,11 @@ RUN apk add --no-cache \
     bash \
     icu-libs \
     imagemagick \
+    libgomp \
+    libjpeg \
+    libpng \
     libxml2 \
+    libwebp \
     libzip \
     git \
     nginx \
@@ -44,28 +52,24 @@ RUN apk add --no-cache \
 # PHP Extensions
 ENV PHPIZE_DEPS \
     autoconf \
-    cmake \
-    file \
     freetype-dev \
     g++ \
     gcc \
-    git \
     icu-dev \
     imagemagick-dev \
     libc-dev \
     libjpeg-turbo-dev \
     libpng-dev \
+    libwebp-dev \
     libxml2-dev \
     libzip-dev \
     make \
-    pcre-dev \
-    pkgconf \
-    re2c \
     zlib-dev
+
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS && \
     docker-php-ext-install -j$(nproc) bcmath exif intl opcache pdo_mysql soap sockets zip && \
-    pecl install apcu redis imagick-3.4.4 && \
+    pecl install apcu redis imagick && \
     docker-php-ext-enable apcu redis imagick && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* /tmp/*
