@@ -13,6 +13,7 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Rector\Property\ImproveDoctrineCollectionDocTypeInEntityRector;
 use Rector\Doctrine\Set\DoctrineSetList;
+use Rector\Php71\Rector\FuncCall\CountOnNullRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
@@ -43,6 +44,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(ImproveDoctrineCollectionDocTypeInEntityRector::class);
 
     $rectorConfig->skip([
+        CountOnNullRector::class,
         ClassPropertyAssignToConstructorPromotionRector::class => [
             __DIR__ . '/src/Entity/*',
         ],
