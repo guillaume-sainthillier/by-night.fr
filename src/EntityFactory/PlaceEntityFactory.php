@@ -43,10 +43,6 @@ class PlaceEntityFactory implements EntityFactoryInterface
         \assert($entity instanceof Place);
         \assert($dto instanceof PlaceDto);
 
-        if (null === $entity) {
-            dd($dto);
-        }
-
         if (null === $dto->name) {
             throw new UncreatableEntityException('Place has no name');
         }
