@@ -62,19 +62,19 @@ class Merger
     public function mergeEvent(Event $a = null, Event $b = null): object|null
     {
         return $this->merge($a, $b, [
-            'nom',
+            'name',
             'start_date' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'end_date' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'descriptif',
-            'horaires',
-            'modification_derniere_minute',
+            'description',
+            'hours',
+            'status',
             'type',
             'category',
             'theme',
             'phoneContacts',
             'mailContacts',
             'websiteContacts',
-            'tarif',
+            'prices',
             'url',
             'facebook_event_id',
             'facebook_owner_id',
@@ -171,13 +171,13 @@ class Merger
     public function mergePlace(Place $a = null, Place $b = null): object|null
     {
         return $this->merge($a, $b, [
-            'nom' => self::MERGE_LEFT,
+            'name' => self::MERGE_LEFT,
             'latitude' => self::MERGE_LEFT,
             'longitude' => self::MERGE_LEFT,
-            'rue' => self::MERGE_LEFT,
+            'street' => self::MERGE_LEFT,
             'url' => self::MERGE_LEFT,
-            'ville' => self::MERGE_LEFT,
-            'codePostal' => self::MERGE_LEFT,
+            'cityName' => self::MERGE_LEFT,
+            'codePostalCode' => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
             'external_id' => self::MERGE_LEFT,
             'reject',

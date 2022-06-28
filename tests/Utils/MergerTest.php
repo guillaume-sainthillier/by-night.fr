@@ -12,11 +12,11 @@ namespace App\Tests\Utils;
 
 use App\Entity\Event;
 use App\Entity\Place;
-use App\Tests\ContainerTestCase;
+use App\Tests\AppKernelTestCase;
 use App\Utils\Merger;
 use DateTime;
 
-class MergerTest extends ContainerTestCase
+class MergerTest extends AppKernelTestCase
 {
     protected ?Merger $merger = null;
 
@@ -24,7 +24,7 @@ class MergerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->merger = self::$container->get(Merger::class);
+        $this->merger = static::getContainer()->get(Merger::class);
     }
 
     public function testPlaceMerge()
@@ -35,13 +35,13 @@ class MergerTest extends ContainerTestCase
 
         $this->merger->mergePlace($persistedPlace, $parsedPlace);
 
-        $this->assertEquals($persistedPlace->getId(), 1);
-        $this->assertEquals($persistedPlace->getName(), 'Dynamo');
-        $this->assertEquals($persistedPlace->getCityName(), 'Toulouse');
-        $this->assertEquals($persistedPlace->getCityPostalCode(), '31000');
-        $this->assertEquals($persistedPlace->getLatitude(), 43.6);
-        $this->assertEquals($persistedPlace->getUrl(), 'https://www.google.com');
-        $this->assertEquals($persistedPlace->getFacebookId(), 'FB ID');
+        self::assertEquals($persistedPlace->getId(), 1);
+        self::assertEquals($persistedPlace->getName(), 'Dynamo');
+        self::assertEquals($persistedPlace->getCityName(), 'Toulouse');
+        self::assertEquals($persistedPlace->getCityPostalCode(), '31000');
+        self::assertEquals($persistedPlace->getLatitude(), 43.6);
+        self::assertEquals($persistedPlace->getUrl(), 'https://www.google.com');
+        self::assertEquals($persistedPlace->getFacebookId(), 'FB ID');
     }
 
     public function testEventMerge()
@@ -50,9 +50,9 @@ class MergerTest extends ContainerTestCase
         $parsedEvent = (new Event())->setId(2)->setName('My Event V2')->setDescription('Event description V2');
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getId(), 1); // ID is intact
-        $this->assertEquals($persistedEvent->getName(), 'My Event V2'); // Newest field
-        $this->assertEquals($persistedEvent->getDescription(), 'Event description V2'); // Newest field
+        self::assertEquals($persistedEvent->getId(), 1); // ID is intact
+        self::assertEquals($persistedEvent->getName(), 'My Event V2'); // Newest field
+        self::assertEquals($persistedEvent->getDescription(), 'Event description V2'); // Newest field
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('now');
@@ -61,7 +61,7 @@ class MergerTest extends ContainerTestCase
         $parsedEvent = (new Event())->setStartDate($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getStartDate(), $databaseDate); // DateTime have not changed (prevents ORM panic)
+        self::assertEquals($persistedEvent->getStartDate(), $databaseDate); // DateTime have not changed (prevents ORM panic)
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('tomorrow');
@@ -70,6 +70,6 @@ class MergerTest extends ContainerTestCase
         $parsedEvent = (new Event())->setStartDate($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getStartDate(), $parsedDate); // DateTime have changed because it's not same day
+        self::assertEquals($persistedEvent->getStartDate(), $parsedDate); // DateTime have changed because it's not same day
     }
 }

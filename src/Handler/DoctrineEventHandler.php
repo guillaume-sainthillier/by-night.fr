@@ -200,7 +200,7 @@ class DoctrineEventHandler
         // Recherche du pays en premier lieu
         if (null !== $dto->country && null !== $dto->country->name && null === $dto->country->code) {
             $country = $this->countryRepository->findOneByName($dto->country->name);
-            $dto->country->code = $country->getId();
+            $dto->country->code = $country?->getId();
         }
 
         // Pas de pays détecté -> next
@@ -256,12 +256,13 @@ class DoctrineEventHandler
         }
 
         $dto->city ??= new CityDto();
-        $dto->city->entityId = $city->getId();
-        if ($city) {
+        if (null !== $city) {
+            $dto->city->entityId = $city->getId();
             $dto->country ??= new CountryDto();
             $dto->country->code = $city->getCountry()->getId();
         } elseif (null !== $zipCity) {
-            $dto->country->code = $city->getCountry()->getId();
+            $dto->country ??= new CountryDto();
+            $dto->country->code = $zipCity->getCountry()->getId();
         }
 
         if (null !== $dto->city) {

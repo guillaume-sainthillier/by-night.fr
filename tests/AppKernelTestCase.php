@@ -12,10 +12,10 @@ namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-abstract class ContainerTestCase extends KernelTestCase
+abstract class AppKernelTestCase extends KernelTestCase
 {
     protected function setUp(): void
     {
-        self::bootKernel();
+        static::bootKernel();
     }
 }

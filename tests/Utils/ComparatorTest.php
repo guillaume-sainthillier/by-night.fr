@@ -14,18 +14,18 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
 use App\Entity\ZipCity;
-use App\Tests\ContainerTestCase;
+use App\Tests\AppKernelTestCase;
 use App\Utils\Comparator;
 
-class ComparatorTest extends ContainerTestCase
+class ComparatorTest extends AppKernelTestCase
 {
-    protected ?Comparator $comparator = null;
+    private ?Comparator $comparator = null;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->comparator = self::$container->get(Comparator::class);
+        $this->comparator = static::getContainer()->get(Comparator::class);
     }
 
     /**
@@ -33,7 +33,7 @@ class ComparatorTest extends ContainerTestCase
      */
     public function testMatchingScorePlace(?Place $a, ?Place $b, int $score)
     {
-        $this->assertEquals($score, $this->comparator->getMatchingScorePlace($a, $b));
+        self::assertEquals($score, $this->comparator->getMatchingScorePlace($a, $b));
     }
 
     public function matchingScorePlaceProvider(): iterable
@@ -85,10 +85,10 @@ class ComparatorTest extends ContainerTestCase
         $original = $place;
         $place = $this->comparator->getBestPlace($places, $place);
         if (null === $expectedId) {
-            $this->assertNull($place, 'Original : ' . $original->getName());
+            self::assertNull($place, 'Original : ' . $original->getName());
         } else {
-            $this->assertNotNull($place, 'Original : ' . $original->getName());
-            $this->assertEquals($expectedId, $place->getId(), 'Original : ' . $original->getName());
+            self::assertNotNull($place, 'Original : ' . $original->getName());
+            self::assertEquals($expectedId, $place->getId(), 'Original : ' . $original->getName());
         }
     }
 
@@ -128,10 +128,10 @@ class ComparatorTest extends ContainerTestCase
      */
     public function testSanitizeRue($actual, $expected)
     {
-        $this->assertEquals($expected, $this->comparator->sanitizeRue($actual), 'Original : ' . $actual);
+        self::assertEquals($expected, $this->comparator->sanitizeRue($actual), 'Original : ' . $actual);
     }
 
-    public function sanitizeRueProvider()
+    public function sanitizeRueProvider(): array
     {
         return [
             ['1908 Route de Lamasquère', '1908 route de lamasquere'],
@@ -142,12 +142,12 @@ class ComparatorTest extends ContainerTestCase
     /**
      * @dataProvider sanitizeVilleProvider
      */
-    public function testSanitizeVille($actual, $expected)
+    public function testSanitizeVille(string $actual, string $expected)
     {
-        $this->assertEquals($expected, $this->comparator->sanitizeVille($actual), 'Original : ' . $actual);
+        self::assertEquals($expected, $this->comparator->sanitizeVille($actual), 'Original : ' . $actual);
     }
 
-    public function sanitizeVilleProvider()
+    public function sanitizeVilleProvider(): array
     {
         return [
             ['saint-lys', 'saintlys'],
