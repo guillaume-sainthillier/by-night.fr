@@ -56,7 +56,7 @@ class EventProfilePicture
         ] = $this->getPicturePathAndSource($event);
 
         if ('upload' === $source) {
-            return $this->assetHelper->getThumbUrl($path, $params);
+            return $this->assetHelper->getThumbS3Url($path, $params);
         }
 
         return $this->assetHelper->getThumbAssetUrl(

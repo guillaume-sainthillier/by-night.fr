@@ -41,9 +41,9 @@ class OldMediaController extends AbstractController
 
         if ($event) {
             if ($event->getImage()->getName() === $infos['basename']) {
-                $url = $assetHelper->getThumbUrl($storage->resolvePath($event, 'imageFile'));
+                $url = $assetHelper->getThumbS3Url($storage->resolvePath($event, 'imageFile'));
             } else {
-                $url = $assetHelper->getThumbUrl($storage->resolvePath($event, 'imageSystemFile'));
+                $url = $assetHelper->getThumbS3Url($storage->resolvePath($event, 'imageSystemFile'));
             }
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
@@ -59,9 +59,9 @@ class OldMediaController extends AbstractController
             ->getOneOrNullResult();
         if ($user) {
             if ($user->getImage()->getName() === $infos['basename']) {
-                $url = $assetHelper->getThumbUrl($storage->resolvePath($user, 'imageFile'));
+                $url = $assetHelper->getThumbS3Url($storage->resolvePath($user, 'imageFile'));
             } else {
-                $url = $assetHelper->getThumbUrl($storage->resolvePath($user, 'imageSystemFile'));
+                $url = $assetHelper->getThumbS3Url($storage->resolvePath($user, 'imageSystemFile'));
             }
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);

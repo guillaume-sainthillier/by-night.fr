@@ -30,3 +30,10 @@ flysystem:
             adapter: 'local'
             options:
                 directory: '%kernel.project_dir%/public'
+
+# In production we disable thumb storage because it's handled by cloudfront
+when@prod:
+  flysystem:
+    storages:
+      thumbs.storage:
+        adapter: 'memory'

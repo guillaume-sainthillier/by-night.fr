@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    public function __construct(LoggerInterface $logger, private Server $glide)
+    public function __construct(LoggerInterface $logger, private Server $s3ThumbServer)
     {
         parent::__construct($logger);
     }
@@ -54,6 +54,6 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
 
     private function deleteThumbnails(string $path): void
     {
-        $this->glide->deleteCache($path);
+        $this->s3ThumbServer->deleteCache($path);
     }
 }

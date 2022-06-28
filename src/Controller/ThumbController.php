@@ -26,58 +26,56 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ThumbController extends Controller
 {
-    #[Route(path: '/thumb/{path<%patterns.path%>}', name: 'thumb_url', methods: ['GET'])]
+    public function __construct(
+        private string $secret,
+        private Packages $packages
+    ) {
+    }
+
+    #[Route(path: '/thumb/{path<%patterns.path%>}', name: 'thumb_s3_url', methods: ['GET'])]
     #[Cache(maxage: 31_536_000, smaxage: 31_536_000)]
-    public function thumb(Request $request, Server $glide, string $path, string $secret, Packages $packages): Response
+    public function thumbS3(Request $request, Server $s3ThumbServer, string $path): Response
     {
-        $parameters = $request->query->all();
-        if (empty($parameters['h']) && empty($parameters['w']) && empty($parameters['p'])) {
-            return new RedirectResponse($packages->getUrl($path, 'aws'), Response::HTTP_MOVED_PERMANENTLY);
-        }
-
-        if (\count($parameters) > 0) {
-            try {
-                // No signature validation if no parameters
-                // added to generate URL without parameters that not produce 404, useful especially for sitemap
-                SignatureFactory::create($secret)->validateRequest($path, $parameters);
-            } catch (SignatureException $signatureException) {
-                throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
-            }
-        }
-
-        $glide->setResponseFactory(new SymfonyResponseFactory($request));
-        try {
-            $response = $glide->getImageResponse($path, $parameters);
-        } catch (InvalidArgumentException|FileNotFoundException $signatureException) {
-            throw $signatureException;
-            throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
-        }
-
-        return $response;
+        return $this->serveFile(
+            $s3ThumbServer,
+            $request,
+            $path,
+            'aws'
+        );
     }
 
     #[Route(path: '/thumb-asset/{path<%patterns.path%>}', name: 'thumb_asset_url', methods: ['GET'])]
     #[Cache(maxage: 31_536_000, smaxage: 31_536_000)]
-    public function thumbAsset(Request $request, Server $assetThumb, Packages $packages, string $path, string $secret): Response
+    public function thumbAsset(Request $request, Server $assetThumbServer, string $path): Response
+    {
+        return $this->serveFile(
+            $assetThumbServer,
+            $request,
+            $path,
+            'local'
+        );
+    }
+
+    private function serveFile(Server $server, Request $request, string $path, string $packageName): Response
     {
         $parameters = $request->query->all();
         if (empty($parameters['h']) && empty($parameters['w']) && empty($parameters['p'])) {
-            return new RedirectResponse($packages->getUrl($path), Response::HTTP_MOVED_PERMANENTLY);
+            return new RedirectResponse($this->packages->getUrl($path, $packageName), Response::HTTP_MOVED_PERMANENTLY);
         }
 
         if (\count($parameters) > 0) {
             try {
                 // No signature validation if no parameters
                 // added to generate URL without parameters that not produce 404, useful especially for sitemap
-                SignatureFactory::create($secret)->validateRequest($path, $parameters);
+                SignatureFactory::create($this->secret)->validateRequest($path, $parameters);
             } catch (SignatureException $signatureException) {
                 throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
             }
         }
 
-        $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
+        $server->setResponseFactory(new SymfonyResponseFactory($request));
         try {
-            $response = $assetThumb->getImageResponse($path, $parameters);
+            $response = $server->getImageResponse($path, $parameters);
         } catch (InvalidArgumentException|FileNotFoundException $signatureException) {
             throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
         }

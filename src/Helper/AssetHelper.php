@@ -20,7 +20,7 @@ class AssetHelper
     {
     }
 
-    public function getThumbUrl(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
+    public function getThumbS3Url(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         if (empty($parameters['fm'])) {
             $parameters['fm'] = 'pjpg';
@@ -32,7 +32,7 @@ class AssetHelper
         $parameters['s'] = SignatureFactory::create($this->secret)->generateSignature($path, $parameters);
         $parameters['path'] = ltrim($path, '/');
 
-        return $this->router->generate('thumb_url', $parameters, $referenceType);
+        return $this->router->generate('thumb_s3_url', $parameters, $referenceType);
     }
 
     public function getThumbAssetUrl(string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string

@@ -38,7 +38,8 @@ services:
             $dataTourismeAppKey: "%env(DATATOURISME_APP_KEY)%"
             $monitor: "%env(APP_MONITOR)%"
             $disableTwitterFeed: "%disable_polled_feeds%"
-            $assetThumb: "@app.asset_thumb"
+            $s3ThumbServer: "@app.s3_thumb_server"
+            $assetThumbServer: "@app.asset_thumb_server"
             $dataDir: "%kernel.project_dir%/var/datas"
             $parsers: !tagged_iterator app.parser
             $entityProviders: !tagged_iterator app.entity_provider
@@ -168,7 +169,8 @@ services:
     Monolog\Processor\PsrLogMessageProcessor:
         tags: { name: monolog.processor, handler: sentry }
 
-    League\Glide\Server:
+    app.s3_thumb_server:
+        class: League\Glide\Server
         # call the static method
         factory: ['App\Glide\ServerFactory', create]
         arguments:
@@ -176,7 +178,7 @@ services:
               cache: '@thumbs.storage'
               driver: 'imagick'
 
-    app.asset_thumb:
+    app.asset_thumb_server:
         class: League\Glide\Server
         # call the static method
         factory: ['App\Glide\ServerFactory', create]

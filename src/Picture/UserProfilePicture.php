@@ -53,7 +53,7 @@ class UserProfilePicture
         ] = $this->getPicturePathAndSource($user);
 
         if ('upload' === $source) {
-            return $this->assetHelper->getThumbUrl($path, $params);
+            return $this->assetHelper->getThumbS3Url($path, $params);
         }
 
         if ('local' === $source) {
