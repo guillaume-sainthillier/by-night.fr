@@ -345,10 +345,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
             return false;
         }
 
-        $from = new DateTime();
-        $from->modify(self::INDEX_FROM);
-
-        return $this->endDate >= $from;
+        return true;
     }
 
     public function isAffiliate(): bool

@@ -85,12 +85,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         $qb = $this->createElasticaQueryBuilder('e');
 
-        return $qb
-            ->where('e.endDate >= :from')
-            ->andWhere('e.draft = false')
-            ->setParameters([
-                'from' => $from->format('Y-m-d'),
-            ]);
+        return $qb->where('e.draft = false');
     }
 
     public function createElasticaQueryBuilder(string $alias, $indexBy = null): QueryBuilder

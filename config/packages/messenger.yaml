@@ -8,7 +8,10 @@ framework:
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
+          elastica:
+            dsn: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
 
         routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
+            FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
