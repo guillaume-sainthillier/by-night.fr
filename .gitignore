@@ -19,20 +19,19 @@ node_modules/
 
 #Pollution
 *.php~
-.php_cs
 
 ###> symfony/phpunit-bridge ###
 .phpunit
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
-.phpunit.result.cache
 
 ###> phpunit/phpunit ###
 /phpunit.xml
