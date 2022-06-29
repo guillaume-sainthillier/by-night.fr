@@ -12,6 +12,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json webpack.config.js yarn.lock ./
 COPY assets ./assets
+COPY src ./src
+COPY templates ./templates
 
 RUN mkdir -p public && \
     yarn build && \
