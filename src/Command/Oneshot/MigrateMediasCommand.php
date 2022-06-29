@@ -10,9 +10,11 @@
 
 namespace App\Command\Oneshot;
 
+use App\Entity\Event;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -33,6 +35,7 @@ class MigrateMediasCommand extends Command
     public function __construct(
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
+        private PaginatorInterface $paginator,
         private StorageInterface $storage
     ) {
         parent::__construct();
@@ -44,66 +47,113 @@ class MigrateMediasCommand extends Command
 
         $io->info('Users');
 
-        $objects = $this
+        $queryBuilder = $this
             ->entityManager
             ->getRepository(User::class)
             ->createQueryBuilder('u')
-            ->where('u.imageSystem.dimensions IS NULL OR u.imageSystem.originalName IS NULL OR u.imageSystemHash IS NULL')
-            ->orWhere('u.image.dimensions IS NULL OR u.image.originalName IS NULL OR u.imageHash IS NULL')
-            ->getQuery()
-            ->toIterable();
+            ->where('u.imageSystem.name IS NOT NULL AND (u.imageSystem.dimensions IS NULL OR u.imageSystem.originalName IS NULL OR u.imageSystemHash IS NULL)')
+            ->orWhere('u.image.name IS NOT NULL AND (u.image.dimensions IS NULL OR u.image.originalName IS NULL OR u.imageHash IS NULL)');
 
-        /** @var User $object */
-        foreach ($objects as $object) {
-            $currentImage = $object->getImageSystem();
-            if (!empty($currentImage->getName())) {
-                if (empty($currentImage->getOriginalName())) {
-                    $currentImage->setOriginalName($currentImage->getName());
+        $paginator = $this->paginator->paginate($queryBuilder, 1, 500);
+        $nbPages = ceil($paginator->getTotalItemCount() / $paginator->getItemNumberPerPage());
+        for ($page = 1; $page <= $nbPages; ++$page) {
+            $paginator->setCurrentPageNumber($page);
+
+            /** @var User $object */
+            foreach ($paginator->getItems() as $object) {
+                if (616 === $object->getId()) {
+                    continue;
                 }
 
-                // Download image
-                if (empty($currentImage->getDimensions()) || empty($object->getImageSystemHash())) {
-                    try {
-                        $stream = $this->storage->resolveStream($object, 'imageSystemFile');
-                        [
-                            'checksum' => $checksum
-                        ] = $this->inject($stream, $currentImage->getName(), $currentImage);
+                $this->logger->info(sprintf(
+                    'Handling user "%d"',
+                    $object->getId()
+                ));
 
-                        $object->setImageSystemHash($checksum);
-                    } catch (Exception $exception) {
-                        $this->logger->error($exception->getMessage());
-                    }
-                }
+                $this->handle($object);
             }
 
-            $currentImage = $object->getImage();
-            if (!empty($currentImage->getName())) {
-                if (empty($currentImage->getOriginalName())) {
-                    $currentImage->setOriginalName($currentImage->getName());
-                }
-
-                // Download image
-                if (empty($currentImage->getDimensions()) || empty($object->getImageHash())) {
-                    try {
-                        $stream = $this->storage->resolveStream($object, 'imageFile');
-                        [
-                            'checksum' => $checksum
-                        ] = $this->inject($stream, $currentImage->getName(), $currentImage);
-
-                        $object->setImageHash($checksum);
-                    } catch (Exception $exception) {
-                        $this->logger->error($exception->getMessage());
-                    }
-                }
-            }
+            $this->entityManager->flush();
+            $this->entityManager->clear();
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->clear();
+        $io->info('Events');
+
+        $queryBuilder = $this
+            ->entityManager
+            ->getRepository(Event::class)
+            ->createQueryBuilder('e')
+            ->where('e.imageSystem.name IS NOT NULL AND (e.imageSystem.dimensions IS NULL OR e.imageSystem.originalName IS NULL OR e.imageSystemHash IS NULL)')
+            ->orWhere('e.image.name IS NOT NULL AND (e.image.dimensions IS NULL OR e.image.originalName IS NULL OR e.imageHash IS NULL)');
+
+        $paginator = $this->paginator->paginate($queryBuilder, 1, 500);
+
+        $nbPages = ceil($paginator->getTotalItemCount() / $paginator->getItemNumberPerPage());
+        for ($page = 1; $page <= $nbPages; ++$page) {
+            $paginator->setCurrentPageNumber($page);
+
+            /** @var Event $object */
+            foreach ($paginator->getItems() as $object) {
+                $this->logger->info(sprintf(
+                    'Handling event "%d"',
+                    $object->getId()
+                ));
+
+                $this->handle($object);
+            }
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        }
 
         $io->info('DONE');
 
         return Command::SUCCESS;
+    }
+
+    private function handle(Event|User $object): void
+    {
+        $currentImage = $object->getImageSystem();
+        if (!empty($currentImage->getName())) {
+            if (empty($currentImage->getOriginalName())) {
+                $currentImage->setOriginalName($currentImage->getName());
+            }
+
+            // Download image
+            if (empty($currentImage->getDimensions()) || empty($object->getImageSystemHash())) {
+                try {
+                    $stream = $this->storage->resolveStream($object, 'imageSystemFile');
+                    [
+                        'checksum' => $checksum
+                    ] = $this->inject($stream, $currentImage->getName(), $currentImage);
+
+                    $object->setImageSystemHash($checksum);
+                } catch (Exception $exception) {
+                    $this->logger->error($exception->getMessage());
+                }
+            }
+        }
+
+        $currentImage = $object->getImage();
+        if (!empty($currentImage->getName())) {
+            if (empty($currentImage->getOriginalName())) {
+                $currentImage->setOriginalName($currentImage->getName());
+            }
+
+            // Download image
+            if (empty($currentImage->getDimensions()) || empty($object->getImageHash())) {
+                try {
+                    $stream = $this->storage->resolveStream($object, 'imageFile');
+                    [
+                        'checksum' => $checksum
+                    ] = $this->inject($stream, $currentImage->getName(), $currentImage);
+
+                    $object->setImageHash($checksum);
+                } catch (Exception $exception) {
+                    $this->logger->error($exception->getMessage());
+                }
+            }
+        }
     }
 
     private function inject($stream, string $name, File $file): array
