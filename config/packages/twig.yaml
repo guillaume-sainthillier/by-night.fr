@@ -1,7 +1,7 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes:
-        - 'Form/fields.html.twig'
+        - 'form/fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
         social_manager: '@App\App\SocialManager'
