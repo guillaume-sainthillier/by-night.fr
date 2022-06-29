@@ -128,9 +128,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageHash = null;
 
-    #[ORM\Column(type: 'string', length: 7, nullable: true)]
-    private ?string $imageMainColor = null;
-
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M')]
@@ -141,9 +138,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
-
-    #[ORM\Column(type: 'string', length: 7, nullable: true)]
-    private ?string $imageSystemMainColor = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $verified = false;
@@ -614,30 +608,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     public function getVerified(): ?bool
     {
         return $this->verified;
-    }
-
-    public function getImageMainColor(): ?string
-    {
-        return $this->imageMainColor;
-    }
-
-    public function setImageMainColor(?string $imageMainColor): self
-    {
-        $this->imageMainColor = $imageMainColor;
-
-        return $this;
-    }
-
-    public function getImageSystemMainColor(): ?string
-    {
-        return $this->imageSystemMainColor;
-    }
-
-    public function setImageSystemMainColor(?string $imageSystemMainColor): self
-    {
-        $this->imageSystemMainColor = $imageSystemMainColor;
-
-        return $this;
     }
 
     public function isEnabled(): ?bool

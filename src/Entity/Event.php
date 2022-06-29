@@ -161,9 +161,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageHash = null;
 
-    #[ORM\Column(type: 'string', length: 7, nullable: true)]
-    private ?string $imageMainColor = null;
-
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M')]
@@ -174,9 +171,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
-
-    #[ORM\Column(type: 'string', length: 7, nullable: true)]
-    private ?string $imageSystemMainColor = null;
 
     #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -1154,30 +1148,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setExternalOrigin(?string $externalOrigin): self
     {
         $this->externalOrigin = $externalOrigin;
-
-        return $this;
-    }
-
-    public function getImageMainColor(): ?string
-    {
-        return $this->imageMainColor;
-    }
-
-    public function setImageMainColor(?string $imageMainColor): self
-    {
-        $this->imageMainColor = $imageMainColor;
-
-        return $this;
-    }
-
-    public function getImageSystemMainColor(): ?string
-    {
-        return $this->imageSystemMainColor;
-    }
-
-    public function setImageSystemMainColor(?string $imageSystemMainColor): self
-    {
-        $this->imageSystemMainColor = $imageSystemMainColor;
 
         return $this;
     }

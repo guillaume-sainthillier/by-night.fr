@@ -63,18 +63,13 @@ class ImageSubscriber implements EventSubscriberInterface
         if ($object instanceof User || $object instanceof \App\Entity\Event) {
             try {
                 [
-                    'mainColor' => $mainColor,
                     'checksum' => $checksum
                 ] = $this->getImageMetadata($file);
 
                 if ('imageFile' === $event->getMapping()->getFilePropertyName()) {
-                    $object
-                        ->setImageHash($checksum)
-                        ->setImageMainColor($mainColor);
+                    $object->setImageHash($checksum);
                 } elseif ('imageSystemFile' === $event->getMapping()->getFilePropertyName()) {
-                    $object
-                        ->setImageSystemHash($checksum)
-                        ->setImageMainColor($mainColor);
+                    $object->setImageSystemHash($checksum);
                 }
             } catch (\Exception $exception) {
                 $this->logger->error($exception->getMessage(), [
@@ -128,7 +123,6 @@ class ImageSubscriber implements EventSubscriberInterface
     {
         return [
             'checksum' => md5_file($file->getPathname()),
-            'mainColor' => null,
         ];
     }
 }

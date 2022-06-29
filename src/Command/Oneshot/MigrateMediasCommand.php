@@ -66,13 +66,10 @@ class MigrateMediasCommand extends Command
                     try {
                         $stream = $this->storage->resolveStream($object, 'imageSystemFile');
                         [
-                            'mainColor' => $mainColor,
                             'checksum' => $checksum
                         ] = $this->inject($stream, $currentImage->getName(), $currentImage);
 
-                        $object
-                            ->setImageSystemHash($checksum)
-                            ->setImageSystemMainColor($mainColor);
+                        $object->setImageSystemHash($checksum);
                     } catch (Exception $exception) {
                         $this->logger->error($exception->getMessage());
                     }
@@ -90,13 +87,10 @@ class MigrateMediasCommand extends Command
                     try {
                         $stream = $this->storage->resolveStream($object, 'imageFile');
                         [
-                            'mainColor' => $mainColor,
                             'checksum' => $checksum
                         ] = $this->inject($stream, $currentImage->getName(), $currentImage);
 
-                        $object
-                            ->setImageHash($checksum)
-                            ->setImageMainColor($mainColor);
+                        $object->setImageHash($checksum);
                     } catch (Exception $exception) {
                         $this->logger->error($exception->getMessage());
                     }
