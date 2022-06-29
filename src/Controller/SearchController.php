@@ -16,7 +16,7 @@ use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
+use Pagerfanta\PagerfantaInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SearchController extends AbstractController
 {
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
-    public function index(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm): Response
+    public function index(Request $request, RepositoryManagerInterface $rm): Response
     {
         $q = trim($request->get('q'));
         $type = $request->get('type');
@@ -39,12 +39,12 @@ class SearchController extends AbstractController
             $type = null;
         }
 
-        $events = $paginator->paginate([]);
-        $users = $paginator->paginate([]);
+        $events = $this->createEmptyPaginator($page, $maxItems);
+        $users = $this->createEmptyPaginator($page, $maxItems);
         if ('' !== $q) {
             if (!$type || 'evenements' === $type) { // Recherche d'événements
-                $results = $this->searchEvents($rm, $q);
-                $events = $paginator->paginate($results, $page, $maxItems);
+                $events = $this->searchEvents($rm, $q);
+                $this->updatePaginator($events, $page, $maxItems);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-events.html.twig', [
@@ -57,8 +57,8 @@ class SearchController extends AbstractController
             }
 
             if (!$type || 'membres' === $type) { // Recherche de membres
-                $results = $this->searchUsers($rm, $q);
-                $users = $paginator->paginate($results, $page, $maxItems);
+                $users = $this->searchUsers($rm, $q);
+                $this->updatePaginator($users, $page, $maxItems);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-users.html.twig', [
@@ -80,20 +80,20 @@ class SearchController extends AbstractController
         ]);
     }
 
-    private function searchEvents(RepositoryManagerInterface $rm, ?string $q)
+    private function searchEvents(RepositoryManagerInterface $rm, ?string $query): PagerfantaInterface
     {
         /** @var EventElasticaRepository $repoSearch */
         $repoSearch = $rm->getRepository(Event::class);
-        $search = (new SearchEvent())->setTerm($q);
+        $search = (new SearchEvent())->setTerm($query);
 
         return $repoSearch->findWithSearch($search, true);
     }
 
-    private function searchUsers(RepositoryManagerInterface $rm, ?string $q)
+    private function searchUsers(RepositoryManagerInterface $rm, ?string $query): PagerfantaInterface
     {
         /** @var UserElasticaRepository $repo */
         $repo = $rm->getRepository(User::class);
 
-        return $repo->findWithSearch($q);
+        return $repo->findWithSearch($query);
     }
 }

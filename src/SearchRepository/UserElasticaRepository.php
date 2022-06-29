@@ -12,12 +12,12 @@ namespace App\SearchRepository;
 
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\PagerfantaInterface;
 
 class UserElasticaRepository extends Repository
 {
-    public function findWithSearch(?string $q): PaginatorAdapterInterface
+    public function findWithSearch(?string $q): PagerfantaInterface
     {
         $query = new BoolQuery();
 
@@ -31,6 +31,6 @@ class UserElasticaRepository extends Repository
         $query->addFilter($match);
 
         // Final Query
-        return $this->createPaginatorAdapter($query);
+        return $this->findPaginated($query);
     }
 }

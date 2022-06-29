@@ -21,8 +21,6 @@ use App\Repository\PlaceRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,7 +41,7 @@ class AgendaController extends BaseController
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
-    public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
+    public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
         // État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -89,15 +87,15 @@ class AgendaController extends BaseController
 
             /** @var EventElasticaRepository $repository */
             $repository = $repositoryManager->getRepository(Event::class);
-            $results = $repository->findWithSearch($search);
-            $events = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
+            $events = $repository->findWithSearch($search);
+            $this->updatePaginator($events, $page, self::EVENT_PER_PAGE);
         } else {
             $isValid = false;
-            $events = $paginator->paginate([], $page, self::EVENT_PER_PAGE);
+            $events = $this->createEmptyPaginator($page, self::EVENT_PER_PAGE);
         }
 
-        if ($events instanceof SlidingPagination && $page > max(1, $events->getPageCount())) {
-            return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getPageCount())]));
+        if ($page > $events->getNbPages()) {
+            return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getNbPages())]));
         }
 
         return $this->render('location/agenda/index.html.twig', [

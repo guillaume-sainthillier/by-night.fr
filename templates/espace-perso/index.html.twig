@@ -72,8 +72,12 @@
                     </tbody>
                 </table>
             </div>
+            {% if events.nbPages > 1 %}
+                <div class="card-footer d-flex align-items-center">
+                    {{ pagerfanta(events) }}
+                </div>
+            {% endif %}
         </div>
-        {{ knp_pagination_render(events) }}
     {% else %}
         <div class="alert alert-info">
             <i class="fa fa-info-circle"></i>

@@ -1,4 +1,4 @@
-{% if events.totalItemCount > 0 %}
+{% if events.nbResults > 0 %}
     <div class="row row-cards row-deck">
         {% for i, event in events %}
             <div class="col-sm-6 col-lg-4">
@@ -9,7 +9,7 @@
         {% endfor %}
     </div>
 
-    {% if events.paginationData.next is defined %}
+    {% if events.hasNextPage() %}
         <div class="text-center my-4">
             <a id="paginate"
                class="btn btn-outline-primary"

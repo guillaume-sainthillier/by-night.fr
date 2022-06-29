@@ -14,6 +14,9 @@
     "aws/aws-sdk-php": {
         "version": "3.154.4"
     },
+    "babdev/pagerfanta-bundle": {
+        "version": "v3.7.0"
+    },
     "beberlei/doctrineextensions": {
         "version": "v1.2.7"
     },
@@ -227,12 +230,6 @@
             "config/packages/jms_serializer.yaml",
             "config/packages/prod/jms_serializer.yaml"
         ]
-    },
-    "knplabs/knp-components": {
-        "version": "v2.4.2"
-    },
-    "knplabs/knp-paginator-bundle": {
-        "version": "v5.3.0"
     },
     "knpuniversity/oauth2-client-bundle": {
         "version": "1.20",

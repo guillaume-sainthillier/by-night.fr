@@ -16,7 +16,6 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +30,7 @@ class CommentController extends BaseController
     public const COMMENTS_PER_PAGE = 10;
 
     #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
-    public function form(Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator, int $page = 1): Response
+    public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comment = new Comment();
         $form = null;
@@ -43,8 +42,8 @@ class CommentController extends BaseController
                 ->createView();
         }
 
-        $comments = $paginator->paginate(
-            $commentRepository->findAllByEventQuery($event),
+        $comments = $this->createQueryBuilderPaginator(
+            $commentRepository->findAllByEventQueryBuilder($event),
             $page,
             self::COMMENTS_PER_PAGE
         );
@@ -60,10 +59,10 @@ class CommentController extends BaseController
      * @ReverseProxy(expires="tomorrow")
      */
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
-    public function list(Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator, int $page = 1): Response
+    public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
-        $comments = $paginator->paginate(
-            $commentRepository->findAllByEventQuery($event),
+        $comments = $this->createQueryBuilderPaginator(
+            $commentRepository->findAllByEventQueryBuilder($event),
             $page,
             self::COMMENTS_PER_PAGE
         );
@@ -78,7 +77,7 @@ class CommentController extends BaseController
 
     #[Route(path: '/{id<%patterns.id%>}/nouveau', name: 'app_comment_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
-    public function new(Request $request, Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator): Response
+    public function new(Request $request, Event $event, CommentRepository $commentRepository): Response
     {
         $user = $this->getAppUser();
         $comment = new Comment();
@@ -94,8 +93,8 @@ class CommentController extends BaseController
             $em->persist($comment);
             $em->flush();
 
-            $comments = $paginator->paginate(
-                $commentRepository->findAllByEventQuery($event),
+            $comments = $this->createQueryBuilderPaginator(
+                $commentRepository->findAllByEventQueryBuilder($event),
                 1,
                 self::COMMENTS_PER_PAGE
             );

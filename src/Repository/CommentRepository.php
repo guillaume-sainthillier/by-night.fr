@@ -14,7 +14,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -30,14 +30,14 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    public function findAllByEventQuery(Event $event): Query
+    public function findAllByEventQueryBuilder(Event $event): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
             ->where('c.event = :event AND c.parent IS NULL AND c.approved = true')
             ->setParameters([':event' => $event])
             ->orderBy('c.createdAt', 'DESC')
-            ->getQuery();
+        ;
     }
 
     /**
@@ -53,16 +53,12 @@ class CommentRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    /**
-     * @return Comment[]
-     */
-    public function findAllAnswersQuery(Comment $comment): Query
+    public function findAllAnswersQueryBuilder(Comment $comment): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
             ->where('c.parent = :parent AND c.approved = true')
             ->setParameters([':parent' => $comment])
-            ->orderBy('c.createdAt', 'DESC')
-            ->getQuery();
+            ->orderBy('c.createdAt', 'DESC');
     }
 }

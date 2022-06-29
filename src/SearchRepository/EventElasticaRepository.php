@@ -19,8 +19,8 @@ use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\PagerfantaInterface;
 
 class EventElasticaRepository extends Repository
 {
@@ -49,7 +49,7 @@ class EventElasticaRepository extends Repository
      */
     public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
-    public function findWithSearch(SearchEvent $search, bool $sortByScore = false): PaginatorAdapterInterface
+    public function findWithSearch(SearchEvent $search, bool $sortByScore = false): PagerfantaInterface
     {
         $mainQuery = new BoolQuery();
         $location = null;
@@ -172,6 +172,6 @@ class EventElasticaRepository extends Repository
             }
         }
 
-        return $this->createPaginatorAdapter($finalQuery);
+        return $this->findPaginated($finalQuery);
     }
 }

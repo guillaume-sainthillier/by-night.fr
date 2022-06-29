@@ -161,14 +161,13 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->addOrderBy('e.id');
     }
 
-    public function findAllByUser(UserInterface $user): Query
+    public function findAllByUserQueryBuilder(UserInterface $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('e')
             ->where('e.user = :user')
             ->setParameters(['user' => $user])
-            ->orderBy('e.id', 'DESC')
-            ->getQuery();
+            ->orderBy('e.id', 'DESC');
     }
 
     public function getCountryEvents(): array
@@ -428,7 +427,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->execute();
     }
 
-    public function findUpcomingEvents(Location $location): Query
+    public function findUpcomingEventsQueryBuilder(Location $location): QueryBuilder
     {
         $from = new DateTime();
 
@@ -441,7 +440,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         $this->buildLocationParameters($qb, $location);
 
-        return $qb->getQuery();
+        return $qb;
     }
 
     private function buildLocationParameters(QueryBuilder $queryBuilder, Location $location): void

@@ -1,7 +1,6 @@
 framework:
     ide: 'phpstorm://open?file=%%f&line=%%l'
     secret: '%env(APP_SECRET)%'
-    default_locale: fr
     #csrf_protection: ~
     #http_method_override: true
 

@@ -45,8 +45,8 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            {% set s = events.totalItemCount > 1 ? 's' %}
-            <h2 class="text-primary h4">{{ events.totalItemCount }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
+            {% set s = events.nbResults > 1 ? 's' %}
+            <h2 class="text-primary h4">{{ events.nbResults }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white py-4">

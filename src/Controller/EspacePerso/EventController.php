@@ -24,9 +24,7 @@ use App\Repository\UserEventRepository;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,12 +39,15 @@ class EventController extends BaseController
     private const EVENT_PER_PAGE = 50;
 
     #[Route(path: '/mes-soirees', name: 'app_event_list', methods: ['GET'])]
-    public function index(Request $request, PaginatorInterface $paginator, EventRepository $eventRepository): Response
+    public function index(Request $request, EventRepository $eventRepository): Response
     {
         $user = $this->getAppUser();
         $page = (int) $request->query->get('page', 1);
-        $query = $eventRepository->findAllByUser($user);
-        $events = $paginator->paginate($query, $page, self::EVENT_PER_PAGE);
+        $events = $this->createQueryBuilderPaginator(
+            $eventRepository->findAllByUserQueryBuilder($user),
+            $page,
+            self::EVENT_PER_PAGE
+        );
 
         return $this->render('espace-perso/index.html.twig', [
             'events' => $events,

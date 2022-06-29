@@ -12,15 +12,15 @@ namespace App\SearchRepository;
 
 use Elastica\Query;
 use Elastica\Query\MultiMatch;
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\PagerfantaInterface;
 
 class CityElasticaRepository extends Repository
 {
     /**
      * @param string $q
      */
-    public function findWithSearch(?string $q): PaginatorAdapterInterface
+    public function findWithSearch(?string $q): PagerfantaInterface
     {
         $query = new MultiMatch();
         $query
@@ -34,6 +34,6 @@ class CityElasticaRepository extends Repository
         $finalQuery->addSort(['_score' => 'DESC']);
         $finalQuery->addSort(['population' => 'DESC']);
 
-        return $this->createPaginatorAdapter($finalQuery);
+        return $this->findPaginated($finalQuery);
     }
 }

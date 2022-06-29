@@ -12,9 +12,9 @@ namespace App\Command\Oneshot;
 
 use App\Entity\Event;
 use App\Entity\User;
+use App\Utils\PaginateTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -32,10 +32,11 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 )]
 class MigrateMediasCommand extends Command
 {
+    use PaginateTrait;
+
     public function __construct(
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
-        private PaginatorInterface $paginator,
         private StorageInterface $storage
     ) {
         parent::__construct();
@@ -54,13 +55,12 @@ class MigrateMediasCommand extends Command
             ->where('u.imageSystem.name IS NOT NULL AND (u.imageSystem.dimensions IS NULL OR u.imageSystem.originalName IS NULL OR u.imageSystemHash IS NULL)')
             ->orWhere('u.image.name IS NOT NULL AND (u.image.dimensions IS NULL OR u.image.originalName IS NULL OR u.imageHash IS NULL)');
 
-        $paginator = $this->paginator->paginate($queryBuilder, 1, 500);
-        $nbPages = ceil($paginator->getTotalItemCount() / $paginator->getItemNumberPerPage());
-        for ($page = 1; $page <= $nbPages; ++$page) {
-            $paginator->setCurrentPageNumber($page);
+        $paginator = $this->createQueryBuilderPaginator($queryBuilder, 1, 500);
+        for ($page = 1; $page <= $paginator->getNbPages(); ++$page) {
+            $paginator->setCurrentPage($page);
 
             /** @var User $object */
-            foreach ($paginator->getItems() as $object) {
+            foreach ($paginator->getCurrentPageResults() as $object) {
                 if (616 === $object->getId()) {
                     continue;
                 }
@@ -86,14 +86,12 @@ class MigrateMediasCommand extends Command
             ->where('e.imageSystem.name IS NOT NULL AND (e.imageSystem.dimensions IS NULL OR e.imageSystem.originalName IS NULL OR e.imageSystemHash IS NULL)')
             ->orWhere('e.image.name IS NOT NULL AND (e.image.dimensions IS NULL OR e.image.originalName IS NULL OR e.imageHash IS NULL)');
 
-        $paginator = $this->paginator->paginate($queryBuilder, 1, 500);
-
-        $nbPages = ceil($paginator->getTotalItemCount() / $paginator->getItemNumberPerPage());
-        for ($page = 1; $page <= $nbPages; ++$page) {
-            $paginator->setCurrentPageNumber($page);
+        $paginator = $this->createQueryBuilderPaginator($queryBuilder, 1, 500);
+        for ($page = 1; $page <= $paginator->getNbPages(); ++$page) {
+            $paginator->setCurrentPage($page);
 
             /** @var Event $object */
-            foreach ($paginator->getItems() as $object) {
+            foreach ($paginator->getCurrentPageResults() as $object) {
                 $this->logger->info(sprintf(
                     'Handling event "%d"',
                     $object->getId()

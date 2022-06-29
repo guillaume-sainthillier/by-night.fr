@@ -11,12 +11,15 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Utils\PaginateTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
 
 abstract class AbstractController extends BaseController
 {
+    use PaginateTrait;
+
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }

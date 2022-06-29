@@ -18,7 +18,6 @@ use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCache\ResponseTagger;
 use FOS\HttpCacheBundle\Configuration\Tag;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,7 +36,7 @@ class CityController extends AbstractController
      * @Tag("autocomplete-city")
      */
     #[Route(path: '/villes', name: 'app_api_city', methods: ['GET'])]
-    public function city(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager): Response
+    public function city(ResponseTagger $responseTagger, Request $request, RepositoryManagerInterface $repositoryManager): Response
     {
         $term = trim($request->get('q'));
         if ('' === $term) {
@@ -46,7 +45,7 @@ class CityController extends AbstractController
             /** @var CityElasticaRepository $repo */
             $repo = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
-            $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
+            $this->updatePaginator($results, 1, self::MAX_RESULTS);
         }
 
         $jsonResults = [];
