@@ -19,7 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Exception\InvalidStateException;
 use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
-use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
+use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Security\Exception\InvalidStateAuthenticationException;
 use KnpU\OAuth2ClientBundle\Security\Exception\NoAuthCodeAuthenticationException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,74 +29,110 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
-class UserSocialAuthenticator extends SocialAuthenticator
+class UserSocialAuthenticator extends OAuth2Authenticator
 {
-    public function __construct(private Security $security, private ClientRegistry $clientRegistry, private EntityManagerInterface $em, private UrlGeneratorInterface $router, private SocialProvider $socialProvider, private OAuthDataProvider $oAuthDataProvider, private TwitterOAuth $twitterOAuth, private UserRepository $userRepository)
-    {
+    public function __construct(
+        private Security $security,
+        private ClientRegistry $clientRegistry,
+        private EntityManagerInterface $entityManager,
+        private UrlGeneratorInterface $router,
+        private UserAuthenticatorInterface $userAuthenticator,
+        private SocialProvider $socialProvider,
+        private OAuthDataProvider $oAuthDataProvider,
+        private TwitterOAuth $twitterOAuth,
+        private UserRepository $userRepository
+    ) {
     }
 
-    public function supports(Request $request)
+    /**
+     * Manual login
+     */
+    public function login(User $user, Request $request): ?Response
+    {
+        return $this->userAuthenticator->authenticateUser(
+            $user,
+            $this,
+            $request
+        );
+    }
+
+    public function supports(Request $request): ?bool
     {
         return 'login_social_check' === $request->attributes->get('_route');
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function authenticate(Request $request): Passport
     {
-        $service = $credentials['service'];
-        $token = $credentials['token'];
-        $social = $this->socialProvider->getSocial($service);
-        $datas = $this->oAuthDataProvider->getDatasFromToken($service, $token);
+        $service = $request->attributes->get('service');
 
-        // In case of adding new socials in profile
-        if (null !== $this->security->getUser()) {
-            /** @var User $existingUser */
-            $existingUser = $this->security->getUser();
+        // Still use Oauth 1.0...
+        if (SocialProvider::TWITTER === $service) {
+            $accessToken = $this->fetchTwitterAccessToken();
         } else {
-            $existingUser = $this
-                ->userRepository
-                ->findOneBySocial($datas['email'], $social->getInfoPropertyPrefix(), $datas['id']);
+            $client = $this->clientRegistry->getClient($service);
+            $accessToken = $this->fetchAccessToken($client);
         }
 
-        if (null === $existingUser) {
-            $existingUser = new User();
-            $existingUser
-                ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
-                ->setPassword('notused')
-                ->setFromLogin(false)
-                ->setVerified(true)
-                ->setEmail($datas['email']);
+        return new SelfValidatingPassport(
+            new UserBadge($accessToken->getToken(), function () use ($accessToken, $service) {
+                $social = $this->socialProvider->getSocial($service);
+                $datas = $this->oAuthDataProvider->getDatasFromToken($service, $accessToken);
 
-            // Avoir duplicate exception
-            $initialUsername = $existingUser->getUserIdentifier();
-            for ($i = 1;; ++$i) {
-                $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUserIdentifier()]);
-                if (null === $persistedUser) {
-                    break;
+                // In case of adding new socials in profile
+                if (null !== $this->security->getUser()) {
+                    /** @var User $existingUser */
+                    $existingUser = $this->security->getUser();
+                } else {
+                    $existingUser = $this
+                        ->userRepository
+                        ->findOneBySocial($datas['email'], $social->getInfoPropertyPrefix(), $datas['id']);
                 }
 
-                $existingUser->setUsername(sprintf('%s-%d', $initialUsername, $i));
-            }
+                if (null === $existingUser) {
+                    $existingUser = new User();
+                    $existingUser
+                        ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
+                        ->setPassword('notused')
+                        ->setFromLogin(false)
+                        ->setVerified(true)
+                        ->setEmail($datas['email']);
 
-            $this->em->persist($existingUser);
-        }
+                    // Avoir duplicate exception
+                    $initialUsername = $existingUser->getUserIdentifier();
+                    for ($i = 1;; ++$i) {
+                        $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUserIdentifier()]);
+                        if (null === $persistedUser) {
+                            break;
+                        }
 
-        if (!$existingUser->getFirstname() && $datas['firstName']) {
-            $existingUser->setFirstname($datas['firstName']);
-        }
+                        $existingUser->setUsername(sprintf('%s-%d', $initialUsername, $i));
+                    }
 
-        if (!$existingUser->getLastname() && $datas['lastName']) {
-            $existingUser->setLastname($datas['lastName']);
-        }
+                    $this->entityManager->persist($existingUser);
+                }
 
-        $social->connectUser($existingUser, $datas);
-        $this->em->flush();
+                if (!$existingUser->getFirstname() && $datas['firstName']) {
+                    $existingUser->setFirstname($datas['firstName']);
+                }
 
-        return $existingUser;
+                if (!$existingUser->getLastname() && $datas['lastName']) {
+                    $existingUser->setLastname($datas['lastName']);
+                }
+
+                $social->connectUser($existingUser, $datas);
+                $this->entityManager->flush();
+
+                return $existingUser;
+            })
+        );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return new RedirectResponse(
             $this->router->generate('login_social_success', [
@@ -105,24 +141,14 @@ class UserSocialAuthenticator extends SocialAuthenticator
         );
     }
 
-    public function getCredentials(Request $request)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $service = $request->attributes->get('service');
+        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 
-        // Still use Oauth 1.0...
-        if (SocialProvider::TWITTER === $service) {
-            return [
-                'service' => $service,
-                'token' => $this->fetchTwitterAccessToken(),
-            ];
-        }
-
-        $client = $this->clientRegistry->getClient($service);
-
-        return [
-            'service' => $service,
-            'token' => $this->fetchAccessToken($client),
-        ];
+        return new RedirectResponse(
+            $this->router->generate('app_login'),
+            Response::HTTP_TEMPORARY_REDIRECT
+        );
     }
 
     private function fetchTwitterAccessToken(): TwitterAccessToken
@@ -134,27 +160,5 @@ class UserSocialAuthenticator extends SocialAuthenticator
         } catch (InvalidStateException $invalidStateException) {
             throw new InvalidStateAuthenticationException($invalidStateException);
         }
-    }
-
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
-    {
-        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
-
-        return new RedirectResponse(
-            $this->router->generate('app_login'),
-            Response::HTTP_TEMPORARY_REDIRECT
-        );
-    }
-
-    /**
-     * Called when authentication is needed, but it's not sent.
-     * This redirects to the 'login'.
-     */
-    public function start(Request $request, AuthenticationException $authException = null)
-    {
-        return new RedirectResponse(
-            $this->router->generate('app_login'),
-            Response::HTTP_TEMPORARY_REDIRECT
-        );
     }
 }

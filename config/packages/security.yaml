@@ -1,4 +1,5 @@
 security:
+    enable_authenticator_manager: true
     encoders:
         legacy:
             algorithm: sha512
@@ -18,10 +19,9 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+      users:
             entity:
                 class: App\Entity\User
-                property: email
 
     firewalls:
         dev:
@@ -29,17 +29,15 @@ security:
             security: false
 
         main:
-            anonymous: true
             lazy: true
-            provider: app_user_provider
+            provider: users
             user_checker: App\Security\UserChecker
             pattern: ^/
 
-            guard:
-                authenticators:
-                    - App\Security\UserSocialAuthenticator
-                    - App\Security\UserFormAuthenticator
-                entry_point: App\Security\UserFormAuthenticator
+            entry_point: App\Security\UserFormAuthenticator
+            custom_authenticators:
+              - App\Security\UserSocialAuthenticator
+              - App\Security\UserFormAuthenticator
 
             logout:
                 delete_cookies: ['PHPSESSID']

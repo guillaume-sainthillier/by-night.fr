@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
@@ -30,7 +29,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/inscription', name: 'app_register', methods: ['GET', 'POST'])]
-    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, GuardAuthenticatorHandler $guardHandler, UserFormAuthenticator $authenticator): Response
+    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserFormAuthenticator $authenticator): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -54,12 +53,12 @@ class RegistrationController extends AbstractController
             $this->emailVerifier->sendEmailConfirmation($user);
             // do anything else you need here, like send an email
 
-            return $guardHandler->authenticateUserAndHandleSuccess(
+            $response = $authenticator->login(
                 $user,
                 $request,
-                $authenticator,
-                'main' // firewall name in security.yaml
             );
+
+            return $response ?? $this->redirectToRoute('app_index');
         }
 
         return $this->render('registration/register.html.twig', [

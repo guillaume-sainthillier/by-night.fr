@@ -17,20 +17,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 #[Route(path: '/{service<%patterns.social%>}')]
 class DefaultController extends AbstractController
 {
     #[Route(path: '/deconnexion', name: 'app_disconnect_service', methods: ['POST'])]
-    public function disconnect(Social $social, Request $request, GuardAuthenticatorHandler $guardAuthenticatorHandler, UserSocialAuthenticator $socialAuthenticator): Response
+    public function disconnect(Social $social, Request $request, UserSocialAuthenticator $socialAuthenticator): Response
     {
         $user = $this->getAppUser();
         $social->disconnectUser($user);
         $this->getEntityManager()->flush();
+
         // Reload user roles as they have changed
-        $token = $socialAuthenticator->createAuthenticatedToken($user, 'main');
-        $guardAuthenticatorHandler->authenticateWithToken($token, $request);
+        $socialAuthenticator->login($user, $request);
 
         return new JsonResponse(['success' => true]);
     }

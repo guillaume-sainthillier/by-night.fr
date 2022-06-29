@@ -22,12 +22,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 #[Route(path: '/profile')]
 class ProfileController extends AbstractController
 {
     #[Route(path: '/delete', name: 'app_user_delete', methods: ['GET', 'POST'])]
-    public function delete(Request $request, EventRepository $eventRepository, CommentRepository $commentRepository): Response
+    public function delete(Request $request, EventRepository $eventRepository, CommentRepository $commentRepository, TokenStorageInterface $tokenStorage): Response
     {
         $form = $this->createDeleteForm();
         $form->handleRequest($request);
@@ -74,6 +75,8 @@ class ProfileController extends AbstractController
             $em->flush();
 
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
+
+            $tokenStorage->setToken(null);
 
             return $this->redirectToRoute('app_index');
         }
