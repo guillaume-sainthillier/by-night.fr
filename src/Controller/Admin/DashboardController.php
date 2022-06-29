@@ -39,7 +39,7 @@ class DashboardController extends AbstractDashboardController
     {
     }
 
-    #[Route(path: '/', name: 'admin')]
+    #[Route(path: '/', name: 'admin', methods: ['GET'])]
     public function index(): Response
     {
         // redirect to some CRUD controller

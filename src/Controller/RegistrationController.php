@@ -29,7 +29,7 @@ class RegistrationController extends AbstractController
         parent::__construct($entityManager);
     }
 
-    #[Route(path: '/inscription', name: 'app_register')]
+    #[Route(path: '/inscription', name: 'app_register', methods: ['GET', 'POST'])]
     public function index(Request $request, UserPasswordHasherInterface $passwordHasher, GuardAuthenticatorHandler $guardHandler, UserFormAuthenticator $authenticator): Response
     {
         $user = new User();
@@ -67,7 +67,7 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/verifier-email', name: 'app_verify_email')]
+    #[Route(path: '/verifier-email', name: 'app_verify_email', methods: ['GET', 'POST'])]
     public function verifyUserEmail(Request $request): Response
     {
         try {

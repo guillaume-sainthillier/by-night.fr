@@ -37,7 +37,7 @@ class ResetPasswordController extends AbstractController
     /**
      * Display & process form to request a password reset.
      */
-    #[Route(path: '', name: 'app_forgot_password_request')]
+    #[Route(path: '', name: 'app_forgot_password_request', methods: ['GET', 'POST'])]
     public function request(Request $request, MailerManager $mailer): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
@@ -57,7 +57,7 @@ class ResetPasswordController extends AbstractController
     /**
      * Confirmation page after a user has requested a password reset.
      */
-    #[Route(path: '/verifier-email', name: 'app_check_email')]
+    #[Route(path: '/verifier-email', name: 'app_check_email', methods: ['GET', 'POST'])]
     public function checkEmail(): Response
     {
         // We prevent users from directly accessing this page
@@ -73,7 +73,7 @@ class ResetPasswordController extends AbstractController
     /**
      * Validates and process the reset URL that the user clicked in their email.
      */
-    #[Route(path: '/reset/{token}', name: 'app_reset_password')]
+    #[Route(path: '/reset/{token}', name: 'app_reset_password', methods: ['GET', 'POST'])]
     public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, string $token = null): Response
     {
         if ($token) {
