@@ -86,7 +86,7 @@ class MigrateMediasCommand extends Command
                 }
 
                 // Download image
-                if (empty($currentImage->getDimensions()) || empty($object->getImageSystemHash())) {
+                if (empty($currentImage->getDimensions()) || empty($object->getImageHash())) {
                     try {
                         $stream = $this->storage->resolveStream($object, 'imageFile');
                         [
