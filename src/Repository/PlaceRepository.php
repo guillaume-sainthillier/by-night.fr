@@ -87,6 +87,9 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->execute();
     }
 
+    /**
+     * @return iterable<array>
+     */
     public function findAllSitemap(): iterable
     {
         return $this

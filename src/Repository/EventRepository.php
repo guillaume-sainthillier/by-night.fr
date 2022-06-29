@@ -114,28 +114,18 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         return parent::createQueryBuilder($alias, $indexBy);
     }
 
-    public function findSiteMap(int $page, int $resultsPerPage): iterable
+    /**
+     * @return iterable<array>
+     */
+    public function findAllSiteMap(): iterable
     {
         return $this
             ->createQueryBuilder('e')
             ->addSelect('c3')
             ->join('p.country', 'c3')
             ->select('e.slug, e.id, e.updatedAt, e.endDate, c.slug AS city_slug, c3.slug AS country_slug')
-            ->setFirstResult($page * $resultsPerPage)
-            ->setMaxResults($resultsPerPage)
             ->getQuery()
             ->toIterable();
-    }
-
-    public function getSiteMapCount(): int
-    {
-        return (int) $this
-            ->createQueryBuilder('e')
-            ->addSelect('c3')
-            ->join('p.country', 'c3')
-            ->select('COUNT(a) as nb')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 
     public function updateNonIndexables(): void

@@ -134,6 +134,9 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             ->getResult();
     }
 
+    /**
+     * @return iterable<array>
+     */
     public function findAllSitemap(): iterable
     {
         return parent::createQueryBuilder('c')
@@ -145,7 +148,10 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             ->toIterable();
     }
 
-    public function findAllSitemapTags(): iterable
+    /**
+     * @return iterable<array>
+     */
+    public function findAllTagsSitemap(): iterable
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug, e.type, e.category, e.theme')

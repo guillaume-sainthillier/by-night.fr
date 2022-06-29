@@ -63,10 +63,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    /**
+     * @return iterable<array>
+     */
     public function findAllSitemap(): iterable
     {
         return $this
             ->createQueryBuilder('u')
+            ->select('u.id, u.slug, u.updatedAt')
             ->getQuery()
             ->toIterable();
     }
