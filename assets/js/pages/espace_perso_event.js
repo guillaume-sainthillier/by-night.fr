@@ -1,7 +1,4 @@
 import $ from 'jquery';
-import 'summernote/dist/summernote-bs5.css';
-import 'summernote/dist/summernote-bs5';
-import 'summernote/dist/lang/summernote-fr-FR';
 
 import initDates from '../lazy-listeners/dates';
 import initImagePreview from '../lazy-listeners/image-previews';
