@@ -29,14 +29,7 @@ import tooltip from './listeners/tooltip';
 class App {
     constructor() {
         this._di = null;
-        this._listeners = [
-            //breadcrumb,
-            headerSearch,
-            imagePreviews,
-            lazyload,
-            //navbarScroll,
-            scrollToTop,
-        ];
+        this._listeners = [headerSearch, imagePreviews, lazyload, scrollToTop];
 
         this._pageListeners = [formCollection, formErrors, like, loadMore, login, popup, register, tooltip];
     }
@@ -65,7 +58,7 @@ class App {
         registerServices(this._di);
 
         // Execute the page load listeners
-        this._pageListeners.forEach((listener) => {
+        this._listeners.forEach((listener) => {
             listener(this._di);
         });
 
@@ -73,7 +66,7 @@ class App {
     }
 
     dispatchPageLoadedEvent(container = document) {
-        this._listeners.forEach((listener) => {
+        this._pageListeners.forEach((listener) => {
             listener(this._di, container);
         });
 
