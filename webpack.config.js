@@ -93,19 +93,25 @@ if (Encore.isProduction()) {
                     path.join(__dirname, 'assets/**/*.js'),
                     path.join(__dirname, 'src/**/*.php'),
                     path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
-                    path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
                     path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
                     path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
                     path.join(__dirname, 'node_modules/fancybox/dist/js/jquery.fancybox.js'),
                     path.join(__dirname, 'node_modules/lazysizes/lazysizes.js'),
                     path.join(__dirname, 'node_modules/morris.js/morris.js'),
                     path.join(__dirname, 'node_modules/raphael/raphael.js'),
+                    path.join(__dirname, 'node_modules/select2/src/js/**/*.js'),
                     path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
+                    path.join(__dirname, 'node_modules/summernote/src/styles/bs5/*.js'),
                     path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
                 ],
                 { nodir: true }
             ),
-            whitelistPatterns: [/^custom-/],
+            safelist: [
+                /^custom-/,
+                /'^note-'/,
+                /^select2-container--bootstrap-5/,
+                /^fa-(masks-theater|vest|file-pen|calendar|location-crosshairs)/,
+            ],
         })
     );
 }
