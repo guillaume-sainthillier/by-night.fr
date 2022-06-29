@@ -24,27 +24,25 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/recherche')]
 class SearchController extends AbstractController
 {
+    private const ITEMS_PER_PAGE = 1;
+
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
     public function index(Request $request, RepositoryManagerInterface $rm): Response
     {
-        $q = trim($request->get('q'));
-        $type = $request->get('type');
-        $page = (int) ($request->get('page', 1));
-        $maxItems = 20;
-        if ($page <= 0) {
-            $page = 1;
-        }
+        $q = trim($request->query->get('q'));
+        $type = $request->query->get('type');
+        $page = max($request->query->getInt('page'), 1);
 
-        if ($type && !\in_array($type, ['evenements', 'membres'])) {
+        if ($type && !\in_array($type, ['evenements', 'membres'], true)) {
             $type = null;
         }
 
-        $events = $this->createEmptyPaginator($page, $maxItems);
-        $users = $this->createEmptyPaginator($page, $maxItems);
+        $events = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
+        $users = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
         if ('' !== $q) {
             if (!$type || 'evenements' === $type) { // Recherche d'événements
                 $events = $this->searchEvents($rm, $q);
-                $this->updatePaginator($events, $page, $maxItems);
+                $this->updatePaginator($events, $page, self::ITEMS_PER_PAGE);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-events.html.twig', [
@@ -58,7 +56,7 @@ class SearchController extends AbstractController
 
             if (!$type || 'membres' === $type) { // Recherche de membres
                 $users = $this->searchUsers($rm, $q);
-                $this->updatePaginator($users, $page, $maxItems);
+                $this->updatePaginator($users, $page, self::ITEMS_PER_PAGE);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-users.html.twig', [
