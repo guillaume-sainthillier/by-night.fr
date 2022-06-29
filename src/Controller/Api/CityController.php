@@ -38,9 +38,9 @@ class CityController extends AbstractController
     #[Route(path: '/villes', name: 'app_api_city', methods: ['GET'])]
     public function city(ResponseTagger $responseTagger, Request $request, RepositoryManagerInterface $repositoryManager): Response
     {
-        $term = trim($request->get('q'));
+        $term = trim($request->query->get('q'));
         if ('' === $term) {
-            $results = [];
+            $results = $this->createEmptyPaginator(1, self::MAX_RESULTS);
         } else {
             /** @var CityElasticaRepository $repo */
             $repo = $repositoryManager->getRepository(City::class);
