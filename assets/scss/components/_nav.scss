@@ -14,10 +14,11 @@
 
 .nav-tabs.bg-primary {
     .nav-link {
-        opacity: 0.76;
         font-weight: normal;
+        color: $navbar-dark-color;
 
         &.active {
+            color: $nav-tabs-link-active-color;
             font-weight: normal;
             opacity: 1;
         }
@@ -27,7 +28,8 @@
         .nav-link {
             padding: 0.5rem 0.75rem;
 
-            .fa {
+            .fa,
+            .fab {
                 display: block;
             }
 

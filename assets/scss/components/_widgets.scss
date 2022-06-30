@@ -211,12 +211,13 @@
     #bottom-navigation {
         display: block;
         position: fixed;
+        border: none;
         width: 100%;
         left: 0;
         bottom: 0;
         z-index: 2;
         transition: transform 0.5s ease;
-        transform: translateY(54px);
+        transform: translateY(51px);
 
         &.visible {
             transform: translateY(0);
@@ -232,6 +233,7 @@
         }
 
         .nav-link {
+            border-radius: 0;
             border: none;
         }
     }
