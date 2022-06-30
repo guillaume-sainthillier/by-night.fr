@@ -12,6 +12,7 @@ namespace App\Consumer;
 
 use App\Handler\DoctrineEventHandler;
 use App\Utils\Monitor;
+use Exception;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use Psr\Log\LoggerInterface;
@@ -26,7 +27,7 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
     /**
      * {@inheritDoc}
      *
-     * @psalm-return 1
+     * @psalm-return 1|-1
      */
     public function batchExecute(array $messages): int
     {
@@ -35,10 +36,19 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
             $dtos[] = unserialize($message->getBody());
         }
 
-        Monitor::bench('ADD EVENT BATCH', function () use ($dtos) {
-            $this->doctrineEventHandler->handleManyCLI($dtos);
-        });
-        Monitor::displayStats();
+        try {
+            Monitor::bench('ADD EVENT BATCH', function () use ($dtos) {
+                $this->doctrineEventHandler->handleManyCLI($dtos);
+            });
+            Monitor::displayStats();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), [
+                'exception' => $e,
+                'extra' => $dtos,
+            ]);
+
+            return ConsumerInterface::MSG_REJECT;
+        }
 
         return ConsumerInterface::MSG_ACK;
     }
