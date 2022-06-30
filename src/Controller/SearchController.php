@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/recherche')]
 class SearchController extends AbstractController
 {
-    private const ITEMS_PER_PAGE = 1;
+    private const ITEMS_PER_PAGE = 20;
 
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
     public function index(Request $request, RepositoryManagerInterface $rm): Response
