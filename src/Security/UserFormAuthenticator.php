@@ -27,6 +27,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -36,6 +37,7 @@ class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
+        private TranslatorInterface $translator,
         private UserAuthenticatorInterface $userAuthenticator
     ) {
     }
@@ -83,12 +85,7 @@ class UserFormAuthenticator extends AbstractLoginFormAuthenticator
         return new RedirectResponse($this->urlGenerator->generate('app_event_list'));
     }
 
-    protected function getLoginUrl(Request $request): string
-    {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
-    }
-
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): RedirectResponse|JsonResponse
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         if ($request->isXmlHttpRequest()) {
             $result = [
@@ -100,5 +97,10 @@ class UserFormAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         return parent::onAuthenticationFailure($request, $exception);
+    }
+
+    protected function getLoginUrl(Request $request): string
+    {
+        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 }
