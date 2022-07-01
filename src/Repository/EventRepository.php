@@ -136,9 +136,9 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $this
             ->_em
             ->createQuery('UPDATE App:Event e
-            SET e.archived = true
+            SET e.archive = true
             WHERE e.endDate < :from
-            AND e.archived = false')
+            AND e.archive = false')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
             ])
@@ -153,7 +153,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
 
         return $this
             ->createElasticaQueryBuilder('e')
-            ->where('e.archived = false')
+            ->where('e.archive = false')
             ->andWhere('e.endDate < :from')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
