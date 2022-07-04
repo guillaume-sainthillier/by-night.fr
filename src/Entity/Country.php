@@ -20,8 +20,9 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use Stringable;
 
-#[ORM\Entity(repositoryClass: CountryRepository::class, readOnly: true)]
 #[ExclusionPolicy('NONE')]
+#[ORM\Entity(repositoryClass: CountryRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Country implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     #[ORM\Column(type: 'string', length: 2)]
