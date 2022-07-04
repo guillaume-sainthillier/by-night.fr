@@ -189,7 +189,7 @@ class OpenAgendaParser extends AbstractParser
         $event->name = $data['title']['fr'];
         $event->description = $description;
         $event->source = $data['link'];
-        $event->externalId = sprintf('OA-%s', $data['uid']);
+        $event->externalId = $data['uid'];
         $event->imageUrl = $data['image'];
         $event->externalUpdatedAt = new DateTimeImmutable($data['updatedAt']);
         $event->startDate = $startDate;
@@ -205,7 +205,7 @@ class OpenAgendaParser extends AbstractParser
 
         $place = new PlaceDto();
         $place->name = $location['placename'] ?? null;
-        $place->externalId = sprintf('OA-%s', $location['uid']);
+        $place->externalId = $location['uid'];
 
         $city = new CityDto();
         $city->postalCode = $location['postalCode'] ?? null;

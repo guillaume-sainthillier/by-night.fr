@@ -281,7 +281,7 @@ class DataTourismeParser extends AbstractParser
             }
 
             $currentEvent = clone $event;
-            $currentEvent->externalId = sprintf('DT-%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
+            $currentEvent->externalId = sprintf('%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
             $currentEvent->startDate = $startDate;
             $currentEvent->endDate = $endDate;
             $currentEvent->hours = $hours;

@@ -109,7 +109,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
-        $event->externalId = sprintf('FS-%s', $data['merchant_product_id']);
+        $event->externalId = $data['merchant_product_id'];
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;

@@ -138,7 +138,7 @@ class SowProgParser extends AbstractParser
         $event->name = $eventData['title'];
         $event->description = $eventData['description'];
         $event->source = 'https://www.sowprog.com/';
-        $event->externalId = sprintf('SP-%s-%s', $data['id'], $scheduleData['id']);
+        $event->externalId = sprintf('%s-%s', $data['id'], $scheduleData['id']);
         $event->imageUrl = $eventData['picture'] ?? null;
         $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
         $event->type = $eventData['eventType']['label'];
@@ -153,7 +153,7 @@ class SowProgParser extends AbstractParser
 
         $place = new PlaceDto();
         $place->name = $locationData['name'];
-        $place->externalId = sprintf('SP-%s', $locationData['id']);
+        $place->externalId = $locationData['id'];
         $place->street = trim(sprintf('%s %s', $contactData['addressLine1'], $contactData['addressLine2']));
 
         $city = new CityDto();

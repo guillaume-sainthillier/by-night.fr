@@ -66,7 +66,7 @@ class DigitickAwinParser extends AbstractAwinParser
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
-        $event->externalId = sprintf('DGT-%s', $data['merchant_product_id']);
+        $event->externalId = $data['merchant_product_id'];
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
