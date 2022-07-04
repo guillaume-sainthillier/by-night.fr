@@ -15,14 +15,35 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use RuntimeException;
 
 abstract class OAuthCrudController extends AbstractCrudController
 {
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setSearchFields(['facebook_id', 'facebook_access_token', 'facebook_refresh_token', 'facebook_email', 'facebook_expires', 'facebook_realname', 'facebook_profile_picture', 'google_id', 'google_access_token', 'google_refresh_token', 'google_email', 'google_expires', 'google_realname', 'google_profile_picture', 'twitter_id', 'twitter_access_token', 'twitter_refresh_token', 'twitter_email', 'twitter_expires', 'twitter_nickname', 'twitter_realname', 'twitter_profile_picture', 'id']);
+            ->setSearchFields(['facebook_id',
+                'facebook_access_token',
+                'facebook_refresh_token',
+                'facebook_email',
+                'facebook_expires',
+                'facebook_realname',
+                'facebook_profile_picture',
+                'google_id',
+                'google_access_token',
+                'google_refresh_token',
+                'google_email',
+                'google_expires',
+                'google_realname',
+                'google_profile_picture',
+                'twitter_id',
+                'twitter_access_token',
+                'twitter_refresh_token',
+                'twitter_email',
+                'twitter_expires',
+                'twitter_nickname',
+                'twitter_realname',
+                'twitter_profile_picture',
+                'id', ]);
     }
 
     public function configureFields(string $pageName): iterable
@@ -53,14 +74,32 @@ abstract class OAuthCrudController extends AbstractCrudController
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $facebookId, $googleId, $twitterId];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $facebookId, $facebookAccessToken, $facebookRefreshToken, $facebookEmail, $facebookExpires, $facebookRealname, $facebookProfilePicture, $googleId, $googleAccessToken, $googleRefreshToken, $googleEmail, $googleExpires, $googleRealname, $googleProfilePicture, $twitterId, $twitterAccessToken, $twitterRefreshToken, $twitterEmail, $twitterExpires, $twitterNickname, $twitterRealname, $twitterProfilePicture];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$facebookId, $facebookAccessToken, $facebookRefreshToken, $facebookEmail, $facebookExpires, $facebookRealname, $facebookProfilePicture, $googleId, $googleAccessToken, $googleRefreshToken, $googleEmail, $googleExpires, $googleRealname, $googleProfilePicture, $twitterId, $twitterAccessToken, $twitterRefreshToken, $twitterEmail, $twitterExpires, $twitterNickname, $twitterRealname, $twitterProfilePicture];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$facebookId, $facebookAccessToken, $facebookRefreshToken, $facebookEmail, $facebookExpires, $facebookRealname, $facebookProfilePicture, $googleId, $googleAccessToken, $googleRefreshToken, $googleEmail, $googleExpires, $googleRealname, $googleProfilePicture, $twitterId, $twitterAccessToken, $twitterRefreshToken, $twitterEmail, $twitterExpires, $twitterNickname, $twitterRealname, $twitterProfilePicture];
         }
 
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        return [
+            $id,
+            $facebookId,
+            $facebookAccessToken,
+            $facebookRefreshToken,
+            $facebookEmail,
+            $facebookExpires,
+            $facebookRealname,
+            $facebookProfilePicture,
+            $googleId,
+            $googleAccessToken,
+            $googleRefreshToken,
+            $googleEmail,
+            $googleExpires,
+            $googleRealname,
+            $googleProfilePicture,
+            $twitterId,
+            $twitterAccessToken,
+            $twitterRefreshToken,
+            $twitterEmail,
+            $twitterExpires,
+            $twitterNickname,
+            $twitterRealname,
+            $twitterProfilePicture,
+        ];
     }
 }

@@ -35,6 +35,14 @@ class PlaceMetadata implements ExternalIdentifiableInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $externalUpdatedAt = null;
 
+    public function __toString(): string
+    {
+        return sprintf('%s (%s)',
+            $this->externalId,
+            $this->externalOrigin
+        );
+    }
+
     public function getExternalId(): ?string
     {
         return $this->externalId;

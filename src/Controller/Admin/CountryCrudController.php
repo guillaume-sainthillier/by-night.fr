@@ -14,7 +14,6 @@ use App\Entity\Country;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use RuntimeException;
 
 class CountryCrudController extends AbstractCrudController
 {
@@ -28,7 +27,16 @@ class CountryCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Pays')
             ->setEntityLabelInPlural('Pays')
-            ->setSearchFields(['id', 'slug', 'locale', 'name', 'displayName', 'atDisplayName', 'capital', 'postalCodeRegex']);
+            ->setSearchFields([
+                'id',
+                'slug',
+                'locale',
+                'name',
+                'displayName',
+                'atDisplayName',
+                'capital',
+                'postalCodeRegex',
+            ]);
     }
 
     public function configureFields(string $pageName): iterable
@@ -43,15 +51,18 @@ class CountryCrudController extends AbstractCrudController
         $slug = TextField::new('slug');
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $displayName];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $slug, $locale, $name, $displayName, $atDisplayName, $capital, $postalCodeRegex];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$id, $locale, $name, $displayName, $atDisplayName, $capital, $postalCodeRegex];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$id, $locale, $name, $displayName, $atDisplayName, $capital, $postalCodeRegex];
+            return [$id, $displayName, $atDisplayName];
         }
 
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        return [
+            $id,
+            $slug,
+            $locale,
+            $name,
+            $displayName,
+            $atDisplayName,
+            $capital,
+            $postalCodeRegex,
+        ];
     }
 }

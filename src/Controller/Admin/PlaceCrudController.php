@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -34,22 +35,36 @@ class PlaceCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Place')
             ->setEntityLabelInPlural('Places')
-            ->setSearchFields(['id', 'externalId', 'ville', 'codePostal', 'facebookId', 'rue', 'latitude', 'longitude', 'nom', 'slug', 'path', 'url']);
+            ->setSearchFields([
+                'id',
+                'name',
+                'metadatas.externalId',
+                'metadatas.externalOrigin',
+                'cityName',
+                'cityPostalCode',
+                'facebookId',
+                'street',
+                'latitude',
+                'longitude',
+                'slug',
+                'path',
+                'url',
+            ]);
     }
 
     public function configureFields(string $pageName): iterable
     {
         $panel1 = FormField::addPanel('Informations');
         $id = IdField::new('id', 'ID');
-        $externalId = TextField::new('externalId');
+        $externalId = CollectionField::new('metadatas');
         $slug = TextField::new('slug');
-        $nom = TextField::new('nom');
+        $nom = TextField::new('name');
         $facebookId = TextField::new('facebookId');
         $junk = BooleanField::new('junk');
         $panel2 = FormField::addPanel('Lieu');
-        $rue = TextField::new('rue');
-        $codePostal = TextField::new('codePostal');
-        $ville = TextField::new('ville');
+        $rue = TextField::new('street');
+        $codePostal = TextField::new('cityPostalCode');
+        $ville = TextField::new('cityName');
         $latitude = NumberField::new('latitude');
         $longitude = NumberField::new('longitude');
         $city = AssociationField::new('city')->autocomplete();
@@ -61,13 +76,28 @@ class PlaceCrudController extends AbstractCrudController
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $nom, $city, $country];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $externalId, $ville, $codePostal, $facebookId, $junk, $rue, $latitude, $longitude, $nom, $slug, $path, $url, $createdAt, $updatedAt, $city, $country];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$panel1, $externalId, $nom, $facebookId, $junk, $panel2, $rue, $codePostal, $ville, $latitude, $longitude, $city, $country];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$panel1, $externalId, $slug, $nom, $facebookId, $junk, $panel2, $rue, $codePostal, $ville, $latitude, $longitude, $city, $country];
         }
+
+        return [
+            $panel1,
+            $createdAt->hideOnForm(),
+            $updatedAt->hideOnForm(),
+            $slug,
+            $nom,
+            $externalId,
+            $facebookId,
+            $junk,
+            $path,
+            $url,
+            $panel2,
+            $rue,
+            $codePostal,
+            $ville,
+            $latitude,
+            $longitude,
+            $city,
+            $country,
+        ];
 
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }

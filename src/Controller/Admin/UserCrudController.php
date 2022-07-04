@@ -22,8 +22,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use RuntimeException;
 
 class UserCrudController extends AbstractCrudController
 {
@@ -35,8 +35,7 @@ class UserCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
-            ->disable(Action::NEW)
-            ;
+            ->disable(Action::NEW);
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -44,7 +43,29 @@ class UserCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('User')
             ->setEntityLabelInPlural('Users')
-            ->setSearchFields(['id', 'email', 'username', 'roles', 'slug', 'firstname', 'lastname', 'description', 'website', 'imageHash', 'imageSystemHash', 'image.name', 'image.originalName', 'image.mimeType', 'image.size', 'image.dimensions', 'imageSystem.name', 'imageSystem.originalName', 'imageSystem.mimeType', 'imageSystem.size', 'imageSystem.dimensions']);
+            ->setSearchFields([
+                'id',
+                'email',
+                'username',
+                'roles',
+                'slug',
+                'firstname',
+                'lastname',
+                'description',
+                'website',
+                'imageHash',
+                'imageSystemHash',
+                'image.name',
+                'image.originalName',
+                'image.mimeType',
+                'image.size',
+                'image.dimensions',
+                'imageSystem.name',
+                'imageSystem.originalName',
+                'imageSystem.mimeType',
+                'imageSystem.size',
+                'imageSystem.dimensions',
+            ]);
     }
 
     public function configureFields(string $pageName): iterable
@@ -58,7 +79,7 @@ class UserCrudController extends AbstractCrudController
         $email = TextField::new('email');
         $firstname = TextField::new('firstname');
         $lastname = TextField::new('lastname');
-        $description = TextField::new('description');
+        $description = TextareaField::new('description');
         $oAuth = AssociationField::new('oAuth')->autocomplete();
         $website = TextField::new('website');
         $enabled = BooleanField::new('enabled');
@@ -66,9 +87,7 @@ class UserCrudController extends AbstractCrudController
         $panel2 = FormField::addPanel('Médias');
         $imageName = TextField::new('image.name');
         $imageSystemName = TextField::new('imageSystem.name');
-        $salt = TextField::new('salt');
         $passwordRequestedAt = DateTimeField::new('passwordRequestedAt');
-        $password = TextField::new('password');
         $fromLogin = BooleanField::new('fromLogin');
         $showSocials = BooleanField::new('showSocials');
         $imageHash = TextField::new('imageHash');
@@ -88,12 +107,43 @@ class UserCrudController extends AbstractCrudController
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $username, $email, $lastLogin, $enabled];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $email, $salt, $username, $enabled, $lastLogin, $passwordRequestedAt, $roles, $password, $slug, $firstname, $lastname, $description, $fromLogin, $showSocials, $website, $imageHash, $imageSystemHash, $isVerified, $createdAt, $updatedAt, $imageName, $imageOriginalName, $imageMimeType, $imageSize, $imageDimensions, $imageSystemName, $imageSystemOriginalName, $imageSystemMimeType, $imageSystemSize, $imageSystemDimensions, $oAuth, $userEvents, $city];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$panel1, $lastLogin, $slug, $username, $roles, $email, $firstname, $lastname, $description, $oAuth, $website, $fromLogin, $showSocials, $enabled, $isVerified, $panel2, $imageName, $imageSystemName];
         }
 
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        return [
+            $panel1,
+            $id->hideOnForm(),
+            $createdAt->hideOnForm(),
+            $updatedAt->hideOnForm(),
+            $slug,
+            $email,
+            $username,
+            $enabled,
+            $lastLogin,
+            $passwordRequestedAt,
+            $roles,
+            $firstname,
+            $lastname,
+            $description,
+            $fromLogin,
+            $showSocials,
+            $website,
+            $isVerified,
+            $panel2,
+            $imageName,
+            $imageOriginalName,
+            $imageMimeType,
+            $imageSize,
+            $imageHash,
+            $imageDimensions,
+            $imageSystemName,
+            $imageSystemOriginalName,
+            $imageSystemMimeType,
+            $imageSystemSize,
+            $imageSystemDimensions,
+            $imageSystemHash,
+            $oAuth,
+            $userEvents,
+            $city,
+        ];
     }
 }

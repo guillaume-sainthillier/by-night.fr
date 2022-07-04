@@ -18,7 +18,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use RuntimeException;
 
 class CommentCrudController extends AbstractCrudController
 {
@@ -32,7 +31,7 @@ class CommentCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Comment')
             ->setEntityLabelInPlural('Comment')
-            ->setSearchFields(['comment', 'id']);
+            ->setSearchFields(['id', 'comment', 'user.username', 'user.email']);
     }
 
     public function configureFields(string $pageName): iterable
@@ -45,18 +44,22 @@ class CommentCrudController extends AbstractCrudController
         $approved = BooleanField::new('approved');
         $comment = TextareaField::new('comment');
         $parent = AssociationField::new('parent')->autocomplete();
-        $reponses = AssociationField::new('reponses')->autocomplete();
+        $reponses = AssociationField::new('children')->autocomplete();
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $createdAt, $event, $user, $approved];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $comment, $approved, $createdAt, $updatedAt, $user, $event, $parent, $reponses];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$event, $user, $approved, $comment];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$event, $user, $createdAt, $updatedAt, $approved, $comment];
         }
 
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        return [
+            $id->hideOnForm(),
+            $createdAt->hideOnForm(),
+            $updatedAt->hideOnForm(),
+            $comment,
+            $approved,
+            $user,
+            $event,
+            $parent,
+            $reponses,
+        ];
     }
 }
