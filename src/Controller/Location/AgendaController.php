@@ -120,11 +120,9 @@ class AgendaController extends BaseController
     {
         $term = null;
         if (null !== $place) {
-            $term = null;
             $search->setLieux([$place->getId()]);
             $formAction = $this->generateUrl('app_agenda_by_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
         } elseif (null !== $tag) {
-            $term = null;
             $search->setTag($tag);
             $formAction = $this->generateUrl('app_agenda_by_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
         } elseif (null !== $type) {
