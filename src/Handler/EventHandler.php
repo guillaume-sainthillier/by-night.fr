@@ -125,7 +125,8 @@ class EventHandler
             default => throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType)),
         };
 
-        $originalName = pathinfo($event->getUrl(), PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
+        $pathUrl = parse_url($event->getUrl(), \PHP_URL_PATH);
+        $originalName = pathinfo($pathUrl, PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
         $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
         $event->setImageSystemFile($file);
     }
