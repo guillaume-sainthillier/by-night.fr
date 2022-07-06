@@ -19,13 +19,10 @@ use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Parsedown;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -35,21 +32,18 @@ class OpenAgendaParser extends AbstractParser
     /**
      * @var int
      */
-    private const EVENT_BATCH_SIZE = 50;
-
-    private HttpClientInterface $client;
+    private const EVENT_BATCH_SIZE = 300;
 
     public function __construct(
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
+        private HttpClientInterface $client,
         private CountryRepository $countryRepository,
         private string $openAgendaKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
-
-        $this->client = HttpClient::create();
     }
 
     /**
@@ -65,91 +59,124 @@ class OpenAgendaParser extends AbstractParser
      */
     public function parse(bool $incremental): void
     {
-        // Fetch event uids from public.opendatasoft.com
-        $query = [
-            'rows' => '-1',
-            'select' => 'uid',
-            'lang' => 'fr',
-            'timezone' => 'UTC',
-        ];
+        $agendasUidAndSlugs = $this->getAgendasUidAndSlugs();
 
-        if ($incremental) {
-            $query['where'] = sprintf("updated_at >= '%s'", (new DateTime('yesterday'))->format('Y-m-d'));
-        } else {
-            $query['where'] = sprintf("date_end >= '%s'", date('Y-m-d'));
+        foreach ($agendasUidAndSlugs as $agendasUidAndSlug) {
+            $this->fetchAgendaEvents($incremental, [$agendasUidAndSlug]);
         }
+    }
 
-        $url = 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/exports/json';
+    private function fetchAgendaEvents(bool $incremental, iterable $agendaIdAndSlugs): void
+    {
+        foreach ($agendaIdAndSlugs as $agendaIdAndSlug) {
+            [$agendaId, $agendaSlug] = $agendaIdAndSlug;
+            $events = $this->getAgendaEvents($incremental, $agendaId);
+            foreach ($events as $event) {
+                $eventDto = $this->arrayToDto($event, $agendaSlug);
+                if (null === $eventDto) {
+                    continue;
+                }
+                // $this->publish($eventDto);
+            }
+        }
+    }
 
-        $response = $this->client->request('GET', $url, ['query' => $query]);
-        $eventIds = array_map(fn (array $data) => (int) $data['uid'], $response->toArray());
-        $eventIds = array_filter($eventIds);
+    private function getAgendaEvents(bool $incremental, int $agendaId): iterable
+    {
+        $filter = $incremental
+            ? ['updatedAt' => ['gte' => (new DateTimeImmutable('yesterday', new \DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
+            : ['timings' => ['gte' => (new DateTimeImmutable('now', new \DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
 
-        $eventChunks = array_chunk($eventIds, self::EVENT_BATCH_SIZE);
-
-        // Then fetch agenda uids from api.openagenda.com
-        $responses = [];
-        foreach ($eventChunks as $eventChunk) {
-            $url = 'https://api.openagenda.com/v1/events';
-            $responses[] = $this->client->request('GET', $url, [
-                'query' => [
+        $after = [];
+        while (true) {
+            $response = $this->client->request('GET', sprintf('https://api.openagenda.com/v2/agendas/%d/events/', $agendaId), [
+                'query' => array_merge($filter, [
                     'key' => $this->openAgendaKey,
-                    'uids' => $eventChunk,
-                ],
+                    'includeLabels' => true,
+                    'detailed' => true,
+                    'monolingual' => 'fr',
+                    'size' => self::EVENT_BATCH_SIZE,
+                    'after' => $after,
+                ]),
             ]);
+
+            $data = $response->toArray();
+
+            foreach ($data['events'] as $event) {
+                yield $event;
+            }
+
+            if (empty($data['after']) || \count($data['events']) < self::EVENT_BATCH_SIZE) {
+                return;
+            }
+
+            $after = $data['after'];
         }
+    }
 
-        foreach ($this->client->stream($responses) as $response => $chunk) {
+    private function getAgendasUidAndSlugs(): iterable
+    {
+        $after = [];
+        while (true) {
             try {
-                if (!$chunk->isLast()) {
-                    continue;
+                $response = $this->client->request('GET', 'https://api.openagenda.com/v2/agendas', [
+                    'query' => [
+                        'key' => $this->openAgendaKey,
+                        'size' => 100,
+                        'after' => $after,
+                        'fields' => ['summary'],
+                    ],
+                ]);
+
+                $data = $response->toArray();
+
+                foreach ($data['agendas'] as $agenda) {
+                    $summary = $agenda['summary'];
+                    if (
+                        isset($summary['publishedEvents']['current'])
+                        && isset($summary['publishedEvents']['upcoming'])
+                        && 0 !== $summary['publishedEvents']['current']
+                        && 0 !== $summary['publishedEvents']['upcoming']
+                    ) {
+                        yield [$agenda['uid'], $agenda['slug']];
+                    }
                 }
 
-                $datas = $response->toArray();
-                if (true !== $datas['success']) {
-                    $exception = new RuntimeException('Unable to fetch agenda ids from uids');
-                    $this->logException($exception, $datas);
-                    continue;
+                if (empty($data['after'])) {
+                    return;
                 }
 
-                // Parse events
-                $this->publishEvents($datas['data']);
+                $after = $data['after'];
             } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
                 $this->logException($exception);
             }
         }
     }
 
-    private function publishEvents(array $data): void
+    private function arrayToDto(array $data, string $agendaSlug): ?EventDto
     {
-        foreach ($data as $datum) {
-            $dto = $this->arrayToDto($datum);
-            if (null === $dto) {
-                continue;
-            }
-
-            $this->publish($dto);
-        }
-    }
-
-    private function arrayToDto(array $data): ?EventDto
-    {
-        if (empty($data['freeText']['fr'])) {
+        if (empty($data['longDescription']) && empty($data['description'])) {
             return null;
         }
 
-        if (empty($data['locations'])) {
+        if (empty($data['location'])) {
             return null;
         }
 
-        $location = current($data['locations']);
-        if (empty($location['dates'])) {
+        if (empty($data['timings'])) {
             return null;
         }
 
-        $countryCode = null;
-        if (empty($location['countryCode'])) {
-            $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
+        $location = $data['location'];
+        $countryCode = $location['countryCode'];
+        if (
+            null === $countryCode
+            && (
+                !empty($location['adminLevel1'])
+                || !empty($location['adminLevel2'])
+            )
+        ) {
+            $country = $this->countryRepository->getFromRegionOrDepartment($location['adminLevel1'] ?? null, $location['adminLevel2'] ?? null);
             $countryCode = $country?->getId();
         }
 
@@ -157,55 +184,87 @@ class OpenAgendaParser extends AbstractParser
             return null;
         }
 
-        $dates = $location['dates'];
-        $startDateAsArray = current($dates);
-        $endDateAsArray = end($dates);
-        $startDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $startDateAsArray['date'] . ' ' . $startDateAsArray['timeStart']);
-        $endDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $endDateAsArray['date'] . ' ' . $endDateAsArray['timeEnd']);
+        $timings = $data['timings'];
+        $startDate = current($timings);
+        $endDate = end($timings);
+        $startDate = new DateTimeImmutable($startDate['begin']);
+        $endDate = new DateTimeImmutable($endDate['end']);
 
         $hours = null;
-        if ($startDate instanceof DateTimeInterface && $endDate instanceof DateTimeInterface && $startDate->getTimestamp() !== $endDate->getTimestamp()) {
+        if ($startDate->format('Y-m-d') !== $endDate->format('Y-m-d')) {
             $hours = sprintf('De %s à %s', $startDate->format("H\hi"), $endDate->format("H\hi"));
-        } elseif ($startDate instanceof DateTimeInterface) {
+        } else {
             $hours = sprintf('A %s', $startDate->format("H\hi"));
         }
 
         $mdParser = new Parsedown();
-        $description = $mdParser->text($data['freeText']['fr']);
+        $description = $mdParser->text($data['longDescription'] ?? $data['description']);
 
-        $type = null;
-        if (!empty($data['tags']['fr'])) {
-            $type = $data['tags']['fr'];
+        $type = $data['keywords'] ?? [];
+
+        $imageUrl = null;
+        foreach ($data['image']['variants'] ?? [] as $variant) {
+            if ('full' === $variant['type']) {
+                $imageUrl = $variant['filename'];
+            }
         }
 
-        if ($data['image'] && str_starts_with($data['image'], '//')) {
-            $data['image'] = 'https:' . $data['image'];
+        $imageUrl ??= $data['image']['filename'] ?? null;
+        if (null !== $imageUrl) {
+            $imageUrl = $data['image']['base'] . $imageUrl;
         }
 
-        $infos = $this->reservationsHandler->parseReservations($location['ticketLink'] ?? null);
+        $urls = [];
+        foreach ($data['registration'] ?? [] as $registration) {
+            if ('link' !== $registration['type']) {
+                continue;
+            }
+
+            $urls[] = $registration['value'];
+        }
+        if (!empty($location['website'])) {
+            $urls[] = $location['website'];
+        }
+
+        $phones = [];
+        if (!empty($location['phone'])) {
+            $phones[] = $location['phone'];
+        }
+
+        $emails = [];
+        if (!empty($location['email'])) {
+            $emails[] = $location['email'];
+        }
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
-        $event->name = $data['title']['fr'];
+        $event->name = $data['title'];
         $event->description = $description;
-        $event->source = $data['link'];
+        $event->source = sprintf(
+            'https://openagenda.com/%s/events/%s',
+            $agendaSlug,
+            $data['slug'],
+        );
         $event->externalId = $data['uid'];
-        $event->imageUrl = $data['image'];
+        $event->imageUrl = $imageUrl;
         $event->externalUpdatedAt = new DateTimeImmutable($data['updatedAt']);
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
+        $event->prices = $data['conditions'] ?? null;
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];
         $event->address = $location['address'];
-        $event->type = $type;
-        $event->websiteContacts = $infos['urls'];
-        $event->phoneContacts = $infos['phones'];
-        $event->emailContacts = $infos['emails'];
+        $event->type = implode(',', $type);
+        $event->websiteContacts = $urls;
+        $event->phoneContacts = $phones;
+        $event->emailContacts = $emails;
 
         $place = new PlaceDto();
-        $place->name = $location['placename'] ?? null;
+        $place->name = $location['name'] ?? null;
         $place->externalId = $location['uid'];
+        $place->latitude = $location['latitude'];
+        $place->longitude = $location['longitude'];
 
         $city = new CityDto();
         $city->postalCode = $location['postalCode'] ?? null;

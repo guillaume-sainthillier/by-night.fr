@@ -38,18 +38,18 @@ class CountryRepository extends ServiceEntityRepository implements DtoFindableRe
     public function getFromRegionOrDepartment(?string $region, ?string $department): ?Country
     {
         $qb = $this
-            ->createQueryBuilder('c')
-            ->leftJoin(AdminZone1::class, 'admin_zone1', 'WITH', 'admin_zone1.country = c')
-            ->leftJoin(AdminZone2::class, 'admin_zone2', 'WITH', 'admin_zone2.country = c');
+            ->createQueryBuilder('c');
 
         if ($region) {
             $qb
+                ->leftJoin(AdminZone1::class, 'admin_zone1', 'WITH', 'admin_zone1.country = c')
                 ->orWhere('LOWER(admin_zone1.name) LIKE :region')
                 ->setParameter('region', '%' . mb_strtolower($region) . '%');
         }
 
         if ($department) {
             $qb
+                ->leftJoin(AdminZone2::class, 'admin_zone2', 'WITH', 'admin_zone2.country = c')
                 ->orWhere('LOWER(admin_zone2.name) LIKE :department')
                 ->setParameter('department', '%' . mb_strtolower($department) . '%');
         }
