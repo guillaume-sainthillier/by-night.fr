@@ -219,10 +219,6 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             ->where('c.slug = :slug')
             ->setParameter('slug', $slug)
             ->getQuery()
-            ->setCacheable(true)
-            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->enableResultCache()
-            ->useQueryCache(true)
             ->getOneOrNullResult();
     }
 }
