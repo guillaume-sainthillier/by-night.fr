@@ -46,7 +46,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
                     'CallerReference' => uniqid(),
                     'Paths' => [
                         'Items' => $paths,
-                        'Quantity' => 1,
+                        'Quantity' => \count($paths),
                     ],
                 ],
             ]);
