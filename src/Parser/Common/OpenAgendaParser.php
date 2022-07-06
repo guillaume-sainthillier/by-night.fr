@@ -76,7 +76,7 @@ class OpenAgendaParser extends AbstractParser
                 if (null === $eventDto) {
                     continue;
                 }
-                // $this->publish($eventDto);
+                $this->publish($eventDto);
             }
         }
     }
