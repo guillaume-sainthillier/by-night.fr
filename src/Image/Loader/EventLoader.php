@@ -67,6 +67,14 @@ class EventLoader extends AbstractImageLoader
             $originalHeight = (int) $systemImage->getDimensions()[1];
         }
 
+        if (!$originalFormat && $image->getMimeType()) {
+            $originalFormat = $this->guessExtensionFromPath($image->getMimeType());
+        }
+
+        if (!$originalFormat && $systemImage->getMimeType()) {
+            $originalFormat = $this->guessExtensionFromPath($systemImage->getMimeType());
+        }
+
         if (!$originalFormat) {
             $originalFormat = $this->guessExtensionFromPath($path);
         }

@@ -67,6 +67,14 @@ class UserLoader extends AbstractImageLoader
             $originalHeight = $user->getImageSystem()->getDimensions()[1];
         }
 
+        if (!$originalFormat && $user->getImage()->getMimeType()) {
+            $originalFormat = $this->guessExtensionFromPath($user->getImage()->getMimeType());
+        }
+
+        if (!$originalFormat && $user->getImageSystem()->getMimeType()) {
+            $originalFormat = $this->guessExtensionFromPath($user->getImageSystem()->getMimeType());
+        }
+
         if (!$originalFormat) {
             $originalFormat = $this->guessExtensionFromPath($path);
         }

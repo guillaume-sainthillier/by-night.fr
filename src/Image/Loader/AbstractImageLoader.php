@@ -14,6 +14,19 @@ use App\Contracts\ImageLoaderInterface;
 
 abstract class AbstractImageLoader implements ImageLoaderInterface
 {
+    protected function guessExtensionFromMimeType(string $mimeType): ?string
+    {
+        $mimeType = mb_strtolower($mimeType);
+
+        return match ($mimeType) {
+            'image/gif' => 'gif',
+            'image/png' => 'png',
+            'image/jpg',
+            'image/jpeg' => 'jpeg',
+            default => null
+        };
+    }
+
     protected function guessExtensionFromPath(string $path): ?string
     {
         $path = mb_strtolower($path);
