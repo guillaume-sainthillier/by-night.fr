@@ -47,7 +47,7 @@ class LocalAssetLoader extends AbstractImageLoader
         return [
             'originalWidth' => $originalWidth,
             'originalHeight' => $originalHeight,
-            'originalFormat' => $originalFormat,
+            'originalFormat' => $originalFormat ?? 'jpg',
         ];
     }
 

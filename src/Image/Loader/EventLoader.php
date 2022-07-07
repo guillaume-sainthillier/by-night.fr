@@ -82,7 +82,7 @@ class EventLoader extends AbstractImageLoader
         return array_merge($defaultParams, [
             'originalWidth' => $originalWidth,
             'originalHeight' => $originalHeight,
-            'originalFormat' => $originalFormat,
+            'originalFormat' => $originalFormat ?? 'jpg',
         ]);
     }
 
