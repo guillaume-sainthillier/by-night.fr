@@ -16,18 +16,12 @@ namespace App\Social;
  * && open the template in the editor.
  */
 
-use App\App\SocialManager;
 use App\Entity\AppOAuth;
 use App\Entity\OAuth;
 use App\Entity\User;
 use App\Exception\SocialException;
-use App\Picture\EventProfilePicture;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 abstract class Social
 {
@@ -39,8 +33,10 @@ abstract class Social
 
     protected bool $isInitialized;
 
-    public function __construct(array $config, protected TokenStorageInterface $tokenStorage, protected RouterInterface $router, protected SessionInterface $session, protected RequestStack $requestStack, protected LoggerInterface $logger, protected EventProfilePicture $eventProfilePicture, protected SocialManager $socialManager)
-    {
+    public function __construct(
+        array $config,
+        protected LoggerInterface $logger,
+    ) {
         if (!isset($config['id'])) {
             throw new SocialException("Le paramètre 'id' est absent");
         }

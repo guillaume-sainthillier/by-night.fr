@@ -1,6 +1,6 @@
 security:
     enable_authenticator_manager: true
-    encoders:
+    password_hashers:
         legacy:
             algorithm: sha512
             encode_as_base64: false

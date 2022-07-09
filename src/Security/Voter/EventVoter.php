@@ -41,7 +41,7 @@ class EventVoter extends Voter
     /**
      * {@inheritDoc}
      */
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
@@ -79,7 +79,7 @@ class EventVoter extends Voter
     /**
      * {@inheritDoc}
      */
-    protected function supports(string $attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         return \in_array($attribute, [
             self::CREATE,
