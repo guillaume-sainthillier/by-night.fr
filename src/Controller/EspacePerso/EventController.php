@@ -25,7 +25,6 @@ use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -107,9 +106,8 @@ class EventController extends BaseController
 
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
-    public function edit(SerializerInterface $serializer, Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
+    public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
-        // dd(json_decode($serializer->serialize($event, 'json', SerializationContext::create()->setGroups(['elasticsearch:event:details'])), true));
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTime());
         }
