@@ -19,9 +19,9 @@
         </div>
     {% endfor %}
 
-    {% if comments.nbResults > comments.currentPageNumber * comments.itemNumberPerPage %}
+    {% if comments.hasNextPage %}
         {% block load_more %}
-            <div class="load_more" data-url="{{ path('app_comment_list',{'id': event.id ,'page': (page+1) }) }}">
+            <div class="load_more" data-url="{{ path('app_comment_list',{'id': event.id ,'page': comments.nextPage }) }}">
                 <button type="button" class="btn btn-outline-primary">
                     Plus
                 </button>
