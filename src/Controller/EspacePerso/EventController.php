@@ -21,6 +21,7 @@ use App\Entity\UserEvent;
 use App\Form\Type\EventType;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
+use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -101,7 +102,7 @@ class EventController extends BaseController
     }
 
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('edit', subject: 'event')]
+    #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function edit(SerializerInterface $serializer, Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
         // dd(json_decode($serializer->serialize($event, 'json', SerializationContext::create()->setGroups(['elasticsearch:event:details'])), true));
@@ -127,7 +128,7 @@ class EventController extends BaseController
     }
 
     #[Route(path: '{id<%patterns.id%>}', name: 'app_event_delete', methods: ['DELETE'])]
-    #[IsGranted('delete', subject: 'event')]
+    #[IsGranted(EventVoter::DELETE, subject: 'event')]
     public function delete(Event $event): Response
     {
         $em = $this->getEntityManager();
@@ -142,7 +143,7 @@ class EventController extends BaseController
     }
 
     #[Route(path: '{id<%patterns.id%>}/cancel', name: 'app_event_cancel', methods: ['POST'])]
-    #[IsGranted('edit', subject: 'event')]
+    #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function cancel(Request $request, Event $event): Response
     {
         $cancel = $request->request->get('cancel', 'true');
@@ -155,7 +156,7 @@ class EventController extends BaseController
     }
 
     #[Route(path: '{id<%patterns.id%>}/draft', name: 'app_event_draft', methods: ['POST'])]
-    #[IsGranted('edit', subject: 'event')]
+    #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function draft(Request $request, Event $event): Response
     {
         $draft = $request->request->get('draft', 'true');

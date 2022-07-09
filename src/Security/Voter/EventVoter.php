@@ -22,12 +22,12 @@ class EventVoter extends Voter
     /**
      * @var string
      */
-    public const EDIT = 'edit';
+    public const EDIT = 'event.edit';
 
     /**
      * @var string
      */
-    public const DELETE = 'delete';
+    public const DELETE = 'event.delete';
 
     public function __construct(private Security $security)
     {
@@ -70,6 +70,9 @@ class EventVoter extends Voter
      */
     protected function supports(string $attribute, $subject)
     {
-        return $subject instanceof Event;
+        return \in_array($attribute, [
+            self::EDIT,
+            self::DELETE,
+        ], true);
     }
 }
