@@ -86,7 +86,7 @@ class DateExtension extends Extension
         return [
             'short' => '0 s',
             'long' => "à l'instant",
-            'full' => "A l'instant",
+            'full' => "À l'instant",
         ];
     }
 }
