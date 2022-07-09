@@ -26,7 +26,7 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
-        if (!$user->getEnabled()) {
+        if (!$user->isEnabled()) {
             $exception = new DisabledException('Votre compte a été désactivé par un administrateur.');
             $exception->setUser($user);
             throw $exception;
