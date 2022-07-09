@@ -392,7 +392,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getFromLogin(): ?bool
+    public function isFromLogin(): ?bool
     {
         return $this->fromLogin;
     }
@@ -404,7 +404,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getShowSocials(): ?bool
+    public function isShowSocials(): ?bool
     {
         return $this->showSocials;
     }
@@ -550,7 +550,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getEnabled(): ?bool
+    public function isEnabled(): ?bool
     {
         return $this->enabled;
     }
@@ -586,7 +586,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function verified(): bool
+    public function isVerified(): ?bool
     {
         return $this->verified;
     }
@@ -603,35 +603,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         $this->salt = $salt;
 
         return $this;
-    }
-
-    public function getVerified(): ?bool
-    {
-        return $this->verified;
-    }
-
-    public function isEnabled(): ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function isFromLogin(): ?bool
-    {
-        return $this->fromLogin;
-    }
-
-    public function isShowSocials(): ?bool
-    {
-        return $this->showSocials;
-    }
-
-    public function isIsVerified(): ?bool
-    {
-        return $this->verified;
-    }
-
-    public function isVerified(): ?bool
-    {
-        return $this->verified;
     }
 }
