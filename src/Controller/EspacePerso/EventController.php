@@ -78,7 +78,6 @@ class EventController extends BaseController
 
             $em->persist($event);
             if ($form->get('comment')->getData()) {
-                $event = $form->getData();
                 $comment = new Comment();
                 $comment
                     ->setComment($form->get('comment')->getData())
