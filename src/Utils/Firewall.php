@@ -146,6 +146,7 @@ class Firewall
             'fritzkalkbrenner.com', 'campusfm.fr', 'polyamour.info', 'parislanuit.fr',
             'Please find the agenda', 'Fore More Details like our Page & Massage us',
             'storiesdown.com', 'view Instagram stories',
+            'TEMOIGNAGE DE PRET', 'prêteur', 'prêteuse', 'preteur', 'preteuse',
         ];
 
         foreach ($black_list as $black_word) {
