@@ -22,6 +22,11 @@ class EventVoter extends Voter
     /**
      * @var string
      */
+    public const CREATE = 'event.create';
+
+    /**
+     * @var string
+     */
     public const EDIT = 'event.edit';
 
     /**
@@ -49,10 +54,16 @@ class EventVoter extends Voter
         }
 
         return match ($attribute) {
+            self::CREATE => $this->canCreate($user),
             self::EDIT => $this->canEdit($subject, $user),
             self::DELETE => $this->canDelete($subject, $user),
             default => throw new LogicException('This code should not be reached!'),
         };
+    }
+
+    private function canCreate(User $user): bool
+    {
+        return $user->isEnabled() && $user->isVerified();
     }
 
     private function canEdit(Event $event, User $user): bool
@@ -71,6 +82,7 @@ class EventVoter extends Voter
     protected function supports(string $attribute, $subject)
     {
         return \in_array($attribute, [
+            self::CREATE,
             self::EDIT,
             self::DELETE,
         ], true);

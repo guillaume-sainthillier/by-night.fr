@@ -5,11 +5,16 @@ import CollectionManager from './services/form/CollectionManager';
 import ElementManager from './services/form/ElementManager';
 import FormManager from './services/form/FormManager';
 import RequiredManager from './services/form/RequiredManager';
+import ToastManager from './services/modals/ToastManager';
 
 /**
  * @param {Container} di
  */
 export default (di) => {
+    di.set('toastManager', () => {
+        return new ToastManager();
+    });
+
     di.set('modalManager', () => {
         return new ModalManager(di);
     });

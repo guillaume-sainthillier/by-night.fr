@@ -5,13 +5,25 @@
 
 {% import "form/macros.html.twig" as macros %}
 
+{% block layout_header %}
+    {% if not app.user.verified %}
+        <div class="alert alert-dismissible fade show alert-info">
+            <div class="{{ block('container_class') }}">
+                Votre email n'est pas vérifié. En raison de nombreaux abus, vous devez désormais <a href="{{ path('app_send_verification_email') }}" class="email-verify"><strong>vérifier votre email</strong></a> pour créer des événéments sur la plateforme.
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block body -%}
-    <div class="text-center mt-2 mb-4">
-        <a class="btn btn-success btn-raised" href="{{ path('app_event_new') }}">
-            <i class="fa fa-plus"></i>
-            Nouvel événement
-        </a>
-    </div>
+    {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
+        <div class="text-center mt-2 mb-4">
+            <a class="btn btn-success btn-raised" href="{{ path('app_event_new') }}">
+                <i class="fa fa-plus"></i>
+                Nouvel événement
+            </a>
+        </div>
+    {% endif %}
 
     {% if events|length > 0 %}
         <div class="card">

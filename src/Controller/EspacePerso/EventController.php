@@ -58,6 +58,10 @@ class EventController extends BaseController
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted(EventVoter::CREATE)) {
+            return $this->redirectToRoute('app_event_list');
+        }
+
         $userDto = new UserDto();
         $userDto->entityId = $this->getAppUser()->getId();
 

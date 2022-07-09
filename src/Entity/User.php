@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
+use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Repository\UserRepository;
 use DateTime;
 use DateTimeImmutable;
@@ -37,6 +38,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: '`user`')]
+#[ORM\EntityListeners([UserEmailEntityListener::class])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;

@@ -55,6 +55,11 @@
                         </div>
                         <div class="col-md-6">
                             {{ form_row(form.email) }}
+                            {% if not app.user.verified %}
+                                <button type="button" data-href="{{ path('app_send_verification_email') }}" class="btn btn-sm btn-primary email-verify">
+                                    Vérifier l'email
+                                </button>
+                            {% endif %}
                         </div>
                     </div>
 

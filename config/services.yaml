@@ -129,6 +129,12 @@ services:
         tags:
             - { name: doctrine.event_subscriber }
 
+    App\Doctrine\EntityListener\:
+        resource: '../src/Doctrine/EntityListener'
+        tags:
+          - { name: doctrine.event_subscriber }
+          - { name: doctrine.orm.entity_listener, lazy: true }
+
     App\Doctrine\EventListener\EntityTagger:
         tags:
             - { name: doctrine.event_listener, event: postPersist }

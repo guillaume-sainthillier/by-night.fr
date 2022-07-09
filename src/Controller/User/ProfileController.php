@@ -16,6 +16,7 @@ use App\Form\Type\ChangePasswordFormType;
 use App\Form\Type\ProfileFormType;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
+use App\Security\EmailVerifier;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -124,6 +125,14 @@ class ProfileController extends AbstractController
             'formChangePassword' => $formChangePassword->createView(),
             'formDelete' => $formDelete->createView(),
         ]);
+    }
+
+    #[Route(path: '/mail-de-verification', name: 'app_send_verification_email', methods: ['POST'])]
+    public function verifyUserEmail(EmailVerifier $emailVerifier): Response
+    {
+        $emailVerifier->sendEmailConfirmation($this->getAppUser());
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     private function createDeleteForm(): FormInterface

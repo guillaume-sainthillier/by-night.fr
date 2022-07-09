@@ -16,6 +16,7 @@ import headerSearch from './global-listeners/header-search';
 import scrollToTop from './global-listeners/scroll-to-top';
 
 //Listeners
+import emailVerify from './listeners/email-verify';
 import formCollection from './listeners/form-collection';
 import formErrors from './listeners/form-errors';
 import imagePreviews from './listeners/image-previews';
@@ -31,7 +32,17 @@ class App {
         this._di = null;
         this._listeners = [headerSearch, imagePreviews, lazyload, scrollToTop];
 
-        this._pageListeners = [formCollection, formErrors, like, loadMore, login, popup, register, tooltip];
+        this._pageListeners = [
+            emailVerify,
+            formCollection,
+            formErrors,
+            like,
+            loadMore,
+            login,
+            popup,
+            register,
+            tooltip,
+        ];
     }
 
     handleError(error) {
