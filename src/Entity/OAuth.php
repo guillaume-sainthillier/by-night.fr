@@ -44,7 +44,7 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_realname = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 511, nullable: true)]
     private ?string $facebook_profile_picture = null;
 
     #[ORM\Column(length: 255, nullable: true)]
