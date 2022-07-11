@@ -15,3 +15,11 @@ framework:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
             FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'

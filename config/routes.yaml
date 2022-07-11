@@ -1,0 +1,41 @@
+app.default:
+  resource: '../src/Controller/'
+  type:     annotation
+
+app.social:
+  resource: '../src/Controller/Social/'
+  prefix:   /social
+  type:     annotation
+
+app.security:
+  resource: '../src/Controller/Security/'
+  type:     annotation
+
+app.espace_perso:
+  resource: '../src/Controller/EspacePerso/'
+  prefix:   /espace-perso
+  type:     annotation
+
+app.comments:
+  resource: '../src/Controller/Comment/'
+  prefix:   /commentaire
+  type:     annotation
+
+app.admin:
+  resource: '../src/Controller/Admin/'
+  prefix:   /_administration
+  type:     annotation
+
+app.private:
+  resource: '../src/Controller/Fragments/'
+  type:     annotation
+
+kernel:
+  resource: '../src/Kernel.php'
+  type: annotation
+
+#La location est définie à partir d'ici
+app.location:
+  resource: '../src/Controller/Location'
+  prefix:   /{location}
+  type:     annotation

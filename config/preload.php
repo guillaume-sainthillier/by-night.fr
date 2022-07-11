@@ -8,12 +8,6 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App;
-
-use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
-use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-
-class Kernel extends BaseKernel
-{
-    use MicroKernelTrait;
+if (file_exists(\dirname(__DIR__) . '/var/cache/prod/App_KernelProdContainer.preload.php')) {
+    require \dirname(__DIR__) . '/var/cache/prod/App_KernelProdContainer.preload.php';
 }

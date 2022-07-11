@@ -1,5 +1,8 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
 # Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     facebook_id_page: '205292952998805'
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
@@ -14,13 +17,10 @@ parameters:
     patterns.admin_social: 'facebook_admin|google_admin|twitter_admin'
 
 services:
-    App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"
-    App\Producer\PurgeCdnCacheUrlProducer: "@old_sound_rabbit_mq.purge_cdn_cache_urls_producer"
-    App\Producer\RemoveImageThumbnailsProducer: "@old_sound_rabbit_mq.remove_image_thumbnails_producer"
-
+    # default configuration for services in *this* file
     _defaults:
-        autowire: true
-        autoconfigure: true
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $memoryCache: "@redis.app_cache_pool"
             $secret: "%kernel.secret%"
@@ -61,8 +61,10 @@ services:
         App\Contracts\ImageLoaderInterface:
             tags: [ 'app.image.loader' ]
 
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/*'
+        resource: '../src/'
         exclude:
             - '../src/Admin/Filter'
             - '../src/Annotation'
@@ -78,6 +80,8 @@ services:
             - '../src/Reject'
             - '../src/Search'
 
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
@@ -86,6 +90,10 @@ services:
         resource: '../src/Request/ParamConverter'
         tags:
             - { name: request.param_converter, priority: 0 }
+
+    App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"
+    App\Producer\PurgeCdnCacheUrlProducer: "@old_sound_rabbit_mq.purge_cdn_cache_urls_producer"
+    App\Producer\RemoveImageThumbnailsProducer: "@old_sound_rabbit_mq.remove_image_thumbnails_producer"
 
     App\Social\FacebookAdmin:
         arguments:

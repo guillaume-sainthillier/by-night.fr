@@ -9,35 +9,24 @@
  */
 
 use App\Kernel;
-use Symfony\Component\Dotenv\Dotenv;
-use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
-require \dirname(__DIR__) . '/vendor/autoload.php';
+require_once \dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-(new Dotenv())->bootEnv(\dirname(__DIR__) . '/.env');
+return function (array $context) {
+    if ($trustedProxies = $context['TRUSTED_PROXIES'] ?? false) {
+        Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_TRAEFIK);
+    }
 
-if ($_SERVER['APP_DEBUG']) {
-    umask(0000);
+    if ($trustedHosts = $context['TRUSTED_HOSTS'] ?? false) {
+        Request::setTrustedHosts([$trustedHosts]);
+    }
 
-    Debug::enable();
-}
+    if ($context['APP_MAINTENANCE']) {
+        require_once __DIR__ . '/maintenance.html';
 
-if ($_SERVER['APP_MAINTENANCE']) {
-    require_once __DIR__ . '/maintenance.html';
-    exit;
-}
+        return null;
+    }
 
-if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? false) {
-    Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_TRAEFIK);
-}
-
-if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
-    Request::setTrustedHosts([$trustedHosts]);
-}
-
-$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
-$request = Request::createFromGlobals();
-$response = $kernel->handle($request);
-$response->send();
-$kernel->terminate($request, $response);
+    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+};

@@ -12,3 +12,7 @@ twig:
         sentry_dsn: "%env(SENTRY_DSN)%"
         app_version: '%env(APP_VERSION)%'
         event_seo: '@App\SEO\EventSEO'
+
+when@test:
+    twig:
+        strict_variables: true

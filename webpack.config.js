@@ -18,6 +18,12 @@ Encore
     // only needed for CDN's or sub-directory deploy
     //.setManifestKeyPrefix('build/')
 
+    /*
+     * ENTRY CONFIG
+     *
+     * Each entry will result in one JavaScript file (e.g. app.js)
+     * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
+     */
     .addEntry('app', './assets/js/app.js')
     .addEntry('index', './assets/js/pages/index.js')
     .addEntry('admin_infos', './assets/js/pages/admin_infos.js')
@@ -36,13 +42,19 @@ Encore
             to: Encore.isProduction() ? 'images/[path][name].[hash:8].[ext]' : 'images/[path][name].[ext]',
         },
     ])
+    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
+    //.enableStimulusBridge('./assets/controllers.json')
 
+    // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
     .configureSplitChunks(function (splitChunks) {
         //https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
         splitChunks.maxInitialRequests = 20; // for HTTP2
         splitChunks.maxAsyncRequests = 20;
     })
+
+    // will require an extra script tag for runtime.js
+    // but, you probably want this, unless you're building a single-page app
     .enableSingleRuntimeChunk()
 
     /*
@@ -55,23 +67,17 @@ Encore
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
+    // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
 
-    // enables @babel/preset-env polyfills
-    .configureBabel(() => {}, {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        includeNodeModules: ['bootstrap'],
+    .configureBabel((config) => {
+        config.plugins.push('@babel/plugin-proposal-class-properties');
     })
-    .enableSassLoader()
-    //.enableIntegrityHashes(Encore.isProduction())
 
-    .autoProvideVariables({
-        $: 'jquery',
-        jQuery: 'jquery',
-        'window.jQuery': 'jquery',
-        'window.$': 'jquery',
-        Popper: ['popper.js', 'default'],
+    // enables @babel/preset-env polyfills
+    .configureBabelPresetEnv((config) => {
+        config.useBuiltIns = 'usage';
+        config.corejs = 3;
     })
     .addPlugin(
         new MomentLocalesPlugin({
@@ -82,6 +88,29 @@ Encore
         jQuery: 'jquery', //Summernote
         jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
         $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
+    })
+
+    // enables Sass/SCSS support
+    .enableSassLoader()
+
+    // uncomment if you use TypeScript
+    //.enableTypeScriptLoader()
+
+    // uncomment if you use React
+    //.enableReactPreset()
+
+    // uncomment to get integrity="..." attributes on your script & link tags
+    // requires WebpackEncoreBundle 1.4 or higher
+    //.enableIntegrityHashes(Encore.isProduction())
+
+    // uncomment if you're having problems with a jQuery plugin
+    //.autoProvidejQuery()
+    .autoProvideVariables({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'window.jQuery': 'jquery',
+        'window.$': 'jquery',
+        Popper: ['popper.js', 'default'],
     });
 
 if (Encore.isProduction()) {

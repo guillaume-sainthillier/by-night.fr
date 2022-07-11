@@ -1,4 +1,5 @@
 knpu_oauth2_client:
+    # configure your clients as described here: https://github.com/knpuniversity/oauth2-client-bundle#configuration
     clients:
         facebook:
             type: facebook
