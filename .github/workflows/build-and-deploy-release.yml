@@ -9,21 +9,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
     - name: Get all release versions
       id: get_all_versions
       run: |
         echo APP_VERSION=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1.\2.\3\4/g") >> $GITHUB_ENV
         echo APP_VERSIONS=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1.\2.\3\4 \1.\2\4 \1\4/g") >> $GITHUB_ENV
     - name: Publish to Docker Repository
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v4
       with:
         name: guystlr/by-night
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         buildargs: APP_VERSION
         tags: "stable,${{ env.APP_VERSIONS }}"
-    - name: stop script if command error
+    - name: Deploy to production
       uses: appleboy/ssh-action@master
       env:
         BY_NIGHT_PATH: ${{ secrets.BY_NIGHT_PATH }}
