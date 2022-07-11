@@ -33,7 +33,7 @@
         "ext-simplexml": "*",
         "ext-xmlreader": "*",
         "ext-zip": "*",
-        "abraham/twitteroauth": "^3",
+        "abraham/twitteroauth": "^4",
         "aws/aws-sdk-php": "^3.154",
         "babdev/pagerfanta-bundle": "^3.7",
         "beberlei/doctrineextensions": "^1.2",
