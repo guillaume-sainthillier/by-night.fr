@@ -20,3 +20,8 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+when@dev:
+    framework:
+        session:
+          handler_id: 'session.handler.native_file'
+          save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
