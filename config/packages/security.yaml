@@ -50,12 +50,12 @@ security:
         - { path: ^/social, roles: ROLE_USER }
         - { path: ^/espace-perso, roles: ROLE_USER }
         - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/login-social, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/login-social, roles: PUBLIC_ACCESS }
+        - { path: ^/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/resetting, roles: PUBLIC_ACCESS }
         - { path: ^/verifier-email, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/_private, roles: IS_AUTHENTICATED_ANONYMOUSLY, ips: [127.0.0.1, ::1, 192.168.0.1/24] }
+        - { path: ^/_private, roles: PUBLIC_ACCESS, ips: [127.0.0.1, ::1, 192.168.0.1/24] }
 
 when@test:
     security:
