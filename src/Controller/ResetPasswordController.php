@@ -60,9 +60,10 @@ class ResetPasswordController extends AbstractController
     #[Route(path: '/verifier-email', name: 'app_check_email', methods: ['GET', 'POST'])]
     public function checkEmail(): Response
     {
-        // We prevent users from directly accessing this page
-        if (!$this->canCheckEmail()) {
-            return $this->redirectToRoute('app_forgot_password_request');
+        // Generate a fake token if the user does not exist or someone hit this page directly.
+        // This prevents exposing whether or not a user was found with the given email address or not
+        if (null === ($resetToken = $this->getTokenObjectFromSession())) {
+            $resetToken = $this->resetPasswordHelper->generateFakeResetToken();
         }
 
         return $this->render('reset-password/check-email.html.twig', [
@@ -131,12 +132,9 @@ class ResetPasswordController extends AbstractController
 
     private function processSendingPasswordResetEmail(string $emailFormData, MailerManager $mailer): RedirectResponse
     {
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy([
+        $user = $this->getEntityManager()->getRepository(User::class)->findOneBy([
             'email' => $emailFormData,
         ]);
-
-        // Marks that you are allowed to see the app_check_email page.
-        $this->setCanCheckEmailInSession();
 
         // Do not reveal whether a user account was found or not.
         if (null === $user) {
@@ -155,6 +153,9 @@ class ResetPasswordController extends AbstractController
         }
 
         $mailer->sendResetPasswordEmail($user, $resetToken, $this->resetPasswordHelper->getTokenLifetime());
+
+        // Store the token object in session for retrieval in check-email route.
+        $this->setTokenObjectInSession($resetToken);
 
         return $this->redirectToRoute('app_check_email');
     }
