@@ -12,12 +12,17 @@ namespace App\Validator\Constraints;
 
 use App\Dto\EventDto;
 use App\Reject\Reject;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class EventConstraintValidator extends ConstraintValidator
 {
     private bool $checkIfUpdate = false;
+
+    public function __construct(private LoggerInterface $logger)
+    {
+    }
 
     public function setUpdatabilityCkeck(bool $checkIfUpdate): void
     {
@@ -46,6 +51,11 @@ class EventConstraintValidator extends ConstraintValidator
 
             return;
         }
+
+        $this->logger->error('Event is rejected', [
+           'event' => (array) $value,
+           'reject' => (array) $reject,
+        ]);
 
         if ($reject->isBadEventName()) {
             $this->context->buildViolation($constraint->badEventName)->atPath('name')->addViolation();
