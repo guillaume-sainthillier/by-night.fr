@@ -134,7 +134,8 @@ class Firewall
 
     private function isSPAMContent(?string $content): bool
     {
-        $black_list = [
+        $content = mb_strtolower($content ?? '');
+        $black_list = array_map('mb_strtolower', [
             'Buy && sell tickets at', 'Please join', 'Invite Friends', 'Buy Tickets',
             'Find Local Concerts', 'reverbnation.com', 'pastaparty.com', 'evrd.us',
             'farishams.com', 'ty-segall.com',
@@ -147,7 +148,8 @@ class Firewall
             'Please find the agenda', 'Fore More Details like our Page & Massage us',
             'storiesdown.com', 'view Instagram stories',
             'TEMOIGNAGE DE PRET', 'prêteur', 'prêteuse', 'preteur', 'preteuse', 'prêt entre particulier',
-        ];
+            'offre de prët', 'offre de prêt',
+        ]);
 
         foreach ($black_list as $black_word) {
             if (mb_strstr($content, $black_word)) {
