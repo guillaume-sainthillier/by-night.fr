@@ -2,7 +2,7 @@ const path = require('path');
 const glob = require('glob-all');
 const Encore = require('@symfony/webpack-encore');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
-const PurgecssPlugin = require('purgecss-webpack-plugin');
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -70,10 +70,6 @@ Encore
     // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
 
-    .configureBabel((config) => {
-        config.plugins.push('@babel/plugin-proposal-class-properties');
-    })
-
     // enables @babel/preset-env polyfills
     .configureBabelPresetEnv((config) => {
         config.useBuiltIns = 'usage';
@@ -115,7 +111,7 @@ Encore
 
 if (Encore.isProduction()) {
     Encore.addPlugin(
-        new PurgecssPlugin({
+        new PurgeCSSPlugin({
             paths: glob.sync(
                 [
                     path.join(__dirname, 'templates/**/*.html.twig'),
