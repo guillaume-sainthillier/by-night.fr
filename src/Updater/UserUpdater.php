@@ -61,7 +61,7 @@ class UserUpdater extends Updater
      */
     private function extractFbIds(array $users): array
     {
-        return array_filter(array_unique(array_map(fn (User $user) => $user->getOAuth()->getFacebookId(), $users)));
+        return array_filter(array_unique(array_map(static fn (User $user) => $user->getOAuth()->getFacebookId(), $users)));
     }
 
     /**

@@ -158,10 +158,9 @@ class AgendaController extends BaseController
     {
         $key = 'event_categories.' . $location->getSlug();
 
-        return $cache->get($key, function (ItemInterface $item) use ($repo, $location) {
+        return $cache->get($key, static function (ItemInterface $item) use ($repo, $location) {
             $eventTypes = $repo->getEventTypes($location);
             $types = [];
-
             foreach ($eventTypes as $eventType) {
                 $eventType = explode(',', $eventType);
                 foreach ($eventType as $type) {

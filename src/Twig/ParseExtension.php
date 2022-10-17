@@ -54,7 +54,7 @@ class ParseExtension extends Extension
         // striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
         $linked_text = preg_replace_callback('
             \#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|"|\'|:|\<|$|\.\s)\#i',
-            fn ($matches) => '<a rel="nofollow" href="$1" target="_blank">$3</a>$4',
+            static fn ($matches) => '<a rel="nofollow" href="$1" target="_blank">$3</a>$4',
             $shorted_text
         );
 

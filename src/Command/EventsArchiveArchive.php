@@ -19,6 +19,8 @@ class EventsArchiveArchive extends Command
 {
     protected static $defaultName = 'app:events:archive';
 
+    protected static $defaultDescription = 'Archive les vieux événements dans ElasticSearch';
+
     /**
      * {@inheritdoc}
      */
@@ -34,7 +36,6 @@ class EventsArchiveArchive extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Archive les vieux événements dans ElasticSearch');
     }
 
     /**

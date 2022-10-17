@@ -28,7 +28,7 @@ trait DtoFindableTrait
             $groupedWheres[$dto->getExternalOrigin()][$dto->getExternalId()] = true;
         }
 
-        if (0 === \count($groupedWheres)) {
+        if ([] === $groupedWheres) {
             return;
         }
 

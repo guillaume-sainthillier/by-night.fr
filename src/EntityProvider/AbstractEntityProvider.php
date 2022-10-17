@@ -140,7 +140,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
             $keys[] = $object->getUniqueKey();
         }
 
-        if (0 === \count($keys)) {
+        if ([] === $keys) {
             $key = sprintf('spl-%s', spl_object_id($object));
             if ($object instanceof PrefixableObjectKeyInterface) {
                 $key = sprintf(

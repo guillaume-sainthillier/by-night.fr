@@ -10,6 +10,7 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
+use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Rector\Property\ImproveDoctrineCollectionDocTypeInEntityRector;
 use Rector\Doctrine\Set\DoctrineSetList;
@@ -44,6 +45,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(ImproveDoctrineCollectionDocTypeInEntityRector::class);
 
     $rectorConfig->skip([
+        CatchExceptionNameMatchingTypeRector::class,
         CountOnNullRector::class,
         ClassPropertyAssignToConstructorPromotionRector::class => [
             __DIR__ . '/src/Entity/*',

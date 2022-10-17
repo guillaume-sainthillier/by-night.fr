@@ -62,12 +62,12 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
         }
 
         $wheres = [];
-        if (\count($cityWheres) > 0) {
+        if ([] !== $cityWheres) {
             $wheres[] = 'p.city IN(:cities)';
             $qb->setParameter('cities', array_keys($cityWheres));
         }
 
-        if (\count($countryWheres) > 0) {
+        if ([] !== $countryWheres) {
             $wheres[] = 'p.country IN(:countries) AND p.city IS NULL';
             $qb->setParameter('countries', array_keys($countryWheres));
         }

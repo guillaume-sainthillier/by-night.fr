@@ -110,7 +110,7 @@ class TagsInvalidator
 
         $tags = array_filter(array_unique($this->tags));
 
-        if (0 === \count($tags)) {
+        if ([] === $tags) {
             return;
         }
 

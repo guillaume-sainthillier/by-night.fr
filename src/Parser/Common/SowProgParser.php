@@ -64,7 +64,7 @@ class SowProgParser extends AbstractParser
      */
     public function parse(bool $incremental): void
     {
-        $modifiedSince = $incremental ? 1_000 * ((time() - 86_400)) : 0;
+        $modifiedSince = $incremental ? 1_000 * (time() - 86_400) : 0;
         $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents?modifiedSince=' . $modifiedSince);
         $events = $response->toArray();
 
@@ -123,13 +123,13 @@ class SowProgParser extends AbstractParser
 
         $prices = null;
         if (!empty($data['eventPrice'])) {
-            $prices = array_map(fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
+            $prices = array_map(static fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
             $prices = implode(' - ', $prices);
         }
 
         $websiteContacts = [];
         if (!empty($data['ticketStore'])) {
-            $tickets = array_map(fn (array $ticket) => $ticket['url'], $data['ticketStore']);
+            $tickets = array_map(static fn (array $ticket) => $ticket['url'], $data['ticketStore']);
             $websiteContacts = $tickets;
         }
 

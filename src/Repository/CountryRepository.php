@@ -94,18 +94,18 @@ class CountryRepository extends ServiceEntityRepository implements DtoFindableRe
             }
         }
 
-        if (0 === \count($idsWheres) && 0 === \count($namesWheres)) {
+        if ([] === $idsWheres && [] === $namesWheres) {
             return [];
         }
 
         $qb = $this->createQueryBuilder('c');
 
-        if (\count($idsWheres) > 0) {
+        if ([] !== $idsWheres) {
             $wheres[] = 'c.id IN (:ids)';
             $qb->setParameter('ids', array_keys($idsWheres));
         }
 
-        if (\count($namesWheres) > 0) {
+        if ([] !== $namesWheres) {
             $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR c.id IN(:names)';
             $qb->setParameter('names', array_keys($namesWheres));
         }

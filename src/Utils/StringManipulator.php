@@ -11,7 +11,9 @@
 namespace App\Utils;
 
 use Symfony\Component\String\AbstractString;
+
 use function Symfony\Component\String\u;
+
 use Symfony\Component\String\UnicodeString;
 
 class StringManipulator
@@ -63,7 +65,7 @@ class StringManipulator
 
     public function deleteStopWords(): self
     {
-        $parts = array_map(fn ($stopWord) => preg_quote($stopWord, '/'), self::$stopWords);
+        $parts = array_map(static fn ($stopWord) => preg_quote($stopWord, '/'), self::$stopWords);
         $stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
 
         $this->text = $this->text->replaceMatches($stopWordsRegex, '');
@@ -82,7 +84,7 @@ class StringManipulator
             return $this;
         }
 
-        if (\is_array($delimiters) && \count($delimiters) > 0) {
+        if (\is_array($delimiters) && [] !== $delimiters) {
             $this->text = $this->text->replaceMatches('/\s+([' . implode('', $delimiters) . '])\s+/u', '$1');
 
             return $this;

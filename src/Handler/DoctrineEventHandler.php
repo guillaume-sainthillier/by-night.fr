@@ -72,7 +72,7 @@ class DoctrineEventHandler
      */
     public function handleMany(array $dtos, bool $flush = true): void
     {
-        if (0 === \count($dtos)) {
+        if ([] === $dtos) {
             return;
         }
 
@@ -102,7 +102,7 @@ class DoctrineEventHandler
     {
         $ids = $this->getAllExternalIds($dtos);
 
-        if (\count($ids) > 0) {
+        if ([] !== $ids) {
             $this->firewall->loadExternalIdsData($ids);
         }
     }
@@ -325,7 +325,7 @@ class DoctrineEventHandler
         array &$allEntityProviders = [],
         array $paths = []
     ): void {
-        if (0 === \count($dtos)) {
+        if ([] === $dtos) {
             return;
         }
 
@@ -446,12 +446,14 @@ class DoctrineEventHandler
                     foreach ($allEntityProviders as $entityProviderToClear) {
                         $entityProviderToClear->clear();
                     }
+
                     $allEntityProviders = [];
 
                     // Clear catalogues
                     foreach ($allCatalogues as $catalogue) {
                         $catalogue->clear();
                     }
+
                     $allCatalogues = [];
 
                     // Finally, clear EM

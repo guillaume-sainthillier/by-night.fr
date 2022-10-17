@@ -76,6 +76,7 @@ class OpenAgendaParser extends AbstractParser
                 if (null === $eventDto) {
                     continue;
                 }
+
                 $this->publish($eventDto);
             }
         }
@@ -222,6 +223,7 @@ class OpenAgendaParser extends AbstractParser
 
             $urls[] = $registration['value'];
         }
+
         if (!empty($location['website'])) {
             $urls[] = $location['website'];
         }

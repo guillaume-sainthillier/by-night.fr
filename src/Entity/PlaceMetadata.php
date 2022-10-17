@@ -17,9 +17,8 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlaceMetadataRepository::class)]
-
 #[ORM\Index(name: 'place_metadata_idx', columns: ['external_id', 'external_origin'])]
-class PlaceMetadata implements ExternalIdentifiableInterface
+class PlaceMetadata implements ExternalIdentifiableInterface, \Stringable
 {
     use EntityIdentityTrait;
     #[ORM\ManyToOne(targetEntity: Place::class, inversedBy: 'metadatas')]

@@ -115,7 +115,7 @@ class DependencyCatalogue implements DependencyCatalogueInterface
      */
     public function objects(): array
     {
-        return array_map(fn (DependencyInterface $dependency) => $dependency->getObject(), $this->all());
+        return array_map(static fn (DependencyInterface $dependency) => $dependency->getObject(), $this->all());
     }
 
     public function clear(): void

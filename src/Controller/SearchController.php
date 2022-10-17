@@ -24,6 +24,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/recherche')]
 class SearchController extends AbstractController
 {
+    /**
+     * @var int
+     */
     private const ITEMS_PER_PAGE = 20;
 
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]

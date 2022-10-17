@@ -86,6 +86,6 @@ class ReservationsHandler
 
     private function getFirstMatches(array $matches): array
     {
-        return array_map(fn (array $match) => $match[0], $matches);
+        return array_map(static fn (array $match) => $match[0], $matches);
     }
 }

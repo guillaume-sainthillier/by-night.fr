@@ -96,7 +96,7 @@ class UserSocialAuthenticator extends OAuth2Authenticator
                 if (null === $existingUser) {
                     $existingUser = new User();
                     $existingUser
-                        ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
+                        ->setUsername(($datas['realname'] ?: $datas['email']) ?: $datas['id'])
                         ->setPassword('notused')
                         ->setFromLogin(false)
                         ->setVerified(true)

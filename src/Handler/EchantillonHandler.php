@@ -88,7 +88,7 @@ class EchantillonHandler
         $repoPlace = $this->placeRepository;
 
         // On prend toutes les places déjà connues par leur city ID
-        if (\count($cityIds) > 0) {
+        if ([] !== $cityIds) {
             $places = $repoPlace->findBy([
                 'city' => array_keys($cityIds),
             ]);
@@ -99,7 +99,7 @@ class EchantillonHandler
         }
 
         // On prend ensuite toutes les places selon leur localisation
-        if (\count($countryIds) > 0) {
+        if ([] !== $countryIds) {
             $places = $repoPlace->findBy([
                 'country' => array_keys($countryIds),
                 'city' => null,
@@ -138,7 +138,7 @@ class EchantillonHandler
             $externalIds[$event->getExternalId()] = true;
         }
 
-        if (\count($externalIds) > 0) {
+        if ([] !== $externalIds) {
             $repoEvent = $this->eventRepository;
             $candidates = $repoEvent->findBy(['externalId' => array_keys($externalIds)]);
             /** @var Event $candidate */

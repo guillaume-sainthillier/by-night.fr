@@ -81,7 +81,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             }
         }
 
-        if (0 === \count($cityNameWheres) && 0 === \count($postalCodesWheres)) {
+        if ([] === $cityNameWheres && [] === $postalCodesWheres) {
             return [];
         }
 
@@ -105,7 +105,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             ++$i;
         }
 
-        if (\count($postalCodesWheres) > 0) {
+        if ([] !== $postalCodesWheres) {
             $queryBuilder->leftJoin('c.zipCities', 'z');
             $i = 1;
             foreach ($postalCodesWheres as $countryId => $postalCodes) {

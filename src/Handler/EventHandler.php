@@ -15,8 +15,10 @@ use App\Entity\Event;
 use App\Exception\UnsupportedFileException;
 use App\File\DeletableFile;
 use App\Utils\Cleaner;
+
 use const DIRECTORY_SEPARATOR;
 use const PATHINFO_BASENAME;
+
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Mime\MimeTypes;
@@ -52,7 +54,7 @@ class EventHandler
      */
     public function handleDownloads(array $events): void
     {
-        $imageUrls = array_filter(array_unique(array_map(fn (Event $event) => $event->getUrl(), $events)));
+        $imageUrls = array_filter(array_unique(array_map(static fn (Event $event) => $event->getUrl(), $events)));
 
         $responses = [];
         foreach ($imageUrls as $imageUrl) {
@@ -64,7 +66,7 @@ class EventHandler
 
         foreach ($this->client->stream($responses) as $response => $chunk) {
             $imageUrl = $response->getInfo('user_data');
-            $currentEvents = array_filter($events, fn (Event $event) => $event->getUrl() === $imageUrl);
+            $currentEvents = array_filter($events, static fn (Event $event) => $event->getUrl() === $imageUrl);
 
             try {
                 if ($chunk->isTimeout()) {
@@ -87,7 +89,7 @@ class EventHandler
                     'exception' => $e,
                     'extra' => [
                         'event' => [
-                            'id' => array_map(fn (Event $event) => $event->getId(), $currentEvents),
+                            'id' => array_map(static fn (Event $event) => $event->getId(), $currentEvents),
                             'url' => $imageUrl,
                         ],
                     ],

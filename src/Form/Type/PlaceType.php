@@ -60,18 +60,18 @@ class PlaceType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
+                'query_builder' => static fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ]);
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            fn ($latitude) => (float) $latitude ?: null,
-            fn ($latitude) => (float) $latitude ?: null
+            static fn ($latitude) => (float) $latitude ?: null,
+            static fn ($latitude) => (float) $latitude ?: null
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            fn ($latitude) => (float) $latitude ?: null,
-            fn ($latitude) => (float) $latitude ?: null
+            static fn ($latitude) => (float) $latitude ?: null,
+            static fn ($latitude) => (float) $latitude ?: null
         ));
 
         $builder->get('country')
@@ -83,7 +83,7 @@ class PlaceType extends AbstractType
 
                     return $this->countryRepository->find($dto->entityId);
                 },
-                function (?Country $country) {
+                static function (?Country $country) {
                     if (null === $country) {
                         return null;
                     }

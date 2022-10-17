@@ -31,7 +31,7 @@ class EventSEO
 
         $tags = $event->getDistinctTags();
 
-        if (\count($tags) > 0) {
+        if ([] !== $tags) {
             $description .= sprintf(' %s.', implode(', ', $tags));
         }
 

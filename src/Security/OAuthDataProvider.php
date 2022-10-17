@@ -40,39 +40,32 @@ class OAuthDataProvider
             $user = $client->fetchUserFromToken($token);
         }
 
-        switch (true) {
-            case $user instanceof FacebookUser:
-                $datas += [
-                    'id' => $user->getId(),
-                    'email' => $user->getEmail(),
-                    'firstName' => $user->getFirstName(),
-                    'lastName' => $user->getLastName(),
-                    'profilePicture' => $user->isDefaultPicture() ? null : $user->getPictureUrl(),
-                    'realname' => $user->getName(),
-                ];
-                break;
-            case $user instanceof GoogleUser:
-                $datas += [
-                    'id' => $user->getId(),
-                    'email' => $user->getEmail(),
-                    'firstName' => $user->getFirstName(),
-                    'lastName' => $user->getLastName(),
-                    'profilePicture' => $user->getAvatar(),
-                    'realname' => $user->getName(),
-                ];
-                break;
-            case $user instanceof TwitterUser:
-                $datas += [
-                    'id' => $user->getId(),
-                    'email' => $user->getEmail(),
-                    'profilePicture' => $user->getProfilePicture(),
-                    'realname' => $user->getName(),
-                    'nickname' => $user->getScreenName(),
-                ];
-                break;
-            default:
-                throw new AuthenticationException(sprintf('Unable to guess how to find user for service "%s"', $serviceName));
-        }
+        match (true) {
+            $user instanceof FacebookUser => $datas += [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'firstName' => $user->getFirstName(),
+                'lastName' => $user->getLastName(),
+                'profilePicture' => $user->isDefaultPicture() ? null : $user->getPictureUrl(),
+                'realname' => $user->getName(),
+            ],
+            $user instanceof GoogleUser => $datas += [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'firstName' => $user->getFirstName(),
+                'lastName' => $user->getLastName(),
+                'profilePicture' => $user->getAvatar(),
+                'realname' => $user->getName(),
+            ],
+            $user instanceof TwitterUser => $datas += [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'profilePicture' => $user->getProfilePicture(),
+                'realname' => $user->getName(),
+                'nickname' => $user->getScreenName(),
+            ],
+            default => throw new AuthenticationException(sprintf('Unable to guess how to find user for service "%s"', $serviceName)),
+        };
 
         // So ugly...
         if (empty($datas['email'])) {

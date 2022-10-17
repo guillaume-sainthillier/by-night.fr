@@ -151,7 +151,7 @@ class IndexController extends BaseController
             'full_categories' => [],
         ];
 
-        if (\count($datas) > 0) {
+        if ([] !== $datas) {
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {

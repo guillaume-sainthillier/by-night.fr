@@ -22,6 +22,8 @@ class CountryImportCommand extends Command
 {
     protected static $defaultName = 'app:country:import';
 
+    protected static $defaultDescription = 'Ajoute un nouveau pays';
+
     /**
      * {@inheritdoc}
      */
@@ -37,8 +39,7 @@ class CountryImportCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Ajoute un nouveau pays')
-            ->addArgument('id', InputArgument::REQUIRED)
+        $this->addArgument('id', InputArgument::REQUIRED)
             ->addArgument('name', InputArgument::OPTIONAL)
             ->addArgument('capital', InputArgument::OPTIONAL)
             ->addArgument('locale', InputArgument::OPTIONAL);
@@ -75,7 +76,7 @@ class CountryImportCommand extends Command
     private function askParam(string $name, InputInterface $input, OutputInterface $output): string
     {
         $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
-        $question->setValidator(function ($value) {
+        $question->setValidator(static function ($value) {
             if (empty($value)) {
                 throw new Exception('Cette valeur ne peut pas être vide');
             }

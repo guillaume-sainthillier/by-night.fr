@@ -60,7 +60,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             $entityIdsWheres[$dto->entityId] = true;
         }
 
-        if (\count($entityIdsWheres) > 0) {
+        if ([] !== $entityIdsWheres) {
             $qb
                 ->orWhere('e.id IN (:ids)')
                 ->setParameter('ids', array_keys($entityIdsWheres));

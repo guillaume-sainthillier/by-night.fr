@@ -22,6 +22,8 @@ class ImagesUpdateCommand extends Command
 {
     protected static $defaultName = 'app:images:update';
 
+    protected static $defaultDescription = 'Mettre à jour les images (events, users) en provenance des réseaux sociaux';
+
     public function __construct(private UserUpdater $userUpdater)
     {
         parent::__construct();
@@ -34,8 +36,7 @@ class ImagesUpdateCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Mettre à jour les images (events, users) en provenance des réseaux sociaux')
-            ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'Date de dernière mise à jour', 'monday this week');
+        $this->addOption('from', null, InputOption::VALUE_OPTIONAL, 'Date de dernière mise à jour', 'monday this week');
     }
 
     /**

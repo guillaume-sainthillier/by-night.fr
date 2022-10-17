@@ -22,6 +22,8 @@ class EventsImportCommand extends Command
 {
     protected static $defaultName = 'app:events:import';
 
+    protected static $defaultDescription = 'Ajouter / mettre à jour des nouveaux événements';
+
     /**
      * @param iterable<ParserInterface> $parsers
      */
@@ -37,8 +39,7 @@ class EventsImportCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Ajouter / mettre à jour des nouveaux événements')
-            ->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
+        $this->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
             ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible');
     }
 

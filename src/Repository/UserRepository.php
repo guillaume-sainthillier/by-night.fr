@@ -164,7 +164,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             }
         }
 
-        if (0 === \count($idsWheres)) {
+        if ([] === $idsWheres) {
             return [];
         }
 

@@ -44,7 +44,7 @@ class Util
             "you're", "you've", 'your', 'yours', 'yourself', 'yourselves',
         ];
 
-        $parts = array_map(fn ($stopWord) => preg_quote($stopWord, '/'), $stopWords);
+        $parts = array_map(static fn ($stopWord) => preg_quote($stopWord, '/'), $stopWords);
         $this->stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
     }
 
@@ -75,8 +75,8 @@ class Util
     {
         if (\is_string($delimiters) && isset($delimiters[0])) { // Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
-        } elseif (\is_array($delimiters) && \count($delimiters) > 0) {
-            return trim(preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', fn ($matches) => $matches[1], $string));
+        } elseif (\is_array($delimiters) && [] !== $delimiters) {
+            return trim(preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', static fn ($matches) => $matches[1], $string));
         }
 
         return trim($string);

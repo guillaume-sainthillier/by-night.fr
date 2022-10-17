@@ -81,7 +81,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $startDate = null;
         $startDates = array_filter(explode(';', $data['custom_1']));
 
-        if (0 === \count($startDates)) {
+        if ([] === $startDates) {
             return null;
         }
 
@@ -153,10 +153,9 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
     private function getImageUrl(string $url)
     {
-        return $this->cache->get('fnac.urls.' . md5($url), function () use ($url) {
+        return $this->cache->get('fnac.urls.' . md5($url), static function () use ($url) {
             $imageUrl = str_replace('grand/', '600/', $url);
             $client = HttpClient::create();
-
             try {
                 $response = $client->request('HEAD', $imageUrl);
 

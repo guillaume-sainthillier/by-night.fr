@@ -337,7 +337,7 @@ class ImageHelper
             ), $imageSizes['sizes']);
 
             if (\in_array($format, ['jpg', 'png'], true)) {
-                $fallback = current(array_filter($images, fn (array $image) => $image['width'] === $imageSizes['unscaledWidth']))
+                $fallback = current(array_filter($images, static fn (array $image) => $image['width'] === $imageSizes['unscaledWidth']))
                     ?: current($images);
 
                 if ($fallback) {
@@ -370,7 +370,7 @@ class ImageHelper
                 $imageProps['height'] = 1 / $imageSizes['aspectRatio'];
                 break;
             case 'fluid':
-                $imageProps['width'] = $width ?: $imageSizes['presentationWidth'] ?: 1;
+                $imageProps['width'] = ($width ?: $imageSizes['presentationWidth']) ?: 1;
                 $imageProps['height'] = ($imageProps['width'] ?: 1) / $imageSizes['aspectRatio'];
                 break;
         }
@@ -380,7 +380,7 @@ class ImageHelper
 
     private function getSrcSet(array $images): array
     {
-        return array_map(fn (array $image) => sprintf(
+        return array_map(static fn (array $image) => sprintf(
             '%s %dw',
             $image['src'],
             $image['width'],
@@ -528,11 +528,11 @@ class ImageHelper
 
         if (\count($breakpoints ?? []) > 0) {
             $originalSizes = $breakpoints;
-            $sizes = array_filter($breakpoints, fn (int $breakpoint) => $breakpoint <= $originalWidth);
+            $sizes = array_filter($breakpoints, static fn (int $breakpoint) => $breakpoint <= $originalWidth);
         } else {
-            $sizes = array_map(fn (float $density) => round($density * $width), $densities);
+            $sizes = array_map(static fn (float $density) => round($density * $width), $densities);
             $originalSizes = $sizes;
-            $sizes = array_filter($sizes, fn (float $size) => $size <= $originalWidth);
+            $sizes = array_filter($sizes, static fn (float $size) => $size <= $originalWidth);
         }
 
         // If a larger breakpoint has been filtered-out, add the actual image width instead
@@ -627,9 +627,9 @@ class ImageHelper
         }
 
         // remove smaller densities because fixed images don't need them
-        $sizes = array_filter($densities, fn (float $density) => $density >= 1);
-        $sizes = array_map(fn (float $density) => $density * $width, $sizes);
-        $sizes = array_filter($sizes, fn (float $size) => $size <= $originalWidth);
+        $sizes = array_filter($densities, static fn (float $density) => $density >= 1);
+        $sizes = array_map(static fn (float $density) => $density * $width, $sizes);
+        $sizes = array_filter($sizes, static fn (float $size) => $size <= $originalWidth);
 
         return [
             'sizes' => $sizes,
