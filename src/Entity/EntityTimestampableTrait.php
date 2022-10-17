@@ -16,11 +16,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 trait EntityTimestampableTrait
 {
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)]
     #[Gedmo\Timestampable(on: 'create')]
     private ?DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)]
     #[Gedmo\Timestampable(on: 'update')]
     private ?DateTimeImmutable $updatedAt = null;
 

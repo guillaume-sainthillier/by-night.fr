@@ -25,13 +25,13 @@ class PlaceMetadata implements ExternalIdentifiableInterface, \Stringable
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Place $place = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
     private ?string $externalId = null;
 
-    #[ORM\Column(type: 'string', length: 63)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
     private ?string $externalOrigin = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $externalUpdatedAt = null;
 
     public function __toString(): string

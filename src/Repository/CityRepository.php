@@ -180,7 +180,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         }
 
         $results = $qb
-            ->orderBy('c.population', 'DESC')
+            ->orderBy('c.population', \Doctrine\Common\Collections\Criteria::DESC)
             ->setMaxResults(50)
             ->getQuery()
             ->getScalarResult();

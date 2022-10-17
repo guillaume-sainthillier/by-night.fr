@@ -35,9 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?int $id = null;
@@ -48,24 +48,24 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\OneToMany(targetEntity: PlaceMetadata::class, mappedBy: 'place', cascade: ['persist', 'remove'])]
     private Collection $metadatas;
 
-    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
     private ?string $externalId = null;
 
-    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?string $cityName = null;
 
-    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 7, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?string $cityPostalCode = null;
 
-    #[ORM\Column(type: 'string', length: 256, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 256, nullable: true)]
     private ?string $facebookId = null;
 
     #[ORM\ManyToOne(targetEntity: City::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?City $city = null;
@@ -73,12 +73,12 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     private ?ZipCity $zipCity = null;
 
     #[ORM\ManyToOne(targetEntity: Country::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?Country $country = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
     private ?bool $junk = null;
 
     private ?string $countryName = null;
@@ -87,35 +87,35 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     private ?Location $location = null;
 
-    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?string $street = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?float $latitude = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?float $longitude = null;
 
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
     #[Groups(['elasticsearch:event:details'])]
     #[Expose]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
     #[Gedmo\Slug(fields: ['name'], unique: false)]
     private ?string $slug = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
     private ?string $path = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
     private ?string $url = null;
 
     public function __construct()

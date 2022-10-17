@@ -15,16 +15,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
 #[ORM\Entity(repositoryClass: UserEventRepository::class)]
-
 #[ORM\UniqueConstraint(name: 'user_event_unique', columns: ['user_id', 'event_id'])]
 class UserEvent implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     private bool $going = false;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     private bool $wish = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userEvents')]

@@ -22,8 +22,8 @@ use Stringable;
 abstract class OAuth implements Stringable
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'integer')]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -38,7 +38,7 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_email = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     private ?int $facebook_expires = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -59,7 +59,7 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_email = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     private ?int $google_expires = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -80,7 +80,7 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_email = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     private ?int $twitter_expires = null;
 
     #[ORM\Column(length: 255, nullable: true)]

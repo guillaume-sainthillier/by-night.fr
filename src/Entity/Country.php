@@ -25,7 +25,7 @@ use Stringable;
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Country implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
-    #[ORM\Column(type: 'string', length: 2)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 2)]
     #[ORM\Id]
     #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
     private ?string $id = null;
@@ -35,25 +35,25 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     #[Gedmo\Slug(fields: ['name'], prefix: 'c--')]
     private ?string $slug = null;
 
-    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 5, nullable: true)]
     #[Exclude]
     private ?string $locale = null;
 
-    #[ORM\Column(type: 'string', length: 63)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
     #[Serializer\Groups(['elasticsearch:city:details'])]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 63)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
     private ?string $displayName = null;
 
-    #[ORM\Column(type: 'string', length: 63)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
     private ?string $atDisplayName = null;
 
-    #[ORM\Column(type: 'string', length: 63)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
     #[Exclude]
     private ?string $capital = null;
 
-    #[ORM\Column(type: 'string', length: 511, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 511, nullable: true)]
     #[Exclude]
     private ?string $postalCodeRegex = null;
 

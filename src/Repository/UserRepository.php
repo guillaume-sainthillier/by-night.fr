@@ -116,7 +116,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->addSelect('COUNT(u.id) AS nb_events')
             ->leftJoin('u.oAuth', 'i')
             ->leftJoin('u.userEvents', 'c')
-            ->orderBy('nb_events', 'DESC')
+            ->orderBy('nb_events', \Doctrine\Common\Collections\Criteria::DESC)
             ->groupBy('u.id')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)

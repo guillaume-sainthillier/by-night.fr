@@ -20,22 +20,22 @@ use Doctrine\ORM\Mapping as ORM;
 class ParserHistory
 {
     use EntityIdentityTrait;
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     private DateTimeInterface $startDate;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     private DateTimeInterface $endDate;
 
-    #[ORM\Column(type: 'string', length: 127)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127)]
     private ?string $fromData = null;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     private int $nouvellesSoirees = 0;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     private int $updateSoirees = 0;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     private int $explorations = 0;
 
     public function __construct()

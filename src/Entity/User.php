@@ -44,36 +44,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     use EntityTimestampableTrait;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'integer')]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\GeneratedValue]
     #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details'])]
     private ?int $id = null;
 
     #[Assert\Length(max: 180)]
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     private ?string $salt = null;
 
     #[Assert\Length(max: 180)]
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
     #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $username = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     private bool $enabled = true;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $lastLogin;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $passwordRequestedAt = null;
 
-    #[ORM\Column(type: 'array')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::ARRAY)]
     private array $roles = [];
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING)]
     private ?string $password = null;
 
     #[ORM\Column(length: 128, unique: true)]
@@ -81,20 +81,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private ?string $slug = null;
 
     #[Assert\Length(max: 255)]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
     #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $firstname = null;
 
     #[Assert\Length(max: 255)]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
     #[Serializer\Groups(['elasticsearch:user:details'])]
     private ?string $lastname = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\OneToOne(targetEntity: UserOAuth::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn]
     private ?UserOAuth $oAuth;
 
     /**
@@ -104,18 +104,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private Collection $userEvents;
 
     #[ORM\ManyToOne(targetEntity: City::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn]
     private ?City $city = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
     private bool $fromLogin = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
     private bool $showSocials = true;
 
     #[Assert\Url]
     #[Assert\Length(max: 255)]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
     private ?string $website = null;
 
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
@@ -127,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $image;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 32, nullable: true)]
     private ?string $imageHash = null;
 
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
@@ -138,10 +138,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $imageSystem;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     private bool $verified = false;
 
     public function __construct()

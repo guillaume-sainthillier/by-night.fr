@@ -60,7 +60,7 @@ class PlaceType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => static fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
+                'query_builder' => static fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', \Doctrine\Common\Collections\Criteria::ASC),
                 'choice_label' => 'name',
             ]);
 

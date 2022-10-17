@@ -24,10 +24,10 @@ class Comment implements Stringable
     use EntityTimestampableTrait;
     #[Assert\Length(min: 3, minMessage: 'Le commentaire doit faire au moins {{ limit }} caractères')]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
     private ?string $comment = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     private bool $approved = true;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -39,7 +39,7 @@ class Comment implements Stringable
     private ?Event $event = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn]
     private ?Comment $parent = null;
 
     /**

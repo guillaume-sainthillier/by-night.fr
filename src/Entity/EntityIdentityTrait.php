@@ -16,7 +16,7 @@ trait EntityIdentityTrait
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     private ?int $id = null;
 
     /**

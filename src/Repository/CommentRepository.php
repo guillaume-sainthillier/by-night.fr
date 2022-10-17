@@ -36,7 +36,7 @@ class CommentRepository extends ServiceEntityRepository
             ->createQueryBuilder('c')
             ->where('c.event = :event AND c.parent IS NULL AND c.approved = true')
             ->setParameters([':event' => $event])
-            ->orderBy('c.createdAt', 'DESC')
+            ->orderBy('c.createdAt', \Doctrine\Common\Collections\Criteria::DESC)
         ;
     }
 
@@ -59,6 +59,6 @@ class CommentRepository extends ServiceEntityRepository
             ->createQueryBuilder('c')
             ->where('c.parent = :parent AND c.approved = true')
             ->setParameters([':parent' => $comment])
-            ->orderBy('c.createdAt', 'DESC');
+            ->orderBy('c.createdAt', \Doctrine\Common\Collections\Criteria::DESC);
     }
 }

@@ -167,7 +167,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->createQueryBuilder('e')
             ->where('e.user = :user')
             ->setParameters(['user' => $user])
-            ->orderBy('e.id', 'DESC');
+            ->orderBy('e.id', \Doctrine\Common\Collections\Criteria::DESC);
     }
 
     public function getCountryEvents(): array
@@ -182,7 +182,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->join('p.country', 'c')
             ->where('e.endDate >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('events', 'DESC')
+            ->orderBy('events', \Doctrine\Common\Collections\Criteria::DESC)
             ->groupBy('c.id')
             ->getQuery()
             ->getScalarResult();
@@ -227,7 +227,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->join('e.place', 'p')
             ->where('ue.user = :user')
             ->groupBy('p.name')
-            ->orderBy('eventsCount', 'DESC')
+            ->orderBy('eventsCount', \Doctrine\Common\Collections\Criteria::DESC)
             ->setParameters([':user' => $user->getId()])
             ->setFirstResult(0)
             ->setMaxResults($limit)
@@ -299,7 +299,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->from('App:User', 'u')
             ->join('u.userEvents', 'ue')
             ->where('ue.event = :event')
-            ->orderBy('nb_events', 'DESC')
+            ->orderBy('nb_events', \Doctrine\Common\Collections\Criteria::DESC)
             ->groupBy('u.id')
             ->setParameters([':event' => $event->getId()])
             ->setFirstResult(($page - 1) * $limit)
@@ -312,7 +312,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return $this
             ->getFindAllSimilarsBuilder($event)
-            ->orderBy('e.name', 'ASC')
+            ->orderBy('e.name', \Doctrine\Common\Collections\Criteria::ASC)
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -359,7 +359,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         return $this
             ->createQueryBuilder('e')
             ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place')
-            ->orderBy('e.endDate', 'ASC')
+            ->orderBy('e.endDate', \Doctrine\Common\Collections\Criteria::ASC)
             ->setParameters([':end_date' => $from->format('Y-m-d'), ':id' => $event->getId(), ':place' => $event->getPlace()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
@@ -419,8 +419,8 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         return $this
             ->getTopEventBuilder($location)
-            ->orderBy('e.endDate', 'ASC')
-            ->addOrderBy('e.participations', 'DESC')
+            ->orderBy('e.endDate', \Doctrine\Common\Collections\Criteria::ASC)
+            ->addOrderBy('e.participations', \Doctrine\Common\Collections\Criteria::DESC)
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -435,8 +435,8 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->createQueryBuilder('e')
             ->where('e.endDate >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('e.endDate', 'ASC')
-            ->addOrderBy('e.participations', 'DESC');
+            ->orderBy('e.endDate', \Doctrine\Common\Collections\Criteria::ASC)
+            ->addOrderBy('e.participations', \Doctrine\Common\Collections\Criteria::DESC);
 
         $this->buildLocationParameters($qb, $location);
 
@@ -484,7 +484,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $results = $qb
             ->setParameter('from', $from->format('Y-m-d'))
             ->groupBy('e.category')
-            ->orderBy('e.category', 'DESC')
+            ->orderBy('e.category', \Doctrine\Common\Collections\Criteria::DESC)
             ->getQuery()
             ->getArrayResult();
 
