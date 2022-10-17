@@ -70,6 +70,13 @@
                                 <span class="d-lg-none ms-2">{{ app.user.username }}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
+                                {% if is_granted('IS_IMPERSONATOR') %}
+                                    <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index') ) }}">
+                                        <i class="fa fa-power-off"></i>
+                                        Exit impersonation
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                {% endif %}
                                 <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
                                     <i class="fa fa-cogs"></i>
                                     Mon compte
