@@ -67,7 +67,7 @@ class SearchType extends AbstractType
                 'required' => false,
                 'label' => 'Mot-clés',
                 'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'], ])
-            ;
+        ;
     }
 
     /**
@@ -85,7 +85,7 @@ class SearchType extends AbstractType
         ]);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return '';
     }

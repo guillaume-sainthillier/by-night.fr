@@ -29,7 +29,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
     /**
      * {@inheritDoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::CHECK_EVENT_URL => 'onEventCheck',
@@ -50,10 +50,10 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
         }
 
         if (null === $this->requestStack->getParentRequest() && (
-                null === $e->getEventId()
-                || $event->getSlug() !== $e->getEventSlug()
-                || $event->getLocationSlug() !== $e->getLocationSlug()
-            )) {
+            null === $e->getEventId()
+            || $event->getSlug() !== $e->getEventSlug()
+            || $event->getLocationSlug() !== $e->getLocationSlug()
+        )) {
             $routeParams = array_merge([
                 'id' => $event->getId(),
                 'slug' => $event->getSlug(),

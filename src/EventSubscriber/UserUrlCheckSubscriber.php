@@ -29,7 +29,7 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
     /**
      * {@inheritDoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::CHECK_USER_URL => 'onUserCheck',
@@ -50,10 +50,10 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
         }
 
         if (null === $this->requestStack->getParentRequest() && (
-                null === $e->getUserId()
-                || (null !== $e->getUserSlug() && $user->getSlug() !== $e->getUserSlug())
-                || (null !== $e->getUserUsername() && $user->getUserIdentifier() !== $e->getUserUsername())
-            )) {
+            null === $e->getUserId()
+            || (null !== $e->getUserSlug() && $user->getSlug() !== $e->getUserSlug())
+            || (null !== $e->getUserUsername() && $user->getUserIdentifier() !== $e->getUserUsername())
+        )) {
             $routeParams = array_merge([
                 'id' => $user->getId(),
                 'slug' => $user->getSlug(),

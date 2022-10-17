@@ -16,7 +16,7 @@ class ReCaptchaResponse extends Constraint
 {
     public string $message = 'Le captcha est incorrect.';
 
-    public function validatedBy()
+    public function validatedBy(): string
     {
         return static::class . 'Validator';
     }
