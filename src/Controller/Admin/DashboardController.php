@@ -70,7 +70,7 @@ class DashboardController extends AbstractDashboardController
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_EDIT, Action::DELETE)
-            ;
+        ;
     }
 
     public function configureMenuItems(): iterable

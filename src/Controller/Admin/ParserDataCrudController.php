@@ -32,7 +32,7 @@ class ParserDataCrudController extends AbstractCrudController
     {
         return parent::configureActions($actions)
             ->disable(Action::NEW)
-            ;
+        ;
     }
 
     public function configureCrud(Crud $crud): Crud

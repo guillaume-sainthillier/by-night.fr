@@ -13,6 +13,7 @@ namespace App\Social;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\App\Location;
 use Exception;
+
 use const JSON_THROW_ON_ERROR;
 
 class Twitter extends Social

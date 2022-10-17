@@ -68,7 +68,7 @@ class EchantillonHandlerTest extends AppKernelTestCase
 
     public function eventEchantillonProvider(): iterable
     {
-        yield [(new Event())];
+        yield [new Event()];
         yield [(new Event())->setPlace(new Place())];
         yield [(new Event())->setPlace((new Place())->setId(1))];
     }

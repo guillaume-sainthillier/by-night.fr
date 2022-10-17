@@ -12,7 +12,9 @@ namespace App\Handler;
 
 use App\Entity\User;
 use App\File\DeletableFile;
+
 use const DIRECTORY_SEPARATOR;
+
 use RuntimeException;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 

@@ -40,10 +40,10 @@ class RegistrationController extends AbstractController
                 ->setFromLogin(true)
                 ->setPassword(
                     $passwordHasher->hashPassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+                        $user,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
 
             $entityManager = $this->getEntityManager();
             $entityManager->persist($user);

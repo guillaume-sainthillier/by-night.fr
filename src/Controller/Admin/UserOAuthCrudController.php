@@ -26,7 +26,7 @@ class UserOAuthCrudController extends OAuthCrudController
     {
         return parent::configureActions($actions)
             ->disable(Action::NEW)
-            ;
+        ;
     }
 
     public function configureCrud(Crud $crud): Crud

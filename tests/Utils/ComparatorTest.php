@@ -52,14 +52,14 @@ class ComparatorTest extends AppKernelTestCase
             [(new Place())->setId(1), (new Place())->setId(1), 100],
             [(new Place())->setExternalId('EXT-1'), (new Place())->setExternalId('EXT-1'), 100],
             [(new Place())->setExternalId('EXT-1'), (new Place())->setExternalId('EXT-2'), 0],
-            [(new Place()), (new Place())->setExternalId('EXT-1'), 0],
-            [(new Place())->setExternalId('EXT-1'), (new Place()), 0],
+            [new Place(), (new Place())->setExternalId('EXT-1'), 0],
+            [(new Place())->setExternalId('EXT-1'), new Place(), 0],
             [(new Place())->setId(1)->setExternalId('EXT-1'), (new Place())->setId(2)->setExternalId('EXT-1'), 100],
             [(new Place())->setId(1)->setExternalId('EXT-1'), (new Place())->setId(1)->setExternalId('EXT-2'), 100],
 
             // By city check
-            [(new Place()), (new Place())->setCity($toulouse), 0],
-            [(new Place())->setCity($toulouse), (new Place()), 0],
+            [new Place(), (new Place())->setCity($toulouse), 0],
+            [(new Place())->setCity($toulouse), new Place(), 0],
             [(new Place())->setCity($toulouse), (new Place())->setCity($toulouse), 0],
             [(new Place())->setCity($toulouse), (new Place())->setCity($toulouse)->setName('Secret place'), 0],
             [(new Place())->setCity($toulouse)->setName('Secret place'), (new Place())->setCity($toulouse), 0],
@@ -67,8 +67,8 @@ class ComparatorTest extends AppKernelTestCase
             [(new Place())->setCity($toulouse)->setName('Bikini'), (new Place())->setCity($toulouse)->setName('Le bikini'), 90],
 
             // By country check
-            [(new Place()), (new Place())->setCountry($france), 0],
-            [(new Place())->setCountry($france), (new Place()), 0],
+            [new Place(), (new Place())->setCountry($france), 0],
+            [(new Place())->setCountry($france), new Place(), 0],
             [(new Place())->setCountry($france), (new Place())->setCountry($france), 0],
             [(new Place())->setCountry($france), (new Place())->setCountry($france)->setName('Secret place'), 0],
             [(new Place())->setCountry($france)->setName('Secret place'), (new Place())->setCountry($france), 0],

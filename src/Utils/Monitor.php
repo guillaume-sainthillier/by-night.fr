@@ -11,6 +11,7 @@
 namespace App\Utils;
 
 use const SORT_STRING;
+
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;

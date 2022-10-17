@@ -16,6 +16,7 @@ class AliasResolver
 
     /**
      * @psalm-template T
+     *
      * @psalm-param T
      *
      * @return T|null

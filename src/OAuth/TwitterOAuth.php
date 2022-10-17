@@ -12,7 +12,9 @@ namespace App\OAuth;
 
 use Abraham\TwitterOAuth\TwitterOAuth as BaseClient;
 use Abraham\TwitterOAuth\TwitterOAuthException;
+
 use const JSON_THROW_ON_ERROR;
+
 use KnpU\OAuth2ClientBundle\Exception\InvalidStateException;
 use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
