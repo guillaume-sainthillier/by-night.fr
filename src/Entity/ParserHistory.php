@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Repository\ParserHistoryRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ParserHistoryRepository::class, readOnly: true)]
@@ -20,22 +21,22 @@ use Doctrine\ORM\Mapping as ORM;
 class ParserHistory
 {
     use EntityIdentityTrait;
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTimeInterface $startDate;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTimeInterface $endDate;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127)]
+    #[ORM\Column(type: Types::STRING, length: 127)]
     private ?string $fromData = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $nouvellesSoirees = 0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $updateSoirees = 0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $explorations = 0;
 
     public function __construct()

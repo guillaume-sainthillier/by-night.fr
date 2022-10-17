@@ -21,6 +21,7 @@ use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use Parsedown;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
@@ -85,8 +86,8 @@ class OpenAgendaParser extends AbstractParser
     private function getAgendaEvents(bool $incremental, int $agendaId): iterable
     {
         $filter = $incremental
-            ? ['updatedAt' => ['gte' => (new DateTimeImmutable('yesterday', new \DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
-            : ['timings' => ['gte' => (new DateTimeImmutable('now', new \DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
+            ? ['updatedAt' => ['gte' => (new DateTimeImmutable('yesterday', new DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
+            : ['timings' => ['gte' => (new DateTimeImmutable('now', new DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
 
         $after = [];
         while (true) {

@@ -16,6 +16,7 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Utils\CityManipulator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -180,7 +181,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         }
 
         $results = $qb
-            ->orderBy('c.population', \Doctrine\Common\Collections\Criteria::DESC)
+            ->orderBy('c.population', Criteria::DESC)
             ->setMaxResults(50)
             ->getQuery()
             ->getScalarResult();

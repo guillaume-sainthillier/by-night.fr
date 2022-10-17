@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Repository\ZipCityRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
@@ -20,7 +21,7 @@ use JMS\Serializer\Annotation as Serializer;
 #[Serializer\ExclusionPolicy('ALL')]
 class ZipCity
 {
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
     #[ORM\GeneratedValue('AUTO')]
     #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:city:details', 'elasticsearch:user:details'])]
@@ -34,28 +35,28 @@ class ZipCity
     #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     private ?Country $country = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 20)]
+    #[ORM\Column(type: Types::STRING, length: 20)]
     private ?string $postalCode = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180)]
+    #[ORM\Column(type: Types::STRING, length: 180)]
     private ?string $name = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT)]
+    #[ORM\Column(type: Types::FLOAT)]
     private float $latitude = 0.0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT)]
+    #[ORM\Column(type: Types::FLOAT)]
     private float $longitude = 0.0;
 
-    #[ORM\Column(name: 'admin1_code', type: \Doctrine\DBAL\Types\Types::STRING, length: 20)]
+    #[ORM\Column(name: 'admin1_code', type: Types::STRING, length: 20)]
     private ?string $admin1Code = null;
 
-    #[ORM\Column(name: 'admin1_name', type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    #[ORM\Column(name: 'admin1_name', type: Types::STRING, length: 100, nullable: true)]
     private ?string $admin1Name = null;
 
-    #[ORM\Column(name: 'admin2_code', type: \Doctrine\DBAL\Types\Types::STRING, length: 80)]
+    #[ORM\Column(name: 'admin2_code', type: Types::STRING, length: 80)]
     private ?string $admin2Code = null;
 
-    #[ORM\Column(name: 'admin2_name', type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    #[ORM\Column(name: 'admin2_name', type: Types::STRING, length: 100, nullable: true)]
     private ?string $admin2Name = null;
 
     #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EXTRA_LAZY', inversedBy: 'zipCities')]

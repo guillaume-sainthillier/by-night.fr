@@ -14,24 +14,26 @@ use App\Contracts\ExternalIdentifiableInterface;
 use App\Repository\PlaceMetadataRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
 #[ORM\Entity(repositoryClass: PlaceMetadataRepository::class)]
 #[ORM\Index(name: 'place_metadata_idx', columns: ['external_id', 'external_origin'])]
-class PlaceMetadata implements ExternalIdentifiableInterface, \Stringable
+class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
 {
     use EntityIdentityTrait;
     #[ORM\ManyToOne(targetEntity: Place::class, inversedBy: 'metadatas')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Place $place = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $externalId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
+    #[ORM\Column(type: Types::STRING, length: 63)]
     private ?string $externalOrigin = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $externalUpdatedAt = null;
 
     public function __toString(): string

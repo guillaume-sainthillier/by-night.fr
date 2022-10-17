@@ -10,9 +10,10 @@
 
 namespace App\Validator\Constraints;
 
+use Attribute;
 use Symfony\Component\Validator\Constraint;
 
-#[\Attribute]
+#[Attribute]
 class EventConstraint extends Constraint
 {
     public string $badEventName = "Le nom de l'événement est incorrect.";

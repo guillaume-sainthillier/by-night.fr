@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Repository\AdminZoneRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\Exclude;
@@ -34,7 +35,7 @@ use Stringable;
 #[ExclusionPolicy('NONE')]
 abstract class AdminZone implements Stringable
 {
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
     #[Groups(['elasticsearch:event:details', 'elasticsearch:city:details', 'elasticsearch:user:details'])]
     protected ?int $id = null;
@@ -44,28 +45,28 @@ abstract class AdminZone implements Stringable
     #[Gedmo\Slug(fields: ['name'])]
     protected ?string $slug = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 200)]
+    #[ORM\Column(type: Types::STRING, length: 200)]
     #[Groups(['elasticsearch:city:details'])]
     protected ?string $name = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT)]
+    #[ORM\Column(type: Types::FLOAT)]
     protected float $latitude = 0.0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT)]
+    #[ORM\Column(type: Types::FLOAT)]
     protected float $longitude = 0.0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     #[Groups(['elasticsearch:city:details'])]
     protected int $population = 0;
 
     #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     protected ?Country $country = null;
 
-    #[ORM\Column(name: 'admin1_code', type: \Doctrine\DBAL\Types\Types::STRING, length: 20, nullable: true)]
+    #[ORM\Column(name: 'admin1_code', type: Types::STRING, length: 20, nullable: true)]
     #[Exclude]
     protected ?string $admin1Code = null;
 
-    #[ORM\Column(name: 'admin2_code', type: \Doctrine\DBAL\Types\Types::STRING, length: 80, nullable: true)]
+    #[ORM\Column(name: 'admin2_code', type: Types::STRING, length: 80, nullable: true)]
     #[Exclude]
     protected ?string $admin2Code = null;
 

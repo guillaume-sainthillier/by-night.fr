@@ -13,6 +13,7 @@ namespace App\Dependency;
 use App\Contracts\DependencyCatalogueInterface;
 use App\Contracts\DependencyInterface;
 use App\Contracts\DependencyObjectInterface;
+use RuntimeException;
 
 class DependencyCatalogue implements DependencyCatalogueInterface
 {
@@ -46,7 +47,7 @@ class DependencyCatalogue implements DependencyCatalogueInterface
     {
         $key = $object->getUniqueKey();
         if (!isset($this->dependencies[$key])) {
-            throw new \RuntimeException('Given dependency is not found');
+            throw new RuntimeException('Given dependency is not found');
         }
 
         return $this->dependencies[$key];

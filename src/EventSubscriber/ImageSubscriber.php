@@ -17,6 +17,7 @@ use App\Producer\RemoveImageThumbnailsProducer;
 
 use const DIRECTORY_SEPARATOR;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -73,7 +74,7 @@ class ImageSubscriber implements EventSubscriberInterface
                 } elseif ('imageSystemFile' === $event->getMapping()->getFilePropertyName()) {
                     $object->setImageSystemHash($checksum);
                 }
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $this->logger->error($exception->getMessage(), [
                     'exception' => $exception,
                 ]);

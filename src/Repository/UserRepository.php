@@ -15,6 +15,7 @@ use App\Dto\UserDto;
 use App\Entity\User;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -116,7 +117,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->addSelect('COUNT(u.id) AS nb_events')
             ->leftJoin('u.oAuth', 'i')
             ->leftJoin('u.userEvents', 'c')
-            ->orderBy('nb_events', \Doctrine\Common\Collections\Criteria::DESC)
+            ->orderBy('nb_events', Criteria::DESC)
             ->groupBy('u.id')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)

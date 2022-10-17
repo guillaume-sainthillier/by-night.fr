@@ -22,6 +22,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\Groups;
@@ -54,15 +55,15 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public const INDEX_FROM = '-6 months';
 
     #[ORM\Id]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue]
     #[Groups(['elasticsearch:event:details'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $externalId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 63, nullable: true)]
     private ?string $externalOrigin = null;
 
     #[ORM\Column(length: 255)]
@@ -70,83 +71,83 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $slug = null;
 
     #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $description = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $externalUpdatedAt = null;
 
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Type("DateTimeInterface<'Y-m-d'>")]
     private ?DateTimeInterface $startDate;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Type("DateTimeInterface<'Y-m-d'>")]
     private ?DateTimeInterface $endDate = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 256, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 16, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true)]
     private ?string $status = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?float $latitude = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?float $longitude = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $address = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 128, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $type = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 128, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $category = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 128, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $theme = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::JSON, nullable: true)]
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $phoneContacts = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::JSON, nullable: true)]
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $mailContacts = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::JSON, nullable: true)]
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $websiteContacts = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reservationTelephone = null;
 
     /** @deprecated  */
     #[Assert\Email]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reservationEmail = null;
 
     /** @deprecated  */
     #[Assert\Url]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 512, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $reservationInternet = null;
 
     /** @deprecated  */
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $prices = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $fromData = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 7, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 7, nullable: true)]
     private ?string $parserVersion = null;
 
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
@@ -158,7 +159,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $image;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 32, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $imageHash = null;
 
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
@@ -169,38 +170,38 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $imageSystem;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 32, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
 
     #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $name = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $url = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn]
     private ?User $user = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[ORM\Column(type: Types::BOOLEAN)]
     #[Groups(['elasticsearch:event:details'])]
     private bool $draft = false;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $tweetPostId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $facebookEventId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $tweetPostSystemId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $fbPostId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $fbPostSystemId = null;
 
     /**
@@ -216,22 +217,22 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $comments;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 31, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]
     private ?string $facebookOwnerId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $fbParticipations = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $fbInterets = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $participations = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $interets = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 256, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $source = null;
 
     #[Assert\Valid]
@@ -242,30 +243,30 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     private ?Reject $reject = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $archive = false;
 
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $placeName = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $placeStreet = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $placeCity = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 7, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 7, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $placePostalCode = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $placeExternalId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $placeFacebookId = null;
 
     private ?Reject $placeReject = null;

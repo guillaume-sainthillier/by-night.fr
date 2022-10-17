@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ParserDataRepository::class)]
@@ -20,22 +21,22 @@ use Doctrine\ORM\Mapping as ORM;
 class ParserData
 {
     use EntityIdentityTrait;
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 127)]
+    #[ORM\Column(type: Types::STRING, length: 127)]
     private ?string $externalId = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 63)]
+    #[ORM\Column(type: Types::STRING, length: 63)]
     private ?string $externalOrigin = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $lastUpdated = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $reason = Reject::VALID;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 7)]
+    #[ORM\Column(type: Types::STRING, length: 7)]
     private string $firewallVersion = '1.0';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 7, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 7, nullable: true)]
     private ?string $parserVersion = null;
 
     private ?Reject $reject = null;

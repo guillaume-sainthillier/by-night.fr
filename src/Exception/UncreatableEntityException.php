@@ -10,6 +10,8 @@
 
 namespace App\Exception;
 
-class UncreatableEntityException extends \RuntimeException
+use RuntimeException;
+
+class UncreatableEntityException extends RuntimeException
 {
 }

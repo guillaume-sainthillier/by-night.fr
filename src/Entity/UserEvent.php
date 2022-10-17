@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Repository\UserEventRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
@@ -20,10 +21,10 @@ class UserEvent implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $going = false;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $wish = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userEvents')]
