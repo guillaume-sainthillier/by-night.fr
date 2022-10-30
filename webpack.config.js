@@ -16,7 +16,7 @@ Encore
     // public path used by the web server to access the output path
     .setPublicPath('/build')
     // only needed for CDN's or sub-directory deploy
-    //.setManifestKeyPrefix('build/')
+    // .setManifestKeyPrefix('build/')
 
     /*
      * ENTRY CONFIG
@@ -43,12 +43,12 @@ Encore
         },
     ])
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
-    //.enableStimulusBridge('./assets/controllers.json')
+    // .enableStimulusBridge('./assets/controllers.json')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
     .configureSplitChunks(function (splitChunks) {
-        //https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
+        // https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
         splitChunks.maxInitialRequests = 20; // for HTTP2
         splitChunks.maxAsyncRequests = 20;
     })
@@ -81,7 +81,7 @@ Encore
         })
     )
     .addAliases({
-        jQuery: 'jquery', //Summernote
+        jQuery: 'jquery', // Summernote
         jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
         $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
     })
@@ -90,17 +90,17 @@ Encore
     .enableSassLoader()
 
     // uncomment if you use TypeScript
-    //.enableTypeScriptLoader()
+    // .enableTypeScriptLoader()
 
     // uncomment if you use React
-    //.enableReactPreset()
+    // .enableReactPreset()
 
     // uncomment to get integrity="..." attributes on your script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
-    //.enableIntegrityHashes(Encore.isProduction())
+    // .enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    // .autoProvidejQuery()
     .autoProvideVariables({
         $: 'jquery',
         jQuery: 'jquery',
@@ -108,6 +108,12 @@ Encore
         'window.$': 'jquery',
         Popper: ['popper.js', 'default'],
     });
+
+if (!Encore.isProduction()) {
+    Encore.enableEslintPlugin((options) => {
+        options.cache = true;
+    });
+}
 
 if (Encore.isProduction()) {
     Encore.addPlugin(
