@@ -14,7 +14,6 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
-use App\Entity\Event;
 use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
@@ -87,7 +86,13 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         foreach ($startDates as $startDateStr) {
             $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
-            $seenHours[] = sprintf('À %s', $startDate->format('H\hi'));
+            if (false !== $startDate) {
+                $seenHours[] = sprintf('À %s', $startDate->format('H\hi'));
+            }
+        }
+
+        if (0 === \count($seenHours)) {
+            return null;
         }
 
         $seenHours = array_unique($seenHours);
