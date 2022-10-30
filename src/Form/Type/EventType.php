@@ -14,7 +14,6 @@ use App\Dto\EventDto;
 use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -120,7 +119,6 @@ class EventType extends AbstractType
                 'label' => 'Sites de réservation',
                 'entry_options' => [
                     'label' => false,
-                    'block_prefix' => 'app_collection_entry_main_text',
                     'icon-prepend' => 'globe',
                     'attr' => [
                         'placeholder' => 'https://monsupersite.fr',
@@ -134,7 +132,6 @@ class EventType extends AbstractType
                 'label' => 'Numéros de téléphone',
                 'entry_options' => [
                     'label' => false,
-                    'block_prefix' => 'app_collection_entry_main_text',
                     'icon-prepend' => 'phone',
                     'attr' => [
                         'placeholder' => '06 01 02 03 04',
@@ -148,7 +145,6 @@ class EventType extends AbstractType
                 'label' => 'Emails de contact',
                 'entry_options' => [
                     'label' => false,
-                    'block_prefix' => 'app_collection_entry_main_text',
                     'icon-prepend' => 'envelope',
                     'attr' => [
                         'placeholder' => 'vousêtes@incroyable.fr',

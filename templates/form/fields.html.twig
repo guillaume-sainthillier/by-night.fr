@@ -1,5 +1,7 @@
 {% use 'form_div_layout.html.twig' with checkbox_widget as base_checkbox_widget %}
 {% use "bootstrap_5_layout.html.twig" %}
+{% use "bootstrap_5_layout.html.twig" with form_label as inline_form_label %}
+
 
 {% block recaptcha_widget %}
     <div {{ block('widget_attributes') }}></div>
@@ -34,41 +36,69 @@
     {{ form_widget(form) }}
 {%- endblock hidden_date_row -%}
 
-{# Adds "add" buttons #}
-{% block app_collection_widget -%}
-    {% if disabled %}
-        {{ form_widget(form, {'attr': {'class': 'form-collection'}}) }}
-    {% else %}
-        <div class="collection-wrapper">
-            {{ form_widget(form, {'attr': {'class': 'form-collection'}}) }}
+{% block app_collection_entry_form_row %}
+    {{ form_row(child, attr|merge({label: false})) }}
+{% endblock %}
 
-            <button type="button" class="add-collection btn btn-sm btn-outline-secondary">
-                <i class="fa fa-plus"></i>
+{# Special block in order to let child redefine whole block #}
+{% block app_collection_entry_widget_row %}
+    <div{% with {'attr': collection_item_attr|merge({'class': (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="collection-item-wrapper">
+            <div class="collection-item-header"
+                 data-toggle="collapse"
+                 data-target="#collapse-{{ child.vars.id }}">
+                {% with child.vars %}{{ block('inline_form_label') }}{% endwith %}
+                {% if not disabled and allow_delete %}
+                    {% import 'form/macros.html.twig' as macros %}
+                    <button class="btn btn-sm rounded btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
+                        {{ macros.icon('times') }}
+                    </button>
+                {% endif %}
+            </div>
+            <div id="collapse-{{ child.vars.id }}" class="collection-item-body collapse show">
+                {% with child.vars %}
+                    {{- block('app_collection_entry_form_row') -}}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{%- block app_collection_row -%}
+    {%- set attr = attr|merge({'class': (attr.class|default('') ~ ' collection')|trim}) -%}
+    {{ form_row(form, {'attr': attr}) }}
+{%- endblock -%}
+
+{% block app_collection_widget %}
+    <div class="collection-wrapper">
+        {% if prototype is defined and not prototype.rendered %}
+            {% set child = prototype %}
+            {% set attr = attr|merge({
+                'data-prototype': block('app_collection_entry_widget_row'),
+                'data-prototype-name': prototype.vars.name,
+                'class': attr.class|default(''),
+            }) %}
+        {% endif %}
+        <div {{ block('widget_container_attributes') }}>
+            {%- if form is rootform -%}
+                {{ form_errors(form) }}
+            {%- endif -%}
+            {% for child in form|filter(child => not child.rendered) %}
+                {% with child.vars %}
+                    {{- block('app_collection_entry_widget_row') -}}
+                {% endwith %}
+            {% endfor %}
+            {{- form_rest(form) -}}
+        </div>
+        {% if not disabled and allow_add %}
+            {% import 'form/macros.html.twig' as macros %}
+            <button type="button" class="add-collection btn btn-icon btn-light mt-2">
+                <span>{{ macros.icon('plus') }}</span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>
-        </div>
-    {% endif %}
-{%- endblock %}
-
-{%- block app_collection_entry_main_text_row -%}
-    {{ form_row(form, {'row_attr': {'class': 'collection-group'}}) }}
-{%- endblock -%}
-
-{%- block app_collection_entry_main_text_widget -%}
-    {% if disabled %}
-        {{- block('form_widget') -}}
-    {% else %}
-        <div class="collection-item {{ group_class|default('mb-3') }}">
-            {{- block('form_widget') -}}
-            <button class="btn btn-outline-danger btn-sm remove-collection"
-                    type="button"
-                    data-group=".collection-group">
-                <i class="fa fa-times"></i>
-            </button>
-        </div>
-    {% endif %}
-{%- endblock -%}
-
+        {% endif %}
+    </div>
+{% endblock %}
 
 {%- block form_row -%}
     {%- if compound is defined and compound -%}
