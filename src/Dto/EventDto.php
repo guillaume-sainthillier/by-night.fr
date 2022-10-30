@@ -27,6 +27,7 @@ use App\Validator\Constraints\EventConstraint;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation\Uploadable;
 use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
@@ -49,19 +50,26 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     public ?DateTimeImmutable $updatedAt = null;
 
     // When used by users
+    #[Assert\Valid]
+    #[Assert\File(maxSize: '6M')]
+    #[Assert\Image]
     #[UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     public ?File $imageFile = null;
 
     public ?EmbeddedFile $image = null;
 
+    #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
     public ?DateTimeInterface $startDate = null;
 
     public ?DateTimeInterface $endDate = null;
 
     public ?string $fromData = null;
 
+    #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
+    #[Assert\Length(max: 255, maxMessage: 'Le nom de votre événement dépasse les 255 caractères autorisés !')]
     public ?string $name = null;
 
+    #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
     public ?string $description = null;
 
     // When used by parsers

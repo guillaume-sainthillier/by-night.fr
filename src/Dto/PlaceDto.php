@@ -21,6 +21,7 @@ use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Place;
 use App\Reject\Reject;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
@@ -28,6 +29,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
 
     public ?int $entityId = null;
 
+    #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
     public ?string $name = null;
 
     public ?CityDto $city = null;
