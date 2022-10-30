@@ -41,8 +41,6 @@ class SocialConverter implements ParamConverterInterface
         $entity = $this->socialProvider->getSocial($service, $options['default_facebook_name']);
         $request->attributes->set($configuration->getName(), $entity);
 
-        $configuration->setClass(null);
-
         return true;
     }
 
