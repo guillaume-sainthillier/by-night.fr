@@ -11,7 +11,6 @@ import registerServices from './services';
 
 //Global listeners
 import lazyload from './global-listeners/lazyload';
-import breadcrumb from './global-listeners/breadcrumb';
 import headerSearch from './global-listeners/header-search';
 import scrollToTop from './global-listeners/scroll-to-top';
 
