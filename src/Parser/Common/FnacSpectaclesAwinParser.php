@@ -71,7 +71,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
      */
     protected function arrayToDto(array $data): ?EventDto
     {
-        if ('0' === $data['is_for_sale'] || '' === trim($data['custom_2'])) {
+        if ('0' === $data['is_for_sale'] || '' === trim($data['custom_2'] ?? '')) {
             return null;
         }
 

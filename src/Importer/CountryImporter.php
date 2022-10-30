@@ -173,6 +173,10 @@ class CountryImporter
 
     private function formatAdminZoneCode(?string $code): ?string
     {
+        if (null === $code) {
+            return null;
+        }
+
         if ('0' === $code || '00' === $code) {
             return $code;
         }
@@ -245,9 +249,9 @@ class CountryImporter
                 ->setPostalCode($data[1])
                 ->setName($data[2])
                 ->setAdmin1Code($adminCode1)
-                ->setAdmin1Name(trim($data[3]) ?: null)
+                ->setAdmin1Name(null === $data[3] ? null : (trim($data[3]) ?: null))
                 ->setAdmin2Code($adminCode2)
-                ->setAdmin2Name(trim($data[5]) ?: null)
+                ->setAdmin2Name(null === $data[5] ? null : (trim($data[5]) ?: null))
                 ->setLatitude((float) $data[9])
                 ->setLongitude((float) $data[10])
                 ->setCountry($country);

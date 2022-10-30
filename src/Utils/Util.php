@@ -73,6 +73,10 @@ class Util
      */
     public function deleteSpaceBetween(?string $string, array|string $delimiters = '-'): string
     {
+        if (null === $string) {
+            return '';
+        }
+
         if (\is_string($delimiters) && isset($delimiters[0])) { // Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && [] !== $delimiters) {
@@ -84,6 +88,10 @@ class Util
 
     public function deleteStopWords(?string $string): string
     {
+        if (null === $string) {
+            return '';
+        }
+
         return trim(preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
@@ -116,6 +124,10 @@ class Util
 
     public function replaceAccents(?string $string): string
     {
+        if (null === $string) {
+            return '';
+        }
+
         $unwanted_array = [
             'Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
             'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',

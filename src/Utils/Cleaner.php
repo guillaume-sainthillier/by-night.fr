@@ -42,7 +42,7 @@ class Cleaner
 
     private function clean(?string $string): string
     {
-        return trim($string);
+        return trim($string ?? '');
     }
 
     public function cleanPlace(PlaceDto $dto): void
@@ -71,6 +71,10 @@ class Cleaner
      */
     private function cleanString(string|null $string, array|string $delimiters = []): string
     {
+        if (null === $string) {
+            return '';
+        }
+
         $step1 = $this->util->utf8TitleCase($string);
         $step2 = $this->util->deleteMultipleSpaces($step1);
         $step3 = $this->util->deleteSpaceBetween($step2, $delimiters);

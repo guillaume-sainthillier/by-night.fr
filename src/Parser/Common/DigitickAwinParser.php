@@ -73,7 +73,9 @@ class DigitickAwinParser extends AbstractAwinParser
         $event->source = $data['aw_deep_link'];
         $event->name = $data['event_name'];
         $event->type = 'Expo' === $data['merchant_category'] ? 'Exposition' : $data['merchant_category'];
-        $event->description = nl2br(trim($this->replaceBBCodes($data['description'])));
+        $event->description = null === $data['description']
+            ? null
+            : nl2br(trim($this->replaceBBCodes($data['description'])));
         $event->imageUrl = $data['merchant_image_url'];
         $event->prices = sprintf('%s€', $data['search_price']);
         $event->latitude = (float) $data['latitude'];
@@ -108,7 +110,7 @@ class DigitickAwinParser extends AbstractAwinParser
         return $event;
     }
 
-    private function replaceBBCodes($text): ?string
+    private function replaceBBCodes(string $text): string
     {
         // BBcode array
         $find = [

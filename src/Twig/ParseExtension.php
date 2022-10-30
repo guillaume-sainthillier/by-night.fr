@@ -45,9 +45,13 @@ class ParseExtension extends Extension
         return strip_tags($texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
     }
 
-    public function resume(?string $texte): string
+    public function resume(?string $text): string
     {
-        $replaced_text = str_replace('&#13;', '<br>', $texte);
+        if (null === $text) {
+            return '';
+        }
+
+        $replaced_text = str_replace('&#13;', '<br>', $text);
         $stripped_text = strip_tags($replaced_text);
         $shorted_text = mb_substr($stripped_text, 0, 250);
 

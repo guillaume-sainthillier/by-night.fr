@@ -172,6 +172,10 @@ class Comparator
 
     public function sanitizeRue(?string $string): string
     {
+        if (null === $string) {
+            return '';
+        }
+
         $step1 = $this->util->utf8LowerCase($string);
         $step2 = $this->util->replaceAccents($step1);
         $step3 = $this->util->deleteMultipleSpaces($step2);

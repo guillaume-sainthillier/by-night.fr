@@ -50,8 +50,6 @@ class EventSEO
             $datetime .= sprintf(' - %s', $event->getHours());
         }
 
-        $datetime = trim($datetime);
-
         return trim($datetime);
     }
 

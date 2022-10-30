@@ -129,7 +129,7 @@ class Firewall
 
     public function checkMinLengthValidity(?string $str, int $min): bool
     {
-        return isset(trim($str)[$min]);
+        return isset(trim($str ?? '')[$min]);
     }
 
     private function isSPAMContent(?string $content): bool
