@@ -27,11 +27,20 @@ import register from './listeners/register';
 import tooltip from './listeners/tooltip';
 
 class App {
-    constructor() {
-        this._di = null;
-        this._listeners = [headerSearch, imagePreviews, lazyload, scrollToTop];
+    #di;
 
-        this._pageListeners = [
+    #listeners;
+
+    #pageListeners;
+
+    #beforeRunListeners;
+
+    constructor() {
+        this.#di = null;
+        this.#beforeRunListeners = [];
+        this.#listeners = [headerSearch, imagePreviews, lazyload, scrollToTop];
+
+        this.#pageListeners = [
             emailVerify,
             formCollection,
             formErrors,
@@ -50,7 +59,7 @@ class App {
     }
 
     run(parameters) {
-        this._di = new Container(parameters);
+        this.#di = new Container(parameters);
 
         if (parameters.dsn) {
             Sentry.init({
@@ -65,19 +74,32 @@ class App {
             });
         }
 
-        registerServices(this._di);
+        registerServices(this.#di);
 
         // Execute the page load listeners
-        this._listeners.forEach((listener) => {
-            listener(this._di);
+        this.#listeners.forEach((listener) => {
+            listener(this.#di);
         });
 
         this.dispatchPageLoadedEvent();
     }
 
     dispatchPageLoadedEvent(container = document) {
-        this._pageListeners.forEach((listener) => {
-            listener(this._di, container);
+        if (!this.#di) {
+            // We store container when run is not called yet
+            this.#beforeRunListeners.push(container);
+            return;
+        }
+
+        if (this.#beforeRunListeners.length > 0) {
+            this.#beforeRunListeners = [];
+            this.#beforeRunListeners.forEach((beforeRunContainer) => {
+                this.dispatchPageLoadedEvent(beforeRunContainer);
+            });
+        }
+
+        this.#pageListeners.forEach((listener) => {
+            listener(this.#di, container);
         });
 
         if (typeof window.onPageLoaded === 'function') {
@@ -87,7 +109,7 @@ class App {
     }
 
     get(key) {
-        return this._di.get(key);
+        return this.#di.get(key);
     }
 
     loadingButtons(container) {

@@ -1,8 +1,14 @@
 export default class Container {
+    #values;
+
+    #keys;
+
+    #instances;
+
     constructor(values = {}) {
-        this._values = {};
-        this._keys = {};
-        this._instances = {};
+        this.#values = {};
+        this.#keys = {};
+        this.#instances = {};
 
         Object.keys(values).forEach((key) => {
             this.set(key, values[key]);
@@ -10,27 +16,27 @@ export default class Container {
     }
 
     set(key, callback) {
-        this._values[key] = callback;
-        this._keys[key] = true;
+        this.#values[key] = callback;
+        this.#keys[key] = true;
     }
 
     get(key) {
-        if (typeof this._keys[key] === 'undefined') {
+        if (typeof this.#keys[key] === 'undefined') {
             throw new ReferenceError(`Identifier ${key} is not defined.`);
         }
 
-        if (typeof this._values[key] !== 'function') {
-            return this._values[key];
+        if (typeof this.#values[key] !== 'function') {
+            return this.#values[key];
         }
 
-        if (typeof this._instances[key] === 'undefined') {
-            this._instances[key] = this._values[key]();
+        if (typeof this.#instances[key] === 'undefined') {
+            this.#instances[key] = this.#values[key]();
         }
 
-        return this._instances[key];
+        return this.#instances[key];
     }
 
     has(key) {
-        return typeof this._keys[key] !== 'undefined';
+        return typeof this.#keys[key] !== 'undefined';
     }
 }
