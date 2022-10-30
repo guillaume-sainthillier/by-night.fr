@@ -81,8 +81,6 @@ class ZipCityRepository extends ServiceEntityRepository
 
         return $query
             ->getQuery()
-            ->useQueryCache(true)
-            ->enableResultCache()
             ->getResult();
     }
 

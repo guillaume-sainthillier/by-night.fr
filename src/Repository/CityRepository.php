@@ -17,7 +17,6 @@ use App\Entity\Country;
 use App\Utils\CityManipulator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -128,10 +127,6 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         return $queryBuilder
             ->where(implode(' OR ', $wheres))
             ->getQuery()
-            ->setCacheable(true)
-            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->enableResultCache()
-            ->useQueryCache(true)
             ->getResult();
     }
 
@@ -207,10 +202,6 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
 
         return $qb
             ->getQuery()
-            ->setCacheable(true)
-            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->enableResultCache()
-            ->useQueryCache(true)
             ->getResult();
     }
 

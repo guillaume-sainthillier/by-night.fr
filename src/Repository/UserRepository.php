@@ -174,8 +174,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->where('u.id IN (:ids)')
             ->setParameter('ids', array_keys($idsWheres))
             ->getQuery()
-            ->enableResultCache()
-            ->useQueryCache(true)
             ->execute();
     }
 }
