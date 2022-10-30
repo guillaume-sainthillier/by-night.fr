@@ -45,7 +45,7 @@
         "friendsofsymfony/elastica-bundle": "^6",
         "friendsofsymfony/http-cache-bundle": "^2.11",
         "google/recaptcha": "^1.2",
-        "jms/serializer-bundle": "^4",
+        "jms/serializer-bundle": "^5",
         "knpuniversity/oauth2-client-bundle": "^2.1",
         "league/flysystem-aws-s3-v3": "^3",
         "league/flysystem-bundle": "^3",
