@@ -15,15 +15,15 @@ export default class Container {
     }
 
     get(key) {
-        if ('undefined' === typeof this._keys[key]) {
+        if (typeof this._keys[key] === 'undefined') {
             throw new ReferenceError(`Identifier ${key} is not defined.`);
         }
 
-        if ('function' !== typeof this._values[key]) {
+        if (typeof this._values[key] !== 'function') {
             return this._values[key];
         }
 
-        if ('undefined' === typeof this._instances[key]) {
+        if (typeof this._instances[key] === 'undefined') {
             this._instances[key] = this._values[key]();
         }
 
@@ -31,6 +31,6 @@ export default class Container {
     }
 
     has(key) {
-        return 'undefined' !== typeof this._keys[key];
+        return typeof this._keys[key] !== 'undefined';
     }
 }

@@ -9,12 +9,12 @@ import * as Sentry from '@sentry/browser';
 import Container from './services/Container';
 import registerServices from './services';
 
-//Global listeners
+// Global listeners
 import lazyload from './global-listeners/lazyload';
 import headerSearch from './global-listeners/header-search';
 import scrollToTop from './global-listeners/scroll-to-top';
 
-//Listeners
+// Listeners
 import emailVerify from './listeners/email-verify';
 import formCollection from './listeners/form-collection';
 import formErrors from './listeners/form-errors';

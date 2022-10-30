@@ -1,22 +1,22 @@
 export default (di, container) => {
     const handleLogin = function ($dialog) {
-        App.dispatchPageLoadedEvent($dialog[0]); //$dialog is a jQuery object so we pass the pure dom object
+        App.dispatchPageLoadedEvent($dialog[0]); // $dialog is a jQuery object so we pass the pure dom object
         $dialog
             .find('form')
             .off('submit')
             .submit(function () {
-                var href = $(this).attr('action');
-                var datas = $(this).serialize();
-                var submit_button = $('#_submit');
-                submit_button.button('loading');
+                const href = $(this).attr('action');
+                const datas = $(this).serialize();
+                const submitButton = $('#_submit');
+                submitButton.button('loading');
                 $.post(href, datas).done(function (data) {
-                    submit_button.button('reset');
+                    submitButton.button('reset');
 
                     if (!data.success) {
                         $dialog.modal('setLittleErreur', data.message);
                     } else {
                         $dialog.modal('hide');
-                        location.reload();
+                        window.location.reload();
                     }
                 });
                 return false;
@@ -28,7 +28,7 @@ export default (di, container) => {
         .click(function (e) {
             e.preventDefault();
 
-            var $dialog = $('#dialog_details');
+            const $dialog = $('#dialog_details');
             $dialog
                 .modal('show')
                 .modal('loading')

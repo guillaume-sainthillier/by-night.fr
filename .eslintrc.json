@@ -14,7 +14,8 @@
         "$": true,
         "confirm2": true,
         "toast": true,
-        "getSwal": true
+        "getSwal": true,
+        "confirm": true
     },
     "extends": ["eslint:recommended", "airbnb", "plugin:prettier/recommended"],
     "parserOptions": {
@@ -31,7 +32,10 @@
         "no-underscore-dangle": "off",
         "max-len": "off",
         "no-shadow": "off",
+        "no-alert": "off",
+        "no-continue": "off",
         "no-console": "off",
+        "class-methods-use-this": "off",
         "consistent-return": "off",
         "no-multi-assign": "off",
         "no-nested-ternary": "off",

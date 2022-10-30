@@ -5,7 +5,7 @@ export default class SocialLogin {
         const self = this;
         self.initOnOff();
 
-        //Actions par défaut
+        // Actions par défaut
         $('body')
             .on('wantConnect', function (event, ck) {
                 self.launchSocialConnect(ck);
@@ -18,13 +18,13 @@ export default class SocialLogin {
             })
             .on('hasConnected', function (event, ui) {
                 const ck = ui.target;
-                const user = ui.user;
+                const { user } = ui;
 
-                const bloc_config = $(ck).closest('.bloc_config');
+                const configBlock = $(ck).closest('.bloc_config');
 
                 $(ck).prop('checked', true);
-                bloc_config.find('.username').text(user.username);
-                bloc_config.find('.when_on').show('normal', function () {
+                configBlock.find('.username').text(user.username);
+                configBlock.find('.when_on').show('normal', function () {
                     $(this).removeClass('hidden');
                 });
             });
@@ -38,9 +38,9 @@ export default class SocialLogin {
                     const ck = $(this);
                     $(ck).prop('checked', !$(ck).prop('checked'));
                     if ($(ck).prop('checked')) {
-                        //Déconnexion
+                        // Déconnexion
                         $('body').trigger('wantDisconnect', ck);
-                    } //Connexion
+                    } // Connexion
                     else {
                         $('body').trigger('wantConnect', ck);
                     }
@@ -48,7 +48,7 @@ export default class SocialLogin {
         });
     }
 
-    //Deps: ['app/App']
+    // Deps: ['app/App']
     launchSocialConnect(ck) {
         popup($(ck).data('href-connect'), ck);
     }
@@ -74,10 +74,10 @@ export default class SocialLogin {
     }
 
     onDisconnectedSocial(ck) {
-        var bloc_config = $(ck).closest('.bloc_config');
+        const configBlock = $(ck).closest('.bloc_config');
 
         $(ck).prop('checked', false);
-        bloc_config.find('.when_on').hide('normal', function () {
+        configBlock.find('.when_on').hide('normal', function () {
             $(this).addClass('hidden');
         });
     }
@@ -91,11 +91,11 @@ export default class SocialLogin {
         $(ck)
             .off('click')
             .click(function () {
-                var div_alert = $(this).closest('.modal-body').find('.alert');
+                const alert = $(this).closest('.modal-body').find('.alert');
                 if ($(this).prop('checked')) {
-                    div_alert.removeClass('hidden');
+                    alert.removeClass('hidden');
                 } else {
-                    div_alert.addClass('hidden');
+                    alert.addClass('hidden');
                 }
             });
     }

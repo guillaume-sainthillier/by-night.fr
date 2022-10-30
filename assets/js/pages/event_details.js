@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     new CommentApp().init();
 
-    var gMap = $('#googleMap').attr('data-bs-toggled', '0');
+    const gMap = $('#googleMap').attr('data-bs-toggled', '0');
     $('#loadMap')
         .off('click')
         .click(function (e) {
@@ -26,9 +26,9 @@ $(document).ready(function () {
             }
 
             if (gMap.attr('data-bs-toggled') === '1') {
-                //Masquer
+                // Masquer
                 gMap.attr('data-bs-toggled', '0').hide('fast');
-            } //Afficher
+            } // Afficher
             else {
                 gMap.attr('data-bs-toggled', '1').show('fast');
             }

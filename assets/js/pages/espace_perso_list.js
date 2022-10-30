@@ -1,10 +1,12 @@
 $(document).ready(function () {
     $('.form-delete').submit(function () {
-        return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
+        return window.confirm(
+            "Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?"
+        );
     });
 
     $('.draft').change(function () {
-        var self = $(this);
+        const self = $(this);
 
         self.attr('disabled', true);
         $.post(self.data('href'), {
@@ -15,7 +17,7 @@ $(document).ready(function () {
     });
 
     $('.cancel').change(function () {
-        var self = $(this);
+        const self = $(this);
         self.attr('disabled', true);
         $.post(self.data('href'), {
             cancel: self.prop('checked'),

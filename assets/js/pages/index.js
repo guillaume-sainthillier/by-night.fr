@@ -6,10 +6,10 @@ $(document).ready(function () {
     initTypeAHead();
 
     $('.form-city-picker').each(function () {
-        var form = $(this);
-        var btn = form.find('.choose-city-action');
-        var field = form.find('.city-picker');
-        var cityValue = form.find('.city-value');
+        const form = $(this);
+        const btn = form.find('.choose-city-action');
+        const field = form.find('.city-picker');
+        const cityValue = form.find('.city-value');
 
         function updateBtn() {
             btn.attr('disabled', cityValue.val().length === 0);
@@ -22,7 +22,7 @@ $(document).ready(function () {
         });
 
         // Saisie de la ville
-        var cities = new Bloodhound({
+        const cities = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote: {

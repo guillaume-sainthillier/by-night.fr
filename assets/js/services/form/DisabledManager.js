@@ -7,18 +7,16 @@ export default class DisabledManager {
     }
 
     handle(disableDefinition, reverseDefinition) {
-        for (let elementId in disableDefinition) {
-            if (disableDefinition.hasOwnProperty(elementId)) {
-                const element = this.elementManager.getElement(elementId);
+        for (const [elementId, definition] of Object.entries(disableDefinition)) {
+            const element = this.elementManager.getElement(elementId);
 
-                const fnUpdateElement = () => {
-                    const elementValue = this.elementManager.getElementValue(element);
-                    this.toggle(elementValue, disableDefinition[elementId], reverseDefinition);
-                };
+            const fnUpdateElement = () => {
+                const elementValue = this.elementManager.getElementValue(element);
+                this.toggle(elementValue, definition, reverseDefinition);
+            };
 
-                fnUpdateElement();
-                on(element, 'change', fnUpdateElement);
-            }
+            fnUpdateElement();
+            on(element, 'change', fnUpdateElement);
         }
     }
 
@@ -26,16 +24,20 @@ export default class DisabledManager {
         toggleDefinition = constructArrayDefinition(toggleDefinition);
 
         // Disable fields first
-        for (let toggleValue in toggleDefinition) {
-            if (toggleDefinition.hasOwnProperty(toggleValue) && elementValue !== toggleValue) {
-                this._toggleFields(toggleDefinition[toggleValue], reverseDefinition);
+        for (const [toggleValue, fields] of Object.entries(toggleDefinition)) {
+            if (elementValue !== toggleValue) {
+                this._toggleFields(fields, reverseDefinition);
             }
         }
 
-        //Then enable
+        // Then enable
         if (toggleDefinition[elementValue]) {
             this._toggleFields(toggleDefinition[elementValue], !reverseDefinition);
         }
+    }
+
+    setDisabled(field, value) {
+        this._setState(field, 'disabled', value);
     }
 
     _toggleFields(fields, value) {
@@ -46,7 +48,7 @@ export default class DisabledManager {
 
     _setState(field, name, value) {
         const element = this.elementManager.getElement(field);
-        if (true === value) {
+        if (value === true) {
             element.setAttribute(name, name);
         } else {
             element.removeAttribute(name);

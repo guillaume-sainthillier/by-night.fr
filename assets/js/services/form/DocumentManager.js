@@ -28,7 +28,7 @@ export default class DocumentManager {
         if (newDocument) {
             on(newDocument, 'click', (e) => {
                 e.preventDefault();
-                let url = updateQueryStringParameter(
+                const url = updateQueryStringParameter(
                     newDocument.getAttribute('href'),
                     'currentCategory',
                     currentCategory
@@ -95,7 +95,7 @@ export default class DocumentManager {
 
             findAll('a.nav-link', documentsContainer).forEach((item) => {
                 const selectItem = (item) => {
-                    removeClass(find('a.nav-link.active', documentsContainer), 'active');
+                    removeClass(findOne('a.nav-link.active', documentsContainer), 'active');
                     addClass(item, 'active');
                     currentCategory = data(item, 'category');
                     filterDocuments(currentCategory);

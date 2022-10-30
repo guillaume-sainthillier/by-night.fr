@@ -1,5 +1,3 @@
-import ElementManager from '../services/form/ElementManager';
-
 export const isTouchDevice = () => {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 };
@@ -7,24 +5,11 @@ export const isTouchDevice = () => {
 export const popup = (href, parent) => {
     window.parent_elem = parent;
 
-    var width = 520,
-        height = 350,
-        leftPosition = window.screen.width / 2 - (width / 2 + 10),
-        topPosition = window.screen.height / 2 - (height / 2 + 50),
-        windowFeatures =
-            'status=no,height=' +
-            height +
-            ',width=' +
-            width +
-            ',left=' +
-            leftPosition +
-            ',top=' +
-            topPosition +
-            ',screenX=' +
-            leftPosition +
-            ',screenY=' +
-            topPosition +
-            ',toolbar=0,status=0';
+    const width = 520;
+    const height = 350;
+    const leftPosition = window.screen.width / 2 - (width / 2 + 10);
+    const topPosition = window.screen.height / 2 - (height / 2 + 50);
+    const windowFeatures = `status=no,height=${height},width=${width},left=${leftPosition},top=${topPosition},screenX=${leftPosition},screenY=${topPosition},toolbar=0,status=0`;
 
     window.open(href, 'sharer', windowFeatures);
 };
@@ -36,54 +21,50 @@ export const removeSelectOptions = (select, removeEmptyOption = false) => {
 };
 
 export const updateQueryStringParameter = (uri, key, value) => {
-    var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
-    var separator = uri.indexOf('?') !== -1 ? '&' : '?';
+    const re = new RegExp(`([?&])${key}=.*?(&|$)`, 'i');
+    const separator = uri.indexOf('?') !== -1 ? '&' : '?';
 
     if (uri.match(re)) {
-        return uri.replace(re, '$1' + key + '=' + value + '$2');
-    } else {
-        return uri + separator + key + '=' + value;
+        return uri.replace(re, `$1${key}=${value}$2`);
     }
+    return `${uri + separator + key}=${value}`;
 };
 
 export const constructArrayDefinition = (definitions) => {
-    let theDefinitions = {};
+    const theDefinitions = {};
 
-    for (let definitionName in definitions) {
-        if (definitions.hasOwnProperty(definitionName)) {
-            definitionName.split(',').forEach((splitedDefinitionName) => {
-                theDefinitions[splitedDefinitionName] = (theDefinitions[splitedDefinitionName] || []).concat(
-                    definitions[definitionName]
-                );
-            });
-        }
+    for (const definitionName of definitions) {
+        definitionName.split(',').forEach((splitedDefinitionName) => {
+            theDefinitions[splitedDefinitionName] = (theDefinitions[splitedDefinitionName] || []).concat(
+                definitions[definitionName]
+            );
+        });
     }
 
     return theDefinitions;
 };
 
 export const constructObjectDefinition = (definitions) => {
-    let theDefinitions = {};
+    const theDefinitions = {};
 
-    for (let definitionName in definitions) {
-        if (definitions.hasOwnProperty(definitionName)) {
-            definitionName.split(',').forEach((splitedDefinitionName) => {
-                theDefinitions[splitedDefinitionName] = Object.assign(
-                    theDefinitions[splitedDefinitionName] || {},
-                    definitions[definitionName]
-                );
-            });
-        }
+    for (const [definitionName, definitionValue] of Object.entries(definitions)) {
+        definitionName.split(',').forEach((splitedDefinitionName) => {
+            const splitedTrimmedDefinitionName = splitedDefinitionName.trim();
+            theDefinitions[splitedTrimmedDefinitionName] = Object.assign(
+                theDefinitions[splitedTrimmedDefinitionName] || {},
+                definitionValue
+            );
+        });
     }
 
     return theDefinitions;
 };
 
 export const getVirtualForm = (container) => {
-    let virtualForm = {};
+    const virtualForm = {};
     findAll('.form-control, .custom-file-input, .custom-control-input', container).forEach((field) => {
         if (field.hasAttribute('name') && field.id) {
-            let name = field
+            const name = field
                 .getAttribute('name')
                 .split(/\]|\[/g)
                 .filter((el) => el !== '')
@@ -112,24 +93,22 @@ export const getVirtualForm = (container) => {
 };
 
 export const getFormValues = (form) => {
-    const elementManager = new ElementManager();
-    let formValues = {};
-    for (let elementName in form) {
-        if (!form.hasOwnProperty(elementName) || elementName.startsWith('_')) {
+    const formValues = {};
+    for (const [elementName, elementId] of Object.entries(form)) {
+        if (elementName.startsWith('_')) {
             continue;
         }
 
-        const elementId = form[elementName];
         if (Array.isArray(elementId)) {
             formValues[elementName] = [];
-            elementId.forEach((collectionElement) => {
-                formValues[elementName].push(getFormValues(collectionElement));
+            elementId.forEach((collectionItem, i) => {
+                formValues[elementName][i] = getFormValues(collectionItem);
             });
         } else if (typeof elementId === 'object') {
             formValues[elementName] = getFormValues(elementId);
         } else {
             const element = dom(`#${elementId}`);
-            formValues[elementName] = elementManager.getElementValue(element);
+            formValues[elementName] = getElementValue(element);
         }
     }
 
@@ -139,7 +118,8 @@ export const getFormValues = (form) => {
 export const getElementValue = (element) => {
     if (element.type === 'checkbox') {
         return element.checked;
-    } else if (element.tagName === 'SELECT') {
+    }
+    if (element.tagName === 'SELECT') {
         if (element.selectedIndex === -1) {
             return null;
         }
@@ -161,10 +141,11 @@ export const setElementValue = (element, value) => {
     }
 };
 
+/* eslint no-bitwise: "off" */
 export const uuid = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = (Math.random() * 16) | 0,
-            v = c === 'x' ? r : (r & 0x3) | 0x8;
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 };

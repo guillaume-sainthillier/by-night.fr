@@ -1,19 +1,19 @@
-//JS
+// JS
 import 'moment/locale/fr';
 import 'daterangepicker';
-import { isTouchDevice } from '../utils/utils';
 import moment from 'moment';
+import { isTouchDevice } from '../utils/utils';
 
-//CSS
+// CSS
 import '../../scss/lazy-components/_datepicker.scss';
 
 export default function init(container = document) {
     $('input.shorcuts_date', container).each(function () {
         $(this).removeAttr('name');
-        var input = this;
-        var fromInput = $('#' + $(this).data('from'));
-        var toInput = $('#' + $(this).data('to'));
-        var ranges = {};
+        const input = this;
+        const fromInput = $(`#${$(this).data('from')}`);
+        const toInput = $(`#${$(this).data('to')}`);
+        const ranges = {};
         $.each($(input).data('ranges'), function (label, values) {
             ranges[label] = [moment(values[0]), values[1] === null ? null : moment(values[1])];
         });
@@ -27,7 +27,7 @@ export default function init(container = document) {
                 startDate: fromInput.val() ? moment(fromInput.val()) : moment(),
                 endDate: toInput.val() ? moment(toInput.val()) : null,
                 autoUpdateInput: false,
-                ranges: ranges,
+                ranges,
                 alwaysShowCalendars: Object.keys(ranges).length === 0,
                 locale: {
                     applyLabel: 'OK',
@@ -41,17 +41,15 @@ export default function init(container = document) {
         );
 
         function callback(start, end, label) {
-            var datas = $(input).data('daterangepicker');
+            const datas = $(input).data('daterangepicker');
             if (typeof datas.ranges[label] !== 'undefined') {
                 $(input).val(label);
+            } else if (!end.isValid()) {
+                $(input).val(`À partir du ${start.format('ll')}`);
+            } else if (start.format('YYYY-MM-DD') === end.format('YYYY-MM-DD')) {
+                $(input).val(`Le ${start.format('ll')}`);
             } else {
-                if (!end.isValid()) {
-                    $(input).val('À partir du ' + start.format('ll'));
-                } else if (start.format('YYYY-MM-DD') === end.format('YYYY-MM-DD')) {
-                    $(input).val('Le ' + start.format('ll'));
-                } else {
-                    $(input).val('Du ' + start.format('ll') + ' au ' + end.format('ll'));
-                }
+                $(input).val(`Du ${start.format('ll')} au ${end.format('ll')}`);
             }
 
             fromInput.val(start.isValid() ? start.format('YYYY-MM-DD') : '');

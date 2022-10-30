@@ -8,7 +8,7 @@ Modal.prototype.loading = function () {
 
 Modal.prototype.hideButtons = function (selecteur) {
     const element = $(this._element);
-    element.find('.modal-footer :not(' + (selecteur || '.btn_retour') + ')').addClass('hidden');
+    element.find(`.modal-footer :not(${selecteur || '.btn_retour'})`).addClass('hidden');
 };
 Modal.prototype.setTitle = function (titre) {
     const element = $(this._element);
@@ -33,25 +33,27 @@ Modal.prototype.setLittleErreur = function (msg) {
 
     element.find('.alert_little').remove();
 
-    const flash_msg = $('<div class="alert alert-danger"><i class="fa fa-warning"></i> </div>').append(msg).hide();
-    element.find('.modal-body').prepend(flash_msg);
-    flash_msg.slideDown('normal');
+    const flashMessage = $('<div class="alert alert-danger"><i class="fa fa-warning"></i> </div>').append(msg).hide();
+    element.find('.modal-body').prepend(flashMessage);
+    flashMessage.slideDown('normal');
 };
 
 $.ajaxSetup({
-    error: (error, textStatus, errorThrown) => {
+    error: (error, textStatus) => {
         if (textStatus === 404 || textStatus === 500) {
+            let message = error.statusText;
             try {
-                var message = error.statusText;
-                var erreurs = JSON.parse(error.responseText);
+                const erreurs = JSON.parse(error.responseText);
 
                 message = '';
                 $.each(erreurs, function (k, erreur) {
-                    message = erreur.message + '<br />';
+                    message = `${erreur.message}<br />`;
                 });
-            } catch (e) {}
+            } catch (e) {
+                /* eslint no-empty: "off" */
+            }
 
-            var dialog = $('#dialog_details');
+            const dialog = $('#dialog_details');
             dialog.modal('setErreur', message).modal('show');
         }
     },

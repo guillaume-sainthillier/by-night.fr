@@ -10,20 +10,20 @@ $(document).ready(function () {
     initDates();
     initImagePreview();
     initSelects();
-    init_custom_tab();
-    init_criteres();
-    load_infinite_scroll();
-    init_pagination();
+    initCustomTab();
+    initCriterions();
+    loadInfiniteScroll();
+    initPagination();
 
-    var countLoads = 0;
-    var isLoading = false;
-    var widgets = new Widgets();
+    let countLoads = 0;
+    let isLoading = false;
+    const widgets = new Widgets();
     widgets.init();
 
-    function load_infinite_scroll() {
-        var marginScroll = 250;
-        var countStep = 2;
-        var paginate = $('#paginate');
+    function loadInfiniteScroll() {
+        const marginScroll = 250;
+        const countStep = 2;
+        const paginate = $('#paginate');
 
         $(window).scroll(
             debounce(
@@ -46,10 +46,10 @@ $(document).ready(function () {
         );
     }
 
-    function init_custom_tab() {
-        var tabs = $('#custom-tab');
+    function initCustomTab() {
+        const tabs = $('#custom-tab');
         tabs.find('a.nav-link').click(function () {
-            var oldActive = $(this).closest('.nav').find('a.nav-link.active');
+            const oldActive = $(this).closest('.nav').find('a.nav-link.active');
             if (oldActive[0] !== this) {
                 desactivate(oldActive);
                 activate(this);
@@ -59,23 +59,23 @@ $(document).ready(function () {
         });
 
         function activate(tab) {
-            var target = $(tab).attr('href');
+            const target = $(tab).attr('href');
             $(target).addClass('active');
             $(tab).addClass('active');
             $('html, body').animate({ scrollTop: 0 }, 'fast');
         }
 
         function desactivate(tab) {
-            var target = $(tab).attr('href');
+            const target = $(tab).attr('href');
             $(target).removeClass('active');
             $(tab).removeClass('active');
         }
 
-        var lastScrollTop = 0;
-        var toTop = $('#toTop');
-        var bottomNavigation = $('#bottom-navigation');
+        let lastScrollTop = 0;
+        const toTop = $('#toTop');
+        const bottomNavigation = $('#bottom-navigation');
         $(window).scroll(function () {
-            var st = $(this).scrollTop();
+            const st = $(this).scrollTop();
             if (st > lastScrollTop) {
                 toTop.removeClass('hidden');
                 bottomNavigation.removeClass('visible');
@@ -87,7 +87,7 @@ $(document).ready(function () {
         });
     }
 
-    function init_pagination() {
+    function initPagination() {
         $('#paginate').click(function (e) {
             e.preventDefault();
 
@@ -97,15 +97,15 @@ $(document).ready(function () {
                 .attr('disabled', true)
                 .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
 
-            var btn = $(this);
-            var container = btn.parent().prev();
+            const btn = $(this);
+            const container = btn.parent().prev();
             $.get($(btn).attr('href'), function (html) {
                 isLoading = true;
-                var currentContainer = $('<div>').html(html);
+                const currentContainer = $('<div>').html(html);
                 btn.parent().remove();
                 currentContainer.insertAfter(container);
                 App.dispatchPageLoadedEvent(currentContainer[0]);
-                init_pagination(currentContainer);
+                initPagination(currentContainer);
             });
         });
     }
@@ -113,8 +113,8 @@ $(document).ready(function () {
     /**
      *
      */
-    function init_criteres() {
-        var options = {
+    function initCriterions() {
+        const options = {
             css_hidden: 'cache',
             css_initial_hidden: 'hidden',
             css_icon_class_open: 'fa-chevron-down',
@@ -126,8 +126,8 @@ $(document).ready(function () {
             duration: 0,
         };
 
-        //Bon bloc indigeste :)
-        var block = $(options.selector_btn_criteres)
+        // Bon bloc indigeste :)
+        const block = $(options.selector_btn_criteres)
             .click(function () {
                 if (block.hasClass(options.css_hidden)) {
                     $(this)
@@ -150,7 +150,7 @@ $(document).ready(function () {
             .closest(options.selector_main_block)
             .find(options.selector_block_criteres);
 
-        //Pas de besoins d'ouvrir la recherche avancée
+        // Pas de besoins d'ouvrir la recherche avancée
         if (block.hasClass(options.css_hidden)) {
             block.hide().removeClass(options.css_initial_hidden);
         }

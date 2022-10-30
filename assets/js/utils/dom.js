@@ -1,11 +1,11 @@
 NodeList.prototype.forEach = Array.prototype.forEach;
 
-window.dom = (selector) => find(selector, document);
-window.find = (selector, element) => (element || document).querySelector(selector);
+window.dom = (selector) => findOne(selector, document);
+window.findOne = (selector, element) => (element || document).querySelector(selector);
 window.findAll = (selector, element) => (element || document).querySelectorAll(selector);
 
 window.data = (element, name, value) => {
-    //Getter
+    // Getter
     if (typeof value === 'undefined') {
         return element.dataset[name];
     }
@@ -74,7 +74,7 @@ window.prependHTML = (element, html) => {
 };
 
 window.parents = function (elem, selector) {
-    let parents = [];
+    const parents = [];
     for (; elem && elem !== document; elem = elem.parentNode) {
         if (selector) {
             if (elem.matches(selector)) {

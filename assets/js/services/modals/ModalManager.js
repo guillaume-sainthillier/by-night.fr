@@ -16,34 +16,30 @@ export default class ModalManager {
     }
 
     createError(params) {
-        params = Object.assign(
-            {
-                icon: 'error',
-                showCloseButton: true,
-                showCancelButton: false,
-                focusCancel: false,
-                focusConfirm: true,
-                heightAuto: false,
-            },
-            params
-        );
+        params = {
+            icon: 'error',
+            showCloseButton: true,
+            showCancelButton: false,
+            focusCancel: false,
+            focusConfirm: true,
+            heightAuto: false,
+            ...params,
+        };
 
         return Swal.fire(params);
     }
 
     createConfirm(params) {
-        params = Object.assign(
-            {
-                icon: 'warning',
-                showCloseButton: true,
-                showCancelButton: true,
-                focusCancel: true,
-                focusConfirm: false,
-                heightAuto: false,
-                cancelButtonText: 'Annuler',
-            },
-            params
-        );
+        params = {
+            icon: 'warning',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusCancel: true,
+            focusConfirm: false,
+            heightAuto: false,
+            cancelButtonText: 'Annuler',
+            ...params,
+        };
 
         return Swal.fire(params).then((result) => {
             return result && result.value;

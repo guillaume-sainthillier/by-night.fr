@@ -1,6 +1,6 @@
 import bsCustomFileInput from 'bs-custom-file-input';
 
-export default (di) => {
+export default () => {
     bsCustomFileInput.destroy();
     bsCustomFileInput.init();
 };

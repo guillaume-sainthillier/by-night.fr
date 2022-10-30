@@ -5,8 +5,8 @@ import 'summernote/dist/lang/summernote-fr-FR';
 import '../../scss/lazy-components/_wysiwyg.scss';
 
 export default function init(container = document) {
-    //SummerNote
-    $('textarea.wysiwyg', document).summernote({
+    // SummerNote
+    $('textarea.wysiwyg', container).summernote({
         lang: 'fr-FR',
         toolbar: [
             ['heading', ['style']],

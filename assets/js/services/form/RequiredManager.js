@@ -7,18 +7,16 @@ export default class RequiredManager {
     }
 
     handle(requireDefinition, reverseDefinition) {
-        for (let elementId in requireDefinition) {
-            if (requireDefinition.hasOwnProperty(elementId)) {
-                const element = this.elementManager.getElement(elementId);
+        for (const [elementId, definition] of Object.entries(requireDefinition)) {
+            const element = this.elementManager.getElement(elementId);
 
-                const fnUpdateElement = () => {
-                    const elementValue = this.elementManager.getElementValue(element);
-                    this.toggle(elementValue, requireDefinition[elementId], reverseDefinition);
-                };
+            const fnUpdateElement = () => {
+                const elementValue = this.elementManager.getElementValue(element);
+                this.toggle(elementValue, definition, reverseDefinition);
+            };
 
-                fnUpdateElement();
-                on(element, 'change', fnUpdateElement);
-            }
+            fnUpdateElement();
+            on(element, 'change', fnUpdateElement);
         }
     }
 
@@ -26,13 +24,13 @@ export default class RequiredManager {
         toggleDefinition = constructArrayDefinition(toggleDefinition);
 
         // Disable fields first
-        for (let toggleValue in toggleDefinition) {
-            if (toggleDefinition.hasOwnProperty(toggleValue) && elementValue !== toggleValue) {
-                this._toggleFields(toggleDefinition[toggleValue], reverseDefinition);
+        for (const [toggleValue, fields] of Object.entries(toggleDefinition)) {
+            if (elementValue !== toggleValue) {
+                this._toggleFields(fields, reverseDefinition);
             }
         }
 
-        //Then enable
+        // Then enable
         if (toggleDefinition[elementValue]) {
             this._toggleFields(toggleDefinition[elementValue], !reverseDefinition);
         }
@@ -40,20 +38,20 @@ export default class RequiredManager {
 
     _toggleFields(fields, required) {
         fields.forEach((field) => {
-            this._setRequired(field, required);
+            this.setRequired(field, required);
         });
     }
 
-    _setRequired(field, required) {
+    setRequired(field, required) {
         const element = this.elementManager.getElement(field);
         const label = this.elementManager.getElementLabel(element);
 
-        if (true === required) {
+        if (required === true) {
             element.setAttribute('required', 'required');
-            label && addClass(label, 'required');
+            if (label) addClass(label, 'required');
         } else {
             element.removeAttribute('required');
-            label && removeClass(label, 'required');
+            if (label) removeClass(label, 'required');
         }
     }
 }

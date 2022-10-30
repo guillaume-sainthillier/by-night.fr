@@ -1,11 +1,11 @@
 export default (di, container) => {
-    var options = {
+    const options = {
         css_selecteur_like: '.btn-like-event',
         css_active_class: 'btn-primary',
     };
 
     $(options.css_selecteur_like, container).click(function () {
-        var btn = $(this);
+        const btn = $(this);
 
         if (btn.hasClass('connexion')) {
             return false;

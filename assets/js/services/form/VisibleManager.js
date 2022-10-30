@@ -7,17 +7,16 @@ export default class VisibleManager {
     }
 
     handle(toggleDefinition, reverseDefinition) {
-        for (let elementId in toggleDefinition) {
-            if (toggleDefinition.hasOwnProperty(elementId)) {
-                const element = this.elementManager.getElement(elementId);
-                const fnUpdateElement = () => {
-                    const elementValue = this.elementManager.getElementValue(element);
-                    this.toggle(elementValue, toggleDefinition[elementId], reverseDefinition);
-                };
+        for (const [elementId, definition] of Object.entries(toggleDefinition)) {
+            const element = this.elementManager.getElement(elementId);
 
-                fnUpdateElement();
-                on(element, 'change', fnUpdateElement);
-            }
+            const fnUpdateElement = () => {
+                const elementValue = this.elementManager.getElementValue(element);
+                this.toggle(elementValue, definition, reverseDefinition);
+            };
+
+            fnUpdateElement();
+            on(element, 'change', fnUpdateElement);
         }
     }
 
@@ -25,13 +24,13 @@ export default class VisibleManager {
         toggleDefinition = constructArrayDefinition(toggleDefinition);
 
         // Hide fields first
-        for (let toggleValue in toggleDefinition) {
-            if (toggleDefinition.hasOwnProperty(toggleValue) && toggleValue !== elementValue) {
-                this._toggleFields(toggleDefinition[toggleValue], reverseDefinition);
+        for (const [toggleValue, fields] of Object.entries(toggleDefinition)) {
+            if (toggleValue !== elementValue) {
+                this._toggleFields(fields, reverseDefinition);
             }
         }
 
-        //Then show
+        // Then show
         if (toggleDefinition[elementValue]) {
             this._toggleFields(toggleDefinition[elementValue], !reverseDefinition);
         }

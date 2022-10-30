@@ -36,15 +36,15 @@ $(document).ready(function () {
     }
 
     function initLieux() {
-        var morris_data = [];
+        const data = [];
 
         $.each(window.datas, function (i, datum) {
-            morris_data.push({ label: datum.name || '', value: datum.eventsCount });
+            data.push({ label: datum.name || '', value: datum.eventsCount });
         });
 
         Morris.Donut({
             element: 'hero-donut',
-            data: morris_data,
+            data,
             colors: ['#36A9E1', '#bdea74', '#67c2ef', '#fabb3d', '#ff5454'],
             formatter(y) {
                 return y;
@@ -53,25 +53,19 @@ $(document).ready(function () {
         });
     }
 
-    function prepare(dataArray) {
-        return dataArray.map(function (item, index) {
-            return { y: item, myIndex: index };
-        });
-    }
-
     function prepareActivite(datas) {
         return datas.data.map(function (events, index) {
-            return { period: datas.categories[index], events: events, full_period: datas.full_categories[index] };
+            return { period: datas.categories[index], events, full_period: datas.full_categories[index] };
         });
     }
 
     function chartActivite(type, colors) {
-        var element = 'chart-' + type;
-        var chart = $('#' + element);
+        const element = `chart-${type}`;
+        const chart = $(`#${element}`);
         $.get(chart.data('url')).done(function (datas) {
             chart.children().remove();
             Morris.Area({
-                element: element,
+                element,
                 lineColors: colors,
                 data: prepareActivite(datas),
                 xkey: 'period',
@@ -81,8 +75,8 @@ $(document).ready(function () {
                 hideHover: 'auto',
                 parseTime: false,
                 resize: true,
-                hoverCallback: function (index, options, content, row) {
-                    var customContent = $('<div>' + content + '</div>');
+                hoverCallback(index, options, content, row) {
+                    const customContent = $(`<div>${content}</div>`);
                     $(customContent).find('.morris-hover-row-label').html(row.full_period);
                     return $(customContent).html();
                 },

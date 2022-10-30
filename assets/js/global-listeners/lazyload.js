@@ -9,5 +9,5 @@ document.addEventListener('lazyloaded', (e) => {
     image.closest('.image-wrapper').classList.add('main-image-loaded');
 });
 
-//no-op as we want to load lazysizes quickly
+// no-op as we want to load lazysizes quickly
 export default function lazyload() {}

@@ -12,29 +12,28 @@ export default class ElementManager {
             field = { element: field };
         }
 
-        field = Object.assign(
-            {
-                id: '',
-                element: null,
-                type: 'formGroup',
-            },
-            field
-        );
+        field = {
+            id: '',
+            element: null,
+            type: 'formGroup',
+            ...field,
+        };
 
         const element = this.getElement(field);
 
         if (field.type === 'formGroup') {
             const container = closest(element, '.form-group');
             if (!container) {
-                throw `Unable to find form-group parent for element with ID "${field.id}"`;
+                throw new Error(`Unable to find form-group parent for element with ID "${field.id}"`);
             }
 
             return container;
-        } else if (field.type === 'block') {
+        }
+        if (field.type === 'block') {
             return element;
         }
 
-        throw `Unable to find element with ID "${field.id}" and type "${field.type}"!`;
+        throw new Error(`Unable to find element with ID "${field.id}" and type "${field.type}"!`);
     }
 
     getElement(field) {
@@ -44,27 +43,27 @@ export default class ElementManager {
             field = { element: field };
         }
 
-        field = Object.assign(
-            {
-                id: '',
-                element: null,
-                type: 'element',
-            },
-            field
-        );
+        field = {
+            id: '',
+            element: null,
+            type: 'element',
+            ...field,
+        };
 
-        if (null !== field.element) {
+        if (field.element !== null) {
             this.lastElement = field.element;
             return field.element;
         }
 
-        if (null === field.id || undefined === field.id || '' === field.id) {
-            throw 'No given id for a field!' + (this.lastElement ? ` Last element ID : ${this.lastElement.id}` : '');
+        if (field.id === null || undefined === field.id || field.id === '') {
+            throw new Error(
+                `No given id for a field!${this.lastElement ? ` Last element ID : ${this.lastElement.id}` : ''}`
+            );
         }
 
         const element = dom(`#${field.id}`);
         if (!element) {
-            throw `Unable to find element with ID "${field.id}"!`;
+            throw new Error(`Unable to find element with ID "${field.id}"!`);
         }
 
         this.lastElement = element;
@@ -78,7 +77,7 @@ export default class ElementManager {
 
         const container = closest(element, '.form-group');
         if (container) {
-            return find('label', container);
+            return findOne('label,legend', container);
         }
 
         return null;

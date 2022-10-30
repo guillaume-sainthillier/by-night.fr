@@ -10,52 +10,45 @@ export default class CollectionManager {
 
     handle(collection, _collection, itemHandler) {
         // Existing items
-        for (let index in typeof collection === 'object' ? collection : []) {
-            if (collection.hasOwnProperty(index) && !index.startsWith('_')) {
-                const form = collection[index];
+        for (const [index, form] of typeof collection === 'object' ? Object.entries(collection) : []) {
+            if (!index.startsWith('_')) {
                 itemHandler(form);
             }
         }
 
-        //New item
-        const collectionElement = dom(`#${_collection || collection}`);
-        on(collectionElement, 'collection.add', (e) => {
-            const item = e.detail.item;
-            let virtualForm = getVirtualForm(item);
-            itemHandler(virtualForm);
+        // New item
+        const collectionDOM = dom(`#${_collection || collection}`);
+        on(collectionDOM, 'collection.add', (e) => {
+            const collectionItem = e.detail.item;
+            itemHandler(getVirtualForm(collectionItem));
         });
     }
 
-    addElement(collection, elementValues = {}, countCallBack = null) {
+    addElement(collection, elementValues = {}, countCallBack = null, dispatchEvent = true) {
         const counter = countCallBack ? countCallBack(collection) : collection.children.length;
 
-        var prototype = data(collection, 'prototype');
-        var prototypeName = data(collection, 'prototypeName') || '__name__';
-        prototype = prototype.replace(new RegExp(prototypeName, 'g'), counter);
+        let prototypeItemHTML = data(collection, 'prototype');
+        const prototypeItemName = data(collection, 'prototypeName') || '__name__';
+        prototypeItemHTML = prototypeItemHTML.replace(new RegExp(prototypeItemName, 'g'), counter);
 
-        appendHTML(collection, prototype);
-        const newCollectionElement = collection.lastElementChild;
+        appendHTML(collection, prototypeItemHTML);
+        const collectionItem = collection.lastElementChild;
         if (elementValues) {
-            this._populate(newCollectionElement, elementValues);
+            this._populate(collectionItem, elementValues);
         }
-        trigger(collection, 'collection.add', { item: newCollectionElement });
-        App.dispatchPageLoadedEvent(newCollectionElement);
-        trigger(collection, 'collection.added', { item: newCollectionElement });
 
-        const btnRemove = find('.remove-collection', newCollectionElement);
-        if (btnRemove) {
-            on(btnRemove, 'click', (e) => {
-                e.preventDefault();
-                this.removeElement(btnRemove);
-            });
+        if (dispatchEvent === true) {
+            trigger(collection, 'collection.add', { item: collectionItem });
+            App.dispatchPageLoadedEvent(collectionItem);
+            trigger(collection, 'collection.added', { item: collectionItem });
         }
     }
 
     _populate(elementDOM, elementValues) {
         const virtualForm = getVirtualForm(elementDOM);
-        for (let formElementName in virtualForm) {
-            //Skip _element (= collection or nested form element)
-            if (!virtualForm.hasOwnProperty(formElementName) || formElementName.startsWith('_')) {
+        for (const [formElementName, formElement] of Object.entries(virtualForm)) {
+            // Skip _element (= collection or nested form element)
+            if (formElementName.startsWith('_')) {
                 continue;
             }
 
@@ -66,13 +59,18 @@ export default class CollectionManager {
 
             const value = elementValues[formElementName];
 
-            //Collection elements
+            // Collection elements
             if (Array.isArray(elementValues[formElementName])) {
                 if (typeof virtualForm[`_${formElementName}`] !== 'undefined') {
                     const parent = dom(`#${virtualForm[`_${formElementName}`]}`);
                     elementValues[formElementName].forEach((childElementValues) => {
-                        this.addElement(parent, childElementValues);
+                        // Don't dispatch events for nested collection items as main item will be dispatched
+                        this.addElement(parent, childElementValues, null, false);
                     });
+                } else if (Array.isArray(value)) {
+                    // Select multiple
+                    const element = dom(`#${formElement}`);
+                    setElementValue(element, value);
                 } else {
                     console.warn(`Element _${formElementName} not found in `, virtualForm);
                 }
@@ -80,23 +78,27 @@ export default class CollectionManager {
             }
 
             // Nested element
-            if (typeof virtualForm[formElementName] === 'object') {
+            if (typeof formElement === 'object') {
                 if (typeof virtualForm[`_${formElementName}`] !== 'undefined') {
                     const element = dom(`#${virtualForm[`_${formElementName}`]}`);
                     this._populate(element, value);
                 } else {
-                    console.warn(`Element _${formElementName} not found in `, virtualForm);
+                    // Embedded
+                    for (const [formChildElementName, formChildElement] of Object.entries(formElement)) {
+                        const element = dom(`#${formChildElement}`);
+                        this._populate(element.parentNode, { [formChildElementName]: value[formChildElementName] });
+                    }
                 }
                 continue;
             }
 
-            const element = dom(`#${virtualForm[formElementName]}`);
+            const element = dom(`#${formElement}`);
             setElementValue(element, value && typeof value.id !== 'undefined' ? value.id : value);
         }
     }
 
     removeElement(btn, withConfirmation = true) {
-        if (false === withConfirmation || !data(btn, 'confirmMessage')) {
+        if (withConfirmation === false) {
             this._doRemove(btn);
             return;
         }
@@ -121,10 +123,10 @@ export default class CollectionManager {
     }
 
     _doRemove(btn) {
-        const collection = closest(btn, '.form-collection');
-        const group = closest(btn, data(btn, 'group') || '.form-group');
+        const collection = closest(btn, '.collection');
+        const collectionItem = closest(btn, data(btn, 'item') || '.form-group');
 
-        remove(group);
+        remove(collectionItem);
         trigger(collection, 'collection.deleted');
     }
 }
