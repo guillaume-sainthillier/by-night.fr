@@ -73,8 +73,6 @@ class PlaceComparator extends AbstractComparator
         $dtoPlaceName = $dto->name;
         if (null !== $dto->city) {
             $dtoPlaceName = str_ireplace($dto->city->name, '', $dtoPlaceName);
-        } elseif (null !== $dto->zipCity) {
-            $dtoPlaceName = str_ireplace($dto->zipCity->name, '', $dtoPlaceName);
         }
 
         $entityPlaceName = $this->sanitize($entityPlaceName);
