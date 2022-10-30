@@ -67,8 +67,6 @@ class DoctrineEventHandler
 
     /**
      * @param EventDto[] $dtos
-     *
-     * @psalm-return array<null|object>
      */
     public function handleMany(array $dtos, bool $flush = true): void
     {
