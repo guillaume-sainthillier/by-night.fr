@@ -22,7 +22,6 @@ use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
 use App\Entity\ParserData;
-use App\Entity\Place;
 use App\Exception\UncreatableEntityException;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
@@ -33,7 +32,6 @@ use App\Utils\Firewall;
 use App\Utils\MemoryUtils;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 
 class DoctrineEventHandler
@@ -51,7 +49,6 @@ class DoctrineEventHandler
         private EventHandler $handler,
         private Firewall $firewall,
         private EntityProviderHandler $entityProviderHandler,
-        private EchantillonHandler $echantillonHandler,
         private EntityFactoryHandler $entityFactoryHandler,
         private CityRepository $repoCity,
         private ZipCityRepository $repoZipCity,
@@ -492,55 +489,6 @@ class DoctrineEventHandler
         }
 
         return $catalogue;
-    }
-
-    /**
-     * @param EventDto[] $events
-     */
-    private function getChunks(array $events): array
-    {
-        $chunks = [];
-        foreach ($events as $i => $event) {
-            if ($event->getPlace() && $event->getPlace()->getCity()) {
-                $key = 'city.' . $event->getPlace()->getCity()->getId();
-            } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
-                $key = 'country.' . $event->getPlace()->country->code;
-            } else {
-                $key = 'unknown';
-            }
-
-            $chunks[$key][$i] = $event;
-        }
-
-        foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = array_chunk($chunk, self::CHUNK_SIZE, true);
-        }
-
-        return $chunks;
-    }
-
-    private function commit(): void
-    {
-        try {
-            $this->entityManager->flush();
-        } catch (Exception $exception) {
-            Monitor::writeln(sprintf(
-                '<error>%s</error>',
-                $exception->getMessage()
-            ));
-        }
-    }
-
-    private function clearEvents(): void
-    {
-        $this->entityManager->clear(Event::class);
-        $this->echantillonHandler->clearEvents();
-    }
-
-    private function clearPlaces(): void
-    {
-        $this->entityManager->clear(Place::class);
-        $this->echantillonHandler->clearPlaces();
     }
 
     /**
