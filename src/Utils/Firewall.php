@@ -161,8 +161,6 @@ class Firewall
     }
 
     /**
-     * @param $externalId
-     *
      * @return ParserData|null
      */
     public function getExploration(?string $externalId)

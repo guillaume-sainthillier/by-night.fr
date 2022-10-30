@@ -58,9 +58,6 @@ class SocialProvider
         ];
     }
 
-    /**
-     * @param $name
-     */
     public function getSocial(string $name, string $default_facebook_name = self::FACEBOOK): Social
     {
         if (self::FACEBOOK === $name) {
