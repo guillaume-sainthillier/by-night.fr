@@ -29,9 +29,9 @@ class PlaceEntityFactory implements EntityFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return PlaceDto::class === $resourceClass;
+        return PlaceDto::class === $dtoClassName;
     }
 
     /**

@@ -29,9 +29,9 @@ class EventEntityFactory implements EntityFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return EventDto::class === $resourceClass;
+        return EventDto::class === $dtoClassName;
     }
 
     /**

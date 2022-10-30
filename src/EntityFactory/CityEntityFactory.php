@@ -19,9 +19,9 @@ class CityEntityFactory implements EntityFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return CityDto::class === $resourceClass;
+        return CityDto::class === $dtoClassName;
     }
 
     /**

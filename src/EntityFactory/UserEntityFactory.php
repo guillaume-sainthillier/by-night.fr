@@ -19,9 +19,9 @@ class UserEntityFactory implements EntityFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return UserDto::class === $resourceClass;
+        return UserDto::class === $dtoClassName;
     }
 
     /**
