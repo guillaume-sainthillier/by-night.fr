@@ -190,14 +190,17 @@ class DataTourismeParser extends AbstractParser
         foreach (['hasBookingContact', 'hasContact'] as $key) {
             foreach ($datas[$key] as $currentDatas) {
                 if (!empty($currentDatas['schema:email'])) {
+                    /** @psalm-suppress DuplicateArrayKey */
                     $emails = [...$emails, ...(array) $currentDatas['schema:email']];
                 }
 
                 if (!empty($currentDatas['schema:telephone'])) {
+                    /** @psalm-suppress DuplicateArrayKey */
                     $phones = [...$phones, ...(array) $currentDatas['schema:telephone']];
                 }
 
                 if (!empty($currentDatas['foaf:homepage'])) {
+                    /** @psalm-suppress DuplicateArrayKey */
                     $websites = [...$websites, ...(array) $currentDatas['foaf:homepage']];
                 }
             }
