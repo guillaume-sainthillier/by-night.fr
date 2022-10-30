@@ -5,17 +5,16 @@
 
 .breadcrumb {
     padding: 0.75rem 0;
+    display: flex;
     flex-wrap: nowrap;
+    overflow-y: auto;
 
     li {
-        overflow: hidden;
-        text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     a {
         color: $primary;
-        white-space: nowrap;
 
         &:hover,
         &:focus {
@@ -26,6 +25,10 @@
 
 .breadcrumb-item {
     display: inline-block;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    float: none;
 }
 
 .breadcrumb > li + li:before {
