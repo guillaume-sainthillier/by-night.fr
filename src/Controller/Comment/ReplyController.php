@@ -58,8 +58,7 @@ class ReplyController extends BaseController
         ]);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $reponse->setParent($comment);
-            $comment->addReponse($reponse);
+            $comment->addChild($reponse);
             $em = $this->getEntityManager();
             $em->persist($comment);
             $em->flush();
