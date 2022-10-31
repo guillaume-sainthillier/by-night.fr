@@ -12,6 +12,7 @@ namespace App\Consumer;
 
 use App\Handler\DoctrineEventHandler;
 use App\Utils\Monitor;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -19,8 +20,11 @@ use Psr\Log\LoggerInterface;
 
 class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    public function __construct(LoggerInterface $logger, private DoctrineEventHandler $doctrineEventHandler)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        private DoctrineEventHandler $doctrineEventHandler,
+        private EntityManagerInterface $entityManager
+    ) {
         parent::__construct($logger);
     }
 
@@ -46,6 +50,10 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
                 'exception' => $e,
                 'extra' => $dtos,
             ]);
+
+            if (!$this->entityManager->isOpen()) {
+                throw $e;
+            }
 
             return ConsumerInterface::MSG_REJECT;
         }
