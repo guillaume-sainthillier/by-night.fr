@@ -45,12 +45,12 @@ class DataTourismeParser extends AbstractParser
     /**
      * @var string
      */
-    private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
+    private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
 
     /**
      * @var string
      */
-    private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
+    private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
     private PropertyAccessorInterface $propertyAccessor;
 
