@@ -19,28 +19,28 @@ parameters:
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
-            $memoryCache: "@redis.app_cache_pool"
-            $secret: "%kernel.secret%"
-            $webDir: "%kernel.project_dir%/public"
-            $publicDirectory: "%kernel.project_dir%/public"
-            $tempPath: "%kernel.project_dir%/var/storage/temp"
-            $facebookIdPage: "%facebook_id_page%"
-            $twitterIdPage: "%twitter_id_page%"
-            $debug: "%kernel.debug%"
-            $cloudFrontDistributionID: "%env(AWS_CLOUDFRONT_DISTRIBUTION_ID)%"
-            $openAgendaKey: "%env(OPEN_AGENDA_KEY)%"
-            $sowprogUsername: "%env(SOWPROG_USER)%"
-            $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
-            $awinApiKey: "%env(AWIN_API_KEY)%"
-            $dataTourismeAppKey: "%env(DATATOURISME_APP_KEY)%"
-            $monitor: "%env(APP_MONITOR)%"
-            $disableTwitterFeed: "%disable_polled_feeds%"
-            $s3ThumbServer: "@app.s3_thumb_server"
-            $assetThumbServer: "@app.asset_thumb_server"
-            $dataDir: "%kernel.project_dir%/var/datas"
+            $memoryCache: '@redis.app_cache_pool'
+            $secret: '%kernel.secret%'
+            $webDir: '%kernel.project_dir%/public'
+            $publicDirectory: '%kernel.project_dir%/public'
+            $tempPath: '%kernel.project_dir%/var/storage/temp'
+            $facebookIdPage: '%facebook_id_page%'
+            $twitterIdPage: '%twitter_id_page%'
+            $debug: '%kernel.debug%'
+            $cloudFrontDistributionID: '%env(AWS_CLOUDFRONT_DISTRIBUTION_ID)%'
+            $openAgendaKey: '%env(OPEN_AGENDA_KEY)%'
+            $sowprogUsername: '%env(SOWPROG_USER)%'
+            $sowprogPassword: '%env(SOWPROG_PASSWORD)%'
+            $awinApiKey: '%env(AWIN_API_KEY)%'
+            $dataTourismeAppKey: '%env(DATATOURISME_APP_KEY)%'
+            $monitor: '%env(APP_MONITOR)%'
+            $disableTwitterFeed: '%disable_polled_feeds%'
+            $s3ThumbServer: '@app.s3_thumb_server'
+            $assetThumbServer: '@app.asset_thumb_server'
+            $dataDir: '%kernel.project_dir%/var/datas'
             $parsers: !tagged_iterator app.parser
             $entityProviders: !tagged_iterator app.entity_provider
             $dtoConverters: !tagged_iterator app.dto_converter
@@ -49,17 +49,17 @@ services:
 
     _instanceof:
         App\Contracts\ParserInterface:
-            tags: [ 'app.parser' ]
+            tags: ['app.parser']
         App\Contracts\EntityProviderInterface:
-            tags: [ 'app.entity_provider' ]
+            tags: ['app.entity_provider']
         App\Contracts\EntityFactoryInterface:
-            tags: [ 'app.entity_factory' ]
+            tags: ['app.entity_factory']
         App\Contracts\DtoConverterInterface:
-            tags: [ 'app.dto_converter' ]
+            tags: ['app.dto_converter']
         App\Contracts\ComparatorInterface:
-            tags: [ 'app.comparator' ]
+            tags: ['app.comparator']
         App\Contracts\ImageLoaderInterface:
-            tags: [ 'app.image.loader' ]
+            tags: ['app.image.loader']
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -91,34 +91,35 @@ services:
         tags:
             - { name: request.param_converter, priority: 0 }
 
-    App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"
-    App\Producer\PurgeCdnCacheUrlProducer: "@old_sound_rabbit_mq.purge_cdn_cache_urls_producer"
-    App\Producer\RemoveImageThumbnailsProducer: "@old_sound_rabbit_mq.remove_image_thumbnails_producer"
+    App\Producer\EventProducer: '@old_sound_rabbit_mq.add_event_producer'
+    App\Producer\EventInErrorProducer: '@old_sound_rabbit_mq.add_event_in_error_producer'
+    App\Producer\PurgeCdnCacheUrlProducer: '@old_sound_rabbit_mq.purge_cdn_cache_urls_producer'
+    App\Producer\RemoveImageThumbnailsProducer: '@old_sound_rabbit_mq.remove_image_thumbnails_producer'
 
     App\Social\FacebookAdmin:
         arguments:
-            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
+            $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
 
     App\Social\Twitter:
         arguments:
-            $config: { id: "%env(TWITTER_API_ID)%", secret: "%env(TWITTER_API_SECRET)%"}
+            $config: { id: '%env(TWITTER_API_ID)%', secret: '%env(TWITTER_API_SECRET)%' }
 
     App\Social\Google:
         arguments:
-            $config: { id: "unused", secret: "unused"}
+            $config: { id: 'unused', secret: 'unused' }
 
     App\Social\Facebook:
         arguments:
-            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
+            $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
 
     App\OAuth\TwitterOAuth:
         arguments:
-            $clientId: "%env(TWITTER_API_ID)%"
-            $clientSecret: "%env(TWITTER_API_SECRET)%"
+            $clientId: '%env(TWITTER_API_ID)%'
+            $clientSecret: '%env(TWITTER_API_SECRET)%'
 
     App\Archive\EventArchivator:
         arguments:
-            $objectPersister: "@fos_elastica.object_persister.event"
+            $objectPersister: '@fos_elastica.object_persister.event'
 
     App\Form\Type\ReCaptchaType:
         arguments:
@@ -140,8 +141,8 @@ services:
     App\Doctrine\EntityListener\:
         resource: '../src/Doctrine/EntityListener'
         tags:
-          - { name: doctrine.event_subscriber }
-          - { name: doctrine.orm.entity_listener, lazy: true }
+            - { name: doctrine.event_subscriber }
+            - { name: doctrine.orm.entity_listener, lazy: true }
 
     App\Doctrine\EventListener\EntityTagger:
         tags:
@@ -153,19 +154,19 @@ services:
 
     Aws\S3\S3Client:
         arguments:
-            -   version: "2006-03-01"
-                region: "%env(AWS_S3_REGION)%"
-                credentials:
-                    key: "%env(AWS_S3_KEY)%"
-                    secret: "%env(AWS_S3_SECRET)%"
+            - version: '2006-03-01'
+              region: '%env(AWS_S3_REGION)%'
+              credentials:
+                  key: '%env(AWS_S3_KEY)%'
+                  secret: '%env(AWS_S3_SECRET)%'
 
     Aws\CloudFront\CloudFrontClient:
         arguments:
-            -   version: "2018-06-18"
-                region: "%env(AWS_S3_REGION)%"
-                credentials:
-                    key: "%env(AWS_S3_KEY)%"
-                    secret: "%env(AWS_S3_SECRET)%"
+            - version: '2018-06-18'
+              region: '%env(AWS_S3_REGION)%'
+              credentials:
+                  key: '%env(AWS_S3_KEY)%'
+                  secret: '%env(AWS_S3_SECRET)%'
 
     # Store session in redis
     Redis:
@@ -197,22 +198,21 @@ services:
         # call the static method
         factory: ['App\Glide\ServerFactory', create]
         arguments:
-            -   source: '@assets.storage.reader'
-                cache: '@thumbs.storage'
-                driver: 'imagick'
-
+            - source: '@assets.storage.reader'
+              cache: '@thumbs.storage'
+              driver: 'imagick'
 
     App\Image\Loader\LoaderRegistry:
         arguments:
             - !tagged_iterator { tag: app.image.loader }
 
     FOS\ElasticaBundle\Persister\AsyncPagerPersister:
-      arguments:
-        - '@fos_elastica.pager_persister_registry'
-        - '@fos_elastica.pager_provider_registry'
-        - '@Symfony\Component\Messenger\MessageBusInterface'
-      tags:
-        - { name: "fos_elastica.pager_persister", persisterName: "async" }
+        arguments:
+            - '@fos_elastica.pager_persister_registry'
+            - '@fos_elastica.pager_provider_registry'
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+        tags:
+            - { name: 'fos_elastica.pager_persister', persisterName: 'async' }
 
     FOS\ElasticaBundle\Message\Handler\AsyncPersistPageHandler:
-      tags: [ messenger.message_handler ]
+        tags: [messenger.message_handler]

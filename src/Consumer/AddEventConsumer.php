@@ -11,17 +11,20 @@
 namespace App\Consumer;
 
 use App\Handler\DoctrineEventHandler;
+use App\Producer\EventInErrorProducer;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
+use OldSound\RabbitMqBundle\RabbitMq\Exception\AckStopConsumerException;
 use Psr\Log\LoggerInterface;
 
 class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
     public function __construct(
         LoggerInterface $logger,
+        private EventInErrorProducer $eventInErrorProducer,
         private DoctrineEventHandler $doctrineEventHandler,
         private EntityManagerInterface $entityManager
     ) {
@@ -50,11 +53,19 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
                 'exception' => $e,
             ]);
 
-            if (!$this->entityManager->isOpen()) {
-                throw $e;
+            try {
+                foreach ($dtos as $dto) {
+                    $this->eventInErrorProducer->scheduleEvent($dto);
+                }
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage(), [
+                    'exception' => $e,
+                ]);
             }
 
-            return ConsumerInterface::MSG_REJECT;
+            if (!$this->entityManager->isOpen()) {
+                throw new AckStopConsumerException('EM is closed');
+            }
         }
 
         return ConsumerInterface::MSG_ACK;
