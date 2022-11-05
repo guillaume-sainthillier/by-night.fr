@@ -48,7 +48,6 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,
-                'extra' => $dtos,
             ]);
 
             if (!$this->entityManager->isOpen()) {
