@@ -103,7 +103,7 @@ class EventHandler
      */
     private function uploadFile(Event $event, string $content): void
     {
-        if ($content && md5($content) === $event->getImageSystemHash()) {
+        if ($content && $event->getImageSystemHash() && md5($content) === $event->getImageSystemHash()) {
             return;
         }
 
