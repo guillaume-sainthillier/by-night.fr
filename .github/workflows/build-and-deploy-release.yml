@@ -23,6 +23,10 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
                   buildargs: APP_VERSION
                   tags: 'stable,${{ env.APP_VERSIONS }}'
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
             - name: Deploy to production
               uses: appleboy/ssh-action@master
               env:
