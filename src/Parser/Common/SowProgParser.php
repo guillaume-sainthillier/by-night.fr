@@ -184,4 +184,12 @@ class SowProgParser extends AbstractParser
     {
         return 'sowprog';
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function getParserVersion(): string
+    {
+        return '1.2';
+    }
 }

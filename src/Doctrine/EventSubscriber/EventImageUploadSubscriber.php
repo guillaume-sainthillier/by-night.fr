@@ -34,14 +34,7 @@ class EventImageUploadSubscriber implements EventSubscriberInterface
 
     public function preFlush(): void
     {
-        if ([] === $this->eventsToHandle) {
-            return;
-        }
-
-        $this->eventHandler->handleDownloads($this->eventsToHandle);
-
-        unset($this->eventsToHandle); // Calls GC
-        $this->eventsToHandle = [];
+        $this->doDownloads();
     }
 
     public function handleEvent(Event $event): void
@@ -51,5 +44,17 @@ class EventImageUploadSubscriber implements EventSubscriberInterface
         }
 
         $this->eventsToHandle[] = $event;
+    }
+
+    public function doDownloads(): void
+    {
+        if ([] === $this->eventsToHandle) {
+            return;
+        }
+
+        $this->eventHandler->handleDownloads($this->eventsToHandle);
+
+        unset($this->eventsToHandle); // Calls GC
+        $this->eventsToHandle = [];
     }
 }

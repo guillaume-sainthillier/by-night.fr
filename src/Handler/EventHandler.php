@@ -14,13 +14,9 @@ use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Exception\UnsupportedFileException;
 use App\File\DeletableFile;
+use App\Manager\TemporyFilesManager;
 use App\Utils\Cleaner;
-
-use const DIRECTORY_SEPARATOR;
-use const PATHINFO_BASENAME;
-
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -28,14 +24,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EventHandler
 {
-    private HttpClientInterface $client;
+    private const MAX_CONCURRENT_REQUESTS = 50;
 
     public function __construct(
         private Cleaner $cleaner,
         private LoggerInterface $logger,
-        private string $tempPath
+        private HttpClientInterface $client,
+        private TemporyFilesManager $temporyFilesManager,
     ) {
-        $this->client = HttpClient::create();
     }
 
     public function cleanEvent(EventDto $dto): void
@@ -50,52 +46,65 @@ class EventHandler
     }
 
     /**
-     * @param Event[] $events
+     * @param iterable|array<Event> $events
      */
-    public function handleDownloads(array $events): void
+    public function handleDownloads(iterable $events): void
     {
-        $imageUrls = array_filter(array_unique(array_map(static fn (Event $event) => $event->getUrl(), $events)));
-
-        $responses = [];
-        foreach ($imageUrls as $imageUrl) {
-            $response = $this->client->request('GET', $imageUrl, [
-                'user_data' => $imageUrl,
-            ]);
-            $responses[] = $response;
+        $eventsPerUrl = [];
+        foreach ($events as $event) {
+            if (!$event->getUrl()) {
+                continue;
+            }
+            $eventsPerUrl[$event->getUrl()][] = $event;
         }
 
-        foreach ($this->client->stream($responses) as $response => $chunk) {
-            $imageUrl = $response->getInfo('user_data');
-            $currentEvents = array_filter($events, static fn (Event $event) => $event->getUrl() === $imageUrl);
-
-            try {
-                if ($chunk->isTimeout()) {
-                    $response->cancel();
-                    continue;
-                } elseif ($chunk->isFirst() && 200 !== $response->getStatusCode()) {
-                    $response->cancel();
-                    continue;
-                } elseif ($chunk->isLast()) {
-                    foreach ($currentEvents as $event) {
-                        $this->uploadFile($event, $response->getContent());
-                    }
-                }
-            } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
-                if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
-                    continue;
-                }
-
-                $this->logger->error($e->getMessage(), [
-                    'exception' => $e,
-                    'extra' => [
-                        'event' => [
-                            'id' => array_map(static fn (Event $event) => $event->getId(), $currentEvents),
-                            'url' => $imageUrl,
-                        ],
-                    ],
+        foreach (array_chunk(array_keys($eventsPerUrl), self::MAX_CONCURRENT_REQUESTS) as $imageUrls) {
+            $responses = [];
+            foreach ($imageUrls as $imageUrl) {
+                $this->logger->info(sprintf('Downloading %s', $imageUrl));
+                $response = $this->client->request('GET', $imageUrl, [
+                    'user_data' => $imageUrl,
                 ]);
+                $responses[] = $response;
+            }
+
+            foreach ($this->client->stream($responses) as $response => $chunk) {
+                $imageUrl = $response->getInfo('user_data');
+                $currentEvents = $eventsPerUrl[$imageUrl] ?? [];
+
+                try {
+                    if ($chunk->isTimeout()) {
+                        $response->cancel();
+                    } elseif ($chunk->isFirst() && 200 !== $response->getStatusCode()) {
+                        $response->cancel();
+                    } elseif ($chunk->isLast()) {
+                        foreach ($currentEvents as $event) {
+                            $this->uploadFile($event, $response->getContent());
+                        }
+                    }
+                } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
+                    if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
+                        $this->logger->info(sprintf('Url %s is not allowed', $imageUrl));
+                        continue;
+                    }
+
+                    $this->logger->error($e->getMessage(), [
+                        'exception' => $e,
+                        'extra' => [
+                            'event' => [
+                                'id' => array_map(static fn (Event $event) => $event->getId(), $currentEvents),
+                                'url' => $imageUrl,
+                            ],
+                        ],
+                    ]);
+                }
             }
         }
+    }
+
+    public function reset(): void
+    {
+        $this->temporyFilesManager->reset();
     }
 
     /**
@@ -108,11 +117,10 @@ class EventHandler
         }
 
         $tempFileBasename = ($event->getId() ?? uniqid());
-        $tempFilePath = $this->tempPath . DIRECTORY_SEPARATOR . $tempFileBasename;
+        $tempFilePath = $this->temporyFilesManager->create();
         $octets = file_put_contents($tempFilePath, $content);
 
         if (0 === $octets) {
-            unlink($tempFilePath);
             $event->setImageSystemFile(null);
 
             return;
@@ -123,12 +131,13 @@ class EventHandler
         $ext = match ($contentType) {
             'image/gif' => 'gif',
             'image/png' => 'png',
-            'image/jpg', 'image/jpeg' => 'jpeg',
+            'image/jpg',
+            'image/jpeg' => 'jpeg',
             default => throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType)),
         };
 
         $pathUrl = parse_url($event->getUrl(), \PHP_URL_PATH);
-        $originalName = pathinfo($pathUrl, PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
+        $originalName = pathinfo($pathUrl, \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
         $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
         $event->setImageSystemFile($file);
     }
