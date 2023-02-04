@@ -73,12 +73,11 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->getImage()->setOriginalName($dto->image?->getOriginalName());
         $entity->getImage()->setSize($dto->image?->getSize());
         $entity->setImageFile($dto->imageFile);
-
-        if ($entity->getUrl() !== $dto->imageUrl || null === $entity->getImageSystem()->getName()) {
-            $entity->setUrl($dto->imageUrl);
-            $this->eventImageUploadSubscriber->handleEvent($entity);
+        $entity->setUrl($dto->imageUrl);
+        // This forces image download
+        if ($entity->getUrl() && null === $entity->getImageSystem()->getName()) {
+            $entity->setUpdatedAt(new \DateTimeImmutable());
         }
-
         $entity->setFromData($dto->fromData);
         $entity->setSource($dto->source);
         $entity->setCategory($dto->category);
