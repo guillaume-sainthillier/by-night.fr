@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -15,6 +15,7 @@ use App\Handler\UserHandler;
 use App\Repository\UserRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
@@ -41,7 +42,7 @@ class UserUpdater extends Updater
     /**
      * {@inheritDoc}
      */
-    public function update(\DateTimeInterface $from): void
+    public function update(DateTimeInterface $from): void
     {
         $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);

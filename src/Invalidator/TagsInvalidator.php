@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -16,6 +16,7 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use Exception;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
 
@@ -120,7 +121,7 @@ class TagsInvalidator
 
         try {
             $this->tagHandler->invalidateTags($tags);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error($exception->getMessage(), [
                 'exception' => $exception,
             ]);

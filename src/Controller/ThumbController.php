@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -10,6 +10,7 @@
 
 namespace App\Controller;
 
+use InvalidArgumentException;
 use League\Glide\Filesystem\FileNotFoundException;
 use League\Glide\Responses\SymfonyResponseFactory;
 use League\Glide\Server;
@@ -75,7 +76,7 @@ class ThumbController extends Controller
         $server->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $server->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException|FileNotFoundException $signatureException) {
+        } catch (InvalidArgumentException|FileNotFoundException $signatureException) {
             throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
         }
 

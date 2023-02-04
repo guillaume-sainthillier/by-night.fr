@@ -2,15 +2,13 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
 
 namespace App\Utils;
-
-use const SORT_STRING;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
@@ -90,7 +88,7 @@ class Monitor
             ]);
 
         $stats = self::getStats();
-        ksort($stats, SORT_STRING);
+        ksort($stats, \SORT_STRING);
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['avg_memory']]);
         }

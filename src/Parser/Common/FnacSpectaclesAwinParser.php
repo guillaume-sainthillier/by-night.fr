@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -17,6 +17,7 @@ use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -85,7 +86,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         }
 
         foreach ($startDates as $startDateStr) {
-            $startDate = \DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
+            $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
             if (false !== $startDate) {
                 $seenHours[] = sprintf('À %s', $startDate->format('H\hi'));
             }
@@ -101,7 +102,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             $hours = $seenHours[0];
         }
 
-        $endDate = \DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
+        $endDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
 
         if ('31/12 23:59' === $startDate->format('d/m H:i') && $startDate->format('d/m/Y') === $endDate->format('d/m/Y')) {
             $hours = null;

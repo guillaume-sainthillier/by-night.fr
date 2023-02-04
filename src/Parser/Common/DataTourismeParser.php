@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -18,7 +18,9 @@ use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
@@ -26,6 +28,7 @@ use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use ZipArchive;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -128,10 +131,10 @@ class DataTourismeParser extends AbstractParser
         }
 
         // Extract zip
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         $res = $zip->open($filePath);
         if (true !== $res) {
-            throw new \RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
+            throw new RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
         }
 
         $zip->extractTo($extractDirectory);
@@ -202,11 +205,11 @@ class DataTourismeParser extends AbstractParser
         $phones = array_filter(array_unique($phones));
         $emails = array_filter(array_unique($emails));
 
-        $lastUpdate = new \DateTimeImmutable($datas['lastUpdate']);
+        $lastUpdate = new DateTimeImmutable($datas['lastUpdate']);
         $lastUpdate->setTime(0, 0);
 
         if (isset($datas['lastUpdateDatatourisme'])) {
-            $lastUpdateDatatourisme = new \DateTimeImmutable($datas['lastUpdateDatatourisme']);
+            $lastUpdateDatatourisme = new DateTimeImmutable($datas['lastUpdateDatatourisme']);
         } else {
             $lastUpdateDatatourisme = null;
         }
@@ -264,8 +267,8 @@ class DataTourismeParser extends AbstractParser
                 continue;
             }
 
-            $startDate = new \DateTimeImmutable($date['startDate']);
-            $endDate = new \DateTimeImmutable($date['endDate']);
+            $startDate = new DateTimeImmutable($date['startDate']);
+            $endDate = new DateTimeImmutable($date['endDate']);
             $hours = null;
 
             $startTime = $date['startTime'] ?? null;
@@ -352,7 +355,7 @@ class DataTourismeParser extends AbstractParser
         $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
 
         if (!preg_match(self::UUID_REGEX, $path)) {
-            throw new \RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
+            throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
         }
 
         return $path;

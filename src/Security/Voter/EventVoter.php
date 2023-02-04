@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -12,6 +12,7 @@ namespace App\Security\Voter;
 
 use App\Entity\Event;
 use App\Entity\User;
+use LogicException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -56,7 +57,7 @@ class EventVoter extends Voter
             self::CREATE => $this->canCreate($user),
             self::EDIT => $this->canEdit($subject, $user),
             self::DELETE => $this->canDelete($subject, $user),
-            default => throw new \LogicException('This code should not be reached!'),
+            default => throw new LogicException('This code should not be reached!'),
         };
     }
 

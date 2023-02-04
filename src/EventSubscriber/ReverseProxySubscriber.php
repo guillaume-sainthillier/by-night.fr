@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -11,6 +11,8 @@
 namespace App\EventSubscriber;
 
 use App\Annotation\ReverseProxy;
+use DateTime;
+use DateTimeZone;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -66,8 +68,8 @@ class ReverseProxySubscriber implements EventSubscriberInterface
             if (null !== $reverseProxyConfiguration->getTtl()) {
                 $ttl = $reverseProxyConfiguration->getTtl();
             } else {
-                $date = \DateTime::createFromFormat('U', strtotime($reverseProxyConfiguration->getExpires()), new \DateTimeZone('UTC'));
-                $now = \DateTime::createFromFormat('U', strtotime('now'), new \DateTimeZone('UTC'));
+                $date = DateTime::createFromFormat('U', strtotime($reverseProxyConfiguration->getExpires()), new DateTimeZone('UTC'));
+                $now = DateTime::createFromFormat('U', strtotime('now'), new DateTimeZone('UTC'));
 
                 $ttl = max($date->format('U') - $now->format('U'), 0);
             }

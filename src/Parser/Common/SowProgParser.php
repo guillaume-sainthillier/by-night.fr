@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -18,6 +18,7 @@ use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -143,11 +144,11 @@ class SowProgParser extends AbstractParser
             $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', $event->imageUrl);
         }
 
-        $event->externalUpdatedAt = (new \DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
+        $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
         $event->type = $eventData['eventType']['label'];
         $event->category = $eventData['eventStyle']['label'];
-        $event->startDate = new \DateTimeImmutable($scheduleData['date']);
-        $event->endDate = new \DateTimeImmutable($scheduleData['endDate']);
+        $event->startDate = new DateTimeImmutable($scheduleData['date']);
+        $event->endDate = new DateTimeImmutable($scheduleData['endDate']);
         $event->hours = $hours;
         $event->websiteContacts = $websiteContacts;
         $event->prices = $prices;

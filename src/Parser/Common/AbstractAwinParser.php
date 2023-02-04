@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -17,7 +17,9 @@ use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
 use Psr\Log\LoggerInterface;
+use SimpleXMLElement;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
@@ -39,7 +41,7 @@ abstract class AbstractAwinParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
-        $xml = new \XMLReader();
+        $xml = new XMLReader();
         $xml->open('compress.zlib://' . $path);
 
         do {
@@ -47,7 +49,7 @@ abstract class AbstractAwinParser extends AbstractParser
         } while ('product' !== $xml->name);
 
         while ('product' === $xml->name) {
-            $event = $this->elementToArray(new \SimpleXMLElement($xml->readOuterXML()));
+            $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
             $event = $this->arrayToDto($event);
             if (null !== $event) {
                 $this->publish($event);
@@ -73,7 +75,7 @@ abstract class AbstractAwinParser extends AbstractParser
 
     abstract protected function getAwinUrl(): string;
 
-    private function elementToArray(\SimpleXMLElement $element): array
+    private function elementToArray(SimpleXMLElement $element): array
     {
         $array = [];
         foreach ($element->children() as $node) {

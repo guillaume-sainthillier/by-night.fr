@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -14,6 +14,7 @@ use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Form\Type\CityAutocompleteType;
 use App\Repository\EventRepository;
+use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +26,7 @@ class HomeController extends AbstractController
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
     {
         $datas = [
-            'from' => new \DateTime(),
+            'from' => new DateTime(),
         ];
         if (null !== ($city = $cityManager->getCity())) {
             $datas += [

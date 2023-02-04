@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -15,9 +15,6 @@ use App\Form\Type\ShortcutType;
 use DateTime;
 use DateTimeInterface;
 use IntlDateFormatter;
-
-use const JSON_THROW_ON_ERROR;
-
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -33,7 +30,7 @@ class DateRangeBuilder
 
         $view->children['shortcut']->vars['attr']['data-from'] = $view->children[$fromName]->vars['id'];
         $view->children['shortcut']->vars['attr']['data-to'] = $view->children[$toName]->vars['id'];
-        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($form->get('shortcut')->getConfig()->getOption('ranges'), JSON_THROW_ON_ERROR);
+        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($form->get('shortcut')->getConfig()->getOption('ranges'), \JSON_THROW_ON_ERROR);
     }
 
     public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName): void

@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -16,8 +16,6 @@ use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
 use DateTime;
-
-use const JSON_THROW_ON_ERROR;
 
 class BikiniParser extends AbstractParser
 {
@@ -37,7 +35,7 @@ class BikiniParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         // Récupère les différents liens à parser depuis le flux RSS
-        $data = json_decode(file_get_contents(self::EVENTS_URL), true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode(file_get_contents(self::EVENTS_URL), true, 512, \JSON_THROW_ON_ERROR);
 
         foreach ($data['events'] as $eventAsArray) {
             $dto = $this->arrayToDto($eventAsArray);

@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -18,9 +18,6 @@ use App\Entity\Country;
 use App\Entity\ZipCity;
 use App\Repository\CountryRepository;
 use App\Utils\Monitor;
-
-use const DIRECTORY_SEPARATOR;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -134,14 +131,14 @@ class CountryImporter
     private function downloadAndExtractGeoname(string $zipUrl, string $filename, ?string $countryId): string
     {
         // Create var/datas/<CountryCode>
-        $filedir = $this->dataDir . DIRECTORY_SEPARATOR . $countryId;
-        $filepath = $filedir . DIRECTORY_SEPARATOR . $filename;
+        $filedir = $this->dataDir . \DIRECTORY_SEPARATOR . $countryId;
+        $filepath = $filedir . \DIRECTORY_SEPARATOR . $filename;
         $fs = new Filesystem();
         $fs->mkdir($filedir);
 
         // Create /tmp/<CountryCode>
-        $tempdir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $countryId;
-        $tempfile = $tempdir . DIRECTORY_SEPARATOR . $countryId . '.zip';
+        $tempdir = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $countryId;
+        $tempfile = $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.zip';
         $fs = new Filesystem();
         $fs->mkdir($tempdir);
 
@@ -159,7 +156,7 @@ class CountryImporter
 
         // move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
         $fs->rename(
-            $tempdir . DIRECTORY_SEPARATOR . $countryId . '.txt',
+            $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.txt',
             $filepath,
             true
         );

@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -14,9 +14,6 @@ use App\Entity\User;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
-
-use const DIRECTORY_SEPARATOR;
-
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -102,7 +99,7 @@ class ImageSubscriber implements EventSubscriberInterface
         $object = $event->getObject();
         $mapping = $event->getMapping();
 
-        $path = $mapping->getUriPrefix() . DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . DIRECTORY_SEPARATOR . $mapping->getFileName($object);
+        $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
         $this->paths[] = $path;
     }
 

@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -11,6 +11,7 @@
 namespace App\Command;
 
 use App\Importer\CountryImporter;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -75,7 +76,7 @@ class CountryImportCommand extends Command
         $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
         $question->setValidator(static function ($value) {
             if (empty($value)) {
-                throw new \Exception('Cette valeur ne peut pas être vide');
+                throw new Exception('Cette valeur ne peut pas être vide');
             }
 
             return $value;

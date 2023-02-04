@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -12,9 +12,6 @@ namespace App\Handler;
 
 use App\Entity\User;
 use App\File\DeletableFile;
-
-use const DIRECTORY_SEPARATOR;
-
 use RuntimeException;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -39,7 +36,7 @@ class UserHandler
             return true;
         }
 
-        $imagePath = $this->webDir . DIRECTORY_SEPARATOR . ltrim($image, DIRECTORY_SEPARATOR);
+        $imagePath = $this->webDir . \DIRECTORY_SEPARATOR . ltrim($image, \DIRECTORY_SEPARATOR);
         if (!file_exists($imagePath)) {
             return true;
         }
@@ -64,7 +61,7 @@ class UserHandler
             };
 
             $filename = $user->getId() . '.' . $ext;
-            $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
+            $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $filename;
             $octets = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {

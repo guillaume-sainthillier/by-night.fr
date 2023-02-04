@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -23,6 +23,7 @@ use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
 use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,7 +109,7 @@ class EventController extends BaseController
     public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
         if ($event->getExternalId()) {
-            $event->setExternalUpdatedAt(new \DateTime());
+            $event->setExternalUpdatedAt(new DateTime());
         }
 
         $dto = $eventDtoFactory->create($event);
