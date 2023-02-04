@@ -12,18 +12,16 @@ namespace App\Command;
 
 use App\Contracts\ParserInterface;
 use App\Utils\Monitor;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand('app:events:import', 'Ajouter / mettre à jour des nouveaux événements')]
 class EventsImportCommand extends Command
 {
-    protected static $defaultName = 'app:events:import';
-
-    protected static $defaultDescription = 'Ajouter / mettre à jour des nouveaux événements';
-
     /**
      * @param iterable<ParserInterface> $parsers
      */

@@ -34,13 +34,11 @@ class AgendaController extends BaseController
      */
     public const EVENT_PER_PAGE = 15;
 
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
         // État de la page
@@ -112,7 +110,7 @@ class AgendaController extends BaseController
             'isValid' => $isValid,
             'isAjax' => $isAjax,
             'routeParams' => $routeParams,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

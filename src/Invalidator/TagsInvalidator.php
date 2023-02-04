@@ -16,7 +16,6 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Entity\UserEvent;
-use Exception;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
 
@@ -37,6 +36,11 @@ class TagsInvalidator
     {
         $this->tags[] = 'autocomplete-city';
         $this->tags[] = self::getCityTag($city);
+    }
+
+    public static function getAutocompleteCityTag(): string
+    {
+        return 'autocomplete-city';
     }
 
     public static function getCityTag(City $city): string
@@ -116,7 +120,7 @@ class TagsInvalidator
 
         try {
             $this->tagHandler->invalidateTags($tags);
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage(), [
                 'exception' => $exception,
             ]);

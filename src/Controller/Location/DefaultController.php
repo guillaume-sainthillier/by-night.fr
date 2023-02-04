@@ -15,20 +15,17 @@ use App\App\Location;
 use App\Controller\AbstractController as BaseController;
 use App\Form\Type\SimpleEventSearchType;
 use App\Repository\EventRepository;
-use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BaseController
 {
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function index(Location $location, EventRepository $eventRepository): Response
     {
         $datas = [
-            'from' => new DateTime(),
+            'from' => new \DateTime(),
         ];
         $events = $this->createQueryBuilderPaginator(
             $eventRepository->findUpcomingEventsQueryBuilder($location),
@@ -40,7 +37,7 @@ class DefaultController extends BaseController
         return $this->render('location/index.html.twig', [
             'location' => $location,
             'events' => $events,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

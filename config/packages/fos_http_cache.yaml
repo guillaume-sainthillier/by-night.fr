@@ -2,6 +2,8 @@
 fos_http_cache:
     tags:
         enabled: true
+        annotations:
+            enabled: false
 
     proxy_client:
         varnish:

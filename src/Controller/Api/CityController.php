@@ -17,7 +17,6 @@ use App\Invalidator\TagsInvalidator;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCache\ResponseTagger;
-use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,13 +30,12 @@ class CityController extends AbstractController
      */
     public const MAX_RESULTS = 7;
 
-    /**
-     * @ReverseProxy(expires="1 year")
-     * @Tag("autocomplete-city")
-     */
     #[Route(path: '/villes', name: 'app_api_city', methods: ['GET'])]
+    #[ReverseProxy(expires: '1 year')]
     public function city(ResponseTagger $responseTagger, Request $request, RepositoryManagerInterface $repositoryManager): Response
     {
+        $responseTagger->addTags([TagsInvalidator::getAutocompleteCityTag()]);
+
         $term = trim($request->query->get('q') ?? '');
         if ('' === $term) {
             $results = $this->createEmptyPaginator(1, self::MAX_RESULTS);

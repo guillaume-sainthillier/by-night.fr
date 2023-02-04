@@ -11,19 +11,16 @@
 namespace App\Command;
 
 use App\Importer\CountryImporter;
-use Exception;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
+#[AsCommand('app:country:import', 'Ajoute un nouveau pays')]
 class CountryImportCommand extends Command
 {
-    protected static $defaultName = 'app:country:import';
-
-    protected static $defaultDescription = 'Ajoute un nouveau pays';
-
     /**
      * {@inheritdoc}
      */
@@ -78,7 +75,7 @@ class CountryImportCommand extends Command
         $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
         $question->setValidator(static function ($value) {
             if (empty($value)) {
-                throw new Exception('Cette valeur ne peut pas être vide');
+                throw new \Exception('Cette valeur ne peut pas être vide');
             }
 
             return $value;

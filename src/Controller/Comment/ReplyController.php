@@ -14,11 +14,11 @@ use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ReplyController extends BaseController
 {
@@ -82,7 +82,7 @@ class ReplyController extends BaseController
 
         return $this->render('comment/reply/form.html.twig', [
             'comment' => $comment,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

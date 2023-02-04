@@ -33,10 +33,8 @@ class WidgetsController extends BaseController
      */
     public const WIDGET_ITEM_LIMIT = 7;
 
-    /**
-     * @ReverseProxy(expires="1 hour")
-     */
     #[Route(path: '/tweeter-feed/{max_id}', name: 'app_widget_tweeter', requirements: ['max_id' => '\d+'], methods: ['GET'])]
+    #[ReverseProxy(expires: '1 hour')]
     public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, int $max_id = null): Response
     {
         $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
@@ -63,10 +61,8 @@ class WidgetsController extends BaseController
         ]);
     }
 
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}', name: 'app_widget_next_events', methods: ['GET'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
@@ -99,10 +95,8 @@ class WidgetsController extends BaseController
         ]);
     }
 
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}', name: 'app_widget_similar_events', methods: ['GET'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function similarEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
@@ -135,10 +129,8 @@ class WidgetsController extends BaseController
         ]);
     }
 
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/top/soirees/{page<%patterns.page%>}', name: 'app_widget_top_events', methods: ['GET'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function topEvents(Location $location, EventRepository $eventRepository, int $page = 1): Response
     {
         $current = $page * self::WIDGET_ITEM_LIMIT;

@@ -10,18 +10,17 @@
 
 namespace App\Controller;
 
-use InvalidArgumentException;
 use League\Glide\Filesystem\FileNotFoundException;
 use League\Glide\Responses\SymfonyResponseFactory;
 use League\Glide\Server;
 use League\Glide\Signatures\SignatureException;
 use League\Glide\Signatures\SignatureFactory;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ThumbController extends Controller
@@ -76,7 +75,7 @@ class ThumbController extends Controller
         $server->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $server->getImageResponse($path, $parameters);
-        } catch (InvalidArgumentException|FileNotFoundException $signatureException) {
+        } catch (\InvalidArgumentException|FileNotFoundException $signatureException) {
             throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
         }
 

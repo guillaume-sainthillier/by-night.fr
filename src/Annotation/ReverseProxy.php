@@ -10,16 +10,16 @@
 
 namespace App\Annotation;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
+use Attribute;
 
-/**
- * @Annotation
- */
-class ReverseProxy extends ConfigurationAnnotation
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::TARGET_FUNCTION)]
+class ReverseProxy
 {
-    private ?int $ttl = null;
-
-    private ?string $expires = null;
+    public function __construct(
+        private ?int $ttl = null,
+        private ?string $expires = null,
+    ) {
+    }
 
     public function getTtl(): ?int
     {
@@ -41,17 +41,11 @@ class ReverseProxy extends ConfigurationAnnotation
         $this->expires = $expires;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAliasName()
     {
         return 'reverse_proxy';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function allowArray()
     {
         return false;

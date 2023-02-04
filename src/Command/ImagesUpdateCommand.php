@@ -12,18 +12,15 @@ namespace App\Command;
 
 use App\Updater\UserUpdater;
 use App\Utils\Monitor;
-use DateTime;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand('app:images:update', 'Mettre à jour les images (events, users) en provenance des réseaux sociaux')]
 class ImagesUpdateCommand extends Command
 {
-    protected static $defaultName = 'app:images:update';
-
-    protected static $defaultDescription = 'Mettre à jour les images (events, users) en provenance des réseaux sociaux';
-
     public function __construct(private UserUpdater $userUpdater)
     {
         parent::__construct();
@@ -44,7 +41,7 @@ class ImagesUpdateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $from = new DateTime($input->getOption('from'));
+        $from = new \DateTime($input->getOption('from'));
 
         Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
         $this->userUpdater->update($from);

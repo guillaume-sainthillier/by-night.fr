@@ -17,20 +17,18 @@ use App\Entity\Event;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
 use App\Picture\EventProfilePicture;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EventController extends BaseController
 {
-    /**
-     * @ReverseProxy(expires="+1 month")
-     */
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
+    #[ReverseProxy(expires: '+1 month')]
     public function index(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');

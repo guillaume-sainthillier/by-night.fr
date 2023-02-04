@@ -12,43 +12,38 @@ namespace App\Request\ParamConverter;
 
 use App\Social\Social;
 use App\Social\SocialProvider;
-use InvalidArgumentException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class SocialConverter implements ParamConverterInterface
+class SocialConverter implements ValueResolverInterface
 {
     public function __construct(private SocialProvider $socialProvider)
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function apply(Request $request, ParamConverter $configuration): bool
+    public function resolve(Request $request, ArgumentMetadata $argument): array
     {
-        $service = $request->attributes->get('service');
-
-        if (null === $service && !$configuration->isOptional()) {
-            throw new InvalidArgumentException('Route attribute is missing');
+        if (\is_object($request->attributes->get($argument->getName()))) {
+            return [];
         }
 
-        $options = array_merge([
+        $argumentType = $argument->getType();
+        if (Social::class !== $argumentType) {
+            return [];
+        }
+
+        $service = $request->attributes->get('service');
+        if (null === $service && !$argument->isNullable()) {
+            throw new \InvalidArgumentException('Route attribute is missing');
+        }
+
+        $options = [
             'default_facebook_name' => SocialProvider::FACEBOOK,
-        ], $configuration->getOptions());
+        ];
 
         $entity = $this->socialProvider->getSocial($service, $options['default_facebook_name']);
-        $request->attributes->set($configuration->getName(), $entity);
 
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supports(ParamConverter $configuration)
-    {
-        return Social::class === $configuration->getClass();
+        return [$entity];
     }
 }

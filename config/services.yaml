@@ -89,7 +89,7 @@ services:
     App\Request\ParamConverter\:
         resource: '../src/Request/ParamConverter'
         tags:
-            - { name: request.param_converter, priority: 0 }
+            - { name: controller.argument_value_resolver, priority: 150 }
 
     App\Producer\EventProducer: '@old_sound_rabbit_mq.add_event_producer'
     App\Producer\EventInErrorProducer: '@old_sound_rabbit_mq.add_event_in_error_producer'

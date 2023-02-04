@@ -16,45 +16,37 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
-use InvalidArgumentException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class LocationConverter implements ParamConverterInterface
+class LocationConverter implements ValueResolverInterface
 {
     public function __construct(private CityManager $cityManager, private CityRepository $cityRepository, private CountryRepository $countryRepository)
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function apply(Request $request, ParamConverter $configuration): bool
+    public function resolve(Request $request, ArgumentMetadata $argument): array
     {
-        $location = null;
-        $locationSlug = $request->attributes->get('location', '');
-
-        if (null === $locationSlug && !$configuration->isOptional()) {
-            throw new InvalidArgumentException('Route attribute is missing');
-        } elseif (null === $locationSlug) {
-            return false;
+        if (\is_object($request->attributes->get($argument->getName()))) {
+            return [];
         }
 
-        if (\is_object($locationSlug)) {
-            return false;
+        $argumentType = $argument->getType();
+        if (Location::class !== $argumentType) {
+            return [];
         }
 
+        $locationSlug = $request->attributes->get($argument->getName());
         $location = new Location();
         if ('unknown' === $locationSlug) {
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
             $noWhere->setSlug($locationSlug);
             $location->setCountry($noWhere);
-            $request->attributes->set($configuration->getName(), $location);
 
-            return false;
+            return [$location];
         }
 
         if (!str_starts_with((string) $locationSlug, 'c--')) {
@@ -73,16 +65,6 @@ class LocationConverter implements ParamConverterInterface
             throw new NotFoundHttpException(sprintf("La location '%s' est introuvable", $locationSlug));
         }
 
-        $request->attributes->set($configuration->getName(), $location);
-
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supports(ParamConverter $configuration): bool
-    {
-        return Location::class === $configuration->getClass();
+        return [$location];
     }
 }

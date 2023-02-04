@@ -14,21 +14,18 @@ use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Form\Type\CityAutocompleteType;
 use App\Repository\EventRepository;
-use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/', name: 'app_index', methods: ['GET', 'POST'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
     {
         $datas = [
-            'from' => new DateTime(),
+            'from' => new \DateTime(),
         ];
         if (null !== ($city = $cityManager->getCity())) {
             $datas += [
@@ -59,7 +56,7 @@ class HomeController extends AbstractController
         }
 
         return $this->render('home/index.html.twig', [
-            'autocomplete_form' => $form->createView(),
+            'autocomplete_form' => $form,
             'stats' => $stats,
         ]);
     }

@@ -16,15 +16,15 @@ use App\Repository\EventRepository;
 use App\Utils\Monitor;
 use App\Utils\PaginateTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand('app:migrate:contacts')]
 class MigrateContactsCommand extends Command
 {
     use PaginateTrait;
-
-    protected static $defaultName = 'app:migrate:contacts';
 
     public function __construct(private EntityManagerInterface $entityManager, private EventRepository $eventRepository, private ReservationsHandler $reservationsHandler)
     {

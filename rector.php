@@ -10,11 +10,14 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
+use App\Annotation\ReverseProxy;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Php71\Rector\FuncCall\CountOnNullRector;
+use Rector\Php80\Rector\Class_\AnnotationToAttributeRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
+use Rector\Php80\ValueObject\AnnotationToAttribute;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 use Rector\Symfony\Rector\MethodCall\ContainerGetToConstructorInjectionRector;
@@ -38,7 +41,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->sets([
         DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
         DoctrineSetList::DOCTRINE_CODE_QUALITY,
-        SymfonyLevelSetList::UP_TO_SYMFONY_60,
+        SymfonyLevelSetList::UP_TO_SYMFONY_62,
         SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
         SensiolabsSetList::FRAMEWORK_EXTRA_61,
         LevelSetList::UP_TO_PHP_80,
@@ -54,5 +57,9 @@ return static function (RectorConfig $rectorConfig): void {
         ContainerGetToConstructorInjectionRector::class => [
             __DIR__ . '/migrations',
         ],
+    ]);
+
+    $rectorConfig->ruleWithConfiguration(AnnotationToAttributeRector::class, [
+        new AnnotationToAttribute(ReverseProxy::class),
     ]);
 };

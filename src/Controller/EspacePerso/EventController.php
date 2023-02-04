@@ -23,13 +23,12 @@ use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
 use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EventController extends BaseController
 {
@@ -100,7 +99,7 @@ class EventController extends BaseController
         }
 
         return $this->render('espace-perso/new.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
@@ -109,7 +108,7 @@ class EventController extends BaseController
     public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
         if ($event->getExternalId()) {
-            $event->setExternalUpdatedAt(new DateTime());
+            $event->setExternalUpdatedAt(new \DateTime());
         }
 
         $dto = $eventDtoFactory->create($event);
@@ -124,7 +123,7 @@ class EventController extends BaseController
         }
 
         return $this->render('espace-perso/edit.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'event' => $event,
         ]);
     }

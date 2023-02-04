@@ -29,10 +29,8 @@ class WidgetsController extends BaseController
      */
     public const WIDGET_ITEM_LIMIT = 7;
 
-    /**
-     * @ReverseProxy(expires="6 hours")
-     */
     #[Route(path: '/top/membres/{page<%patterns.page%>}', name: 'app_agenda_top_users', methods: ['GET'])]
+    #[ReverseProxy(expires: '6 hours')]
     public function topUsers(UserRepository $userRepository, int $page = 1): Response
     {
         $count = $userRepository->getCount();
@@ -49,10 +47,8 @@ class WidgetsController extends BaseController
         ]);
     }
 
-    /**
-     * @ReverseProxy(expires="1 year")
-     */
     #[Route(path: '/_private/tendances/{id<%patterns.id%>}', name: 'app_event_trends', methods: ['GET'])]
+    #[ReverseProxy(expires: '1 year')]
     public function trends(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
         $participer = false;

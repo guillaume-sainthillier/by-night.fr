@@ -16,11 +16,11 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CommentController extends BaseController
 {
@@ -55,10 +55,8 @@ class CommentController extends BaseController
         ]);
     }
 
-    /**
-     * @ReverseProxy(expires="tomorrow")
-     */
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
+    #[ReverseProxy(expires: 'tomorrow')]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comments = $this->createQueryBuilderPaginator(

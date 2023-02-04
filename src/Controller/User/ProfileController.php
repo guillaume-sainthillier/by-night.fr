@@ -121,9 +121,9 @@ class ProfileController extends AbstractController
         $formDelete = $this->createDeleteForm();
 
         return $this->render('profile/edit.html.twig', [
-            'form' => $form->createView(),
-            'formChangePassword' => $formChangePassword->createView(),
-            'formDelete' => $formDelete->createView(),
+            'form' => $form,
+            'formChangePassword' => $formChangePassword,
+            'formDelete' => $formDelete,
         ]);
     }
 
