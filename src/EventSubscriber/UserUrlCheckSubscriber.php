@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UserUrlCheckSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private RequestStack $requestStack, private UrlGeneratorInterface $router, private UserRepository $userRepository)
+    public function __construct(private readonly RequestStack $requestStack, private readonly UrlGeneratorInterface $router, private readonly UserRepository $userRepository)
     {
     }
 

@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\SecurityEvents;
 
 class UserLastLoginSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 

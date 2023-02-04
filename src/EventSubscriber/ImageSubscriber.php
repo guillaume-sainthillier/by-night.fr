@@ -30,9 +30,9 @@ class ImageSubscriber implements EventSubscriberInterface
     private array $filesToDelete = [];
 
     public function __construct(
-        private LoggerInterface $logger,
-        private PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer,
-        private RemoveImageThumbnailsProducer $removeImageThumbnailsProducer
+        private readonly LoggerInterface $logger,
+        private readonly PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer,
+        private readonly RemoveImageThumbnailsProducer $removeImageThumbnailsProducer
     ) {
     }
 

@@ -29,8 +29,8 @@ abstract class AbstractAwinParser extends AbstractParser
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
         protected HttpClientInterface $httpClient,
-        private string $tempPath,
-        private string $awinApiKey
+        private readonly string $tempPath,
+        private readonly string $awinApiKey
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
     }

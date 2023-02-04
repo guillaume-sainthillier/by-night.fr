@@ -39,9 +39,9 @@ class UserFormAuthenticator extends AbstractLoginFormAuthenticator
     private const LOGIN_ROUTE = 'app_login';
 
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator,
-        private TranslatorInterface $translator,
-        private UserAuthenticatorInterface $userAuthenticator
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly TranslatorInterface $translator,
+        private readonly UserAuthenticatorInterface $userAuthenticator
     ) {
     }
 

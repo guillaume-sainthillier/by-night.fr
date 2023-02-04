@@ -20,9 +20,9 @@ class DateExtension extends Extension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('diff_date', [$this, 'diffDate']),
-            new TwigFilter('stats_diff_date', [$this, 'statsDiffDate']),
-            new TwigFilter('datetime', [$this, 'getDateTime']),
+            new TwigFilter('diff_date', $this->diffDate(...)),
+            new TwigFilter('stats_diff_date', $this->statsDiffDate(...)),
+            new TwigFilter('datetime', $this->getDateTime(...)),
         ];
     }
 

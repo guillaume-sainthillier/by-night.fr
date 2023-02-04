@@ -25,7 +25,7 @@ class CountryImportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function __construct(private CountryImporter $countryImporter)
+    public function __construct(private readonly CountryImporter $countryImporter)
     {
         parent::__construct();
     }

@@ -27,8 +27,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class ThumbController extends Controller
 {
     public function __construct(
-        private string $secret,
-        private Packages $packages
+        private readonly string $secret,
+        private readonly Packages $packages
     ) {
     }
 

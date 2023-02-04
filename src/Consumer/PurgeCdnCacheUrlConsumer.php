@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    public function __construct(LoggerInterface $logger, private CloudFrontClient $client, private string $cloudFrontDistributionID)
+    public function __construct(LoggerInterface $logger, private readonly CloudFrontClient $client, private readonly string $cloudFrontDistributionID)
     {
         parent::__construct($logger);
     }

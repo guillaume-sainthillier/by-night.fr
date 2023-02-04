@@ -29,8 +29,8 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 class EventType extends AbstractType
 {
     public function __construct(
-        private DoctrineEventHandler $doctrineEventHandler,
-        private DateRangeBuilder $dateRangeBuilder
+        private readonly DoctrineEventHandler $doctrineEventHandler,
+        private readonly DateRangeBuilder $dateRangeBuilder
     ) {
     }
 
@@ -151,7 +151,7 @@ class EventType extends AbstractType
                     ],
                 ],
             ])
-            ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
+            ->addEventListener(FormEvents::SUBMIT, $this->onSubmit(...));
 
         if (null !== $options['data'] && null === $options['data']->entityId) {
             $builder

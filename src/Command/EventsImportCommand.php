@@ -25,7 +25,7 @@ class EventsImportCommand extends Command
     /**
      * @param iterable<ParserInterface> $parsers
      */
-    public function __construct(private iterable $parsers)
+    public function __construct(private readonly iterable $parsers)
     {
         parent::__construct();
     }

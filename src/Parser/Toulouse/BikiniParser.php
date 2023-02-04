@@ -54,7 +54,7 @@ class BikiniParser extends AbstractParser
             $hours = sprintf('De %s à %s', $startDate->format('H:i'), $endDate->format('H:i'));
         }
 
-        $placeParts = explode("\n", $data['place']['address']);
+        $placeParts = explode("\n", (string) $data['place']['address']);
         $placeParts = array_map('trim', $placeParts);
 
         $event = new EventDto();

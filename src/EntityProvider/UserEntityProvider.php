@@ -16,7 +16,7 @@ use App\Repository\UserRepository;
 
 class UserEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(private UserRepository $userRepository)
+    public function __construct(private readonly UserRepository $userRepository)
     {
     }
 

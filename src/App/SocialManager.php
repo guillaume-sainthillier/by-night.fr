@@ -19,7 +19,7 @@ class SocialManager
 
     private ?AppOAuth $appOAuth = null;
 
-    public function __construct(private string $facebookIdPage, private string $twitterIdPage, private AppOAuthRepository $appOAuthRepository)
+    public function __construct(private readonly string $facebookIdPage, private readonly string $twitterIdPage, private readonly AppOAuthRepository $appOAuthRepository)
     {
     }
 

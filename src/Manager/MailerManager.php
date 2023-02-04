@@ -19,7 +19,7 @@ use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 class MailerManager
 {
-    public function __construct(private MailerInterface $mailer)
+    public function __construct(private readonly MailerInterface $mailer)
     {
     }
 

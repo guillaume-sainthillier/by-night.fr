@@ -25,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PlaceType extends AbstractType
 {
-    public function __construct(private CountryRepository $countryRepository)
+    public function __construct(private readonly CountryRepository $countryRepository)
     {
     }
 

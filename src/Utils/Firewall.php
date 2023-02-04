@@ -21,12 +21,12 @@ class Firewall
     /**
      * @var string
      */
-    public const VERSION = '1.1';
+    final public const VERSION = '1.1';
 
     /** @var ParserData[] */
     private array $parserDatas = [];
 
-    public function __construct(private Comparator $comparator, private ParserDataRepository $parserDataRepository)
+    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository)
     {
         $this->parserDatas = [];
     }

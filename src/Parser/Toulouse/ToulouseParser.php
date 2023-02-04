@@ -86,7 +86,7 @@ class ToulouseParser extends AbstractParser
             $event->description = $tab[4];
             $event->startDate = $startDate;
             $event->endDate = $endDate;
-            $event->hours = implode('.', array_unique(explode('.', $tab[7])));
+            $event->hours = implode('.', array_unique(explode('.', (string) $tab[7])));
             $event->status = $tab[9];
             $event->latitude = (float) $tab[20];
             $event->longitude = (float) $tab[21];

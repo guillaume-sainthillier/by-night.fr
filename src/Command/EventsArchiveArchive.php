@@ -22,7 +22,7 @@ class EventsArchiveArchive extends Command
     /**
      * {@inheritdoc}
      */
-    public function __construct(private EventArchivator $eventArchivator)
+    public function __construct(private readonly EventArchivator $eventArchivator)
     {
         parent::__construct();
     }

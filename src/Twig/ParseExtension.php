@@ -18,9 +18,9 @@ class ParseExtension extends Extension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('parse_tags', [$this, 'parseTags']),
-            new TwigFilter('ensure_protocol', [$this, 'ensureProtocol']),
-            new TwigFilter('resume', [$this, 'resume']),
+            new TwigFilter('parse_tags', $this->parseTags(...)),
+            new TwigFilter('ensure_protocol', $this->ensureProtocol(...)),
+            new TwigFilter('resume', $this->resume(...)),
         ];
     }
 

@@ -22,7 +22,7 @@ use App\Handler\EntityProviderHandler;
 
 class PlaceEntityFactory implements EntityFactoryInterface
 {
-    public function __construct(private EntityProviderHandler $entityProviderHandler)
+    public function __construct(private readonly EntityProviderHandler $entityProviderHandler)
     {
     }
 

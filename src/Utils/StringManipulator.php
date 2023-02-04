@@ -65,7 +65,7 @@ class StringManipulator
 
     public function deleteStopWords(): self
     {
-        $parts = array_map(static fn ($stopWord) => preg_quote($stopWord, '/'), self::$stopWords);
+        $parts = array_map(static fn ($stopWord) => preg_quote((string) $stopWord, '/'), self::$stopWords);
         $stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
 
         $this->text = $this->text->replaceMatches($stopWordsRegex, '');

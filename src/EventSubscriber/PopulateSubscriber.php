@@ -18,7 +18,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PopulateSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private IndexManager $indexManager)
+    public function __construct(private readonly IndexManager $indexManager)
     {
     }
 

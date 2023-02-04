@@ -26,14 +26,14 @@ class SitemapSuscriber implements EventSubscriberInterface
 {
     private UrlContainerInterface $urlContainer;
 
-    private DateTimeInterface $now;
+    private readonly DateTimeInterface $now;
 
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator,
-        private CityRepository $cityRepository,
-        private PlaceRepository $placeRepository,
-        private EventRepository $eventRepository,
-        private UserRepository $userRepository
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly CityRepository $cityRepository,
+        private readonly PlaceRepository $placeRepository,
+        private readonly EventRepository $eventRepository,
+        private readonly UserRepository $userRepository
     ) {
         $this->now = new DateTimeImmutable();
     }
@@ -54,12 +54,12 @@ class SitemapSuscriber implements EventSubscriberInterface
         $section = $event->getSection();
 
         $sections = [
-            'app' => [$this, 'registerStaticRoutes'],
-            'agenda' => [$this, 'registerAgendaRoutes'],
-            'places' => [$this, 'registerPlacesRoutes'],
-            'users' => [$this, 'registerUserRoutes'],
-            'events' => [$this, 'registerEventRoutes'],
-            'tags' => [$this, 'registerTagRoutes'],
+            'app' => $this->registerStaticRoutes(...),
+            'agenda' => $this->registerAgendaRoutes(...),
+            'places' => $this->registerPlacesRoutes(...),
+            'users' => $this->registerUserRoutes(...),
+            'events' => $this->registerEventRoutes(...),
+            'tags' => $this->registerTagRoutes(...),
         ];
 
         foreach ($sections as $name => $generateFunction) {

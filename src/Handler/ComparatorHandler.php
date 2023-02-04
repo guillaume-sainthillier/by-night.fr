@@ -18,7 +18,7 @@ class ComparatorHandler
     /**
      * @param ComparatorInterface[] $comparators
      */
-    public function __construct(private iterable $comparators)
+    public function __construct(private readonly iterable $comparators)
     {
     }
 

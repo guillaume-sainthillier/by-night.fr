@@ -40,9 +40,9 @@ class OpenAgendaParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
-        private HttpClientInterface $client,
-        private CountryRepository $countryRepository,
-        private string $openAgendaKey,
+        private readonly HttpClientInterface $client,
+        private readonly CountryRepository $countryRepository,
+        private readonly string $openAgendaKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
     }

@@ -34,10 +34,10 @@ class EventsDownloadImagesCommand extends Command
     use PaginateTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private EventRepository $eventRepository,
-        private EventHandler $eventHandler,
-        private LoggerInterface $logger
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EventRepository $eventRepository,
+        private readonly EventHandler $eventHandler,
+        private readonly LoggerInterface $logger
     ) {
         parent::__construct();
     }

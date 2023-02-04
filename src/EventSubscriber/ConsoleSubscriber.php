@@ -22,7 +22,7 @@ class ConsoleSubscriber implements EventSubscriberInterface
     /** @var array<Stopwatch|null> */
     private array $stopwatches = [];
 
-    public function __construct(private int $monitor)
+    public function __construct(private readonly int $monitor)
     {
     }
 

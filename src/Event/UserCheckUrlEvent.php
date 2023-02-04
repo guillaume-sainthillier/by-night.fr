@@ -20,7 +20,7 @@ class UserCheckUrlEvent extends ContractEvent
 
     private ?User $user = null;
 
-    public function __construct(private ?int $userId, private ?string $userSlug, private ?string $userUsername, private string $routeName, private array $routeParams = [])
+    public function __construct(private readonly ?int $userId, private readonly ?string $userSlug, private readonly ?string $userUsername, private readonly string $routeName, private readonly array $routeParams = [])
     {
     }
 

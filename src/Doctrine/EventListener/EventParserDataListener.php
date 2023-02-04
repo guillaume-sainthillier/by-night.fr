@@ -19,7 +19,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class EventParserDataListener
 {
-    public function __construct(private ParserDataRepository $parserDataRepository)
+    public function __construct(private readonly ParserDataRepository $parserDataRepository)
     {
     }
 

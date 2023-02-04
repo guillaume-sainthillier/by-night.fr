@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ReverseProxySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private bool $debug)
+    public function __construct(private readonly bool $debug)
     {
     }
 

@@ -24,9 +24,9 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
 {
     public function __construct(
         LoggerInterface $logger,
-        private EventInErrorProducer $eventInErrorProducer,
-        private DoctrineEventHandler $doctrineEventHandler,
-        private EntityManagerInterface $entityManager
+        private readonly EventInErrorProducer $eventInErrorProducer,
+        private readonly DoctrineEventHandler $doctrineEventHandler,
+        private readonly EntityManagerInterface $entityManager
     ) {
         parent::__construct($logger);
     }

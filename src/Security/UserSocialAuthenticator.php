@@ -38,15 +38,15 @@ use Symfony\Component\Security\Http\SecurityRequestAttributes;
 class UserSocialAuthenticator extends OAuth2Authenticator
 {
     public function __construct(
-        private Security $security,
-        private ClientRegistry $clientRegistry,
-        private EntityManagerInterface $entityManager,
-        private UrlGeneratorInterface $router,
-        private UserAuthenticatorInterface $userAuthenticator,
-        private SocialProvider $socialProvider,
-        private OAuthDataProvider $oAuthDataProvider,
-        private TwitterOAuth $twitterOAuth,
-        private UserRepository $userRepository
+        private readonly Security $security,
+        private readonly ClientRegistry $clientRegistry,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UrlGeneratorInterface $router,
+        private readonly UserAuthenticatorInterface $userAuthenticator,
+        private readonly SocialProvider $socialProvider,
+        private readonly OAuthDataProvider $oAuthDataProvider,
+        private readonly TwitterOAuth $twitterOAuth,
+        private readonly UserRepository $userRepository
     ) {
     }
 

@@ -26,12 +26,12 @@ class WidgetsController extends BaseController
     /**
      * @var int
      */
-    public const TWEET_LIMIT = 25;
+    final public const TWEET_LIMIT = 25;
 
     /**
      * @var int
      */
-    public const WIDGET_ITEM_LIMIT = 7;
+    final public const WIDGET_ITEM_LIMIT = 7;
 
     #[Route(path: '/tweeter-feed/{max_id}', name: 'app_widget_tweeter', requirements: ['max_id' => '\d+'], methods: ['GET'])]
     #[ReverseProxy(expires: '1 hour')]
@@ -40,7 +40,7 @@ class WidgetsController extends BaseController
         $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
-            parse_str($results['search_metadata']['next_results'], $infos);
+            parse_str((string) $results['search_metadata']['next_results'], $infos);
 
             if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('app_widget_tweeter', [

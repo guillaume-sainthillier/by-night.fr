@@ -24,7 +24,7 @@ class TagsInvalidator
 {
     private array $tags = [];
 
-    public function __construct(private CacheManager $tagHandler, private LoggerInterface $logger, private bool $debug)
+    public function __construct(private readonly CacheManager $tagHandler, private readonly LoggerInterface $logger, private readonly bool $debug)
     {
     }
 

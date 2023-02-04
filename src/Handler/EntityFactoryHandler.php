@@ -18,7 +18,7 @@ class EntityFactoryHandler
     /**
      * @param EntityFactoryInterface[] $entityFactories
      */
-    public function __construct(private iterable $entityFactories)
+    public function __construct(private readonly iterable $entityFactories)
     {
     }
 

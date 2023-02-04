@@ -18,44 +18,44 @@ class Merger
     /**
      * @var string
      */
-    public const MERGE_LEFT = 'do_merge_left';
+    final public const MERGE_LEFT = 'do_merge_left';
 
     /**
      * @var string
      */
-    public const MERGE_RIGHT = 'do_merge_right';
+    final public const MERGE_RIGHT = 'do_merge_right';
 
     /**
      * @var string
      */
-    public const MERGE_MAX = 'do_merge_max';
+    final public const MERGE_MAX = 'do_merge_max';
 
     /**
      * @var string
      */
-    public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
+    final public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
 
     /**
      * @var string
      */
-    public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
+    final public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
 
     /**
      * @var string
      */
-    public const FORCE_MERGE_LEFT = 'do_force_merge_left';
+    final public const FORCE_MERGE_LEFT = 'do_force_merge_left';
 
     /**
      * @var string
      */
-    public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
+    final public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
 
     /**
      * @var string
      */
-    public const DEFAULT_MERGE = self::MERGE_RIGHT;
+    final public const DEFAULT_MERGE = self::MERGE_RIGHT;
 
-    public function __construct(private Comparator $comparator)
+    public function __construct(private readonly Comparator $comparator)
     {
     }
 
@@ -125,7 +125,7 @@ class Merger
 
     private function skakeToCamel($str): string
     {
-        return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', (string) $str)));
     }
 
     private function getBestContent($valueA, $valueB, string $mergeType)

@@ -26,7 +26,7 @@ class MigrateContactsCommand extends Command
 {
     use PaginateTrait;
 
-    public function __construct(private EntityManagerInterface $entityManager, private EventRepository $eventRepository, private ReservationsHandler $reservationsHandler)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly EventRepository $eventRepository, private readonly ReservationsHandler $reservationsHandler)
     {
         parent::__construct();
     }

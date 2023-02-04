@@ -29,7 +29,7 @@ class SowProgParser extends AbstractParser
      */
     private const BASE_URI = 'https://agenda.sowprog.com';
 
-    private HttpClientInterface $client;
+    private readonly HttpClientInterface $client;
 
     public function __construct(
         LoggerInterface $logger,
@@ -102,13 +102,13 @@ class SowProgParser extends AbstractParser
         if ($scheduleData['startHour'] && $scheduleData['startHour'] !== $scheduleData['endHour']) {
             $hours = sprintf(
                 'De %s à %s',
-                str_replace(':', 'h', $scheduleData['startHour']),
-                str_replace(':', 'h', $scheduleData['endHour'])
+                str_replace(':', 'h', (string) $scheduleData['startHour']),
+                str_replace(':', 'h', (string) $scheduleData['endHour'])
             );
         } elseif ($scheduleData['startHour']) {
             $hours = sprintf(
                 'À %s',
-                str_replace(':', 'h', $scheduleData['startHour'])
+                str_replace(':', 'h', (string) $scheduleData['startHour'])
             );
         }
 

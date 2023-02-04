@@ -16,9 +16,9 @@ use App\Picture\UserProfilePicture;
 class UserLoader extends AbstractImageLoader
 {
     public function __construct(
-        private LocalAssetLoader $localAssetLoader,
-        private UrlLoader $urlLoader,
-        private UserProfilePicture $userProfilePicture,
+        private readonly LocalAssetLoader $localAssetLoader,
+        private readonly UrlLoader $urlLoader,
+        private readonly UserProfilePicture $userProfilePicture,
     ) {
     }
 

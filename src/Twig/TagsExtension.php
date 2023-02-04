@@ -20,7 +20,7 @@ class TagsExtension extends Extension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('tags', [$this, 'getTags']),
+            new TwigFunction('tags', $this->getTags(...)),
         ];
     }
 

@@ -47,11 +47,11 @@ class ImageHelper
      */
     private const DEFAULT_FIXED_WIDTH = 800;
 
-    private array $defaultParams;
+    private readonly array $defaultParams;
 
     public function __construct(
-        private LoaderRegistry $loaderRegistry,
-        private Environment $twig
+        private readonly LoaderRegistry $loaderRegistry,
+        private readonly Environment $twig
     ) {
         $this->defaultParams = [
             'path' => null,
@@ -195,11 +195,11 @@ class ImageHelper
                 $value = implode(' ', array_unique($value));
             }
 
-            if (null === $value || '' === trim($value)) {
+            if (null === $value || '' === trim((string) $value)) {
                 continue;
             }
 
-            $normalizedAttr[$key] = trim($value);
+            $normalizedAttr[$key] = trim((string) $value);
         }
 
         return $normalizedAttr;

@@ -25,9 +25,9 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class EventProfilePicture
 {
     public function __construct(
-        private UploaderHelper $helper,
-        private Packages $packages,
-        private AssetHelper $assetHelper
+        private readonly UploaderHelper $helper,
+        private readonly Packages $packages,
+        private readonly AssetHelper $assetHelper
     ) {
     }
 

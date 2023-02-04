@@ -22,7 +22,7 @@ class CityManager
 
     private bool $initCooky = false;
 
-    public function __construct(private RequestStack $requestStack, private CityRepository $cityRepository)
+    public function __construct(private readonly RequestStack $requestStack, private readonly CityRepository $cityRepository)
     {
     }
 

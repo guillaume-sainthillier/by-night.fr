@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LocationConverter implements ValueResolverInterface
 {
-    public function __construct(private CityManager $cityManager, private CityRepository $cityRepository, private CountryRepository $countryRepository)
+    public function __construct(private readonly CityManager $cityManager, private readonly CityRepository $cityRepository, private readonly CountryRepository $countryRepository)
     {
     }
 

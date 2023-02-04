@@ -37,7 +37,7 @@ class EchantillonHandler
      */
     private array $events = [];
 
-    public function __construct(private PlaceRepository $placeRepository, private EventRepository $eventRepository)
+    public function __construct(private readonly PlaceRepository $placeRepository, private readonly EventRepository $eventRepository)
     {
         $this->init();
     }

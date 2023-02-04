@@ -21,8 +21,8 @@ use App\Handler\EntityProviderHandler;
 class EventEntityFactory implements EntityFactoryInterface
 {
     public function __construct(
-        private EntityProviderHandler $entityProviderHandler,
-        private EventImageUploadSubscriber $eventImageUploadSubscriber,
+        private readonly EntityProviderHandler $entityProviderHandler,
+        private readonly EventImageUploadSubscriber $eventImageUploadSubscriber,
     ) {
     }
 

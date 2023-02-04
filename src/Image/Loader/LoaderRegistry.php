@@ -18,7 +18,7 @@ class LoaderRegistry
     /**
      * @param iterable<ImageLoaderInterface> $loaders
      */
-    public function __construct(private iterable $loaders)
+    public function __construct(private readonly iterable $loaders)
     {
     }
 

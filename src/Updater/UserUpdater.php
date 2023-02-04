@@ -34,7 +34,7 @@ class UserUpdater extends Updater
         FacebookAdmin $facebookAdmin,
         HttpClientInterface $client,
         protected UserHandler $userHandler,
-        private UserRepository $userRepository
+        private readonly UserRepository $userRepository
     ) {
         parent::__construct($entityManager, $logger, $facebookAdmin, $client);
     }

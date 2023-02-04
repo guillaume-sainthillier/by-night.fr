@@ -18,8 +18,8 @@ use App\Repository\CityRepository;
 class CityEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
-        private CityRepository $cityRepository,
-        private ComparatorHandler $comparatorHandler
+        private readonly CityRepository $cityRepository,
+        private readonly ComparatorHandler $comparatorHandler
     ) {
     }
 

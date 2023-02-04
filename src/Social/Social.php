@@ -88,7 +88,7 @@ abstract class Social
             }
 
             $value = $datas[$property];
-            $fullProperty = $propertyPrefix . ucfirst($property);
+            $fullProperty = $propertyPrefix . ucfirst((string) $property);
             $propertyAccess->setValue($info, $fullProperty, $value);
         }
     }
@@ -99,7 +99,7 @@ abstract class Social
         $propertyAccess = PropertyAccess::createPropertyAccessor();
 
         foreach ($this->getInfoProperties() as $property) {
-            $fullProperty = $propertyPrefix . ucfirst($property);
+            $fullProperty = $propertyPrefix . ucfirst((string) $property);
             $propertyAccess->setValue($info, $fullProperty, null);
         }
     }

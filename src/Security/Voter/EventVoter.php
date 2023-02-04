@@ -22,19 +22,19 @@ class EventVoter extends Voter
     /**
      * @var string
      */
-    public const CREATE = 'event.create';
+    final public const CREATE = 'event.create';
 
     /**
      * @var string
      */
-    public const EDIT = 'event.edit';
+    final public const EDIT = 'event.edit';
 
     /**
      * @var string
      */
-    public const DELETE = 'event.delete';
+    final public const DELETE = 'event.delete';
 
-    public function __construct(private Security $security)
+    public function __construct(private readonly Security $security)
     {
     }
 

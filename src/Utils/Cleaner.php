@@ -16,7 +16,7 @@ use App\Dto\PlaceDto;
 
 class Cleaner
 {
-    public function __construct(private Util $util)
+    public function __construct(private readonly Util $util)
     {
     }
 

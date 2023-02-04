@@ -56,7 +56,7 @@ class DigitickAwinParser extends AbstractAwinParser
             return null;
         }
 
-        if (!preg_match('#^(.+) (\d{5}) (.+)$#', $data['venue_address'], $placeMatches)) {
+        if (!preg_match('#^(.+) (\d{5}) (.+)$#', (string) $data['venue_address'], $placeMatches)) {
             return null;
         }
 

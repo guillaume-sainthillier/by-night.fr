@@ -18,7 +18,7 @@ class EntityProviderHandler
     /**
      * @param EntityProviderInterface[] $entityProviders
      */
-    public function __construct(private iterable $entityProviders)
+    public function __construct(private readonly iterable $entityProviders)
     {
     }
 

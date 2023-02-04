@@ -23,7 +23,7 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(EntityManagerInterface $entityManager, private EmailVerifier $emailVerifier)
+    public function __construct(EntityManagerInterface $entityManager, private readonly EmailVerifier $emailVerifier)
     {
         parent::__construct($entityManager);
     }

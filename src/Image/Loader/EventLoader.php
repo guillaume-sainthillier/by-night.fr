@@ -17,8 +17,8 @@ use App\Picture\EventProfilePicture;
 class EventLoader extends AbstractImageLoader
 {
     public function __construct(
-        private LocalAssetLoader $localAssetLoader,
-        private EventProfilePicture $eventProfilePicture,
+        private readonly LocalAssetLoader $localAssetLoader,
+        private readonly EventProfilePicture $eventProfilePicture,
     ) {
     }
 

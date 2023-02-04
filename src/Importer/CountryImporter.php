@@ -35,7 +35,7 @@ class CountryImporter
      */
     private const CITIES_PER_TRANSACTION = 50;
 
-    public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly string $dataDir, private readonly CountryRepository $countryRepository)
     {
     }
 
@@ -246,9 +246,9 @@ class CountryImporter
                 ->setPostalCode($data[1])
                 ->setName($data[2])
                 ->setAdmin1Code($adminCode1)
-                ->setAdmin1Name(null === $data[3] ? null : (trim($data[3]) ?: null))
+                ->setAdmin1Name(null === $data[3] ? null : (trim((string) $data[3]) ?: null))
                 ->setAdmin2Code($adminCode2)
-                ->setAdmin2Name(null === $data[5] ? null : (trim($data[5]) ?: null))
+                ->setAdmin2Name(null === $data[5] ? null : (trim((string) $data[5]) ?: null))
                 ->setLatitude((float) $data[9])
                 ->setLongitude((float) $data[10])
                 ->setCountry($country);

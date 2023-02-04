@@ -20,7 +20,7 @@ class EventConstraintValidator extends ConstraintValidator
 {
     private bool $checkIfUpdate = false;
 
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
     }
 

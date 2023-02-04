@@ -21,7 +21,7 @@ class UserEmailEntityListener implements EventSubscriberInterface
     /** @var User[] */
     private array $queue = [];
 
-    public function __construct(private EmailVerifier $emailVerifier)
+    public function __construct(private readonly EmailVerifier $emailVerifier)
     {
     }
 

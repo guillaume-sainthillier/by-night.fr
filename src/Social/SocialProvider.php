@@ -17,32 +17,32 @@ class SocialProvider
     /**
      * @var string
      */
-    public const FACEBOOK = 'facebook';
+    final public const FACEBOOK = 'facebook';
 
     /**
      * @var string
      */
-    public const FACEBOOK_ADMIN = 'facebook_admin';
+    final public const FACEBOOK_ADMIN = 'facebook_admin';
 
     /**
      * @var string
      */
-    public const TWITTER = 'twitter';
+    final public const TWITTER = 'twitter';
 
     /**
      * @var string
      */
-    public const TWITTER_ADMIN = 'twitter_admin';
+    final public const TWITTER_ADMIN = 'twitter_admin';
 
     /**
      * @var string
      */
-    public const GOOGLE = 'google';
+    final public const GOOGLE = 'google';
 
     /**
      * @var string
      */
-    public const GOOGLE_ADMIN = 'google_admin';
+    final public const GOOGLE_ADMIN = 'google_admin';
 
     private array $socials;
 

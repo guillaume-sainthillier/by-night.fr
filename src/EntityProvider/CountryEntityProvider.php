@@ -18,8 +18,8 @@ use App\Repository\CountryRepository;
 class CountryEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
-        private CountryRepository $countryRepository,
-        private ComparatorHandler $comparatorHandler
+        private readonly CountryRepository $countryRepository,
+        private readonly ComparatorHandler $comparatorHandler
     ) {
     }
 

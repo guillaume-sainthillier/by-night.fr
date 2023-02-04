@@ -35,9 +35,9 @@ class MigrateMediasCommand extends Command
     use PaginateTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private LoggerInterface $logger,
-        private StorageInterface $storage
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LoggerInterface $logger,
+        private readonly StorageInterface $storage
     ) {
         parent::__construct();
     }

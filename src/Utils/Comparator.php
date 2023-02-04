@@ -17,7 +17,7 @@ use Exception;
 
 class Comparator
 {
-    public function __construct(private Util $util)
+    public function __construct(private readonly Util $util)
     {
     }
 

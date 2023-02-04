@@ -17,14 +17,14 @@ use Twig\TwigFunction;
 class AssetExtension extends Extension
 {
     public function __construct(
-        private AssetHelper $assetHelper,
+        private readonly AssetHelper $assetHelper,
     ) {
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('thumb_asset', [$this->assetHelper, 'getThumbAssetUrl'], ['is_safe' => ['html']]),
+            new TwigFunction('thumb_asset', $this->assetHelper->getThumbAssetUrl(...), ['is_safe' => ['html']]),
         ];
     }
 }

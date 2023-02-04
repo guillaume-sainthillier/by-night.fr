@@ -44,7 +44,7 @@ return static function (RectorConfig $rectorConfig): void {
         SymfonyLevelSetList::UP_TO_SYMFONY_62,
         SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
         SensiolabsSetList::FRAMEWORK_EXTRA_61,
-        LevelSetList::UP_TO_PHP_80,
+        LevelSetList::UP_TO_PHP_81,
         SetList::CODING_STYLE,
     ]);
 

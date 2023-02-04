@@ -15,8 +15,8 @@ use App\Helper\AssetHelper;
 class LocalAssetLoader extends AbstractImageLoader
 {
     public function __construct(
-        private AssetHelper $assetHelper,
-        private string $publicDirectory
+        private readonly AssetHelper $assetHelper,
+        private readonly string $publicDirectory
     ) {
     }
 
@@ -34,7 +34,7 @@ class LocalAssetLoader extends AbstractImageLoader
         }
 
         if (!$originalWidth || !$originalHeight) {
-            $absolutePath = rtrim($this->publicDirectory, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR . ltrim($path, '/');
+            $absolutePath = rtrim($this->publicDirectory, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR . ltrim((string) $path, '/');
             $dimensions = @getimagesize($absolutePath);
             if (!$dimensions) {
                 return $params;

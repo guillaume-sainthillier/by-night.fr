@@ -14,7 +14,7 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class TwitterUser implements ResourceOwnerInterface
 {
-    public function __construct(private array $response)
+    public function __construct(private readonly array $response)
     {
     }
 

@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CityAutocompleteType extends AbstractType
 {
-    public function __construct(private DateRangeBuilder $dateRangeBuilder)
+    public function __construct(private readonly DateRangeBuilder $dateRangeBuilder)
     {
     }
 

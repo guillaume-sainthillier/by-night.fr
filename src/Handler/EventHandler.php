@@ -30,10 +30,10 @@ class EventHandler
     private const MAX_CONCURRENT_REQUESTS = 50;
 
     public function __construct(
-        private Cleaner $cleaner,
-        private LoggerInterface $logger,
-        private HttpClientInterface $client,
-        private TemporyFilesManager $temporyFilesManager,
+        private readonly Cleaner $cleaner,
+        private readonly LoggerInterface $logger,
+        private readonly HttpClientInterface $client,
+        private readonly TemporyFilesManager $temporyFilesManager,
     ) {
     }
 

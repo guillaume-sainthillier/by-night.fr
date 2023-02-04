@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 class SocialConverter implements ValueResolverInterface
 {
-    public function __construct(private SocialProvider $socialProvider)
+    public function __construct(private readonly SocialProvider $socialProvider)
     {
     }
 

@@ -28,7 +28,7 @@ class CityController extends AbstractController
     /**
      * @var int
      */
-    public const MAX_RESULTS = 7;
+    final public const MAX_RESULTS = 7;
 
     #[Route(path: '/villes', name: 'app_api_city', methods: ['GET'])]
     #[ReverseProxy(expires: '1 year')]

@@ -20,7 +20,7 @@ class EventCheckUrlEvent extends ContractEvent
 
     private ?Event $event = null;
 
-    public function __construct(private ?int $eventId, private string $eventSlug, private string $locationSlug, private string $routeName, private array $routeParams = [])
+    public function __construct(private readonly ?int $eventId, private readonly string $eventSlug, private readonly string $locationSlug, private readonly string $routeName, private readonly array $routeParams = [])
     {
     }
 

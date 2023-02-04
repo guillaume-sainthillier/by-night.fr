@@ -16,7 +16,7 @@ use App\Repository\EventRepository;
 
 class EventEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(private EventRepository $eventRepository)
+    public function __construct(private readonly EventRepository $eventRepository)
     {
     }
 

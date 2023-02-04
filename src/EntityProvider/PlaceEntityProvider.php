@@ -18,8 +18,8 @@ use App\Repository\PlaceRepository;
 class PlaceEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
-        private PlaceRepository $placeRepository,
-        private ComparatorHandler $comparatorHandler
+        private readonly PlaceRepository $placeRepository,
+        private readonly ComparatorHandler $comparatorHandler
     ) {
     }
 

@@ -52,7 +52,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     /**
      * @var string
      */
-    public const INDEX_FROM = '-6 months';
+    final public const INDEX_FROM = '-6 months';
 
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]

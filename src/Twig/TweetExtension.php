@@ -18,7 +18,7 @@ class TweetExtension extends Extension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('tweet', [$this, 'tweet']),
+            new TwigFilter('tweet', $this->tweet(...)),
         ];
     }
 

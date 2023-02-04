@@ -41,18 +41,18 @@ class DoctrineEventHandler
      */
     private const CHUNK_SIZE = 50;
 
-    private ParserHistoryHandler $parserHistoryHandler;
+    private readonly ParserHistoryHandler $parserHistoryHandler;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private LoggerInterface $logger,
-        private EventHandler $handler,
-        private Firewall $firewall,
-        private EntityProviderHandler $entityProviderHandler,
-        private EntityFactoryHandler $entityFactoryHandler,
-        private CityRepository $repoCity,
-        private ZipCityRepository $repoZipCity,
-        private CountryRepository $countryRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LoggerInterface $logger,
+        private readonly EventHandler $handler,
+        private readonly Firewall $firewall,
+        private readonly EntityProviderHandler $entityProviderHandler,
+        private readonly EntityFactoryHandler $entityFactoryHandler,
+        private readonly CityRepository $repoCity,
+        private readonly ZipCityRepository $repoZipCity,
+        private readonly CountryRepository $countryRepository
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }

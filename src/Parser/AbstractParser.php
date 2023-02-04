@@ -23,9 +23,9 @@ abstract class AbstractParser implements ParserInterface
     private int $parsedEvents = 0;
 
     public function __construct(
-        private LoggerInterface $logger,
-        private EventProducer $eventProducer,
-        private EventHandler $eventHandler,
+        private readonly LoggerInterface $logger,
+        private readonly EventProducer $eventProducer,
+        private readonly EventHandler $eventHandler,
         protected ReservationsHandler $reservationsHandler,
     ) {
     }

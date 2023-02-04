@@ -28,7 +28,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry, private CityManipulator $cityManipulator)
+    public function __construct(ManagerRegistry $registry, private readonly CityManipulator $cityManipulator)
     {
         parent::__construct($registry, City::class);
     }

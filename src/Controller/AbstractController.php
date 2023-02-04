@@ -20,7 +20,7 @@ abstract class AbstractController extends BaseController
 {
     use PaginateTrait;
 
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 

@@ -38,7 +38,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         HttpClientInterface $httpClient,
         string $tempPath,
         string $awinApiKey,
-        private CacheInterface $cache
+        private readonly CacheInterface $cache
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler, $httpClient, $tempPath, $awinApiKey);
     }
@@ -79,7 +79,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $seenHours = [];
         $hours = null;
         $startDate = null;
-        $startDates = array_filter(explode(';', $data['custom_1']));
+        $startDates = array_filter(explode(';', (string) $data['custom_1']));
 
         if ([] === $startDates) {
             return null;

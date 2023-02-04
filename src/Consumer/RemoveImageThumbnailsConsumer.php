@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    public function __construct(LoggerInterface $logger, private Server $s3ThumbServer)
+    public function __construct(LoggerInterface $logger, private readonly Server $s3ThumbServer)
     {
         parent::__construct($logger);
     }

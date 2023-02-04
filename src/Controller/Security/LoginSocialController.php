@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class LoginSocialController extends AbstractController
 {
     #[Route(path: '/check-{service<%patterns.social%>}', name: 'login_social_check', methods: ['GET', 'POST'])]
-    public function connectCheck(): Response
+    public function connectCheck(): never
     {
         throw new Exception('This code should not be reach!');
     }

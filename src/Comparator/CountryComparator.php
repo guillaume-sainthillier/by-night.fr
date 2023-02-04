@@ -17,7 +17,7 @@ use App\Utils\SluggerUtils;
 
 class CountryComparator extends AbstractComparator
 {
-    public function __construct(private SluggerUtils $sluggerUtils)
+    public function __construct(private readonly SluggerUtils $sluggerUtils)
     {
     }
 

@@ -31,7 +31,7 @@ class TwitterOAuth
      */
     private const OAUTH_TOKEN_SECRET_SESSION_KEY = '_oauth_token_secret';
 
-    public function __construct(private string $clientId, private string $clientSecret, private RequestStack $requestStack)
+    public function __construct(private readonly string $clientId, private readonly string $clientSecret, private readonly RequestStack $requestStack)
     {
     }
 

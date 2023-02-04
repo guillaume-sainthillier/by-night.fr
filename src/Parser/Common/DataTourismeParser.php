@@ -47,16 +47,16 @@ class DataTourismeParser extends AbstractParser
      */
     private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
-    private PropertyAccessorInterface $propertyAccessor;
+    private readonly PropertyAccessorInterface $propertyAccessor;
 
     public function __construct(
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
-        private HttpClientInterface $client,
-        private string $tempPath,
-        private string $dataTourismeAppKey
+        private readonly HttpClientInterface $client,
+        private readonly string $tempPath,
+        private readonly string $dataTourismeAppKey
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
 
@@ -275,11 +275,11 @@ class DataTourismeParser extends AbstractParser
             $endTime = $date['endTime'] ?? null;
 
             if ($startTime && $endTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
-                $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $endTime);
+                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
+                $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $endTime);
                 $hours = sprintf('De %s à %s', $startTime, $endTime);
             } elseif ($startTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
+                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
                 $hours = sprintf('À %s', $startTime);
             }
 
