@@ -91,7 +91,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             }
         }
 
-        if (0 === \count($seenHours)) {
+        if ([] === $seenHours) {
             return null;
         }
 

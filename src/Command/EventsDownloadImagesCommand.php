@@ -15,6 +15,7 @@ use App\Handler\EventHandler;
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
 use App\Utils\PaginateTrait;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\PagerfantaInterface;
 use Psr\Log\LoggerInterface;
@@ -45,12 +46,13 @@ class EventsDownloadImagesCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->title('Handling event image download');
+
         $qb = $this
             ->eventRepository
             ->createSimpleQueryBuilder('e')
             ->where('e.url IS NOT NULL')
             ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
-            ->orderBy('e.id', 'DESC')
+            ->orderBy('e.id', Criteria::DESC)
         ;
 
         /** @var PagerfantaInterface<Event> $pagination */
@@ -73,8 +75,9 @@ class EventsDownloadImagesCommand extends Command
 
             Monitor::advanceProgressBar();
         }
+
         Monitor::finishProgressBar();
 
-        return Command::SUCCESS;
+        return (int) Command::SUCCESS;
     }
 }

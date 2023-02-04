@@ -24,6 +24,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EventHandler
 {
+    /**
+     * @var int
+     */
     private const MAX_CONCURRENT_REQUESTS = 50;
 
     public function __construct(
@@ -55,6 +58,7 @@ class EventHandler
             if (!$event->getUrl()) {
                 continue;
             }
+
             $eventsPerUrl[$event->getUrl()][] = $event;
         }
 

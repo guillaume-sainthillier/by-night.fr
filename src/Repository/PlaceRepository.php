@@ -72,7 +72,7 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
             $qb->setParameter('countries', array_keys($countryWheres));
         }
 
-        if (\count($wheres) > 0) {
+        if ([] !== $wheres) {
             $qb->andWhere(implode(' OR ', $wheres));
         }
 
