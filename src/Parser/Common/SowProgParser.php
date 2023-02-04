@@ -18,7 +18,6 @@ use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
-use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -139,12 +138,16 @@ class SowProgParser extends AbstractParser
         $event->description = $eventData['description'];
         $event->source = 'https://www.sowprog.com/';
         $event->externalId = sprintf('%s-%s', $data['id'], $scheduleData['id']);
-        $event->imageUrl = $eventData['picture'] ?? null;
-        $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
+        $event->imageUrl = $eventData['picture'] ?? $eventData['thumbnail'] ?? null;
+        if ($event->imageUrl) {
+            $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', $event->imageUrl);
+        }
+
+        $event->externalUpdatedAt = (new \DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
         $event->type = $eventData['eventType']['label'];
         $event->category = $eventData['eventStyle']['label'];
-        $event->startDate = new DateTimeImmutable($scheduleData['date']);
-        $event->endDate = new DateTimeImmutable($scheduleData['endDate']);
+        $event->startDate = new \DateTimeImmutable($scheduleData['date']);
+        $event->endDate = new \DateTimeImmutable($scheduleData['endDate']);
         $event->hours = $hours;
         $event->websiteContacts = $websiteContacts;
         $event->prices = $prices;
