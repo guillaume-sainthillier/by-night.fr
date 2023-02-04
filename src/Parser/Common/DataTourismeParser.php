@@ -18,22 +18,14 @@ use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
-use DateTimeImmutable;
-
-use const DIRECTORY_SEPARATOR;
-use const JSON_THROW_ON_ERROR;
-use const PHP_URL_PATH;
-
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use ZipArchive;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -59,6 +51,7 @@ class DataTourismeParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
+        private HttpClientInterface $client,
         private string $tempPath,
         private string $dataTourismeAppKey
     ) {
@@ -103,7 +96,7 @@ class DataTourismeParser extends AbstractParser
 
         $fs = new Filesystem();
         foreach ($files as $file) {
-            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, JSON_THROW_ON_ERROR);
+            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, \JSON_THROW_ON_ERROR);
             $dtos = array_filter($this->arrayToDtos($datas));
 
             foreach ($dtos as $dto) {
@@ -119,27 +112,26 @@ class DataTourismeParser extends AbstractParser
         // Remove previous extracts
         $fs = new Filesystem();
 
-        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
-        $extractDirectory = $this->tempPath . DIRECTORY_SEPARATOR . md5($url);
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
+        $extractDirectory = $this->tempPath . \DIRECTORY_SEPARATOR . md5($url);
 
         if ($fs->exists($extractDirectory)) {
             $fs->remove($extractDirectory);
         }
 
         // Download fresh version
-        $client = HttpClient::create();
-        $response = $client->request('GET', $url);
+        $response = $this->client->request('GET', $url);
 
         $fileHandler = fopen($filePath, 'w');
-        foreach ($client->stream($response) as $chunk) {
+        foreach ($this->client->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());
         }
 
         // Extract zip
-        $zip = new ZipArchive();
+        $zip = new \ZipArchive();
         $res = $zip->open($filePath);
         if (true !== $res) {
-            throw new RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
+            throw new \RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
         }
 
         $zip->extractTo($extractDirectory);
@@ -210,11 +202,11 @@ class DataTourismeParser extends AbstractParser
         $phones = array_filter(array_unique($phones));
         $emails = array_filter(array_unique($emails));
 
-        $lastUpdate = new DateTimeImmutable($datas['lastUpdate']);
+        $lastUpdate = new \DateTimeImmutable($datas['lastUpdate']);
         $lastUpdate->setTime(0, 0);
 
         if (isset($datas['lastUpdateDatatourisme'])) {
-            $lastUpdateDatatourisme = new DateTimeImmutable($datas['lastUpdateDatatourisme']);
+            $lastUpdateDatatourisme = new \DateTimeImmutable($datas['lastUpdateDatatourisme']);
         } else {
             $lastUpdateDatatourisme = null;
         }
@@ -272,8 +264,8 @@ class DataTourismeParser extends AbstractParser
                 continue;
             }
 
-            $startDate = new DateTimeImmutable($date['startDate']);
-            $endDate = new DateTimeImmutable($date['endDate']);
+            $startDate = new \DateTimeImmutable($date['startDate']);
+            $endDate = new \DateTimeImmutable($date['endDate']);
             $hours = null;
 
             $startTime = $date['startTime'] ?? null;
@@ -357,10 +349,10 @@ class DataTourismeParser extends AbstractParser
 
     private function getExternalIdFromUrl(string $url): string
     {
-        $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
+        $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
 
         if (!preg_match(self::UUID_REGEX, $path)) {
-            throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
+            throw new \RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
         }
 
         return $path;

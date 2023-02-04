@@ -15,14 +15,9 @@ use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
-
-use const DIRECTORY_SEPARATOR;
-
 use ForceUTF8\Encoding;
 use Psr\Log\LoggerInterface;
-use SimpleXMLElement;
-use Symfony\Component\HttpClient\HttpClient;
-use XMLReader;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
@@ -31,8 +26,10 @@ abstract class AbstractAwinParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
-        private string $tempPath, private string $awinApiKey)
-    {
+        protected HttpClientInterface $httpClient,
+        private string $tempPath,
+        private string $awinApiKey
+    ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
     }
 
@@ -42,7 +39,7 @@ abstract class AbstractAwinParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
-        $xml = new XMLReader();
+        $xml = new \XMLReader();
         $xml->open('compress.zlib://' . $path);
 
         do {
@@ -50,7 +47,7 @@ abstract class AbstractAwinParser extends AbstractParser
         } while ('product' !== $xml->name);
 
         while ('product' === $xml->name) {
-            $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
+            $event = $this->elementToArray(new \SimpleXMLElement($xml->readOuterXML()));
             $event = $this->arrayToDto($event);
             if (null !== $event) {
                 $this->publish($event);
@@ -63,12 +60,11 @@ abstract class AbstractAwinParser extends AbstractParser
 
     private function downloadFile(string $url): string
     {
-        $client = HttpClient::create();
-        $response = $client->request('GET', $url);
+        $response = $this->httpClient->request('GET', $url);
 
-        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
         $fileHandler = fopen($filePath, 'w');
-        foreach ($client->stream($response) as $chunk) {
+        foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());
         }
 
@@ -77,7 +73,7 @@ abstract class AbstractAwinParser extends AbstractParser
 
     abstract protected function getAwinUrl(): string;
 
-    private function elementToArray(SimpleXMLElement $element): array
+    private function elementToArray(\SimpleXMLElement $element): array
     {
         $array = [];
         foreach ($element->children() as $node) {

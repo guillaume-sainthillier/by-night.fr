@@ -19,7 +19,6 @@ use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SowProgParser extends AbstractParser
@@ -36,12 +35,13 @@ class SowProgParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
+        HttpClientInterface $client,
         string $sowprogUsername,
         string $sowprogPassword
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
 
-        $this->client = HttpClient::create([
+        $this->client = $client->withOptions([
             'base_uri' => self::BASE_URI,
             'auth_basic' => [$sowprogUsername, $sowprogPassword],
             'headers' => [

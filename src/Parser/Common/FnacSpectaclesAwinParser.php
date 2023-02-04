@@ -17,11 +17,10 @@ use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
-use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class FnacSpectaclesAwinParser extends AbstractAwinParser
 {
@@ -35,11 +34,12 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
+        HttpClientInterface $httpClient,
         string $tempPath,
         string $awinApiKey,
         private CacheInterface $cache
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler, $tempPath, $awinApiKey);
+        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler, $httpClient, $tempPath, $awinApiKey);
     }
 
     /**
@@ -85,7 +85,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         }
 
         foreach ($startDates as $startDateStr) {
-            $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
+            $startDate = \DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
             if (false !== $startDate) {
                 $seenHours[] = sprintf('À %s', $startDate->format('H\hi'));
             }
@@ -101,7 +101,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             $hours = $seenHours[0];
         }
 
-        $endDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
+        $endDate = \DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
 
         if ('31/12 23:59' === $startDate->format('d/m H:i') && $startDate->format('d/m/Y') === $endDate->format('d/m/Y')) {
             $hours = null;
@@ -160,9 +160,8 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
     {
         return $this->cache->get('fnac.urls.' . md5($url), static function () use ($url) {
             $imageUrl = str_replace('grand/', '600/', $url);
-            $client = HttpClient::create();
             try {
-                $response = $client->request('HEAD', $imageUrl);
+                $response = $this->httpClient->request('HEAD', $imageUrl);
 
                 if (200 === $response->getStatusCode()) {
                     return $imageUrl;

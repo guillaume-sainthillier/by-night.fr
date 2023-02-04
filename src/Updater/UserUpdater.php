@@ -15,10 +15,10 @@ use App\Handler\UserHandler;
 use App\Repository\UserRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
-use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class UserUpdater extends Updater
 {
@@ -27,15 +27,21 @@ class UserUpdater extends Updater
      */
     private const PAGINATION_SIZE = 50;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, protected UserHandler $userHandler, private UserRepository $userRepository)
-    {
-        parent::__construct($entityManager, $logger, $facebookAdmin);
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+        FacebookAdmin $facebookAdmin,
+        HttpClientInterface $client,
+        protected UserHandler $userHandler,
+        private UserRepository $userRepository
+    ) {
+        parent::__construct($entityManager, $logger, $facebookAdmin, $client);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function update(DateTimeInterface $from): void
+    public function update(\DateTimeInterface $from): void
     {
         $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);
