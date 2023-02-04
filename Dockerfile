@@ -24,6 +24,7 @@ FROM php:8.1-fpm-alpine
 ARG APP_VERSION=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     APP_VERSION="${APP_VERSION}" \
+    MUSL_LOCPATH="/usr/share/i18n/locales/musl" \
     TZ="Europs/Paris"
 
 EXPOSE 80
