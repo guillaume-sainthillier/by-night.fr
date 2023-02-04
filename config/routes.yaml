@@ -1,41 +1,53 @@
 app.default:
-  resource: '../src/Controller/'
-  type:     annotation
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
 
 app.social:
-  resource: '../src/Controller/Social/'
-  prefix:   /social
-  type:     annotation
+    resource:
+        path: ../src/Controller/Social
+        namespace: App\Controller\Social
+    prefix: /social
+    type: attribute
 
 app.security:
-  resource: '../src/Controller/Security/'
-  type:     annotation
+    resource:
+        path: ../src/Controller/Security
+        namespace: App\Controller\Security
+    type: attribute
 
 app.espace_perso:
-  resource: '../src/Controller/EspacePerso/'
-  prefix:   /espace-perso
-  type:     annotation
+    resource:
+        path: ../src/Controller/EspacePerso
+        namespace: App\Controller\EspacePerso
+    prefix: /espace-perso
+    type: attribute
 
 app.comments:
-  resource: '../src/Controller/Comment/'
-  prefix:   /commentaire
-  type:     annotation
+    resource:
+        path: ../src/Controller/Comment
+        namespace: App\Controller\Comment
+    prefix: /commentaire
+    type: attribute
 
 app.admin:
-  resource: '../src/Controller/Admin/'
-  prefix:   /_administration
-  type:     annotation
+    resource:
+        path: ../src/Controller/Admin
+        namespace: App\Controller\Admin
+    prefix: /_administration
+    type: attribute
 
 app.private:
-  resource: '../src/Controller/Fragments/'
-  type:     annotation
-
-kernel:
-  resource: '../src/Kernel.php'
-  type: annotation
+    resource:
+        path: ../src/Controller/Fragments
+        namespace: App\Controller\Fragments
+    type: attribute
 
 #La location est définie à partir d'ici
 app.location:
-  resource: '../src/Controller/Location'
-  prefix:   /{location}
-  type:     annotation
+    resource:
+        path: ../src/Controller/Location
+        namespace: App\Controller\Location
+    prefix: /{location}
+    type: attribute

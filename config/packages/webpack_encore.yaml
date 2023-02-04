@@ -11,8 +11,8 @@ webpack_encore:
         # https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change
         # 'data-turbo-track': reload
     # link_attributes:
-        # Uncomment if using Turbo Drive
-        # 'data-turbo-track': reload
+    # Uncomment if using Turbo Drive
+    # 'data-turbo-track': reload
 
     # If using Encore.enableIntegrityHashes() and need the crossorigin attribute (default: false, or use 'anonymous' or 'use-credentials')
     # crossorigin: 'anonymous'
@@ -25,14 +25,10 @@ webpack_encore:
 
     # If you have multiple builds:
     # builds:
-        # pass "frontend" as the 3rg arg to the Twig functions
-        # {{ encore_entry_script_tags('entry1', null, 'frontend') }}
+    # frontend: '%kernel.project_dir%/public/frontend/build'
 
-        # frontend: '%kernel.project_dir%/public/frontend/build'
-
-    # Cache the entrypoints.json (rebuild Symfony's cache when entrypoints.json changes)
-    # Put in config/packages/prod/webpack_encore.yaml
-    # cache: true
+    # pass the build name as the 3rd argument to the Twig functions
+    # {{ encore_entry_script_tags('entry1', null, 'frontend') }}
 
 framework:
     assets:
@@ -43,7 +39,6 @@ when@prod:
         # Cache the entrypoints.json (rebuild Symfony's cache when entrypoints.json changes)
         # Available in version 1.2
         cache: true
-
 #when@test:
 #    webpack_encore:
 #        strict_mode: false

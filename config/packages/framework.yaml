@@ -4,6 +4,7 @@ framework:
     secret: '%env(APP_SECRET)%'
     #csrf_protection: ~
     #http_method_override: true
+    handle_all_throwables: true
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
@@ -23,5 +24,5 @@ when@test:
 when@dev:
     framework:
         session:
-          handler_id: 'session.handler.native_file'
-          save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+            handler_id: 'session.handler.native_file'
+            save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
