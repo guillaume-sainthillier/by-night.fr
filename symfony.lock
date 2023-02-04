@@ -311,9 +311,6 @@
             "config/packages/nyholm_psr7.yaml"
         ]
     },
-    "openlss/lib-array2xml": {
-        "version": "1.0.0"
-    },
     "pagerfanta/pagerfanta": {
         "version": "v2.4.1"
     },
@@ -985,8 +982,5 @@
     },
     "webmozart/assert": {
         "version": "1.9.1"
-    },
-    "webmozart/path-util": {
-        "version": "2.3.0"
     }
 }
