@@ -59,7 +59,7 @@ class EventHandler
                 continue;
             }
 
-            if (!str_starts_with('http://', $event->getUrl()) && !str_starts_with('https://', $event->getUrl())) {
+            if (!str_starts_with($event->getUrl(), 'http://') && !str_starts_with($event->getUrl(), 'https://')) {
                 continue;
             }
 
