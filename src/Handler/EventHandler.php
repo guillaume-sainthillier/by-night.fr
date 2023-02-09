@@ -69,7 +69,6 @@ class EventHandler
         foreach (array_chunk(array_keys($eventsPerUrl), self::MAX_CONCURRENT_REQUESTS) as $imageUrls) {
             $responses = [];
             foreach ($imageUrls as $imageUrl) {
-                $this->logger->info(sprintf('Downloading %s', $imageUrl));
                 $response = $this->client->request('GET', $imageUrl, [
                     'user_data' => $imageUrl,
                 ]);
