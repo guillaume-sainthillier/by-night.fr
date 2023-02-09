@@ -21,6 +21,7 @@ use Symfony\Component\Mime\MimeTypes;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Vich\UploaderBundle\Handler\UploadHandler;
 
 class EventHandler
 {
@@ -34,6 +35,7 @@ class EventHandler
         private readonly LoggerInterface $logger,
         private readonly HttpClientInterface $client,
         private readonly TemporyFilesManager $temporyFilesManager,
+        private readonly UploadHandler $uploadHandler,
     ) {
     }
 
@@ -119,7 +121,8 @@ class EventHandler
      */
     private function uploadFile(Event $event, string $content): void
     {
-        if ($content && $event->getImageSystemHash() && md5($content) === $event->getImageSystemHash()) {
+        $hash = null;
+        if ($content && $event->getImageSystemHash() && ($hash = md5($content)) === $event->getImageSystemHash()) {
             return;
         }
 
@@ -128,6 +131,7 @@ class EventHandler
         $octets = file_put_contents($tempFilePath, $content);
 
         if (0 === $octets) {
+            $event->setImageSystemHash(null);
             $event->setImageSystemFile(null);
 
             return;
@@ -146,6 +150,12 @@ class EventHandler
         $pathUrl = parse_url($event->getUrl(), \PHP_URL_PATH);
         $originalName = pathinfo($pathUrl, \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
         $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
+        $event->setImageHash($hash);
         $event->setImageSystemFile($file);
+
+        // We do a manual upload on new entity because preFlush is after prePersist event
+        if (null === $event->getId()) {
+            $this->uploadHandler->upload($event, 'imageSystemFile');
+        }
     }
 }
