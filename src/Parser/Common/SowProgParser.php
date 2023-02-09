@@ -144,7 +144,7 @@ class SowProgParser extends AbstractParser
             $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', $event->imageUrl);
         }
 
-        $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
+        $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp((int) round($data['modificationDate'] / 1_000));
         $event->type = $eventData['eventType']['label'];
         $event->category = $eventData['eventStyle']['label'];
         $event->startDate = new DateTimeImmutable($scheduleData['date']);
