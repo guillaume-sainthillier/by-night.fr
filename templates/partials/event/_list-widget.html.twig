@@ -5,7 +5,7 @@
     <a class="scroll-item list-group-item list-group-item-action d-flex w-100 align-items-center" title="{{ event.name }} à {{ event.placeName }}" href="{{ path('app_event_details', {'slug' : event.slug, 'id': event.id, 'location': event.locationSlug}) }}">
         <div class="list-group-item-date text-info" title="{{ event.endDate|format_date('full') }}">
             {% if event.endDate != event.startDate %}
-                <small class="mb-1">{{ event.startDate|date('d/m') }} }}</small>
+                <small class="mb-1">{{ event.startDate|date('d/m') }}</small>
             {% endif %}
             <small>{{ event.endDate|date('d/m') }}</small>
         </div>
