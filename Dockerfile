@@ -32,6 +32,7 @@ WORKDIR /app
 # Install dependencies
 RUN apk add --no-cache \
     bash \
+    icu-data-full \
     icu-libs \
     imagemagick \
     libgomp \
