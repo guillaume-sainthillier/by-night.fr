@@ -40,8 +40,6 @@ RUN apk add --no-cache \
     libxml2 \
     libwebp \
     libzip \
-    musl-locales \
-    musl-locales-lang \
     git \
     nginx \
     rabbitmq-c \
