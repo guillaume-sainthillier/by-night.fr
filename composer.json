@@ -55,7 +55,6 @@
         "league/oauth2-google": "^4.0",
         "mhujer/breadcrumbs-bundle": "^1.4",
         "neitanod/forceutf8": "^2.0",
-        "nyholm/psr7": "^1.4",
         "pagerfanta/doctrine-orm-adapter": "^3.6",
         "pagerfanta/pagerfanta": "^3.6",
         "pagerfanta/twig": "^3.6",
