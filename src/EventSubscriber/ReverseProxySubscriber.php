@@ -48,7 +48,7 @@ class ReverseProxySubscriber implements EventSubscriberInterface
 
     public function onKernelResponse(ResponseEvent $event): void
     {
-        if ($this->enableHttpCache) {
+        if (!$this->enableHttpCache) {
             return;
         }
 
