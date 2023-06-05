@@ -526,7 +526,7 @@ class ImageHelper
 
         $width = round($width);
 
-        if (\count($breakpoints ?? []) > 0) {
+        if (($breakpoints ?? []) !== []) {
             $originalSizes = $breakpoints;
             $sizes = array_filter($breakpoints, static fn (int $breakpoint) => $breakpoint <= $originalWidth);
         } else {

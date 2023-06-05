@@ -85,8 +85,6 @@ class ZipCityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $countryId
-     *
      * @return ZipCity[]
      */
     public function findAllByCity(?string $city, string $countryId = null): array
@@ -96,7 +94,6 @@ class ZipCityRepository extends ServiceEntityRepository
 
     /**
      * @param string $postalCode
-     * @param string $countryId
      *
      * @return ZipCity[]
      */

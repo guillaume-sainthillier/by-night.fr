@@ -79,11 +79,7 @@ class UserLoader extends AbstractImageLoader
             $originalFormat = $this->guessExtensionFromPath($path);
         }
 
-        return array_merge($defaultParams, [
-            'originalWidth' => $originalWidth,
-            'originalHeight' => $originalHeight,
-            'originalFormat' => $originalFormat ?? 'jpg',
-        ]);
+        return [...$defaultParams, 'originalWidth' => $originalWidth, 'originalHeight' => $originalHeight, 'originalFormat' => $originalFormat ?? 'jpg'];
     }
 
     public function getUrl(array $params): string
