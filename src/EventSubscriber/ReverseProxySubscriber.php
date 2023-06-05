@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ReverseProxySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly bool $debug)
+    public function __construct(private readonly bool $enableHttpCache)
     {
     }
 
@@ -48,7 +48,7 @@ class ReverseProxySubscriber implements EventSubscriberInterface
 
     public function onKernelResponse(ResponseEvent $event): void
     {
-        if ($this->debug) {
+        if ($this->enableHttpCache) {
             return;
         }
 
@@ -75,7 +75,7 @@ class ReverseProxySubscriber implements EventSubscriberInterface
             }
 
             $response = $event->getResponse();
-            $response->headers->set('X-Reverse-Proxy-TTL', $ttl, false);
+            $response->headers->set('X-Reverse-Proxy-TTL', $ttl);
         }
     }
 }

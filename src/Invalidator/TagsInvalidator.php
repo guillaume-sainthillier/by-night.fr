@@ -24,8 +24,11 @@ class TagsInvalidator
 {
     private array $tags = [];
 
-    public function __construct(private readonly CacheManager $tagHandler, private readonly LoggerInterface $logger, private readonly bool $debug)
-    {
+    public function __construct(
+        private readonly CacheManager $tagHandler,
+        private readonly LoggerInterface $logger,
+        private readonly bool $enableHttpCache
+    ) {
     }
 
     public static function getHeaderTag(): string
@@ -35,8 +38,8 @@ class TagsInvalidator
 
     public function addCity(City $city): void
     {
-        $this->tags[] = 'autocomplete-city';
-        $this->tags[] = self::getCityTag($city);
+        $this->addTag('autocomplete-city');
+        $this->addTag(self::getCityTag($city));
     }
 
     public static function getAutocompleteCityTag(): string
@@ -51,7 +54,7 @@ class TagsInvalidator
 
     public function addUser(User $user): void
     {
-        $this->tags[] = self::getUserTag($user);
+        $this->addTag(self::getUserTag($user));
     }
 
     public static function getUserTag(User $user): string
@@ -61,7 +64,7 @@ class TagsInvalidator
 
     public function addUserEvent(UserEvent $userEvent): void
     {
-        $this->tags[] = self::getTrendTag($userEvent->getEvent());
+        $this->addTag(self::getTrendTag($userEvent->getEvent()));
     }
 
     public static function getTrendTag(Event $event): string
@@ -72,7 +75,7 @@ class TagsInvalidator
     public function addEvent(Event $event): void
     {
         if ($event->getId()) {
-            $this->tags[] = self::getEventTag($event);
+            $this->addTag(self::getEventTag($event));
         }
 
         if (null !== $event->getPlace()) {
@@ -93,10 +96,10 @@ class TagsInvalidator
     public function addPlace(Place $place): void
     {
         if ($place->getId()) {
-            $this->tags[] = self::getPlaceTag($place);
+            $this->addTag(self::getPlaceTag($place));
         }
 
-        $this->tags[] = self::getLocationTag($place->getLocation());
+        $this->addTag(self::getLocationTag($place->getLocation()));
     }
 
     public static function getPlaceTag(Place $place): string
@@ -106,15 +109,7 @@ class TagsInvalidator
 
     public function flush(): void
     {
-        if ($this->debug) {
-            unset($this->tags); // Call GC
-            $this->tags = [];
-
-            return;
-        }
-
-        $tags = array_filter(array_unique($this->tags));
-
+        $tags = array_keys($this->tags);
         if ([] === $tags) {
             return;
         }
@@ -129,5 +124,14 @@ class TagsInvalidator
 
         unset($this->tags); // Call GC
         $this->tags = [];
+    }
+
+    private function addTag(string $tag): void
+    {
+        if (false === $this->enableHttpCache) {
+            return;
+        }
+
+        $this->tags[$tag] = true;
     }
 }

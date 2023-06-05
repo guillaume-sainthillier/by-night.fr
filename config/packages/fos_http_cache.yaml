@@ -7,7 +7,9 @@ fos_http_cache:
 
     proxy_client:
         varnish:
+            tag_mode: 'purgekeys'
+            tags_header: 'xkey'
             http:
                 servers:
-                    - varnish
+                    - '%env(VARNISH_URL)%'
                 base_url: '%env(APP_URL)%'

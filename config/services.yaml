@@ -41,6 +41,7 @@ services:
             $s3ThumbServer: '@app.s3_thumb_server'
             $assetThumbServer: '@app.asset_thumb_server'
             $dataDir: '%kernel.project_dir%/var/datas'
+            $enableHttpCache: '%env(bool:ENABLE_HTTP_CACHE)%'
             $parsers: !tagged_iterator app.parser
             $entityProviders: !tagged_iterator app.entity_provider
             $dtoConverters: !tagged_iterator app.dto_converter
