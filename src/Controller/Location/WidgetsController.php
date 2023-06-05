@@ -63,7 +63,7 @@ class WidgetsController extends BaseController
 
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}', name: 'app_widget_next_events', methods: ['GET'])]
     #[ReverseProxy(expires: 'tomorrow')]
-    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
+    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, int $id = null, int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -97,7 +97,7 @@ class WidgetsController extends BaseController
 
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}', name: 'app_widget_similar_events', methods: ['GET'])]
     #[ReverseProxy(expires: 'tomorrow')]
-    public function similarEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
+    public function similarEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, int $id = null, ?int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);

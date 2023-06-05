@@ -80,7 +80,7 @@ class ImageHelper
         ];
     }
 
-    public function image(array $params, ?Environment $twig = null): string
+    public function image(array $params, Environment $twig = null): string
     {
         $loader = $this->loaderRegistry->getLoader($params);
 

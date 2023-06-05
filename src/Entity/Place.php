@@ -159,8 +159,8 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         }
 
         foreach ($this->getExternalIdentifiables() as $metadata) {
-            if ($metadata->getExternalId() === $externalIdentifiable->getExternalId() &&
-                $metadata->getExternalOrigin() === $externalIdentifiable->getExternalOrigin()) {
+            if ($metadata->getExternalId() === $externalIdentifiable->getExternalId()
+                && $metadata->getExternalOrigin() === $externalIdentifiable->getExternalOrigin()) {
                 return true;
             }
         }

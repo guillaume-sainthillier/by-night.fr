@@ -92,8 +92,8 @@ class Firewall
         }
 
         // Pas de dates valides fournies
-        if (!$dto->startDate instanceof DateTimeInterface ||
-            ($dto->endDate && !$dto->endDate instanceof DateTimeInterface)
+        if (!$dto->startDate instanceof DateTimeInterface
+            || ($dto->endDate && !$dto->endDate instanceof DateTimeInterface)
         ) {
             $dto->reject->addReason(Reject::BAD_EVENT_DATE);
         } elseif ($dto->endDate && $dto->endDate < $dto->startDate) {
@@ -242,7 +242,7 @@ class Firewall
         // L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        // L'événement a changé -> valide
+            // L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }

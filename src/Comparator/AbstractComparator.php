@@ -23,9 +23,9 @@ abstract class AbstractComparator implements ComparatorInterface
     {
         // Search by exact matching only
         if (
-            $dto instanceof ExternalIdentifiableInterface &&
-            null !== $dto->getExternalId() &&
-            null !== $dto->getExternalOrigin()
+            $dto instanceof ExternalIdentifiableInterface
+            && null !== $dto->getExternalId()
+            && null !== $dto->getExternalOrigin()
         ) {
             foreach ($entities as $entity) {
                 if ($entity instanceof ExternalIdentifiablesInterface) {
@@ -37,8 +37,8 @@ abstract class AbstractComparator implements ComparatorInterface
                 }
 
                 foreach ($externals as $external) {
-                    if ($external->getExternalId() === $dto->getExternalId() &&
-                        $external->getExternalOrigin() === $dto->getExternalOrigin()) {
+                    if ($external->getExternalId() === $dto->getExternalId()
+                        && $external->getExternalOrigin() === $dto->getExternalOrigin()) {
                         return new Matching($entity, 100.0);
                     }
                 }

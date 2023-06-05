@@ -29,7 +29,7 @@ class EventController extends BaseController
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
     #[ReverseProxy(expires: '+1 month')]
-    public function index(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
+    public function index(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, int $id = null): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);

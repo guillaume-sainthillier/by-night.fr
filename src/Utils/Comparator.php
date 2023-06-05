@@ -55,8 +55,8 @@ class Comparator
             return false;
         }
 
-        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
-            ($a->getId() && $a->getId() === $b->getId());
+        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId())
+            || ($a->getId() && $a->getId() === $b->getId());
     }
 
     public function getMatchingScorePlace(Place $a = null, Place $b = null): int
@@ -69,17 +69,17 @@ class Comparator
             return 100;
         }
 
-        if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId()) ||
-            ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId()) ||
-            (!$a->getCity() && !$b->getCity() && !$a->getZipCity() && !$b->getZipCity() && $a->getCountry() && $b->getCountry() && $a->getCountry()->getId() === $b->getCountry()->getId())) {
+        if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId())
+            || ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId())
+            || (!$a->getCity() && !$b->getCity() && !$a->getZipCity() && !$b->getZipCity() && $a->getCountry() && $b->getCountry() && $a->getCountry()->getId() === $b->getCountry()->getId())) {
             $matchingScoreNom = $this->getMatchingScoreTextWithoutCity(
                 $a->getName(), $a->getCity(), $a->getZipCity(),
                 $b->getName(), $b->getCity(), $b->getZipCity()
             );
 
             // Même rue & ~ même nom
-            if ($matchingScoreNom >= 80 &&
-                $this->getMatchingScoreRue($a->getStreet(), $b->getStreet()) >= 90
+            if ($matchingScoreNom >= 80
+                && $this->getMatchingScoreRue($a->getStreet(), $b->getStreet()) >= 90
             ) {
                 return 100;
             }
@@ -93,7 +93,7 @@ class Comparator
         return 0;
     }
 
-    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null): int|float
+    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, string $b = null, City $cityB = null, ZipCity $zipCityB = null): int|float
     {
         if ($a && $a === $b) {
             return 100;

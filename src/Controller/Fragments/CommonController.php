@@ -27,7 +27,7 @@ class CommonController extends AbstractController
 
     #[Route(path: '/_private/header/{id<%patterns.id%>}', name: 'app_private_header', methods: ['GET'])]
     #[ReverseProxy(expires: '+1 day')]
-    public function header(CityManager $cityManager, CityRepository $cityRepository, ?int $id = null): Response
+    public function header(CityManager $cityManager, CityRepository $cityRepository, int $id = null): Response
     {
         $city = null;
         if ($id) {

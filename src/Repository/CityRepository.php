@@ -186,7 +186,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         return \array_slice($results, 0, $limit);
     }
 
-    public function findAllByName(?string $cityName, ?string $countryId = null): array
+    public function findAllByName(?string $cityName, string $countryId = null): array
     {
         $cities = $this->cityManipulator->getCityNameAlternatives($cityName);
 
