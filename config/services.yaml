@@ -69,6 +69,7 @@ services:
             - '../src/Admin/Filter'
             - '../src/Annotation'
             - '../src/Dependency'
+            - '../src/DependencyInjection'
             - '../src/Dto'
             - '../src/Entity'
             - '../src/Exception'
@@ -206,13 +207,8 @@ services:
         arguments:
             - !tagged_iterator { tag: app.image.loader }
 
-    FOS\ElasticaBundle\Persister\AsyncPagerPersister:
-        arguments:
-            - '@fos_elastica.pager_persister_registry'
-            - '@fos_elastica.pager_provider_registry'
-            - '@Symfony\Component\Messenger\MessageBusInterface'
-        tags:
-            - { name: 'fos_elastica.pager_persister', persisterName: 'async' }
-
     FOS\ElasticaBundle\Message\Handler\AsyncPersistPageHandler:
         tags: [messenger.message_handler]
+
+    FOS\ElasticaBundle\Persister\AsyncPagerPersister: '@fos_elastica.async_pager_persister'
+    FOS\ElasticaBundle\Persister\PersisterRegistry: '@fos_elastica.persister_registry'
