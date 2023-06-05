@@ -71,13 +71,13 @@
                                     <a class="btn btn-light" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
                                         <i class="fa fa-pencil-alt text-primary"></i>
                                     </a>
-                                    <form class="d-inline-block form-delete" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
-                                        <input name="_method" type="hidden" value="DELETE">
-                                        <button type="submit" class="btn btn-light" data-bs-toggle="tooltip" title="Supprimer l'événement">
-                                            <i class="fa fa-trash text-danger"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-light" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement">
+                                        <i class="fa fa-trash text-danger"></i>
+                                    </button>
                                 </div>
+                                <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
+                                    <input name="_method" type="hidden" value="DELETE">
+                                </form>
                             </td>
                         </tr>
                     {% endfor %}

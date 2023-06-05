@@ -18,6 +18,7 @@ import scrollToTop from './global-listeners/scroll-to-top';
 import emailVerify from './listeners/email-verify';
 import formCollection from './listeners/form-collection';
 import formErrors from './listeners/form-errors';
+import formTarget from './listeners/form-target';
 import imagePreviews from './listeners/image-previews';
 import like from './listeners/like';
 import loadMore from './listeners/load-more';
@@ -44,6 +45,7 @@ class App {
             emailVerify,
             formCollection,
             formErrors,
+            formTarget,
             like,
             loadMore,
             login,
