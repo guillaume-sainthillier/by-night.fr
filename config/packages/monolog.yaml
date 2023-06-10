@@ -56,6 +56,5 @@ when@prod:
                 process_psr_3_messages: false
                 channels: ['!event', '!doctrine']
             deprecation:
-                type: stream
+                type: 'null'
                 channels: [deprecation]
-                path: php://stderr
