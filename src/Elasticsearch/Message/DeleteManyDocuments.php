@@ -19,7 +19,7 @@ class DeleteManyDocuments extends DocumentsAction
      */
     public function __construct(
         string $indexName,
-        private array $documents
+        private readonly array $documents
     ) {
         parent::__construct($indexName);
     }

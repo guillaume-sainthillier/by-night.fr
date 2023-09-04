@@ -12,7 +12,7 @@ namespace App\Elasticsearch\Message;
 
 abstract class DocumentsAction
 {
-    public function __construct(private string $indexName)
+    public function __construct(private readonly string $indexName)
     {
     }
 

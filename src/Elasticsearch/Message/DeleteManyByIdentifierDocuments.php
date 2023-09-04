@@ -17,8 +17,8 @@ class DeleteManyByIdentifierDocuments extends DocumentsAction
      */
     public function __construct(
         string $indexName,
-        private array $documentIds,
-        private bool|string $routing,
+        private readonly array $documentIds,
+        private readonly bool|string $routing,
     ) {
         parent::__construct($indexName);
     }

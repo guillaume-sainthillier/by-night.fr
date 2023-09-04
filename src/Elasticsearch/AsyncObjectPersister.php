@@ -24,11 +24,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class AsyncObjectPersister implements ObjectPersisterInterface
 {
     public function __construct(
-        private ObjectPersisterInterface $decorated,
-        private Index $index,
-        private array $options,
-        private MessageBusInterface $messageBus,
-        private LoggerInterface $logger,
+        private readonly ObjectPersisterInterface $decorated,
+        private readonly Index $index,
+        private readonly array $options,
+        private readonly MessageBusInterface $messageBus,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
