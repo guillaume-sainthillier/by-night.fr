@@ -30,10 +30,10 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 511, nullable: true)]
     private ?string $facebook_access_token = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 511, nullable: true)]
     private ?string $facebook_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
