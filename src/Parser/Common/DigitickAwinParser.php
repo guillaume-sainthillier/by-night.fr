@@ -134,6 +134,7 @@ class DigitickAwinParser extends AbstractAwinParser
             '<a href="$1">$2</a>',
             '<img src="$1" alt="" />',
         ];
+
         // Replacing the BBcodes with corresponding HTML tags
         return preg_replace($find, $replace, $text);
     }
