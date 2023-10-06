@@ -93,8 +93,6 @@ class ZipCityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $postalCode
-     *
      * @return ZipCity[]
      */
     public function findAllByPostalCode(?string $postalCode, string $countryId = null): array

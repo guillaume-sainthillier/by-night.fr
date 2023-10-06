@@ -17,9 +17,6 @@ use Pagerfanta\PagerfantaInterface;
 
 class CityElasticaRepository extends Repository
 {
-    /**
-     * @param string $q
-     */
     public function findWithSearch(?string $q): PagerfantaInterface
     {
         $query = new MultiMatch();
