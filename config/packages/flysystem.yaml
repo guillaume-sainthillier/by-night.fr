@@ -1,24 +1,31 @@
 # Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+
+services:
+    app.flysytem.http_client_adapter:
+        class: App\Flysystem\HttpClientAdapter
+        autowire: true
+        arguments:
+            $options: { base_uri: '%env(AWS_S3_URL)%' }
+
 flysystem:
     storages:
         s3.storage.reader:
-            adapter: 'aws'
+            adapter: 'app.flysytem.http_client_adapter'
             options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                bucket: '%env(AWS_S3_BUCKET_NAME)%'
 
         users.storage:
             adapter: 'aws'
             options:
                 client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                bucket: '%env(AWS_S3_BUCKET_NAME)%'
                 prefix: 'uploads/users'
 
         events.storage:
             adapter: 'aws'
             options:
                 client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                bucket: '%env(AWS_S3_BUCKET_NAME)%'
                 prefix: 'uploads/documents'
 
         thumbs.storage:
@@ -33,7 +40,7 @@ flysystem:
 
 # In production we disable thumb storage because it's handled by cloudfront
 when@prod:
-  flysystem:
-    storages:
-      thumbs.storage:
-        adapter: 'memory'
+    flysystem:
+        storages:
+            thumbs.storage:
+                adapter: 'memory'
