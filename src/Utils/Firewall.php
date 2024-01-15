@@ -150,7 +150,7 @@ class Firewall
             'TEMOIGNAGE DE PRET', 'prêteur', 'prêteuse', 'preteur', 'preteuse', 'prêt entre particulier',
             'offre de prët', 'offre de prêt', 'RETOUR AFFECTIF', "retour d'amour", 'Retour d’affection',
             'grand marabout', 'ENVOÛTEMENT AMOUREUX', 'faire revenir un homme', "rituel d'amour", 'Retour de l’être aimé',
-            "Retour de l'être aimé",
+            "Retour de l'être aimé", 'valise magique', 
         ]);
 
         foreach ($black_list as $black_word) {
