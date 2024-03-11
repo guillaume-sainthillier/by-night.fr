@@ -24,7 +24,7 @@ FROM php:8.1-fpm-alpine
 ARG APP_VERSION=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     APP_VERSION="${APP_VERSION}" \
-    TZ="Europs/Paris"
+    TZ="Europe/Paris"
 
 EXPOSE 80
 WORKDIR /app
