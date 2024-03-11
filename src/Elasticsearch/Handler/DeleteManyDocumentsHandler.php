@@ -10,13 +10,13 @@
 
 namespace App\Elasticsearch\Handler;
 
-use App\Elasticsearch\Message\ReplaceManyDocuments;
+use App\Elasticsearch\Message\DeleteManyDocuments;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 class DeleteManyDocumentsHandler extends AbstractActionHandler
 {
-    public function __invoke(ReplaceManyDocuments $action): void
+    public function __invoke(DeleteManyDocuments $action): void
     {
         $persister = $this->getPersister($action);
         $persister->doDeleteMany($action->getDocuments());
