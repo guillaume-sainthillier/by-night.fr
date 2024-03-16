@@ -87,7 +87,7 @@ class SearchController extends AbstractController
         $repoSearch = $rm->getRepository(Event::class);
         $search = (new SearchEvent())->setTerm($query);
 
-        return $repoSearch->findWithSearch($search, true);
+        return $repoSearch->findWithSearch($search);
     }
 
     private function searchUsers(RepositoryManagerInterface $rm, ?string $query): PagerfantaInterface

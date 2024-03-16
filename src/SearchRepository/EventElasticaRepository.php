@@ -48,8 +48,9 @@ class EventElasticaRepository extends Repository
      */
     final public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
-    public function findWithSearch(SearchEvent $search, bool $sortByScore = false): PagerfantaInterface
+    public function findWithSearch(SearchEvent $search): PagerfantaInterface
     {
+        $sortByScore = false;
         $mainQuery = new BoolQuery();
         $location = null;
         if ([] !== $search->getLieux()) {
@@ -133,6 +134,7 @@ class EventElasticaRepository extends Repository
 
         // Query
         if ($search->getTerm()) {
+            $sortByScore = true;
             $query = new MultiMatch();
             $query
                 ->setFuzziness('auto')
