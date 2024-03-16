@@ -318,9 +318,6 @@
             "config/packages/nyholm_psr7.yaml"
         ]
     },
-    "pagerfanta/pagerfanta": {
-        "version": "v2.4.1"
-    },
     "paragonie/constant_time_encoding": {
         "version": "v2.4.0"
     },
