@@ -1,9 +1,0 @@
-FOS\UserBundle\Model\User:
-    exclusion_policy: ALL
-    properties:
-        id:
-            expose: true
-            groups: [list_event, list_user]
-        username:
-            expose: true
-            groups: [list_event, list_user]
