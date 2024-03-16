@@ -14,7 +14,6 @@ use App\Search\SearchEvent;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\GeoDistance;
-use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
@@ -152,9 +151,11 @@ class EventElasticaRepository extends Repository
         }
 
         if ([] !== $search->getType()) {
-            $communeTypeQuery = new MatchQuery();
-            $communeTypeQuery->setField('type', implode(' ', $search->getType()));
-            $mainQuery->addFilter($communeTypeQuery);
+            $query = new MultiMatch();
+            $query
+                ->setQuery(implode(' ', $search->getType()))
+                ->setFields(['type', 'theme', 'category']);
+            $mainQuery->addFilter($query);
         }
 
         // Construction de la requête finale
