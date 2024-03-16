@@ -100,15 +100,15 @@ class Comparator
         }
 
         if (null !== $cityA) {
-            $a = str_ireplace($cityA->getName(), '', $a);
+            $a = str_ireplace((string) $cityA->getName(), '', (string) $a);
         } elseif (null !== $zipCityA) {
-            $a = str_ireplace($zipCityA->getName(), '', $a);
+            $a = str_ireplace((string) $zipCityA->getName(), '', (string) $a);
         }
 
         if (null !== $cityB) {
-            $b = str_ireplace($cityB->getName(), '', $b);
+            $b = str_ireplace((string) $cityB->getName(), '', (string) $b);
         } elseif (null !== $zipCityB) {
-            $b = str_ireplace($zipCityB->getName(), '', $b);
+            $b = str_ireplace((string) $zipCityB->getName(), '', (string) $b);
         }
 
         $a = $this->sanitize($a);
@@ -127,7 +127,7 @@ class Comparator
             $string = $this->util->deleteStopWords($string);
             $string = $this->util->deleteMultipleSpaces($string);
 
-            return trim($string);
+            return trim((string) $string);
         });
     }
 
@@ -180,18 +180,18 @@ class Comparator
         $step2 = $this->util->replaceAccents($step1);
         $step3 = $this->util->deleteMultipleSpaces($step2);
 
-        return trim($step3);
+        return trim((string) $step3);
     }
 
     public function sanitizeNumber(?string $string): ?string
     {
-        return preg_replace('#\D#', '', $string);
+        return preg_replace('#\D#', '', (string) $string);
     }
 
     public function sanitizeVille(?string $string): string
     {
-        $string = preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
-        $string = str_replace(' ', '', $string);
+        $string = preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', (string) $string);
+        $string = str_replace(' ', '', (string) $string);
 
         return $this->sanitize($string);
     }

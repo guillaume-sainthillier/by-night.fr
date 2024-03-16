@@ -26,7 +26,7 @@ class ParseExtension extends Extension
 
     public function ensureProtocol(?string $link): ?string
     {
-        if (!preg_match('#^(http|https|ftp)#', $link)) {
+        if (!preg_match('#^(http|https|ftp)#', (string) $link)) {
             return 'http://' . $link;
         }
 
@@ -35,14 +35,14 @@ class ParseExtension extends Extension
 
     public function parseTags(?string $texte): ?string
     {
-        $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', $texte);
-        $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $texte);
+        $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', (string) $texte);
+        $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', (string) $texte);
 
-        if (!preg_match('#<(.*)(script|style|link)#i', $texte)) {
+        if (!preg_match('#<(.*)(script|style|link)#i', (string) $texte)) {
             return $texte;
         }
 
-        return strip_tags($texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
+        return strip_tags((string) $texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
     }
 
     public function resume(?string $text): string
@@ -64,13 +64,13 @@ class ParseExtension extends Extension
 
         $final_text = $this->trimBr($linked_text);
 
-        return trim($final_text);
+        return trim((string) $final_text);
     }
 
     private function trimBr(?string $string): ?string
     {
-        $string = preg_replace('#^\s*(?:<br\s*\/?>\s*)*#i', '', $string);
+        $string = preg_replace('#^\s*(?:<br\s*\/?>\s*)*#i', '', (string) $string);
 
-        return preg_replace('#\s*(?:<br\s*\/?>\s*)*$#i', '', $string);
+        return preg_replace('#\s*(?:<br\s*\/?>\s*)*$#i', '', (string) $string);
     }
 }

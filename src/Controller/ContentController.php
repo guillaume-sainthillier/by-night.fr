@@ -13,7 +13,7 @@ namespace App\Controller;
 use App\Annotation\ReverseProxy;
 use App\Controller\AbstractController as BaseController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[ReverseProxy(expires: '1 year')]
 class ContentController extends BaseController

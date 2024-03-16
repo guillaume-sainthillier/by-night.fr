@@ -41,7 +41,7 @@ class UserHandler
             return true;
         }
 
-        return md5_file($imagePath) !== md5($newContent);
+        return md5_file($imagePath) !== md5((string) $newContent);
     }
 
     public function uploadFile(User $user, string $content, string $contentType): void

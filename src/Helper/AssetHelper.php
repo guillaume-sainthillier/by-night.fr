@@ -24,13 +24,13 @@ class AssetHelper
     {
         if (empty($parameters['fm'])) {
             $parameters['fm'] = 'pjpg';
-            if (str_ends_with($path, 'png')) {
+            if (str_ends_with((string) $path, 'png')) {
                 $parameters['fm'] = 'png';
             }
         }
 
         $parameters['s'] = SignatureFactory::create($this->secret)->generateSignature($path, $parameters);
-        $parameters['path'] = ltrim($path, '/');
+        $parameters['path'] = ltrim((string) $path, '/');
 
         return $this->router->generate('thumb_s3_url', $parameters, $referenceType);
     }

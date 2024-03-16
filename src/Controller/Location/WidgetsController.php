@@ -18,7 +18,7 @@ use App\Event\Events;
 use App\Repository\EventRepository;
 use App\Social\Twitter;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class WidgetsController extends BaseController

@@ -18,7 +18,7 @@ use App\Social\Social;
 use App\Social\SocialProvider;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route(path: '/login-social')]

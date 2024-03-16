@@ -14,7 +14,7 @@ use App\App\SocialManager;
 use App\Controller\AbstractController;
 use App\Entity\AppOAuth;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/info')]
 class InfoController extends AbstractController

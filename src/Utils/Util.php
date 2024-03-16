@@ -54,7 +54,7 @@ class Util
             return '';
         }
 
-        return trim(preg_replace('#[^\d.-]#u', '', $string));
+        return trim((string) preg_replace('#[^\d.-]#u', '', $string));
     }
 
     public function replaceNonAlphanumericChars(?string $string): string
@@ -63,7 +63,7 @@ class Util
             return '';
         }
 
-        return trim(preg_replace('#[^A-Za-z0-9 ]#u', '', $string));
+        return trim((string) preg_replace('#[^A-Za-z0-9 ]#u', '', $string));
     }
 
     /**
@@ -78,9 +78,9 @@ class Util
         }
 
         if (\is_string($delimiters) && isset($delimiters[0])) { // Strlen > 0
-            return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
+            return trim((string) preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && [] !== $delimiters) {
-            return trim(preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', static fn ($matches) => $matches[1], $string));
+            return trim((string) preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', static fn ($matches) => $matches[1], $string));
         }
 
         return trim($string);
@@ -92,7 +92,7 @@ class Util
             return '';
         }
 
-        return trim(preg_replace($this->stopWordsRegex, ' ', $string));
+        return trim((string) preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
     public function deleteMultipleSpaces(?string $string): ?string

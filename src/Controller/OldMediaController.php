@@ -17,7 +17,7 @@ use App\Helper\AssetHelper;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
 class OldMediaController extends AbstractController

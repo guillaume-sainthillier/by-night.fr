@@ -39,7 +39,7 @@ class TweetExtension extends Extension
                 '$1<a class="link-hashtag" href="https://twitter.com/search?q=%23$2&src=hash" target="_blank">#$2</a>',
                 '$1<a class="link-mention" href="https://twitter.com/$2" target="_blank">@$2</a>',
             ],
-            $tweet
+            (string) $tweet
         );
     }
 }

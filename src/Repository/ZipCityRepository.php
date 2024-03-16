@@ -64,7 +64,7 @@ class ZipCityRepository extends ServiceEntityRepository
         if ($city) {
             $cities = [];
             $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-            $city = str_replace('’', "'", $city);
+            $city = str_replace('’', "'", (string) $city);
             $cities[] = $city;
             $cities[] = str_replace(' ', '-', $city);
             $cities[] = str_replace('-', ' ', $city);

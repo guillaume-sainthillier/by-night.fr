@@ -59,7 +59,7 @@ class EventElasticaRepository extends Repository
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCountry()) {
             $mainQuery->addFilter(
-                new Term(['place.country.id' => mb_strtolower($search->getLocation()->getCountry()->getId())])
+                new Term(['place.country.id' => mb_strtolower((string) $search->getLocation()->getCountry()->getId())])
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCity()) {
             $location = $search->getLocation()->getCity()->getLocation();

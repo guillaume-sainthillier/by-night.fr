@@ -16,7 +16,7 @@ use App\OAuth\TwitterOAuth;
 use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/login-social')]
 class LoginSocialController extends AbstractController

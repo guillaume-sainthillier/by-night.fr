@@ -15,7 +15,7 @@ use App\Controller\AbstractController;
 use App\Social\Social;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/social/{service<%patterns.admin_social%>}')]
 class SocialController extends AbstractController

@@ -68,7 +68,7 @@ class ReverseProxySubscriber implements EventSubscriberInterface
             if (null !== $reverseProxyConfiguration->getTtl()) {
                 $ttl = $reverseProxyConfiguration->getTtl();
             } else {
-                $date = DateTime::createFromFormat('U', strtotime($reverseProxyConfiguration->getExpires()), new DateTimeZone('UTC'));
+                $date = DateTime::createFromFormat('U', strtotime((string) $reverseProxyConfiguration->getExpires()), new DateTimeZone('UTC'));
                 $now = DateTime::createFromFormat('U', strtotime('now'), new DateTimeZone('UTC'));
 
                 $ttl = max($date->format('U') - $now->format('U'), 0);

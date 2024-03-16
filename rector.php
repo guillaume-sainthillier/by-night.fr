@@ -14,13 +14,11 @@ use App\Annotation\ReverseProxy;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
-use Rector\Php71\Rector\FuncCall\CountOnNullRector;
 use Rector\Php80\Rector\Class_\AnnotationToAttributeRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php80\ValueObject\AnnotationToAttribute;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
-use Rector\Symfony\Set\SymfonyLevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
 use Rector\Symfony\Symfony42\Rector\MethodCall\ContainerGetToConstructorInjectionRector;
 
@@ -40,7 +38,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->sets([
         DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
         DoctrineSetList::DOCTRINE_CODE_QUALITY,
-        SymfonyLevelSetList::UP_TO_SYMFONY_63,
+        SymfonySetList::SYMFONY_64,
         SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
         LevelSetList::UP_TO_PHP_82,
         SetList::CODING_STYLE,
@@ -48,7 +46,6 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->skip([
         CatchExceptionNameMatchingTypeRector::class,
-        CountOnNullRector::class,
         ClassPropertyAssignToConstructorPromotionRector::class => [
             __DIR__ . '/src/Entity/*',
         ],

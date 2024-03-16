@@ -19,7 +19,7 @@ use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Pagerfanta\PagerfantaInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/recherche')]
 class SearchController extends AbstractController

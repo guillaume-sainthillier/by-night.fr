@@ -25,10 +25,10 @@ class CityManipulator
 
         foreach ($variants as $variant) {
             $alternatives[] = $variant;
-            $alternatives[] = str_replace(' ', '-', $variant);
-            $alternatives[] = str_replace('-', ' ', $variant);
-            $alternatives[] = str_replace(["l'", "d'"], '', $variant);
-            $alternatives[] = str_replace("'", '', $variant);
+            $alternatives[] = str_replace(' ', '-', (string) $variant);
+            $alternatives[] = str_replace('-', ' ', (string) $variant);
+            $alternatives[] = str_replace(["l'", "d'"], '', (string) $variant);
+            $alternatives[] = str_replace("'", '', (string) $variant);
         }
 
         return array_values(array_unique($alternatives));

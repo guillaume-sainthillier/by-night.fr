@@ -65,14 +65,14 @@ class PlaceComparator extends AbstractComparator
 
         $entityPlaceName = $entity->getName();
         if (null !== $entity->getCity()) {
-            $entityPlaceName = str_ireplace($entity->getCity()->getName(), '', $entityPlaceName);
+            $entityPlaceName = str_ireplace((string) $entity->getCity()->getName(), '', $entityPlaceName);
         } elseif (null !== $entity->getZipCity()) {
-            $entityPlaceName = str_ireplace($entity->getZipCity()->getName(), '', $entityPlaceName);
+            $entityPlaceName = str_ireplace((string) $entity->getZipCity()->getName(), '', $entityPlaceName);
         }
 
         $dtoPlaceName = $dto->name;
         if (null !== $dto->city) {
-            $dtoPlaceName = str_ireplace($dto->city->name, '', $dtoPlaceName);
+            $dtoPlaceName = str_ireplace((string) $dto->city->name, '', $dtoPlaceName);
         }
 
         $entityPlaceName = $this->sanitize($entityPlaceName);

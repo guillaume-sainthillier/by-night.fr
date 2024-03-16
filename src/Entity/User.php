@@ -254,7 +254,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function getUsername(): string
     {
-        return ucfirst($this->username);
+        return ucfirst((string) $this->username);
     }
 
     public function getUserIdentifier(): string

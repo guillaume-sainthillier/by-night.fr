@@ -42,7 +42,7 @@ class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolv
         return sprintf(
             '%s-data-%s',
             $this->getKeyPrefix(),
-            mb_strtolower($this->code ?? $this->name)
+            mb_strtolower((string) ($this->code ?? $this->name))
         );
     }
 

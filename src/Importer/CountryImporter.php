@@ -199,7 +199,7 @@ class CountryImporter
                         'Département de ',
                         'Département du ',
                         'Territoire de ',
-                    ], '', $entity->getName())
+                    ], '', (string) $entity->getName())
                 );
             }
         }
