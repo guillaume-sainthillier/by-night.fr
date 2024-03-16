@@ -470,7 +470,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->select('e.category')
             ->from($this->_entityName, 'e')
             ->join('e.place', 'p')
-            ->where("e.category != ''")
+            ->where('e.category IS NOT NULL')
             ->andWhere('e.endDate >= :from');
 
         if ($location->isCity()) {
@@ -485,7 +485,6 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
         $results = $qb
             ->setParameter('from', $from->format('Y-m-d'))
             ->groupBy('e.category')
-            ->orderBy('e.category', Criteria::DESC)
             ->getQuery()
             ->getArrayResult();
 

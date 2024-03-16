@@ -32,7 +32,7 @@ class EventSEO
         $tags = $event->getDistinctTags();
 
         if ([] !== $tags) {
-            $description .= sprintf(' %s.', implode(', ', $tags));
+            $description .= sprintf(' %s.', implode(', ', array_keys($tags)));
         }
 
         if ($event->getFbParticipations() + $event->getFbInterets() > 50) {

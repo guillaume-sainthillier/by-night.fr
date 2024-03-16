@@ -25,7 +25,7 @@
     {% do menu.addItem(event.name, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
 {% endblock %}
     
-{% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
+{% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|keys|join(',') }},{% endif %}{{ parent() }}{% endblock %}
 {% block meta_description event_seo.eventDescription(event) %}
 
 {% block metas %}
@@ -36,7 +36,7 @@
         <meta property="article:author" content="{{ url('app_user_index', {'id': event.user.id, 'slug': event.user.slug}) }}" />
     {% endif %}
 
-    {% for tag in distinctTags %}
+    {% for tag in distinctTags|keys %}
         <meta property="article:tag" content="{{ tag }}" />
     {% endfor %}
 {% endblock %}
@@ -265,9 +265,9 @@
 
                                 {% for tag in distinctTags %}
                                     <a class="badge bg-info"
-                                       title="{{ tag }} {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_by_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">{{ tag }} {{ event.place.location.atName }}</strong>
+                                       title="{{ tag.value }} {{ event.place.location.atName }}"
+                                       href="{{ path('app_agenda_by_tags', {'tag' : tag.value, 'location': event.place.locationSlug}) }}">
+                                        <strong class="font-weight-normal">{{ tag.value }} {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endfor %}
                             </p>

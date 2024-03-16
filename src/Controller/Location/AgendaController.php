@@ -20,6 +20,7 @@ use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
+use App\Utils\TagUtils;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -154,22 +155,19 @@ class AgendaController extends BaseController
 
     private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location)
     {
-        $key = 'event_categories.' . $location->getSlug();
+        $key = 'event.categories.v2.' . $location->getSlug();
 
         return $cache->get($key, static function (ItemInterface $item) use ($repo, $location) {
             $eventTypes = $repo->getEventTypes($location);
             $types = [];
             foreach ($eventTypes as $eventType) {
-                $eventType = explode(',', $eventType);
-                foreach ($eventType as $type) {
-                    $type = array_map('trim', explode('//', $type))[0];
-                    if (!\in_array($type, $types, true) && '' !== $type) {
-                        $types[$type] = $type;
-                    }
+                $eventTypeTags = TagUtils::getTagTerms($eventType);
+                foreach ($eventTypeTags as $eventTypeTag) {
+                    $types[$eventTypeTag] = $eventTypeTag;
                 }
             }
 
-            ksort($types);
+            ksort($types, \SORT_NATURAL | \SORT_FLAG_CASE);
             $item->expiresAfter(24 * 60 * 60);
 
             return $types;

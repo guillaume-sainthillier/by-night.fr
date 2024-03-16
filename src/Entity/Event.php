@@ -17,6 +17,7 @@ use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
+use App\Utils\TagUtils;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -439,13 +440,29 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     /**
      * @return string[]
      *
-     * @psalm-return array<int, string>
+     * @psalm-return array<string, array{type: string, value: string}>
      */
     public function getDistinctTags(): array
     {
-        $tags = $this->category . ',' . $this->type . ',' . $this->theme;
+        $categoryTags = TagUtils::getTagTerms($this->category ?? '');
+        $tags = TagUtils::getTagTerms($this->category . ',' . $this->type . ',' . $this->theme);
 
-        return array_unique(array_map('trim', array_map('ucfirst', array_filter(preg_split('#[,/]#', $tags)))));
+        $allTags = [];
+        foreach ($categoryTags as $categoryTag) {
+            $allTags[$categoryTag] = [
+                'type' => 'category',
+                'value' => $categoryTag,
+            ];
+        }
+
+        foreach ($tags as $tag) {
+            $allTags[$tag] ??= [
+                'type' => 'tag',
+                'value' => $tag,
+            ];
+        }
+
+        return $allTags;
     }
 
     public function getPlaceCountryName(): ?string
