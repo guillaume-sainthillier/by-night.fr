@@ -73,7 +73,7 @@ ENV PHPIZE_DEPS \
 
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS && \
-    docker-php-ext-install -j$(nproc) bcmath exif intl opcache pcntl pdo_mysql soap sockets zip && \
+    docker-php-ext-install -j$(nproc) bcmath exif intl opcache pcntl pdo_mysql zip && \
     pecl install amqp apcu redis imagick && \
     docker-php-ext-enable amqp apcu redis imagick && \
     apk del .build-deps && \
