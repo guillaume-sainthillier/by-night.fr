@@ -159,7 +159,7 @@ class EventElasticaRepository extends Repository
 
         // Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
-        $finalQuery->setSource([]); // Grab only id as we don't need other fields
+        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
         if (!$sortByScore) {
             $finalQuery->addSort(['end_date' => 'asc']);
 
