@@ -38,6 +38,7 @@ RUN apk add --no-cache \
     libgomp \
     libjpeg \
     libpng \
+    linux-headers \
     libxml2 \
     libwebp \
     libzip \
