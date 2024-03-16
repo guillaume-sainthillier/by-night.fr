@@ -79,7 +79,7 @@ abstract class AbstractAwinParser extends AbstractParser
     {
         $array = [];
         foreach ($element->children() as $node) {
-            $array[$node->getName()] = \is_array($node) ? $this->elementToArray($node) : Encoding::toUTF8(utf8_decode($node));
+            $array[$node->getName()] = \is_array($node) ? $this->elementToArray($node) : Encoding::toUTF8(mb_convert_encoding($node, 'ISO-8859-1'));
         }
 
         return $array;

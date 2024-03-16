@@ -19,7 +19,7 @@ RUN mkdir -p public && \
     yarn build && \
     yarn install --frozen-lockfile --ignore-scripts --production
 
-FROM php:8.1-fpm-alpine
+FROM php:8.2-fpm-alpine
 
 ARG APP_VERSION=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
