@@ -104,7 +104,7 @@ class Util
         return u($string)->collapseWhitespace()->trim()->toString();
     }
 
-    public function utf8TitleCase(?string $string): string|null
+    public function utf8TitleCase(?string $string): ?string
     {
         if (null === $string) {
             return null;
@@ -113,7 +113,7 @@ class Util
         return u($string)->title(true)->trim()->toString();
     }
 
-    public function utf8LowerCase(?string $string): string|null
+    public function utf8LowerCase(?string $string): ?string
     {
         if (null === $string) {
             return null;

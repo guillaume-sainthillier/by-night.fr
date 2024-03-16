@@ -106,6 +106,7 @@
         "vich/uploader-bundle": "^2"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.51",
         "phpunit/phpunit": "^10.1",
         "rector/rector": "^0.18",
         "symfony/browser-kit": "6.3.*",

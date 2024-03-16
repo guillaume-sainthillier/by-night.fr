@@ -39,7 +39,7 @@ class AgendaController extends BaseController
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
     #[ReverseProxy(expires: 'tomorrow')]
-    public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, string $type = null, string $tag = null, string $slug = null): Response
+    public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
         // État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -114,7 +114,7 @@ class AgendaController extends BaseController
         ]);
     }
 
-    private function handleSearch(SearchEvent $search, Location $location, ?string $type, ?string $tag, Place $place = null): string
+    private function handleSearch(SearchEvent $search, Location $location, ?string $type, ?string $tag, ?Place $place = null): string
     {
         $term = null;
         if (null !== $place) {

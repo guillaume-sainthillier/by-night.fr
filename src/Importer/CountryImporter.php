@@ -39,7 +39,7 @@ class CountryImporter
     {
     }
 
-    public function import(string $id, string $name = null, string $capital = null, string $locale = null): void
+    public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null): void
     {
         /**
          * @var Country

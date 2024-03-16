@@ -52,7 +52,7 @@ class Monitor
         self::$enableMonitoring = $enable;
     }
 
-    public static function writeln(string $message = null): void
+    public static function writeln(?string $message = null): void
     {
         if (null !== self::$output) {
             self::$output->writeln($message);

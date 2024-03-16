@@ -149,6 +149,18 @@
     "felixfbecker/language-server-protocol": {
         "version": "1.5.1"
     },
+    "friendsofphp/php-cs-fixer": {
+        "version": "3.51",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "be2103eb4a20942e28a6dd87736669b757132435"
+        },
+        "files": [
+            ".php-cs-fixer.dist.php"
+        ]
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.2"
     },

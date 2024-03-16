@@ -59,7 +59,7 @@ class Merger
     {
     }
 
-    public function mergeEvent(Event $a = null, Event $b = null): object|null
+    public function mergeEvent(?Event $a = null, ?Event $b = null): ?object
     {
         return $this->merge($a, $b, [
             'name',
@@ -168,7 +168,7 @@ class Merger
         return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 
-    public function mergePlace(Place $a = null, Place $b = null): object|null
+    public function mergePlace(?Place $a = null, ?Place $b = null): ?object
     {
         return $this->merge($a, $b, [
             'name' => self::MERGE_LEFT,

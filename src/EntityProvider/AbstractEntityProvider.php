@@ -70,7 +70,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function addEntity(object $entity, object $fromDto = null): void
+    public function addEntity(object $entity, ?object $fromDto = null): void
     {
         $keys = $this->getObjectKeys($entity);
         if (null !== $fromDto) {

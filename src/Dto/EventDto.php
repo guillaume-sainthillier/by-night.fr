@@ -124,7 +124,7 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      */
-    public function setImageFile(File $image = null): self
+    public function setImageFile(?File $image = null): self
     {
         $this->imageFile = $image;
 

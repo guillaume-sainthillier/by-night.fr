@@ -31,7 +31,7 @@ class EventProfilePicture
     ) {
     }
 
-    public function getOriginalPicture(Event|EventDto $event): string|null
+    public function getOriginalPicture(Event|EventDto $event): ?string
     {
         [
             'path' => $path,

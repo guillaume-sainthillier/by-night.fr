@@ -21,7 +21,7 @@ class Comparator
     {
     }
 
-    public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90): ?Place
+    public function getBestPlace(array $places, ?Place $testedPlace = null, $minScore = 90): ?Place
     {
         if (null === $testedPlace) {
             return null;
@@ -49,7 +49,7 @@ class Comparator
         return $bestItem;
     }
 
-    public function isExactSamePlace(Place $a = null, Place $b = null): bool
+    public function isExactSamePlace(?Place $a = null, ?Place $b = null): bool
     {
         if (null === $a || null === $b) {
             return false;
@@ -59,7 +59,7 @@ class Comparator
             || ($a->getId() && $a->getId() === $b->getId());
     }
 
-    public function getMatchingScorePlace(Place $a = null, Place $b = null): int
+    public function getMatchingScorePlace(?Place $a = null, ?Place $b = null): int
     {
         if (null === $a || null === $b) {
             return 0;
@@ -93,7 +93,7 @@ class Comparator
         return 0;
     }
 
-    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, string $b = null, City $cityB = null, ZipCity $zipCityB = null): int|float
+    private function getMatchingScoreTextWithoutCity(?string $a, ?City $cityA = null, ?ZipCity $zipCityA = null, ?string $b = null, ?City $cityB = null, ?ZipCity $zipCityB = null): int|float
     {
         if ($a && $a === $b) {
             return 100;

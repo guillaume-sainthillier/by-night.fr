@@ -79,6 +79,6 @@
             "prettier --write"
         ],
         "*.{js,jsx}": "eslint --ignore-path .gitignore --fix",
-        "*.php": "php-cs-fixer fix --config=.php-cs-fixer.dist.php"
+        "*.php": "./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php"
     }
 }

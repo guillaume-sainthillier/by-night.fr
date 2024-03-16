@@ -168,7 +168,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         return false;
     }
 
-    public function getLocationSlug(): string|null
+    public function getLocationSlug(): ?string
     {
         return $this->getLocation()->getSlug();
     }
@@ -215,7 +215,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         return $this->reject;
     }
 
-    public function setReject(Reject $reject = null): self
+    public function setReject(?Reject $reject = null): self
     {
         $this->reject = $reject;
 

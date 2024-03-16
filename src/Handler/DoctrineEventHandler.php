@@ -315,7 +315,7 @@ class DoctrineEventHandler
      */
     private function mergeWithDatabase(
         array $dtos,
-        DependencyCatalogue $previousCatalogue = null,
+        ?DependencyCatalogue $previousCatalogue = null,
         array &$allCatalogues = [],
         array &$allEntityProviders = [],
         array $paths = []

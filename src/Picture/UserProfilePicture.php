@@ -24,7 +24,7 @@ class UserProfilePicture
     ) {
     }
 
-    public function getOriginalProfilePicture(User $user): string|null
+    public function getOriginalProfilePicture(User $user): ?string
     {
         [
             'path' => $path,
@@ -45,7 +45,7 @@ class UserProfilePicture
         return $path;
     }
 
-    public function getProfilePicture(User $user, array $params = []): string|null
+    public function getProfilePicture(User $user, array $params = []): ?string
     {
         [
             'path' => $path,

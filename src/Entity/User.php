@@ -214,7 +214,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      */
-    public function setImageFile(File $image = null): self
+    public function setImageFile(?File $image = null): self
     {
         $this->imageFile = $image;
 
@@ -239,7 +239,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      */
-    public function setImageSystemFile(File $image = null): self
+    public function setImageSystemFile(?File $image = null): self
     {
         $this->imageSystemFile = $image;
 

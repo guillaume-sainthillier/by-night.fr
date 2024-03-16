@@ -163,7 +163,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
     /**
      * @return string[]
      */
-    public function findAllRandomNames(Country $country = null, $limit = 5): array
+    public function findAllRandomNames(?Country $country = null, $limit = 5): array
     {
         $qb = parent::createQueryBuilder('c')
             ->select('c.name, c.slug, c2.name AS country')
@@ -186,7 +186,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         return \array_slice($results, 0, $limit);
     }
 
-    public function findAllByName(?string $cityName, string $countryId = null): array
+    public function findAllByName(?string $cityName, ?string $countryId = null): array
     {
         $cities = $this->cityManipulator->getCityNameAlternatives($cityName);
 

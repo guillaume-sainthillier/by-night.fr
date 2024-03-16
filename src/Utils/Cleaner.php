@@ -69,7 +69,7 @@ class Cleaner
      *
      * @psalm-param ''|array{0?: '-'} $delimiters
      */
-    private function cleanString(string|null $string, array|string $delimiters = []): string
+    private function cleanString(?string $string, array|string $delimiters = []): string
     {
         if (null === $string) {
             return '';

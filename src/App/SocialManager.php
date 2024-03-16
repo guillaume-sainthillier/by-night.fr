@@ -33,7 +33,7 @@ class SocialManager
         return null !== $this->appOAuth;
     }
 
-    public function getAppOAuth(): AppOAuth|null
+    public function getAppOAuth(): ?AppOAuth
     {
         if (!$this->_siteInfoInitialized) {
             $this->_siteInfoInitialized = true;

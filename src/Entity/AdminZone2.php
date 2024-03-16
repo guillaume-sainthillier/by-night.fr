@@ -30,7 +30,7 @@ class AdminZone2 extends AdminZone
     /**
      * Set parent.
      */
-    public function setParent(AdminZone1 $parent = null): self
+    public function setParent(?AdminZone1 $parent = null): self
     {
         $this->parent = $parent;
 

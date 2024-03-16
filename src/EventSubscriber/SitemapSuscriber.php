@@ -197,7 +197,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function addUrl($section, string $name, array $params = [], DateTimeInterface $lastMod = null, string $changefreq = null, float $priority = 0.6): void
+    private function addUrl($section, string $name, array $params = [], ?DateTimeInterface $lastMod = null, ?string $changefreq = null, float $priority = 0.6): void
     {
         $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
 
