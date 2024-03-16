@@ -27,7 +27,7 @@ class CityElasticaRepository extends Repository
         ;
 
         $finalQuery = Query::create($query);
-        $finalQuery->setSource([]); // Grab only id as we don't need other fields
+        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
         $finalQuery->addSort(['_score' => 'DESC']);
         $finalQuery->addSort(['population' => 'DESC']);
 

@@ -10,6 +10,7 @@
 
 namespace App\SearchRepository;
 
+use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Repository;
@@ -30,7 +31,9 @@ class UserElasticaRepository extends Repository
 
         $query->addFilter($match);
 
-        // Final Query
-        return $this->findPaginated($query);
+        $finalQuery = Query::create($query);
+        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
+
+        return $this->findPaginated($finalQuery);
     }
 }
