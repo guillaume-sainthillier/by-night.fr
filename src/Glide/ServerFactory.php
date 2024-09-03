@@ -26,13 +26,14 @@ use League\Glide\Manipulators\Pixelate;
 use League\Glide\Manipulators\Sharpen;
 use League\Glide\Manipulators\Size;
 use League\Glide\Manipulators\Watermark;
+use League\Glide\Server;
 
 class ServerFactory extends \League\Glide\ServerFactory
 {
     /**
      * {@inheritDoc}
      */
-    public static function create(array $config = [])
+    public static function create(array $config = []): Server
     {
         return (new self($config))->getServer();
     }

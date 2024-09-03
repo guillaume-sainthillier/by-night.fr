@@ -11,7 +11,6 @@
 namespace App\EntityFactory;
 
 use App\Contracts\EntityFactoryInterface;
-use App\Dto\CountryDto;
 use App\Dto\PlaceDto;
 use App\Entity\City;
 use App\Entity\Country;
@@ -78,17 +77,5 @@ class PlaceEntityFactory implements EntityFactoryInterface
         }
 
         return $entity;
-    }
-
-    private function fetchCountry(CountryDto $dto): ?Country
-    {
-        $countryEntityProvider = $this->entityProviderHandler->getEntityProvider($dto::class);
-        /** @var Country|null $country */
-        $country = $countryEntityProvider->getEntity($dto);
-        if (null === $dto->entityId && $country) {
-            $dto->entityId = $country->getId();
-        }
-
-        return $country;
     }
 }

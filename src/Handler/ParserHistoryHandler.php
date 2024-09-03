@@ -15,19 +15,14 @@ use DateTime;
 
 class ParserHistoryHandler
 {
-    private array $stats;
+    private array $stats = [
+        'nbBlacklists' => 0,
+        'nbInserts' => 0,
+        'nbUpdates' => 0,
+        'nbExplorations' => 0,
+    ];
 
     private ?ParserHistory $parserHistory = null;
-
-    public function __construct()
-    {
-        $this->stats = [
-            'nbBlacklists' => 0,
-            'nbInserts' => 0,
-            'nbUpdates' => 0,
-            'nbExplorations' => 0,
-        ];
-    }
 
     public function addExploration(): self
     {

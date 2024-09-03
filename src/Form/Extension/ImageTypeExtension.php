@@ -16,20 +16,16 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Picture\UserProfilePicture;
-use App\Twig\AssetExtension;
 use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
-use Vich\UploaderBundle\Storage\StorageInterface;
 
 class ImageTypeExtension extends AbstractTypeExtension
 {
     public function __construct(
-        private readonly StorageInterface $storage,
-        private readonly AssetExtension $assetExtension,
         private readonly UserProfilePicture $userProfilePicture,
         private readonly EventProfilePicture $eventProfilePicture,
     ) {

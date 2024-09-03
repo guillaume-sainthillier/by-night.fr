@@ -189,19 +189,17 @@ class CountryImporter
 
     private function sanitizeAdminZone(AdminZone $entity): void
     {
-        if ('FR' == $entity->getCountry()->getId()) {
-            if ($entity instanceof AdminZone2) {
-                $entity->setName(str_replace([
-                    "Département d'",
-                    "Département de l'",
-                    'Département de la ',
-                    'Département des ',
-                    'Département de ',
-                    'Département du ',
-                    'Territoire de ',
-                ], '', (string) $entity->getName())
-                );
-            }
+        if ('FR' == $entity->getCountry()->getId() && $entity instanceof AdminZone2) {
+            $entity->setName(str_replace([
+                "Département d'",
+                "Département de l'",
+                'Département de la ',
+                'Département des ',
+                'Département de ',
+                'Département du ',
+                'Territoire de ',
+            ], '', (string) $entity->getName())
+            );
         }
     }
 

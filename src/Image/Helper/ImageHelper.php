@@ -740,18 +740,4 @@ class ImageHelper
             'aspectRatio' => $aspectRatio,
         ]);
     }
-
-    private function stylesToStyle(array $styles): string
-    {
-        $stylesAsProperties = [];
-        foreach ($styles as $property => $value) {
-            $stylesAsProperties[] = \sprintf(
-                '%s: %s',
-                $property,
-                $value
-            );
-        }
-
-        return implode('; ', $stylesAsProperties);
-    }
 }

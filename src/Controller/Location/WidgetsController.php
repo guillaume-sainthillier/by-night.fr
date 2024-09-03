@@ -37,7 +37,7 @@ class WidgetsController extends BaseController
     #[ReverseProxy(expires: '1 hour')]
     public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, ?int $max_id = null): Response
     {
-        $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
+        $results = $disableTwitterFeed ? [] : $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
             parse_str((string) $results['search_metadata']['next_results'], $infos);

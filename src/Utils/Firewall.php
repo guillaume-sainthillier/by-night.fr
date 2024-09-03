@@ -28,7 +28,6 @@ class Firewall
 
     public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository)
     {
-        $this->parserDatas = [];
     }
 
     public function loadExternalIdsData(array $ids): void

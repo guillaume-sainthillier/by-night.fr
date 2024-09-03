@@ -20,7 +20,7 @@ class AsyncElasticaPersisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        foreach ($container->findTaggedServiceIds('fos_elastica.persister') as $id => $tags) {
+        foreach (array_keys($container->findTaggedServiceIds('fos_elastica.persister')) as $id) {
             $service = $container->getDefinition($id);
             $newServiceId = str_replace('fos_elastica.', 'app.', $id);
             $decorator = new Definition($newServiceId);

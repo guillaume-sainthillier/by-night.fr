@@ -269,8 +269,7 @@ class DoctrineEventHandler
         $explorations = $this->firewall->getExplorations();
 
         $chunks = array_chunk($explorations, 500);
-        unset($explorations); // Calls GC
-        $explorations = null;
+        unset($explorations);
 
         foreach ($chunks as $chunk) {
             /** @var ParserData $exploration */
@@ -295,16 +294,6 @@ class DoctrineEventHandler
     private function getAllowedEvents(array $dtos): array
     {
         return array_filter($dtos, fn (EventDto $dto) => $this->firewall->isEventDtoValid($dto));
-    }
-
-    /**
-     * @param EventDto[] $dtos
-     *
-     * @return EventDto[]
-     */
-    private function getNotAllowedEvents(array $dtos): array
-    {
-        return array_filter($dtos, fn (EventDto $dto) => !$this->firewall->isEventDtoValid($dto));
     }
 
     /**

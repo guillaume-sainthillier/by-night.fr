@@ -50,7 +50,7 @@ class UserHandler
             return;
         }
 
-        if (!$content) {
+        if ('' === $content) {
             $user->getOAuth()->setFacebookProfilePicture(null);
         } else {
             $ext = match ($contentType) {

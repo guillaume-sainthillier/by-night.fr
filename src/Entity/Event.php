@@ -338,11 +338,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function isIndexable(): bool
     {
-        if (false !== $this->draft) {
-            return false;
-        }
-
-        return true;
+        return false === $this->draft;
     }
 
     public function isAffiliate(): bool

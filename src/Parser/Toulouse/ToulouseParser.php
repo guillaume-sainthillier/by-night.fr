@@ -41,9 +41,7 @@ class ToulouseParser extends AbstractParser
     {
         $fichier = $this->downloadCSV();
 
-        if (null !== $fichier) {
-            $this->parseCSV($fichier);
-        }
+        $this->parseCSV($fichier);
     }
 
     /**

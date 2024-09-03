@@ -10,51 +10,47 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
-use App\Annotation\ReverseProxy;
+use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
+use Rector\CodeQuality\Rector\If_\CombineIfRector;
+use Rector\CodeQuality\Rector\If_\SimplifyIfElseToTernaryRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
-use Rector\Php80\Rector\Class_\AnnotationToAttributeRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
-use Rector\Php80\ValueObject\AnnotationToAttribute;
-use Rector\Set\ValueObject\LevelSetList;
-use Rector\Set\ValueObject\SetList;
 use Rector\Symfony\Set\SymfonySetList;
-use Rector\Symfony\Symfony42\Rector\MethodCall\ContainerGetToConstructorInjectionRector;
 
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->paths([
+return RectorConfig::configure()
+    ->withImportNames()
+    ->withSymfonyContainerXml(__DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml')
+    ->withCache(__DIR__ . '/var/tools/rector')
+    ->withPaths([
         __DIR__ . '/migrations',
         __DIR__ . '/src',
         __DIR__ . '/tests',
-    ]);
-
-    $rectorConfig->importNames();
-    $rectorConfig->importShortClasses();
-
-    $rectorConfig->symfonyContainerXml(__DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
-
-    // define sets of rules
-    $rectorConfig->sets([
-        DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
+    ])
+    // uncomment to reach your current PHP version
+    ->withPhpSets()
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        codingStyle: true,
+    )
+    ->withSets([
         DoctrineSetList::DOCTRINE_CODE_QUALITY,
+        SymfonySetList::SYMFONY_CODE_QUALITY,
         SymfonySetList::SYMFONY_64,
-        SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
-        LevelSetList::UP_TO_PHP_82,
-        SetList::CODING_STYLE,
-    ]);
-
-    $rectorConfig->skip([
+    ])
+    ->withSkip([
+        FlipTypeControlToUseExclusiveTypeRector::class,
         CatchExceptionNameMatchingTypeRector::class,
+        SimplifyIfElseToTernaryRector::class => [
+            __DIR__ . '/src/Image/Helper/ImageHelper.php',
+        ],
+        CombineIfRector::class => [
+            __DIR__ . '/src/Entity/*',
+        ],
         ClassPropertyAssignToConstructorPromotionRector::class => [
             __DIR__ . '/src/Entity/*',
         ],
-        ContainerGetToConstructorInjectionRector::class => [
-            __DIR__ . '/migrations',
-        ],
-    ]);
-
-    $rectorConfig->ruleWithConfiguration(AnnotationToAttributeRector::class, [
-        new AnnotationToAttribute(ReverseProxy::class),
-    ]);
-};
+    ])
+;

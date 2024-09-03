@@ -78,6 +78,6 @@ class EventsDownloadImagesCommand extends Command
 
         Monitor::finishProgressBar();
 
-        return (int) Command::SUCCESS;
+        return Command::SUCCESS;
     }
 }
