@@ -17,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DateTypeExtension extends AbstractTypeExtension
+final class DateTypeExtension extends AbstractTypeExtension
 {
     /**
      * {@inheritDoc}

@@ -15,7 +15,7 @@ use App\Dto\CityDto;
 use App\Entity\City;
 use App\Utils\SluggerUtils;
 
-class CityComparator extends AbstractComparator
+final class CityComparator extends AbstractComparator
 {
     public function __construct(private readonly SluggerUtils $sluggerUtils)
     {

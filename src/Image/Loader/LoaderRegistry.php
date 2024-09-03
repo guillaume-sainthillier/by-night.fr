@@ -13,12 +13,12 @@ namespace App\Image\Loader;
 use App\Contracts\ImageLoaderInterface;
 use RuntimeException;
 
-class LoaderRegistry
+final readonly class LoaderRegistry
 {
     /**
      * @param iterable<ImageLoaderInterface> $loaders
      */
-    public function __construct(private readonly iterable $loaders)
+    public function __construct(private iterable $loaders)
     {
     }
 

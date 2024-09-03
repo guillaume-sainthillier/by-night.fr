@@ -16,12 +16,12 @@ use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
 use DateTimeInterface;
 
-class Firewall
+final class Firewall
 {
     /**
      * @var string
      */
-    final public const VERSION = '1.1';
+    public const VERSION = '1.1';
 
     /** @var ParserData[] */
     private array $parserDatas = [];

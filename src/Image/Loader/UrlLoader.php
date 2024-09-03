@@ -10,7 +10,7 @@
 
 namespace App\Image\Loader;
 
-class UrlLoader extends AbstractImageLoader
+final class UrlLoader extends AbstractImageLoader
 {
     public function getUrl(array $params): string
     {

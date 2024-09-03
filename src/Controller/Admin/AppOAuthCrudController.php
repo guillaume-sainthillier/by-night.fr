@@ -13,7 +13,7 @@ namespace App\Controller\Admin;
 use App\Entity\AppOAuth;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
-class AppOAuthCrudController extends OAuthCrudController
+final class AppOAuthCrudController extends OAuthCrudController
 {
     public static function getEntityFqcn(): string
     {

@@ -16,7 +16,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\User;
 
-class UserDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
+final class UserDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?int $entityId = null;
 

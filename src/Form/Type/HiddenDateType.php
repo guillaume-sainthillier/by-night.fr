@@ -16,7 +16,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HiddenDateType extends DateType
+final class HiddenDateType extends DateType
 {
     /**
      * {@inheritDoc}

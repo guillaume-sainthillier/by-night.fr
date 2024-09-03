@@ -18,11 +18,11 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EntityProviderHandler;
 
-class EventEntityFactory implements EntityFactoryInterface
+final readonly class EventEntityFactory implements EntityFactoryInterface
 {
     public function __construct(
-        private readonly EntityProviderHandler $entityProviderHandler,
-        private readonly EventImageUploadSubscriber $eventImageUploadSubscriber,
+        private EntityProviderHandler $entityProviderHandler,
+        private EventImageUploadSubscriber $eventImageUploadSubscriber,
     ) {
     }
 

@@ -14,7 +14,7 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CheckboxTypeExtension extends AbstractTypeExtension
+final class CheckboxTypeExtension extends AbstractTypeExtension
 {
     /**
      * {@inheritDoc}

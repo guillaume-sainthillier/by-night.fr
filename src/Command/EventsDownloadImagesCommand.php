@@ -29,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:events:download-images',
     description: 'Download all missing event images',
 )]
-class EventsDownloadImagesCommand extends Command
+final class EventsDownloadImagesCommand extends Command
 {
     use PaginateTrait;
 

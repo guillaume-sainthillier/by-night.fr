@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/info')]
-class InfoController extends AbstractController
+final class InfoController extends AbstractController
 {
     #[Route(path: '/', name: 'app_administration_info_index', methods: ['GET'])]
     public function list(SocialManager $socialManager): Response

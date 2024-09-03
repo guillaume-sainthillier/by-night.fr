@@ -21,7 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method AppOAuth[]    findAll()
  * @method AppOAuth[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AppOAuthRepository extends ServiceEntityRepository
+final class AppOAuthRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

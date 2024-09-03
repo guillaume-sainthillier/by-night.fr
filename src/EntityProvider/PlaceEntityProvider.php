@@ -15,7 +15,7 @@ use App\Dto\PlaceDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\PlaceRepository;
 
-class PlaceEntityProvider extends AbstractEntityProvider
+final class PlaceEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
         private readonly PlaceRepository $placeRepository,

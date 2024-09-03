@@ -14,7 +14,7 @@ use Attribute;
 use Symfony\Component\Validator\Constraint;
 
 #[Attribute]
-class EventConstraint extends Constraint
+final class EventConstraint extends Constraint
 {
     public string $badEventName = "Le nom de l'événement est incorrect.";
 
@@ -56,6 +56,6 @@ class EventConstraint extends Constraint
 
     public function validatedBy(): string
     {
-        return static::class . 'Validator';
+        return self::class . 'Validator';
     }
 }

@@ -22,12 +22,12 @@ use App\Parser\Toulouse\ToulouseParser;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-class EventProfilePicture
+final readonly class EventProfilePicture
 {
     public function __construct(
-        private readonly UploaderHelper $helper,
-        private readonly Packages $packages,
-        private readonly AssetHelper $assetHelper,
+        private UploaderHelper $helper,
+        private Packages $packages,
+        private AssetHelper $assetHelper,
     ) {
     }
 

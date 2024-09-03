@@ -10,7 +10,7 @@
 
 namespace App\Manager;
 
-class TemporyFilesManager
+final class TemporyFilesManager
 {
     /**
      * @var resource[]

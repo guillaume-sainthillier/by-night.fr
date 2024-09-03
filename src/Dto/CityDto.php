@@ -20,7 +20,7 @@ use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\City;
 
-class CityDto implements DependencyRequirableInterface, DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
+final class CityDto implements DependencyRequirableInterface, DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?int $entityId = null;
 

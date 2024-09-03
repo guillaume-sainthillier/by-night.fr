@@ -20,22 +20,22 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 /**
  * @extends Voter<string, Event>
  */
-class EventVoter extends Voter
+final class EventVoter extends Voter
 {
     /**
      * @var string
      */
-    final public const CREATE = 'event.create';
+    public const CREATE = 'event.create';
 
     /**
      * @var string
      */
-    final public const EDIT = 'event.edit';
+    public const EDIT = 'event.edit';
 
     /**
      * @var string
      */
-    final public const DELETE = 'event.delete';
+    public const DELETE = 'event.delete';
 
     public function __construct(private readonly Security $security)
     {

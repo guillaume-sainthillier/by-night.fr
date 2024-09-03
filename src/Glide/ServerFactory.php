@@ -28,7 +28,7 @@ use League\Glide\Manipulators\Size;
 use League\Glide\Manipulators\Watermark;
 use League\Glide\Server;
 
-class ServerFactory extends \League\Glide\ServerFactory
+final class ServerFactory extends \League\Glide\ServerFactory
 {
     /**
      * {@inheritDoc}

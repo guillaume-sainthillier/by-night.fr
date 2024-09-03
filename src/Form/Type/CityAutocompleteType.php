@@ -20,7 +20,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class CityAutocompleteType extends AbstractType
+final class CityAutocompleteType extends AbstractType
 {
     public function __construct(private readonly DateRangeBuilder $dateRangeBuilder)
     {

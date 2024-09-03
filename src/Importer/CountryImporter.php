@@ -23,7 +23,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use ZipArchive;
 
-class CountryImporter
+final readonly class CountryImporter
 {
     /**
      * @var int
@@ -35,7 +35,7 @@ class CountryImporter
      */
     private const CITIES_PER_TRANSACTION = 50;
 
-    public function __construct(private readonly EntityManagerInterface $em, private readonly string $dataDir, private readonly CountryRepository $countryRepository)
+    public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
     {
     }
 

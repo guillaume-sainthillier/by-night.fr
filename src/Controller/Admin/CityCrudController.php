@@ -13,7 +13,7 @@ namespace App\Controller\Admin;
 use App\Entity\City;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
-class CityCrudController extends AdminZoneCrudController
+final class CityCrudController extends AdminZoneCrudController
 {
     public static function getEntityFqcn(): string
     {

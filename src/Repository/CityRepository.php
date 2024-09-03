@@ -27,7 +27,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method City[]    findAll()
  * @method City[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly CityManipulator $cityManipulator)
     {

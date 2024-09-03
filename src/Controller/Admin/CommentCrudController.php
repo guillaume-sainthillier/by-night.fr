@@ -19,7 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
-class CommentCrudController extends AbstractCrudController
+final class CommentCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

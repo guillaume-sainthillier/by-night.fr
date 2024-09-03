@@ -17,9 +17,9 @@ use App\Repository\ParserDataRepository;
 use App\Utils\Firewall;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class EventParserDataListener
+final readonly class EventParserDataListener
 {
-    public function __construct(private readonly ParserDataRepository $parserDataRepository)
+    public function __construct(private ParserDataRepository $parserDataRepository)
     {
     }
 

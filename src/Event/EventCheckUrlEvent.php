@@ -14,7 +14,7 @@ use App\Entity\Event;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 
-class EventCheckUrlEvent extends ContractEvent
+final class EventCheckUrlEvent extends ContractEvent
 {
     private ?Response $response = null;
 

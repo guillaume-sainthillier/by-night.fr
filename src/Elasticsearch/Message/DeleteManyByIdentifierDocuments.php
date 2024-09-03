@@ -10,7 +10,7 @@
 
 namespace App\Elasticsearch\Message;
 
-class DeleteManyByIdentifierDocuments extends DocumentsAction
+final class DeleteManyByIdentifierDocuments extends DocumentsAction
 {
     /**
      * @param string[] $documentIds

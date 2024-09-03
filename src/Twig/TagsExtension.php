@@ -15,7 +15,7 @@ use RuntimeException;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
 
-class TagsExtension extends Extension
+final class TagsExtension extends Extension
 {
     public function getFunctions(): array
     {

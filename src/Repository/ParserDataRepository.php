@@ -21,7 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ParserData[]    findAll()
  * @method ParserData[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ParserDataRepository extends ServiceEntityRepository
+final class ParserDataRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

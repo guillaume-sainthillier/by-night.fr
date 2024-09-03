@@ -15,12 +15,12 @@ use App\Helper\AssetHelper;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-class UserProfilePicture
+final readonly class UserProfilePicture
 {
     public function __construct(
-        private readonly UploaderHelper $helper,
-        private readonly Packages $packages,
-        private readonly AssetHelper $assetHelper,
+        private UploaderHelper $helper,
+        private Packages $packages,
+        private AssetHelper $assetHelper,
     ) {
     }
 

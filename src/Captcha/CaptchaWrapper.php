@@ -13,9 +13,9 @@ namespace App\Captcha;
 use ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class CaptchaWrapper
+final readonly class CaptchaWrapper
 {
-    public function __construct(private readonly RequestStack $requestStack, private readonly ReCaptcha $reCaptcha)
+    public function __construct(private RequestStack $requestStack, private ReCaptcha $reCaptcha)
     {
     }
 

@@ -21,32 +21,32 @@ use Elastica\Query\Terms;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\PagerfantaInterface;
 
-class EventElasticaRepository extends Repository
+final class EventElasticaRepository extends Repository
 {
     /**
      * @var string
      */
-    final public const EXPO_TERMS = 'exposition, salon';
+    public const EXPO_TERMS = 'exposition, salon';
 
     /**
      * @var string
      */
-    final public const CONCERT_TERMS = 'concert, musique, artiste';
+    public const CONCERT_TERMS = 'concert, musique, artiste';
 
     /**
      * @var string
      */
-    final public const FAMILY_TERMS = 'famille, enfants';
+    public const FAMILY_TERMS = 'famille, enfants';
 
     /**
      * @var string
      */
-    final public const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
+    public const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
 
     /**
      * @var string
      */
-    final public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
+    public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
     public function findWithSearch(SearchEvent $search): PagerfantaInterface
     {

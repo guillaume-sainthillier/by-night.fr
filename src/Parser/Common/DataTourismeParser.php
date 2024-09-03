@@ -30,7 +30,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use ZipArchive;
 
-class DataTourismeParser extends AbstractParser
+final class DataTourismeParser extends AbstractParser
 {
     /**
      * @var string

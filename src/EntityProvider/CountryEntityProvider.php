@@ -15,7 +15,7 @@ use App\Dto\CountryDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\CountryRepository;
 
-class CountryEntityProvider extends AbstractEntityProvider
+final class CountryEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
         private readonly CountryRepository $countryRepository,

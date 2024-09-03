@@ -10,92 +10,92 @@
 
 namespace App\Reject;
 
-class Reject
+final class Reject
 {
     /**
      * @var int
      */
-    final public const VALID = 1;
+    public const VALID = 1;
 
     /**
      * @var int
      */
-    final public const BAD_EVENT_NAME = 2;
+    public const BAD_EVENT_NAME = 2;
 
     /**
      * @var int
      */
-    final public const BAD_EVENT_DATE = 4;
+    public const BAD_EVENT_DATE = 4;
 
     /**
      * @var int
      */
-    final public const BAD_EVENT_DATE_INTERVAL = 8;
+    public const BAD_EVENT_DATE_INTERVAL = 8;
 
     /**
      * @var int
      */
-    final public const SPAM_EVENT_DESCRIPTION = 16;
+    public const SPAM_EVENT_DESCRIPTION = 16;
 
     /**
      * @var int
      */
-    final public const BAD_EVENT_DESCRIPTION = 32;
+    public const BAD_EVENT_DESCRIPTION = 32;
 
     /**
      * @var int
      */
-    final public const NO_NEED_TO_UPDATE = 64;
+    public const NO_NEED_TO_UPDATE = 64;
 
     /**
      * @var int
      */
-    final public const NO_PLACE_PROVIDED = 128;
+    public const NO_PLACE_PROVIDED = 128;
 
     /**
      * @var int
      */
-    final public const NO_PLACE_LOCATION_PROVIDED = 256;
+    public const NO_PLACE_LOCATION_PROVIDED = 256;
 
     /**
      * @var int
      */
-    final public const BAD_PLACE_NAME = 512;
+    public const BAD_PLACE_NAME = 512;
 
     /**
      * @var int
      */
-    final public const BAD_PLACE_LOCATION = 1_024;
+    public const BAD_PLACE_LOCATION = 1_024;
 
     /**
      * @var int
      */
-    final public const BAD_PLACE_CITY_NAME = 2_048;
+    public const BAD_PLACE_CITY_NAME = 2_048;
 
     /**
      * @var int
      */
-    final public const BAD_PLACE_CITY_POSTAL_CODE = 4_096;
+    public const BAD_PLACE_CITY_POSTAL_CODE = 4_096;
 
     /**
      * @var int
      */
-    final public const BAD_USER = 8_192;
+    public const BAD_USER = 8_192;
 
     /**
      * @var int
      */
-    final public const EVENT_DELETED = 16_384;
+    public const EVENT_DELETED = 16_384;
 
     /**
      * @var int
      */
-    final public const NO_COUNTRY_PROVIDED = 131_072;
+    public const NO_COUNTRY_PROVIDED = 131_072;
 
     /**
      * @var int
      */
-    final public const BAD_COUNTRY = 262_144;
+    public const BAD_COUNTRY = 262_144;
 
     protected int $reason = self::VALID;
 

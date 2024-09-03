@@ -22,7 +22,7 @@ use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class SowProgParser extends AbstractParser
+final class SowProgParser extends AbstractParser
 {
     /**
      * @var string

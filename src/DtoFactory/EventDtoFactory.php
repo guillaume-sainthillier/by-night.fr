@@ -17,7 +17,7 @@ use App\Dto\PlaceDto;
 use App\Dto\UserDto;
 use App\Entity\Event;
 
-class EventDtoFactory
+final class EventDtoFactory
 {
     public function create(Event $entity): EventDto
     {

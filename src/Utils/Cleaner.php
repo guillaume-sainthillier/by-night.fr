@@ -14,9 +14,9 @@ use App\Dto\CityDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 
-class Cleaner
+final readonly class Cleaner
 {
-    public function __construct(private readonly Util $util)
+    public function __construct(private Util $util)
     {
     }
 

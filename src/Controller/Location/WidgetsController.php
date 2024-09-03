@@ -21,17 +21,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class WidgetsController extends BaseController
+final class WidgetsController extends BaseController
 {
     /**
      * @var int
      */
-    final public const TWEET_LIMIT = 25;
+    public const TWEET_LIMIT = 25;
 
     /**
      * @var int
      */
-    final public const WIDGET_ITEM_LIMIT = 7;
+    public const WIDGET_ITEM_LIMIT = 7;
 
     #[Route(path: '/tweeter-feed/{max_id}', name: 'app_widget_tweeter', requirements: ['max_id' => '\d+'], methods: ['GET'])]
     #[ReverseProxy(expires: '1 hour')]

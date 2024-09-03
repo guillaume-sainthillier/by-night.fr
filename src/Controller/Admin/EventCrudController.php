@@ -30,7 +30,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use RuntimeException;
 
-class EventCrudController extends AbstractCrudController
+final class EventCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

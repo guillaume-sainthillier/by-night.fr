@@ -12,7 +12,7 @@ namespace App\Elasticsearch\Message;
 
 use Elastica\Document;
 
-class ReplaceManyDocuments extends DocumentsAction
+final class ReplaceManyDocuments extends DocumentsAction
 {
     /**
      * @param Document[] $documents

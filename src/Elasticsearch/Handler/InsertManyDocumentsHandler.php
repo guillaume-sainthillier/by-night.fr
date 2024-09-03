@@ -14,7 +14,7 @@ use App\Elasticsearch\Message\InsertManyDocuments;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class InsertManyDocumentsHandler extends AbstractActionHandler
+final class InsertManyDocumentsHandler extends AbstractActionHandler
 {
     public function __invoke(InsertManyDocuments $action): void
     {

@@ -23,7 +23,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class FnacSpectaclesAwinParser extends AbstractAwinParser
+final class FnacSpectaclesAwinParser extends AbstractAwinParser
 {
     /**
      * @var string

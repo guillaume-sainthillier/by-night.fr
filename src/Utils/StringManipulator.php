@@ -14,7 +14,7 @@ use function Symfony\Component\String\u;
 
 use Symfony\Component\String\UnicodeString;
 
-class StringManipulator
+final class StringManipulator
 {
     private UnicodeString $text;
 

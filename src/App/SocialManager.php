@@ -13,7 +13,7 @@ namespace App\App;
 use App\Entity\AppOAuth;
 use App\Repository\AppOAuthRepository;
 
-class SocialManager
+final class SocialManager
 {
     private bool $_siteInfoInitialized = false;
 

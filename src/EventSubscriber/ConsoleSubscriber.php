@@ -17,7 +17,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-class ConsoleSubscriber implements EventSubscriberInterface
+final class ConsoleSubscriber implements EventSubscriberInterface
 {
     /** @var array<Stopwatch|null> */
     private array $stopwatches = [];

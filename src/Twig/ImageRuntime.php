@@ -14,9 +14,9 @@ use App\Image\Helper\ImageHelper;
 use Twig\Environment;
 use Twig\Extension\RuntimeExtensionInterface;
 
-class ImageRuntime implements RuntimeExtensionInterface
+final readonly class ImageRuntime implements RuntimeExtensionInterface
 {
-    public function __construct(private readonly ImageHelper $imageHelper)
+    public function __construct(private ImageHelper $imageHelper)
     {
     }
 

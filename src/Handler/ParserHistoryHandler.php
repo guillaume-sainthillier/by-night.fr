@@ -13,7 +13,7 @@ namespace App\Handler;
 use App\Entity\ParserHistory;
 use DateTime;
 
-class ParserHistoryHandler
+final class ParserHistoryHandler
 {
     private array $stats = [
         'nbBlacklists' => 0,

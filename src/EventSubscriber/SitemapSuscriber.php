@@ -22,7 +22,7 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class SitemapSuscriber implements EventSubscriberInterface
+final class SitemapSuscriber implements EventSubscriberInterface
 {
     private UrlContainerInterface $urlContainer;
 

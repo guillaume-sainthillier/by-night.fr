@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 #[AsCommand('app:country:import', 'Ajoute un nouveau pays')]
-class CountryImportCommand extends Command
+final class CountryImportCommand extends Command
 {
     /**
      * {@inheritdoc}

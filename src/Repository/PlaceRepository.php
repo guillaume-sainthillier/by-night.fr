@@ -23,7 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Place[]    findAll()
  * @method Place[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     use DtoFindableTrait;
 

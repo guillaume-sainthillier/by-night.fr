@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HomeController extends AbstractController
+final class HomeController extends AbstractController
 {
     #[Route(path: '/', name: 'app_index', methods: ['GET', 'POST'])]
     #[ReverseProxy(expires: 'tomorrow')]

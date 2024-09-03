@@ -15,7 +15,7 @@ use App\Dto\CountryDto;
 use App\Entity\Country;
 use App\Utils\SluggerUtils;
 
-class CountryComparator extends AbstractComparator
+final class CountryComparator extends AbstractComparator
 {
     public function __construct(private readonly SluggerUtils $sluggerUtils)
     {

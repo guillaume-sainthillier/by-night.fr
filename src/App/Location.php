@@ -13,7 +13,7 @@ namespace App\App;
 use App\Entity\City;
 use App\Entity\Country;
 
-class Location
+final class Location
 {
     private ?City $city = null;
 

@@ -23,7 +23,7 @@ use App\Entity\Place;
 use App\Reject\Reject;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
+final class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalIdentifiableTrait;
 

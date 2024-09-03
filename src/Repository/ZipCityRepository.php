@@ -21,7 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ZipCity[]    findAll()
  * @method ZipCity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ZipCityRepository extends ServiceEntityRepository
+final class ZipCityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

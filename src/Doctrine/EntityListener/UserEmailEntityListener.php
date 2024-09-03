@@ -16,7 +16,7 @@ use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 
-class UserEmailEntityListener implements EventSubscriberInterface
+final class UserEmailEntityListener implements EventSubscriberInterface
 {
     /** @var User[] */
     private array $queue = [];

@@ -10,7 +10,7 @@
 
 namespace App\Utils;
 
-class CityManipulator
+final class CityManipulator
 {
     public function getCityNameAlternatives(string $city): array
     {

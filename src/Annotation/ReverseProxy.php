@@ -13,7 +13,7 @@ namespace App\Annotation;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::TARGET_FUNCTION)]
-class ReverseProxy
+final class ReverseProxy
 {
     public function __construct(
         private ?int $ttl = null,

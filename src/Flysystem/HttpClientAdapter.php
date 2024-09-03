@@ -30,9 +30,9 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class HttpClientAdapter implements FilesystemAdapter
+final readonly class HttpClientAdapter implements FilesystemAdapter
 {
-    private readonly HttpClientInterface $httpClient;
+    private HttpClientInterface $httpClient;
 
     public function __construct(
         HttpClientInterface $httpClient,

@@ -13,9 +13,9 @@ namespace App\Dependency;
 use App\Contracts\DependencyInterface;
 use App\Contracts\DependencyObjectInterface;
 
-class Dependency implements DependencyInterface
+final readonly class Dependency implements DependencyInterface
 {
-    public function __construct(private readonly DependencyObjectInterface $object, private readonly bool $isReference = true)
+    public function __construct(private DependencyObjectInterface $object, private bool $isReference = true)
     {
     }
 

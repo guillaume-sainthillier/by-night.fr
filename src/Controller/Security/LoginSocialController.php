@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/login-social')]
-class LoginSocialController extends AbstractController
+final class LoginSocialController extends AbstractController
 {
     #[Route(path: '/check-{service<%patterns.social%>}', name: 'login_social_check', methods: ['GET', 'POST'])]
     public function connectCheck(): never

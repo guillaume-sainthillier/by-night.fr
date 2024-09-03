@@ -15,7 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
-class UserOAuthCrudController extends OAuthCrudController
+final class UserOAuthCrudController extends OAuthCrudController
 {
     public static function getEntityFqcn(): string
     {

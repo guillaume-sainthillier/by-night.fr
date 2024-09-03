@@ -16,9 +16,9 @@ use FOS\ElasticaBundle\Event\PreIndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class PopulateSubscriber implements EventSubscriberInterface
+final readonly class PopulateSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly IndexManager $indexManager)
+    public function __construct(private IndexManager $indexManager)
     {
     }
 

@@ -14,9 +14,9 @@ use League\Glide\Signatures\SignatureFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class AssetHelper
+final readonly class AssetHelper
 {
-    public function __construct(private readonly RouterInterface $router, private readonly string $secret)
+    public function __construct(private RouterInterface $router, private string $secret)
     {
     }
 

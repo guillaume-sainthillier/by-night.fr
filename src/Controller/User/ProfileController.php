@@ -26,7 +26,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 #[Route(path: '/profile')]
-class ProfileController extends AbstractController
+final class ProfileController extends AbstractController
 {
     #[Route(path: '/delete', name: 'app_user_delete', methods: ['GET', 'POST'])]
     public function delete(Request $request, EventRepository $eventRepository, CommentRepository $commentRepository, TokenStorageInterface $tokenStorage): Response

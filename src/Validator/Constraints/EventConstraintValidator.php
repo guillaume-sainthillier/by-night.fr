@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class EventConstraintValidator extends ConstraintValidator
+final class EventConstraintValidator extends ConstraintValidator
 {
     private bool $checkIfUpdate = false;
 

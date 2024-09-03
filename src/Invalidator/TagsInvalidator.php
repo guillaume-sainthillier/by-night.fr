@@ -20,7 +20,7 @@ use Exception;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
 
-class TagsInvalidator
+final class TagsInvalidator
 {
     private array $tags = [];
 

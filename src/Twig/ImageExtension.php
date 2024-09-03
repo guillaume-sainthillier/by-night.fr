@@ -13,7 +13,7 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-class ImageExtension extends AbstractExtension
+final class ImageExtension extends AbstractExtension
 {
     public function getFunctions(): array
     {

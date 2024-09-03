@@ -15,7 +15,7 @@ use DateTime;
 use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SearchEvent
+final class SearchEvent
 {
     #[Assert\NotBlank]
     private ?DateTimeInterface $from;

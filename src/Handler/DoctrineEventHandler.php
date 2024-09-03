@@ -34,25 +34,25 @@ use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-class DoctrineEventHandler
+final readonly class DoctrineEventHandler
 {
     /**
      * @var int
      */
     private const CHUNK_SIZE = 50;
 
-    private readonly ParserHistoryHandler $parserHistoryHandler;
+    private ParserHistoryHandler $parserHistoryHandler;
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
-        private readonly EventHandler $handler,
-        private readonly Firewall $firewall,
-        private readonly EntityProviderHandler $entityProviderHandler,
-        private readonly EntityFactoryHandler $entityFactoryHandler,
-        private readonly CityRepository $repoCity,
-        private readonly ZipCityRepository $repoZipCity,
-        private readonly CountryRepository $countryRepository,
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
+        private EventHandler $handler,
+        private Firewall $firewall,
+        private EntityProviderHandler $entityProviderHandler,
+        private EntityFactoryHandler $entityFactoryHandler,
+        private CityRepository $repoCity,
+        private ZipCityRepository $repoZipCity,
+        private CountryRepository $countryRepository,
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }

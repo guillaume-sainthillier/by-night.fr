@@ -15,7 +15,7 @@ use App\Dto\CityDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\CityRepository;
 
-class CityEntityProvider extends AbstractEntityProvider
+final class CityEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
         private readonly CityRepository $cityRepository,

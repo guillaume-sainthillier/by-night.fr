@@ -14,7 +14,7 @@ use App\Contracts\EntityFactoryInterface;
 use App\Dto\CountryDto;
 use LogicException;
 
-class CountryEntityFactory implements EntityFactoryInterface
+final class CountryEntityFactory implements EntityFactoryInterface
 {
     /**
      * {@inheritDoc}

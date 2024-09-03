@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class ProfileFormType extends AbstractType
+final class ProfileFormType extends AbstractType
 {
     /**
      * {@inheritDoc}

@@ -16,7 +16,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\Country;
 
-class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
+final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?string $entityId = null;
 

@@ -15,7 +15,7 @@ use App\Handler\EventHandler;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Events;
 
-class EventImageUploadSubscriber implements EventSubscriberInterface
+final class EventImageUploadSubscriber implements EventSubscriberInterface
 {
     /** @var Event[] */
     private array $eventsToHandle = [];

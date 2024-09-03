@@ -12,7 +12,7 @@ namespace App\Elasticsearch\Message;
 
 use Elastica\Document;
 
-class DeleteManyDocuments extends DocumentsAction
+final class DeleteManyDocuments extends DocumentsAction
 {
     /**
      * @param Document[] $documents

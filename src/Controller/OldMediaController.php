@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
-class OldMediaController extends AbstractController
+final class OldMediaController extends AbstractController
 {
     #[Route(path: '/media/cache/{filter}/{path<%patterns.path%>}', methods: ['GET'])]
     #[Route(path: '/uploads/{path<%patterns.path%>}', methods: ['GET'])]

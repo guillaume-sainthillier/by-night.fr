@@ -20,7 +20,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\Exception\AckStopConsumerException;
 use Psr\Log\LoggerInterface;
 
-class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterface
+final class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
     public function __construct(
         LoggerInterface $logger,

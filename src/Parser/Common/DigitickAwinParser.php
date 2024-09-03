@@ -16,7 +16,7 @@ use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use DateTimeImmutable;
 
-class DigitickAwinParser extends AbstractAwinParser
+final class DigitickAwinParser extends AbstractAwinParser
 {
     /**
      * @var string

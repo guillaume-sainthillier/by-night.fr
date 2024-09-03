@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-class EventController extends BaseController
+final class EventController extends BaseController
 {
     /**
      * @var int

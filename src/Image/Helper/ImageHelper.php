@@ -13,7 +13,7 @@ namespace App\Image\Helper;
 use App\Image\Loader\LoaderRegistry;
 use Twig\Environment;
 
-class ImageHelper
+final readonly class ImageHelper
 {
     /**
      * @var float
@@ -47,11 +47,11 @@ class ImageHelper
      */
     private const DEFAULT_FIXED_WIDTH = 800;
 
-    private readonly array $defaultParams;
+    private array $defaultParams;
 
     public function __construct(
-        private readonly LoaderRegistry $loaderRegistry,
-        private readonly Environment $twig,
+        private LoaderRegistry $loaderRegistry,
+        private Environment $twig,
     ) {
         $this->defaultParams = [
             'path' => null,
@@ -543,7 +543,7 @@ class ImageHelper
             $sizes[] = $originalWidth;
         }
 
-        if ('fluid' === $layout && !\in_array((float) $width, $sizes, true)) {
+        if ('fluid' === $layout && !\in_array($width, $sizes, true)) {
             $sizes[] = $width;
         }
 

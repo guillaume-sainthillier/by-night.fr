@@ -12,37 +12,37 @@ namespace App\Social;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class SocialProvider
+final class SocialProvider
 {
     /**
      * @var string
      */
-    final public const FACEBOOK = 'facebook';
+    public const FACEBOOK = 'facebook';
 
     /**
      * @var string
      */
-    final public const FACEBOOK_ADMIN = 'facebook_admin';
+    public const FACEBOOK_ADMIN = 'facebook_admin';
 
     /**
      * @var string
      */
-    final public const TWITTER = 'twitter';
+    public const TWITTER = 'twitter';
 
     /**
      * @var string
      */
-    final public const TWITTER_ADMIN = 'twitter_admin';
+    public const TWITTER_ADMIN = 'twitter_admin';
 
     /**
      * @var string
      */
-    final public const GOOGLE = 'google';
+    public const GOOGLE = 'google';
 
     /**
      * @var string
      */
-    final public const GOOGLE_ADMIN = 'google_admin';
+    public const GOOGLE_ADMIN = 'google_admin';
 
     private array $socials;
 

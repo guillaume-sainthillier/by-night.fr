@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class ReCaptchaResponseValidator extends ConstraintValidator
+final class ReCaptchaResponseValidator extends ConstraintValidator
 {
     public function __construct(private readonly RequestStack $requestStack, private readonly CaptchaWrapper $captcha)
     {

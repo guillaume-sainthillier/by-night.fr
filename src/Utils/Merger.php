@@ -13,49 +13,49 @@ namespace App\Utils;
 use App\Entity\Event;
 use App\Entity\Place;
 
-class Merger
+final readonly class Merger
 {
     /**
      * @var string
      */
-    final public const MERGE_LEFT = 'do_merge_left';
+    public const MERGE_LEFT = 'do_merge_left';
 
     /**
      * @var string
      */
-    final public const MERGE_RIGHT = 'do_merge_right';
+    public const MERGE_RIGHT = 'do_merge_right';
 
     /**
      * @var string
      */
-    final public const MERGE_MAX = 'do_merge_max';
+    public const MERGE_MAX = 'do_merge_max';
 
     /**
      * @var string
      */
-    final public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
+    public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
 
     /**
      * @var string
      */
-    final public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
+    public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
 
     /**
      * @var string
      */
-    final public const FORCE_MERGE_LEFT = 'do_force_merge_left';
+    public const FORCE_MERGE_LEFT = 'do_force_merge_left';
 
     /**
      * @var string
      */
-    final public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
+    public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
 
     /**
      * @var string
      */
-    final public const DEFAULT_MERGE = self::MERGE_RIGHT;
+    public const DEFAULT_MERGE = self::MERGE_RIGHT;
 
-    public function __construct(private readonly Comparator $comparator)
+    public function __construct(private Comparator $comparator)
     {
     }
 

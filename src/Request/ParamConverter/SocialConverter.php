@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class SocialConverter implements ValueResolverInterface
+final readonly class SocialConverter implements ValueResolverInterface
 {
-    public function __construct(private readonly SocialProvider $socialProvider)
+    public function __construct(private SocialProvider $socialProvider)
     {
     }
 

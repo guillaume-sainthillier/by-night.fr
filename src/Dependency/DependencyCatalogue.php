@@ -15,7 +15,7 @@ use App\Contracts\DependencyInterface;
 use App\Contracts\DependencyObjectInterface;
 use RuntimeException;
 
-class DependencyCatalogue implements DependencyCatalogueInterface
+final class DependencyCatalogue implements DependencyCatalogueInterface
 {
     /** @var DependencyInterface[] */
     private array $dependencies = [];

@@ -18,7 +18,7 @@ use League\Glide\Manipulators\Size;
 /**
  * @property string $thumb
  */
-class Thumb extends BaseManipulator
+final class Thumb extends BaseManipulator
 {
     public function __construct(
         /**

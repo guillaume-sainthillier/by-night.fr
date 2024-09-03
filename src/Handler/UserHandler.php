@@ -15,9 +15,9 @@ use App\File\DeletableFile;
 use RuntimeException;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-class UserHandler
+final readonly class UserHandler
 {
-    public function __construct(private readonly UploaderHelper $helper, private readonly string $webDir, private readonly string $tempPath)
+    public function __construct(private UploaderHelper $helper, private string $webDir, private string $tempPath)
     {
     }
 

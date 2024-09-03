@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand('app:events:archive', 'Archive les vieux événements dans ElasticSearch')]
-class EventsArchiveArchive extends Command
+final class EventsArchiveArchive extends Command
 {
     /**
      * {@inheritdoc}

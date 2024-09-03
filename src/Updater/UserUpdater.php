@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class UserUpdater extends Updater
+final class UserUpdater extends Updater
 {
     /**
      * @var int

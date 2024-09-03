@@ -21,7 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method OAuth[]    findAll()
  * @method OAuth[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class OAuthRepository extends ServiceEntityRepository
+final class OAuthRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

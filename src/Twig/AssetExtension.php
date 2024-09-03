@@ -14,7 +14,7 @@ use App\Helper\AssetHelper;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
 
-class AssetExtension extends Extension
+final class AssetExtension extends Extension
 {
     public function __construct(
         private readonly AssetHelper $assetHelper,

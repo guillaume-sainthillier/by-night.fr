@@ -14,7 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\UserDto;
 use App\Repository\UserRepository;
 
-class UserEntityProvider extends AbstractEntityProvider
+final class UserEntityProvider extends AbstractEntityProvider
 {
     public function __construct(private readonly UserRepository $userRepository)
     {

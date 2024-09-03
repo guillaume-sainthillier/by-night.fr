@@ -25,7 +25,7 @@ use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
 #[Route(path: '/mot-de-passe-perdu')]
-class ResetPasswordController extends AbstractController
+final class ResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
 

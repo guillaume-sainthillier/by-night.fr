@@ -14,7 +14,7 @@ use App\Entity\City;
 use App\Repository\CityRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class CityManager
+final class CityManager
 {
     private ?City $currentCity = null;
 

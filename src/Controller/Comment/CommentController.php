@@ -22,12 +22,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-class CommentController extends BaseController
+final class CommentController extends BaseController
 {
     /**
      * @var int
      */
-    final public const COMMENTS_PER_PAGE = 10;
+    public const COMMENTS_PER_PAGE = 10;
 
     #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
     public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response

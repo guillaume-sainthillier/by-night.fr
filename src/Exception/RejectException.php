@@ -10,6 +10,6 @@
 
 namespace App\Exception;
 
-class RejectException
+final class RejectException
 {
 }

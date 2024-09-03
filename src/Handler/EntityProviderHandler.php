@@ -13,12 +13,12 @@ namespace App\Handler;
 use App\Contracts\EntityProviderInterface;
 use RuntimeException;
 
-class EntityProviderHandler
+final readonly class EntityProviderHandler
 {
     /**
      * @param EntityProviderInterface[] $entityProviders
      */
-    public function __construct(private readonly iterable $entityProviders)
+    public function __construct(private iterable $entityProviders)
     {
     }
 

@@ -18,12 +18,12 @@ use App\Repository\CityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class CommonController extends AbstractController
+final class CommonController extends AbstractController
 {
     /**
      * @var int
      */
-    final public const LIFE_TIME_CACHE = 86_400;
+    public const LIFE_TIME_CACHE = 86_400;
 
     #[Route(path: '/_private/header/{id<%patterns.id%>}', name: 'app_private_header', methods: ['GET'])]
     #[ReverseProxy(expires: '+1 day')]

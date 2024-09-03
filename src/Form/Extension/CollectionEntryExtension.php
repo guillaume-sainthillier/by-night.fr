@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CollectionEntryExtension extends AbstractTypeExtension
+final class CollectionEntryExtension extends AbstractTypeExtension
 {
     public static function getExtendedTypes(): iterable
     {

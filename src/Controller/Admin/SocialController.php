@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/social/{service<%patterns.admin_social%>}')]
-class SocialController extends AbstractController
+final class SocialController extends AbstractController
 {
     #[Route(path: '/deconnexion', name: 'app_administration_disconnect_service', methods: ['POST'])]
     public function disconnect(Social $social, SocialManager $socialManager): Response

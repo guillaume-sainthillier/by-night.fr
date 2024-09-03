@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class FormTypeExtension extends AbstractTypeExtension
+final class FormTypeExtension extends AbstractTypeExtension
 {
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {

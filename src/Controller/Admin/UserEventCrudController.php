@@ -18,7 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
-class UserEventCrudController extends AbstractCrudController
+final class UserEventCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

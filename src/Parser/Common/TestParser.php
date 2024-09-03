@@ -17,7 +17,7 @@ use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
 use DateTimeImmutable;
 
-class TestParser extends AbstractParser
+final class TestParser extends AbstractParser
 {
     public static function getParserName(): string
     {

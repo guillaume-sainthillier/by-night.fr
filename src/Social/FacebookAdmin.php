@@ -10,7 +10,7 @@
 
 namespace App\Social;
 
-class FacebookAdmin extends Facebook
+final class FacebookAdmin extends Facebook
 {
     /**
      * @var string

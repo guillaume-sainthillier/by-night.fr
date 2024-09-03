@@ -14,7 +14,7 @@ use App\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 
-class UserCheckUrlEvent extends ContractEvent
+final class UserCheckUrlEvent extends ContractEvent
 {
     private ?Response $response = null;
 

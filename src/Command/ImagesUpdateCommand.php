@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand('app:images:update', 'Mettre à jour les images (events, users) en provenance des réseaux sociaux')]
-class ImagesUpdateCommand extends Command
+final class ImagesUpdateCommand extends Command
 {
     public function __construct(private readonly UserUpdater $userUpdater)
     {

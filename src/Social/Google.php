@@ -10,7 +10,7 @@
 
 namespace App\Social;
 
-class Google extends Social
+final class Google extends Social
 {
     /**
      * {@inheritDoc}

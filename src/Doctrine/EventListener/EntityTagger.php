@@ -18,9 +18,9 @@ use App\Entity\UserEvent;
 use App\Invalidator\TagsInvalidator;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class EntityTagger
+final readonly class EntityTagger
 {
-    public function __construct(private readonly TagsInvalidator $eventInvalidator)
+    public function __construct(private TagsInvalidator $eventInvalidator)
     {
     }
 

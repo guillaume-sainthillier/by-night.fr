@@ -34,7 +34,7 @@ use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 
 #[Uploadable]
 #[EventConstraint]
-class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
+final class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalDateFilterableTrait;
     use DtoExternalIdentifiableTrait;

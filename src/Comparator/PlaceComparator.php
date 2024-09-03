@@ -15,7 +15,7 @@ use App\Dto\PlaceDto;
 use App\Entity\Place;
 use App\Utils\SluggerUtils;
 
-class PlaceComparator extends AbstractComparator
+final class PlaceComparator extends AbstractComparator
 {
     public function supports(object $object): bool
     {

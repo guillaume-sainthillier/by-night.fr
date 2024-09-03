@@ -29,7 +29,7 @@ use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UserFormAuthenticator extends AbstractLoginFormAuthenticator
+final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
 

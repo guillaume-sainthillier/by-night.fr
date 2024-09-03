@@ -14,7 +14,7 @@ use App\Elasticsearch\Message\DeleteManyByIdentifierDocuments;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class DeleteManyByIdentifierDocumentsHandler extends AbstractActionHandler
+final class DeleteManyByIdentifierDocumentsHandler extends AbstractActionHandler
 {
     public function __invoke(DeleteManyByIdentifierDocuments $action): void
     {

@@ -10,7 +10,7 @@
 
 namespace App\Utils;
 
-class MemoryUtils
+final class MemoryUtils
 {
     public static function getMemoryUsage(bool $realUsage = false): string
     {

@@ -19,7 +19,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class RegistrationFormType extends AbstractType
+final class RegistrationFormType extends AbstractType
 {
     /**
      * Builds the embedded form representing the user.

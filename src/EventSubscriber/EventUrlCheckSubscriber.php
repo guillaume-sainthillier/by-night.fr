@@ -20,9 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class EventUrlCheckSubscriber implements EventSubscriberInterface
+final readonly class EventUrlCheckSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly RequestStack $requestStack, private readonly UrlGeneratorInterface $router, private readonly EventRepository $eventRepository)
+    public function __construct(private RequestStack $requestStack, private UrlGeneratorInterface $router, private EventRepository $eventRepository)
     {
     }
 

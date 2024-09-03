@@ -12,7 +12,7 @@ namespace App\Image\Loader;
 
 use App\Helper\AssetHelper;
 
-class LocalAssetLoader extends AbstractImageLoader
+final class LocalAssetLoader extends AbstractImageLoader
 {
     public function __construct(
         private readonly AssetHelper $assetHelper,

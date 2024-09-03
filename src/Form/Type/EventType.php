@@ -26,7 +26,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class EventType extends AbstractType
+final class EventType extends AbstractType
 {
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,

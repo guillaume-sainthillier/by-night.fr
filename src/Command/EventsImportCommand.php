@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand('app:events:import', 'Ajouter / mettre à jour des nouveaux événements')]
-class EventsImportCommand extends Command
+final class EventsImportCommand extends Command
 {
     /**
      * @param iterable<ParserInterface> $parsers

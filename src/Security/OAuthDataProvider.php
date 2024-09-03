@@ -19,9 +19,9 @@ use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Token\AccessToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class OAuthDataProvider
+final readonly class OAuthDataProvider
 {
-    public function __construct(private readonly ClientRegistry $clientRegistry, private readonly TwitterOAuth $twitterOAuth)
+    public function __construct(private ClientRegistry $clientRegistry, private TwitterOAuth $twitterOAuth)
     {
     }
 

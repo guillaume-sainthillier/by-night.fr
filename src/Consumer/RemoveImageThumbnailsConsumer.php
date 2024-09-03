@@ -17,7 +17,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 
-class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
+final class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
     public function __construct(LoggerInterface $logger, private readonly Server $s3ThumbServer)
     {

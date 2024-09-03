@@ -13,12 +13,12 @@ namespace App\Handler;
 use App\Contracts\EntityFactoryInterface;
 use RuntimeException;
 
-class EntityFactoryHandler
+final readonly class EntityFactoryHandler
 {
     /**
      * @param EntityFactoryInterface[] $entityFactories
      */
-    public function __construct(private readonly iterable $entityFactories)
+    public function __construct(private iterable $entityFactories)
     {
     }
 

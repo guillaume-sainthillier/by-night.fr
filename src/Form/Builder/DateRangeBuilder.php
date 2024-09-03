@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
-class DateRangeBuilder
+final class DateRangeBuilder
 {
     public function finishView(FormView $view, FormInterface $form): void
     {

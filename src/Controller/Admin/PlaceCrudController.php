@@ -23,7 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use RuntimeException;
 
-class PlaceCrudController extends AbstractCrudController
+final class PlaceCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

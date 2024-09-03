@@ -13,7 +13,7 @@ namespace App\Producer;
 use App\Dto\EventDto;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
-class EventProducer extends Producer
+final class EventProducer extends Producer
 {
     public function scheduleEvent(EventDto $event): void
     {

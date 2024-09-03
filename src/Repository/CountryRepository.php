@@ -26,7 +26,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Country[]    findAll()
  * @method Country[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CountryRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class CountryRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -14,7 +14,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 use App\App\Location;
 use Exception;
 
-class Twitter extends Social
+final class Twitter extends Social
 {
     private ?TwitterOAuth $client = null;
 

@@ -21,7 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use RuntimeException;
 
-class ParserDataCrudController extends AbstractCrudController
+final class ParserDataCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

@@ -19,9 +19,9 @@ use App\Entity\PlaceMetadata;
 use App\Exception\UncreatableEntityException;
 use App\Handler\EntityProviderHandler;
 
-class PlaceEntityFactory implements EntityFactoryInterface
+final readonly class PlaceEntityFactory implements EntityFactoryInterface
 {
-    public function __construct(private readonly EntityProviderHandler $entityProviderHandler)
+    public function __construct(private EntityProviderHandler $entityProviderHandler)
     {
     }
 

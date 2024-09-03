@@ -10,7 +10,7 @@
 
 namespace App\Utils;
 
-class TagUtils
+final class TagUtils
 {
     /**
      * @return string[]

@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
-class ImageSubscriber implements EventSubscriberInterface
+final class ImageSubscriber implements EventSubscriberInterface
 {
     private array $paths = [];
 

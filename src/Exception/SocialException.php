@@ -12,6 +12,6 @@ namespace App\Exception;
 
 use Exception;
 
-class SocialException extends Exception
+final class SocialException extends Exception
 {
 }

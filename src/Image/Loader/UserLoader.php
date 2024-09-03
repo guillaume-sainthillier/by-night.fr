@@ -13,7 +13,7 @@ namespace App\Image\Loader;
 use App\Entity\User;
 use App\Picture\UserProfilePicture;
 
-class UserLoader extends AbstractImageLoader
+final class UserLoader extends AbstractImageLoader
 {
     public function __construct(
         private readonly LocalAssetLoader $localAssetLoader,

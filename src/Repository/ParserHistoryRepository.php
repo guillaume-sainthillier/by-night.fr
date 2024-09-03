@@ -20,7 +20,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ParserHistory|null findOneBy(array $criteria, array $orderBy = null)
  * @method ParserHistory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ParserHistoryRepository extends ServiceEntityRepository
+final class ParserHistoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

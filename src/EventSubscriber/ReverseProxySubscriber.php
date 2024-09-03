@@ -18,9 +18,9 @@ use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ReverseProxySubscriber implements EventSubscriberInterface
+final readonly class ReverseProxySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly bool $enableHttpCache)
+    public function __construct(private bool $enableHttpCache)
     {
     }
 

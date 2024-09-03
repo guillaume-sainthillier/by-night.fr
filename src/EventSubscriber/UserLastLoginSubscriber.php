@@ -17,9 +17,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 
-class UserLastLoginSubscriber implements EventSubscriberInterface
+final readonly class UserLastLoginSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 

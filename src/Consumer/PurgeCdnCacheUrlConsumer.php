@@ -17,7 +17,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 
-class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
+final class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
     public function __construct(LoggerInterface $logger, private readonly CloudFrontClient $client, private readonly string $cloudFrontDistributionID)
     {

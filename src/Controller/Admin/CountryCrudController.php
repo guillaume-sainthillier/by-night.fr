@@ -15,7 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class CountryCrudController extends AbstractCrudController
+final class CountryCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

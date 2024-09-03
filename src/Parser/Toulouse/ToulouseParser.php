@@ -19,7 +19,7 @@ use DateTimeImmutable;
 use ForceUTF8\Encoding;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ToulouseParser extends AbstractParser
+final class ToulouseParser extends AbstractParser
 {
     /**
      * @var string

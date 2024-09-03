@@ -10,7 +10,7 @@
 
 namespace App\Utils;
 
-class ChunkUtils
+final class ChunkUtils
 {
     /**
      * @param object[] $objects

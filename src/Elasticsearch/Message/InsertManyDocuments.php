@@ -12,7 +12,7 @@ namespace App\Elasticsearch\Message;
 
 use Elastica\Document;
 
-class InsertManyDocuments extends DocumentsAction
+final class InsertManyDocuments extends DocumentsAction
 {
     /**
      * @param Document[] $documents

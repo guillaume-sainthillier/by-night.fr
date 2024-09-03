@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ReCaptchaType extends AbstractType
+final class ReCaptchaType extends AbstractType
 {
     public function __construct(private readonly string $siteKey, private readonly ReCaptchaSubscriber $reCaptchaSubscriber)
     {

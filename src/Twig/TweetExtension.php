@@ -13,7 +13,7 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
-class TweetExtension extends Extension
+final class TweetExtension extends Extension
 {
     public function getFilters(): array
     {

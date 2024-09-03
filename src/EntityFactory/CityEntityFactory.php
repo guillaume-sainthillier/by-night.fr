@@ -14,7 +14,7 @@ use App\Contracts\EntityFactoryInterface;
 use App\Dto\CityDto;
 use LogicException;
 
-class CityEntityFactory implements EntityFactoryInterface
+final class CityEntityFactory implements EntityFactoryInterface
 {
     /**
      * {@inheritDoc}

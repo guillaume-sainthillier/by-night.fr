@@ -15,9 +15,9 @@ use App\Entity\Place;
 use App\Entity\ZipCity;
 use Exception;
 
-class Comparator
+final readonly class Comparator
 {
-    public function __construct(private readonly Util $util)
+    public function __construct(private Util $util)
     {
     }
 

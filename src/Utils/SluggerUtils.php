@@ -13,7 +13,7 @@ namespace App\Utils;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-class SluggerUtils
+final class SluggerUtils
 {
     private static ?SluggerInterface $slugger = null;
 

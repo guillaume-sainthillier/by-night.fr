@@ -15,7 +15,7 @@ use DateTimeInterface;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
-class DateExtension extends Extension
+final class DateExtension extends Extension
 {
     public function getFilters(): array
     {

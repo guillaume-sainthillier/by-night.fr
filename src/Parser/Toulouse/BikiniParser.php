@@ -17,7 +17,7 @@ use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
 use DateTime;
 
-class BikiniParser extends AbstractParser
+final class BikiniParser extends AbstractParser
 {
     /**
      * @var string

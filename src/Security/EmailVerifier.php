@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
-class EmailVerifier
+final readonly class EmailVerifier
 {
-    public function __construct(private readonly MailerManager $mailer, private readonly VerifyEmailHelperInterface $verifyEmailHelper, private readonly EntityManagerInterface $entityManager)
+    public function __construct(private MailerManager $mailer, private VerifyEmailHelperInterface $verifyEmailHelper, private EntityManagerInterface $entityManager)
     {
     }
 

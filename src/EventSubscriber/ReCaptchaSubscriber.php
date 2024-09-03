@@ -15,9 +15,9 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class ReCaptchaSubscriber implements EventSubscriberInterface
+final readonly class ReCaptchaSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly RequestStack $requestStack)
+    public function __construct(private RequestStack $requestStack)
     {
     }
 

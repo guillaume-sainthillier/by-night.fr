@@ -14,7 +14,7 @@ use App\Contracts\EntityFactoryInterface;
 use App\Dto\UserDto;
 use LogicException;
 
-class UserEntityFactory implements EntityFactoryInterface
+final class UserEntityFactory implements EntityFactoryInterface
 {
     /**
      * {@inheritDoc}

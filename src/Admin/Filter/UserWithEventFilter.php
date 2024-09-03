@@ -18,7 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterDataDto;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\FilterTrait;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\BooleanFilterType;
 
-class UserWithEventFilter implements FilterInterface
+final class UserWithEventFilter implements FilterInterface
 {
     use FilterTrait;
 

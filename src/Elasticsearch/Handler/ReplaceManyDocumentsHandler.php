@@ -14,7 +14,7 @@ use App\Elasticsearch\Message\ReplaceManyDocuments;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class ReplaceManyDocumentsHandler extends AbstractActionHandler
+final class ReplaceManyDocumentsHandler extends AbstractActionHandler
 {
     public function __invoke(ReplaceManyDocuments $action): void
     {

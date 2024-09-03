@@ -28,12 +28,12 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class AgendaController extends BaseController
+final class AgendaController extends BaseController
 {
     /**
      * @var int
      */
-    final public const EVENT_PER_PAGE = 15;
+    public const EVENT_PER_PAGE = 15;
 
     #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]

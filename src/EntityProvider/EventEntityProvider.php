@@ -14,7 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\EventDto;
 use App\Repository\EventRepository;
 
-class EventEntityProvider extends AbstractEntityProvider
+final class EventEntityProvider extends AbstractEntityProvider
 {
     public function __construct(private readonly EventRepository $eventRepository)
     {

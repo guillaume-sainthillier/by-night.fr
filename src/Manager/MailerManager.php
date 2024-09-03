@@ -17,9 +17,9 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
-class MailerManager
+final readonly class MailerManager
 {
-    public function __construct(private readonly MailerInterface $mailer)
+    public function __construct(private MailerInterface $mailer)
     {
     }
 

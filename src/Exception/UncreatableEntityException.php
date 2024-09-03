@@ -12,6 +12,6 @@ namespace App\Exception;
 
 use RuntimeException;
 
-class UncreatableEntityException extends RuntimeException
+final class UncreatableEntityException extends RuntimeException
 {
 }

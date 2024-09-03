@@ -12,9 +12,9 @@ namespace App\Comparator;
 
 use App\Contracts\MatchingInterface;
 
-class Matching implements MatchingInterface
+final readonly class Matching implements MatchingInterface
 {
-    public function __construct(private readonly ?object $entity = null, private readonly float $confidence = 0.0)
+    public function __construct(private ?object $entity = null, private float $confidence = 0.0)
     {
     }
 

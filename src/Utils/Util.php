@@ -12,7 +12,7 @@ namespace App\Utils;
 
 use function Symfony\Component\String\u;
 
-class Util
+final class Util
 {
     protected string $stopWordsRegex;
 

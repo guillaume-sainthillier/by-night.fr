@@ -18,14 +18,14 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
-class EventArchivator
+final readonly class EventArchivator
 {
     /**
      * @var int
      */
-    final public const ITEMS_PER_TRANSACTION = 5_000;
+    public const ITEMS_PER_TRANSACTION = 5_000;
 
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ObjectPersisterInterface $objectPersister, private readonly EventRepository $eventRepository)
+    public function __construct(private EntityManagerInterface $entityManager, private ObjectPersisterInterface $objectPersister, private EventRepository $eventRepository)
     {
     }
 

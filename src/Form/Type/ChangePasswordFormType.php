@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ChangePasswordFormType extends AbstractType
+final class ChangePasswordFormType extends AbstractType
 {
     /**
      * {@inheritDoc}

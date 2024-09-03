@@ -15,7 +15,7 @@ use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\PagerfantaInterface;
 
-class CityElasticaRepository extends Repository
+final class CityElasticaRepository extends Repository
 {
     public function findWithSearch(?string $q): PagerfantaInterface
     {

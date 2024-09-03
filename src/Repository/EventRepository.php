@@ -31,7 +31,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Event[]    findAll()
  * @method Event[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     use DtoFindableTrait;
 

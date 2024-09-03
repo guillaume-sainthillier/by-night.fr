@@ -14,7 +14,7 @@ use App\Entity\Event;
 use DateTimeInterface;
 use IntlDateFormatter;
 
-class EventSEO
+final class EventSEO
 {
     public function getEventDescription(Event $event): string
     {

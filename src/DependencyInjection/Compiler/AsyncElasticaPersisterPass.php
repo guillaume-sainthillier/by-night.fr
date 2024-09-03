@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-class AsyncElasticaPersisterPass implements CompilerPassInterface
+final class AsyncElasticaPersisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

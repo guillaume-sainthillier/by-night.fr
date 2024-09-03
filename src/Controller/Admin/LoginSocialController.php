@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route(path: '/login-social')]
-class LoginSocialController extends AbstractController
+final class LoginSocialController extends AbstractController
 {
     #[Route(path: '/check-{service<%patterns.admin_social%>}', name: 'admin_login_social_check', methods: ['GET', 'POST'])]
     public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider, TwitterOAuth $twitterOAuth): Response

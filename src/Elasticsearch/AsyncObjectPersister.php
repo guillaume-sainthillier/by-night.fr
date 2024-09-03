@@ -21,7 +21,7 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class AsyncObjectPersister implements ObjectPersisterInterface
+final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 {
     public function __construct(
         private readonly ObjectPersisterInterface $decorated,

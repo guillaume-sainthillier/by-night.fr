@@ -16,7 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CityType extends AbstractType
+final class CityType extends AbstractType
 {
     /**
      * {@inheritDoc}

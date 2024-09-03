@@ -23,7 +23,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class ImageTypeExtension extends AbstractTypeExtension
+final class ImageTypeExtension extends AbstractTypeExtension
 {
     public function __construct(
         private readonly UserProfilePicture $userProfilePicture,

@@ -35,7 +35,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 
-class UserSocialAuthenticator extends OAuth2Authenticator
+final class UserSocialAuthenticator extends OAuth2Authenticator
 {
     public function __construct(
         private readonly Security $security,

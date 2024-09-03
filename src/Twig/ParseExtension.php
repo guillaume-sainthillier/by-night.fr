@@ -13,7 +13,7 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
-class ParseExtension extends Extension
+final class ParseExtension extends Extension
 {
     public function getFilters(): array
     {

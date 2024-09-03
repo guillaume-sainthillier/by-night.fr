@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class CitySubscriber implements EventSubscriberInterface
+final class CitySubscriber implements EventSubscriberInterface
 {
     /**
      * {@inheritdoc}

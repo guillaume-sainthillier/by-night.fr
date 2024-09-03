@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SearchType extends AbstractType
+final class SearchType extends AbstractType
 {
     public function __construct(private readonly DateRangeBuilder $dateRangeBuilder)
     {

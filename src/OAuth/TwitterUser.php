@@ -12,9 +12,9 @@ namespace App\OAuth;
 
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
-class TwitterUser implements ResourceOwnerInterface
+final readonly class TwitterUser implements ResourceOwnerInterface
 {
-    public function __construct(private readonly array $response)
+    public function __construct(private array $response)
     {
     }
 

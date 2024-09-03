@@ -19,7 +19,7 @@ use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class DefaultController extends BaseController
+final class DefaultController extends BaseController
 {
     #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
     #[ReverseProxy(expires: 'tomorrow')]

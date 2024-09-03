@@ -16,7 +16,7 @@ use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use RuntimeException;
 
-class EchantillonHandler
+final class EchantillonHandler
 {
     public $newPlaces;
 
