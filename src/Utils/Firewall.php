@@ -91,6 +91,11 @@ class Firewall
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
+        // Pas de SPAM dans le titre
+        if (!$dto->isAffiliate() && $this->isSPAMContent($dto->name)) {
+            $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
+        }
+
         // Pas de dates valides fournies
         if (!$dto->startDate instanceof DateTimeInterface
             || ($dto->endDate && !$dto->endDate instanceof DateTimeInterface)
