@@ -24,6 +24,7 @@ use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Flysystem\UnableToSetVisibility;
 use League\Flysystem\UnableToWriteFile;
+use RuntimeException;
 use Symfony\Component\HttpClient\Response\StreamableInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -125,7 +126,7 @@ class HttpClientAdapter implements FilesystemAdapter
 
     public function listContents(string $path, bool $deep): iterable
     {
-        throw UnableToListContents::atLocation($path, 'This is a readonly adapter.');
+        throw UnableToListContents::atLocation($path, $deep, new RuntimeException('This is a readonly adapter.'));
     }
 
     public function move(string $source, string $destination, Config $config): void
