@@ -27,7 +27,7 @@ final class RemoveImageThumbnailsConsumer extends AbstractConsumer implements Ba
     /**
      * {@inheritDoc}
      */
-    public function batchExecute(array $messages): array|bool|int
+    public function batchExecute(array $messages): array
     {
         $result = [];
 

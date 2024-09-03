@@ -11,8 +11,8 @@ https://by-night.fr
 
 ## Stack technique
 
--   PHP 8.0
--   Symfony 5.4
+-   PHP 8.2
+-   Symfony 7.1
 -   MySQL 8.0
 -   Elastic Search 7
 -   Varnish 6

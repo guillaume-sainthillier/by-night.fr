@@ -2,9 +2,12 @@ when@prod:
     sentry:
         dsn: '%env(SENTRY_DSN)%'
         options:
-            release: '%env(APP_VERSION)%' #your app version
-            integrations:
-                - 'Sentry\Integration\IgnoreErrorsIntegration'
+            release: '%env(APP_VERSION)%'
+        # this hooks into critical paths of the framework (and vendors) to perform
+        # automatic instrumentation (there might be some performance penalty)
+        # https://docs.sentry.io/platforms/php/guides/symfony/performance/instrumentation/automatic-instrumentation/
+        tracing:
+            enabled: false
 
         #        If you are using Monolog, you also need this additional configuration to log the errors correctly:
         #        https://docs.sentry.io/platforms/php/guides/symfony/#monolog-integration
@@ -18,13 +21,8 @@ when@prod:
                 level: !php/const Monolog\Logger::ERROR
                 hub_id: Sentry\State\HubInterface
 
+    #    Uncomment these lines to register a log message processor that resolves PSR-3 placeholders
+    #    https://docs.sentry.io/platforms/php/guides/symfony/#monolog-integration
     services:
         Monolog\Processor\PsrLogMessageProcessor:
             tags: { name: monolog.processor, handler: sentry }
-
-        Sentry\Integration\IgnoreErrorsIntegration:
-            arguments:
-                $options:
-                    ignore_exceptions:
-                        - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-                        - Symfony\Component\Security\Core\Exception\AccessDeniedException

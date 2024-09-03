@@ -23,9 +23,7 @@ return function (array $context) {
     }
 
     if ($context['APP_MAINTENANCE']) {
-        require_once __DIR__ . '/maintenance.html';
-
-        return null;
+        return file_get_contents(__DIR__ . '/maintenance.html');
     }
 
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);

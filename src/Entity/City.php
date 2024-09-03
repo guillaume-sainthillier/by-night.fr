@@ -28,10 +28,6 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     #[Groups(['elasticsearch:city:details'])]
     protected ?AdminZone $parent = null;
 
-    #[Groups(['elasticsearch:city:details'])]
-    #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
-    protected ?Country $country = null;
-
     /** @var Collection<int, ZipCity> */
     #[ORM\OneToMany(targetEntity: ZipCity::class, fetch: 'EXTRA_LAZY', mappedBy: 'parent')]
     protected Collection $zipCities;
@@ -39,6 +35,13 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     public function __construct()
     {
         $this->zipCities = new ArrayCollection();
+    }
+
+    #[Groups(['elasticsearch:city:details'])]
+    #[VirtualProperty(name: 'country')]
+    public function getCountry(): ?Country
+    {
+        return parent::getCountry();
     }
 
     public function __toString(): string
@@ -86,11 +89,6 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         }
 
         return $postalCodes;
-    }
-
-    public function getCountry(): ?Country
-    {
-        return $this->country;
     }
 
     public function setCountry(?Country $country): self

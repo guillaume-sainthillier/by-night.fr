@@ -38,7 +38,7 @@ return RectorConfig::configure()
     ->withSets([
         DoctrineSetList::DOCTRINE_CODE_QUALITY,
         SymfonySetList::SYMFONY_CODE_QUALITY,
-        SymfonySetList::SYMFONY_64,
+        SymfonySetList::SYMFONY_71,
     ])
     ->withSkip([
         FlipTypeControlToUseExclusiveTypeRector::class,
