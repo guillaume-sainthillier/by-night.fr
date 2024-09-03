@@ -159,7 +159,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
     private function getImageUrl(string $url)
     {
-        return $this->cache->get('fnac.urls.' . md5($url), static function () use ($url) {
+        return $this->cache->get('fnac.urls.' . md5($url), function () use ($url) {
             $imageUrl = str_replace('grand/', '600/', $url);
             try {
                 $response = $this->httpClient->request('HEAD', $imageUrl);
