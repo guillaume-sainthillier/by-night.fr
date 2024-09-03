@@ -15,6 +15,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * @extends ServiceEntityRepository<AdminZone2>
  * @method AdminZone2|null find($id, $lockMode = null, $lockVersion = null)
  * @method AdminZone2|null findOneBy(array $criteria, array $orderBy = null)
  * @method AdminZone2[]    findAll()

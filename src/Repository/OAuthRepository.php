@@ -15,6 +15,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * @extends ServiceEntityRepository<OAuth>
  * @method OAuth|null find($id, $lockMode = null, $lockVersion = null)
  * @method OAuth|null findOneBy(array $criteria, array $orderBy = null)
  * @method OAuth[]    findAll()

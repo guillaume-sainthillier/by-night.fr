@@ -15,6 +15,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * @extends ServiceEntityRepository<UserEvent>
  * @method UserEvent|null find($id, $lockMode = null, $lockVersion = null)
  * @method UserEvent|null findOneBy(array $criteria, array $orderBy = null)
  * @method UserEvent[]    findAll()

@@ -25,6 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
+ * @extends ServiceEntityRepository<Event>
  * @method Event|null find($id, $lockMode = null, $lockVersion = null)
  * @method Event|null findOneBy(array $criteria, array $orderBy = null)
  * @method Event[]    findAll()
