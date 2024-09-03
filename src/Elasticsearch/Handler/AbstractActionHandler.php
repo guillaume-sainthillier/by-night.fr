@@ -24,7 +24,8 @@ abstract class AbstractActionHandler
 
     protected function getPersister(DocumentsAction $action): AsyncObjectPersister
     {
-        $persister = $this->registry->getPersister($action->getIndexName());
+        $indexName = $action->getIndexName();
+        $persister = $this->registry->getPersister($indexName);
         if (!$persister instanceof AsyncObjectPersister) {
             throw new InvalidArgumentException(sprintf('No async persister was registered for index "%s".', $indexName));
         }
