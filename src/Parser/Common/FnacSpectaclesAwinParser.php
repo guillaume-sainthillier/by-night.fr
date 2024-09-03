@@ -106,7 +106,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         if ('31/12 23:59' === $startDate->format('d/m H:i') && $startDate->format('d/m/Y') === $endDate->format('d/m/Y')) {
             $hours = null;
-            $startDate->setDate((int) $startDate->format('Y'), 1, 1);
+            $startDate = $startDate->setDate((int) $startDate->format('Y'), 1, 1);
         }
 
         // Prevents Reject::BAD_EVENT_DATE_INTERVAL
@@ -157,7 +157,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         return $event;
     }
 
-    private function getImageUrl(string $url)
+    private function getImageUrl(string $url): string
     {
         return $this->cache->get('fnac.urls.' . md5($url), function () use ($url) {
             $imageUrl = str_replace('grand/', '600/', $url);

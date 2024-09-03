@@ -31,7 +31,7 @@ class ComparatorTest extends AppKernelTestCase
     /**
      * @dataProvider matchingScorePlaceProvider
      */
-    public function testMatchingScorePlace(?Place $a, ?Place $b, int $score)
+    public function testMatchingScorePlace(?Place $a, ?Place $b, int $score): void
     {
         self::assertEquals($score, $this->comparator->getMatchingScorePlace($a, $b));
     }
@@ -80,7 +80,7 @@ class ComparatorTest extends AppKernelTestCase
     /**
      * @dataProvider bestPlaceProvider
      */
-    public function testBestPlace(?int $expectedId, Place $place, array $places)
+    public function testBestPlace(?int $expectedId, Place $place, array $places): void
     {
         $original = $place;
         $place = $this->comparator->getBestPlace($places, $place);
@@ -126,7 +126,7 @@ class ComparatorTest extends AppKernelTestCase
     /**
      * @dataProvider sanitizeRueProvider
      */
-    public function testSanitizeRue($actual, $expected)
+    public function testSanitizeRue(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->comparator->sanitizeRue($actual), 'Original : ' . $actual);
     }
@@ -142,7 +142,7 @@ class ComparatorTest extends AppKernelTestCase
     /**
      * @dataProvider sanitizeVilleProvider
      */
-    public function testSanitizeVille(string $actual, string $expected)
+    public function testSanitizeVille(string $actual, string $expected): void
     {
         self::assertEquals($expected, $this->comparator->sanitizeVille($actual), 'Original : ' . $actual);
     }

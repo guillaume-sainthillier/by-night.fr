@@ -16,7 +16,7 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-class Monitor
+final class Monitor
 {
     public static ?OutputInterface $output = null;
 
@@ -29,21 +29,21 @@ class Monitor
     public static function createProgressBar(int $nbSteps): void
     {
         if (null !== self::$output) {
-            static::$progressBar = new ProgressBar(self::$output, $nbSteps);
+            self::$progressBar = new ProgressBar(self::$output, $nbSteps);
         }
     }
 
     public static function advanceProgressBar(int $step = 1): void
     {
-        if (null !== static::$progressBar) {
-            static::$progressBar->advance($step);
+        if (null !== self::$progressBar) {
+            self::$progressBar->advance($step);
         }
     }
 
     public static function finishProgressBar(): void
     {
-        if (null !== static::$progressBar) {
-            static::$progressBar->finish();
+        if (null !== self::$progressBar) {
+            self::$progressBar->finish();
         }
     }
 
@@ -112,7 +112,7 @@ class Monitor
      *
      * @psalm-return array{nb: int, total: 0|mixed, avg: 0|mixed|null, min?: mixed|null, max?: mixed|null, avg_memory: 0|mixed|null}
      */
-    private static function getTime($stat): array
+    private static function getTime(array $stat): array
     {
         $nbItems = is_countable($stat['time']) ? \count($stat['time']) : 0;
 
@@ -148,7 +148,7 @@ class Monitor
         return round($bytes / 1_000 / 1_000, 2) . ' MB';
     }
 
-    public static function bench(string $message, callable $function)
+    public static function bench(string $message, callable $function): mixed
     {
         $stopwatch = self::start($message);
         $retour = \call_user_func($function);

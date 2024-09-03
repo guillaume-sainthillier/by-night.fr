@@ -21,7 +21,7 @@ final readonly class Comparator
     {
     }
 
-    public function getBestPlace(array $places, ?Place $testedPlace = null, $minScore = 90): ?Place
+    public function getBestPlace(array $places, ?Place $testedPlace = null, int $minScore = 90): ?Place
     {
         if (null === $testedPlace) {
             return null;

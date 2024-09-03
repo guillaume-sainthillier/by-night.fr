@@ -27,7 +27,7 @@ class ReservationsHandlerTest extends AppKernelTestCase
     /**
      * @dataProvider getReservationsSample
      */
-    public function testParseReservations(string $content, array $expectedInfos)
+    public function testParseReservations(string $content, array $expectedInfos): void
     {
         $infos = $this->reservationsHandler->parseReservations($content);
         self::assertEquals($expectedInfos, $infos);

@@ -29,7 +29,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Event|null find($id, $lockMode = null, $lockVersion = null)
  * @method Event|null findOneBy(array $criteria, array $orderBy = null)
  * @method Event[]    findAll()
- * @method Event[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Event[]    findBy(array $criteria, array $orderBy = null, int $limit = null, $offset = null)
  */
 final class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
@@ -90,7 +90,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $qb->where('e.draft = false');
     }
 
-    public function createElasticaQueryBuilder(string $alias, $indexBy = null): QueryBuilder
+    public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
     {
         return $this
             ->createQueryBuilder($alias, $indexBy)
@@ -111,7 +111,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->leftJoin('c.parent', 'c2');
     }
 
-    public function createSimpleQueryBuilder(string $alias, $indexBy = null): QueryBuilder
+    public function createSimpleQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
     {
         return parent::createQueryBuilder($alias, $indexBy);
     }
@@ -218,7 +218,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $ordered;
     }
 
-    public function findAllUserPlaces(User $user, $limit = 5): array
+    public function findAllUserPlaces(User $user, int $limit = 5): array
     {
         return $this->_em
             ->createQueryBuilder()
@@ -237,7 +237,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getResult();
     }
 
-    public function findAllNextEvents(User $user, bool $isNext = true, $page = 1, $limit = 3): array
+    public function findAllNextEvents(User $user, bool $isNext = true, int $page = 1, int $limit = 3): array
     {
         return $this
             ->createQueryBuilder('e')
@@ -290,7 +290,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getSingleScalarResult();
     }
 
-    public function findAllTrends(Event $event, $page = 1, $limit = 7)
+    public function findAllTrends(Event $event, int $page = 1, int $limit = 7): array
     {
         return $this
             ->_em
@@ -310,7 +310,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->execute();
     }
 
-    public function findAllSimilars(Event $event, ?int $page = 1, int $limit = 7)
+    /**
+     * @return array<Event>
+     */
+    public function findAllSimilars(Event $event, ?int $page = 1, int $limit = 7): array
     {
         return $this
             ->getFindAllSimilarsBuilder($event)

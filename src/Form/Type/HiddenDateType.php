@@ -20,10 +20,8 @@ final class HiddenDateType extends DateType
 {
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         parent::finishView($view, $form, $options);
         $view->vars['type'] = 'hidden';
@@ -31,10 +29,8 @@ final class HiddenDateType extends DateType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 

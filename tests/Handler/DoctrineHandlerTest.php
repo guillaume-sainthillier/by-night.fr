@@ -180,7 +180,7 @@ class DoctrineHandlerTest extends AppKernelTestCase
     /**
      * @dataProvider guessEventLocationProvider()
      */
-    public function testGuessEventLocation(PlaceDto $place, ?string $expectedCountryCode, ?string $expectedCityName, ?string $expectedCityPostalCode, int $expectedRejectReason)
+    public function testGuessEventLocation(PlaceDto $place, ?string $expectedCountryCode, ?string $expectedCityName, ?string $expectedCityPostalCode, int $expectedRejectReason): void
     {
         $place->reject = new Reject();
         $this->doctrineHandler->guessEventLocation($place);

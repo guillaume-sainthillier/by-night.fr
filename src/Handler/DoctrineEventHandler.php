@@ -217,21 +217,21 @@ final readonly class DoctrineEventHandler
         $city = null;
 
         // Ville + CP
-        if ($dto->city?->name && $dto->city?->postalCode) {
-            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->city?->postalCode, $dto->city?->name, $dto->country->code);
+        if ($dto->city->name && $dto->city->postalCode) {
+            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->city->postalCode, $dto->city->name, $dto->country->code);
         }
 
         // Ville
-        if (!$zipCity && $dto->city?->name) {
-            $zipCities = $this->repoZipCity->findAllByCity($dto->city?->name, $dto->country->code);
+        if (!$zipCity && $dto->city->name) {
+            $zipCities = $this->repoZipCity->findAllByCity($dto->city->name, $dto->country->code);
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
         }
 
         // CP
-        if (!$zipCity && $dto->city?->postalCode) {
-            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->city?->postalCode, $dto->country?->code);
+        if (!$zipCity && $dto->city->postalCode) {
+            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->city->postalCode, $dto->country->code);
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
@@ -242,8 +242,8 @@ final readonly class DoctrineEventHandler
         }
 
         // City
-        if (!$city && $dto->city?->name) {
-            $cities = $this->repoCity->findAllByName($dto->city?->name, $dto->country?->code);
+        if (!$city && $dto->city->name) {
+            $cities = $this->repoCity->findAllByName($dto->city->name, $dto->country->code);
             if (1 === \count($cities)) {
                 $city = $cities[0];
             }
@@ -305,7 +305,7 @@ final readonly class DoctrineEventHandler
     private function mergeWithDatabase(
         array $dtos,
         bool $flush,
-        ?DependencyCatalogue $previousCatalogue = null,
+        ?DependencyCatalogueInterface $previousCatalogue = null,
         array &$allCatalogues = [],
         array &$allEntityProviders = [],
         array $paths = [],

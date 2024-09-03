@@ -32,10 +32,8 @@ final class EventsImportCommand extends Command
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
             ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible');

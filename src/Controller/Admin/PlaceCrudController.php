@@ -21,7 +21,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use RuntimeException;
 
 final class PlaceCrudController extends AbstractCrudController
 {
@@ -98,7 +97,5 @@ final class PlaceCrudController extends AbstractCrudController
             $city,
             $country,
         ];
-
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

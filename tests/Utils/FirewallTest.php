@@ -28,7 +28,7 @@ class FirewallTest extends AppKernelTestCase
         $this->firewall = static::getContainer()->get(Firewall::class);
     }
 
-    public function testExplorations()
+    public function testExplorations(): void
     {
         $noNeedToUpdateReject = (new Reject())->addReason(Reject::NO_NEED_TO_UPDATE);
         $badReject = (new Reject())->addReason(Reject::BAD_PLACE_LOCATION);

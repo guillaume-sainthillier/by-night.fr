@@ -12,7 +12,6 @@ namespace App\Entity;
 
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Repository\PlaceMetadataRepository;
-use DateTime;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,7 +33,7 @@ class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
     private ?string $externalOrigin = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $externalUpdatedAt = null;
+    private ?DateTimeInterface $externalUpdatedAt = null;
 
     public function __toString(): string
     {

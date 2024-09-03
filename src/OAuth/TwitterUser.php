@@ -51,7 +51,7 @@ final readonly class TwitterUser implements ResourceOwnerInterface
         return $this->response;
     }
 
-    private function getResponseValue(string $key)
+    private function getResponseValue(string $key): mixed
     {
         if (\array_key_exists($key, $this->response)) {
             return $this->response[$key];

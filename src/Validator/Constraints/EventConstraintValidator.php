@@ -29,10 +29,7 @@ final class EventConstraintValidator extends ConstraintValidator
         $this->checkIfUpdate = $checkIfUpdate;
     }
 
-    /**
-     * @return void
-     */
-    public function validate($value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint): void
     {
         \assert($value instanceof EventDto);
         \assert($constraint instanceof EventConstraint);

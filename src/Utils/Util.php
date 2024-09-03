@@ -48,7 +48,7 @@ final class Util
         $this->stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
     }
 
-    public function replaceNonNumericChars(?string $string): string
+    public function replaceNonNumericChars(float|string|null $string): string
     {
         if (null === $string) {
             return '';

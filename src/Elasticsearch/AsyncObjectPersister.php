@@ -17,6 +17,7 @@ use App\Elasticsearch\Message\ReplaceManyDocuments;
 use Elastica\Document;
 use Elastica\Exception\BulkException;
 use Elastica\Index;
+use FOS\ElasticaBundle\Persister\ObjectPersister;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -24,6 +25,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 {
     public function __construct(
+        /** @var ObjectPersister */
         private readonly ObjectPersisterInterface $decorated,
         private readonly Index $index,
         private readonly array $options,

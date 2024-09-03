@@ -26,7 +26,7 @@ final class DateExtension extends Extension
         ];
     }
 
-    public function getDateTime($string): DateTime
+    public function getDateTime(string $string): DateTime
     {
         return new DateTime($string);
     }
@@ -78,8 +78,8 @@ final class DateExtension extends Extension
         } elseif ($diff->s > 30) { // Secondes
             return [
                 'short' => \sprintf('%d s', $diff->s),
-                'long' => \sprintf('%d seconde%s', $diff->s, $diff->s > 1 ? 's' : ''),
-                'full' => \sprintf('Il y a %d seconde%s', $diff->s, $diff->s > 1 ? 's' : ''),
+                'long' => \sprintf('%d secondes', $diff->s),
+                'full' => \sprintf('Il y a %d secondes', $diff->s),
             ];
         }
 

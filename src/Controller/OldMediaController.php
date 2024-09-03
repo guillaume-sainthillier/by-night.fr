@@ -28,7 +28,7 @@ final class OldMediaController extends AbstractController
     public function index(string $path, StorageInterface $storage, AssetHelper $assetHelper, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         $infos = pathinfo($path);
-        /** @var Event $event */
+        /** @var Event|null $event */
         $event = $eventRepository
             ->createQueryBuilder('e')
             ->where('e.image.name = :path OR e.imageSystem.name = :path')

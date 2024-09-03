@@ -36,7 +36,7 @@ class EchantillonHandlerTest extends AppKernelTestCase
     /**
      * @dataProvider userEventEchantillonsProvider
      */
-    public function testUserEventEchantillons(Event $event)
+    public function testUserEventEchantillons(Event $event): void
     {
         $this->echantillonHandler->prefetchPlaceEchantillons([$event]);
         $this->echantillonHandler->prefetchEventEchantillons([$event]);
@@ -58,7 +58,7 @@ class EchantillonHandlerTest extends AppKernelTestCase
     /**
      * @dataProvider eventEchantillonProvider
      */
-    public function testEventEchantillons(Event $event)
+    public function testEventEchantillons(Event $event): void
     {
         $this->echantillonHandler->prefetchPlaceEchantillons([$event]);
 
@@ -73,7 +73,7 @@ class EchantillonHandlerTest extends AppKernelTestCase
         yield [(new Event())->setPlace((new Place())->setId(1))];
     }
 
-    public function testAddNewEvent()
+    public function testAddNewEvent(): void
     {
         $france = (new Country())->setId('FR');
         $saintLys = (new City())->setId(2_978_661)->setCountry($france);
@@ -98,7 +98,7 @@ class EchantillonHandlerTest extends AppKernelTestCase
         $this->makeAddNewEventAsserts($parsedEvent1, 1, $countPersistedPlaces + 1);
     }
 
-    private function makeAddNewEventAsserts(Event $event, int $expectedCountEvents, int $expectedCountPlaces)
+    private function makeAddNewEventAsserts(Event $event, int $expectedCountEvents, int $expectedCountPlaces): void
     {
         $persistedEvents = $this->echantillonHandler->getEventEchantillons($event);
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
@@ -110,7 +110,7 @@ class EchantillonHandlerTest extends AppKernelTestCase
         }
     }
 
-    public function testPlacesEchantillons()
+    public function testPlacesEchantillons(): void
     {
         $france = (new Country())->setId('FR');
         $saintLys = (new City())->setId(2_978_661)->setCountry($france);

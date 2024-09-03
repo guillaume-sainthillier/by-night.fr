@@ -49,7 +49,7 @@ final class ToulouseParser extends AbstractParser
      *
      * @return string le chemin absolu vers le fichier
      */
-    private function downloadCSV()
+    private function downloadCSV(): string
     {
         $data = file_get_contents(self::DOWNLOAD_URL);
         $path_file = \sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());

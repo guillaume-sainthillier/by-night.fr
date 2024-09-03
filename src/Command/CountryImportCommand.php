@@ -14,6 +14,7 @@ use App\Importer\CountryImporter;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,10 +33,8 @@ final class CountryImportCommand extends Command
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('id', InputArgument::REQUIRED)
             ->addArgument('name', InputArgument::OPTIONAL)
@@ -45,10 +44,8 @@ final class CountryImportCommand extends Command
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $optionalParams = [];
         $atLeastOneInfo = false;
@@ -82,7 +79,10 @@ final class CountryImportCommand extends Command
             return $value;
         });
 
-        return $this->getHelper('question')->ask($input, $output, $question);
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+
+        return $helper->ask($input, $output, $question);
     }
 
     /**

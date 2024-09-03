@@ -59,11 +59,11 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         $entity->setAddress($dto->address);
-        if ($dto->createdAt && $entity->getCreatedAt()?->format('Y-m-d H:i:s') !== $dto->createdAt?->format('Y-m-d H:i:s')) {
+        if ($dto->createdAt && $entity->getCreatedAt()?->format('Y-m-d H:i:s') !== $dto->createdAt->format('Y-m-d H:i:s')) {
             $entity->setCreatedAt($dto->createdAt);
         }
 
-        if ($dto->updatedAt && $entity->getUpdatedAt()?->format('Y-m-d H:i:s') !== $dto->updatedAt?->format('Y-m-d H:i:s')) {
+        if ($dto->updatedAt && $entity->getUpdatedAt()?->format('Y-m-d H:i:s') !== $dto->updatedAt->format('Y-m-d H:i:s')) {
             $entity->setUpdatedAt($dto->updatedAt);
         }
 

@@ -69,7 +69,12 @@ final class IndexController extends BaseController
         return new JsonResponse($datas);
     }
 
-    private function getDataOfWeek(EventRepository $repo, User $user)
+    /**
+     * @return array[]
+     *
+     * @psalm-return array<array>
+     */
+    private function getDataOfWeek(EventRepository $repo, User $user): array
     {
         $datas = $repo->getStatsUser($user, 'DAYOFWEEK');
 
@@ -102,8 +107,6 @@ final class IndexController extends BaseController
 
     /**
      * @return array[]
-     *
-     * @psalm-return array<array>
      */
     private function fillDatas(array $final_datas, array $datas): array
     {
@@ -114,7 +117,12 @@ final class IndexController extends BaseController
         return array_map('array_values', $final_datas);
     }
 
-    private function getDataOfMonth(EventRepository $repo, User $user)
+    /**
+     * @return array[]
+     *
+     * @psalm-return array<array>
+     */
+    private function getDataOfMonth(EventRepository $repo, User $user): array
     {
         $datas = $repo->getStatsUser($user, 'MONTH');
 
@@ -141,7 +149,12 @@ final class IndexController extends BaseController
         return $this->fillDatas($final_datas, $datas);
     }
 
-    private function getDataOfYear(EventRepository $repo, User $user)
+    /**
+     * @return array[]
+     *
+     * @psalm-return array<array>
+     */
+    private function getDataOfYear(EventRepository $repo, User $user): array
     {
         $datas = $repo->getStatsUser($user, 'YEAR');
 

@@ -41,12 +41,15 @@ final class ReverseProxy
         $this->expires = $expires;
     }
 
-    public function getAliasName()
+    public function getAliasName(): string
     {
         return 'reverse_proxy';
     }
 
-    public function allowArray()
+    /**
+     * @return false
+     */
+    public function allowArray(): bool
     {
         return false;
     }

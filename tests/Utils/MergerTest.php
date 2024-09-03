@@ -27,7 +27,7 @@ class MergerTest extends AppKernelTestCase
         $this->merger = static::getContainer()->get(Merger::class);
     }
 
-    public function testPlaceMerge()
+    public function testPlaceMerge(): void
     {
         // Simple places
         $persistedPlace = (new Place())->setId(1)->setName('Dynamo')->setCityName('Toulouse')->setCityPostalCode('31000');
@@ -44,7 +44,7 @@ class MergerTest extends AppKernelTestCase
         self::assertEquals($persistedPlace->getFacebookId(), 'FB ID');
     }
 
-    public function testEventMerge()
+    public function testEventMerge(): void
     {
         $persistedEvent = (new Event())->setId(1)->setName('My Event')->setDescription('Event description');
         $parsedEvent = (new Event())->setId(2)->setName('My Event V2')->setDescription('Event description V2');

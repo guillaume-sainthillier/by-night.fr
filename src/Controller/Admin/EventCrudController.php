@@ -28,7 +28,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
-use RuntimeException;
 
 final class EventCrudController extends AbstractCrudController
 {
@@ -223,7 +222,5 @@ final class EventCrudController extends AbstractCrudController
             $fromData,
             $parserVersion,
         ];
-
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

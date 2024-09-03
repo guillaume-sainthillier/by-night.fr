@@ -26,7 +26,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
-        $settings->setRefreshInterval(-1);
+        $settings->setRefreshInterval('-1');
     }
 
     public function postIndexPopulate(PostIndexPopulateEvent $event): void

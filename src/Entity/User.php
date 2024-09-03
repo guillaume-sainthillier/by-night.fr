@@ -66,10 +66,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private bool $enabled = true;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $lastLogin;
+    private ?DateTimeInterface $lastLogin;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $passwordRequestedAt = null;
+    private ?DateTimeInterface $passwordRequestedAt = null;
 
     #[ORM\Column(type: Types::ARRAY)]
     private array $roles = [];

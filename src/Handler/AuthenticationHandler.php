@@ -10,6 +10,7 @@
 
 namespace App\Handler;
 
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +46,7 @@ final class AuthenticationHandler implements AuthenticationSuccessHandlerInterfa
             // remove the session key
             $request->getSession()->remove($key);
         } else {
+            /** @var User $user */
             $user = $token->getUser();
 
             if ($user->getCity()) {

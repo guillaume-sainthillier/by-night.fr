@@ -18,10 +18,6 @@ use RuntimeException;
 
 final class EchantillonHandler
 {
-    public $newPlaces;
-
-    public $fbPlaces;
-
     /**
      * @var Place[][]
      */
@@ -67,7 +63,6 @@ final class EchantillonHandler
 
     public function clearPlaces(): void
     {
-        unset($this->newPlaces, $this->fbPlaces);
         $this->initPlaces();
     }
 

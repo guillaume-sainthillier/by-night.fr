@@ -54,7 +54,7 @@ final class LoginSocialController extends AbstractController
     #[Route(path: '/success-{service<%patterns.social%>}', name: 'login_social_success', methods: ['GET'])]
     public function success(): Response
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (null === $user) {
             throw $this->createNotFoundException();

@@ -29,10 +29,8 @@ final class ImagesUpdateCommand extends Command
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('from', null, InputOption::VALUE_OPTIONAL, 'Date de dernière mise à jour', 'monday this week');
     }

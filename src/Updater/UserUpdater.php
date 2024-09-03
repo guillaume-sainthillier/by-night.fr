@@ -47,7 +47,7 @@ final class UserUpdater extends Updater
         $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);
 
-        $nbBatchs = ceil($count / self::PAGINATION_SIZE);
+        $nbBatchs = (int) ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 1; $i <= $nbBatchs; ++$i) {
@@ -112,6 +112,6 @@ final class UserUpdater extends Updater
     private function doFlush(): void
     {
         $this->entityManager->flush();
-        $this->entityManager->clear(User::class);
+        $this->entityManager->clear();
     }
 }

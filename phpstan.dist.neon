@@ -1,0 +1,19 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 6
+    tmpDir: var/tools/phpstan
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - src
+#        - tests
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics
+        - '#is not the same as PHPDoc type .+ of overridden property#'
+        - '#should be contravariant with parameter#'

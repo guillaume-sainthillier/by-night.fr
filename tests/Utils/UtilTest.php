@@ -27,7 +27,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider nonNumericCharsProvider
      */
-    public function testReplaceNonNumericChars($actual, $expected)
+    public function testReplaceNonNumericChars(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->replaceNonNumericChars($actual), 'Original : ' . $actual);
     }
@@ -48,7 +48,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider nonAlphanumericCharsProvider
      */
-    public function testReplaceNonAlphanumericChars($actual, $expected)
+    public function testReplaceNonAlphanumericChars(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->replaceNonAlphanumericChars($actual), 'Original : ' . $actual);
     }
@@ -65,7 +65,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider deleteSpaceBetweenProvider
      */
-    public function testDeleteSpaceBetween($actual, $expected, $delimiters)
+    public function testDeleteSpaceBetween($actual, $expected, $delimiters): void
     {
         self::assertEquals($expected, $this->utils->deleteSpaceBetween($actual, $delimiters), 'Original : ' . $actual);
     }
@@ -85,7 +85,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider deleteStopWordsProvider
      */
-    public function testDeleteStopWords($actual, $expected)
+    public function testDeleteStopWords(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->deleteStopWords($actual), 'Original : ' . $actual);
     }
@@ -104,7 +104,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider deleteMultipleSpacesProvider
      */
-    public function testDeleteMultipleSpaces($actual, $expected)
+    public function testDeleteMultipleSpaces(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->deleteMultipleSpaces($actual), 'Original : ' . $actual);
     }
@@ -122,7 +122,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider utf8TitleCaseProvider
      */
-    public function testUtf8TitleCase($actual, $expected)
+    public function testUtf8TitleCase(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->utf8TitleCase($actual), 'Original : ' . $actual);
     }
@@ -139,7 +139,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider utf8LowerCaseProvider
      */
-    public function testUtf8LowerCase($actual, $expected)
+    public function testUtf8LowerCase(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->utf8LowerCase($actual), 'Original : ' . $actual);
     }
@@ -156,7 +156,7 @@ class UtilTest extends AppKernelTestCase
     /**
      * @dataProvider replaceAccentsProvider
      */
-    public function testReplaceAccents($actual, $expected)
+    public function testReplaceAccents(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->replaceAccents($actual), 'Original : ' . $actual);
     }

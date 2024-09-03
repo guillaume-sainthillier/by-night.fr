@@ -24,7 +24,7 @@ final class TagsExtension extends Extension
         ];
     }
 
-    public function getTags(string $type, $object = null): string
+    public function getTags(string $type, mixed $object = null): string
     {
         return match ($type) {
             'location' => TagsInvalidator::getLocationTag($object),

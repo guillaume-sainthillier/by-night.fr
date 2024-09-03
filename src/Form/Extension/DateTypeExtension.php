@@ -31,10 +31,8 @@ final class DateTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $format = static fn (Options $options): string|int => 'single_text' === $options['widget'] ? DateType::HTML5_FORMAT : IntlDateFormatter::SHORT;
 

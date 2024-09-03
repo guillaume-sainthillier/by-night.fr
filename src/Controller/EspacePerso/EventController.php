@@ -42,7 +42,7 @@ final class EventController extends BaseController
     public function index(Request $request, EventRepository $eventRepository): Response
     {
         $user = $this->getAppUser();
-        $page = (int) $request->query->get('page', 1);
+        $page = $request->query->getInt('page', 1);
         $events = $this->createQueryBuilderPaginator(
             $eventRepository->findAllByUserQueryBuilder($user),
             $page,

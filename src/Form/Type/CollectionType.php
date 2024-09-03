@@ -18,10 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class CollectionType extends AbstractType
 {
-    /**
-     * @return void
-     */
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         if (!isset($view->vars['attr'])) {
             $view->vars['attr'] = [];
@@ -54,10 +51,7 @@ final class CollectionType extends AbstractType
         return $prefixes;
     }
 
-    /**
-     * @return void
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'label' => false,

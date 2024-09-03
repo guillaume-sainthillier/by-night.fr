@@ -27,7 +27,7 @@ final readonly class EmailVerifier
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             'app_verify_email',
-            $user->getId(),
+            $user->getUserIdentifier(),
             $user->getEmail()
         );
 
@@ -43,7 +43,7 @@ final readonly class EmailVerifier
      */
     public function handleEmailConfirmation(Request $request, User $user): void
     {
-        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
+        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getUserIdentifier(), $user->getEmail());
 
         $user->setVerified(true);
 

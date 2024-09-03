@@ -25,20 +25,16 @@ final class ReCaptchaType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventSubscriber($this->reCaptchaSubscriber);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'block_prefix' => 'recaptcha',

@@ -97,10 +97,10 @@ final class Firewall
 
         // Pas de dates valides fournies
         if (!$dto->startDate instanceof DateTimeInterface
-            || ($dto->endDate && !$dto->endDate instanceof DateTimeInterface)
+            || !$dto->endDate instanceof DateTimeInterface
         ) {
             $dto->reject->addReason(Reject::BAD_EVENT_DATE);
-        } elseif ($dto->endDate && $dto->endDate < $dto->startDate) {
+        } elseif ($dto->endDate < $dto->startDate) {
             $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
@@ -166,10 +166,7 @@ final class Firewall
         return false;
     }
 
-    /**
-     * @return ParserData|null
-     */
-    public function getExploration(?string $externalId)
+    public function getExploration(?string $externalId): ?ParserData
     {
         if (!isset($this->parserDatas[$externalId])) {
             return null;

@@ -486,7 +486,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this->id;
     }
 
-    public function setId($id): self
+    public function setId(?int $id): self
     {
         $this->id = $id;
 

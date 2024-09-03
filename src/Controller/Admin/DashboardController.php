@@ -94,6 +94,9 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Historique Maj', 'fas fa-history', ParserHistory::class);
     }
 
+    /**
+     * @param User $user
+     */
     public function configureUserMenu(UserInterface $user): UserMenu
     {
         // Usually it's better to call the parent method because that gives you a

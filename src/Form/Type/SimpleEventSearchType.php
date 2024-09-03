@@ -26,10 +26,8 @@ final class SimpleEventSearchType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         parent::finishView($view, $form, $options);
         $this->dateRangeBuilder->finishView($view, $form);
@@ -37,10 +35,8 @@ final class SimpleEventSearchType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->dateRangeBuilder->addShortcutDateFields($builder, 'from', 'to');
         $builder
@@ -51,10 +47,8 @@ final class SimpleEventSearchType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'method' => 'get',

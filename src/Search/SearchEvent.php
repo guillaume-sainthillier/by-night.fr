@@ -63,17 +63,11 @@ final class SearchEvent
         return $this;
     }
 
-    /**
-     * @return DateTime|null
-     */
     public function getFrom(): ?DateTimeInterface
     {
         return $this->from;
     }
 
-    /**
-     * @param DateTime|null $from
-     */
     public function setFrom(?DateTimeInterface $from): self
     {
         $this->from = $from;

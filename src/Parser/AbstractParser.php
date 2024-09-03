@@ -88,7 +88,7 @@ abstract class AbstractParser implements ParserInterface
         }
     }
 
-    private function getSanitizedValue($value)
+    private function getSanitizedValue(mixed $value): mixed
     {
         if (\is_object($value)) {
             $this->sanitize($value);

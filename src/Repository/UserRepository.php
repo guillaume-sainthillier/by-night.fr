@@ -136,7 +136,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->getSingleScalarResult();
     }
 
-    public function findOneBySocial(string $email, string $infoPrefix, $socialId): ?User
+    public function findOneBySocial(string $email, string $infoPrefix, string $socialId): ?User
     {
         return $this
             ->createQueryBuilder('u')

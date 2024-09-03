@@ -21,10 +21,7 @@ final class ReCaptchaResponseValidator extends ConstraintValidator
     {
     }
 
-    /**
-     * @return void
-     */
-    public function validate($value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint): void
     {
         \assert($constraint instanceof ReCaptchaResponse);
 

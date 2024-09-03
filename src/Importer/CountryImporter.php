@@ -41,9 +41,6 @@ final readonly class CountryImporter
 
     public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null): void
     {
-        /**
-         * @var Country
-         */
         $country = $this->countryRepository->find($id);
         if (!$country) {
             $country = new Country();
@@ -66,10 +63,7 @@ final readonly class CountryImporter
         $this->deleteEmptyDatas($country);
     }
 
-    /**
-     * @return void
-     */
-    private function createAdminZones(Country $country)
+    private function createAdminZones(Country $country): void
     {
         $filepath = $this->downloadAndExtractGeoname(
             'https://download.geonames.org/export/dump/' . $country->getId() . '.zip',
@@ -203,10 +197,7 @@ final readonly class CountryImporter
         }
     }
 
-    /**
-     * @return void
-     */
-    private function createZipCities(Country $country)
+    private function createZipCities(Country $country): void
     {
         $filepath = $this->downloadAndExtractGeoname(
             'https://download.geonames.org/export/zip/' . $country->getId() . '.zip',

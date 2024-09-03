@@ -18,7 +18,6 @@ use App\Utils\PaginateTrait;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\PagerfantaInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,8 +35,7 @@ final class EventsDownloadImagesCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EventRepository $eventRepository,
-        private readonly EventHandler $eventHandler,
-        private readonly LoggerInterface $logger
+        private readonly EventHandler $eventHandler
     ) {
         parent::__construct();
     }

@@ -206,7 +206,7 @@ final class DataTourismeParser extends AbstractParser
         $emails = array_filter(array_unique($emails));
 
         $lastUpdate = new DateTimeImmutable($datas['lastUpdate']);
-        $lastUpdate->setTime(0, 0);
+        $lastUpdate = $lastUpdate->setTime(0, 0);
 
         if (isset($datas['lastUpdateDatatourisme'])) {
             $lastUpdateDatatourisme = new DateTimeImmutable($datas['lastUpdateDatatourisme']);
@@ -338,7 +338,7 @@ final class DataTourismeParser extends AbstractParser
     /**
      * @param string|string[] $paths
      */
-    private function getDataValue(array $datas, array|string $paths, $defaultValue = null)
+    private function getDataValue(array $datas, array|string $paths, mixed $defaultValue = null): mixed
     {
         foreach ((array) $paths as $path) {
             try {

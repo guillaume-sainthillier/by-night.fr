@@ -62,7 +62,7 @@ final class DateRangeBuilder
                 $fromName = $shortcut->getConfig()->getOption('from');
                 $toName = $shortcut->getConfig()->getOption('to');
 
-                /** @var DateTimeInterface $from */
+                /** @var DateTimeInterface|null $from */
                 $from = $form->get($fromName)->getData();
 
                 /** @var DateTimeInterface|null $to */

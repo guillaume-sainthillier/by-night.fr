@@ -34,7 +34,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         parent::__construct($registry, City::class);
     }
 
-    public function createElasticaQueryBuilder(string $alias, $indexBy = null): QueryBuilder
+    public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
     {
         return $this
             ->createQueryBuilder($alias, $indexBy)
@@ -164,7 +164,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     /**
      * @return string[]
      */
-    public function findAllRandomNames(?Country $country = null, $limit = 5): array
+    public function findAllRandomNames(?Country $country = null, int $limit = 5): array
     {
         $qb = parent::createQueryBuilder('c')
             ->select('c.name, c.slug, c2.name AS country')

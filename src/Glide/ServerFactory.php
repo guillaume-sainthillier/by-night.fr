@@ -41,7 +41,7 @@ final class ServerFactory extends \League\Glide\ServerFactory
     /**
      * {@inheritDoc}
      */
-    public function getManipulators()
+    public function getManipulators(): array
     {
         return [
             new Orientation(),

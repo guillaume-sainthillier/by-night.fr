@@ -36,10 +36,8 @@ final class EventType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         parent::finishView($view, $form, $options);
         $this->dateRangeBuilder->finishView($view, $form);
@@ -47,10 +45,8 @@ final class EventType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->dateRangeBuilder->addDateFields($builder, 'startDate', 'endDate');
         $builder
@@ -169,10 +165,8 @@ final class EventType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function onSubmit(FormEvent $event)
+    public function onSubmit(FormEvent $event): void
     {
         $data = $event->getData();
 
@@ -180,8 +174,8 @@ final class EventType extends AbstractType
             return;
         }
 
-        if (null !== $data->place?->country && null !== $data?->place->city) {
-            $data->place->city->country = $data->place?->country;
+        if (null !== $data->place?->country && null !== $data->place->city) {
+            $data->place->city->country = $data->place->country;
         }
 
         $this->doctrineEventHandler->handleOne($data, false);
@@ -189,10 +183,8 @@ final class EventType extends AbstractType
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => EventDto::class,

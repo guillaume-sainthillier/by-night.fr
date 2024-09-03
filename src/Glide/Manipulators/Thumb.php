@@ -31,7 +31,7 @@ final class Thumb extends BaseManipulator
     /**
      * {@inheritDoc}
      */
-    public function run(Image $image)
+    public function run(Image $image): Image
     {
         if (null === $this->thumb) {
             return $image;

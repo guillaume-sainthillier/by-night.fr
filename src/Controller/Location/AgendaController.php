@@ -153,7 +153,12 @@ final class AgendaController extends BaseController
         return $formAction;
     }
 
-    private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location)
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<string, string>
+     */
+    private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location): array
     {
         $key = 'event.categories.v2.' . $location->getSlug();
 

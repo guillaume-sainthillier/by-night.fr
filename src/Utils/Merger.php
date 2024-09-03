@@ -123,12 +123,12 @@ final readonly class Merger
         return $a;
     }
 
-    private function skakeToCamel($str): string
+    private function skakeToCamel(?string $str): string
     {
         return str_replace(' ', '', ucwords(str_replace('_', ' ', (string) $str)));
     }
 
-    private function getBestContent($valueA, $valueB, string $mergeType)
+    private function getBestContent(mixed $valueA, mixed $valueB, string $mergeType): mixed
     {
         if (\is_callable($mergeType)) {
             return \call_user_func($mergeType, $valueA, $valueB);

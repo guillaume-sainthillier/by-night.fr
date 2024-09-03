@@ -27,10 +27,7 @@ final class CitySubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @return void
-     */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest()) {
             return;

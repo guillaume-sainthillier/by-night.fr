@@ -35,7 +35,7 @@ final readonly class ReverseProxySubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onKernelControllerArguments(ControllerArgumentsEvent $event)
+    public function onKernelControllerArguments(ControllerArgumentsEvent $event): void
     {
         $request = $event->getRequest();
 
@@ -68,14 +68,14 @@ final readonly class ReverseProxySubscriber implements EventSubscriberInterface
             if (null !== $reverseProxyConfiguration->getTtl()) {
                 $ttl = $reverseProxyConfiguration->getTtl();
             } else {
-                $date = DateTime::createFromFormat('U', strtotime((string) $reverseProxyConfiguration->getExpires()), new DateTimeZone('UTC'));
-                $now = DateTime::createFromFormat('U', strtotime('now'), new DateTimeZone('UTC'));
+                $date = DateTime::createFromFormat('U', (string) strtotime((string) $reverseProxyConfiguration->getExpires()), new DateTimeZone('UTC'));
+                $now = DateTime::createFromFormat('U', (string) strtotime('now'), new DateTimeZone('UTC'));
 
                 $ttl = max($date->format('U') - $now->format('U'), 0);
             }
 
             $response = $event->getResponse();
-            $response->headers->set('X-Reverse-Proxy-TTL', $ttl);
+            $response->headers->set('X-Reverse-Proxy-TTL', (string) $ttl);
         }
     }
 }

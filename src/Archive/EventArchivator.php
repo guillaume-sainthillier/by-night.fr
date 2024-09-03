@@ -39,7 +39,7 @@ final readonly class EventArchivator
         $qb = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 
-        $nbTransactions = ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
+        $nbTransactions = (int) ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
         Monitor::createProgressBar($nbTransactions);
         for ($i = 0; $i < $nbTransactions; ++$i) {
             $events = $qb

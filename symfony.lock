@@ -2,12 +2,6 @@
     "abraham/twitteroauth": {
         "version": "1.1.0"
     },
-    "amphp/amp": {
-        "version": "v2.5.2"
-    },
-    "amphp/byte-stream": {
-        "version": "v1.8.1"
-    },
     "aws/aws-crt-php": {
         "version": "v1.0.2"
     },
@@ -40,9 +34,6 @@
     },
     "composer/xdebug-handler": {
         "version": "2.0.1"
-    },
-    "dnoegel/php-xdg-base-dir": {
-        "version": "v0.1.1"
     },
     "doctrine/annotations": {
         "version": "2.0",
@@ -142,12 +133,6 @@
     },
     "ezimuel/ringphp": {
         "version": "1.2.0"
-    },
-    "felixfbecker/advanced-json-rpc": {
-        "version": "v3.2.1"
-    },
-    "felixfbecker/language-server-protocol": {
-        "version": "1.5.1"
     },
     "friendsofphp/php-cs-fixer": {
         "version": "3.51",
@@ -297,9 +282,6 @@
     "neitanod/forceutf8": {
         "version": "v2.0.4"
     },
-    "netresearch/jsonmapper": {
-        "version": "v4.0.0"
-    },
     "nikic/php-parser": {
         "version": "v4.9.1"
     },
@@ -366,15 +348,6 @@
     },
     "php-http/promise": {
         "version": "1.1.0"
-    },
-    "phpdocumentor/reflection-common": {
-        "version": "2.2.0"
-    },
-    "phpdocumentor/reflection-docblock": {
-        "version": "5.2.2"
-    },
-    "phpdocumentor/type-resolver": {
-        "version": "1.4.0"
     },
     "phpseclib/phpseclib": {
         "version": "2.0.29"
@@ -920,11 +893,5 @@
         "files": [
             "config/packages/vich_uploader.yaml"
         ]
-    },
-    "vimeo/psalm": {
-        "version": "4.8.1"
-    },
-    "webmozart/assert": {
-        "version": "1.9.1"
     }
 }
