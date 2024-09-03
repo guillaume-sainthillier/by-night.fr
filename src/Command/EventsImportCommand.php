@@ -53,7 +53,7 @@ class EventsImportCommand extends Command
                 continue;
             }
 
-            Monitor::writeln(sprintf(
+            Monitor::writeln(\sprintf(
                 'Starting <info>%s</info>',
                 $parser->getName()
             ));
@@ -61,7 +61,7 @@ class EventsImportCommand extends Command
             $parser->parse(!$input->getOption('full'));
             $nbEvents = $parser->getParsedEvents();
 
-            Monitor::writeln(sprintf(
+            Monitor::writeln(\sprintf(
                 '<info>%d</info> parsed events',
                 $nbEvents
             ));

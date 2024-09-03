@@ -51,7 +51,7 @@ class ImageHelper
 
     public function __construct(
         private readonly LoaderRegistry $loaderRegistry,
-        private readonly Environment $twig
+        private readonly Environment $twig,
     ) {
         $this->defaultParams = [
             'path' => null,
@@ -186,7 +186,7 @@ class ImageHelper
                         continue;
                     }
 
-                    $cssValues[] = sprintf('%s: %s', $propertyName, $propertyValue);
+                    $cssValues[] = \sprintf('%s: %s', $propertyName, $propertyValue);
                 }
 
                 $value = implode('; ', $cssValues);
@@ -247,7 +247,7 @@ class ImageHelper
     private function calculateImageSizes(array $params): array
     {
         [
-            'layout' => $layout
+            'layout' => $layout,
         ] = $params;
 
         if ('fixed' === $layout) {
@@ -326,14 +326,14 @@ class ImageHelper
 
         foreach ($formats as $format) {
             $images = array_map(fn (int $size) => $this->generateImageSource(array_merge($params, [
-                    'width' => $size,
-                    'height' => round($size / $imageSizes['aspectRatio']),
-                    'format' => $format,
-                    'loaderOptions' => array_merge($loaderOptions, [
-                        'fit' => $params['fit'] ?? null,
-                        'quality' => 80,
-                    ]),
-                ])
+                'width' => $size,
+                'height' => round($size / $imageSizes['aspectRatio']),
+                'format' => $format,
+                'loaderOptions' => array_merge($loaderOptions, [
+                    'fit' => $params['fit'] ?? null,
+                    'quality' => 80,
+                ]),
+            ])
             ), $imageSizes['sizes']);
 
             if (\in_array($format, ['jpg', 'png'], true)) {
@@ -352,7 +352,7 @@ class ImageHelper
             $data['sources'][] = [
                 'srcSet' => $this->getSrcSet($images),
                 'sizes' => $sizes,
-                'mimeType' => sprintf('image/%s', $format),
+                'mimeType' => \sprintf('image/%s', $format),
             ];
         }
 
@@ -380,7 +380,7 @@ class ImageHelper
 
     private function getSrcSet(array $images): array
     {
-        return array_map(static fn (array $image) => sprintf(
+        return array_map(static fn (array $image) => \sprintf(
             '%s %dw',
             $image['src'],
             $image['width'],
@@ -437,13 +437,13 @@ class ImageHelper
             // If screen is wider than the max size, image width is the max size,
             // otherwise it's the width of the screen
             $sizes = [
-                sprintf('(min-width: %dpx) %dpx', $width, $width),
+                \sprintf('(min-width: %dpx) %dpx', $width, $width),
                 '100vw',
             ];
         } elseif ('fixed' === $layout) {
             // Image is always the same width, whatever the size of the screen
             $sizes = [
-                sprintf('%dpx', $width),
+                \sprintf('%dpx', $width),
             ];
         } elseif ('fullWidth' === $layout) {
             $sizes = [
@@ -745,7 +745,7 @@ class ImageHelper
     {
         $stylesAsProperties = [];
         foreach ($styles as $property => $value) {
-            $stylesAsProperties[] = sprintf(
+            $stylesAsProperties[] = \sprintf(
                 '%s: %s',
                 $property,
                 $value

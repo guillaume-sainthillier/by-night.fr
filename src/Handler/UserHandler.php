@@ -57,7 +57,7 @@ class UserHandler
                 'image/gif' => 'gif',
                 'image/png' => 'png',
                 'image/jpg', 'image/jpeg' => 'jpeg',
-                default => throw new RuntimeException(sprintf('Unable to find extension for mime type %s', $contentType)),
+                default => throw new RuntimeException(\sprintf('Unable to find extension for mime type %s', $contentType)),
             };
 
             $filename = $user->getId() . '.' . $ext;

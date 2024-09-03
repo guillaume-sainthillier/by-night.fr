@@ -56,7 +56,7 @@ class DataTourismeParser extends AbstractParser
         ReservationsHandler $reservationsHandler,
         private readonly HttpClientInterface $client,
         private readonly string $tempPath,
-        private readonly string $dataTourismeAppKey
+        private readonly string $dataTourismeAppKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
 
@@ -88,7 +88,7 @@ class DataTourismeParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $url = $incremental ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
-        $directory = $this->getFeed(sprintf($url, $this->dataTourismeAppKey));
+        $directory = $this->getFeed(\sprintf($url, $this->dataTourismeAppKey));
 
         $finder = new Finder();
         $files = $finder
@@ -115,7 +115,7 @@ class DataTourismeParser extends AbstractParser
         // Remove previous extracts
         $fs = new Filesystem();
 
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . \sprintf('%s.zip', md5($url));
         $extractDirectory = $this->tempPath . \DIRECTORY_SEPARATOR . md5($url);
 
         if ($fs->exists($extractDirectory)) {
@@ -134,7 +134,7 @@ class DataTourismeParser extends AbstractParser
         $zip = new ZipArchive();
         $res = $zip->open($filePath);
         if (true !== $res) {
-            throw new RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
+            throw new RuntimeException(\sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
         }
 
         $zip->extractTo($extractDirectory);
@@ -245,7 +245,7 @@ class DataTourismeParser extends AbstractParser
             '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
         ]);
         $place->street = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]');
-        $place->externalId = sprintf('DT-%s', $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')));
+        $place->externalId = \sprintf('DT-%s', $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')));
         $event->place = $place;
 
         $city = new CityDto();
@@ -277,14 +277,14 @@ class DataTourismeParser extends AbstractParser
             if ($startTime && $endTime) {
                 $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
                 $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $endTime);
-                $hours = sprintf('De %s à %s', $startTime, $endTime);
+                $hours = \sprintf('De %s à %s', $startTime, $endTime);
             } elseif ($startTime) {
                 $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $hours = sprintf('À %s', $startTime);
+                $hours = \sprintf('À %s', $startTime);
             }
 
             $currentEvent = clone $event;
-            $currentEvent->externalId = sprintf('%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
+            $currentEvent->externalId = \sprintf('%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
             $currentEvent->startDate = $startDate;
             $currentEvent->endDate = $endDate;
             $currentEvent->hours = $hours;
@@ -355,7 +355,7 @@ class DataTourismeParser extends AbstractParser
         $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
 
         if (!preg_match(self::UUID_REGEX, $path)) {
-            throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
+            throw new RuntimeException(\sprintf('Unable to guess id FROM url "%s"', $url));
         }
 
         return $path;

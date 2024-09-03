@@ -118,14 +118,14 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
                     continue;
                 }
 
-                $key = sprintf(
+                $key = \sprintf(
                     'external-%s-%s',
                     $externalIdentifiable->getExternalId(),
                     $externalIdentifiable->getExternalOrigin()
                 );
 
                 if ($object instanceof PrefixableObjectKeyInterface) {
-                    $key = sprintf(
+                    $key = \sprintf(
                         '%s-%s',
                         $object->getKeyPrefix(),
                         $key,
@@ -141,9 +141,9 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         }
 
         if ([] === $keys) {
-            $key = sprintf('spl-%s', spl_object_id($object));
+            $key = \sprintf('spl-%s', spl_object_id($object));
             if ($object instanceof PrefixableObjectKeyInterface) {
-                $key = sprintf(
+                $key = \sprintf(
                     '%s-%s',
                     $object->getKeyPrefix(),
                     $key,

@@ -64,12 +64,12 @@ class OAuthDataProvider
                 'realname' => $user->getName(),
                 'nickname' => $user->getScreenName(),
             ],
-            default => throw new AuthenticationException(sprintf('Unable to guess how to find user for service "%s"', $serviceName)),
+            default => throw new AuthenticationException(\sprintf('Unable to guess how to find user for service "%s"', $serviceName)),
         };
 
         // So ugly...
         if (empty($datas['email'])) {
-            $datas['email'] = sprintf('john.doe-%s@by-night.fr', uniqid('', true));
+            $datas['email'] = \sprintf('john.doe-%s@by-night.fr', uniqid('', true));
         }
 
         return $datas;

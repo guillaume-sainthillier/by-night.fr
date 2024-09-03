@@ -27,7 +27,7 @@ class TagsInvalidator
     public function __construct(
         private readonly CacheManager $tagHandler,
         private readonly LoggerInterface $logger,
-        private readonly bool $enableHttpCache
+        private readonly bool $enableHttpCache,
     ) {
     }
 
@@ -49,7 +49,7 @@ class TagsInvalidator
 
     public static function getCityTag(City $city): string
     {
-        return sprintf('city-%d', $city->getId());
+        return \sprintf('city-%d', $city->getId());
     }
 
     public function addUser(User $user): void
@@ -59,7 +59,7 @@ class TagsInvalidator
 
     public static function getUserTag(User $user): string
     {
-        return sprintf('user-%d', $user->getId());
+        return \sprintf('user-%d', $user->getId());
     }
 
     public function addUserEvent(UserEvent $userEvent): void
@@ -69,7 +69,7 @@ class TagsInvalidator
 
     public static function getTrendTag(Event $event): string
     {
-        return sprintf('tendances-%d', $event->getId());
+        return \sprintf('tendances-%d', $event->getId());
     }
 
     public function addEvent(Event $event): void
@@ -85,12 +85,12 @@ class TagsInvalidator
 
     public static function getEventTag(Event $event): string
     {
-        return sprintf('event-%d', $event->getId());
+        return \sprintf('event-%d', $event->getId());
     }
 
     public static function getLocationTag(Location $location): string
     {
-        return sprintf('location-%s', $location->getId());
+        return \sprintf('location-%s', $location->getId());
     }
 
     public function addPlace(Place $place): void
@@ -104,7 +104,7 @@ class TagsInvalidator
 
     public static function getPlaceTag(Place $place): string
     {
-        return sprintf('place-%d', $place->getId());
+        return \sprintf('place-%d', $place->getId());
     }
 
     public function flush(): void

@@ -63,6 +63,6 @@ class ParserHistoryCrudController extends AbstractCrudController
             return [$startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
         }
 
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        throw new RuntimeException(\sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

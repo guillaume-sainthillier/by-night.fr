@@ -30,6 +30,6 @@ class EntityFactoryHandler
             }
         }
 
-        throw new RuntimeException(sprintf('Unable to get entity factory for class "%s"', $className));
+        throw new RuntimeException(\sprintf('Unable to get entity factory for class "%s"', $className));
     }
 }

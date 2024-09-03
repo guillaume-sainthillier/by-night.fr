@@ -30,7 +30,7 @@ class EventType extends AbstractType
 {
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,
-        private readonly DateRangeBuilder $dateRangeBuilder
+        private readonly DateRangeBuilder $dateRangeBuilder,
     ) {
     }
 

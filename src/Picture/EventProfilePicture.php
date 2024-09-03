@@ -27,7 +27,7 @@ class EventProfilePicture
     public function __construct(
         private readonly UploaderHelper $helper,
         private readonly Packages $packages,
-        private readonly AssetHelper $assetHelper
+        private readonly AssetHelper $assetHelper,
     ) {
     }
 
@@ -35,7 +35,7 @@ class EventProfilePicture
     {
         [
             'path' => $path,
-            'source' => $source
+            'source' => $source,
         ] = $this->getPicturePathAndSource($event);
 
         if ('upload' === $source) {
@@ -52,7 +52,7 @@ class EventProfilePicture
     {
         [
             'path' => $path,
-            'source' => $source
+            'source' => $source,
         ] = $this->getPicturePathAndSource($event);
 
         if ('upload' === $source) {

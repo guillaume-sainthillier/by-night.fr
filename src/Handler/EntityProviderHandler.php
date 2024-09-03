@@ -30,6 +30,6 @@ class EntityProviderHandler
             }
         }
 
-        throw new RuntimeException(sprintf('Unable to get entity provider for class "%s"', $className));
+        throw new RuntimeException(\sprintf('Unable to get entity provider for class "%s"', $className));
     }
 }

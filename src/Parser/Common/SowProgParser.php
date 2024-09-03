@@ -38,7 +38,7 @@ class SowProgParser extends AbstractParser
         ReservationsHandler $reservationsHandler,
         HttpClientInterface $client,
         string $sowprogUsername,
-        string $sowprogPassword
+        string $sowprogPassword,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
 
@@ -100,13 +100,13 @@ class SowProgParser extends AbstractParser
 
         $hours = null;
         if ($scheduleData['startHour'] && $scheduleData['startHour'] !== $scheduleData['endHour']) {
-            $hours = sprintf(
+            $hours = \sprintf(
                 'De %s à %s',
                 str_replace(':', 'h', (string) $scheduleData['startHour']),
                 str_replace(':', 'h', (string) $scheduleData['endHour'])
             );
         } elseif ($scheduleData['startHour']) {
-            $hours = sprintf(
+            $hours = \sprintf(
                 'À %s',
                 str_replace(':', 'h', (string) $scheduleData['startHour'])
             );
@@ -114,7 +114,7 @@ class SowProgParser extends AbstractParser
 
         $description = null;
         foreach ($data['artist'] as $artist) {
-            $description .= sprintf(
+            $description .= \sprintf(
                 "\n<h2>%s</h2>\n%s",
                 $artist['name'],
                 $artist['description']
@@ -123,7 +123,7 @@ class SowProgParser extends AbstractParser
 
         $prices = null;
         if (!empty($data['eventPrice'])) {
-            $prices = array_map(static fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
+            $prices = array_map(static fn (array $price) => \sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
             $prices = implode(' - ', $prices);
         }
 
@@ -138,7 +138,7 @@ class SowProgParser extends AbstractParser
         $event->name = $eventData['title'];
         $event->description = $eventData['description'];
         $event->source = 'https://www.sowprog.com/';
-        $event->externalId = sprintf('%s-%s', $data['id'], $scheduleData['id']);
+        $event->externalId = \sprintf('%s-%s', $data['id'], $scheduleData['id']);
         $event->imageUrl = $eventData['picture'] ?? $eventData['thumbnail'] ?? null;
         if ($event->imageUrl) {
             $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', (string) $event->imageUrl);
@@ -158,7 +158,7 @@ class SowProgParser extends AbstractParser
         $place = new PlaceDto();
         $place->name = $locationData['name'];
         $place->externalId = $locationData['id'];
-        $place->street = trim(sprintf('%s %s', $contactData['addressLine1'], $contactData['addressLine2']));
+        $place->street = trim(\sprintf('%s %s', $contactData['addressLine1'], $contactData['addressLine2']));
 
         $city = new CityDto();
         $city->postalCode = $contactData['zipCode'];

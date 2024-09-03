@@ -30,6 +30,6 @@ class ComparatorHandler
             }
         }
 
-        throw new RuntimeException(sprintf('Unable to get comparator for class "%s"', $dto::class));
+        throw new RuntimeException(\sprintf('Unable to get comparator for class "%s"', $dto::class));
     }
 }

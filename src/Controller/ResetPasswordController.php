@@ -93,7 +93,7 @@ class ResetPasswordController extends AbstractController
         try {
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $resetPasswordException) {
-            $this->addFlash('error', sprintf(
+            $this->addFlash('error', \sprintf(
                 'Un problème est survenu lors de votre demande - %s',
                 $resetPasswordException->getReason()
             ));
@@ -144,7 +144,7 @@ class ResetPasswordController extends AbstractController
         try {
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
         } catch (ResetPasswordExceptionInterface $resetPasswordException) {
-            $this->addFlash('error', sprintf(
+            $this->addFlash('error', \sprintf(
                 'Un problème est survenu lors de votre demande - %s',
                 $resetPasswordException->getReason()
             ));

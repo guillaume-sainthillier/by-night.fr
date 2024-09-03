@@ -57,7 +57,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%d',
             $this->getKeyPrefix(),
             $this->getId()
@@ -73,7 +73,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
 
         $parts[] = $this->getCountry()->getName();
 
-        return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
+        return \sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
     }
 
     #[Groups(['elasticsearch:city:details'])]

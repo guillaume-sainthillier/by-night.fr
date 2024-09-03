@@ -91,7 +91,7 @@ class OpenAgendaParser extends AbstractParser
 
         $after = [];
         while (true) {
-            $response = $this->client->request('GET', sprintf('https://api.openagenda.com/v2/agendas/%d/events/', $agendaId), [
+            $response = $this->client->request('GET', \sprintf('https://api.openagenda.com/v2/agendas/%d/events/', $agendaId), [
                 'query' => array_merge($filter, [
                     'key' => $this->openAgendaKey,
                     'includeLabels' => true,
@@ -194,9 +194,9 @@ class OpenAgendaParser extends AbstractParser
 
         $hours = null;
         if ($startDate->format('Y-m-d') !== $endDate->format('Y-m-d')) {
-            $hours = sprintf('De %s à %s', $startDate->format("H\hi"), $endDate->format("H\hi"));
+            $hours = \sprintf('De %s à %s', $startDate->format("H\hi"), $endDate->format("H\hi"));
         } else {
-            $hours = sprintf('A %s', $startDate->format("H\hi"));
+            $hours = \sprintf('A %s', $startDate->format("H\hi"));
         }
 
         $mdParser = new Parsedown();
@@ -243,7 +243,7 @@ class OpenAgendaParser extends AbstractParser
         $event->fromData = self::getParserName();
         $event->name = $data['title'];
         $event->description = $description;
-        $event->source = sprintf(
+        $event->source = \sprintf(
             'https://openagenda.com/%s/events/%s',
             $agendaSlug,
             $data['slug'],

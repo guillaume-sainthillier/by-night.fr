@@ -17,10 +17,12 @@ with this source code in the file LICENSE.
 EOF;
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__ . '/public')
-    ->in(__DIR__ . '/src')
-    ->in(__DIR__ . '/tests')
-    ->in(__DIR__ . '/migrations')
+    ->in([
+        __DIR__ . '/migrations',
+        __DIR__ . '/public',
+        __DIR__ . '/src',
+        __DIR__ . '/tests',
+    ])
     ->append([
         __FILE__,
         __DIR__ . '/rector.php',
@@ -30,6 +32,7 @@ $finder = PhpCsFixer\Finder::create()
 $config = new PhpCsFixer\Config();
 
 return $config
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,

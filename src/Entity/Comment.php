@@ -58,7 +58,7 @@ class Comment implements Stringable
 
     public function __toString(): string
     {
-        return sprintf('#%s', $this->id ?: '?');
+        return \sprintf('#%s', $this->id ?: '?');
     }
 
     public function getComment(): ?string

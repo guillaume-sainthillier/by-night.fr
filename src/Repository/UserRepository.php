@@ -53,7 +53,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
+            throw new UnsupportedUserException(\sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
         $user->setPassword($newHashedPassword);
@@ -145,7 +145,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->leftJoin('u.oAuth', 'i')
             ->where('u.email = :email')
             ->setParameter('email', $email)
-            ->orWhere(sprintf('i.%s_id = :socialId', $infoPrefix))
+            ->orWhere(\sprintf('i.%s_id = :socialId', $infoPrefix))
             ->setParameter('socialId', $socialId)
             ->getQuery()
             ->setMaxResults(1)

@@ -38,7 +38,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         HttpClientInterface $httpClient,
         string $tempPath,
         string $awinApiKey,
-        private readonly CacheInterface $cache
+        private readonly CacheInterface $cache,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler, $httpClient, $tempPath, $awinApiKey);
     }
@@ -88,7 +88,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         foreach ($startDates as $startDateStr) {
             $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
             if (false !== $startDate) {
-                $seenHours[] = sprintf('À %s', $startDate->format('H\hi'));
+                $seenHours[] = \sprintf('À %s', $startDate->format('H\hi'));
             }
         }
 
@@ -121,16 +121,16 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->hours = $hours;
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
-        $event->description = nl2br(trim(sprintf("%s\n\n%s", $data['description'], $data['product_short_description'])));
+        $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'], $data['product_short_description'])));
         $event->imageUrl = $this->getImageUrl($data['merchant_image_url']);
-        $event->prices = sprintf('%s€', $data['search_price']);
+        $event->prices = \sprintf('%s€', $data['search_price']);
         $event->latitude = (float) $data['latitude'];
         $event->longitude = (float) $data['longitude'];
 
         $place = new PlaceDto();
         $place->name = $data['custom_2'];
         $place->street = \in_array($data['custom_6'], ['.', '-', ''], true) ? null : $data['custom_6'];
-        $place->externalId = sha1(sprintf(
+        $place->externalId = sha1(\sprintf(
             '%s %s %s %s %s',
             $data['custom_2'],
             $data['custom_6'],

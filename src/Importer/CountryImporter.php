@@ -53,11 +53,11 @@ class CountryImporter
                 ->setCapital($capital)
                 ->setLocale($locale);
 
-            Monitor::writeln(sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
+            Monitor::writeln(\sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->em->persist($country);
             $this->em->flush();
         } else {
-            Monitor::writeln(sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
+            Monitor::writeln(\sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
         }
 
         $this->createAdminZones($country);
@@ -162,7 +162,7 @@ class CountryImporter
         );
 
         if (!$fs->exists($filepath)) {
-            throw new IOException(sprintf('File %s does not exists', $filepath));
+            throw new IOException(\sprintf('File %s does not exists', $filepath));
         }
 
         return $filepath;
@@ -192,14 +192,14 @@ class CountryImporter
         if ('FR' == $entity->getCountry()->getId()) {
             if ($entity instanceof AdminZone2) {
                 $entity->setName(str_replace([
-                        "Département d'",
-                        "Département de l'",
-                        'Département de la ',
-                        'Département des ',
-                        'Département de ',
-                        'Département du ',
-                        'Territoire de ',
-                    ], '', (string) $entity->getName())
+                    "Département d'",
+                    "Département de l'",
+                    'Département de la ',
+                    'Département des ',
+                    'Département de ',
+                    'Département du ',
+                    'Territoire de ',
+                ], '', (string) $entity->getName())
                 );
             }
         }

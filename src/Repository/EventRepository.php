@@ -199,7 +199,7 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         $datas = $this->_em
             ->createQueryBuilder()
-            ->select(sprintf('%s(e.endDate) as group', $groupByFunction))
+            ->select(\sprintf('%s(e.endDate) as group', $groupByFunction))
             ->addSelect('count(e.id) as events')
             ->from($this->_entityName, 'e')
             ->join('e.userEvents', 'ue')

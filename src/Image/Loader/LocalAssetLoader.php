@@ -16,7 +16,7 @@ class LocalAssetLoader extends AbstractImageLoader
 {
     public function __construct(
         private readonly AssetHelper $assetHelper,
-        private readonly string $publicDirectory
+        private readonly string $publicDirectory,
     ) {
     }
 
@@ -26,7 +26,7 @@ class LocalAssetLoader extends AbstractImageLoader
             'originalWidth' => $originalWidth,
             'originalHeight' => $originalHeight,
             'originalFormat' => $originalFormat,
-            'path' => $path
+            'path' => $path,
         ] = $params;
 
         if (null === $originalFormat && null !== $path) {

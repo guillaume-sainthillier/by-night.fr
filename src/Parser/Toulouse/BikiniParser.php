@@ -49,9 +49,9 @@ class BikiniParser extends AbstractParser
         $endDate = DateTime::createFromFormat('U', $data['endTime']);
 
         if ($startDate->getTimestamp() === $endDate->getTimestamp()) {
-            $hours = sprintf('À %s', $startDate->format('H:i'));
+            $hours = \sprintf('À %s', $startDate->format('H:i'));
         } else {
-            $hours = sprintf('De %s à %s', $startDate->format('H:i'), $endDate->format('H:i'));
+            $hours = \sprintf('De %s à %s', $startDate->format('H:i'), $endDate->format('H:i'));
         }
 
         $placeParts = explode("\n", (string) $data['place']['address']);

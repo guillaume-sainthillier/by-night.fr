@@ -52,7 +52,7 @@ class DoctrineEventHandler
         private readonly EntityFactoryHandler $entityFactoryHandler,
         private readonly CityRepository $repoCity,
         private readonly ZipCityRepository $repoZipCity,
-        private readonly CountryRepository $countryRepository
+        private readonly CountryRepository $countryRepository,
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }
@@ -319,7 +319,7 @@ class DoctrineEventHandler
         ?DependencyCatalogue $previousCatalogue = null,
         array &$allCatalogues = [],
         array &$allEntityProviders = [],
-        array $paths = []
+        array $paths = [],
     ): void {
         if ([] === $dtos) {
             return;
@@ -333,7 +333,7 @@ class DoctrineEventHandler
         foreach ($chunks as $dtoClassName => $dtoChunks) {
             $currentPaths = $paths;
             $currentPaths[] = $dtoClassName;
-            $this->logger->info(sprintf(
+            $this->logger->info(\sprintf(
                 '[%s] Traversing %d objects',
                 implode(' > ', $currentPaths),
                 \count($dtoChunks)
@@ -419,7 +419,7 @@ class DoctrineEventHandler
                 $this->mergeWithDatabase($providedCatalogue->objects(), $flush, $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
                 if ($isRootTransaction && $flush) {
-                    $this->logger->info(sprintf(
+                    $this->logger->info(\sprintf(
                         '[%s] FLUSH',
                         implode(' > ', $currentPaths),
                     ));
@@ -454,7 +454,7 @@ class DoctrineEventHandler
 
                     // Finally, clear EM
                     $this->entityManager->clear();
-                    $this->logger->info(sprintf(
+                    $this->logger->info(\sprintf(
                         'Memory usage after flush: %s - Memory peak usage: %s',
                         MemoryUtils::getMemoryUsage(),
                         MemoryUtils::getPeakMemoryUsage(),

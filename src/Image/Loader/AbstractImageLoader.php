@@ -23,7 +23,7 @@ abstract class AbstractImageLoader implements ImageLoaderInterface
             'image/png' => 'png',
             'image/jpg',
             'image/jpeg' => 'jpeg',
-            default => null
+            default => null,
         };
     }
 
@@ -36,7 +36,7 @@ abstract class AbstractImageLoader implements ImageLoaderInterface
             str_ends_with($path, '.jpeg') => 'jpg',
             str_ends_with($path, '.png') => 'png',
             str_ends_with($path, '.gif') => 'gif',
-            default => null
+            default => null,
         };
     }
 

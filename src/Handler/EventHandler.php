@@ -93,7 +93,7 @@ class EventHandler
                     }
                 } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
                     if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
-                        $this->logger->info(sprintf('Url %s is not allowed', $imageUrl));
+                        $this->logger->info(\sprintf('Url %s is not allowed', $imageUrl));
                         continue;
                     }
 
@@ -144,7 +144,7 @@ class EventHandler
             'image/png' => 'png',
             'image/jpg',
             'image/jpeg' => 'jpeg',
-            default => throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType)),
+            default => throw new UnsupportedFileException(\sprintf('Unable to find extension for mime type %s', $contentType)),
         };
 
         $pathUrl = parse_url((string) $event->getUrl(), \PHP_URL_PATH);

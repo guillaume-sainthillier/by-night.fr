@@ -33,7 +33,7 @@ class TagsExtension extends Extension
             'user' => TagsInvalidator::getUserTag($object),
             'trends' => TagsInvalidator::getTrendTag($object),
             'header' => TagsInvalidator::getHeaderTag(),
-            default => throw new RuntimeException(sprintf('No tags for %s', $type)),
+            default => throw new RuntimeException(\sprintf('No tags for %s', $type)),
         };
     }
 }

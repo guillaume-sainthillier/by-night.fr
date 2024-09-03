@@ -62,6 +62,6 @@ class ParserDataCrudController extends AbstractCrudController
             return [$externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
         }
 
-        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        throw new RuntimeException(\sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

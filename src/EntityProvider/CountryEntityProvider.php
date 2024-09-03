@@ -19,7 +19,7 @@ class CountryEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
         private readonly CountryRepository $countryRepository,
-        private readonly ComparatorHandler $comparatorHandler
+        private readonly ComparatorHandler $comparatorHandler,
     ) {
     }
 

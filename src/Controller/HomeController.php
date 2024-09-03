@@ -52,8 +52,8 @@ class HomeController extends AbstractController
             }
 
             return $this->redirectToRoute('app_agenda_index', $params + [
-                    'location' => $city,
-                ]);
+                'location' => $city,
+            ]);
         }
 
         return $this->render('home/index.html.twig', [

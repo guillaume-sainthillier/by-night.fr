@@ -19,7 +19,7 @@ class CityEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
         private readonly CityRepository $cityRepository,
-        private readonly ComparatorHandler $comparatorHandler
+        private readonly ComparatorHandler $comparatorHandler,
     ) {
     }
 

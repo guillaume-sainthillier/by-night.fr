@@ -32,14 +32,14 @@ class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolv
     public function getUniqueKey(): string
     {
         if (null === $this->code && null === $this->name) {
-            return sprintf(
+            return \sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
                 spl_object_id($this)
             );
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-data-%s',
             $this->getKeyPrefix(),
             mb_strtolower((string) ($this->code ?? $this->name))
@@ -58,7 +58,7 @@ class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolv
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%s',
             $this->getKeyPrefix(),
             $this->entityId

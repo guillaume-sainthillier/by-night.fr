@@ -92,9 +92,9 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
 
         $i = 1;
         foreach ($cityNameWheres as $countryId => $cityNames) {
-            $countryPlaceholder = sprintf('city_name_country_%d', $i);
-            $cityNamesPlaceholder = sprintf('city_name_names_%d', $i);
-            $wheres[] = sprintf(
+            $countryPlaceholder = \sprintf('city_name_country_%d', $i);
+            $cityNamesPlaceholder = \sprintf('city_name_names_%d', $i);
+            $wheres[] = \sprintf(
                 '(c.country = :%s AND c.name IN(:%s))',
                 $countryPlaceholder,
                 $cityNamesPlaceholder
@@ -110,9 +110,9 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             $queryBuilder->leftJoin('c.zipCities', 'z');
             $i = 1;
             foreach ($postalCodesWheres as $countryId => $postalCodes) {
-                $countryPlaceholder = sprintf('postal_code_country_%d', $i);
-                $postalCodesPlaceholder = sprintf('postal_code_names_%d', $i);
-                $wheres[] = sprintf(
+                $countryPlaceholder = \sprintf('postal_code_country_%d', $i);
+                $postalCodesPlaceholder = \sprintf('postal_code_names_%d', $i);
+                $wheres[] = \sprintf(
                     '(c.country = :%s AND z.postalCode IN(:%s))',
                     $countryPlaceholder,
                     $postalCodesPlaceholder

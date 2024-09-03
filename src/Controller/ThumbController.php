@@ -28,7 +28,7 @@ class ThumbController extends Controller
 {
     public function __construct(
         private readonly string $secret,
-        private readonly Packages $packages
+        private readonly Packages $packages,
     ) {
     }
 

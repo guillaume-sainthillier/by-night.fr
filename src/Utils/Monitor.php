@@ -140,7 +140,7 @@ class Monitor
 
     public static function formatDuration(int|float $microseconds): string
     {
-        return sprintf('%01.2f ms', $microseconds);
+        return \sprintf('%01.2f ms', $microseconds);
     }
 
     public static function formatMemory(float|int $bytes): string

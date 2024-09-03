@@ -46,7 +46,7 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
         }
 
         if (null === $user) {
-            throw new NotFoundHttpException(null === $e->getUserId() ? sprintf('User with username "%s" not found', $e->getUserUsername()) : sprintf('User with id "%d" not found', $e->getUserId()));
+            throw new NotFoundHttpException(null === $e->getUserId() ? \sprintf('User with username "%s" not found', $e->getUserUsername()) : \sprintf('User with id "%d" not found', $e->getUserId()));
         }
 
         if (null === $this->requestStack->getParentRequest() && (

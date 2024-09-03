@@ -35,9 +35,9 @@ trait DtoFindableTrait
         $i = 1;
         $wheres = [];
         foreach ($groupedWheres as $externalOrigin => $ids) {
-            $externalOriginPlaceholder = sprintf('externalOrigin_%d', $i);
-            $externalIdsPlaceholder = sprintf('externalIds_%d', $i);
-            $wheres[] = sprintf(
+            $externalOriginPlaceholder = \sprintf('externalOrigin_%d', $i);
+            $externalIdsPlaceholder = \sprintf('externalIds_%d', $i);
+            $wheres[] = \sprintf(
                 '(%s.externalOrigin = :%s AND %s.externalId IN(:%s))',
                 $rootAlias,
                 $externalOriginPlaceholder,

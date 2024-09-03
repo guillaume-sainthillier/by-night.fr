@@ -32,7 +32,7 @@ class ImageSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer,
-        private readonly RemoveImageThumbnailsProducer $removeImageThumbnailsProducer
+        private readonly RemoveImageThumbnailsProducer $removeImageThumbnailsProducer,
     ) {
     }
 
@@ -63,7 +63,7 @@ class ImageSubscriber implements EventSubscriberInterface
         if ($object instanceof User || $object instanceof \App\Entity\Event) {
             try {
                 [
-                    'checksum' => $checksum
+                    'checksum' => $checksum,
                 ] = $this->getImageMetadata($file);
 
                 if ('imageFile' === $event->getMapping()->getFilePropertyName()) {

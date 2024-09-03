@@ -26,7 +26,7 @@ class FacebookAdmin extends Facebook
     {
         $urls = [];
         foreach ($ids_users as $id_user) {
-            $urls[$id_user] = sprintf(
+            $urls[$id_user] = \sprintf(
                 '%s/%s/picture?width=1500&height=1500',
                 self::BASE_GRAPH_URL,
                 $id_user

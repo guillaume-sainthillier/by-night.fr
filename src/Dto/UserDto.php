@@ -29,7 +29,7 @@ class UserDto implements DependencyObjectInterface, DtoEntityIdentifierResolvabl
     {
         return
             $this->getInternalId()
-            ?? sprintf(
+            ?? \sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
                 spl_object_id($this)
@@ -48,7 +48,7 @@ class UserDto implements DependencyObjectInterface, DtoEntityIdentifierResolvabl
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%s',
             $this->getKeyPrefix(),
             $this->entityId

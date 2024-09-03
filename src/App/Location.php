@@ -35,16 +35,16 @@ class Location
     public function getAppName(): string
     {
         if (null !== $this->city) {
-            return sprintf('%s By Night', $this->city->getName());
+            return \sprintf('%s By Night', $this->city->getName());
         }
 
-        return sprintf('By Night %s', $this->country->getDisplayName());
+        return \sprintf('By Night %s', $this->country->getDisplayName());
     }
 
     public function getAtName(): ?string
     {
         if (null !== $this->city) {
-            return sprintf('à %s', $this->city->getName());
+            return \sprintf('à %s', $this->city->getName());
         }
 
         if (null !== $this->country) {

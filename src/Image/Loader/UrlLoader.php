@@ -26,7 +26,7 @@ class UrlLoader extends AbstractImageLoader
     {
         [
             'originalFormat' => $originalFormat,
-            'path' => $path
+            'path' => $path,
         ] = $params;
 
         if (null === $originalFormat && null !== $path) {

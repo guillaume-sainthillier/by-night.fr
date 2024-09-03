@@ -54,7 +54,7 @@ class ToulouseParser extends AbstractParser
     private function downloadCSV()
     {
         $data = file_get_contents(self::DOWNLOAD_URL);
-        $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
+        $path_file = \sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
         $fs = new Filesystem();
         $fs->dumpFile($path_file, $data);
 
@@ -100,7 +100,7 @@ class ToulouseParser extends AbstractParser
             $event->source = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/';
 
             $place = new PlaceDto();
-            $place->externalId = sha1(mb_strtolower(sprintf(
+            $place->externalId = sha1(mb_strtolower(\sprintf(
                 '%s %s %s %s',
                 $tab[10],
                 $tab[12],

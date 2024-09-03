@@ -51,7 +51,7 @@ class CityDto implements DependencyRequirableInterface, DependencyObjectInterfac
     public function getUniqueKey(): string
     {
         if (null === $this->name) {
-            return sprintf(
+            return \sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
                 spl_object_id($this)
@@ -61,14 +61,14 @@ class CityDto implements DependencyRequirableInterface, DependencyObjectInterfac
         $cityKey = mb_strtolower($this->name);
 
         if (null === $this->country) {
-            return sprintf(
+            return \sprintf(
                 '%s-data-%s',
                 $this->getKeyPrefix(),
                 $cityKey
             );
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-data-%s-%s',
             $this->getKeyPrefix(),
             $cityKey,
@@ -88,7 +88,7 @@ class CityDto implements DependencyRequirableInterface, DependencyObjectInterfac
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%d',
             $this->getKeyPrefix(),
             $this->entityId

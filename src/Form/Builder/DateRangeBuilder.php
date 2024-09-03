@@ -92,11 +92,11 @@ class DateRangeBuilder
                 }
 
                 if (null === $to) {
-                    $label = sprintf('A partir du %s', $this->formatDate($from));
+                    $label = \sprintf('A partir du %s', $this->formatDate($from));
                 } elseif ($to->getTimestamp() === $from->getTimestamp()) {
-                    $label = sprintf('Le %s', $this->formatDate($from));
+                    $label = \sprintf('Le %s', $this->formatDate($from));
                 } else {
-                    $label = sprintf('Du %s au %s', $this->formatDate($from), $this->formatDate($to));
+                    $label = \sprintf('Du %s au %s', $this->formatDate($from), $this->formatDate($to));
                 }
 
                 $shortcut->setData($label);
@@ -131,11 +131,11 @@ class DateRangeBuilder
                 }
 
                 if (null === $to) {
-                    $label = sprintf('A partir du %s', $this->formatDate($from));
+                    $label = \sprintf('A partir du %s', $this->formatDate($from));
                 } elseif ($to->getTimestamp() === $from->getTimestamp()) {
-                    $label = sprintf('Le %s', $this->formatDate($from));
+                    $label = \sprintf('Le %s', $this->formatDate($from));
                 } else {
-                    $label = sprintf('Du %s au %s', $this->formatDate($from), $this->formatDate($to));
+                    $label = \sprintf('Du %s au %s', $this->formatDate($from), $this->formatDate($to));
                 }
 
                 $data['shortcut'] = $label;

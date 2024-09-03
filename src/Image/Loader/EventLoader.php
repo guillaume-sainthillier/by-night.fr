@@ -32,7 +32,7 @@ class EventLoader extends AbstractImageLoader
 
         [
             'path' => $path,
-            'source' => $source
+            'source' => $source,
         ] = $this->eventProfilePicture->getPicturePathAndSource($event);
         $params['path'] = $path;
         $defaultParams = [

@@ -170,14 +170,14 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     public function getUniqueKey(): string
     {
         if (null === $this->externalId || null === $this->externalOrigin) {
-            return sprintf(
+            return \sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
                 spl_object_id($this)
             );
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-external-%s-%s',
             $this->getKeyPrefix(),
             $this->externalId,
@@ -197,7 +197,7 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%d',
             $this->getKeyPrefix(),
             $this->entityId

@@ -160,7 +160,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%s',
             $this->getKeyPrefix(),
             $this->getId()
@@ -264,7 +264,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function __toString(): string
     {
-        return sprintf('%s (#%s)', $this->username, $this->id);
+        return \sprintf('%s (#%s)', $this->username, $this->id);
     }
 
     /**

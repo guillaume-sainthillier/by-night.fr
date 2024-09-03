@@ -18,25 +18,25 @@ class EventSEO
 {
     public function getEventDescription(Event $event): string
     {
-        $description = sprintf('Découvrez %s.', $event->getName());
+        $description = \sprintf('Découvrez %s.', $event->getName());
 
         if ($event->getPlaceName() && $event->getPlaceCity()) {
-            $description .= sprintf(' %s à %s.',
+            $description .= \sprintf(' %s à %s.',
                 $event->getPlaceName(),
                 $event->getPlaceCity()
             );
         }
 
-        $description .= sprintf(' %s.', ucfirst($this->getEventDateTime($event)));
+        $description .= \sprintf(' %s.', ucfirst($this->getEventDateTime($event)));
 
         $tags = $event->getDistinctTags();
 
         if ([] !== $tags) {
-            $description .= sprintf(' %s.', implode(', ', array_keys($tags)));
+            $description .= \sprintf(' %s.', implode(', ', array_keys($tags)));
         }
 
         if ($event->getFbParticipations() + $event->getFbInterets() > 50) {
-            $description .= sprintf(' %d personnes intéressées', $event->getFbParticipations() + $event->getFbInterets());
+            $description .= \sprintf(' %d personnes intéressées', $event->getFbParticipations() + $event->getFbInterets());
         }
 
         return $description;
@@ -47,7 +47,7 @@ class EventSEO
         $datetime = $this->getEventDate($event);
 
         if ($event->getHours()) {
-            $datetime .= sprintf(' - %s', $event->getHours());
+            $datetime .= \sprintf(' - %s', $event->getHours());
         }
 
         return trim($datetime);
@@ -56,12 +56,12 @@ class EventSEO
     public function getEventDate(Event $event): string
     {
         if (!$event->getEndDate() || $event->getStartDate() === $event->getEndDate()) {
-            return sprintf('le %s',
+            return \sprintf('le %s',
                 $this->formatDate($event->getStartDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
             );
         }
 
-        return sprintf('du %s au %s',
+        return \sprintf('du %s au %s',
             $this->formatDate($event->getStartDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE),
             $this->formatDate($event->getEndDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
         );
@@ -79,7 +79,7 @@ class EventSEO
         $title = $this->getEventShortTitle($event);
 
         if ($event->getPlaceName()) {
-            $title .= sprintf(' - %s', $event->getPlaceName());
+            $title .= \sprintf(' - %s', $event->getPlaceName());
         }
 
         return $title;
@@ -89,7 +89,7 @@ class EventSEO
     {
         $shortTitle = $event->getName();
         if ($event->getStatus()) {
-            $shortTitle = sprintf('[%s] %s', $event->getStatus(), $shortTitle);
+            $shortTitle = \sprintf('[%s] %s', $event->getStatus(), $shortTitle);
         }
 
         return $shortTitle;

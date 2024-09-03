@@ -73,7 +73,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             && null === $this->name
             && null === $this->street
         ) {
-            return sprintf(
+            return \sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
                 spl_object_id($this)
@@ -81,7 +81,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         }
 
         if (null !== $this->externalId && null !== $this->externalOrigin) {
-            return sprintf(
+            return \sprintf(
                 '%s-external-%s-%s',
                 $this->getKeyPrefix(),
                 $this->externalId,
@@ -89,14 +89,14 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             );
         }
 
-        $placeKey = mb_strtolower(sprintf(
+        $placeKey = mb_strtolower(\sprintf(
             '%s-%s',
             $this->name,
             $this->street
         ));
 
         if (null !== $this->city) {
-            return sprintf(
+            return \sprintf(
                 '%s-data-%s-%s',
                 $this->getKeyPrefix(),
                 $placeKey,
@@ -105,7 +105,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         }
 
         if (null !== $this->country) {
-            return sprintf(
+            return \sprintf(
                 '%s-data-%s-%s',
                 $this->getKeyPrefix(),
                 $placeKey,
@@ -113,7 +113,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             );
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-data-%s',
             $this->getKeyPrefix(),
             $placeKey
@@ -132,7 +132,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%d',
             $this->getKeyPrefix(),
             $this->entityId

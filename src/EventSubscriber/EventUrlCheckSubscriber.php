@@ -46,7 +46,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
         }
 
         if (null === $event) {
-            throw new NotFoundHttpException(null === $e->getEventId() ? sprintf('Event with slug "%s" not found', $e->getEventSlug()) : sprintf('Event with id "%d" not found', $e->getEventId()));
+            throw new NotFoundHttpException(null === $e->getEventId() ? \sprintf('Event with slug "%s" not found', $e->getEventSlug()) : \sprintf('Event with id "%d" not found', $e->getEventId()));
         }
 
         if (null === $this->requestStack->getParentRequest() && (

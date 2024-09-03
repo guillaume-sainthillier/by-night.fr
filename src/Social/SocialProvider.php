@@ -65,7 +65,7 @@ class SocialProvider
         }
 
         if (!isset($this->socials[$name])) {
-            throw new NotFoundHttpException(sprintf('Unable to find social service with id "%s"', $name));
+            throw new NotFoundHttpException(\sprintf('Unable to find social service with id "%s"', $name));
         }
 
         return $this->socials[$name];

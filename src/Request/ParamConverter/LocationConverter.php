@@ -62,7 +62,7 @@ class LocationConverter implements ValueResolverInterface
         } elseif ($entity instanceof Country) {
             $location->setCountry($entity);
         } else {
-            throw new NotFoundHttpException(sprintf("La location '%s' est introuvable", $locationSlug));
+            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug));
         }
 
         return [$location];

@@ -74,7 +74,7 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%s',
             $this->getKeyPrefix(),
             $this->getId()

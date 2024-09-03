@@ -19,7 +19,7 @@ class PlaceEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
         private readonly PlaceRepository $placeRepository,
-        private readonly ComparatorHandler $comparatorHandler
+        private readonly ComparatorHandler $comparatorHandler,
     ) {
     }
 

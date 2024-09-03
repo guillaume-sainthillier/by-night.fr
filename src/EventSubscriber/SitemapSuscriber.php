@@ -33,7 +33,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         private readonly CityRepository $cityRepository,
         private readonly PlaceRepository $placeRepository,
         private readonly EventRepository $eventRepository,
-        private readonly UserRepository $userRepository
+        private readonly UserRepository $userRepository,
     ) {
         $this->now = new DateTimeImmutable();
     }

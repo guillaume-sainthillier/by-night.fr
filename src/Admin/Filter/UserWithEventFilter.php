@@ -40,6 +40,6 @@ class UserWithEventFilter implements FilterInterface
         }
 
         $queryBuilder
-            ->andWhere(sprintf('%s.user IS NOT NULL', $filterDataDto->getEntityAlias()));
+            ->andWhere(\sprintf('%s.user IS NOT NULL', $filterDataDto->getEntityAlias()));
     }
 }

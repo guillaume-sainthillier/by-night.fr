@@ -135,7 +135,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%d',
             $this->getKeyPrefix(),
             $this->getId()
@@ -224,7 +224,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     public function __toString(): string
     {
-        return sprintf('%s (#%s)',
+        return \sprintf('%s (#%s)',
             $this->name,
             $this->id
         );

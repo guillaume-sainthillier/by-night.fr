@@ -30,6 +30,6 @@ class LoaderRegistry
             }
         }
 
-        throw new RuntimeException(sprintf('No loaders support your parameters: %s', json_encode($params, \JSON_THROW_ON_ERROR)));
+        throw new RuntimeException(\sprintf('No loaders support your parameters: %s', json_encode($params, \JSON_THROW_ON_ERROR)));
     }
 }

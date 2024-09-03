@@ -299,7 +299,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
             return null;
         }
 
-        return sprintf(
+        return \sprintf(
             '%s-id-%d',
             $this->getKeyPrefix(),
             $this->getId()
@@ -479,7 +479,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function __toString(): string
     {
-        return sprintf('%s (#%s)',
+        return \sprintf('%s (#%s)',
             $this->name,
             $this->id
         );

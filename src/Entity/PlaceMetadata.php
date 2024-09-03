@@ -38,7 +38,7 @@ class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
 
     public function __toString(): string
     {
-        return sprintf('%s (%s)',
+        return \sprintf('%s (%s)',
             $this->externalId,
             $this->externalOrigin
         );

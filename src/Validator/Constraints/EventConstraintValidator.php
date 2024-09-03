@@ -53,8 +53,8 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         $this->logger->error('Event is rejected', [
-           'event' => (array) $value,
-           'reject' => (array) $reject,
+            'event' => (array) $value,
+            'reject' => (array) $reject,
         ]);
 
         if ($reject->isBadEventName()) {

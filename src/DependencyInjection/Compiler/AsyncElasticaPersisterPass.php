@@ -27,7 +27,7 @@ class AsyncElasticaPersisterPass implements CompilerPassInterface
             $decorator
                 ->setClass(AsyncObjectPersister::class)
                 ->setDecoratedService($id)
-                ->setArgument(0, new Reference(sprintf('%s.inner', $newServiceId)))
+                ->setArgument(0, new Reference(\sprintf('%s.inner', $newServiceId)))
                 // index
                 ->setArgument(1, $service->getArgument(0))
                 // options

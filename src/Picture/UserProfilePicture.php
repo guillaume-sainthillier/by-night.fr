@@ -20,7 +20,7 @@ class UserProfilePicture
     public function __construct(
         private readonly UploaderHelper $helper,
         private readonly Packages $packages,
-        private readonly AssetHelper $assetHelper
+        private readonly AssetHelper $assetHelper,
     ) {
     }
 
@@ -28,7 +28,7 @@ class UserProfilePicture
     {
         [
             'path' => $path,
-            'source' => $source
+            'source' => $source,
         ] = $this->getPicturePathAndSource($user);
 
         if ('upload' === $source) {
@@ -49,7 +49,7 @@ class UserProfilePicture
     {
         [
             'path' => $path,
-            'source' => $source
+            'source' => $source,
         ] = $this->getPicturePathAndSource($user);
 
         if ('upload' === $source) {
@@ -92,7 +92,7 @@ class UserProfilePicture
         if (null !== $info) {
             if (null !== $info->getFacebookId()) {
                 return [
-                    'path' => sprintf('https://graph.facebook.com/%s/picture?type=large', $info->getFacebookId()),
+                    'path' => \sprintf('https://graph.facebook.com/%s/picture?type=large', $info->getFacebookId()),
                     'source' => 'dist',
                 ];
             }

@@ -35,7 +35,7 @@ abstract class AbstractParser implements ParserInterface
      */
     public function getName(): string
     {
-        return sprintf('%s v%s', static::getParserName(), static::getParserVersion());
+        return \sprintf('%s v%s', static::getParserName(), static::getParserVersion());
     }
 
     /**

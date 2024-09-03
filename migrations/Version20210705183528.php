@@ -29,23 +29,23 @@ final class Version20210705183528 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         foreach ([
-                     'sowprog' => 'SP-',
-                     'openagenda' => 'OA-',
-                     'facebook' => 'FB-',
-                     'datatourisme' => 'DT-',
-                     'awin.fnac' => 'FS-',
-                     'awin.digitick' => 'DGT-',
-                     'toulouse.opendata' => 'TOU-',
-                     'toulouse.bikini' => 'BKN-',
-                 ] as $origin => $prefix) {
-            $this->addSql(sprintf('
+            'sowprog' => 'SP-',
+            'openagenda' => 'OA-',
+            'facebook' => 'FB-',
+            'datatourisme' => 'DT-',
+            'awin.fnac' => 'FS-',
+            'awin.digitick' => 'DGT-',
+            'toulouse.opendata' => 'TOU-',
+            'toulouse.bikini' => 'BKN-',
+        ] as $origin => $prefix) {
+            $this->addSql(\sprintf('
                 UPDATE event
                 SET external_id = REPLACE(external_id, \'%s\', \'\'),
                     external_origin = \'%s\'
                 WHERE external_id LIKE \'%s%%\'
             ', $prefix, $origin, $prefix));
 
-            $this->addSql(sprintf('
+            $this->addSql(\sprintf('
                 INSERT INTO place_metadata (place_id, external_id, external_origin, external_updated_at)
                     SELECT p.id, REPLACE(p.external_id, \'%s\', \'\'), \'%s\', pd.last_updated
                     FROM place p
@@ -53,7 +53,7 @@ final class Version20210705183528 extends AbstractMigration
                     WHERE p.external_id LIKE \'%s%%\'
             ', $prefix, $origin, $prefix));
 
-            $this->addSql(sprintf('
+            $this->addSql(\sprintf('
                 UPDATE place
                 SET external_id = REPLACE(external_id, \'%s\', \'\')
                 WHERE external_id LIKE \'%s%%\'

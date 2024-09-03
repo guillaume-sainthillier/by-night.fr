@@ -91,8 +91,8 @@ class EventElasticaRepository extends Repository
                 $cas1 = new BoolQuery();
                 $cas1
                     ->addMust(new Range('start_date', [
-                            'lte' => $search->getFrom()->format('Y-m-d'),
-                        ])
+                        'lte' => $search->getFrom()->format('Y-m-d'),
+                    ])
                     )
                     ->addMust(new Range('end_date', [
                         'gte' => $search->getTo()->format('Y-m-d'),
@@ -102,8 +102,8 @@ class EventElasticaRepository extends Repository
                 $cas2 = new BoolQuery();
                 $cas2
                     ->addMust(new Range('start_date', [
-                            'gte' => $search->getFrom()->format('Y-m-d'),
-                        ])
+                        'gte' => $search->getFrom()->format('Y-m-d'),
+                    ])
                     )
                     ->addMust(new Range('end_date', [
                         'lte' => $search->getTo()->format('Y-m-d'),

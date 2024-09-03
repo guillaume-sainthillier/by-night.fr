@@ -24,7 +24,7 @@ class Thumb extends BaseManipulator
         /**
          * Maximum image size in pixels.
          */
-        private readonly ?int $maxImageSize = null
+        private readonly ?int $maxImageSize = null,
     ) {
     }
 

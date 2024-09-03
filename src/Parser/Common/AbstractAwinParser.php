@@ -30,7 +30,7 @@ abstract class AbstractAwinParser extends AbstractParser
         ReservationsHandler $reservationsHandler,
         protected HttpClientInterface $httpClient,
         private readonly string $tempPath,
-        private readonly string $awinApiKey
+        private readonly string $awinApiKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
     }
@@ -64,7 +64,7 @@ abstract class AbstractAwinParser extends AbstractParser
     {
         $response = $this->httpClient->request('GET', $url);
 
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . \sprintf('%s.gz', md5($url));
         $fileHandler = fopen($filePath, 'w');
         foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());

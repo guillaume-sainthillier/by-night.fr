@@ -18,7 +18,7 @@ use InvalidArgumentException;
 abstract class AbstractActionHandler
 {
     public function __construct(
-        protected PersisterRegistry $registry
+        protected PersisterRegistry $registry,
     ) {
     }
 
@@ -27,7 +27,7 @@ abstract class AbstractActionHandler
         $indexName = $action->getIndexName();
         $persister = $this->registry->getPersister($indexName);
         if (!$persister instanceof AsyncObjectPersister) {
-            throw new InvalidArgumentException(sprintf('No async persister was registered for index "%s".', $indexName));
+            throw new InvalidArgumentException(\sprintf('No async persister was registered for index "%s".', $indexName));
         }
 
         return $persister;

@@ -36,7 +36,7 @@ class HttpClientAdapter implements FilesystemAdapter
 
     public function __construct(
         HttpClientInterface $httpClient,
-        array $options = []
+        array $options = [],
     ) {
         $this->httpClient = $httpClient->withOptions($options);
     }
@@ -131,11 +131,11 @@ class HttpClientAdapter implements FilesystemAdapter
 
     public function move(string $source, string $destination, Config $config): void
     {
-        throw new UnableToMoveFile(sprintf('Unable to move file from %s to %s as this is a readonly adapter.', $source, $destination));
+        throw new UnableToMoveFile(\sprintf('Unable to move file from %s to %s as this is a readonly adapter.', $source, $destination));
     }
 
     public function copy(string $source, string $destination, Config $config): void
     {
-        throw new UnableToCopyFile(sprintf('Unable to copy file from %s to %s as this is a readonly adapter.', $source, $destination));
+        throw new UnableToCopyFile(\sprintf('Unable to copy file from %s to %s as this is a readonly adapter.', $source, $destination));
     }
 }

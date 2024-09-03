@@ -19,7 +19,7 @@ class ReplaceManyDocuments extends DocumentsAction
      */
     public function __construct(
         string $indexName,
-        private readonly array $documents
+        private readonly array $documents,
     ) {
         parent::__construct($indexName);
     }

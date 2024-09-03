@@ -62,7 +62,7 @@ class DigitickAwinParser extends AbstractAwinParser
 
         $startDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['event_date']);
         $endDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['event_date']);
-        $hours = sprintf('À %s', $startDate->format('H\hi'));
+        $hours = \sprintf('À %s', $startDate->format('H\hi'));
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
@@ -77,14 +77,14 @@ class DigitickAwinParser extends AbstractAwinParser
             ? null
             : nl2br(trim($this->replaceBBCodes($data['description'])));
         $event->imageUrl = $data['merchant_image_url'];
-        $event->prices = sprintf('%s€', $data['search_price']);
+        $event->prices = \sprintf('%s€', $data['search_price']);
         $event->latitude = (float) $data['latitude'];
         $event->longitude = (float) $data['longitude'];
 
         $place = new PlaceDto();
         $place->name = $data['venue_name'];
         $place->street = $placeMatches[1];
-        $place->externalId = sha1(sprintf(
+        $place->externalId = sha1(\sprintf(
             '%s %s %s %s',
             $data['venue_name'],
             $placeMatches[1],

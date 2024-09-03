@@ -46,7 +46,7 @@ class UserSocialAuthenticator extends OAuth2Authenticator
         private readonly SocialProvider $socialProvider,
         private readonly OAuthDataProvider $oAuthDataProvider,
         private readonly TwitterOAuth $twitterOAuth,
-        private readonly UserRepository $userRepository
+        private readonly UserRepository $userRepository,
     ) {
     }
 
@@ -111,7 +111,7 @@ class UserSocialAuthenticator extends OAuth2Authenticator
                             break;
                         }
 
-                        $existingUser->setUsername(sprintf('%s-%d', $initialUsername, $i));
+                        $existingUser->setUsername(\sprintf('%s-%d', $initialUsername, $i));
                     }
 
                     $this->entityManager->persist($existingUser);

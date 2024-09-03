@@ -21,7 +21,7 @@ class EventImageUploadSubscriber implements EventSubscriberInterface
     private array $eventsToHandle = [];
 
     public function __construct(
-        private readonly EventHandler $eventHandler
+        private readonly EventHandler $eventHandler,
     ) {
     }
 

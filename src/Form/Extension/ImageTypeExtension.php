@@ -31,7 +31,7 @@ class ImageTypeExtension extends AbstractTypeExtension
         private readonly StorageInterface $storage,
         private readonly AssetExtension $assetExtension,
         private readonly UserProfilePicture $userProfilePicture,
-        private readonly EventProfilePicture $eventProfilePicture
+        private readonly EventProfilePicture $eventProfilePicture,
     ) {
     }
 

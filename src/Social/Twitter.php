@@ -32,7 +32,7 @@ class Twitter extends Social
 
         $name = $location->isCountry() ? $location->getCountry()->getName() : $location->getCity()->getName();
         $params = [
-            'q' => sprintf('#%s filter:safe', $name),
+            'q' => \sprintf('#%s filter:safe', $name),
             'lang' => 'fr',
             'result_type' => 'recent',
             'count' => $limit,

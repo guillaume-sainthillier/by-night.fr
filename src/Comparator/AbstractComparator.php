@@ -33,7 +33,7 @@ abstract class AbstractComparator implements ComparatorInterface
                 } elseif ($entity instanceof ExternalIdentifiableInterface) {
                     $externals = [$entity];
                 } else {
-                    throw new LogicException(sprintf('Unable to fetch ids from "%s" class', $entity::class));
+                    throw new LogicException(\sprintf('Unable to fetch ids from "%s" class', $entity::class));
                 }
 
                 foreach ($externals as $external) {
