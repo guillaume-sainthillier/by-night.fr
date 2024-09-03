@@ -10,15 +10,13 @@
 
 namespace App\Utils;
 
-use Symfony\Component\String\AbstractString;
-
 use function Symfony\Component\String\u;
 
 use Symfony\Component\String\UnicodeString;
 
 class StringManipulator
 {
-    private UnicodeString|AbstractString $text;
+    private UnicodeString $text;
 
     private static array $stopWords = [
         'alors', 'au', 'aucuns', 'aussi', 'autre', 'avant', 'avec', 'avoir', 'bon', 'car', 'ce', 'cela', 'ces',
