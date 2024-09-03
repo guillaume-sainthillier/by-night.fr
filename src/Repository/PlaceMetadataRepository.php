@@ -10,22 +10,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Place;
 use App\Entity\PlaceMetadata;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<PlaceMetadata>
- * @method Place|null find($id, $lockMode = null, $lockVersion = null)
- * @method Place|null findOneBy(array $criteria, array $orderBy = null)
- * @method Place[]    findAll()
- * @method Place[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @method PlaceMetadata|null find($id, $lockMode = null, $lockVersion = null)
+ * @method PlaceMetadata|null findOneBy(array $criteria, array $orderBy = null)
+ * @method PlaceMetadata[]    findAll()
+ * @method PlaceMetadata[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 final class PlaceMetadataRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Place::class);
+        parent::__construct($registry, PlaceMetadata::class);
     }
 }
