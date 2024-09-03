@@ -87,7 +87,7 @@ class DoctrineEventHandler
         // Clean event data
         $this->cleanEvents($allowedEvents);
 
-        $this->mergeWithDatabase($allowedEvents);
+        $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
     /**
@@ -315,6 +315,7 @@ class DoctrineEventHandler
      */
     private function mergeWithDatabase(
         array $dtos,
+        bool $flush,
         ?DependencyCatalogue $previousCatalogue = null,
         array &$allCatalogues = [],
         array &$allEntityProviders = [],
@@ -350,7 +351,7 @@ class DoctrineEventHandler
                 // Resolve current dependencies before persisting root objects
                 $requiredCatalogue = $this->computeRequiredCatalogue($chunk);
                 $allCatalogues[] = $requiredCatalogue;
-                $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
+                $this->mergeWithDatabase($requiredCatalogue->objects(), $flush, $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
                 // Then perform a global SQL request to fetch entities by external ids
                 $entityProvider->prefetchEntities($chunk);
@@ -415,9 +416,9 @@ class DoctrineEventHandler
                 // Resolve current dependencies after persisting parent objects
                 $providedCatalogue = $this->computeProvidedCatalogue($chunk);
                 $allCatalogues[] = $providedCatalogue;
-                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
+                $this->mergeWithDatabase($providedCatalogue->objects(), $flush, $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
-                if ($isRootTransaction) {
+                if ($isRootTransaction && $flush) {
                     $this->logger->info(sprintf(
                         '[%s] FLUSH',
                         implode(' > ', $currentPaths),
