@@ -1,4 +1,5 @@
 body.error-page {
+    display: flex;
     padding: 0;
     background: white;
 }
@@ -6,19 +7,21 @@ body.error-page {
 .box-error {
     margin-top: 200px;
     margin-top: 30vh;
-}
+    max-width: 30em;
+    margin-left: auto;
+    margin-right: auto;
 
-.box-error h1 {
-    float: left;
-    font-size: 48px;
-    margin-right: 20px;
-}
+    h1 {
+        font-size: 48px;
+        margin: 0 20px 0 0;
+    }
 
-.box-error h2 {
-    font-size: 28px;
-}
+    h2 {
+        font-size: 28px;
+    }
 
-.box-error p {
-    margin-top: -8px;
-    font-weight: 300;
+    p {
+        margin-top: -8px;
+        font-weight: 300;
+    }
 }

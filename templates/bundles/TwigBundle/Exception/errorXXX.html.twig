@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta charset="{{ _charset }}" />
+    <meta charset="{{ _charset }}"/>
     <title>{{ title }}</title>
 
     <!-- Icons -->
@@ -18,34 +18,37 @@
     <!-- ./Icons -->
 
     <!-- CSS -->
-    <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500%7CRoboto+Condensed:300' rel='stylesheet' type='text/css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Roboto:wght@300;400;500&display=swap"
+          rel="stylesheet">
     {{ encore_entry_link_tags('app') }}
     <!-- ./CSS-->
 </head>
 <body class="error-page">
-<div class="container-fluid">
-    <div class="row box-error">
-        <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
-            <h1>{{ code }}</h1>
-            <h2>{{ message }}</h2>
-            <p>{{ description }}</p>
+<div class="container-fluid d-flex flex-column h-100">
+    <div class="d-flex flex-column box-error">
+        <div class="row g-0">
+            <div class="col-auto">
+                <h1>{{ code }}</h1>
+            </div>
+            <div class="col">
+                <h2>{{ message }}</h2>
+                <p>{{ description }}</p>
+            </div>
+        </div>
 
-            <form method="get" action="{{ path('app_search_index') }}">
-                <div class="input-group">
-                    <div class="input-group-prepend me-2">
-                        <span class="input-group-text">
-                            <i class="fa fa-search"></i>
-                        </span>
-                    </div>
-                    <input name="q" class="form-control" size="16" type="text" placeholder="Que cherchez-vous ?" />
-                    <span class="input-group-append">
-                        <input class="btn btn-outline-secondary" type="submit" value="Rechercher" />
+        <form method="get" action="{{ path('app_search_index') }}">
+            <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-search"></i>
                     </span>
-                </div>
-            </form>
-        </div><!--/col-->
-    </div><!--/row-->
-    {{ encore_entry_script_tags('app') }}
+                <input name="q" class="form-control" size="16" type="text" placeholder="Que cherchez-vous ?"/>
+                <input class="btn btn-outline-secondary" type="submit" value="Rechercher"/>
+            </div>
+        </form>
+    </div>
 </div>
+{{ encore_entry_script_tags('app') }}
 </body>
 </html>
