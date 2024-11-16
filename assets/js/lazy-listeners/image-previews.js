@@ -1,7 +1,7 @@
-import 'fancybox/dist/js/jquery.fancybox';
-import 'fancybox/dist/css/jquery.fancybox.css';
+import 'fancybox/dist/js/jquery.fancybox'
+import 'fancybox/dist/css/jquery.fancybox.css'
 
-import '../../scss/components/_image-previews.scss';
+import '../../scss/components/_image-previews.scss'
 
 export default function init(container = document) {
     $('.image-gallery', container).each(function () {
@@ -18,7 +18,7 @@ export default function init(container = document) {
                 },
             })
             .click(function () {
-                return false;
-            });
-    });
+                return false
+            })
+    })
 }

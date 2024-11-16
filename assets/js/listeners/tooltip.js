@@ -1,3 +1,3 @@
 export default (di, container) => {
-    $('[data-bs-toggle="tooltip"]', container).tooltip();
-};
+    $('[data-bs-toggle="tooltip"]', container).tooltip()
+}

@@ -1,25 +1,25 @@
-import initDates from '../lazy-listeners/dates';
-import initTypeAHead from '../lazy-listeners/typeahead';
+import initDates from '../lazy-listeners/dates'
+import initTypeAHead from '../lazy-listeners/typeahead'
 
 $(document).ready(function () {
-    initDates();
-    initTypeAHead();
+    initDates()
+    initTypeAHead()
 
     $('.form-city-picker').each(function () {
-        const form = $(this);
-        const btn = form.find('.choose-city-action');
-        const field = form.find('.city-picker');
-        const cityValue = form.find('.city-value');
+        const form = $(this)
+        const btn = form.find('.choose-city-action')
+        const field = form.find('.city-picker')
+        const cityValue = form.find('.city-value')
 
         function updateBtn() {
-            btn.attr('disabled', cityValue.val().length === 0);
+            btn.attr('disabled', cityValue.val().length === 0)
         }
 
-        updateBtn();
+        updateBtn()
 
         $(this).submit(function () {
-            return !btn.attr('disabled');
-        });
+            return !btn.attr('disabled')
+        })
 
         // Saisie de la ville
         const cities = new Bloodhound({
@@ -29,8 +29,8 @@ $(document).ready(function () {
                 url: AppConfig.apiCityURL,
                 wildcard: '%QUERY',
             },
-        });
-        cities.initialize();
+        })
+        cities.initialize()
 
         // Proxy inputs typeahead events to addressPicker
         field
@@ -40,10 +40,10 @@ $(document).ready(function () {
                 source: cities.ttAdapter(),
             })
             .on('typeahead:selected', function (e, data) {
-                cityValue.val(data.slug || '');
-                updateBtn();
-                $(form).submit();
+                cityValue.val(data.slug || '')
+                updateBtn()
+                $(form).submit()
             })
-            .on('keyup input', updateBtn);
-    });
-});
+            .on('keyup input', updateBtn)
+    })
+})

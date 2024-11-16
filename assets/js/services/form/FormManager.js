@@ -1,4 +1,4 @@
-import { constructObjectDefinition } from '../../utils/utils';
+import { constructObjectDefinition } from '../../utils/utils'
 
 export default class FormManager {
     /**
@@ -7,35 +7,35 @@ export default class FormManager {
      * @param {RequiredManager} requiredManager
      */
     constructor(visibleManager, disabledManagager, requiredManager) {
-        this.visibleManager = visibleManager;
-        this.disabledManagager = disabledManagager;
-        this.requiredManager = requiredManager;
+        this.visibleManager = visibleManager
+        this.disabledManagager = disabledManagager
+        this.requiredManager = requiredManager
     }
 
     handle(formDefinition) {
-        formDefinition = constructObjectDefinition(formDefinition);
+        formDefinition = constructObjectDefinition(formDefinition)
         if (formDefinition.visibility) {
-            this.visibleManager.handle(formDefinition.visibility, false);
+            this.visibleManager.handle(formDefinition.visibility, false)
         }
 
         if (formDefinition['!visibility']) {
-            this.visibleManager.handle(formDefinition['!visibility'], true);
+            this.visibleManager.handle(formDefinition['!visibility'], true)
         }
 
         if (formDefinition.disable) {
-            this.disabledManagager.handle(formDefinition.disable, false);
+            this.disabledManagager.handle(formDefinition.disable, false)
         }
 
         if (formDefinition['!disable']) {
-            this.disabledManagager.handle(formDefinition['!disable'], true);
+            this.disabledManagager.handle(formDefinition['!disable'], true)
         }
 
         if (formDefinition.require) {
-            this.requiredManager.handle(formDefinition.require, false);
+            this.requiredManager.handle(formDefinition.require, false)
         }
 
         if (formDefinition['!require']) {
-            this.requiredManager.handle(formDefinition['!require'], true);
+            this.requiredManager.handle(formDefinition['!require'], true)
         }
     }
 }
