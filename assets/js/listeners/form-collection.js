@@ -1,3 +1,6 @@
+import {findAll, findOne, on} from "@/js/utils/dom"
+import {closest} from "@/js/utils/css"
+
 export default (di, container) => {
     const collectionManager = di.get('collectionManager')
 

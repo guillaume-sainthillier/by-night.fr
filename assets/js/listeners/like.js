@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export default (di, container) => {
     const options = {
         css_selecteur_like: '.btn-like-event',

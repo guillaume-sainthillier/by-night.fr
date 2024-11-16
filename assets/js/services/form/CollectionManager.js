@@ -1,4 +1,6 @@
-import { getVirtualForm, setElementValue } from '../../utils/utils'
+import { getVirtualForm, setElementValue } from '@/js/utils/utils'
+import {appendHTML, data, dom, findAll, on, trigger} from "@/js/utils/dom"
+import {closest} from "@/js/utils/css"
 
 export default class CollectionManager {
     /**
@@ -39,7 +41,7 @@ export default class CollectionManager {
 
         if (dispatchEvent === true) {
             trigger(collection, 'collection.add', { item: collectionItem })
-            App.dispatchPageLoadedEvent(collectionItem)
+            window.App.dispatchPageLoadedEvent(collectionItem)
             trigger(collection, 'collection.added', { item: collectionItem })
         }
     }
@@ -126,6 +128,7 @@ export default class CollectionManager {
         const collection = closest(btn, '.collection')
         const collectionItem = closest(btn, data(btn, 'item') || '.form-group')
 
+        // eslint-disable-next-line no-undef
         remove(collectionItem)
         trigger(collection, 'collection.deleted')
     }

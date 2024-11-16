@@ -1,10 +1,11 @@
+import $ from 'jquery'
 import debounce from 'lodash/debounce'
 
-import initDates from '../lazy-listeners/dates'
-import initImagePreview from '../lazy-listeners/image-previews'
-import initSelects from '../lazy-listeners/selects'
+import initDates from '@/js/lazy-listeners/dates'
+import initImagePreview from '@/js/lazy-listeners/image-previews'
+import initSelects from '@/js/lazy-listeners/selects'
 
-import Widgets from '../components/Widgets'
+import Widgets from '@/js/components/Widgets'
 
 $(document).ready(function () {
     initDates()
@@ -104,7 +105,7 @@ $(document).ready(function () {
                 const currentContainer = $('<div>').html(html)
                 btn.parent().remove()
                 currentContainer.insertAfter(container)
-                App.dispatchPageLoadedEvent(currentContainer[0])
+                window.App.dispatchPageLoadedEvent(currentContainer[0])
                 initPagination(currentContainer)
             })
         })

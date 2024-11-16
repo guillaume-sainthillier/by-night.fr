@@ -1,3 +1,3 @@
-import SocialLogin from '../components/SocialLogin'
+import SocialLogin from '@/js/components/SocialLogin'
 
 new SocialLogin().init()

@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import { debounce } from 'lodash'
 
 export default () => {

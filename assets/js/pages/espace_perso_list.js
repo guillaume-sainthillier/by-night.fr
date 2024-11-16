@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 $(document).ready(function () {
     $('.form-delete').submit(function () {
         return window.confirm(

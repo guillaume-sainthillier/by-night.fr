@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export default class CommentApp {
     constructor() {
         this.options = {
@@ -29,7 +31,7 @@ export default class CommentApp {
             function () // On parcours les div comments (1 par page normalement)
             {
                 const commentsContainer = $(this)
-                App.dispatchPageLoadedEvent(commentsContainer[0]) // On bind les liens connexion/inscription
+                window.App.dispatchPageLoadedEvent(commentsContainer[0]) // On bind les liens connexion/inscription
                 self.init_new_comment(commentsContainer) // On bind le formulaire d'envoi d'un nouveau comment
                 self.init_load_new_reponse(commentsContainer) // On bind le lien de réponse des comments
                 self.init_list_reponses(commentsContainer) // On bind le bouton de liste des réponses
@@ -131,7 +133,7 @@ export default class CommentApp {
                     .closest(self.options.css_main_block_reponse)
                     .find(self.options.css_block_post_reponse) // On cherche le block du post
                 postAnswerContainer.hide().load(link.data('url'), function () {
-                    App.dispatchPageLoadedEvent(postAnswerContainer[0]) // On bind les liens connexion/inscription
+                    window.App.dispatchPageLoadedEvent(postAnswerContainer[0]) // On bind les liens connexion/inscription
                     self.init_new_reponse(postAnswerContainer) // On bind le formulaire d'envoi d'une nouvelle réponse
                     $(this).show(self.options.animation_duration, function () {
                         link.text(link.data('text'))
@@ -153,7 +155,7 @@ export default class CommentApp {
             .find('form')
             .off('submit')
             .submit(function () {
-                App.loadingButtons(this)
+                window.App.loadingButtons(this)
                 const form = $(this)
                 const mainAnswerContainer = answerPostContainer.closest(self.options.css_main_block_reponse)
 
@@ -173,13 +175,13 @@ export default class CommentApp {
                         } // L'envoie de la réponse a échoué
                         else {
                             answerPostContainer.html(retour.post)
-                            App.dispatchPageLoadedEvent(answerPostContainer[0]) // On bind les liens connexion/inscription
+                            window.App.dispatchPageLoadedEvent(answerPostContainer[0]) // On bind les liens connexion/inscription
                             self.init_new_reponse(answerPostContainer) // On bind le formulaire d'envoi d'une nouvelle réponse
                         }
                     })
                     .always(function () // Dans tous les cas
                     {
-                        App.resetButtons(form)
+                        window.App.resetButtons(form)
                     })
 
                 return false
@@ -195,7 +197,7 @@ export default class CommentApp {
                 $(this)
                     .off('submit')
                     .submit(function () {
-                        App.loadingButtons(comment) // On bloque le bouton submit le temps du chargement
+                        window.App.loadingButtons(comment) // On bloque le bouton submit le temps du chargement
 
                         $.post($(this).attr('action'), $(this).serialize())
                             .done(function (retour) {
@@ -227,12 +229,12 @@ export default class CommentApp {
                                     postCommentContainer = mainCommentsContainer.find(
                                         self.options.css_block_poster_comment
                                     )
-                                    App.dispatchPageLoadedEvent(postCommentContainer)
+                                    window.App.dispatchPageLoadedEvent(postCommentContainer)
                                     self.init_new_comment(postCommentContainer)
                                 }
                             })
                             .always(function () {
-                                App.resetButtons(comment)
+                                window.App.resetButtons(comment)
                             })
 
                         return false

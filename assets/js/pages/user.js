@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import Raphael from 'raphael/raphael'
 import 'morris.js/morris.css'
 import 'morris.js/morris'
@@ -42,7 +43,7 @@ $(document).ready(function () {
             data.push({ label: datum.name || '', value: datum.eventsCount })
         })
 
-        Morris.Donut({
+        window.Morris.Donut({
             element: 'hero-donut',
             data,
             colors: ['#36A9E1', '#bdea74', '#67c2ef', '#fabb3d', '#ff5454'],
@@ -64,7 +65,7 @@ $(document).ready(function () {
         const chart = $(`#${element}`)
         $.get(chart.data('url')).done(function (datas) {
             chart.children().remove()
-            Morris.Area({
+            window.Morris.Area({
                 element,
                 lineColors: colors,
                 data: prepareActivite(datas),

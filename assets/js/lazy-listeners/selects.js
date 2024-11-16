@@ -1,8 +1,7 @@
 import 'select2'
-import 'select2/src/scss/core.scss'
-import 'select2-bootstrap-5-theme/src/select2-bootstrap-5-theme.scss'
+import '@/scss/lazy-components/_selects.scss'
 import $ from 'jquery'
-import { isTouchDevice } from '../utils/utils'
+import { isTouchDevice } from '@/js/utils/utils'
 
 export default (container = document) => {
     $('select.form-select:not(.hidden)', container).each(function () {

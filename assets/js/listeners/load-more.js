@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export default (di, container) => {
     $('.more', container).click(function (e) {
         e.preventDefault()
@@ -12,7 +14,7 @@ export default (di, container) => {
             const currentContainer = $('<div>').html(html)
             btn.parent().remove()
             currentContainer.insertAfter(container)
-            App.dispatchPageLoadedEvent(currentContainer[0])
+            window.App.dispatchPageLoadedEvent(currentContainer[0])
         })
     })
 }

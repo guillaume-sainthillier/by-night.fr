@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export default class Widgets {
     init(selecteur) {
         const self = this
@@ -39,7 +41,7 @@ export default class Widgets {
                         btn.remove()
                         containerBody.append(content)
                         self.initMoreWidgets(container)
-                        App.dispatchPageLoadedEvent(container[0])
+                        window.App.dispatchPageLoadedEvent(container[0])
                         if (scrollAreaLastItem.next().length > 0) {
                             self.scrollTo(scrollAreaLastItem.next(), scrollArea, function () {})
                         }

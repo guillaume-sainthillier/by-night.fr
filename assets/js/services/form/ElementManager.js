@@ -1,4 +1,6 @@
-import { getElementValue, setElementValue } from '../../utils/utils'
+import { getElementValue, setElementValue } from '@/js/utils/utils'
+import {closest, sibling} from "@/js/utils/css"
+import {dom, findOne} from "@/js/utils/dom"
 
 export default class ElementManager {
     constructor() {

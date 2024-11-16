@@ -2,7 +2,7 @@ import $ from 'jquery'
 import 'summernote/dist/summernote-bs5'
 import 'summernote/dist/lang/summernote-fr-FR'
 
-import '../../scss/lazy-components/_wysiwyg.scss'
+import '@/scss/lazy-components/_wysiwyg.scss'
 
 export default function init(container = document) {
     // SummerNote

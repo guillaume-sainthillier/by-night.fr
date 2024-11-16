@@ -1,11 +1,12 @@
 // JS
+import $ from 'jquery'
 import 'moment/locale/fr'
 import 'daterangepicker'
 import moment from 'moment'
-import { isTouchDevice } from '../utils/utils'
+import { isTouchDevice } from '@/js/utils/utils'
 
 // CSS
-import '../../scss/lazy-components/_datepicker.scss'
+import '@/scss/lazy-components/_datepicker.scss'
 
 export default function init(container = document) {
     $('input.shorcuts_date', container).each(function () {

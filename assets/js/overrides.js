@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import Modal from 'bootstrap/js/dist/modal'
 
 Modal.prototype.loading = function () {
@@ -50,7 +51,7 @@ $.ajaxSetup({
                     message = `${erreur.message}<br />`
                 })
             } catch (e) {
-                /* eslint no-empty: "off" */
+                /* eslint no-unused-vars: "off" */
             }
 
             const dialog = $('#dialog_details')

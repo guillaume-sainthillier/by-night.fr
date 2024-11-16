@@ -1,5 +1,7 @@
 import ElementManager from './ElementManager'
-import { constructArrayDefinition } from '../../utils/utils'
+import { constructArrayDefinition } from '@/js/utils/utils'
+import {on} from "@/js/utils/dom"
+import {addClass, removeClass} from "@/js/utils/css"
 
 export default class RequiredManager {
     constructor() {

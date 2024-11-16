@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "target": "es2020",
+    "module": "es2015",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "assets/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "public/build",
+    "var",
+    "vendor",
+    ".yarn"
+  ],
+  "typeAcquisition": {
+    "enable": true
+  }
+}

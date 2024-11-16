@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export default (di, container) => {
     $('a.email-verify, button.email-verify', container).click(function (e) {
         const that = this

@@ -1,4 +1,4 @@
-import { constructObjectDefinition } from '../../utils/utils'
+import { constructObjectDefinition } from '@/js/utils/utils'
 
 export default class FormManager {
     /**

@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export default () => {
     const searchForm = $('.navbar .search-form')
     const searchBackdrop = $('#search-menu-backdrop')

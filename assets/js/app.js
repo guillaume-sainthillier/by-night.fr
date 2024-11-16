@@ -1,5 +1,6 @@
-import '../scss/app.scss'
+import '@/scss/app.scss'
 
+import $ from 'jquery'
 import './vendors'
 import './overrides'
 import './utils/css'

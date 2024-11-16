@@ -1,13 +1,14 @@
-const path = require('path');
-const glob = require('glob-all');
-const Encore = require('@symfony/webpack-encore');
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
-const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
+const path = require('path')
+const glob = require('glob-all')
+const ESLintWebpackPlugin = require("eslint-webpack-plugin")
+const Encore = require('@symfony/webpack-encore')
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin')
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
 if (!Encore.isRuntimeEnvironmentConfigured()) {
-    Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
+    Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev')
 }
 
 Encore
@@ -49,8 +50,8 @@ Encore
     .splitEntryChunks()
     .configureSplitChunks(function (splitChunks) {
         // https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
-        splitChunks.maxInitialRequests = 20; // for HTTP2
-        splitChunks.maxAsyncRequests = 20;
+        splitChunks.maxInitialRequests = 20 // for HTTP2
+        splitChunks.maxAsyncRequests = 20
     })
 
     // will require an extra script tag for runtime.js
@@ -72,8 +73,8 @@ Encore
 
     // enables @babel/preset-env polyfills
     .configureBabelPresetEnv((config) => {
-        config.useBuiltIns = 'usage';
-        config.corejs = '3.23';
+        config.useBuiltIns = 'usage'
+        config.corejs = '3.23'
     })
     .addPlugin(
         new MomentLocalesPlugin({
@@ -81,13 +82,16 @@ Encore
         })
     )
     .addAliases({
+        '@': path.join(__dirname, 'assets'),
         jQuery: 'jquery', // Summernote
         jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
         $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
     })
 
     // enables Sass/SCSS support
-    .enableSassLoader()
+    .enableSassLoader((options) => {
+        options.api = 'legacy'
+    })
 
     // uncomment if you use TypeScript
     // .enableTypeScriptLoader()
@@ -106,13 +110,18 @@ Encore
         jQuery: 'jquery',
         'window.jQuery': 'jquery',
         'window.$': 'jquery',
-        Popper: ['popper.js', 'default'],
-    });
+    })
 
-if (!Encore.isProduction()) {
-    Encore.enableEslintPlugin((options) => {
-        options.cache = true;
-    });
+if(Encore.isDev()) {
+    Encore.addPlugin(new ESLintWebpackPlugin({
+        fix: true,
+        configType: 'flat',
+        exclude: [
+            'node_modules',
+            'var',
+            'vendor',
+        ]
+    }))
 }
 
 if (Encore.isProduction()) {
@@ -144,7 +153,7 @@ if (Encore.isProduction()) {
                 /^fa-(masks-theater|vest|file-pen|calendar|location-crosshairs)/,
             ],
         })
-    );
+    )
 }
 
-module.exports = Encore.getWebpackConfig();
+module.exports = Encore.getWebpackConfig()

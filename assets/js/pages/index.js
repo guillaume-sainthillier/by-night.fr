@@ -1,5 +1,6 @@
-import initDates from '../lazy-listeners/dates'
-import initTypeAHead from '../lazy-listeners/typeahead'
+import $ from 'jquery'
+import initDates from '@/js/lazy-listeners/dates'
+import initTypeAHead from '@/js/lazy-listeners/typeahead'
 
 $(document).ready(function () {
     initDates()
@@ -22,11 +23,11 @@ $(document).ready(function () {
         })
 
         // Saisie de la ville
-        const cities = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
+        const cities = new window.Bloodhound({
+            datumTokenizer: window.Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: window.Bloodhound.tokenizers.whitespace,
             remote: {
-                url: AppConfig.apiCityURL,
+                url: window.AppConfig.apiCityURL,
                 wildcard: '%QUERY',
             },
         })

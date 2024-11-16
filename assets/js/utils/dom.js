@@ -1,10 +1,10 @@
 NodeList.prototype.forEach = Array.prototype.forEach
 
-window.dom = (selector) => findOne(selector, document)
-window.findOne = (selector, element) => (element || document).querySelector(selector)
-window.findAll = (selector, element) => (element || document).querySelectorAll(selector)
+export const dom = (selector) => findOne(selector, document)
+export const findOne = (selector, element) => (element || document).querySelector(selector)
+export const findAll = (selector, element) => (element || document).querySelectorAll(selector)
 
-window.data = (element, name, value) => {
+export const data = (element, name, value) => {
     // Getter
     if (typeof value === 'undefined') {
         return element.dataset[name]
@@ -13,18 +13,18 @@ window.data = (element, name, value) => {
     element.dataset[name] = value
 }
 
-window.on = (element, event, handler, useCapture) => element.addEventListener(event, handler, useCapture)
-window.off = (element, event, handler, useCapture) => element.removeEventListener(event, handler, useCapture)
-window.trigger = (element, eventName, params) => {
+export const on = (element, event, handler, useCapture) => element.addEventListener(event, handler, useCapture)
+export const off = (element, event, handler, useCapture) => element.removeEventListener(event, handler, useCapture)
+export const trigger = (element, eventName, params) => {
     const event = new CustomEvent(eventName, { detail: params })
     element.dispatchEvent(event)
 }
 
-window.sort = (parent, callback) => {
+export const sort = (parent, callback) => {
     [...parent.children].sort((a, b) => callback(a, b)).map((node) => parent.appendChild(node))
 }
 
-window.submit = (form) => {
+export const submit = (form) => {
     if (data(form, 'action')) {
         form.setAttribute('action', data(form, 'action'))
     }
@@ -33,21 +33,21 @@ window.submit = (form) => {
     trigger(form, 'submit')
 }
 
-window.softSubmit = (form) => {
+export const softSubmit = (form) => {
     trigger(form, 'pjax:preSubmit')
 }
 
-window.insertAfter = (element, newElement) => {
+export const insertAfter = (element, newElement) => {
     if (newElement.parentNode) {
         newElement.parentNode.insertBefore(element, newElement.nextSibling)
     }
 }
 
-window.remove = (element) => {
+export const remove = (element) => {
     element.parentNode.removeChild(element)
 }
 
-window.appendHTML = (element, html) => {
+export const appendHTML = (element, html) => {
     const child = document.createElement('div')
     child.innerHTML = html
 
@@ -56,15 +56,15 @@ window.appendHTML = (element, html) => {
     }
 }
 
-window.append = (parent, element) => {
+export const append = (parent, element) => {
     parent.appendChild(element)
 }
 
-window.prepend = (element, parent) => {
+export const prepend = (element, parent) => {
     parent.insertBefore(element, parent.childNodes[0] || null)
 }
 
-window.prependHTML = (element, html) => {
+export const prependHTML = (element, html) => {
     const child = document.createElement('div')
     child.innerHTML = html
 
@@ -73,7 +73,7 @@ window.prependHTML = (element, html) => {
     }
 }
 
-window.parents = function (elem, selector) {
+export const parents = function (elem, selector) {
     const parents = []
     for (; elem && elem !== document; elem = elem.parentNode) {
         if (selector) {

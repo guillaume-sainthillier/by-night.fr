@@ -1,4 +1,5 @@
-import { popup } from '../utils/utils'
+import $ from 'jquery'
+import { popup } from '@/js/utils/utils'
 
 export default class SocialLogin {
     init() {

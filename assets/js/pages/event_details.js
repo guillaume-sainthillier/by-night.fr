@@ -1,5 +1,6 @@
-import Widgets from '../components/Widgets'
-import CommentApp from '../components/CommentApp'
+import $ from 'jquery'
+import Widgets from '@/js/components/Widgets'
+import CommentApp from '@/js/components/CommentApp'
 
 $(document).ready(function () {
     new Widgets().init()

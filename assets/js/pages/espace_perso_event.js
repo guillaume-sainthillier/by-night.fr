@@ -1,10 +1,10 @@
 import $ from 'jquery'
 
-import initDates from '../lazy-listeners/dates'
-import initImagePreview from '../lazy-listeners/image-previews'
-import initSelects from '../lazy-listeners/selects'
-import initTypeAHead from '../lazy-listeners/typeahead'
-import initWYSIWYG from '../lazy-listeners/wysiwyg'
+import initDates from '@/js/lazy-listeners/dates'
+import initImagePreview from '@/js/lazy-listeners/image-previews'
+import initSelects from '@/js/lazy-listeners/selects'
+import initTypeAHead from '@/js/lazy-listeners/typeahead'
+import initWYSIWYG from '@/js/lazy-listeners/wysiwyg'
 
 import 'typeahead-addresspicker/dist/typeahead-addresspicker'
 
@@ -34,7 +34,7 @@ function initGMap() {
     // Lieux
     const $field = $('#app_event_place_name')
     // instantiate the addressPicker suggestion engine (based on bloodhound)
-    const addressPicker = new AddressPicker({
+    const addressPicker = new window.AddressPicker({
         map: {
             id: '#map',
             zoom: 12,
@@ -43,7 +43,7 @@ function initGMap() {
                 lat: 43.6,
                 lng: 1.433333,
             },
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapTypeId: window.google.maps.MapTypeId.ROADMAP,
         },
         autocompleteService: {
             types: ['address'],
@@ -67,7 +67,7 @@ function initGMap() {
         source: addressPicker.ttAdapter(),
     })
     // instantiate the placePicker suggestion engine (based on bloodhound)
-    const placePicker = new AddressPicker({
+    const placePicker = new window.AddressPicker({
         autocompleteService: {
             types: ['establishment'],
         },

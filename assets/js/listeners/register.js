@@ -1,6 +1,8 @@
+import $ from 'jquery'
+
 export default (di, container) => {
     const handleRegister = function ($dialog) {
-        App.dispatchPageLoadedEvent($dialog[0]) // $dialog is a jQuery object so we pass the pure dom object
+        window.App.dispatchPageLoadedEvent($dialog[0]) // $dialog is a jQuery object so we pass the pure dom object
         $dialog
             .find('form')
             .off('submit')
