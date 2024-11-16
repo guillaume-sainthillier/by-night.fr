@@ -71,9 +71,7 @@ class App {
                 autoSessionTracking: false,
             })
 
-            Sentry.configureScope((scope) => {
-                scope.setUser(parameters.user)
-            })
+            Sentry.getCurrentScope().setUser(this.get('user'))
         }
 
         registerServices(this.#di)
