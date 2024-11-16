@@ -1,15 +1,15 @@
 twig:
-    default_path: '%kernel.project_dir%/templates'
+    file_name_pattern: '*.twig'
     form_themes:
         - 'form/fields.html.twig'
     globals:
-        menu: "@white_october_breadcrumbs"
+        menu: '@white_october_breadcrumbs'
         social_manager: '@App\App\SocialManager'
         userProfilePicture: '@App\Picture\UserProfilePicture'
         eventProfilePicture: '@App\Picture\EventProfilePicture'
         facebook_app_id: '%env(FACEBOOK_API_ID)%'
-        googleMapKey: "%google_map_key%"
-        sentry_dsn: "%env(SENTRY_DSN)%"
+        googleMapKey: '%google_map_key%'
+        sentry_dsn: '%env(SENTRY_DSN)%'
         app_version: '%env(APP_VERSION)%'
         event_seo: '@App\SEO\EventSEO'
 

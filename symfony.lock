@@ -9,7 +9,7 @@
         "version": "3.154.4"
     },
     "babdev/pagerfanta-bundle": {
-        "version": "v4.4.0"
+        "version": "v4.5.0"
     },
     "beberlei/doctrineextensions": {
         "version": "v1.2.7"
@@ -64,8 +64,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "2.12",
-            "ref": "7266981c201efbbe02ae53c87f8bb378e3f825ae"
+            "version": "2.13",
+            "ref": "8d96c0b51591ffc26794d865ba3ee7d193438a83"
         },
         "files": [
             "config/packages/doctrine.yaml",
@@ -111,7 +111,7 @@
         "version": "1.1.1"
     },
     "easycorp/easyadmin-bundle": {
-        "version": "4.12",
+        "version": "4.14",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -165,7 +165,7 @@
         "version": "2.9.2"
     },
     "friendsofsymfony/http-cache-bundle": {
-        "version": "3.0.1"
+        "version": "3.0.2"
     },
     "gedmo/doctrine-extensions": {
         "version": "v2.4.42"
@@ -204,7 +204,7 @@
         "version": "3.9.0"
     },
     "jms/serializer-bundle": {
-        "version": "5.4",
+        "version": "5.5",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
             "branch": "main",
@@ -268,7 +268,7 @@
         "version": "3.0.3"
     },
     "mhujer/breadcrumbs-bundle": {
-        "version": "1.5.9"
+        "version": "1.5.10"
     },
     "monolog/monolog": {
         "version": "2.1.1"
@@ -307,7 +307,7 @@
         "version": "v2.12.0"
     },
     "php-amqplib/rabbitmq-bundle": {
-        "version": "2.16",
+        "version": "2.17",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
             "branch": "main",
@@ -323,7 +323,7 @@
         "version": "2.3.0"
     },
     "php-http/discovery": {
-        "version": "1.19",
+        "version": "1.20",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -424,12 +424,12 @@
         "version": "2.5.0"
     },
     "sentry/sentry-symfony": {
-        "version": "4.14",
+        "version": "5.0",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
             "branch": "main",
-            "version": "4.6",
-            "ref": "153de5f041f7e8a9c19f3674b800b76be0e6fd90"
+            "version": "5.0",
+            "ref": "76afa07d23e76f678942f00af5a6a417ba0816d0"
         },
         "files": [
             "config/packages/sentry.yaml"
@@ -592,7 +592,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "4.3",
-            "ref": "df66ee1f226c46f01e85c29c2f7acce0596ba35a"
+            "ref": "09051cfde49476e3c12cd3a0e44289ace1c75a4f"
         },
         "files": [
             "config/packages/mailer.yaml"
@@ -817,12 +817,12 @@
         ]
     },
     "symfony/webpack-encore-bundle": {
-        "version": "2.1",
+        "version": "2.2",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "2.0",
-            "ref": "082d754b3bd54b3fc669f278f1eea955cfd23cf5"
+            "ref": "35ee1edee91a1a7137095f53db7ed0c20884b745"
         },
         "files": [
             "assets/app.js",
@@ -836,7 +836,7 @@
         "version": "v5.1.5"
     },
     "symfonycasts/reset-password-bundle": {
-        "version": "1.22",
+        "version": "1.23",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -848,10 +848,10 @@
         ]
     },
     "symfonycasts/verify-email-bundle": {
-        "version": "v1.17.0"
+        "version": "v1.17.2"
     },
     "twig/extra-bundle": {
-        "version": "v3.12.0"
+        "version": "v3.13.0"
     },
     "twig/intl-extra": {
         "version": "v3.0.5"
