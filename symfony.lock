@@ -191,9 +191,6 @@
     "guzzlehttp/psr7": {
         "version": "1.6.1"
     },
-    "http-interop/http-factory-guzzle": {
-        "version": "1.0.0"
-    },
     "intervention/image": {
         "version": "2.5.1"
     },
@@ -343,9 +340,6 @@
     "php-http/message": {
         "version": "1.9.0"
     },
-    "php-http/message-factory": {
-        "version": "v1.0.2"
-    },
     "php-http/promise": {
         "version": "1.1.0"
     },
@@ -425,9 +419,6 @@
     },
     "sebastian/diff": {
         "version": "4.0.2"
-    },
-    "sentry/sdk": {
-        "version": "2.2.0"
     },
     "sentry/sentry": {
         "version": "2.5.0"
@@ -652,21 +643,6 @@
     "symfony/password-hasher": {
         "version": "v5.3.0"
     },
-    "symfony/phpunit-bridge": {
-        "version": "7.1",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "6.3",
-            "ref": "a411a0480041243d97382cac7984f7dce7813c08"
-        },
-        "files": [
-            ".env.test",
-            "bin/phpunit",
-            "phpunit.xml.dist",
-            "tests/bootstrap.php"
-        ]
-    },
     "symfony/polyfill-apcu": {
         "version": "v1.18.1"
     },
@@ -686,9 +662,6 @@
         "version": "v1.18.1"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.18.1"
-    },
-    "symfony/polyfill-php72": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-php73": {
