@@ -95,6 +95,10 @@ final readonly class CountryImporter
             $adminCode1 = $this->formatAdminZoneCode($data[10]);
             $adminCode2 = $this->formatAdminZoneCode($data[11]);
 
+            $existingEntity = $this->em->getRepository($entity::class)->find((int) $data[0]);
+            if ($existingEntity) {
+                $entity = $existingEntity;
+            }
             $entity
                 ->setId((int) $data[0])
                 ->setName($data[1])
@@ -107,13 +111,10 @@ final readonly class CountryImporter
 
             $this->sanitizeAdminZone($entity);
 
-            $this->em->merge($entity);
+            $this->em->persist($entity);
             if (self::CITIES_PER_TRANSACTION === $i) {
                 $this->em->flush();
-                $this->em->clear(City::class);
-                $this->em->clear(AdminZone::class);
-                $this->em->clear(AdminZone1::class);
-                $this->em->clear(AdminZone2::class);
+                $this->em->clear();
                 $i = 0;
             }
         }
@@ -245,7 +246,7 @@ final readonly class CountryImporter
             $this->em->persist($city);
             if (self::ZIP_CODES_PER_TRANSACTION === $i) {
                 $this->em->flush();
-                $this->em->clear(ZipCity::class);
+                $this->em->clear();
                 $i = 0;
             }
         }

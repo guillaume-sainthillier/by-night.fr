@@ -25,6 +25,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<User>
+ *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findAll()
@@ -57,8 +58,8 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         }
 
         $user->setPassword($newHashedPassword);
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
     }
 
     /**
@@ -128,10 +129,10 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
 
     public function getCount(): int
     {
-        return (int) $this->_em
+        return (int) $this->getEntityManager()
             ->createQueryBuilder()
             ->select('count(u.id)')
-            ->from('App:User', 'u')
+            ->from(User::class, 'u')
             ->getQuery()
             ->getSingleScalarResult();
     }

@@ -20,6 +20,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Comment>
+ *
  * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
  * @method Comment|null findOneBy(array $criteria, array $orderBy = null)
  * @method Comment[]    findAll()
@@ -37,7 +38,7 @@ final class CommentRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('c')
             ->where('c.event = :event AND c.parent IS NULL AND c.approved = true')
-            ->setParameters([':event' => $event])
+            ->setParameter('event', $event)
             ->orderBy('c.createdAt', Criteria::DESC)
         ;
     }
@@ -50,7 +51,7 @@ final class CommentRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('c')
             ->where('c.user = :user')
-            ->setParameters([':user' => $user->getId()])
+            ->setParameter('user', $user)
             ->getQuery()
             ->execute();
     }
@@ -60,7 +61,7 @@ final class CommentRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('c')
             ->where('c.parent = :parent AND c.approved = true')
-            ->setParameters([':parent' => $comment])
+            ->setParameter('parent', $comment)
             ->orderBy('c.createdAt', Criteria::DESC);
     }
 }

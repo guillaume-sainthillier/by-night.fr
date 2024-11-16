@@ -15,7 +15,7 @@ use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
 use App\Utils\Firewall;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 final readonly class EventParserDataListener
 {
@@ -25,12 +25,12 @@ final readonly class EventParserDataListener
 
     public function preRemove(LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         if (!$entity instanceof Event || null === $entity->getExternalId() || null === $entity->getExternalOrigin()) {
             return;
         }
 
-        $entityManager = $args->getEntityManager();
+        $entityManager = $args->getObjectManager();
         $parserData = $this->parserDataRepository->findOneBy([
             'externalOrigin' => $entity->getExternalOrigin(),
             'externalId' => $entity->getExternalId(),
