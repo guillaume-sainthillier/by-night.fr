@@ -13,25 +13,25 @@
     <ul class="nav nav-pills nav-fill mb-1 justify-content-center">
         <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#profil" aria-controls="profil">
-                <i class="fa fa-user"></i>
+                <i class="icon fa fa-user"></i>
                 <span class="d-none d-sm-block d-md-inline-block">Profil</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#socials" aria-controls="socials">
-                <i class="fab fa-facebook-f"></i>
+                <i class="icon fab fa-facebook-f"></i>
                 <span class="d-none d-sm-block d-md-inline-block">Réseaux sociaux</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#password" aria-controls="password">
-                <i class="fa fa-key"></i>
+                <i class="icon fa fa-key"></i>
                 <span class="d-none d-sm-block d-md-inline-block">Mot de passe</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#supprimer" aria-controls="supprimer">
-                <i class="fa fa-trash"></i>
+                <i class="icon fa fa-trash"></i>
                 <span class="d-none d-sm-block d-md-inline-block">Supprimer le compte</span>
             </a>
         </li>
@@ -45,12 +45,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            {{ form_row(form.imageFile) }}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
                             {{ form_row(form.username) }}
                         </div>
                         <div class="col-md-6">
@@ -61,9 +55,6 @@
                                 </button>
                             {% endif %}
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-md-6">
                             {{ form_row(form.firstname) }}
                         </div>
@@ -71,9 +62,19 @@
                             {{ form_row(form.lastname) }}
                         </div>
                     </div>
-                    {{ form_row(form.description) }}
-
-                    <div class="row align-items-baseline">
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.imageFile, {row_attr: {class: 'form-group mb-0'}}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.description) }}
+                        </div>
                         <div class="col-md-6">
                             {{ form_row(form.website) }}
                         </div>
@@ -83,7 +84,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-center mt-2 py-3">
-                    <input type="submit" class="btn btn-lg btn-primary btn-raised" value="Modifier mes informations" />
+                    <input type="submit" class="btn btn-primary" value="Modifier mes informations" />
                 </div>
             </div>
             {{ form_rest(form) }}
@@ -94,9 +95,7 @@
                 <h2 class="card-header">Réseaux sociaux</h2>
                 <div class="card-body">
                     {% for service in ['facebook', 'google', 'twitter'] %}
-                        <div class="bloc_config">
-                            {% include 'social/social.html.twig' with { 'oAuth': app.user.oAuth, 'service': service } %}
-                        </div>
+                        {% include 'social/social.html.twig' with { 'oAuth': app.user.oAuth, 'service': service } %}
                     {% endfor %}
                 </div>
             </div>
@@ -111,7 +110,7 @@
                     {{ form_row(formChangePassword.plainPassword.second) }}
                 </div>
                 <div class="card-footer text-center mt-2 py-3">
-                    <input type="submit" class="btn btn-lg btn-lh btn-primary btn-raised" value="{{ 'Mettre à jour le mot de passe' }}" />
+                    <input type="submit" class="btn btn-lh btn-primary" value="{{ 'Mettre à jour le mot de passe' }}" />
                 </div>
             </div>
             {{ form_rest(formChangePassword) }}
@@ -124,7 +123,7 @@
                     <p>Supprimer les informations relatives à mon compte</p>
                 </div>
                 <div class="card-footer text-center mt-2 py-3">
-                    <button id="btnDelete" type="button" data-bs-toggle="modal" data-target="#deleteModal" class="btn btn-lg btn-danger btn-raised">
+                    <button id="btnDelete" type="button" data-bs-toggle="modal" data-target="#deleteModal" class="btn btn-danger">
                         Supprimer mon compte
                     </button>
                 </div>

@@ -117,31 +117,42 @@ _______     __  _   _ _____ _____ _    _ _______
     {% block head_js_layout %}{% endblock %}
     {% block head_js %}{% endblock %}
 </head>
-<body itemscope itemtype="http://schema.org/WebPage">
-<div id="wrap">
-    <header>
-        <!-- Menu -->
-        {% if location is defined and location.isCity %}
-            {{ render_esi(path('app_private_header', {'id': location.city.id})) }}
-        {% else %}
-            {{ render_esi(path('app_private_header')) }}
-        {% endif %}
-        <!-- ./Menu -->
+<body itemscope itemtype="http://schema.org/WebPage" id="{% block page_id 'page' %}">
+<div class="page">
+    <!-- Menu -->
+    {% if location is defined and location.isCity %}
+        {{ render_esi(path('app_private_header', {'id': location.city.id})) }}
+    {% else %}
+        {{ render_esi(path('app_private_header')) }}
+    {% endif %}
+    <!-- ./Menu -->
 
-        {% block breadcrumb_widget %}
-            <div id="bread">
-                <div class="container">
-                    {% do menu.addItem('By Night', url('app_index')) %}
+    {% block breadcrumb_widget %}
+        <div id="bread">
+            <div class="container-lg">
+                {% do menu.addItem('By Night', url('app_index')) %}
 
-                    {% block breadcrumb %}{% endblock %}
-                    {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
-                </div>
+                {% block breadcrumb %}{% endblock %}
+                {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
             </div>
-        {% endblock %}
-    </header>
+        </div>
+    {% endblock %}
 
     <!-- Main -->
-    {% block layout %}{% endblock %}
+    <div class="page-wrapper">
+        {% block layout_top %}{% endblock %}
+        <div class="page-body">
+            {% block layout %}{% endblock %}
+        </div>
+        <!-- Footer -->
+        {% if location is defined %}
+            {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
+            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {'id': countryId})) }}
+        {% else %}
+            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
+        {% endif %}
+        <!-- ./Footer -->
+    </div>
     <!-- ./Main -->
 </div>
 <div id="search-menu-backdrop"></div>
@@ -153,24 +164,15 @@ _______     __  _   _ _____ _____ _    _ _______
 {% block modals %}{% endblock %}
 <!-- ./Modals -->
 
-<!-- Footer -->
-{% if location is defined %}
-    {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
-    {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {'id': countryId})) }}
-{% else %}
-    {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
-{% endif %}
-<!-- ./Footer -->
-
-<button type="button" id="toTop" class="btn btn-primary bmd-btn-fab">
-    <i class="fa fa-chevron-up"></i>
+<button type="button" id="toTop" class="btn btn-icon btn-primary">
+    <i class="icon fa fa-chevron-up"></i>
 </button>
 
 <!-- JS -->
 {{ encore_entry_script_tags('app') }}
 {%- block js -%}{%- endblock -%}
 <script>
-  on(window, 'load', function () {
+  window.addEventListener('load', function () {
     App.run({{ {
         'environment': app.environment,
         'locale': app.request.locale,

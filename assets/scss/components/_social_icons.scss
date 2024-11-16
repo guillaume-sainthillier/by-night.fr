@@ -1,6 +1,8 @@
 .social {
     text-align: center;
-    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     height: 40px;
     width: 40px;
     line-height: 40px;
@@ -8,7 +10,19 @@
     color: gray;
     border: 1px solid lightgray;
     border-radius: 4px;
-    transition: color 0.25s ease, background-color 0.5s ease;
+    transition:
+        color 0.25s ease,
+        background-color 0.5s ease;
+
+    &:hover {
+        text-decoration: none;
+    }
+
+    .icon {
+        width: 1em;
+        height: 1em;
+        font-size: 1em;
+    }
 
     &.big-social {
         height: 80px;

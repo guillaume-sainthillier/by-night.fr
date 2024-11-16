@@ -1,14 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block layout %}
+{% block layout_top %}
     {% include 'layouts/_flash-messages.html.twig' %}
-    <h1>{% block titre 'Hello' %}</h1>
-    <div class="{% block container_class 'container' %}" id="container">
+    <div class="page-header">
+        <h1>{% block titre 'Hello' %}</h1>
+    </div>
+{% endblock %}
+
+{% block layout %}
+    <div class="{% block container_class 'container-lg' %}" id="container">
         <div class="card">
-            <div class="card-body">
-                <div class="px-md-5">
-                    {% block layout_body %}{% block body %}{% endblock %}{% endblock %}
-                </div>
+            <div class="card-body px-md-5 py-xl-4 px-xl-6">
+                {% block layout_body %}{% block body %}{% endblock %}{% endblock %}
             </div>
         </div>
     </div>

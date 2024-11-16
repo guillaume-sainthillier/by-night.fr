@@ -19,7 +19,7 @@
     {{ form_widget(form.file) }}
 
     {% if form.delete is defined %}
-        <div class="delete-image">
+        <div class="delete-image mt-2">
             {{ form_row(form.delete) }}
         </div>
     {% endif %}
@@ -50,8 +50,8 @@
                 {% with child.vars %}{{ block('inline_form_label') }}{% endwith %}
                 {% if not disabled and allow_delete %}
                     {% import 'form/macros.html.twig' as macros %}
-                    <button class="btn btn-sm rounded btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
-                        {{ macros.icon('times') }}
+                    <button class="btn btn-sm rounded btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
+                        {{ macros.icon('xmark') }}
                     </button>
                 {% endif %}
             </div>
@@ -92,7 +92,7 @@
         </div>
         {% if not disabled and allow_add %}
             {% import 'form/macros.html.twig' as macros %}
-            <button type="button" class="add-collection btn btn-icon btn-light mt-2">
+            <button type="button" class="add-collection btn btn-with-icon btn-unstyled mt-2">
                 <span>{{ macros.icon('plus') }}</span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>

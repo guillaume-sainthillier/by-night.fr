@@ -1,6 +1,7 @@
 {% extends 'layouts/full.html.twig' %}
 {% do fos_httpcache_tag(tags('location', location)) %}
 
+{% block page_id 'page-location-index' %}
 {% block meta_title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
 
 {% block meta_description -%}
@@ -23,7 +24,7 @@
         {% set locationUrl = asset('build/images/landing.jpg') %}
     {% endif %}
     <section class="full_wrapper" style="background-image: url({{ locationUrl }})">
-        <div class="fade-black-transp"></div>
+        <div class="icon fade-black-transp"></div>
         <div class="wrapper">
             <h1>Votre sortie {{ location.atName }}</h1>
             <div class="no-margin-form card search_container">
@@ -35,7 +36,7 @@
                     {{ form_row(form.term, {'label': 'Et je cherche...', 'attr': {'placeholder': 'Concert, bar, spectacle, enfant, soirée, ...'}, 'icon_prepend': 'search'}) }}
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-raised btn-primary search">
+                        <button type="submit" class="btn btn-primary search">
                             C'est parti
                         </button>
                     </div>
@@ -49,8 +50,8 @@
             <h2 class="text-primary h4">{{ events.nbResults }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
         </div>
     </section>
-    <section class="bg-white py-4">
-        <div class="container">
+    <section class="bg-white py-4 py-xl-6">
+        <div class="container-lg">
             <h2>Envie de sortir aujourd'hui ou ce soir {{ location.atName }} ?</h2>
             <p>Si vous cherchez <strong>que faire {{ location.atName }}</strong>, trouvez facilement un
                 <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>,
@@ -78,13 +79,13 @@
             {% endif %}
             <div class="text-center">
                 <a href="{{ path('app_agenda_index', {'location': location.slug}) }}" class="btn btn-outline-primary">
-                    Agenda des événements<span class="hidden-xs hidden-sm">, concerts, spectacles {{ location.atName }}</span>
+                    Agenda des événements<span class="d-none d-md-block">, concerts, spectacles {{ location.atName }}</span>
                 </a>
             </div>
         </div>
     </section>
-    <section class="py-4">
-        <div class="container">
+    <section class="py-4 py-xl-6">
+        <div class="container-lg">
             {% set contents = [{
                 'title': 'Concert',
                 'icon': 'flaticon-microphone47',
@@ -145,10 +146,12 @@
                 {% for i, content in contents %}
                     <div class="col-sm-6 col-lg-4">
                         <div class="card">
-                            <h3 class="card-header">
-                                <i class="icon {{ content.icon }} text-primary"></i>
-                                {{ content.title }}
-                            </h3>
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="icon {{ content.icon }} text-primary"></i>
+                                    {{ content.title }}
+                                </h3>
+                            </div>
                             <div class="card-body">
                                 <p class="card-text">{{ content.text|raw }}</p>
                             </div>
@@ -165,14 +168,14 @@
             </div>
         </div>
     </section>
-    <section class="bg-white py-4">
-        <div class="container">
+    <section class="bg-white py-4 py-xl-6">
+        <div class="container-lg">
             <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
             {% include 'partials/event/_list-grid-vertical.html.twig' with({events: events, page: 1}) %}
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_index', {'location': location.slug}) }}" class="btn btn-outline-primary">
-                    Toutes les sorties <span class="hidden-xs hidden-sm">{{ location.atName }}</span>
+                    Toutes les sorties <span class="d-none d-md-block">&nbsp;{{ location.atName }}</span>
                 </a>
             </div>
         </div>

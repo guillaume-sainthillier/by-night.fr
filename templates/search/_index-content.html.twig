@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="text-center">
-                            <input class="btn btn-primary btn-raised" type="submit" value="Rechercher" />
+                            <input class="btn btn-primary" type="submit" value="Rechercher" />
                         </div>
                     </form>
                 </div>
@@ -57,7 +57,7 @@
         {% if events.nbResults > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
                 {% set s = events.nbResults > 1 ? 's': null %}
-                <h3>Événement{{ s }} <span class="badge bg-info number number-sm">{{ events.nbResults }}</span>
+                <h3>Événement{{ s }} <span class="badge text-bg-info number number-sm">{{ events.nbResults }}</span>
                 </h3>
             {% endif %}
             {% include 'search/content-events.html.twig' %}
@@ -66,7 +66,7 @@
         {% if users.nbResults > 0 and (not type or type == 'membres') %}
             {% if type != 'membres' %}
                 {% set s = users.nbResults > 1 ? 's': null %}
-                <h3>Membre{{ s }} <span class="badge bg-info number number-sm">{{ users.nbResults }}</span></h3>
+                <h3>Membre{{ s }} <span class="badge text-bg-info number number-sm">{{ users.nbResults }}</span></h3>
             {% endif %}
             {% include 'search/content-users.html.twig' %}
         {% endif %}

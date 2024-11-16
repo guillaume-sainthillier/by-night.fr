@@ -11,7 +11,9 @@ export default (di, container) => {
                 const datas = $(this).serialize()
                 const submitButton = $('#_submit')
                 submitButton.button('loading')
-                $.post(href, datas).done(function (data) {
+                $
+                    .post(href, datas)
+                    .done(function (data) {
                     submitButton.button('reset')
 
                     if (!data.success) {
@@ -21,6 +23,12 @@ export default (di, container) => {
                         window.location.reload()
                     }
                 })
+                    .fail(function (jqXHR) {
+                        if(jqXHR.status === 422) {
+                            $dialog.html(jqXHR.responseText)
+                            handleLogin($dialog) // ne rien mettre après
+                        }
+                    })
                 return false
             })
     }

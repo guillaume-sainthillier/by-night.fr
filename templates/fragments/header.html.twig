@@ -3,17 +3,22 @@
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     {{ fos_httpcache_tag(tags('user', app.user)) }}
 {% endif %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-    <div class="container">
-        <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
-            {{ macros.thumb('build/images/by-night.png', 36, 36, {'alt': 'By Night'}) }}
-        </a>
+<header class="navbar navbar-expand-lg text-bg-primary sticky-top" data-bs-theme="dark">
+    <div class="container-lg">
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbar-main">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi" fill="currentColor" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
             </svg>
         </button>
-        <div class="offcanvas offcanvas-start" id="navbar-main">
+        <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
+            {{ macros.thumb('build/images/by-night.png', 36, 36, {'alt': 'By Night'}) }}
+        </a>
+        <div class="d-flex d-lg-none">
+            <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
+                {% include 'fragments/_header-user-dropdown.html.twig' with ({show_username: false}) %}
+            </ul>
+        </div>
+        <div class="offcanvas-lg offcanvas-end text-bg-primary flex-grow-1" id="navbar-main">
             <div class="offcanvas-header">
                 <div class="d-flex align-items-center">
                     {{ macros.thumb('build/images/by-night.png', 36, 36, {'alt': 'By Night'}) }}
@@ -23,8 +28,8 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav align-items-lg-center justify-content-lg-center">
+            <div class="offcanvas-body d-flex flex-column flex-lg-row">
+                <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
                     {% if city %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_location_index', {'location': city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
@@ -43,55 +48,27 @@
                     {%- endif %}
                 </ul>
 
-                <form action="{{ path('app_search_index') }}" method="GET" class="search-form" role="search">
+                <form action="{{ path('app_search_index') }}" method="GET" class="search-form order-first order-lg-0 mb-2 mb-lg-0" role="search">
                     <button type="submit" class="btn btn-sm btn-ghost-light btn-icon-circle">
-                        <i class="fa fa-search"></i>
+                        <i class="icon fa fa-search"></i>
                     </button>
                     <input type="search" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
                 </form>
 
-                <ul class="navbar-nav align-items-lg-center justify-content-lg-center">
-                    {% if is_granted('ROLE_ADMIN') %}
+                {% if is_granted('ROLE_ADMIN') %}
+                <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
-                            <div class="dropdown-menu dropdown-menu-end">
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
                                 <a class="dropdown-item" href="{{ path('admin') }}">Administration</a>
                                 <a class="dropdown-item" href="{{ path('app_administration_info_index') }}">Réseaux Sociaux</a>
                             </div>
                         </li>
-                    {% endif %}
+                </ul>
+                {% endif %}
+                <ul class="d-none d-lg-flex navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                        <li class="nav-item dropdown nav-avatar">
-                            <a href="#" title="{{ app.user.username }}" class="nav-link d-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
-                                {{ macros.userThumb(app.user, 30, 30, {
-                                    placeholder: false,
-                                    priority: true,
-                                }) }}
-                                <span class="d-lg-none ms-2">{{ app.user.username }}</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                {% if is_granted('IS_IMPERSONATOR') %}
-                                    <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index') ) }}">
-                                        <i class="fa fa-power-off"></i>
-                                        Exit impersonation
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                {% endif %}
-                                <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
-                                    <i class="fa fa-cogs"></i>
-                                    Mon compte
-                                </a>
-                                <a class="dropdown-item" title="Accéder à mon profil public" href="{{ path('app_user_index', {'id' : app.user.id, 'slug': app.user.slug}) }}">
-                                    <i class="fa fa-user"></i>
-                                    Profil public
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ path('_logout_main') }}">
-                                    <i class="fa fa-power-off"></i>
-                                    Déconnexion
-                                </a>
-                            </div>
-                        </li>
+                        {% include 'fragments/_header-user-dropdown.html.twig' with ({show_username: true}) %}
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link register" title="Inscrivez-vous sur By Night" href="{{ path('app_register') }}">
@@ -108,4 +85,4 @@
             </div>
         </div>
     </div>
-</nav>
+</header>

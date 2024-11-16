@@ -52,10 +52,14 @@ final class ProfileFormType extends AbstractType
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Afficher un lien vers mes réseaux sociaux',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
             ])
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
+                'delete_label' => 'Supprimer l\'image de profil',
                 'thumb_params' => [
                     'height' => 200,
                 ],

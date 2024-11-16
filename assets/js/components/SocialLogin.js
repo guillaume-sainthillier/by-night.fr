@@ -25,9 +25,6 @@ export default class SocialLogin {
 
                 $(ck).prop('checked', true)
                 configBlock.find('.username').text(user.username)
-                configBlock.find('.when_on').show('normal', function () {
-                    $(this).removeClass('hidden')
-                })
             })
     }
 
@@ -78,9 +75,7 @@ export default class SocialLogin {
         const configBlock = $(ck).closest('.bloc_config')
 
         $(ck).prop('checked', false)
-        configBlock.find('.when_on').hide('normal', function () {
-            $(this).addClass('hidden')
-        })
+        configBlock.find('.username').text('')
     }
 
     /**

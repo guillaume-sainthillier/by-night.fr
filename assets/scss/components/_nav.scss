@@ -8,6 +8,13 @@
     font-size: 0.875rem;
 }
 
+.nav-pills {
+    .icon {
+        margin-right: 0.25rem;
+        --#{$prefix}icon-size: 1rem;
+    }
+}
+
 .nav-tabs {
     flex-wrap: nowrap;
 }

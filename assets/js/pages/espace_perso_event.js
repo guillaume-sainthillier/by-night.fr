@@ -32,7 +32,7 @@ function initGMap() {
     // Google Maps
 
     // Lieux
-    const $field = $('#app_event_place_name')
+    const $placeName = $('#app_event_place_name')
     // instantiate the addressPicker suggestion engine (based on bloodhound)
     const addressPicker = new window.AddressPicker({
         map: {
@@ -56,7 +56,7 @@ function initGMap() {
 
     const $addressField = $('#app_event_address')
     // Proxy inputs typeahead events to addressPicker
-    addressPicker.bindDefaultTypeaheadEvent($field)
+    addressPicker.bindDefaultTypeaheadEvent($addressField)
     $(addressPicker).on('addresspicker:selected', function (event, result) {
         assignGMapInfo(event, result)
     })
@@ -74,7 +74,7 @@ function initGMap() {
     })
 
     // Proxy inputs typeahead events to addressPicker
-    placePicker.bindDefaultTypeaheadEvent($field)
+    placePicker.bindDefaultTypeaheadEvent($placeName)
     $(placePicker).on('addresspicker:selected', function (event, result) {
         assignGMapInfo(event, result)
 
@@ -84,11 +84,11 @@ function initGMap() {
         }
 
         if (typeof result.placeResult.name !== 'undefined' && result.placeResult.name) {
-            $field.data('name', result.placeResult.name)
+            $placeName.data('name', result.placeResult.name)
         }
     })
 
-    $field
+    $placeName
         .typeahead(null, {
             displayKey: 'description',
             source: placePicker.ttAdapter(),
@@ -104,11 +104,9 @@ function assignGMapInfo(event, result) {
     $('#app_event_place_city_name').val(result.nameForType('locality'))
     $('#app_event_place_city_postalCode').val(result.nameForType('postal_code'))
 
-    const rue = `${result.nameForType('street_number') ? result.nameForType('street_number') : ''} ${
-        result.nameForType('route') || ''
-    }`.trim()
-    $('#event_placeStreet').val(rue)
+    const streetName = `${result.nameForType('street_number') ?? ''} ${result.nameForType('route') ?? ''}`.trim()
+    $('#app_event_place_street').val(streetName)
     $('#app_event_place_country')
-        .val(result.nameForType('country', true) || '')
+        .val(result.nameForType('country', true) ?? '')
         .trigger('change')
 }

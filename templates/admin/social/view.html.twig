@@ -9,9 +9,7 @@
 
 {% block body_admin -%}
     {% for service in ['facebook', 'twitter'] %}
-        <div class="bloc_config">
-            {% include 'social/social-info.html.twig' with { 'oAuth': oAuth, 'service': service } %}
-        </div>
+        {% include 'social/social-info.html.twig' with { 'oAuth': oAuth, 'service': service } %}
     {% endfor %}
 {%- endblock %}
 

@@ -4,7 +4,10 @@
     white-space: nowrap;
 
     &.navbar-shadow {
-        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+        box-shadow:
+            0 2px 4px -1px rgba(0, 0, 0, 0.2),
+            0 4px 5px 0 rgba(0, 0, 0, 0.14),
+            0 1px 10px 0 rgba(0, 0, 0, 0.12);
     }
 
     .nav-link {
@@ -12,10 +15,7 @@
         font-size: 0.875rem;
     }
 
-    .offcanvas.show {
-        background: $primary;
-        color: $navbar-dark-brand-color;
-
+    .offcanvas-lg.show {
         .offcanvas-header {
             border-bottom: 1px solid $navbar-dark-color;
         }
@@ -26,8 +26,6 @@
     }
 
     .navbar-brand {
-        height: 46px;
-        margin-right: 0.75rem;
         padding-left: $navbar-brand-padding-y;
         padding-right: $navbar-brand-padding-y;
     }
@@ -53,7 +51,9 @@
         max-width: 720px;
         position: relative;
         background: rgba(241, 243, 244, 0.24);
-        transition: background 100ms ease-in, width 100ms ease-out;
+        transition:
+            background 100ms ease-in,
+            width 100ms ease-out;
 
         &,
         input,
@@ -81,11 +81,23 @@
             &,
             input,
             input::placeholder {
-                color: $navbar-light-color;
+                color: rgba(0, 0, 0, 0.55);
             }
 
             .btn {
-                color: $navbar-light-color;
+                color: rgba(0, 0, 0, 0.55);
+            }
+        }
+    }
+
+    .offcanvas-body {
+        @include media-breakpoint-down(lg) {
+            .navbar-nav .dropdown-menu {
+                position: static;
+            }
+
+            .dropdown-menu-arrow.dropdown-menu-end:before {
+                display: none;
             }
         }
     }
@@ -99,7 +111,9 @@
     position: fixed;
     right: 0;
     top: 0;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
+    transition:
+        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0s 0.3s;
     z-index: -1;
 
     &.open {

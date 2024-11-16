@@ -2,7 +2,7 @@
 {{ form_errors(form) }}
 <div class="block_criteres card">
     <h2 class="card-header h3">
-        <i class="fa fa-calendar-days text-primary"></i>
+        <i class="icon fa fa-calendar-days text-primary"></i>
         Agenda
     </h2>
     <div class="card-body">
@@ -24,9 +24,9 @@
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}
         {% endif %}
         <div class="d-flex flex-wrap w-100">
-            <button type="submit" class="btn btn-primary btn-raised">Rechercher</button>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
             <button type="button" class="ms-auto btn_criteres btn btn-sm btn-outline-secondary mt-2 mt-sm-0">
-                <i class="fa {{ options.iconClass }}"></i>
+                <i class="icon fa {{ options.iconClass }}"></i>
                 Recherche avancée
             </button>
         </div>

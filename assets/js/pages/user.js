@@ -13,8 +13,6 @@ $(document).ready(function () {
     }
 
     function initCharts() {
-        $('.chart').css({ height: '350px', width: '100%' })
-
         initLieux()
         initActivite()
     }

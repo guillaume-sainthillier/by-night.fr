@@ -144,13 +144,13 @@ if (Encore.isProduction()) {
                     path.join(__dirname, 'node_modules/summernote/src/styles/bs5/*.js'),
                     path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
                 ],
-                { nodir: true }
+                {nodir: true}
             ),
             safelist: [
                 /^custom-/,
                 /^note-/,
                 /^select2-container--bootstrap-5/,
-                /^fa-(masks-theater|vest|file-pen|calendar|location-crosshairs)/,
+                /^fa-(plus|xmark|masks-theater|vest|file-pen|calendar|location-crosshairs|twitter|facebook)/,
             ],
         })
     )

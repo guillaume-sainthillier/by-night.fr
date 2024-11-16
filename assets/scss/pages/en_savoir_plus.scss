@@ -14,14 +14,16 @@ $colorOdd: $info;
 
         &.odd {
             background-color: $colorOdd;
+            color: color-contrast($colorOdd);
         }
 
         &.even {
             background-color: $colorEven;
+            color: color-contrast($colorEven);
         }
     }
 
-    .icon {
+    .icon-wrapper {
         border-width: 1px;
         display: inline-block;
         border-style: dotted;

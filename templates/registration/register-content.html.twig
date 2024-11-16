@@ -2,19 +2,19 @@
     <div class="col-4">
         <a class="social-facebook social big-social p-1" title="Inscrivez-vous avec Facebook"
            href="{{ path('login_social_start', {service: 'facebook'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="fab fa-facebook-f"></i>
+            <i class="icon fab fa-facebook-f"></i>
         </a>
     </div>
     <div class="col-4">
         <a class="social-twitter social big-social p-1" title="Inscrivez-vous avec Twitter"
            href="{{ path('login_social_start', {service: 'twitter'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="fab fa-twitter"></i>
+            <i class="icon fab fa-twitter"></i>
         </a>
     </div>
     <div class="col-4">
         <a class="social-google social big-social p-1" title="Inscrivez-vous avec Google"
            href="{{ path('login_social_start', {service: 'google'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="fab fa-google"></i>
+            <i class="icon fab fa-google"></i>
         </a>
     </div>
 </div>
@@ -22,7 +22,7 @@
 <div class="no-margin-form mt-4">
     {% if error is defined and error %}
         <div class="alert alert-danger">
-            <i class="fa fa-warning"></i>
+            <i class="icon fa fa-warning"></i>
             {{ error }}
         </div>
     {% endif %}
