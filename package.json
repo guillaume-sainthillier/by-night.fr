@@ -75,7 +75,7 @@
         "*.{scss,md,yaml,yml}": [
             "prettier --write"
         ],
-        "*.{js,jsx}": "eslint --ignore-path .gitignore --fix",
+        "*.{js,jsx}": "eslint --fix",
         "*.php": "./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php"
     }
 }
