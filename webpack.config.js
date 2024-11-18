@@ -148,7 +148,7 @@ if (Encore.isProduction()) {
             ),
             safelist: [
                 /^custom-/,
-                /'^note-'/,
+                /^note-/,
                 /^select2-container--bootstrap-5/,
                 /^fa-(masks-theater|vest|file-pen|calendar|location-crosshairs)/,
             ],
