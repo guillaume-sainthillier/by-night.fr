@@ -2,12 +2,16 @@ services:
     app:
         build: ./docker/dev
         volumes:
-            - nfsmount:/app
+            - .:/app
+            - /app/node_modules
+            - /app/vendor
 
     worker:
         build: ./docker/dev
         volumes:
-            - nfsmount:/app
+            - .:/app
+            - /app/node_modules
+            - /app/vendor
 
     varnish:
         volumes:
