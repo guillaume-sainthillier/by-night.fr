@@ -4,7 +4,7 @@
 {% block meta_title_admin 'Paramétrage des Réseaux Sociaux' %}
 
 {% block breadcrumb_admin -%}
-    {% do menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': info.id})) %}
+    {% do menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': oAuth.id})) %}
 {%- endblock %}
 
 {% block body_admin -%}
