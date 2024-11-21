@@ -35,7 +35,7 @@ final class EventsDownloadImagesCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EventRepository $eventRepository,
-        private readonly EventHandler $eventHandler
+        private readonly EventHandler $eventHandler,
     ) {
         parent::__construct();
     }

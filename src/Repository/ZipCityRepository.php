@@ -16,6 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<ZipCity>
+ *
  * @method ZipCity|null find($id, $lockMode = null, $lockVersion = null)
  * @method ZipCity|null findOneBy(array $criteria, array $orderBy = null)
  * @method ZipCity[]    findAll()

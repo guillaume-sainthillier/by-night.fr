@@ -16,6 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<AppOAuth>
+ *
  * @method AppOAuth|null find($id, $lockMode = null, $lockVersion = null)
  * @method AppOAuth|null findOneBy(array $criteria, array $orderBy = null)
  * @method AppOAuth[]    findAll()

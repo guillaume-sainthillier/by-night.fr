@@ -16,6 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<ParserData>
+ *
  * @method ParserData|null find($id, $lockMode = null, $lockVersion = null)
  * @method ParserData|null findOneBy(array $criteria, array $orderBy = null)
  * @method ParserData[]    findAll()
