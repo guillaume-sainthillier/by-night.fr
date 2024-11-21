@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block layout_top %}
-    {% include 'layouts/_flash-messages.html.twig' %}
+    {{ include('layouts/_flash-messages.html.twig') }}
     {% block layout_header '' %}
     <div class="page-header">
         <h1>{% block titre 'Hello' %}</h1>

@@ -6,16 +6,16 @@
         {{ macros.userLazyThumb(user, 360, null, {
             fit: null,
             objectFit: 'contain',
-            aspectRatio: 16/9,
+            aspectRatio: 16 / 9,
             wrapperAttr: {
-                class: ''
-            }
+                class: '',
+            },
         }) }}
     </div>
     <div class="col-sm-9 col-lg-8 card-content">
         <div class="card-body">
             <h3 class="h5">
-                <a href="{{ path('app_user_index', {'id' : user.id, 'slug': user.slug}) }}">
+                <a href="{{ path('app_user_index', {id: user.id, slug: user.slug}) }}">
                     {{ user.username }}
                 </a>
             </h3>
@@ -23,7 +23,7 @@
                 Membre depuis le
                 <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
             </p>
-            {% include 'partials/user/_socials.html.twig' %}
+            {{ include('partials/user/_socials.html.twig') }}
         </div>
     </div>
 </div>

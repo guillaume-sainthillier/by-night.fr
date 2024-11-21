@@ -4,5 +4,5 @@
 {{ fos_httpcache_tag('block-event') }}
 
 {% for i, event in events %}
-    {% include 'partials/event/_item-card.html.twig' %}
+    {{ include('partials/event/_item-card.html.twig') }}
 {% endfor %}

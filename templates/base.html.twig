@@ -106,12 +106,10 @@ _______     __  _   _ _____ _____ _    _ _______
             "url": "{{ url('app_index') }}",
             "potentialAction": {
                 "@type": "SearchAction",
-                "target": "{{ url('app_search_index', {'q': '{search_term_string}'})|url_decode }}",
+                "target": "{{ url('app_search_index', {q: '{search_term_string}'})|url_decode }}",
                 "query-input": "required name=search_term_string"
             }
         }
-
-
 
     </script>
     {% block head_js_layout %}{% endblock %}
@@ -121,7 +119,7 @@ _______     __  _   _ _____ _____ _    _ _______
 <div class="page">
     <!-- Menu -->
     {% if location is defined and location.isCity %}
-        {{ render_esi(path('app_private_header', {'id': location.city.id})) }}
+        {{ render_esi(path('app_private_header', {id: location.city.id})) }}
     {% else %}
         {{ render_esi(path('app_private_header')) }}
     {% endif %}
@@ -147,7 +145,7 @@ _______     __  _   _ _____ _____ _    _ _______
         <!-- Footer -->
         {% if location is defined %}
             {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
-            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {'id': countryId})) }}
+            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {id: countryId})) }}
         {% else %}
             {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
         {% endif %}
@@ -159,7 +157,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
 <!-- Modals -->
 <div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-hidden="true">
-    {% include 'layouts/modal.html.twig' %}
+    {{ include('layouts/modal.html.twig') }}
 </div>
 {% block modals %}{% endblock %}
 <!-- ./Modals -->
@@ -174,11 +172,11 @@ _______     __  _   _ _____ _____ _    _ _______
 <script>
   window.addEventListener('load', function () {
     App.run({{ {
-        'environment': app.environment,
-        'locale': app.request.locale,
-        'release': app_version,
-        'dsn': sentry_dsn,
-        'user' : (app.user ? {'id': app.user.id, 'username': app.user.username, 'email': app.user.email} : null)
+        environment: app.environment,
+        locale: app.request.locale,
+        release: app_version,
+        dsn: sentry_dsn,
+        user: (app.user ? {id: app.user.id, username: app.user.username, email: app.user.email} : null),
     }|json_encode|raw }});
   });
 </script>

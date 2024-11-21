@@ -7,7 +7,7 @@
             </div>
             <div class="col">
                 <div class="infos">
-                    <a href="{{ path('app_user_index', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
+                    <a href="{{ path('app_user_index', {id: comment.user.id, slug: comment.user.slug}) }}">{{ comment.user.username }}</a>
                     <small class="text-muted" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">
                         {{ comment.createdAt|diff_date }}
                     </small>
@@ -21,7 +21,7 @@
 
     {% if comments.hasNextPage %}
         {% block load_more %}
-            <div class="load_more" data-url="{{ path('app_comment_list',{'id': event.id ,'page': comments.nextPage }) }}">
+            <div class="load_more" data-url="{{ path('app_comment_list', {id: event.id, page: comments.nextPage}) }}">
                 <button type="button" class="btn btn-outline-primary">
                     Plus
                 </button>

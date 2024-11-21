@@ -5,7 +5,7 @@
             {% set originalTweet = tweet.retweeted_status is defined ? tweet.retweeted_status : tweet %}
             {% set isRetweet = tweet.retweeted_status is defined %}
             {% set dateTweet = tweet.created_at|datetime %}
-            {% set dateTweetInfos =  dateTweet|stats_diff_date %}
+            {% set dateTweetInfos = dateTweet|stats_diff_date %}
             {% set userURL = 'https://twitter.com/' ~ tweet.user.screen_name %}
             {% set tweetURL = 'https://twitter.com/' ~ tweet.user.screen_name ~ '/status/' ~ tweet.id %}
             {% if originalTweet.id not in displayedTweets %}

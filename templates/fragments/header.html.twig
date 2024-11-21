@@ -11,17 +11,17 @@
             </svg>
         </button>
         <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
-            {{ macros.thumb('build/images/by-night.png', 36, 36, {'alt': 'By Night'}) }}
+            {{ macros.thumb('build/images/by-night.png', 36, 36, {alt: 'By Night'}) }}
         </a>
         <div class="d-flex d-lg-none">
             <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
-                {% include 'fragments/_header-user-dropdown.html.twig' with ({show_username: false}) %}
+                {{ include('fragments/_header-user-dropdown.html.twig', {show_username: false}) }}
             </ul>
         </div>
         <div class="offcanvas-lg offcanvas-end text-bg-primary flex-grow-1" id="navbar-main">
             <div class="offcanvas-header">
                 <div class="d-flex align-items-center">
-                    {{ macros.thumb('build/images/by-night.png', 36, 36, {'alt': 'By Night'}) }}
+                    {{ macros.thumb('build/images/by-night.png', 36, 36, {alt: 'By Night'}) }}
                     <h5 class="offcanvas-title ms-2" id="staticBackdropLabel">
                         By Night
                     </h5>
@@ -32,10 +32,10 @@
                 <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
                     {% if city %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_location_index', {'location': city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
+                            <a class="nav-link" href="{{ path('app_location_index', {location: city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_agenda_index', {'location': city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>
+                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>
                         </li>
                     {% endif %}
                     <li class="nav-item">
@@ -68,7 +68,7 @@
                 {% endif %}
                 <ul class="d-none d-lg-flex navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                        {% include 'fragments/_header-user-dropdown.html.twig' with ({show_username: true}) %}
+                        {{ include('fragments/_header-user-dropdown.html.twig', {show_username: true}) }}
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link register" title="Inscrivez-vous sur By Night" href="{{ path('app_register') }}">

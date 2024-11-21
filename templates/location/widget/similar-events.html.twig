@@ -3,8 +3,8 @@
 {% block titre %}Événements similaires{% endblock %}
 {% block body %}
     {{ render_esi(controller('App\\Controller\\Location\\WidgetsController::similarEvents', {
-        'slug': event.slug,
-        'id': event.id,
-        'location': event.locationSlug
-    } )) }}
+        slug: event.slug,
+        id: event.id,
+        location: event.locationSlug,
+    })) }}
 {% endblock %}

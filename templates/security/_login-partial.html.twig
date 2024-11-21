@@ -3,7 +3,7 @@
 {% block titre 'Connectez-vous sur By Night' %}
 
 {% block body -%}
-    {% include 'security/login-content.html.twig' with({'partial': true}) %}
+    {{ include('security/login-content.html.twig', {partial: true}) }}
     <p class="mt-4 mb-0">
         Pas encore inscrit ?
         <a class="register" href="{{ path('app_register') }}"

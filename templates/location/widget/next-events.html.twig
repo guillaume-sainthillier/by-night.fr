@@ -3,8 +3,8 @@
 {% block titre %}{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small>{% endblock %}
 {% block body %}
     {{ render_esi(path('app_widget_next_events', {
-        'slug': event.slug,
-        'id': event.id,
-        'location': event.locationSlug
-    } )) }}
+        slug: event.slug,
+        id: event.id,
+        location: event.locationSlug,
+    })) }}
 {% endblock %}

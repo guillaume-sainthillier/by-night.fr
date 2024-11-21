@@ -1,4 +1,4 @@
-{% import "form/macros.html.twig" as macros %}
+{% import 'form/macros.html.twig' as macros %}
 {% if microdata is not defined %}
     {% set microdata = true %}
 {% endif %}
@@ -27,7 +27,7 @@
         <div class="card-body">
             <h3 class="h5">
                 <a title="Tous les détails de {{ event.name }} "
-                   href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
+                   href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}"
                    {% if microdata %}itemprop="url"{% endif %}>
                     <span {% if microdata %}itemprop="name"{% endif %}>{{ event.name }}</span>
                 </a>
@@ -43,7 +43,6 @@
                             <meta itemprop="endDate" content="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}" />
                         {% endif %}
 
-
                         <time {% if microdata %}itemprop="startDate"{% endif %}
                               datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
                             {{ startDate }}
@@ -54,7 +53,6 @@
                             {{ startDate }}
                         </time>
                         -
-
 
                         <time {% if microdata %}itemprop="endDate"{% endif %}
                               datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">
@@ -111,7 +109,7 @@
                     <div>
                         Par
                         <a class="one-line"
-                           href="{{ path('app_user_index', {'id': event.user.id, 'slug': event.user.slug} ) }}"
+                           href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}"
                            title="Accédez au profil de {{ event.user.username }}">
                             {{ event.user.username }}
                         </a>

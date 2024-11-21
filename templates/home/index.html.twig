@@ -1,6 +1,6 @@
 {% extends 'layouts/full.html.twig' %}
 
-{% block meta_title "Le compagnon de vos sorties et soirées en France" %}
+{% block meta_title 'Le compagnon de vos sorties et soirées en France' %}
 {% block meta_description 'Le compagnon pour vos sorties. Choisissez votre ville et découvrez les événements du moment !' %}
 {% block breadcrumb_widget '' %}
 
@@ -11,13 +11,13 @@
             <h1>Bienvenue ! On fait quoi ?</h1>
             <div class="card no-margin-form search_container">
                 <div class="card-body">
-                    {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker m-0'} }) }}
+                    {{ form_start(autocomplete_form, {attr: {class: 'form-city-picker m-0'}}) }}
                     {{ form_errors(autocomplete_form) }}
 
-                    {{ form_row(autocomplete_form.shortcut, {'label': 'Je veux sortir', 'attr': {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}, 'icon_prepend': 'calendar-alt'}) }}
+                    {{ form_row(autocomplete_form.shortcut, {label: 'Je veux sortir', attr: {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}, icon_prepend: 'calendar-alt'}) }}
                     {{ form_row(autocomplete_form.from) }}
                     {{ form_row(autocomplete_form.to) }}
-                    {{ form_row(autocomplete_form.name, {'label': 'À', 'icon_prepend': 'location-dot'}) }}
+                    {{ form_row(autocomplete_form.name, {label: 'À', icon_prepend: 'location-dot'}) }}
                     <div class="text-center">
                         <button class="btn btn-primary choose-city-action" type="submit" disabled>
                             C'est parti
@@ -44,7 +44,7 @@
                                 <h5 class="card-subtitle text-muted">{{ stat.events }}</span> événement{{ stat.events > 1 ? 's' }} à venir</h5>
                             </div>
                             <div class="card-footer text-center py-2">
-                                <a class="btn btn-outline-primary" href="{{ path('app_agenda_index', {'location': stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">
+                                <a class="btn btn-outline-primary" href="{{ path('app_agenda_index', {location: stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">
                                     Sortir {{ stat.atDisplayName }}
                                 </a>
                             </div>

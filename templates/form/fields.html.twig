@@ -1,7 +1,6 @@
 {% use 'form_div_layout.html.twig' with checkbox_widget as base_checkbox_widget %}
-{% use "bootstrap_5_layout.html.twig" %}
-{% use "bootstrap_5_layout.html.twig" with form_label as inline_form_label %}
-
+{% use 'bootstrap_5_layout.html.twig' %}
+{% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label %}
 
 {% block recaptcha_widget %}
     <div {{ block('widget_attributes') }}></div>
@@ -42,7 +41,7 @@
 
 {# Special block in order to let child redefine whole block #}
 {% block app_collection_entry_widget_row %}
-    <div{% with {'attr': collection_item_attr|merge({'class': (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
+    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
         <div class="collection-item-wrapper">
             <div class="collection-item-header"
                  data-toggle="collapse"
@@ -65,8 +64,8 @@
 {% endblock %}
 
 {%- block app_collection_row -%}
-    {%- set attr = attr|merge({'class': (attr.class|default('') ~ ' collection')|trim}) -%}
-    {{ form_row(form, {'attr': attr}) }}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' collection')|trim}) -%}
+    {{ form_row(form, {attr: attr}) }}
 {%- endblock -%}
 
 {% block app_collection_widget %}
@@ -76,7 +75,7 @@
             {% set attr = attr|merge({
                 'data-prototype': block('app_collection_entry_widget_row'),
                 'data-prototype-name': prototype.vars.name,
-                'class': attr.class|default(''),
+                class: attr.class|default(''),
             }) %}
         {% endif %}
         <div {{ block('widget_container_attributes') }}>
@@ -106,7 +105,7 @@
     {%- endif -%}
     {%- set widget_attr = {} -%}
     {%- if help is not empty -%}
-        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~ '_help'}} -%}
     {%- endif -%}
     {%- set row_class = row_class|default(row_attr.class|default('form-group')|trim) -%}
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
@@ -118,7 +117,7 @@
         {% if icon_prepend or icon_append %}
             {% embed 'components/input-icon.html.twig' with({
                 iconPrepend: icon_prepend,
-                iconAppend: icon_append
+                iconAppend: icon_append,
             }) %}
                 {% block body %}{{- form_widget(form, widget_attr) -}}{% endblock %}
             {% endembed %}

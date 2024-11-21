@@ -6,7 +6,7 @@
 {% block meta_title user.username %}
 
 {% block breadcrumb -%}
-    {% do menu.addItem("Mon compte", url('app_user_edit')) %}
+    {% do menu.addItem('Mon compte', url('app_user_edit')) %}
 {%- endblock %}
 
 {% block body -%}
@@ -39,7 +39,7 @@
 
     <div class="tab-content">
         <div class="tab-pane fade show active" id="profil" role="tabpanel">
-            {{ form_start(form, { 'action': path('app_user_edit'), 'attr': { 'enctype': 'multipart/form-data'} }) }}
+            {{ form_start(form, {action: path('app_user_edit'), attr: {enctype: 'multipart/form-data'}}) }}
             <div class="card">
                 <h2 class="card-header">Profil</h2>
                 <div class="card-body">
@@ -95,7 +95,7 @@
                 <h2 class="card-header">Réseaux sociaux</h2>
                 <div class="card-body">
                     {% for service in ['facebook', 'google', 'twitter'] %}
-                        {% include 'social/social.html.twig' with { 'oAuth': app.user.oAuth, 'service': service } %}
+                        {{ include('social/social.html.twig', {oAuth: app.user.oAuth, service: service}) }}
                     {% endfor %}
                 </div>
             </div>
@@ -141,5 +141,5 @@
 {%- endblock %}
 
 {% block modals %}
-    {% include 'profile/_modal-delete.html.twig' %}
+    {{ include('profile/_modal-delete.html.twig') }}
 {% endblock %}

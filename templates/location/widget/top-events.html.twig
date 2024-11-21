@@ -9,7 +9,7 @@
 {% block body %}
     <div class="list-group scroll-area-content">
         {{ render_esi(controller('App\\Controller\\Location\\WidgetsController::topEvents', {
-            'location': location.slug
+            location: location.slug,
         })) }}
     </div>
 {% endblock %}

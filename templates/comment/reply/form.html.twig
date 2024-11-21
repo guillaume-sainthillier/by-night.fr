@@ -1,5 +1,5 @@
 {% extends 'comment/form.html.twig' %}
 
 {% block form_comment %}
-    {{ form_row(form.comment, {'attr' : {'placeholder': 'Répondez à ' ~ comment.user.username}}) }}
+    {{ form_row(form.comment, {attr: {placeholder: 'Répondez à ' ~ comment.user.username}}) }}
 {% endblock %}

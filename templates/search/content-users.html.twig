@@ -1,9 +1,9 @@
-{% include 'partials/user/_list-grid-vertical.html.twig' %}
+{{ include('partials/user/_list-grid-vertical.html.twig') }}
 
 {% if users.hasNextPage() %}
     <div class="text-center my-4">
         <a class="btn btn-outline-primary more"
-           href="{{ path('app_search_index', {'q' : term, 'page': users.getNextPage(), 'type' : 'membres'}) }}">
+           href="{{ path('app_search_index', {q: term, page: users.getNextPage(), type: 'membres'}) }}">
             Plus
         </a>
     </div>

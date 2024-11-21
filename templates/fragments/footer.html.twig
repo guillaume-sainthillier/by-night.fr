@@ -42,7 +42,7 @@
                     {% for city in cities %}
                         <li>
                             <i class="icon fa fa-li fa-angle-right"></i>
-                            <a title="Sortir à {{ city.name }}, {{ city.country }}" href="{{ path('app_agenda_index', {'location' : city.slug}) }}">
+                            <a title="Sortir à {{ city.name }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
                                 {{ city.name }}
                             </a>
                         </li>
@@ -129,7 +129,7 @@
         <div class="d-flex align-items-center justify-content-center justify-content-lg-between flex-wrap gap-2">
             <p class="text-center text-lg-start">
                 <a href="{{ path('app_index') }}">By Night v{{ app_version }}</a>
-                | © {{ "now"|date('Y') }} - Tous droits réservés
+                | © {{ 'now'|date('Y') }} - Tous droits réservés
             </p>
             <p class="text-center text-lg-start">
                 Fait avec <span title="passion" class="number text-danger">♥</span> par un

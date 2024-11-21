@@ -12,7 +12,7 @@
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
             {% if is_granted('IS_IMPERSONATOR') %}
-                <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index') ) }}">
+                <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index')) }}">
                     <i class="icon fa fa-power-off"></i>
                     Exit impersonation
                 </a>
@@ -22,7 +22,7 @@
                 <i class="icon fa fa-cogs"></i>
                 Mon compte
             </a>
-            <a class="dropdown-item" title="Accéder à mon profil public" href="{{ path('app_user_index', {'id' : app.user.id, 'slug': app.user.slug}) }}">
+            <a class="dropdown-item" title="Accéder à mon profil public" href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug}) }}">
                 <i class="icon fa fa-user"></i>
                 Profil public
             </a>

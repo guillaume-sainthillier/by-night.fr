@@ -1,6 +1,6 @@
 {% extends 'layouts/stretch.html.twig' %}
 
-{% import "form/macros.html.twig" as macros %}
+{% import 'form/macros.html.twig' as macros %}
 {% set nameSoiree = event_seo.getEventShortTitle(event) %}
 {% set horaires = event_seo.getEventDateTime(event) %}
 {% set descriptionSoiree = event.description|parse_tags|raw %}
@@ -15,16 +15,16 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem(location.country.displayName, url('app_location_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
     {% else %}
-        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {'location': location.city.country.slug})) %}
-        {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_index', {'location': location.city.slug})) %}
+        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
+        {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_index', {location: location.city.slug})) %}
     {% endif %}
 
-    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {'location': location.slug, 'slug': place.slug})) %}
-    {% do menu.addItem(event.name, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
+    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, slug: place.slug})) %}
+    {% do menu.addItem(event.name, url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})) %}
 {% endblock %}
-    
+
 {% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|keys|join(',') }},{% endif %}{{ parent() }}{% endblock %}
 {% block meta_description event_seo.eventDescription(event) %}
 
@@ -33,7 +33,7 @@
     <meta property="article:published_time" content="{{ event.createdAt.format('Y-m-d') }}" />
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
     {% if event.user %}
-        <meta property="article:author" content="{{ url('app_user_index', {'id': event.user.id, 'slug': event.user.slug}) }}" />
+        <meta property="article:author" content="{{ url('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" />
     {% endif %}
 
     {% for tag in distinctTags|keys %}
@@ -42,11 +42,11 @@
 {% endblock %}
 
 {% block og_title nameSoiree %}
-{% block og_url url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) %}
+{% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
 {% block og_image original %}
 
 {% block body -%}
-    {{ fos_httpcache_tag(tags('event', event) ) }}
+    {{ fos_httpcache_tag(tags('event', event)) }}
     {% if event.draft %}
         <div class="alert alert-warning">
             <i class="icon fa fa-warning"></i>
@@ -69,8 +69,8 @@
                             placeholderPriority: true,
                             attr: {
                                 class: 'img',
-                                itemprop: 'image'
-                            }
+                                itemprop: 'image',
+                            },
                         }) }}
                     </a>
                 </div>
@@ -104,14 +104,14 @@
                         {% endif %}
 
                         <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
-                            <meta name="url" content="{{ path('app_agenda_by_place', {'slug': place.slug, 'location': place.locationSlug}) }}">
+                            <meta name="url" content="{{ path('app_agenda_by_place', {slug: place.slug, location: place.locationSlug}) }}">
 
                             {% if event.placeName %}
                                 <i class="icon fa fa-location-dot"></i>
                             {% endif %}
                             <div>
-                                {% set mapParameter = "place?q=" %}
-                                {% set mapValue = "" %}
+                                {% set mapParameter = 'place?q=' %}
+                                {% set mapValue = '' %}
                                 {% if event.placeName %}
                                     {% set mapValue = event.placeName %}
                                     <h2 class="mb-0">
@@ -136,9 +136,9 @@
                                                 {% endif %}
 
                                                 {% if event.placeCity %}
-                                                    {% set mapValue = mapValue ~ " " ~ event.placeCity %}
+                                                    {% set mapValue = mapValue ~ ' ' ~ event.placeCity %}
                                                     {% if event.place and event.place.city %}
-                                                        <meta name="url" content="{{ path('app_agenda_index', {'location': place.locationSlug}) }}">
+                                                        <meta name="url" content="{{ path('app_agenda_index', {location: place.locationSlug}) }}">
                                                         <strong class="font-weight-normal" itemprop="addressLocality">{{ event.placeCity }}</strong>
                                                     {% endif %}
                                                 {% endif %}
@@ -153,7 +153,7 @@
                                         <meta itemprop="longitude" content="{{ event.longitude }}" />
                                     </span>
                                     {% if not place.city %}
-                                        {% set mapParameter = "place?q=" %}
+                                        {% set mapParameter = 'place?q=' %}
                                         {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
                                     {% endif %}
                                 {% endif %}
@@ -182,7 +182,7 @@
                                 <i class="icon fa fa-user"></i>
                                 <p>
                                     Par
-                                    <a href="{{ path('app_user_index', {'id': event.user.id, 'slug': event.user.slug} ) }}"
+                                    <a href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}"
                                        title="Les événements de {{ event.user.username }}">
                                         {{ event.user.username }}
                                     </a>
@@ -194,7 +194,7 @@
             </div>
             <div class="card-header card-header-border-top">
                 {{ render_esi(path('app_event_trends', {
-                    'id': event.id
+                    id: event.id,
                 })) }}
             </div>
             <div class="card-body">
@@ -231,7 +231,7 @@
                             <div class="detail-item">
                                 <i class="icon fab fa-facebook-f"></i>
                                 <p class="one-line">
-                                    {% set lien = "https://www.facebook.com/events/" ~ event.facebookEventId %}
+                                    {% set lien = 'https://www.facebook.com/events/' ~ event.facebookEventId %}
                                     <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
                                 </p>
                             </div>
@@ -243,7 +243,7 @@
                                 {% if event.place.country %}
                                     <a class="badge text-bg-info"
                                        title="Sortir {{ event.place.country.atDisplayName }}"
-                                       href="{{ path('app_agenda_index', {'location': event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_index', {location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements {{ event.place.country.atDisplayName }}</strong>
                                     </a>
                                 {% endif %}
@@ -251,14 +251,14 @@
                                 {% if event.place.location.isCity and event.placeName != event.place.location.name %}
                                     <a class="badge text-bg-info"
                                        title="Sortir {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_index', {'location': event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_index', {location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endif %}
                                 {% if event.placeName %}
                                     <a class="badge text-bg-info"
                                        title="Sortir à {{ event.placeName }}"
-                                       href="{{ path('app_agenda_by_place', {'slug': event.place.slug, 'location': event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_by_place', {slug: event.place.slug, location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements à {{ event.placeName }}</strong>
                                     </a>
                                 {% endif %}
@@ -266,7 +266,7 @@
                                 {% for tag in distinctTags %}
                                     <a class="badge text-bg-info"
                                        title="{{ tag.value }} {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_by_tags', {'tag' : tag.value, 'location': event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_by_tags', {tag: tag.value, location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">{{ tag.value }} {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endfor %}
@@ -313,17 +313,17 @@
 
             <div class="card-body">
                 {{ render_esi(path('app_comment_form', {
-                    'id': event.id,
+                    id: event.id,
                 })) }}
             </div>
         </div>
 
         {% if event.placeName %}
-            {% include 'location/widget/next-events.html.twig' %}
+            {{ include('location/widget/next-events.html.twig') }}
         {% endif %}
 
         <!-- Événements similaires -->
-        {% include 'location/widget/similar-events.html.twig' %}
+        {{ include('location/widget/similar-events.html.twig') }}
         <!-- ./Événements similaires -->
 
     {% endif %}
@@ -332,7 +332,7 @@
 {% block css %}
     {{ encore_entry_link_tags('event_details') }}
 {% endblock %}
-        
+
 {% block js %}
     {{ encore_entry_script_tags('event_details') }}
 {% endblock %}

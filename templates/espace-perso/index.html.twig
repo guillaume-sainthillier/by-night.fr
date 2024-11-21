@@ -3,7 +3,7 @@
 {% block titre 'Mes événements' %}
 {% block meta_title 'Mes événements' %}
 
-{% import "form/macros.html.twig" as macros %}
+{% import 'form/macros.html.twig' as macros %}
 
 {% block layout_header %}
     {% if not app.user.verified %}
@@ -46,7 +46,7 @@
                     {% for event in events %}
                         <tr>
                             <td>
-                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" title="Accéder à l'événement">{{ event.name }}</a>
+                                <a href="{{ path('app_event_edit', {id: event.id}) }}" title="Accéder à l'événement">{{ event.name }}</a>
                             </td>
                             <td>{{ event.placeName }}</td>
                             <td>{{ event.placeCity }}</td>
@@ -55,29 +55,29 @@
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input draft" data-href="{{ path('app_event_draft', {'id': event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
+                                    <input class="form-check-input draft" data-href="{{ path('app_event_draft', {id: event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
                                     <label class="form-check-label" for="draft-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input cancel" data-href="{{ path('app_event_cancel', {'id': event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
+                                    <input class="form-check-input cancel" data-href="{{ path('app_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
                                     <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>
                             <td class="actions">
                                 <div class="btn-group btn-group-icon-sm">
-                                    <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
+                                    <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
                                         <i class="icon fa fa-eye text-secondary"></i>
                                     </a>
-                                    <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
+                                    <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
                                         <i class="icon fa fa-pencil-alt text-primary"></i>
                                     </a>
                                     <button type="button" class="btn btn-icon btn-unstyled" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement">
                                         <i class="icon fa fa-trash text-danger"></i>
                                     </button>
                                 </div>
-                                <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
+                                <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {id: event.id}) }}">
                                     <input name="_method" type="hidden" value="DELETE">
                                 </form>
                             </td>

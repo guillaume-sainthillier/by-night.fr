@@ -1,8 +1,8 @@
 {% set currentType = type %}
 {% set options = {
     '': 'Tout le site',
-    'evenements': 'Les événements',
-    'membres': 'Les membres',
+    evenements: 'Les événements',
+    membres: 'Les membres',
 } %}
 
 {%- block search -%}
@@ -16,7 +16,7 @@
                                 <div class="mb-3">
                                     <label for="search">Je cherche</label>
                                     {% embed 'components/input-icon.html.twig' with({
-                                        iconPrepend: 'search'
+                                        iconPrepend: 'search',
                                     }) %}
                                         {% block body %}
                                             <input name="q"
@@ -56,19 +56,19 @@
         </h2>
         {% if events.nbResults > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
-                {% set s = events.nbResults > 1 ? 's': null %}
+                {% set s = events.nbResults > 1 ? 's' : null %}
                 <h3>Événement{{ s }} <span class="badge text-bg-info number number-sm">{{ events.nbResults }}</span>
                 </h3>
             {% endif %}
-            {% include 'search/content-events.html.twig' %}
+            {{ include('search/content-events.html.twig') }}
         {% endif %}
 
         {% if users.nbResults > 0 and (not type or type == 'membres') %}
             {% if type != 'membres' %}
-                {% set s = users.nbResults > 1 ? 's': null %}
+                {% set s = users.nbResults > 1 ? 's' : null %}
                 <h3>Membre{{ s }} <span class="badge text-bg-info number number-sm">{{ users.nbResults }}</span></h3>
             {% endif %}
-            {% include 'search/content-users.html.twig' %}
+            {{ include('search/content-users.html.twig') }}
         {% endif %}
     {% endif %}
 {%- endblock -%}

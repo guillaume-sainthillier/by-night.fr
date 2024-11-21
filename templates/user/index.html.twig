@@ -15,8 +15,8 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {% do menu.addItem("Membres", url('app_search_index', {'type' : 'membres'})) %}
-    {% do menu.addItem(username, url('app_user_index', {'id' : user.id, 'slug': user.slug })) %}
+    {% do menu.addItem('Membres', url('app_search_index', {type: 'membres'})) %}
+    {% do menu.addItem(username, url('app_user_index', {id: user.id, slug: user.slug})) %}
 {% endblock %}
 
 {% block meta_description -%}
@@ -52,7 +52,7 @@
                         <span class="text-primary h5 mb-0">{{ user.createdAt.format('d/m/Y') }}</span>
                     </div>
                 </div>
-                {% include 'social/user.html.twig' %}
+                {{ include('social/user.html.twig') }}
             </div>
         </div>
         <div class="col-md-9">
@@ -69,7 +69,7 @@
                             Aucun événement de prévu pour {{ username }} !
                         </div>
                     {% else %}
-                        {% include 'partials/event/_list-card.html.twig' with({'events' : nextEvents}) %}
+                        {{ include('partials/event/_list-card.html.twig', {events: nextEvents}) }}
                     {% endif %}
                 </div>
                 <div class="tab-pane" id="passes">
@@ -79,7 +79,7 @@
                             Aucun événement passé pour {{ username }} !
                         </div>
                     {% else %}
-                        {% include 'partials/event/_list-card.html.twig' with({'events' : previousEvents}) %}
+                        {{ include('partials/event/_list-card.html.twig', {events: previousEvents}) }}
                     {% endif %}
                 </div>
             </div>
@@ -103,7 +103,7 @@
                                 <div class="tab-pane fade show active" id="annee">
                                     <div id="chart-annee"
                                          class="chart"
-                                         data-url="{{ path("app_user_stats", {'type': 'annee', 'id' : user.id, 'slug': user.slug }) }}">
+                                         data-url="{{ path('app_user_stats', {type: 'annee', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-info" role="status">
                                                 <span class="sr-only">Loading...</span>
@@ -114,7 +114,7 @@
                                 <div class="tab-pane fade" id="mois">
                                     <div id="chart-mois"
                                          class="chart"
-                                         data-url="{{ path("app_user_stats", {'type': 'mois', 'id' : user.id, 'slug': user.slug }) }}">
+                                         data-url="{{ path('app_user_stats', {type: 'mois', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-success" role="status">
                                                 <span class="sr-only">Loading...</span>
@@ -125,7 +125,7 @@
                                 <div class="tab-pane fade" id="semaine">
                                     <div id="chart-semaine"
                                          class="chart"
-                                         data-url="{{ path("app_user_stats", {'type': 'semaine', 'id' : user.id, 'slug': user.slug }) }}">
+                                         data-url="{{ path('app_user_stats', {type: 'semaine', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-info" role="status">
                                                 <span class="sr-only">Loading...</span>

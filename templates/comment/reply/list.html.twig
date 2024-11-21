@@ -1,7 +1,7 @@
 {% extends 'comment/list.html.twig' %}
 
 {% block load_more %}
-    <div class="load_more" data-url="{{ path('app_comment_reponse_list',{'id': mainComment.id ,'page': (page+1) }) }}">
+    <div class="load_more" data-url="{{ path('app_comment_reponse_list', {id: mainComment.id, page: (page + 1)}) }}">
         <button type="button" class="btn btn-primary">
             Plus
         </button>
