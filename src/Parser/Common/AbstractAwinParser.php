@@ -12,7 +12,6 @@ namespace App\Parser\Common;
 
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
-use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
@@ -27,12 +26,11 @@ abstract class AbstractAwinParser extends AbstractParser
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
-        ReservationsHandler $reservationsHandler,
         protected HttpClientInterface $httpClient,
         private readonly string $tempPath,
         private readonly string $awinApiKey,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
+        parent::__construct($logger, $eventProducer, $eventHandler);
     }
 
     /**

@@ -15,7 +15,6 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
-use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
@@ -39,12 +38,11 @@ final class OpenAgendaParser extends AbstractParser
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
-        ReservationsHandler $reservationsHandler,
         private readonly HttpClientInterface $client,
         private readonly CountryRepository $countryRepository,
         private readonly string $openAgendaKey,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
+        parent::__construct($logger, $eventProducer, $eventHandler);
     }
 
     /**

@@ -15,7 +15,6 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
-use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
@@ -34,13 +33,12 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
-        ReservationsHandler $reservationsHandler,
         HttpClientInterface $httpClient,
         string $tempPath,
         string $awinApiKey,
         private readonly CacheInterface $cache,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler, $httpClient, $tempPath, $awinApiKey);
+        parent::__construct($logger, $eventProducer, $eventHandler, $httpClient, $tempPath, $awinApiKey);
     }
 
     /**
