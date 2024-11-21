@@ -24,7 +24,7 @@
         }
     },
     "require": {
-        "php": "^8.2",
+        "php": "~8.2.0",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
@@ -59,6 +59,7 @@
         "pagerfanta/twig": "^4",
         "php-amqplib/rabbitmq-bundle": "^2.2",
         "presta/sitemap-bundle": "^4",
+        "runtime/frankenphp-symfony": "^0.2.0",
         "sentry/sentry-symfony": "^5",
         "social-links/social-links": "^1.13",
         "stof/doctrine-extensions-bundle": "^1.3",

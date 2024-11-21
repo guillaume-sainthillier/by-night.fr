@@ -5,7 +5,6 @@ node_modules
 tests
 var
 vendor
-docker/*/assets
 public/bundles
 public/build
 public/sitemap
