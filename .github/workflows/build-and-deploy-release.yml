@@ -1,7 +1,10 @@
 name: Build And Deploy Release
 
 on:
+    pull_request:
     push:
+        branches:
+            - 'refs/pull/*'
         tags:
             - v*
 
@@ -10,11 +13,18 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - name: Get all release versions
-              id: get_all_versions
+            - name: Get all latest versions
+              if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
               run: |
+                  echo TAG_VERSION=latest >> $GITHUB_ENV
+                  echo APP_VERSION=latest >> $GITHUB_ENV
+                  echo APP_VERSIONS=latest >> $GITHUB_ENV
+            - name: Get all stable versions
+              if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+              run: |
+                  echo TAG_VERSION=stable >> $GITHUB_ENV
                   echo APP_VERSION=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1.\2.\3\4/g") >> $GITHUB_ENV
-                  echo APP_VERSIONS=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1.\2.\3\4 \1.\2\4 \1\4/g") >> $GITHUB_ENV
+                  echo APP_VERSIONS=stable,$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1.\2.\3\4 \1.\2\4 \1\4/g") >> $GITHUB_ENV
             - name: Publish to Docker Repository
               uses: elgohr/Publish-Docker-Github-Action@v5
               with:
@@ -22,12 +32,13 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
                   buildargs: APP_VERSION
-                  tags: 'stable,${{ env.APP_VERSIONS }}'
+                  tags: '${{ env.APP_VERSIONS }}'
     upload-assets:
         needs: build
         runs-on: ubuntu-latest
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         container:
-            image: guystlr/by-night
+            image: guystlr/by-night:${{ env.TAG_VERSION }}
             env:
                 AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
@@ -36,11 +47,12 @@ jobs:
             - name: Upload assets to S3
               run: |
                   apk add --no-cache aws-cli
-                  aws s3 sync /app/public/build s3://assets.by-night.fr
-                  aws s3 sync /app/public/bundles s3://assets.by-night.fr
+                  aws s3 sync /app/public/build s3://assets.by-night.fr/build
+                  aws s3 sync /app/public/bundles s3://assets.by-night.fr/bundles
     deploy:
         needs: build
         runs-on: ubuntu-latest
+        if: startsWith(github.ref, 'refs/tags/v')
         steps:
             - name: Deploy to production
               uses: appleboy/ssh-action@master
