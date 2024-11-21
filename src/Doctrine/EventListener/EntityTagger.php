@@ -16,7 +16,7 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Invalidator\TagsInvalidator;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 final readonly class EntityTagger
 {
@@ -31,7 +31,7 @@ final readonly class EntityTagger
 
     public function postPersist(LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
 
         if ($entity instanceof City) {
             $this->tag($entity);
@@ -42,7 +42,7 @@ final readonly class EntityTagger
 
     public function preUpdate(LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
 
         // Flag old place too in case it has changed
         if ($entity instanceof Event && $entity->getPlace()) {
@@ -52,13 +52,13 @@ final readonly class EntityTagger
 
     public function postUpdate(LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         $this->tag($entity);
     }
 
     public function preRemove(LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         $this->tag($entity);
     }
 

@@ -5,7 +5,7 @@
             {% set originalTweet = tweet.retweeted_status is defined ? tweet.retweeted_status : tweet %}
             {% set isRetweet = tweet.retweeted_status is defined %}
             {% set dateTweet = tweet.created_at|datetime %}
-            {% set dateTweetInfos =  dateTweet|stats_diff_date %}
+            {% set dateTweetInfos = dateTweet|stats_diff_date %}
             {% set userURL = 'https://twitter.com/' ~ tweet.user.screen_name %}
             {% set tweetURL = 'https://twitter.com/' ~ tweet.user.screen_name ~ '/status/' ~ tweet.id %}
             {% if originalTweet.id not in displayedTweets %}
@@ -15,7 +15,7 @@
                         {% if isRetweet %}
                             <div class="timeline-Tweet-retweetCredit">
                                 <div class="timeline-Tweet-retweetCreditIcon">
-                                    <i class="fa fa-retweet"></i>
+                                    <i class="icon fa fa-retweet"></i>
                                 </div>
                                 {{ tweet.user.name }} a retweeté
                             </div>
@@ -52,7 +52,7 @@
                                    href="https://twitter.com/intent/tweet?in_reply_to={{ tweet.id }}">
                                     <div class="Icon Icon--reply TweetAction-icon" aria-label="Répondre"
                                          title="Répondre" role="img">
-                                        <i class="fa fa-reply"></i>
+                                        <i class="icon fa fa-reply"></i>
                                     </div>
                                 </a>
                             </li>
@@ -61,7 +61,7 @@
                                    href="https://twitter.com/intent/retweet?tweet_id={{ tweet.id }}">
                                     <div class="Icon Icon--share TweetAction-icon" aria-label="Retweeter"
                                          title="Retweeter" role="img">
-                                        <i class="fa fa-retweet"></i>
+                                        <i class="icon fa fa-retweet"></i>
                                     </div>
                                 </a>
                             </li>
@@ -70,7 +70,7 @@
                                    href="https://twitter.com/intent/like?tweet_id={{ tweet.id }}">
                                     <div class="Icon Icon--heart TweetAction-icon" aria-label="J'aime" title="J'aime"
                                          role="img">
-                                        <i class="fa fa-heart"></i>
+                                        <i class="icon fa fa-heart"></i>
                                     </div>
                                 </a>
                             </li>

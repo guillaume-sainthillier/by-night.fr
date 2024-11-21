@@ -1,8 +1,8 @@
-import $ from 'jquery';
-import 'summernote/dist/summernote-bs5';
-import 'summernote/dist/lang/summernote-fr-FR';
+import $ from 'jquery'
+import 'summernote/dist/summernote-bs5'
+import 'summernote/dist/lang/summernote-fr-FR'
 
-import '../../scss/lazy-components/_wysiwyg.scss';
+import '@/scss/lazy-components/_wysiwyg.scss'
 
 export default function init(container = document) {
     // SummerNote
@@ -20,5 +20,5 @@ export default function init(container = document) {
             mode: 'text/html',
             htmlMode: true,
         },
-    });
+    })
 }

@@ -209,13 +209,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     /**
      * @var Collection<int, UserEvent>
      */
-    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event', cascade: ['persist', 'merge', 'remove'], fetch: 'EXTRA_LAZY')]
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
     private Collection $userEvents;
 
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', cascade: ['persist', 'merge', 'remove'], fetch: 'EXTRA_LAZY')]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
     #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
     private Collection $comments;
 
@@ -238,7 +238,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $source = null;
 
     #[Assert\Valid]
-    #[ORM\ManyToOne(targetEntity: Place::class, cascade: ['persist', 'merge'])]
+    #[ORM\ManyToOne(targetEntity: Place::class, cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['elasticsearch:event:details'])]
     private ?Place $place = null;

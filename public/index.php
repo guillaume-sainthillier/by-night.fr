@@ -10,6 +10,7 @@
 
 use App\Kernel;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once \dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
@@ -23,7 +24,7 @@ return function (array $context) {
     }
 
     if ($context['APP_MAINTENANCE']) {
-        return file_get_contents(__DIR__ . '/maintenance.html');
+        return new Response(file_get_contents(__DIR__ . '/maintenance.html'), Response::HTTP_SERVICE_UNAVAILABLE);
     }
 
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);

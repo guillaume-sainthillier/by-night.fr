@@ -9,10 +9,16 @@ $bgColor: #f0f0f0;
 $primary: #3f51b5;
 $info: #fabb3d;
 $warning: $color-warning;
+$success: #198754;
 
 $white: #fff;
 
 $link-footer-color: #0091ff;
+
+// Configuration
+$enable-dark-mode: true;
+$enable-rounded: true;
+$enable-cssgrid: true;
 
 //Misc
 $body-bg: $bgColor;
@@ -25,7 +31,19 @@ $link-decoration: none;
 
 //RFS
 $font-size-base: 1rem;
-$h1-font-size: $font-size-base * 3;
+$h1-font-size: 3rem;
+$h1-line-height: $h1-font-size * 1.2;
+$h1-line-height: 3.5rem;
+$h2-font-size: 2rem;
+$h2-line-height: $h2-font-size * 1.2;
+$h3-font-size: 1.75rem;
+$h3-line-height: $h3-font-size * 1.2;
+$h4-font-size: 1.5rem;
+$h4-line-height: $h3-font-size * 1.2;
+$h5-font-size: 1.25rem;
+$h5-line-height: $h3-font-size * 1.2;
+$h6-font-size: 0.875rem;
+$h6-line-height: $h3-font-size * 1.2;
 
 //Navbar
 $navbar-dark-color: rgba($white, 0.84);
@@ -44,10 +62,25 @@ $card-cap-bg: white;
 $card-cap-padding-y: 0.75rem;
 
 //Shadow
-$box-shadow: 0 0.5px 0 0 #ffffff inset, 0 1px 2px 0 #b3b3b3;
+$box-shadow:
+    0 0.5px 0 0 #ffffff inset,
+    0 1px 2px 0 #b3b3b3;
 
 //Modal
 $modal-header-padding-y: 0.5rem;
 
+// Icons
+$icon-size: 1.125em;
+
+//Buttons
+$btn-padding-y-sm: 0.25rem;
+$btn-padding-x-sm: 0.5rem;
+$btn-font-size-sm: 0.875rem;
+$btn-border-radius-sm: 0.25rem;
+
+// Forms
+$form-label-font-size: 1rem;
+
 //Tabler
+$prefix: 'app-' !default;
 $grid-gutter-width: 1rem;

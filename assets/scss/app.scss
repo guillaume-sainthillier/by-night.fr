@@ -4,7 +4,7 @@
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~@fortawesome/fontawesome-free/scss/brands';
-@import 'ui/bootstrap';
+//@import 'ui/bootstrap';
 @import 'ui/tabler';
 
 //Components
@@ -25,6 +25,7 @@
 @import 'components/modal';
 @import 'components/nav';
 @import 'components/navbar';
+@import 'components/page';
 @import 'components/pagination';
 @import 'components/placeholder';
 @import 'components/print';
@@ -44,15 +45,6 @@
 @import 'pages/user_details';
 @import 'pages/user_event_crud';
 
-html,
-body {
-    height: 100%;
-}
-
-body {
-    padding-top: 62px;
-}
-
 h1,
 h2,
 h3,
@@ -70,9 +62,9 @@ h6,
 }
 
 h1 {
-    margin-top: 0.5rem;
     text-align: center;
     letter-spacing: -2px;
+    margin: 0;
 
     strong {
         font-weight: 300;
@@ -87,7 +79,6 @@ h1 {
 }
 
 #toTop {
-    display: none;
     text-decoration: none;
     position: fixed;
     bottom: 2%;
@@ -95,13 +86,21 @@ h1 {
     z-index: 100;
     width: 4rem;
     height: 4rem;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    &.hidden {
+        display: none;
+    }
+
+    .icon {
+        margin: 0;
+        vertical-align: middle;
+    }
 
     @include media-breakpoint-up(lg) {
         width: 3rem;
         height: 3rem;
     }
-}
-
-.bloc_config {
-    margin-top: 40px;
 }

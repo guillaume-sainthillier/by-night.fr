@@ -36,21 +36,6 @@ parameters:
 			path: src/Image/Helper/ImageHelper.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:merge\\(\\)\\.$#"
-			count: 1
-			path: src/Importer/CountryImporter.php
-
-		-
-			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:clear\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 5
-			path: src/Importer/CountryImporter.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between false and 0\\|1\\|2\\|3\\|4\\|5\\|6\\|7\\|8\\|9\\|10\\|11\\|12\\|13\\|14\\|15\\|16\\|17\\|18\\|19\\|20\\|21\\|22\\|23\\|24\\|25\\|26\\|27\\|28\\|29\\|30\\|31\\|32\\|true will always evaluate to false\\.$#"
-			count: 1
-			path: src/Importer/CountryImporter.php
-
-		-
 			message: """
 				#^Regex pattern is invalid\\: Delimiter must not be alphanumeric, backslash, or NUL in pattern\\: 
 				            \\\\\\#\\(\\(http\\|https\\|ftp\\)\\://\\(\\\\S\\*\\?\\\\\\.\\\\S\\*\\?\\)\\)\\(\\\\s\\|\\\\;\\|\\\\\\)\\|\\\\\\]\\|\\\\\\[\\|\\\\\\{\\|\\\\\\}\\|,\\|"\\|'\\|\\:\\|\\\\\\<\\|\\$\\|\\\\\\.\\\\s\\)\\\\\\#i$#

@@ -91,7 +91,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         return $postalCodes;
     }
 
-    public function setCountry(?Country $country): self
+    public function setCountry(?Country $country): static
     {
         $this->country = $country;
 
@@ -103,7 +103,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         return $this->parent;
     }
 
-    public function setParent(?AdminZone $parent): self
+    public function setParent(?AdminZone $parent): static
     {
         $this->parent = $parent;
 
@@ -118,7 +118,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         return $this->zipCities;
     }
 
-    public function addZipCity(ZipCity $zipCity): self
+    public function addZipCity(ZipCity $zipCity): static
     {
         if (!$this->zipCities->contains($zipCity)) {
             $this->zipCities[] = $zipCity;
@@ -128,7 +128,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         return $this;
     }
 
-    public function removeZipCity(ZipCity $zipCity): self
+    public function removeZipCity(ZipCity $zipCity): static
     {
         if ($this->zipCities->removeElement($zipCity)) {
             // set the owning side to null (unless already changed)

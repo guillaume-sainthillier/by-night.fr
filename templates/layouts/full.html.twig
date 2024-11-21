@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig') }}
+{% endblock %}
+
 {% block layout %}
-    {% include 'layouts/_flash-messages.html.twig' %}
     {% block body %}{% endblock %}
 {% endblock %}

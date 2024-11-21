@@ -1,36 +1,37 @@
-import initDates from '../lazy-listeners/dates';
-import initTypeAHead from '../lazy-listeners/typeahead';
+import $ from 'jquery'
+import initDates from '@/js/lazy-listeners/dates'
+import initTypeAHead from '@/js/lazy-listeners/typeahead'
 
 $(document).ready(function () {
-    initDates();
-    initTypeAHead();
+    initDates()
+    initTypeAHead()
 
     $('.form-city-picker').each(function () {
-        const form = $(this);
-        const btn = form.find('.choose-city-action');
-        const field = form.find('.city-picker');
-        const cityValue = form.find('.city-value');
+        const form = $(this)
+        const btn = form.find('.choose-city-action')
+        const field = form.find('.city-picker')
+        const cityValue = form.find('.city-value')
 
         function updateBtn() {
-            btn.attr('disabled', cityValue.val().length === 0);
+            btn.attr('disabled', cityValue.val().length === 0)
         }
 
-        updateBtn();
+        updateBtn()
 
         $(this).submit(function () {
-            return !btn.attr('disabled');
-        });
+            return !btn.attr('disabled')
+        })
 
         // Saisie de la ville
-        const cities = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
+        const cities = new window.Bloodhound({
+            datumTokenizer: window.Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: window.Bloodhound.tokenizers.whitespace,
             remote: {
-                url: AppConfig.apiCityURL,
+                url: window.AppConfig.apiCityURL,
                 wildcard: '%QUERY',
             },
-        });
-        cities.initialize();
+        })
+        cities.initialize()
 
         // Proxy inputs typeahead events to addressPicker
         field
@@ -40,10 +41,10 @@ $(document).ready(function () {
                 source: cities.ttAdapter(),
             })
             .on('typeahead:selected', function (e, data) {
-                cityValue.val(data.slug || '');
-                updateBtn();
-                $(form).submit();
+                cityValue.val(data.slug || '')
+                updateBtn()
+                $(form).submit()
             })
-            .on('keyup input', updateBtn);
-    });
-});
+            .on('keyup input', updateBtn)
+    })
+})

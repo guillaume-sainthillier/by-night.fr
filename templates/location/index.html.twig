@@ -1,6 +1,7 @@
 {% extends 'layouts/full.html.twig' %}
 {% do fos_httpcache_tag(tags('location', location)) %}
 
+{% block page_id 'page-location-index' %}
 {% block meta_title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
 
 {% block meta_description -%}
@@ -9,10 +10,10 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem(location.country.displayName, url('app_location_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
     {% else %}
-        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {'location': location.city.country.slug})) %}
-        {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.slug})) %}
+        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
+        {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {location: location.slug})) %}
     {% endif %}
 {% endblock %}
 
@@ -23,19 +24,19 @@
         {% set locationUrl = asset('build/images/landing.jpg') %}
     {% endif %}
     <section class="full_wrapper" style="background-image: url({{ locationUrl }})">
-        <div class="fade-black-transp"></div>
+        <div class="icon fade-black-transp"></div>
         <div class="wrapper">
             <h1>Votre sortie {{ location.atName }}</h1>
             <div class="no-margin-form card search_container">
                 <div class="card-body">
-                    {{ form_start(form, {'action': path('app_agenda_index', {'location': location.slug})}) }}
+                    {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
                     {{ form_row(form.from) }}
                     {{ form_row(form.to) }}
-                    {{ form_row(form.shortcut, {'label': 'Je veux sortir ' ~ location.atName, 'icon_prepend': 'calendar-alt'}) }}
-                    {{ form_row(form.term, {'label': 'Et je cherche...', 'attr': {'placeholder': 'Concert, bar, spectacle, enfant, soirée, ...'}, 'icon_prepend': 'search'}) }}
+                    {{ form_row(form.shortcut, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'calendar-alt'}) }}
+                    {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'search'}) }}
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-raised btn-primary search">
+                        <button type="submit" class="btn btn-primary search">
                             C'est parti
                         </button>
                     </div>
@@ -49,8 +50,8 @@
             <h2 class="text-primary h4">{{ events.nbResults }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
         </div>
     </section>
-    <section class="bg-white py-4">
-        <div class="container">
+    <section class="bg-white py-4 py-xl-6">
+        <div class="container-lg">
             <h2>Envie de sortir aujourd'hui ou ce soir {{ location.atName }} ?</h2>
             <p>Si vous cherchez <strong>que faire {{ location.atName }}</strong>, trouvez facilement un
                 <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>,
@@ -77,78 +78,80 @@
                 </p>
             {% endif %}
             <div class="text-center">
-                <a href="{{ path('app_agenda_index', {'location': location.slug}) }}" class="btn btn-outline-primary">
-                    Agenda des événements<span class="hidden-xs hidden-sm">, concerts, spectacles {{ location.atName }}</span>
+                <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
+                    Agenda des événements<span class="d-none d-md-block">, concerts, spectacles {{ location.atName }}</span>
                 </a>
             </div>
         </div>
     </section>
-    <section class="py-4">
-        <div class="container">
+    <section class="py-4 py-xl-6">
+        <div class="container-lg">
             {% set contents = [{
-                'title': 'Concert',
-                'icon': 'flaticon-microphone47',
-                'color': 'red',
-                'link': path('app_agenda_by_type', {'type': 'concert', 'location': location.slug}),
-                'title_link': 'Concerts ' ~ location.atName,
-                'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples
-                            " ~ location.atName ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
-                            soirées et pour <strong>sortir se détendre</strong> " ~ location.atName ~ "."
+                title: 'Concert',
+                icon: 'flaticon-microphone47',
+                color: 'red',
+                link: path('app_agenda_by_type', {type: 'concert', location: location.slug}),
+                title_link: 'Concerts ' ~ location.atName,
+                text: 'Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples
+                            ' ~ location.atName ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
+                            soirées et pour <strong>sortir se détendre</strong> " ~ location.atName ~ '.',
             }, {
-                'title': 'Etudiant',
-                'icon': 'flaticon-students17',
-                'color': 'orange',
-                'link': path('app_agenda_by_type', {'type': 'etudiant', 'location': location.slug}),
-                'title_link': 'Soirées étudiantes ' ~ location.atName,
-                'text': "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
+                title: 'Etudiant',
+                icon: 'flaticon-students17',
+                color: 'orange',
+                link: path('app_agenda_by_type', {type: 'etudiant', location: location.slug}),
+                title_link: 'Soirées étudiantes ' ~ location.atName,
+                text: "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en 
                             <strong>discothèque</strong> ce soir ? " ~ location.appName ~ " regroupe
-                            <strong>l'agenda des soirées</strong> rien que pour vous !"
+                            <strong>l'agenda des soirées</strong> rien que pour vous !",
             }, {
-                'title': 'Famille',
-                'icon': 'flaticon-father16',
-                'color': 'green',
-                'link': path('app_agenda_by_type', {'type': 'famille', 'location': location.slug}),
-                'title_link': 'Sorties familles ' ~ location.atName,
-                'text': "Trouvez des idées pour <strong>sortir en famille</strong> " ~ location.atName ~ " avec tous les
+                title: 'Famille',
+                icon: 'flaticon-father16',
+                color: 'green',
+                link: path('app_agenda_by_type', {type: 'famille', location: location.slug}),
+                title_link: 'Sorties familles ' ~ location.atName,
+                text: 'Trouvez des idées pour <strong>sortir en famille</strong> ' ~ location.atName ~ ' avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
-                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de " ~ location.name ~ " !"
+                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de ' ~ location.name ~ ' !',
             }, {
-                'title': 'Spectacle',
-                'icon': 'flaticon-tickets',
-                'color': 'blue',
-                'link': path('app_agenda_by_type', {'type': 'spectacle', 'location': location.slug}),
-                'title_link': 'Spectacles ' ~ location.atName,
-                'text': location.atName ~ ", il y a pleins de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
+                title: 'Spectacle',
+                icon: 'flaticon-tickets',
+                color: 'blue',
+                link: path('app_agenda_by_type', {type: 'spectacle', location: location.slug}),
+                title_link: 'Spectacles ' ~ location.atName,
+                text: location.atName ~ ', il y a pleins de <strong>spectacles en ' ~ 'now'|date('Y') ~ "</strong> ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorite grâce à
-                            <strong>l'agenda des spectacles " ~ location.atName ~ "</strong>."
+                            <strong>l'agenda des spectacles " ~ location.atName ~ '</strong>.',
             }, {
-                'title': 'Exposition',
-                'icon': 'flaticon-theater1',
-                'color': 'darkblue',
-                'link': path('app_agenda_by_type', {'type': 'exposition', 'location': location.slug}),
-                'title_link': 'Les expos ' ~ location.atName,
-                'text': "Les <strong>expos " ~ location.atName ~ "</strong> sont nombreuses ! Envie d'aller visiter les
+                title: 'Exposition',
+                icon: 'flaticon-theater1',
+                color: 'darkblue',
+                link: path('app_agenda_by_type', {type: 'exposition', location: location.slug}),
+                title_link: 'Les expos ' ~ location.atName,
+                text: 'Les <strong>expos ' ~ location.atName ~ "</strong> sont nombreuses ! Envie d'aller visiter les
                     <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
-                    les <strong>expos à voir " ~ location.atName ~ "</strong> ? C'est par ici !"
+                    les <strong>expos à voir " ~ location.atName ~ "</strong> ? C'est par ici !",
             }, {
-                'title': 'Organisateur',
-                'icon': 'flaticon-calendar60',
-                'color': 'purple',
-                'link': path('app_event_new'),
-                'title_link': 'Créer un événement',
-                'text': "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
-                            de communication</strong> " ~ location.atName ~ " ? <strong>Publiez facilement</strong>
-                            votre événement sur notre plateforme et donnez lui un maximum de <strong>visibilité</strong> !"
+                title: 'Organisateur',
+                icon: 'flaticon-calendar60',
+                color: 'purple',
+                link: path('app_event_new'),
+                title_link: 'Créer un événement',
+                text: "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
+                            de communication</strong> " ~ location.atName ~ ' ? <strong>Publiez facilement</strong>
+                            votre événement sur notre plateforme et donnez lui un maximum de <strong>visibilité</strong> !',
             }] %}
             <div class="row row-cards row-deck">
                 {% for i, content in contents %}
                     <div class="col-sm-6 col-lg-4">
                         <div class="card">
-                            <h3 class="card-header">
-                                <i class="icon {{ content.icon }} text-primary"></i>
-                                {{ content.title }}
-                            </h3>
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="icon {{ content.icon }} text-primary"></i>
+                                    {{ content.title }}
+                                </h3>
+                            </div>
                             <div class="card-body">
                                 <p class="card-text">{{ content.text|raw }}</p>
                             </div>
@@ -165,14 +168,14 @@
             </div>
         </div>
     </section>
-    <section class="bg-white py-4">
-        <div class="container">
+    <section class="bg-white py-4 py-xl-6">
+        <div class="container-lg">
             <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
-            {% include 'partials/event/_list-grid-vertical.html.twig' with({events: events, page: 1}) %}
+            {{ include('partials/event/_list-grid-vertical.html.twig', {events: events, page: 1}) }}
 
             <div class="text-center mt-4">
-                <a href="{{ path('app_agenda_index', {'location': location.slug}) }}" class="btn btn-outline-primary">
-                    Toutes les sorties <span class="hidden-xs hidden-sm">{{ location.atName }}</span>
+                <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
+                    Toutes les sorties <span class="d-none d-md-block">&nbsp;{{ location.atName }}</span>
                 </a>
             </div>
         </div>

@@ -15,7 +15,6 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
-use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTimeImmutable;
@@ -35,12 +34,11 @@ final class SowProgParser extends AbstractParser
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
-        ReservationsHandler $reservationsHandler,
         HttpClientInterface $client,
         string $sowprogUsername,
         string $sowprogPassword,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
+        parent::__construct($logger, $eventProducer, $eventHandler);
 
         $this->client = $client->withOptions([
             'base_uri' => self::BASE_URI,

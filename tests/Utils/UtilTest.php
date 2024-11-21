@@ -12,6 +12,7 @@ namespace App\Tests\Utils;
 
 use App\Tests\AppKernelTestCase;
 use App\Utils\Util;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class UtilTest extends AppKernelTestCase
 {
@@ -24,16 +25,14 @@ class UtilTest extends AppKernelTestCase
         $this->utils = static::getContainer()->get(Util::class);
     }
 
-    /**
-     * @dataProvider nonNumericCharsProvider
-     */
+    #[DataProvider('nonNumericCharsProvider')]
     public function testReplaceNonNumericChars(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->replaceNonNumericChars($actual), 'Original : ' . $actual);
     }
 
     // Latitude or Postal Code
-    public function nonNumericCharsProvider(): array
+    public static function nonNumericCharsProvider(): array
     {
         return [
             ['31470', '31470'],
@@ -45,15 +44,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider nonAlphanumericCharsProvider
-     */
+    #[DataProvider('nonAlphanumericCharsProvider')]
     public function testReplaceNonAlphanumericChars(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->replaceNonAlphanumericChars($actual), 'Original : ' . $actual);
     }
 
-    public function nonAlphanumericCharsProvider(): array
+    public static function nonAlphanumericCharsProvider(): array
     {
         return [
             ['Lorem Ipsum', 'Lorem Ipsum'],
@@ -62,15 +59,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider deleteSpaceBetweenProvider
-     */
-    public function testDeleteSpaceBetween($actual, $expected, $delimiters): void
+    #[DataProvider('deleteSpaceBetweenProvider')]
+    public function testDeleteSpaceBetween(string $actual, string $expected, string|array $delimiters): void
     {
         self::assertEquals($expected, $this->utils->deleteSpaceBetween($actual, $delimiters), 'Original : ' . $actual);
     }
 
-    public function deleteSpaceBetweenProvider(): array
+    public static function deleteSpaceBetweenProvider(): array
     {
         return [
             ['Lorem Ipsum', 'Lorem Ipsum', ''], // Nothing happen
@@ -82,15 +77,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider deleteStopWordsProvider
-     */
+    #[DataProvider('deleteStopWordsProvider')]
     public function testDeleteStopWords(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->deleteStopWords($actual), 'Original : ' . $actual);
     }
 
-    public function deleteStopWordsProvider(): array
+    public static function deleteStopWordsProvider(): array
     {
         return [
             ['Bikini', 'Bikini'],
@@ -101,15 +94,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider deleteMultipleSpacesProvider
-     */
+    #[DataProvider('deleteMultipleSpacesProvider')]
     public function testDeleteMultipleSpaces(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->deleteMultipleSpaces($actual), 'Original : ' . $actual);
     }
 
-    public function deleteMultipleSpacesProvider(): array
+    public static function deleteMultipleSpacesProvider(): array
     {
         return [
             ['My Super Event', 'My Super Event'],
@@ -119,15 +110,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider utf8TitleCaseProvider
-     */
+    #[DataProvider('utf8TitleCaseProvider')]
     public function testUtf8TitleCase(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->utf8TitleCase($actual), 'Original : ' . $actual);
     }
 
-    public function utf8TitleCaseProvider(): array
+    public static function utf8TitleCaseProvider(): array
     {
         return [
             ['My Super Event', 'My Super Event'],
@@ -136,15 +125,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider utf8LowerCaseProvider
-     */
+    #[DataProvider('utf8LowerCaseProvider')]
     public function testUtf8LowerCase(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->utf8LowerCase($actual), 'Original : ' . $actual);
     }
 
-    public function utf8LowerCaseProvider(): array
+    public static function utf8LowerCaseProvider(): array
     {
         return [
             ['my super event', 'my super event'],
@@ -153,15 +140,13 @@ class UtilTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider replaceAccentsProvider
-     */
+    #[DataProvider('replaceAccentsProvider')]
     public function testReplaceAccents(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->utils->replaceAccents($actual), 'Original : ' . $actual);
     }
 
-    public function replaceAccentsProvider(): array
+    public static function replaceAccentsProvider(): array
     {
         return [
             ['my super event', 'my super event'],

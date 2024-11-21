@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
     app:
         build: .
@@ -13,8 +11,6 @@ services:
     worker:
         build: .
         env_file: .env.local
-
-
     assets:
         image: nginx:1.17-alpine
         ports:
@@ -23,8 +19,6 @@ services:
             - ./docker/prod/assets/nginx.conf:/etc/nginx/nginx.conf:ro
             - assets:/assets/build:ro
             - bundles:/assets/bundles:ro
-        networks:
-            - local
 
     varnish:
         volumes:

@@ -5,9 +5,9 @@
             <small class="text-muted">Soyez le premier à réagir</small>
         {% endif %}
     </h4>
-    {% include 'comment/form.html.twig' %}
+    {{ include('comment/form.html.twig') }}
 
     {% if comments.nbResults > 0 %}
-        {% include 'comment/list.html.twig' %}
+        {{ include('comment/list.html.twig') }}
     {% endif %}
 </div>

@@ -1,12 +1,12 @@
 {% extends 'reset-password/layout.html.twig' %}
 
 {% block breadcrumb_reset %}
-    {% do menu.addItem("Étape 2/3", url('app_check_email')) %}
+    {% do menu.addItem('Étape 2/3', url('app_check_email')) %}
 {% endblock %}
 
 {% block body %}
     <div class="alert alert-success">
-        <i class="fa fa-check"></i>
+        <i class="icon fa fa-check"></i>
         Un e-mail a été envoyé. Il contient un lien sur lequel il vous faudra cliquer pour réinitialiser votre mot de passe.
         <br />
         <br />

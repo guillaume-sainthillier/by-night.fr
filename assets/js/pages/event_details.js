@@ -1,16 +1,17 @@
-import Widgets from '../components/Widgets';
-import CommentApp from '../components/CommentApp';
+import $ from 'jquery'
+import Widgets from '@/js/components/Widgets'
+import CommentApp from '@/js/components/CommentApp'
 
 $(document).ready(function () {
-    new Widgets().init();
+    new Widgets().init()
 
-    new CommentApp().init();
+    new CommentApp().init()
 
-    const gMap = $('#googleMap').attr('data-bs-toggled', '0');
+    const gMap = $('#googleMap').attr('data-bs-toggled', '0')
     $('#loadMap')
         .off('click')
         .click(function (e) {
-            e.preventDefault();
+            e.preventDefault()
             if (!gMap.find('iframe').length) {
                 $('<iframe>')
                     .attr({
@@ -22,15 +23,15 @@ $(document).ready(function () {
                         allowfullscreen: true,
                     })
                     .css({ width: '100%', border: '0' })
-                    .appendTo(gMap);
+                    .appendTo(gMap)
             }
 
             if (gMap.attr('data-bs-toggled') === '1') {
                 // Masquer
-                gMap.attr('data-bs-toggled', '0').hide('fast');
+                gMap.attr('data-bs-toggled', '0').hide('fast')
             } // Afficher
             else {
-                gMap.attr('data-bs-toggled', '1').show('fast');
+                gMap.attr('data-bs-toggled', '1').show('fast')
             }
-        });
-});
+        })
+})

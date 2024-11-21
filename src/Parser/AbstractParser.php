@@ -13,7 +13,6 @@ namespace App\Parser;
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
-use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -26,7 +25,6 @@ abstract class AbstractParser implements ParserInterface
         private readonly LoggerInterface $logger,
         private readonly EventProducer $eventProducer,
         private readonly EventHandler $eventHandler,
-        protected ReservationsHandler $reservationsHandler,
     ) {
     }
 

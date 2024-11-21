@@ -4,14 +4,14 @@
 {% block meta_title 'Connexion réussie' %}
 
 {% set userInfo = {
-    'username' : userInformation.realName,
-    'email' : userInformation.email
+    username: userInformation.realName,
+    email: userInformation.email,
 } %}
 
 {% block hwi_oauth_content -%}
     <div class="alert alert-success">
-        <i class="fa fa-check"></i>
-        {{ 'header.success' | trans({'%name%': userInformation.realName}, 'HWIOAuthBundle') }}
+        <i class="icon fa fa-check"></i>
+        {{ 'header.success'|trans({'%name%': userInformation.realName}, 'HWIOAuthBundle') }}
     </div>
     <br/>
     <div class="spinner-grow text-primary" role="status">

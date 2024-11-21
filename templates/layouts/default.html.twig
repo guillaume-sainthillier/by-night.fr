@@ -1,10 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block layout %}
-    {% include 'layouts/_flash-messages.html.twig' %}
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig') }}
     {% block layout_header '' %}
-    <div class="{% block container_class 'container' %}" id="{% block page_id 'page' %}">
-        <h1>{% block titre 'Hello' %}</h1>
+    <div class="page-header">
+        <div class="{{ block('container_class') }}">
+            <h1>{% block titre 'Hello' %}</h1>
+            {% block title_after '' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block layout %}
+    <div class="{% block container_class 'container' %}">
         {% block layout_body %}{% block body %}{% endblock %}{% endblock %}
     </div>
 {% endblock %}

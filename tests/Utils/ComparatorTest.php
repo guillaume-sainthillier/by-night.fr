@@ -16,6 +16,7 @@ use App\Entity\Place;
 use App\Entity\ZipCity;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Comparator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ComparatorTest extends AppKernelTestCase
 {
@@ -28,15 +29,13 @@ class ComparatorTest extends AppKernelTestCase
         $this->comparator = static::getContainer()->get(Comparator::class);
     }
 
-    /**
-     * @dataProvider matchingScorePlaceProvider
-     */
+    #[DataProvider('matchingScorePlaceProvider')]
     public function testMatchingScorePlace(?Place $a, ?Place $b, int $score): void
     {
         self::assertEquals($score, $this->comparator->getMatchingScorePlace($a, $b));
     }
 
-    public function matchingScorePlaceProvider(): iterable
+    public static function matchingScorePlaceProvider(): iterable
     {
         $france = (new Country())->setId('FR');
         $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
@@ -77,9 +76,7 @@ class ComparatorTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider bestPlaceProvider
-     */
+    #[DataProvider('bestPlaceProvider')]
     public function testBestPlace(?int $expectedId, Place $place, array $places): void
     {
         $original = $place;
@@ -92,7 +89,7 @@ class ComparatorTest extends AppKernelTestCase
         }
     }
 
-    public function bestPlaceProvider(): iterable
+    public static function bestPlaceProvider(): iterable
     {
         $france = (new Country())->setId('FR');
         $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
@@ -123,15 +120,13 @@ class ComparatorTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider sanitizeRueProvider
-     */
+    #[DataProvider('sanitizeRueProvider')]
     public function testSanitizeRue(?string $actual, ?string $expected): void
     {
         self::assertEquals($expected, $this->comparator->sanitizeRue($actual), 'Original : ' . $actual);
     }
 
-    public function sanitizeRueProvider(): array
+    public static function sanitizeRueProvider(): array
     {
         return [
             ['1908 Route de Lamasquère', '1908 route de lamasquere'],
@@ -139,15 +134,13 @@ class ComparatorTest extends AppKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider sanitizeVilleProvider
-     */
+    #[DataProvider('sanitizeVilleProvider')]
     public function testSanitizeVille(string $actual, string $expected): void
     {
         self::assertEquals($expected, $this->comparator->sanitizeVille($actual), 'Original : ' . $actual);
     }
 
-    public function sanitizeVilleProvider(): array
+    public static function sanitizeVilleProvider(): array
     {
         return [
             ['saint-lys', 'saintlys'],

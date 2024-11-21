@@ -2,7 +2,7 @@
 <div class="row row-cards row-deck">
     {% for i, event in events %}
         <div class="col-lg-6">
-            {% include 'partials/event/_item-card.html.twig' %}
+            {{ include('partials/event/_item-card.html.twig') }}
         </div>
     {% endfor %}
 </div>

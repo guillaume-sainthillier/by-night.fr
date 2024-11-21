@@ -1,45 +1,46 @@
-import '../scss/app.scss';
+import '@/scss/app.scss'
 
-import './vendors';
-import './overrides';
-import './utils/css';
-import './utils/dom';
+import $ from 'jquery'
+import './vendors'
+import './overrides'
+import './utils/css'
+import './utils/dom'
 
-import * as Sentry from '@sentry/browser';
-import Container from './services/Container';
-import registerServices from './services';
+import * as Sentry from '@sentry/browser'
+import Container from './services/Container'
+import registerServices from './services'
 
 // Global listeners
-import lazyload from './global-listeners/lazyload';
-import headerSearch from './global-listeners/header-search';
-import scrollToTop from './global-listeners/scroll-to-top';
+import lazyload from './global-listeners/lazyload'
+import headerSearch from './global-listeners/header-search'
+import scrollToTop from './global-listeners/scroll-to-top'
 
 // Listeners
-import emailVerify from './listeners/email-verify';
-import formCollection from './listeners/form-collection';
-import formErrors from './listeners/form-errors';
-import formTarget from './listeners/form-target';
-import imagePreviews from './listeners/image-previews';
-import like from './listeners/like';
-import loadMore from './listeners/load-more';
-import login from './listeners/login';
-import popup from './listeners/popup';
-import register from './listeners/register';
-import tooltip from './listeners/tooltip';
+import emailVerify from './listeners/email-verify'
+import formCollection from './listeners/form-collection'
+import formErrors from './listeners/form-errors'
+import formTarget from './listeners/form-target'
+import imagePreviews from './listeners/image-previews'
+import like from './listeners/like'
+import loadMore from './listeners/load-more'
+import login from './listeners/login'
+import popup from './listeners/popup'
+import register from './listeners/register'
+import tooltip from './listeners/tooltip'
 
 class App {
-    #di;
+    #di
 
-    #listeners;
+    #listeners
 
-    #pageListeners;
+    #pageListeners
 
-    #beforeRunListeners;
+    #beforeRunListeners
 
     constructor() {
-        this.#di = null;
-        this.#beforeRunListeners = [];
-        this.#listeners = [headerSearch, imagePreviews, lazyload, scrollToTop];
+        this.#di = null
+        this.#beforeRunListeners = []
+        this.#listeners = [headerSearch, imagePreviews, lazyload, scrollToTop]
 
         this.#pageListeners = [
             emailVerify,
@@ -52,16 +53,16 @@ class App {
             popup,
             register,
             tooltip,
-        ];
+        ]
     }
 
     handleError(error) {
-        Sentry.captureException(error);
-        throw error;
+        Sentry.captureException(error)
+        throw error
     }
 
     run(parameters) {
-        this.#di = new Container(parameters);
+        this.#di = new Container(parameters)
 
         if (parameters.dsn) {
             Sentry.init({
@@ -69,60 +70,58 @@ class App {
                 release: parameters.release,
                 environment: parameters.environment,
                 autoSessionTracking: false,
-            });
+            })
 
-            Sentry.configureScope((scope) => {
-                scope.setUser(parameters.user);
-            });
+            Sentry.getCurrentScope().setUser(this.get('user'))
         }
 
-        registerServices(this.#di);
+        registerServices(this.#di)
 
         // Execute the page load listeners
         this.#listeners.forEach((listener) => {
-            listener(this.#di);
-        });
+            listener(this.#di)
+        })
 
-        this.dispatchPageLoadedEvent();
+        this.dispatchPageLoadedEvent()
     }
 
     dispatchPageLoadedEvent(container = document) {
         if (!this.#di) {
             // We store container when run is not called yet
-            this.#beforeRunListeners.push(container);
-            return;
+            this.#beforeRunListeners.push(container)
+            return
         }
 
         if (this.#beforeRunListeners.length > 0) {
-            this.#beforeRunListeners = [];
+            this.#beforeRunListeners = []
             this.#beforeRunListeners.forEach((beforeRunContainer) => {
-                this.dispatchPageLoadedEvent(beforeRunContainer);
-            });
+                this.dispatchPageLoadedEvent(beforeRunContainer)
+            })
         }
 
         this.#pageListeners.forEach((listener) => {
-            listener(this.#di, container);
-        });
+            listener(this.#di, container)
+        })
 
         if (typeof window.onPageLoaded === 'function') {
-            window.onPageLoaded(this, container);
-            window.onPageLoaded = null;
+            window.onPageLoaded(this, container)
+            window.onPageLoaded = null
         }
     }
 
     get(key) {
-        return this.#di.get(key);
+        return this.#di.get(key)
     }
 
     loadingButtons(container) {
         $('.btn-submit', container)
             .attr('disabled', true)
-            .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
     }
 
     resetButtons(container) {
-        $('.btn-submit', container).attr('disabled', false).find('.spinner-border').remove();
+        $('.btn-submit', container).attr('disabled', false).find('.spinner-border').remove()
     }
 }
 
-window.App = new App();
+window.App = new App()

@@ -1,7 +1,7 @@
 {% extends 'layouts/simple.html.twig' %}
 
 {% block breadcrumb -%}
-    {% do menu.addItem("Administration", url('easyadmin')) %}
+    {% do menu.addItem('Administration', url('admin')) %}
     {% block breadcrumb_admin %}{% endblock %}
 {%- endblock %}
 
@@ -12,7 +12,7 @@
 {% block meta_title -%}
     Administration - {% block meta_title_admin '' %}
 {%- endblock %}
-    
+
 {% block titre -%}
     Administration - {% block titre_admin '' %}
 {%- endblock %}

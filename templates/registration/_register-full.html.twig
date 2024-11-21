@@ -7,19 +7,19 @@
 {%- endblock %}
 
 {% block breadcrumb -%}
-    {% do menu.addItem("Inscription", url('app_register')) %}
+    {% do menu.addItem('Inscription', url('app_register')) %}
 {%- endblock %}
 
 {% block meta_description 'Devenez membre de By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
 
 {% block body %}
-    {{ form_start(form, {'action': path('app_register')}) }}
+    {{ form_start(form, {action: path('app_register')}) }}
     <div class="card">
         <div class="card-body">
-            {% include 'registration/register-content.html.twig' with({'partial': false}) %}
+            {{ include('registration/register-content.html.twig', {partial: false}) }}
         </div>
         <div class="card-footer text-center py-2">
-            <button class="btn btn-lg btn-primary" type="submit">
+            <button class="btn btn-primary" type="submit">
                 Créer mon profil
             </button>
         </div>

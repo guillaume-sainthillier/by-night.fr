@@ -15,7 +15,6 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
-use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTimeImmutable;
@@ -53,12 +52,11 @@ final class DataTourismeParser extends AbstractParser
         LoggerInterface $logger,
         EventProducer $eventProducer,
         EventHandler $eventHandler,
-        ReservationsHandler $reservationsHandler,
         private readonly HttpClientInterface $client,
         private readonly string $tempPath,
         private readonly string $dataTourismeAppKey,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
+        parent::__construct($logger, $eventProducer, $eventHandler);
 
         $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
             ->enableExceptionOnInvalidIndex()

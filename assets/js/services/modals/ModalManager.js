@@ -1,8 +1,8 @@
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'
 
 export default class ModalManager {
     constructor(di) {
-        this._di = di;
+        this._di = di
     }
 
     createLoading() {}
@@ -12,7 +12,7 @@ export default class ModalManager {
     hideLoading() {}
 
     hideModals() {
-        Swal.close();
+        Swal.close()
     }
 
     createError(params) {
@@ -24,9 +24,9 @@ export default class ModalManager {
             focusConfirm: true,
             heightAuto: false,
             ...params,
-        };
+        }
 
-        return Swal.fire(params);
+        return Swal.fire(params)
     }
 
     createConfirm(params) {
@@ -39,10 +39,10 @@ export default class ModalManager {
             heightAuto: false,
             cancelButtonText: 'Annuler',
             ...params,
-        };
+        }
 
         return Swal.fire(params).then((result) => {
-            return result && result.value;
-        });
+            return result && result.value
+        })
     }
 }

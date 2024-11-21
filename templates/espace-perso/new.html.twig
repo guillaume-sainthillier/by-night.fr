@@ -4,7 +4,7 @@
 {% block meta_title 'Nouvel événement' %}
 
 {% block breadcrumb_espace -%}
-    {% do menu.addItem("Nouveau", url('app_event_new')) %}
+    {% do menu.addItem('Nouveau', url('app_event_new')) %}
 {%- endblock %}
 
 {% block body -%}
@@ -20,7 +20,7 @@
                         {% block icon 'fa-file' %}
 
                         {% block body %}
-                            {{ form_row(form.name, {'icon_prepend': 'file-pen'}) }}
+                            {{ form_row(form.name, {icon_prepend: 'file-pen'}) }}
                             {{ form_row(form.description) }}
                             {{ form_row(form.imageFile) }}
                         {% endblock %}
@@ -55,11 +55,11 @@
                         {% block body %}
                             {{ form_row(form.startDate) }}
                             {{ form_row(form.endDate) }}
-                            {{ form_row(form.shortcut, {'label': 'Dates', 'icon_prepend': 'calendar'}) }}
-                            {{ form_row(form.hours, {'icon_prepend': 'clock'}) }}
-                            {{ form_row(form.category, {'icon_prepend': 'masks-theater'}) }}
-                            {{ form_row(form.theme, {'icon_prepend': 'vest'}) }}
-                            {{ form_row(form.prices, {'icon_prepend': 'ticket'}) }}
+                            {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'calendar'}) }}
+                            {{ form_row(form.hours, {icon_prepend: 'clock'}) }}
+                            {{ form_row(form.category, {icon_prepend: 'masks-theater'}) }}
+                            {{ form_row(form.theme, {icon_prepend: 'vest'}) }}
+                            {{ form_row(form.prices, {icon_prepend: 'ticket'}) }}
                         {% endblock %}
 
                         {% block footer_widget '' %}
@@ -72,8 +72,8 @@
 
                         {% block body %}
                             {{ form_errors(form.place) }}
-                            {{ form_row(form.place.name, {'icon_prepend': 'location-dot'}) }}
-                            {{ form_row(form.address, {'icon_prepend': 'location-crosshairs'}) }}
+                            {{ form_row(form.place.name, {icon_prepend: 'location-dot'}) }}
+                            {{ form_row(form.address, {icon_prepend: 'location-crosshairs'}) }}
 
                             <div class="ms-2 ms-sm-5 mb-5">
                                 {{ form_row(form.place.street) }}
@@ -94,11 +94,11 @@
             <hr />
             <div class="mt-2">
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
-                    <i class="fa fa-chevron-left"></i>
+                    <i class="icon fa fa-chevron-left"></i>
                     Retour
                 </a>
-                <button type="submit" class="ms-2 btn btn-primary btn-raised">
-                    <i class="fa fa-save"></i>
+                <button type="submit" class="ms-2 btn btn-primary">
+                    <i class="icon fa fa-save"></i>
                     Sauvegarder
                 </button>
             </div>

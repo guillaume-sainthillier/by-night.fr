@@ -1,8 +1,8 @@
-{% include 'partials/event/_list-grid-vertical.html.twig' with({'events': events}) %}
+{{ include('partials/event/_list-grid-vertical.html.twig', {events: events}) }}
 
 {% if events.hasNextPage() %}
     <div class="text-center my-4">
-        <a class="btn btn-outline-primary more" href="{{ path('app_search_index', {'q' : term, 'page': events.getNextPage(), 'type' : 'evenements'}) }}">
+        <a class="btn btn-outline-primary more" href="{{ path('app_search_index', {q: term, page: events.getNextPage(), type: 'evenements'}) }}">
             Plus
         </a>
     </div>

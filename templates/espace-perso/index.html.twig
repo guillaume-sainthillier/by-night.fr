@@ -3,7 +3,7 @@
 {% block titre 'Mes événements' %}
 {% block meta_title 'Mes événements' %}
 
-{% import "form/macros.html.twig" as macros %}
+{% import 'form/macros.html.twig' as macros %}
 
 {% block layout_header %}
     {% if not app.user.verified %}
@@ -15,20 +15,22 @@
     {% endif %}
 {% endblock %}
 
-{% block body -%}
+{% block title_after %}
     {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
-        <div class="text-center mt-2 mb-4">
-            <a class="btn btn-success btn-raised" href="{{ path('app_event_new') }}">
-                <i class="fa fa-plus"></i>
+        <div class="text-center mt-2">
+            <a class="btn btn-success" href="{{ path('app_event_new') }}">
+                <i class="icon fa fa-plus"></i>
                 Nouvel événement
             </a>
         </div>
     {% endif %}
+{% endblock %}
 
+{% block body -%}
     {% if events|length > 0 %}
         <div class="card">
             <div class="table-responsive">
-                <table class="table card-table mb-0">
+                <table class="table card-table align-middle mb-0">
                     <thead>
                     <tr>
                         <th>Nom</th>
@@ -44,7 +46,7 @@
                     {% for event in events %}
                         <tr>
                             <td>
-                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" title="Accéder à l'événement">{{ event.name }}</a>
+                                <a href="{{ path('app_event_edit', {id: event.id}) }}" title="Accéder à l'événement">{{ event.name }}</a>
                             </td>
                             <td>{{ event.placeName }}</td>
                             <td>{{ event.placeCity }}</td>
@@ -53,29 +55,29 @@
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input draft" data-href="{{ path('app_event_draft', {'id': event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
+                                    <input class="form-check-input draft" data-href="{{ path('app_event_draft', {id: event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
                                     <label class="form-check-label" for="draft-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input cancel" data-href="{{ path('app_event_cancel', {'id': event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
+                                    <input class="form-check-input cancel" data-href="{{ path('app_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
                                     <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>
                             <td class="actions">
-                                <div class="btn-group">
-                                    <a class="btn btn-light" href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
-                                        <i class="fa fa-eye text-secondary"></i>
+                                <div class="btn-group btn-group-icon-sm">
+                                    <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
+                                        <i class="icon fa fa-eye text-secondary"></i>
                                     </a>
-                                    <a class="btn btn-light" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
-                                        <i class="fa fa-pencil-alt text-primary"></i>
+                                    <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
+                                        <i class="icon fa fa-pencil-alt text-primary"></i>
                                     </a>
-                                    <button type="button" class="btn btn-light" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement">
-                                        <i class="fa fa-trash text-danger"></i>
+                                    <button type="button" class="btn btn-icon btn-unstyled" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement">
+                                        <i class="icon fa fa-trash text-danger"></i>
                                     </button>
                                 </div>
-                                <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
+                                <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {id: event.id}) }}">
                                     <input name="_method" type="hidden" value="DELETE">
                                 </form>
                             </td>
@@ -92,7 +94,7 @@
         </div>
     {% else %}
         <div class="alert alert-info">
-            <i class="fa fa-info-circle"></i>
+            <i class="icon fa fa-info-circle"></i>
             Aucun événement créé, publiez dès maintenant le vôtre !
         </div>
     {% endif %}

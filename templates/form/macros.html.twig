@@ -17,9 +17,9 @@
     <img class="img-fluid {{ attrs.class|default('') }}"
          width="{{ width }}"
          height="{{ height }}"
-         src="{{ thumb_asset(asset(path, 'local'), {'h': height, 'w': width}) }}"
-         srcset="{{ thumb_asset(asset(path, 'local'), {'h': height, 'w': width, 'dpr': 2}) }} 2x"
-    {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+         src="{{ thumb_asset(asset(path, 'local'), {h: height, w: width}) }}"
+         srcset="{{ thumb_asset(asset(path, 'local'), {h: height, w: width, dpr: 2}) }} 2x"
+    {% for name, value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro userThumb(user, width, height, params = {}) %}
@@ -30,7 +30,7 @@
         height: height,
         fit: 'crop',
         wrapperAttr: {
-            class: 'rounded-circle'
+            class: 'rounded-circle',
         },
         attr: {
             alt: user.username,
