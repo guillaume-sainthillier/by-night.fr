@@ -56,15 +56,15 @@ final readonly class DoctrineEventHandler
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }
 
-    public function handleOne(EventDto $dto, bool $flush = true): void
+    public function handleOne(EventDto $dto): void
     {
-        $this->handleMany([$dto], $flush);
+        $this->handleMany([$dto]);
     }
 
     /**
      * @param EventDto[] $dtos
      */
-    public function handleMany(array $dtos, bool $flush = true): void
+    public function handleMany(array $dtos): void
     {
         if ([] === $dtos) {
             return;
@@ -86,7 +86,7 @@ final readonly class DoctrineEventHandler
         // Clean event data
         $this->cleanEvents($allowedEvents);
 
-        $this->mergeWithDatabase($allowedEvents, $flush);
+        $this->mergeWithDatabase($allowedEvents);
     }
 
     /**
@@ -297,13 +297,12 @@ final readonly class DoctrineEventHandler
 
     /**
      * @param object[]                       $dtos
+     * @param string[]                       $paths
      * @param DependencyCatalogueInterface[] $allCatalogues
      * @param EntityProviderInterface[]      $allEntityProviders
-     * @param string[]                       $paths
      */
     private function mergeWithDatabase(
         array $dtos,
-        bool $flush,
         ?DependencyCatalogueInterface $previousCatalogue = null,
         array &$allCatalogues = [],
         array &$allEntityProviders = [],
@@ -339,7 +338,7 @@ final readonly class DoctrineEventHandler
                 // Resolve current dependencies before persisting root objects
                 $requiredCatalogue = $this->computeRequiredCatalogue($chunk);
                 $allCatalogues[] = $requiredCatalogue;
-                $this->mergeWithDatabase($requiredCatalogue->objects(), $flush, $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
+                $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
                 // Then perform a global SQL request to fetch entities by external ids
                 $entityProvider->prefetchEntities($chunk);
@@ -404,9 +403,9 @@ final readonly class DoctrineEventHandler
                 // Resolve current dependencies after persisting parent objects
                 $providedCatalogue = $this->computeProvidedCatalogue($chunk);
                 $allCatalogues[] = $providedCatalogue;
-                $this->mergeWithDatabase($providedCatalogue->objects(), $flush, $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
+                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
-                if ($isRootTransaction && $flush) {
+                if ($isRootTransaction) {
                     $this->logger->info(\sprintf(
                         '[%s] FLUSH',
                         implode(' > ', $currentPaths),
@@ -486,7 +485,7 @@ final readonly class DoctrineEventHandler
     public function handleManyCLI(array $dtos, bool $flush = true): void
     {
         $this->parserHistoryHandler->start();
-        $this->handleMany($dtos, $flush);
+        $this->handleMany($dtos);
         $parserHistory = $this->parserHistoryHandler->stop();
 
         $this->entityManager->persist($parserHistory);

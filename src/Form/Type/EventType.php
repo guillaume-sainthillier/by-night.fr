@@ -178,7 +178,7 @@ final class EventType extends AbstractType
             $data->place->city->country = $data->place->country;
         }
 
-        $this->doctrineEventHandler->handleOne($data, false);
+        $this->doctrineEventHandler->handleOne($data);
     }
 
     /**
