@@ -152,7 +152,7 @@ final class Firewall
             'Please find the agenda', 'Fore More Details like our Page & Massage us',
             'storiesdown.com', 'view Instagram stories',
             'TEMOIGNAGE DE PRET', 'prêteur', 'prêteuse', 'preteur', 'preteuse', 'prêt entre particulier',
-            'offre de prët', 'offre de prêt', 'RETOUR AFFECTIF', "retour d'amour", 'Retour d’affection',
+            'offre de prët', 'offre de prêt', 'offres de prêt', 'RETOUR AFFECTIF', "retour d'amour", 'Retour d’affection',
             'grand marabout', 'ENVOÛTEMENT AMOUREUX', 'faire revenir un homme', "rituel d'amour", 'Retour de l’être aimé',
             "Retour de l'être aimé", 'valise magique',
         ]);
