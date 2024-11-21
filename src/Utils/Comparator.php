@@ -117,8 +117,12 @@ final readonly class Comparator
         return $this->getMatchingScore($a, $b);
     }
 
-    public function sanitize(string $string): string
+    public function sanitize(?string $string): string
     {
+        if (null === $string || '' === trim($string)) {
+            return '';
+        }
+
         return Monitor::bench('Sanitize', function () use ($string) {
             $string = $this->util->deleteStopWords($string);
             $string = $this->util->utf8LowerCase($string);
