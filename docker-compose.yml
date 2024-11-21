@@ -1,4 +1,18 @@
 services:
+    app:
+        build: .
+        env_file:
+            - .env
+            - .env.local
+        ports:
+            - 8080:80
+    worker:
+        command: 'worker'
+        build: .
+        env_file:
+            - .env
+            - .env.local
+
     redis:
         image: redis:alpine
         ports:
