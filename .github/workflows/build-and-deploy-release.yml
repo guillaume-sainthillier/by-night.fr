@@ -23,6 +23,21 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
                   buildargs: APP_VERSION
                   tags: 'stable,${{ env.APP_VERSIONS }}'
+    upload-assets:
+        needs: build
+        runs-on: ubuntu-latest
+        container:
+            image: guystlr/by-night
+            env:
+                AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+                AWS_DEFAULT_REGION: eu-west-3
+        steps:
+            - name: Upload assets to S3
+              run: |
+                  apk add --no-cache aws-cli
+                  aws s3 sync /app/public/build s3://assets.by-night.fr
+                  aws s3 sync /app/public/bundles s3://assets.by-night.fr
     deploy:
         needs: build
         runs-on: ubuntu-latest
