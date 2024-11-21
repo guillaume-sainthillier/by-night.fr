@@ -97,7 +97,7 @@ abstract class AdminZone implements Stringable
         return $this->id;
     }
 
-    public function setId(int $id): self
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -109,7 +109,7 @@ abstract class AdminZone implements Stringable
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(string $slug): static
     {
         $this->slug = $slug;
 
@@ -121,7 +121,7 @@ abstract class AdminZone implements Stringable
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -133,7 +133,7 @@ abstract class AdminZone implements Stringable
         return $this->latitude;
     }
 
-    public function setLatitude(float $latitude): self
+    public function setLatitude(float $latitude): static
     {
         $this->latitude = $latitude;
 
@@ -145,7 +145,7 @@ abstract class AdminZone implements Stringable
         return $this->longitude;
     }
 
-    public function setLongitude(float $longitude): self
+    public function setLongitude(float $longitude): static
     {
         $this->longitude = $longitude;
 
@@ -157,7 +157,7 @@ abstract class AdminZone implements Stringable
         return $this->population;
     }
 
-    public function setPopulation(int $population): self
+    public function setPopulation(int $population): static
     {
         $this->population = $population;
 
@@ -169,7 +169,7 @@ abstract class AdminZone implements Stringable
         return $this->admin1Code;
     }
 
-    public function setAdmin1Code(?string $admin1Code): self
+    public function setAdmin1Code(?string $admin1Code): static
     {
         $this->admin1Code = $admin1Code;
 
@@ -181,7 +181,7 @@ abstract class AdminZone implements Stringable
         return $this->admin2Code;
     }
 
-    public function setAdmin2Code(?string $admin2Code): self
+    public function setAdmin2Code(?string $admin2Code): static
     {
         $this->admin2Code = $admin2Code;
 
@@ -193,7 +193,7 @@ abstract class AdminZone implements Stringable
         return $this->country;
     }
 
-    public function setCountry(?Country $country): self
+    public function setCountry(?Country $country): static
     {
         $this->country = $country;
 

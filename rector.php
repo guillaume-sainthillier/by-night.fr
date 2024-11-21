@@ -21,11 +21,10 @@ use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Symfony\Set\SymfonySetList;
 
 return RectorConfig::configure()
-    ->withImportNames()
+    ->withImportNames(removeUnusedImports: true)
     ->withSymfonyContainerXml(__DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml')
     ->withCache(__DIR__ . '/var/tools/rector')
     ->withPaths([
-        __DIR__ . '/migrations',
         __DIR__ . '/src',
         __DIR__ . '/tests',
     ])

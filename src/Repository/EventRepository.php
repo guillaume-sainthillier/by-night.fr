@@ -19,10 +19,8 @@ use App\Entity\UserEvent;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -160,7 +158,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->addOrderBy('e.id');
     }
 
-    public function findAllByUserQueryBuilder(UserInterface $user): QueryBuilder
+    public function findAllByUserQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('e')

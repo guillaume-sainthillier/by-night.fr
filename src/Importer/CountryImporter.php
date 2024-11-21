@@ -96,9 +96,10 @@ final readonly class CountryImporter
             $adminCode2 = $this->formatAdminZoneCode($data[11]);
 
             $existingEntity = $this->em->getRepository($entity::class)->find((int) $data[0]);
-            if ($existingEntity) {
+            if (null !== $existingEntity) {
                 $entity = $existingEntity;
             }
+
             $entity
                 ->setId((int) $data[0])
                 ->setName($data[1])
@@ -142,7 +143,7 @@ final readonly class CountryImporter
         $fs->dumpFile($tempfile, $content);
 
         $zip = new ZipArchive();
-        if (false === $zip->open($tempfile)) {
+        if (true !== $zip->open($tempfile)) {
             throw new IOException('Unable to unzip ' . $tempfile);
         }
 

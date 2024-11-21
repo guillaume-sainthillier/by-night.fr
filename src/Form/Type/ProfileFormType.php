@@ -59,7 +59,7 @@ final class ProfileFormType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
-                'delete_label' => 'Supprimer l\'image de profil',
+                'delete_label' => "Supprimer l'image de profil",
                 'thumb_params' => [
                     'height' => 200,
                 ],

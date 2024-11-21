@@ -20,7 +20,6 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
-use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Exception\UncreatableEntityException;
 use App\Reject\Reject;

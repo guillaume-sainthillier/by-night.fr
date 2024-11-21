@@ -254,7 +254,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function getUsername(): string
     {
-        return ucfirst((string) $this->username);
+        return ucfirst($this->username ?? '');
     }
 
     public function getUserIdentifier(): string
@@ -549,14 +549,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername(?string $username): self
     {
         $this->username = $username;
 

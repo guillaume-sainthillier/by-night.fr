@@ -60,7 +60,7 @@ class UtilTest extends AppKernelTestCase
     }
 
     #[DataProvider('deleteSpaceBetweenProvider')]
-    public function testDeleteSpaceBetween($actual, $expected, $delimiters): void
+    public function testDeleteSpaceBetween(string $actual, string $expected, string|array $delimiters): void
     {
         self::assertEquals($expected, $this->utils->deleteSpaceBetween($actual, $delimiters), 'Original : ' . $actual);
     }
