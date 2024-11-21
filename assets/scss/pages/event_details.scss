@@ -23,6 +23,7 @@
                 flex-direction: row;
                 flex-wrap: wrap;
                 gap: 0.25rem;
+                overflow: hidden;
 
                 a {
                     max-width: 100%;
@@ -37,7 +38,7 @@
 .detail-item {
     margin-bottom: 0.375rem;
     display: flex;
-    align-items: flex-start;
+    align-items: baseline;
     flex-flow: row;
 
     &:last-child {

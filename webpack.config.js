@@ -130,7 +130,7 @@ if (Encore.isProduction()) {
             paths: glob.sync(
                 [
                     path.join(__dirname, 'templates/**/*.html.twig'),
-                    path.join(__dirname, 'assets/**/*.js'),
+                    path.join(__dirname, 'assets/**/*'),
                     path.join(__dirname, 'src/**/*.php'),
                     path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
                     path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
@@ -146,12 +146,19 @@ if (Encore.isProduction()) {
                 ],
                 {nodir: true}
             ),
-            safelist: [
-                /^custom-/,
-                /^note-/,
-                /^select2-container--bootstrap-5/,
-                /^fa-(plus|xmark|masks-theater|vest|file-pen|calendar|location-crosshairs|twitter|facebook)/,
-            ],
+            safelist: {
+                greedy: [
+                    /^dropdown-menu/,
+                    /^form-label/,
+                    /^visible$/,
+                    /^show$/,
+                    /^hidden$/,
+                    /^custom-/,
+                    /^note-/,
+                    /^select2-container--bootstrap-5/,
+                    /^fa-(plus|xmark|masks-theater|vest|file-pen|calendar|location-crosshairs|twitter|facebook)/,
+                ]
+            },
         })
     )
 }

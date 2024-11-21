@@ -35,10 +35,8 @@
     }
 
     a.dropdown-item {
-        min-width: 11rem;
-
-        .fa {
-            width: 1rem;
+        .icon {
+            --#{$prefix}icon-size: 1.125em;
             text-align: center;
             margin-right: 0.5rem;
         }
