@@ -14,6 +14,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Repository\UserRepository;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -581,7 +582,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setLastLogin(?DateTime $lastLogin): self
     {
-        $this->lastLogin = $lastLogin;
+        $this->lastLogin = UnitOfWorkOptimizer::getDateTimeValue($this->lastLogin, $lastLogin);
 
         return $this;
     }
@@ -593,7 +594,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setPasswordRequestedAt(?DateTime $passwordRequestedAt): self
     {
-        $this->passwordRequestedAt = $passwordRequestedAt;
+        $this->passwordRequestedAt = UnitOfWorkOptimizer::getDateTimeValue($this->passwordRequestedAt, $passwordRequestedAt);
 
         return $this;
     }

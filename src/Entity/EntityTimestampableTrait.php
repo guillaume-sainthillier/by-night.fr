@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,9 +31,9 @@ trait EntityTimestampableTrait
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $updatedAt): void
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
-        $this->createdAt = $updatedAt;
+        $this->createdAt = UnitOfWorkOptimizer::getDateTimeValue($this->createdAt, $createdAt);
     }
 
     public function getUpdatedAt(): ?DateTimeImmutable
@@ -42,6 +43,6 @@ trait EntityTimestampableTrait
 
     public function setUpdatedAt(DateTimeImmutable $updatedAt): void
     {
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = UnitOfWorkOptimizer::getDateTimeValue($this->updatedAt, $updatedAt);
     }
 }

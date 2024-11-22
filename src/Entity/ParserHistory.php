@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Repository\ParserHistoryRepository;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -47,7 +48,7 @@ class ParserHistory
     #[ORM\PrePersist]
     public function majEndDate(): void
     {
-        $this->endDate = new DateTime();
+        $this->setEndDate(new DateTime());
     }
 
     /**
@@ -65,7 +66,7 @@ class ParserHistory
 
     public function setStartDate(DateTime $startDate): self
     {
-        $this->startDate = $startDate;
+        $this->startDate = UnitOfWorkOptimizer::getDateTimeValue($this->startDate, $startDate);
 
         return $this;
     }
@@ -89,7 +90,7 @@ class ParserHistory
 
     public function setEndDate(DateTime $endDate): self
     {
-        $this->endDate = $endDate;
+        $this->endDate = UnitOfWorkOptimizer::getDateTimeValue($this->endDate, $endDate);
 
         return $this;
     }

@@ -18,6 +18,7 @@ use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\TagUtils;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -547,7 +548,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function setExternalUpdatedAt(?DateTime $externalUpdatedAt): self
     {
-        $this->externalUpdatedAt = $externalUpdatedAt;
+        $this->externalUpdatedAt = UnitOfWorkOptimizer::getDateTimeValue($this->externalUpdatedAt, $externalUpdatedAt);
 
         return $this;
     }
@@ -559,7 +560,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function setStartDate(?DateTime $startDate): self
     {
-        $this->startDate = $startDate;
+        $this->startDate = UnitOfWorkOptimizer::getDateValue($this->startDate, $startDate);
 
         return $this;
     }
@@ -571,7 +572,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function setEndDate(?DateTime $endDate): self
     {
-        $this->endDate = $endDate;
+        $this->endDate = UnitOfWorkOptimizer::getDateValue($this->endDate, $endDate);
 
         return $this;
     }

@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -72,7 +73,7 @@ class ParserData
 
     public function setLastUpdated(?DateTime $lastUpdated): self
     {
-        $this->lastUpdated = $lastUpdated;
+        $this->lastUpdated = UnitOfWorkOptimizer::getDateTimeValue($this->lastUpdated, $lastUpdated);
 
         return $this;
     }

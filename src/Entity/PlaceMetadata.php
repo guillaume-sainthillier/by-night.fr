@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Repository\PlaceMetadataRepository;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -74,7 +75,7 @@ class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
 
     public function setExternalUpdatedAt(?DateTime $externalUpdatedAt): self
     {
-        $this->externalUpdatedAt = $externalUpdatedAt;
+        $this->externalUpdatedAt = UnitOfWorkOptimizer::getDateTimeValue($this->externalUpdatedAt, $externalUpdatedAt);
 
         return $this;
     }
