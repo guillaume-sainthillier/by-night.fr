@@ -46,9 +46,10 @@ jobs:
         steps:
             - name: Upload assets to S3
               run: |
-                  apk add --no-cache aws-cli && \
-                  aws s3 sync /app/public/build s3://assets.by-night.fr/build && \
-                  aws s3 sync /app/public/bundles s3://assets.by-night.fr/bundles
+                  set -ex;
+                  apk add --no-cache aws-cli;
+                  aws s3 sync /app/public/build s3://assets.by-night.fr/build --size-only;
+                  aws s3 sync /app/public/bundles s3://assets.by-night.fr/bundles --size-only
     deploy:
         needs: build
         runs-on: ubuntu-latest
