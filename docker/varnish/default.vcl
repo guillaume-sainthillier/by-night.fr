@@ -210,6 +210,8 @@ sub vcl_hash {
     ) {
         hash_data(req.http.cookie);
     }
+
+	return (lookup);
 }
 
 # Called before any object except a vcl_synth result is delivered to the client.
