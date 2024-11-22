@@ -12,6 +12,7 @@ namespace App\Repository;
 
 use App\Entity\ResetPasswordRequest;
 use App\Entity\User;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -43,6 +44,6 @@ final class ResetPasswordRequestRepository extends ServiceEntityRepository imple
             throw new RuntimeException('Unable to pass an user instance');
         }
 
-        return new ResetPasswordRequest($user, $expiresAt, $selector, $hashedToken);
+        return new ResetPasswordRequest($user, DateTimeImmutable::createFromInterface($expiresAt), $selector, $hashedToken);
     }
 }

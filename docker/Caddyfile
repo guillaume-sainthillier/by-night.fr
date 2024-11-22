@@ -42,6 +42,12 @@
 	# Disable Topics tracking if not enabled explicitly: https://github.com/jkarlin/topics
 	header ?Permissions-Policy "browsing-topics=()"
 	header /build/* Cache-Control "public, max-age=31536000, immutable"
+	header /bundles/easyadmin/* Cache-Control "public, max-age=31536000, immutable"
+	# Cache favicons, images and SVGs for a year
+	header /images/* Cache-Control "public, max-age=31536000, immutable"
+	header /*.ico Cache-Control "public, max-age=31536000, immutable"
+	header /*.png Cache-Control "public, max-age=31536000, immutable"
+	header /*.svg Cache-Control "public, max-age=31536000, immutable"
 
 	php_server
 }

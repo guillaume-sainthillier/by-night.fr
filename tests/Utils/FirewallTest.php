@@ -15,7 +15,7 @@ use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Firewall;
-use DateTimeImmutable;
+use DateTime;
 
 class FirewallTest extends AppKernelTestCase
 {
@@ -34,8 +34,8 @@ class FirewallTest extends AppKernelTestCase
         $badReject = (new Reject())->addReason(Reject::BAD_PLACE_LOCATION);
         $deletedReject = (new Reject())->addReason(Reject::EVENT_DELETED);
 
-        $now = new DateTimeImmutable();
-        $tomorrow = new DateTimeImmutable('tomorrow');
+        $now = new DateTime();
+        $tomorrow = new DateTime('tomorrow');
 
         // L'événement ne doit pas être valide car il n'a pas changé
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);

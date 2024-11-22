@@ -18,9 +18,9 @@ use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\TagUtils;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -78,18 +78,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $externalUpdatedAt = null;
+    private ?DateTime $externalUpdatedAt = null;
 
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Type("DateTimeInterface<'Y-m-d'>")]
-    private ?DateTimeInterface $startDate;
+    private ?DateTime $startDate;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Type("DateTimeInterface<'Y-m-d'>")]
-    private ?DateTimeInterface $endDate = null;
+    private ?DateTime $endDate = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
@@ -541,38 +541,38 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getExternalUpdatedAt(): ?DateTimeInterface
+    public function getExternalUpdatedAt(): ?DateTime
     {
         return $this->externalUpdatedAt;
     }
 
-    public function setExternalUpdatedAt(?DateTimeInterface $externalUpdatedAt): self
+    public function setExternalUpdatedAt(?DateTime $externalUpdatedAt): self
     {
-        $this->externalUpdatedAt = $externalUpdatedAt;
+        $this->externalUpdatedAt = UnitOfWorkOptimizer::getDateTimeValue($this->externalUpdatedAt, $externalUpdatedAt);
 
         return $this;
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?DateTimeInterface $startDate): self
+    public function setStartDate(?DateTime $startDate): self
     {
-        $this->startDate = $startDate;
+        $this->startDate = UnitOfWorkOptimizer::getDateValue($this->startDate, $startDate);
 
         return $this;
     }
 
-    public function getEndDate(): ?DateTimeInterface
+    public function getEndDate(): ?DateTime
     {
         return $this->endDate;
     }
 
-    public function setEndDate(?DateTimeInterface $endDate): self
+    public function setEndDate(?DateTime $endDate): self
     {
-        $this->endDate = $endDate;
+        $this->endDate = UnitOfWorkOptimizer::getDateValue($this->endDate, $endDate);
 
         return $this;
     }

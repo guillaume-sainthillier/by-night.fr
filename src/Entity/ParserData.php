@@ -12,7 +12,8 @@ namespace App\Entity;
 
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
-use DateTimeInterface;
+use App\Utils\UnitOfWorkOptimizer;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,7 +29,7 @@ class ParserData
     private ?string $externalOrigin = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $lastUpdated = null;
+    private ?DateTime $lastUpdated = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $reason = Reject::VALID;
@@ -65,14 +66,14 @@ class ParserData
         return $this;
     }
 
-    public function getLastUpdated(): ?DateTimeInterface
+    public function getLastUpdated(): ?DateTime
     {
         return $this->lastUpdated;
     }
 
-    public function setLastUpdated(?DateTimeInterface $lastUpdated): self
+    public function setLastUpdated(?DateTime $lastUpdated): self
     {
-        $this->lastUpdated = $lastUpdated;
+        $this->lastUpdated = UnitOfWorkOptimizer::getDateTimeValue($this->lastUpdated, $lastUpdated);
 
         return $this;
     }
