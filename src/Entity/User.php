@@ -16,7 +16,6 @@ use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Repository\UserRepository;
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -66,10 +65,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private bool $enabled = true;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $lastLogin;
+    private ?DateTime $lastLogin;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $passwordRequestedAt = null;
+    private ?DateTime $passwordRequestedAt = null;
 
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
@@ -575,24 +574,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getLastLogin(): ?DateTimeInterface
+    public function getLastLogin(): ?DateTime
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(?DateTimeInterface $lastLogin): self
+    public function setLastLogin(?DateTime $lastLogin): self
     {
         $this->lastLogin = $lastLogin;
 
         return $this;
     }
 
-    public function getPasswordRequestedAt(): ?DateTimeInterface
+    public function getPasswordRequestedAt(): ?DateTime
     {
         return $this->passwordRequestedAt;
     }
 
-    public function setPasswordRequestedAt(?DateTimeInterface $passwordRequestedAt): self
+    public function setPasswordRequestedAt(?DateTime $passwordRequestedAt): self
     {
         $this->passwordRequestedAt = $passwordRequestedAt;
 

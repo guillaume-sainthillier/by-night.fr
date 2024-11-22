@@ -17,6 +17,7 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EntityProviderHandler;
+use DateTime;
 
 final readonly class EventEntityFactory implements EntityFactoryInterface
 {
@@ -47,15 +48,15 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setExternalOrigin($dto->externalOrigin);
 
         if ($entity->getExternalUpdatedAt()?->format('Y-m-d H:i:s') !== $dto->externalUpdatedAt?->format('Y-m-d H:i:s')) {
-            $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
+            $entity->setExternalUpdatedAt(DateTime::createFromInterface($dto->externalUpdatedAt));
         }
 
         if ($entity->getStartDate()?->format('Y-m-d H:i:s') !== $dto->startDate?->format('Y-m-d H:i:s')) {
-            $entity->setStartDate($dto->startDate);
+            $entity->setStartDate(DateTime::createFromInterface($dto->startDate));
         }
 
         if ($entity->getEndDate()?->format('Y-m-d H:i:s') !== $dto->endDate?->format('Y-m-d H:i:s')) {
-            $entity->setEndDate($dto->endDate);
+            $entity->setEndDate(DateTime::createFromInterface($dto->endDate));
         }
 
         $entity->setAddress($dto->address);

@@ -12,7 +12,6 @@ namespace App\Entity;
 
 use App\Repository\ParserHistoryRepository;
 use DateTime;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,10 +21,10 @@ class ParserHistory
 {
     use EntityIdentityTrait;
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private DateTimeInterface $startDate;
+    private DateTime $startDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private DateTimeInterface $endDate;
+    private DateTime $endDate;
 
     #[ORM\Column(type: Types::STRING, length: 127)]
     private ?string $fromData = null;
@@ -59,12 +58,12 @@ class ParserHistory
         return $this->endDate->getTimestamp() - $this->startDate->getTimestamp();
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }
 
-    public function setStartDate(DateTimeInterface $startDate): self
+    public function setStartDate(DateTime $startDate): self
     {
         $this->startDate = $startDate;
 
@@ -83,12 +82,12 @@ class ParserHistory
         return $this;
     }
 
-    public function getEndDate(): ?DateTimeInterface
+    public function getEndDate(): ?DateTime
     {
         return $this->endDate;
     }
 
-    public function setEndDate(DateTimeInterface $endDate): self
+    public function setEndDate(DateTime $endDate): self
     {
         $this->endDate = $endDate;
 
