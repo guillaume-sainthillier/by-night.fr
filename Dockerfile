@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.4
+#syntax=docker/dockerfile:1.7-labs
 
 # Versions
 FROM dunglas/frankenphp:1.3.0-php8.2.25-alpine AS php_upstream
@@ -39,13 +39,13 @@ RUN APP_ENV=prod composer install --no-interaction --no-dev --no-scripts --prefe
 FROM node_upstream as node_builder
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY --link package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --ignore-scripts
 
-COPY package.json webpack.config.js yarn.lock ./
-COPY assets ./assets
-COPY src ./src
-COPY templates ./templates
+COPY --link webpack.config.js ./
+COPY --link assets ./assets
+COPY --link src ./src
+COPY --link templates ./templates
 
 RUN mkdir -p public && \
     yarn build
@@ -70,17 +70,13 @@ RUN apk add --no-cache \
     git \
     supervisor \
     tzdata && \
-    echo "Europe/Paris" > /etc/timezone && \
-    #Composer
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    # Reduce layer size
-    rm -rf /var/cache/apk/* /tmp/*
+    echo "Europe/Paris" > /etc/timezone
 
 # Composer install before sources
 COPY --from=php_builder --link /app/vendor ./vendor
 COPY --from=node_builder --link /app/public/build ./public/build
 
-COPY --link . .
+COPY --link --exclude=assets --exclude=docker . .
 
 # Config
 COPY --link docker/Caddyfile /etc/caddy/Caddyfile
@@ -91,12 +87,12 @@ COPY --link docker/entrypoint.sh /usr/local/bin/docker-entrypoint
 
 RUN mkdir -p /run/php var/cache var/sessions var/storage/temp var/datas public/build && \
     APP_ENV=prod composer dump-autoload --optimize --classmap-authoritative --no-dev --no-interaction && \
-    APP_ENV=prod composer run-script post-install-cmd && \
     APP_ENV=prod bin/console cache:clear --no-warmup && \
     APP_ENV=prod bin/console cache:warmup && \
+    APP_ENV=prod bin/console assets:install && \
     echo "<?php return [];" > .env.local.php && \
     chown -R www-data:www-data var public/build public/bundles && \
-    rm -rf .git docker assets /root/.composer /root/.cache /tmp/*
+    rm -rf /root/.cache
 
 
 HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
