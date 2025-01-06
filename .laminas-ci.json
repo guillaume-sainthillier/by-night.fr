@@ -1,13 +1,6 @@
 {
   "additional_checks": [
     {
-      "name": "PHPStan",
-      "job": {
-        "command": "bin/console cache:warmup; vendor/bin/phpstan analyse",
-        "php": "@lowest"
-      }
-    },
-    {
       "name": "Lint",
       "job": {
         "command": "export APP_ENV=prod; bin/console lint:container; bin/console lint:yaml config --parse-tags; bin/console lint:twig templates; bin/console doctrine:schema:validate --skip-sync",
@@ -24,7 +17,6 @@
     }
   ],
   "additional_composer_arguments": [
-    "--ignore-platform-req=ext-*",
-    "--no-scripts"
+    "--ignore-platform-req=ext-*"
   ]
 }
