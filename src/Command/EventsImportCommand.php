@@ -35,7 +35,8 @@ final class EventsImportCommand extends Command
      */
     protected function configure(): void
     {
-        $this->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
+        $this
+            ->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
             ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible');
     }
 
@@ -48,6 +49,17 @@ final class EventsImportCommand extends Command
 
         foreach ($this->parsers as $parser) {
             if ('all' !== $parserName && $parser->getCommandName() !== $parserName) {
+                continue;
+            }
+
+            if (!$parser->isEnabled()) {
+                if ('all' !== $parserName) {
+                    Monitor::writeln(\sprintf(
+                        '<warning>%s is not enabled</warning>',
+                        $parser->getName()
+                    ));
+                }
+
                 continue;
             }
 
