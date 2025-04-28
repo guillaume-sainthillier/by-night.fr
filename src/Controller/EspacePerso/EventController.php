@@ -66,6 +66,7 @@ final class EventController extends BaseController
 
         $eventDto = new EventDto();
         $eventDto->user = $userDto;
+
         $form = $this->createForm(EventType::class, $eventDto);
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);

@@ -244,6 +244,7 @@ final class DataTourismeParser extends AbstractParser
         ]);
         $place->street = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]');
         $place->externalId = \sprintf('DT-%s', $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')));
+
         $event->place = $place;
 
         $city = new CityDto();
@@ -252,10 +253,12 @@ final class DataTourismeParser extends AbstractParser
             '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
         ]);
         $city->postalCode = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]');
+
         $place->city = $city;
 
         $country = new CountryDto();
         $country->name = $countryName;
+
         $city->country = $country;
         $place->country = $country;
 

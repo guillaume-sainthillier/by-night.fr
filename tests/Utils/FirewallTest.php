@@ -41,6 +41,7 @@ class FirewallTest extends AppKernelTestCase
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
         $event = (new EventDto());
         $event->externalUpdatedAt = $now;
+
         $this->firewall->filterEventExploration($exploration, $event);
         self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
@@ -49,6 +50,7 @@ class FirewallTest extends AppKernelTestCase
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
         $event = (new EventDto());
         $event->externalUpdatedAt = $tomorrow;
+
         $this->firewall->filterEventExploration($exploration, $event);
         self::assertEquals(Reject::VALID, $exploration->getReject()->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
@@ -57,6 +59,7 @@ class FirewallTest extends AppKernelTestCase
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event = (new EventDto());
         $event->externalUpdatedAt = $now;
+
         $this->firewall->filterEventExploration($exploration, $event);
         self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
@@ -65,6 +68,7 @@ class FirewallTest extends AppKernelTestCase
         $exploration = (new ParserData())->setReject($badReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event = (new EventDto());
         $event->reject = new Reject();
+
         $this->firewall->filterEventExploration($exploration, $event);
         self::assertEquals(Reject::VALID, $exploration->getReject()->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
@@ -74,6 +78,7 @@ class FirewallTest extends AppKernelTestCase
         $event = (new EventDto());
         $event->reject = new Reject();
         $event->parserVersion = 'new version';
+
         $this->firewall->filterEventExploration($exploration, $event);
         self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $exploration->getReject()->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());

@@ -479,7 +479,7 @@ final readonly class DoctrineEventHandler
     /**
      * @param EventDto[] $dtos
      */
-    public function handleManyCLI(array $dtos, bool $flush = true): void
+    public function handleManyCLI(array $dtos): void
     {
         $this->parserHistoryHandler->start();
         $this->handleMany($dtos);
