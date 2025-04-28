@@ -33,8 +33,6 @@ final class AddEventConsumer extends AbstractConsumer implements BatchConsumerIn
 
     /**
      * {@inheritDoc}
-     *
-     * @psalm-return 1|-1
      */
     public function batchExecute(array $messages): int
     {

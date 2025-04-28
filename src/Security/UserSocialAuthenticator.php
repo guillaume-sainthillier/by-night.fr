@@ -62,7 +62,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         );
     }
 
-    public function supports(Request $request): ?bool
+    public function supports(Request $request): bool
     {
         return 'login_social_check' === $request->attributes->get('_route');
     }
@@ -133,7 +133,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
     {
         return new RedirectResponse(
             $this->router->generate('login_social_success', [
@@ -142,7 +142,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         );
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $request->getSession()->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);
 

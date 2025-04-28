@@ -52,11 +52,11 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
 
         $entity->setAddress($dto->address);
-        if ($dto->createdAt) {
+        if (null !== $dto->createdAt) {
             $entity->setCreatedAt($dto->createdAt);
         }
 
-        if ($dto->updatedAt) {
+        if (null !== $dto->updatedAt) {
             $entity->setUpdatedAt($dto->updatedAt);
         }
 

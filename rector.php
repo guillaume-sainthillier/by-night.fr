@@ -15,9 +15,9 @@ use Rector\CodeQuality\Rector\If_\CombineIfRector;
 use Rector\CodeQuality\Rector\If_\SimplifyIfElseToTernaryRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
-use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
+use Rector\Symfony\CodeQuality\Rector\Class_\InlineClassRoutePrefixRector;
 use Rector\Symfony\Set\SymfonySetList;
 
 return RectorConfig::configure()
@@ -34,15 +34,16 @@ return RectorConfig::configure()
         deadCode: true,
         codeQuality: true,
         codingStyle: true,
+        doctrineCodeQuality: true,
+        symfonyCodeQuality: true
     )
     ->withSets([
-        DoctrineSetList::DOCTRINE_CODE_QUALITY,
-        SymfonySetList::SYMFONY_CODE_QUALITY,
-        SymfonySetList::SYMFONY_71,
+        SymfonySetList::SYMFONY_72,
         PHPUnitSetList::PHPUNIT_110,
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
     ->withSkip([
+        InlineClassRoutePrefixRector::class,
         FlipTypeControlToUseExclusiveTypeRector::class,
         CatchExceptionNameMatchingTypeRector::class,
         SimplifyIfElseToTernaryRector::class => [

@@ -18,6 +18,8 @@ interface ParserInterface
 
     public static function getParserVersion(): string;
 
+    public function isEnabled(): bool;
+
     public function getName(): string;
 
     public function parse(bool $incremental): void;

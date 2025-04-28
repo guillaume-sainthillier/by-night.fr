@@ -28,6 +28,11 @@ abstract class AbstractParser implements ParserInterface
     ) {
     }
 
+    public function isEnabled(): bool
+    {
+        return true;
+    }
+
     /**
      * {@inheritDoc}
      */

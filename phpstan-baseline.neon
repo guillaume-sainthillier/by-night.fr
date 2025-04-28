@@ -1,54 +1,76 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Access to an undefined property SocialLinks\\\\Page\\:\\:\\$facebook\\.$#"
+			message: '#^Access to an undefined property SocialLinks\\Page\:\:\$facebook\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/Controller/Fragments/WidgetsController.php
 
 		-
-			message: "#^Access to an undefined property SocialLinks\\\\Page\\:\\:\\$twitter\\.$#"
+			message: '#^Access to an undefined property SocialLinks\\Page\:\:\$twitter\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/Controller/Fragments/WidgetsController.php
 
 		-
-			message: "#^Access to an undefined property SocialLinks\\\\Page\\:\\:\\$facebook\\.$#"
+			message: '#^Access to an undefined property SocialLinks\\Page\:\:\$facebook\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/Controller/Location/EventController.php
 
 		-
-			message: "#^Access to an undefined property SocialLinks\\\\Page\\:\\:\\$twitter\\.$#"
+			message: '#^Access to an undefined property SocialLinks\\Page\:\:\$twitter\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/Controller/Location/EventController.php
 
 		-
-			message: "#^Negated boolean expression is always true\\.$#"
+			message: '#^Strict comparison using \!\=\= between array\{\} and non\-empty\-array\<string, array\<mixed\>\|bool\|float\|int\|string\> will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Controller/ThumbController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: src/EntityFactory/PlaceEntityFactory.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>postalCode" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/EntityFactory/PlaceEntityFactory.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
 			count: 1
 			path: src/Image/Helper/ImageHelper.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and mixed will always evaluate to false\\.$#"
+			message: '#^Strict comparison using \=\=\= between array\{\} and mixed will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Image/Helper/ImageHelper.php
 
 		-
-			message: "#^Ternary operator condition is always true\\.$#"
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
 			count: 1
 			path: src/Image/Helper/ImageHelper.php
 
 		-
-			message: """
-				#^Regex pattern is invalid\\: Delimiter must not be alphanumeric, backslash, or NUL in pattern\\: 
-				            \\\\\\#\\(\\(http\\|https\\|ftp\\)\\://\\(\\\\S\\*\\?\\\\\\.\\\\S\\*\\?\\)\\)\\(\\\\s\\|\\\\;\\|\\\\\\)\\|\\\\\\]\\|\\\\\\[\\|\\\\\\{\\|\\\\\\}\\|,\\|"\\|'\\|\\:\\|\\\\\\<\\|\\$\\|\\\\\\.\\\\s\\)\\\\\\#i$#
-			"""
+			message: '''
+				#^Regex pattern is invalid\: Delimiter must not be alphanumeric, backslash, or NUL in pattern\: 
+				            \\\#\(\(http\|https\|ftp\)\://\(\\S\*\?\\\.\\S\*\?\)\)\(\\s\|\\;\|\\\)\|\\\]\|\\\[\|\\\{\|\\\}\|,\|"\|'\|\:\|\\\<\|\$\|\\\.\\s\)\\\#i$#
+			'''
+			identifier: regexp.pattern
 			count: 1
 			path: src/Twig/ParseExtension.php
 
 		-
-			message: "#^Property App\\\\Utils\\\\StringManipulator\\:\\:\\$text \\(Symfony\\\\Component\\\\String\\\\UnicodeString\\) does not accept Symfony\\\\Component\\\\String\\\\AbstractUnicodeString\\.$#"
+			message: '#^Property App\\Utils\\StringManipulator\:\:\$text \(Symfony\\Component\\String\\UnicodeString\) does not accept Symfony\\Component\\String\\AbstractUnicodeString\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/Utils/StringManipulator.php
-
-		-
-			message: "#^Regex pattern is invalid\\: Compilation failed\\: missing terminating \\] for character class at offset 10 in pattern\\: /\\\\s\\+\\(\\[\\]\\)\\\\s\\+/u$#"
-			count: 1
-			path: src/Utils/Util.php

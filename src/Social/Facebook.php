@@ -22,7 +22,7 @@ class Facebook extends Social
     /**
      * {@inheritDoc}
      */
-    public function getInfoPropertyPrefix(): ?string
+    public function getInfoPropertyPrefix(): string
     {
         return 'facebook';
     }
