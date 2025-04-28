@@ -41,7 +41,7 @@ final class HiddenDateType extends DateType
         ]);
     }
 
-    public function getParent(): ?string
+    public function getParent(): string
     {
         return HiddenType::class;
     }

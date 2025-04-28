@@ -31,7 +31,7 @@ final readonly class EventProfilePicture
     ) {
     }
 
-    public function getOriginalPicture(Event|EventDto $event): ?string
+    public function getOriginalPicture(Event|EventDto $event): string
     {
         [
             'path' => $path,

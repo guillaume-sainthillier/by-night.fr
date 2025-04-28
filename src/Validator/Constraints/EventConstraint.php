@@ -48,7 +48,7 @@ final class EventConstraint extends Constraint
 
     public string $eventDeleted = "L'événement facebook a été supprimé par son créateur. Il ne peut plus être mis à jour sur la plateforme.";
 
-    public function getTargets(): string|array
+    public function getTargets(): string
     {
         // This is the important bit.
         return self::CLASS_CONSTRAINT;

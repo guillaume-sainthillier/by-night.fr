@@ -110,7 +110,6 @@ final readonly class DoctrineEventHandler
     {
         $ids = [];
         foreach ($dtos as $dto) {
-            \assert($dto instanceof EventDto);
             if (null !== $dto->getExternalId()) {
                 $ids[$dto->getExternalId()] = true;
             }
@@ -258,9 +257,7 @@ final readonly class DoctrineEventHandler
             $dto->country->code = $zipCity->getCountry()->getId();
         }
 
-        if (null !== $dto->city) {
-            $dto->reject->setReason(Reject::VALID);
-        }
+        $dto->reject->setReason(Reject::VALID);
     }
 
     private function flushParserData(): void
