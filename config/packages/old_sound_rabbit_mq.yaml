@@ -8,9 +8,9 @@ old_sound_rabbit_mq:
             password: '%env(RABBITMQ_PASSWORD)%'
             vhost: '/'
             lazy: true
-            connection_timeout: 300
-            read_write_timeout: 300
-            heartbeat: 150
+            connection_timeout: 600
+            read_write_timeout: 600
+            heartbeat: 300
 
     producers:
         add_event:
