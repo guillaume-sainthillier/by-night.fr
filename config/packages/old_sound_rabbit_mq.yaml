@@ -2,15 +2,7 @@
 old_sound_rabbit_mq:
     connections:
         default:
-            host: '%env(RABBITMQ_HOST)%'
-            port: '%env(RABBITMQ_PORT)%'
-            user: '%env(RABBITMQ_USER)%'
-            password: '%env(RABBITMQ_PASSWORD)%'
-            vhost: '/'
-            lazy: true
-            connection_timeout: 600
-            read_write_timeout: 600
-            heartbeat: 300
+            url: '%env(RABBITMQ_URL)%'
 
     producers:
         add_event:
