@@ -19,7 +19,7 @@ services:
             - 6379:6379
 
     rabbitmq:
-        image: rabbitmq:3.9-management-alpine
+        image: rabbitmq:3.13-management-alpine
         hostname: 'mabbit'
         ports:
             - 5672:5672
