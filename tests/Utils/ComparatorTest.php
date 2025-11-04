@@ -37,8 +37,17 @@ class ComparatorTest extends AppKernelTestCase
 
     public static function matchingScorePlaceProvider(): iterable
     {
-        $france = (new Country())->setId('FR');
-        $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
+        $france = (new Country())
+            ->setId('FR')
+            ->setName('France')
+            ->setDisplayName('France')
+            ->setAtDisplayName('en France')
+            ->setCapital('Paris');
+
+        $toulouse = (new City())
+            ->setId(1)
+            ->setName('Toulouse')
+            ->setCountry($france);
 
         return [
             // Basic Place check
@@ -91,10 +100,35 @@ class ComparatorTest extends AppKernelTestCase
 
     public static function bestPlaceProvider(): iterable
     {
-        $france = (new Country())->setId('FR');
-        $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
-        $toulouseZip = (new ZipCity())->setId(1)->setName('Toulouse')->setPostalCode('31000')->setParent($toulouse);
-        $toulouseZip2 = (new ZipCity())->setId(2)->setName('Toulouse')->setPostalCode('31500')->setParent($toulouse);
+        $france = (new Country())
+            ->setId('FR')
+            ->setName('France')
+            ->setDisplayName('France')
+            ->setAtDisplayName('en France')
+            ->setCapital('Paris');
+
+        $toulouse = (new City())
+            ->setId(1)
+            ->setName('Toulouse')
+            ->setCountry($france);
+
+        $toulouseZip = (new ZipCity())
+            ->setId(1)
+            ->setName('Toulouse')
+            ->setPostalCode('31000')
+            ->setParent($toulouse)
+            ->setAdmin1Code('76')
+            ->setAdmin2Code('31')
+            ->setCountry($france);
+
+        $toulouseZip2 = (new ZipCity())
+            ->setId(2)
+            ->setName('Toulouse')
+            ->setPostalCode('31500')
+            ->setParent($toulouse)
+            ->setAdmin1Code('76')
+            ->setAdmin2Code('31')
+            ->setCountry($france);
 
         $dynamo = (new Place())->setId(1)->setName('Dynamo')->setStreet('6 rue Amélie')->setZipCity(clone $toulouseZip)->setCity($toulouse);
         $bikini = (new Place())->setId(2)->setName('Le bikini')->setZipCity($toulouseZip)->setCity($toulouse);

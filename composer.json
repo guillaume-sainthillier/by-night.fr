@@ -106,6 +106,7 @@
         "vich/uploader-bundle": "^2"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "friendsofphp/php-cs-fixer": "^3.64",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2",
@@ -118,7 +119,8 @@
         "symfony/debug-bundle": "7.2.*",
         "symfony/maker-bundle": "^1.11",
         "symfony/web-profiler-bundle": "7.2.*",
-        "vincentlanglet/twig-cs-fixer": "^3.3"
+        "vincentlanglet/twig-cs-fixer": "^3.3",
+        "zenstruck/foundry": "^2.6"
     },
     "config": {
         "preferred-install": {
