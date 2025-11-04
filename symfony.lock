@@ -14,9 +14,6 @@
     "beberlei/doctrineextensions": {
         "version": "v1.2.7"
     },
-    "behat/transliterator": {
-        "version": "v1.3.0"
-    },
     "clue/stream-filter": {
         "version": "v1.4.1"
     },
