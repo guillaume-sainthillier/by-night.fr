@@ -58,10 +58,22 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?EmbeddedFile $image = null;
 
+    /**
+     * @deprecated Use $dateTimes instead. Kept for backward compatibility during migration.
+     */
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
     public ?DateTimeInterface $startDate = null;
 
+    /**
+     * @deprecated Use $dateTimes instead. Kept for backward compatibility during migration.
+     */
     public ?DateTimeInterface $endDate = null;
+
+    /**
+     * @var EventDateTimeDto[]
+     */
+    #[Assert\Valid]
+    public array $dateTimes = [];
 
     public ?string $fromData = null;
 

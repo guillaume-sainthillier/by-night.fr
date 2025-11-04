@@ -12,6 +12,7 @@ namespace App\Parser\Common;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
@@ -185,6 +186,17 @@ final class OpenAgendaParser extends AbstractParser
         }
 
         $timings = $data['timings'];
+
+        // Create multiple EventDateTimeDto objects for each timing
+        $dateTimeDtos = [];
+        foreach ($timings as $timing) {
+            $dateTimeDtos[] = new EventDateTimeDto(
+                new DateTimeImmutable($timing['begin']),
+                new DateTimeImmutable($timing['end'])
+            );
+        }
+
+        // Keep legacy fields for backward compatibility
         $startDate = current($timings);
         $endDate = end($timings);
         $startDate = new DateTimeImmutable($startDate['begin']);
@@ -249,6 +261,11 @@ final class OpenAgendaParser extends AbstractParser
         $event->externalId = $data['uid'];
         $event->imageUrl = $imageUrl;
         $event->externalUpdatedAt = new DateTimeImmutable($data['updatedAt']);
+
+        // Set multiple date/time slots
+        $event->dateTimes = $dateTimeDtos;
+
+        // Keep legacy fields for backward compatibility during migration
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;

@@ -12,6 +12,7 @@ namespace App\Parser\Toulouse;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
@@ -82,9 +83,7 @@ final class ToulouseParser extends AbstractParser
             $event->name = $nom;
             $event->fromData = self::getParserName();
             $event->description = $tab[4];
-            $event->startDate = $startDate;
-            $event->endDate = $endDate;
-            $event->hours = implode('.', array_unique(explode('.', (string) $tab[7])));
+            $event->dateTimes = [new EventDateTimeDto($startDate, $endDate)];
             $event->status = $tab[9];
             $event->latitude = (float) $tab[20];
             $event->longitude = (float) $tab[21];

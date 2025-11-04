@@ -12,6 +12,7 @@ namespace App\Parser\Common;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
@@ -74,49 +75,45 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             return null;
         }
 
-        $seenHours = [];
-        $hours = null;
-        $startDate = null;
         $startDates = array_filter(explode(';', (string) $data['custom_1']));
 
         if ([] === $startDates) {
             return null;
         }
 
-        foreach ($startDates as $startDateStr) {
-            $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
-            if (false !== $startDate) {
-                $seenHours[] = \sprintf('À %s', $startDate->format('H\hi'));
-            }
-        }
-
-        if ([] === $seenHours) {
+        $validToDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
+        if (false === $validToDate) {
             return null;
         }
 
-        $seenHours = array_unique($seenHours);
+        // Create date/time slots for each start date
+        $dateTimeDtos = [];
+        foreach ($startDates as $startDateStr) {
+            $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
+            if (false === $startDate) {
+                continue;
+            }
 
-        if (1 === \count($seenHours)) {
-            $hours = $seenHours[0];
+            // Each start date creates a slot that ends at 23:59 the same day
+            $endDate = $startDate->setTime(23, 59, 59);
+
+            // Special handling: New Year's Eve all-day events
+            if ('31/12 23:59' === $startDate->format('d/m H:i')) {
+                $startDate = $startDate->setDate((int) $startDate->format('Y'), 1, 1)->setTime(0, 0);
+                $endDate = $startDate->setTime(23, 59, 59);
+            }
+
+            $dateTimeDtos[] = new EventDateTimeDto($startDate, $endDate);
         }
 
-        $endDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
-
-        if ('31/12 23:59' === $startDate->format('d/m H:i') && $startDate->format('d/m/Y') === $endDate->format('d/m/Y')) {
-            $hours = null;
-            $startDate = $startDate->setDate((int) $startDate->format('Y'), 1, 1);
+        if (empty($dateTimeDtos)) {
+            return null;
         }
-
-        // Prevents Reject::BAD_EVENT_DATE_INTERVAL
-        $endDate = $endDate->setTime(0, 0);
-        $startDate = $startDate->setTime(0, 0);
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
         $event->externalId = $data['merchant_product_id'];
-        $event->startDate = $startDate;
-        $event->endDate = $endDate;
-        $event->hours = $hours;
+        $event->dateTimes = $dateTimeDtos;
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'], $data['product_short_description'])));

@@ -12,6 +12,7 @@ namespace App\Parser\Toulouse;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
@@ -48,12 +49,6 @@ final class BikiniParser extends AbstractParser
         $startDate = DateTime::createFromFormat('U', $data['startTime']);
         $endDate = DateTime::createFromFormat('U', $data['endTime']);
 
-        if ($startDate->getTimestamp() === $endDate->getTimestamp()) {
-            $hours = \sprintf('À %s', $startDate->format('H:i'));
-        } else {
-            $hours = \sprintf('De %s à %s', $startDate->format('H:i'), $endDate->format('H:i'));
-        }
-
         $placeParts = explode("\n", (string) $data['place']['address']);
         $placeParts = array_map('trim', $placeParts);
 
@@ -61,9 +56,7 @@ final class BikiniParser extends AbstractParser
         $event->fromData = self::getParserName();
         $event->externalId = $data['id'];
         $event->name = $data['title'];
-        $event->startDate = $startDate;
-        $event->endDate = $endDate;
-        $event->hours = $hours;
+        $event->dateTimes = [new EventDateTimeDto($startDate, $endDate)];
         $event->description = $data['htmlDescription'];
         $event->type = 'Concert, Musique';
         $event->category = $data['style'];

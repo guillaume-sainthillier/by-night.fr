@@ -14,6 +14,7 @@ use App\Contracts\EntityFactoryInterface;
 use App\Doctrine\EventSubscriber\EventImageUploadSubscriber;
 use App\Dto\EventDto;
 use App\Entity\Event;
+use App\Entity\EventDateTime;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EntityProviderHandler;
@@ -48,6 +49,23 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setExternalOrigin($dto->externalOrigin);
 
         $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTime::createFromInterface($dto->externalUpdatedAt));
+
+        // Handle multiple date/time slots
+        // Clear existing date/time slots
+        foreach ($entity->getDateTimes()->toArray() as $existingDateTime) {
+            $entity->removeDateTime($existingDateTime);
+        }
+
+        // Add new date/time slots from DTO
+        foreach ($dto->dateTimes as $dateTimeDto) {
+            $eventDateTime = new EventDateTime();
+            $eventDateTime->setStartDateTime(DateTime::createFromInterface($dateTimeDto->startDateTime));
+            $eventDateTime->setEndDateTime(DateTime::createFromInterface($dateTimeDto->endDateTime));
+            $entity->addDateTime($eventDateTime);
+        }
+
+        // Keep legacy date fields for backward compatibility during migration
+        // These will be deprecated once all code uses dateTimes
         $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
         $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
 

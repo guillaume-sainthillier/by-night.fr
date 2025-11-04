@@ -12,6 +12,7 @@ namespace App\Parser\Common;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
@@ -262,7 +263,8 @@ final class DataTourismeParser extends AbstractParser
         $city->country = $country;
         $place->country = $country;
 
-        // Multiple date handling
+        // Multiple date/time slots handling - collect all slots for ONE event
+        $dateTimeDtos = [];
         foreach ($datas['takesPlaceAt'] as $date) {
             if (empty($date['endDate'])) {
                 continue;
@@ -270,30 +272,38 @@ final class DataTourismeParser extends AbstractParser
 
             $startDate = new DateTimeImmutable($date['startDate']);
             $endDate = new DateTimeImmutable($date['endDate']);
-            $hours = null;
 
             $startTime = $date['startTime'] ?? null;
             $endTime = $date['endTime'] ?? null;
 
-            if ($startTime && $endTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $endTime);
-                $hours = \sprintf('De %s à %s', $startTime, $endTime);
-            } elseif ($startTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $hours = \sprintf('À %s', $startTime);
+            // Apply time component if available
+            if ($startTime) {
+                $timeParts = explode(':', $startTime);
+                if (count($timeParts) >= 2) {
+                    $startDate = $startDate->setTime((int) $timeParts[0], (int) $timeParts[1]);
+                }
             }
 
-            $currentEvent = clone $event;
-            $currentEvent->externalId = \sprintf('%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
-            $currentEvent->startDate = $startDate;
-            $currentEvent->endDate = $endDate;
-            $currentEvent->hours = $hours;
+            if ($endTime) {
+                $timeParts = explode(':', $endTime);
+                if (count($timeParts) >= 2) {
+                    $endDate = $endDate->setTime((int) $timeParts[0], (int) $timeParts[1]);
+                }
+            }
 
-            $events[] = $currentEvent;
+            $dateTimeDtos[] = new EventDateTimeDto($startDate, $endDate);
         }
 
-        return $events;
+        // If no valid dates found, return empty array
+        if (empty($dateTimeDtos)) {
+            return [];
+        }
+
+        // Set the date/time slots on the event
+        $event->dateTimes = $dateTimeDtos;
+        $event->externalId = $datas['dc:identifier'];
+
+        return [$event];
     }
 
     private function getFrenchType(string $type): ?string
