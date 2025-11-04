@@ -93,11 +93,16 @@ vendor/bin/phpunit --testdox
 
 - `tests/AppKernelTestCase.php` - Base test case with Foundry support
 - `tests/Utils/` - Utility function tests:
-  - `ComparatorTest` - Place comparison and matching (47 tests)
+  - `ChunkUtilsTest` - Object chunking and grouping by class (10 tests)
+  - `CityManipulatorTest` - City name alternatives and sanitization (17 tests)
   - `CleanerTest` - DTO cleaning for events, places, cities (11 tests)
-  - `StringManipulatorTest` - String manipulation utilities (32 tests)
-  - `UtilTest` - General utility functions (32 tests)
+  - `ComparatorTest` - Place comparison and matching (47 tests)
   - `FirewallTest` - Firewall utilities (1 test)
+  - `MemoryUtilsTest` - Memory formatting and usage tracking (13 tests)
+  - `SluggerUtilsTest` - URL-safe slug generation (23 tests)
+  - `StringManipulatorTest` - String manipulation utilities (32 tests)
+  - `TagUtilsTest` - Tag parsing and deduplication (19 tests)
+  - `UtilTest` - General utility functions (32 tests)
 - `src/Factory/` - Foundry factories for entities
 - `src/DataFixtures/` - Doctrine fixtures using Foundry
 
@@ -105,9 +110,11 @@ vendor/bin/phpunit --testdox
 
 The test suite currently includes:
 
-- **123 passing unit tests** for utility classes
-- Tests for string manipulation, cleaning, comparison, and validation
+- **205 passing unit tests** for utility classes (293 assertions)
+- Tests for string manipulation, cleaning, comparison, validation, chunking, memory, and slugs
+- Comprehensive edge case coverage (empty strings, Unicode, special characters)
 - All tests run without database dependencies
+- Fast execution (<1 second)
 - Factories are ready for future integration tests
 
 ## Notes
