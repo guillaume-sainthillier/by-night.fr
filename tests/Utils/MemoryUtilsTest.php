@@ -20,7 +20,6 @@ class MemoryUtilsTest extends TestCase
     {
         $result = MemoryUtils::getMemoryUsage();
 
-        self::assertIsString($result);
         self::assertNotEmpty($result);
     }
 
@@ -37,7 +36,6 @@ class MemoryUtilsTest extends TestCase
     {
         $result = MemoryUtils::getPeakMemoryUsage();
 
-        self::assertIsString($result);
         self::assertNotEmpty($result);
     }
 
@@ -54,8 +52,6 @@ class MemoryUtilsTest extends TestCase
         $result1 = MemoryUtils::getMemoryUsage(false);
         $result2 = MemoryUtils::getMemoryUsage(true);
 
-        self::assertIsString($result1);
-        self::assertIsString($result2);
         // Both should be valid memory strings
         self::assertNotEmpty($result1);
         self::assertNotEmpty($result2);
@@ -112,6 +108,7 @@ class MemoryUtilsTest extends TestCase
         $method->setAccessible(true);
 
         $result = $method->invoke(null, 1536); // 1.5 KB
+        self::assertIsString($result);
 
         self::assertStringStartsWith('1.5', $result);
         self::assertStringContainsString('kb', $result);
@@ -124,8 +121,8 @@ class MemoryUtilsTest extends TestCase
         $method->setAccessible(true);
 
         $result = $method->invoke(null, 0);
-
         self::assertIsString($result);
+
         self::assertStringContainsString('b', $result);
     }
 
@@ -137,6 +134,7 @@ class MemoryUtilsTest extends TestCase
 
         $petabyte = 1024 ** 5;
         $result = $method->invoke(null, $petabyte);
+        self::assertIsString($result);
 
         self::assertStringContainsString('pb', $result);
     }
@@ -146,10 +144,6 @@ class MemoryUtilsTest extends TestCase
         $current = MemoryUtils::getMemoryUsage();
         $peak = MemoryUtils::getPeakMemoryUsage();
 
-        // Both should be valid strings with units
-        self::assertIsString($current);
-        self::assertIsString($peak);
-        
         // Peak memory should always be >= current memory
         // We can't directly compare the strings, but we can verify they're both valid
         self::assertMatchesRegularExpression('/[\d.]+ (b|kb|mb|gb|tb|pb)/', $current);

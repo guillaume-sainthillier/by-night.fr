@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class CityManipulatorTest extends TestCase
 {
-    private ?CityManipulator $manipulator = null;
+    private CityManipulator $manipulator;
 
     protected function setUp(): void
     {
@@ -46,7 +46,7 @@ class CityManipulatorTest extends TestCase
         $result = $this->manipulator->getCityNameAlternatives('Paris');
 
         self::assertContains('Paris', $result);
-        self::assertGreaterThanOrEqual(1, count($result));
+        self::assertGreaterThanOrEqual(1, \count($result));
     }
 
     #[DataProvider('cityAlternativesProvider')]
@@ -81,14 +81,13 @@ class CityManipulatorTest extends TestCase
         $result = $this->manipulator->getCityNameAlternatives('Paris');
 
         $unique = array_unique($result);
-        self::assertCount(count($result), $unique, 'Alternatives should contain only unique values');
+        self::assertCount(\count($result), $unique, 'Alternatives should contain only unique values');
     }
 
     public function testGetCityNameAlternativesWithEmptyString(): void
     {
         $result = $this->manipulator->getCityNameAlternatives('');
 
-        self::assertIsArray($result);
         self::assertNotEmpty($result);
     }
 
@@ -96,7 +95,6 @@ class CityManipulatorTest extends TestCase
     {
         $result = $this->manipulator->getCityNameAlternatives('Saint  Denis');
 
-        self::assertIsArray($result);
         self::assertNotEmpty($result);
     }
 

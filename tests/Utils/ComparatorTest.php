@@ -20,7 +20,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class ComparatorTest extends AppKernelTestCase
 {
-    private ?Comparator $comparator = null;
+    private Comparator $comparator;
 
     protected function setUp(): void
     {

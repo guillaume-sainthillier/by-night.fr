@@ -20,7 +20,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class CleanerTest extends AppKernelTestCase
 {
-    private ?Cleaner $cleaner = null;
+    private Cleaner $cleaner;
 
     protected function setUp(): void
     {
@@ -76,17 +76,19 @@ class CleanerTest extends AppKernelTestCase
 
         $this->cleaner->cleanEvent($dto);
 
-        self::assertEquals(255, strlen($dto->address));
-        self::assertEquals(128, strlen($dto->category));
-        self::assertEquals(128, strlen($dto->theme));
+        self::assertNotNull($dto->address);
+        self::assertNotNull($dto->category);
+        self::assertNotNull($dto->theme);
+        self::assertEquals(255, \strlen($dto->address));
+        self::assertEquals(128, \strlen($dto->category));
+        self::assertEquals(128, \strlen($dto->theme));
     }
 
     #[DataProvider('coordinatesProvider')]
-    public function testCleanEventCleansCoordinates(mixed $input, ?float $expected): void
+    public function testCleanEventCleansCoordinates(?float $input, ?float $expected): void
     {
         $dto = new EventDto();
         $dto->startDate = new DateTime('2024-01-15');
-        // Cleaner expects mixed type input for coordinates (can be string or float)
         $dto->latitude = $input;
         $dto->longitude = $input;
 
@@ -120,8 +122,8 @@ class CleanerTest extends AppKernelTestCase
     public function testCleanPlaceCleansCoordinates(): void
     {
         $dto = new PlaceDto();
-        $dto->latitude = '43.604652';
-        $dto->longitude = '1.444209';
+        $dto->latitude = 43.604652;
+        $dto->longitude = 1.444209;
 
         $this->cleaner->cleanPlace($dto);
 

@@ -11,6 +11,7 @@
 namespace App\Tests\Utils;
 
 use App\Utils\ChunkUtils;
+use ArrayObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -34,16 +35,16 @@ class ChunkUtilsTest extends TestCase
     public function testGetChunksByClassWithMultipleTypes(): void
     {
         $obj1 = new stdClass();
-        $obj2 = new \ArrayObject();
+        $obj2 = new ArrayObject();
         $obj3 = new stdClass();
-        $obj4 = new \ArrayObject();
+        $obj4 = new ArrayObject();
 
         $objects = [$obj1, $obj2, $obj3, $obj4];
         $result = ChunkUtils::getChunksByClass($objects);
 
         self::assertCount(2, $result);
         self::assertCount(2, $result[stdClass::class]);
-        self::assertCount(2, $result[\ArrayObject::class]);
+        self::assertCount(2, $result[ArrayObject::class]);
     }
 
     public function testGetChunksByClassPreservesKeys(): void
@@ -65,7 +66,6 @@ class ChunkUtilsTest extends TestCase
     {
         $result = ChunkUtils::getChunksByClass([]);
 
-        self::assertIsArray($result);
         self::assertEmpty($result);
     }
 
@@ -79,8 +79,12 @@ class ChunkUtilsTest extends TestCase
         $result = ChunkUtils::getNestedChunksByClass($objects, 5);
 
         self::assertCount(1, $result);
-        self::assertCount(1, $result[stdClass::class]);
-        self::assertCount(2, $result[stdClass::class][0]);
+        $classResult = $result[stdClass::class];
+        self::assertIsArray($classResult);
+        self::assertCount(1, $classResult);
+        $chunk = $classResult[0];
+        self::assertIsArray($chunk);
+        self::assertCount(2, $chunk);
     }
 
     public function testGetNestedChunksByClassWithMultipleChunks(): void
@@ -96,10 +100,18 @@ class ChunkUtilsTest extends TestCase
         $result = ChunkUtils::getNestedChunksByClass($objects, 2);
 
         self::assertCount(1, $result);
-        self::assertCount(3, $result[stdClass::class]); // 3 chunks: [2, 2, 1]
-        self::assertCount(2, $result[stdClass::class][0]);
-        self::assertCount(2, $result[stdClass::class][1]);
-        self::assertCount(1, $result[stdClass::class][2]);
+        $classResult = $result[stdClass::class];
+        self::assertIsArray($classResult);
+        self::assertCount(3, $classResult); // 3 chunks: [2, 2, 1]
+        $chunk0 = $classResult[0];
+        $chunk1 = $classResult[1];
+        $chunk2 = $classResult[2];
+        self::assertIsArray($chunk0);
+        self::assertIsArray($chunk1);
+        self::assertIsArray($chunk2);
+        self::assertCount(2, $chunk0);
+        self::assertCount(2, $chunk1);
+        self::assertCount(1, $chunk2);
     }
 
     public function testGetNestedChunksByClassPreservesKeys(): void
@@ -112,15 +124,21 @@ class ChunkUtilsTest extends TestCase
 
         $result = ChunkUtils::getNestedChunksByClass($objects, 2);
 
-        self::assertArrayHasKey(0, $result[stdClass::class][0]);
-        self::assertArrayHasKey(1, $result[stdClass::class][0]);
-        self::assertArrayHasKey(2, $result[stdClass::class][1]);
+        $classResult = $result[stdClass::class];
+        self::assertIsArray($classResult);
+        $chunk0 = $classResult[0];
+        $chunk1 = $classResult[1];
+        self::assertIsArray($chunk0);
+        self::assertIsArray($chunk1);
+        self::assertArrayHasKey(0, $chunk0);
+        self::assertArrayHasKey(1, $chunk0);
+        self::assertArrayHasKey(2, $chunk1);
     }
 
     public function testGetNestedChunksByClassWithMixedTypes(): void
     {
         $obj1 = new stdClass();
-        $obj2 = new \ArrayObject();
+        $obj2 = new ArrayObject();
         $obj3 = new stdClass();
         $obj4 = new stdClass();
 
@@ -128,8 +146,12 @@ class ChunkUtilsTest extends TestCase
         $result = ChunkUtils::getNestedChunksByClass($objects, 2);
 
         self::assertCount(2, $result);
-        self::assertCount(2, $result[stdClass::class]); // 2 chunks of stdClass
-        self::assertCount(1, $result[\ArrayObject::class]); // 1 chunk of ArrayObject
+        $stdClassResult = $result[stdClass::class];
+        $arrayObjectResult = $result[ArrayObject::class];
+        self::assertIsArray($stdClassResult);
+        self::assertIsArray($arrayObjectResult);
+        self::assertCount(2, $stdClassResult); // 2 chunks of stdClass
+        self::assertCount(1, $arrayObjectResult); // 1 chunk of ArrayObject
     }
 
     public function testGetNestedChunksByClassWithChunkSizeOne(): void
@@ -142,17 +164,24 @@ class ChunkUtilsTest extends TestCase
 
         $result = ChunkUtils::getNestedChunksByClass($objects, 1);
 
-        self::assertCount(3, $result[stdClass::class]);
-        self::assertCount(1, $result[stdClass::class][0]);
-        self::assertCount(1, $result[stdClass::class][1]);
-        self::assertCount(1, $result[stdClass::class][2]);
+        $classResult = $result[stdClass::class];
+        self::assertIsArray($classResult);
+        self::assertCount(3, $classResult);
+        $chunk0 = $classResult[0];
+        $chunk1 = $classResult[1];
+        $chunk2 = $classResult[2];
+        self::assertIsArray($chunk0);
+        self::assertIsArray($chunk1);
+        self::assertIsArray($chunk2);
+        self::assertCount(1, $chunk0);
+        self::assertCount(1, $chunk1);
+        self::assertCount(1, $chunk2);
     }
 
     public function testGetNestedChunksByClassWithEmptyArray(): void
     {
         $result = ChunkUtils::getNestedChunksByClass([], 2);
 
-        self::assertIsArray($result);
         self::assertEmpty($result);
     }
 }

@@ -171,7 +171,7 @@ class StringManipulatorTest extends TestCase
     {
         $input = '  Café   Concert  -  Jazz  ';
         $manipulator = new StringManipulator($input);
-        
+
         $result = $manipulator
             ->deleteMultipleSpaces()
             ->deleteMultipleSpacesBetween('-')

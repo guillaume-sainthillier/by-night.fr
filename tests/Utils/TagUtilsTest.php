@@ -29,31 +29,31 @@ class TagUtilsTest extends TestCase
         return [
             // Single tag
             ['rock', ['rock']],
-            
+
             // Comma separated
             ['rock,jazz,blues', ['rock', 'jazz', 'blues']],
-            
+
             // Slash separated
             ['rock/jazz/blues', ['rock', 'jazz', 'blues']],
-            
+
             // Mixed delimiters
             ['rock,jazz/blues', ['rock', 'jazz', 'blues']],
-            
+
             // With spaces
             ['rock , jazz , blues', ['rock', 'jazz', 'blues']],
             ['rock / jazz / blues', ['rock', 'jazz', 'blues']],
-            
+
             // Duplicates removed
             ['rock,rock,jazz', ['rock', 'jazz']],
-            
+
             // Empty strings filtered
             ['rock,,jazz', ['rock', 'jazz']],
             ['rock,,,jazz', ['rock', 'jazz']],
-            
+
             // Empty input
             ['', []],
             [',,,', []],
-            
+
             // Complex example
             ['rock, jazz, blues / rock / pop', ['rock', 'jazz', 'blues', 'pop']],
         ];
@@ -109,7 +109,6 @@ class TagUtilsTest extends TestCase
     {
         $result = TagUtils::getTagTerms(',/,/,');
 
-        self::assertIsArray($result);
         self::assertEmpty($result);
     }
 

@@ -36,41 +36,41 @@ class SluggerUtilsTest extends AppKernelTestCase
         return [
             // Basic text
             ['Hello World', 'hello-world'],
-            
+
             // Accents removed
             ['café', 'cafe'],
             ['élève', 'eleve'],
             ['Zürich', 'zurich'],
-            
+
             // Multiple words
             ['The Quick Brown Fox', 'the-quick-brown-fox'],
-            
+
             // Special characters
             ['Hello & World!', 'hello-world'],
             ['user@email.com', 'user-email-com'],
-            
+
             // Numbers preserved
             ['Test 123', 'test-123'],
             ['2024 Event', '2024-event'],
-            
+
             // Multiple spaces
             ['Hello    World', 'hello-world'],
-            
+
             // Leading/trailing spaces
             ['  Hello World  ', 'hello-world'],
-            
+
             // Hyphens
             ['Already-Slugged', 'already-slugged'],
-            
+
             // Underscores
             ['Snake_Case_Text', 'snake-case-text'],
-            
+
             // French
             ['Événement à Paris', 'evenement-a-paris'],
-            
+
             // German
             ['Müller Straße', 'muller-strasse'],
-            
+
             // Spanish
             ['Mañana en España', 'manana-en-espana'],
         ];
@@ -88,14 +88,15 @@ class SluggerUtilsTest extends AppKernelTestCase
     {
         $result = SluggerUtils::generateSlug('');
 
-        self::assertIsString($result);
+        self::assertEquals('', $result);
     }
 
     public function testGenerateSlugWithOnlySpecialCharacters(): void
     {
         $result = SluggerUtils::generateSlug('!@#$%^&*()');
 
-        self::assertIsString($result);
+        // Result should be a valid slug (possibly empty)
+        self::assertMatchesRegularExpression('/^[a-z0-9\-]*$/', $result);
     }
 
     public function testGenerateSlugConsistency(): void
