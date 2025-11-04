@@ -4,13 +4,18 @@ This document describes the testing setup for the By Night application.
 
 ## Requirements
 
-### PHP Extensions
+No special requirements needed for the current test suite. All tests run without database dependencies.
 
-The test suite is configured to use SQLite database. You need the following PHP extensions:
+## Test Configuration
 
-- `pdo_sqlite` - PDO driver for SQLite databases
+The test environment is configured to use SQLite database (for future integration tests):
 
-### Installing PHP SQLite Extension
+- Database URL: `sqlite:///%kernel.project_dir%/var/data_test.db`
+- Configuration file: `.env.test`
+
+### Installing PHP SQLite Extension (Optional)
+
+If you want to add integration tests in the future:
 
 #### Ubuntu/Debian
 ```bash
@@ -28,13 +33,6 @@ Uncomment the following line in your `php.ini`:
 ```ini
 extension=pdo_sqlite
 ```
-
-## Test Configuration
-
-The test environment is configured to use SQLite in-memory database:
-
-- Database URL: `sqlite:///%kernel.project_dir%/var/data_test.db`
-- Configuration file: `.env.test`
 
 ## Foundry Bundle & Fixtures
 
@@ -94,35 +92,27 @@ vendor/bin/phpunit --testdox
 ## Test Structure
 
 - `tests/AppKernelTestCase.php` - Base test case with Foundry support
-- `tests/Utils/` - Utility function tests (Comparator, Cleaner, StringManipulator, Util, Firewall)
-- `tests/Repository/` - Repository integration tests (require database)
-- `tests/Entity/` - Entity behavior and validation tests (require database)
+- `tests/Utils/` - Utility function tests:
+  - `ComparatorTest` - Place comparison and matching (47 tests)
+  - `CleanerTest` - DTO cleaning for events, places, cities (11 tests)
+  - `StringManipulatorTest` - String manipulation utilities (32 tests)
+  - `UtilTest` - General utility functions (32 tests)
+  - `FirewallTest` - Firewall utilities (1 test)
 - `src/Factory/` - Foundry factories for entities
 - `src/DataFixtures/` - Doctrine fixtures using Foundry
 
 ## Test Coverage
 
-The test suite includes:
+The test suite currently includes:
 
-- **123 passing tests** for utility classes (no database required)
-- Unit tests for string manipulation, cleaning, comparison, and validation
-- Repository tests (require SQLite extension)
-- Entity tests (require SQLite extension)
-
-## Running Tests Without Database
-
-Many tests don't require a database connection and can run without SQLite installed:
-
-```bash
-# Run only utility tests (no database required)
-vendor/bin/phpunit tests/Utils/
-```
-
-Repository and entity tests require the `pdo_sqlite` PHP extension and will be skipped if not available.
+- **123 passing unit tests** for utility classes
+- Tests for string manipulation, cleaning, comparison, and validation
+- All tests run without database dependencies
+- Factories are ready for future integration tests
 
 ## Notes
 
 - The test suite uses Foundry's `Factories` trait for factory support
 - For unit tests that don't need database persistence, use `withoutPersisting()` on factories
-- Repository and entity tests use the `ResetDatabase` trait for database isolation
-- Most utility tests don't require a database and will run in any environment
+- All current tests run without database dependencies
+- Factories are available for creating test data in future integration tests
