@@ -19,7 +19,7 @@ use DateTime;
 
 class FirewallTest extends AppKernelTestCase
 {
-    protected ?Firewall $firewall = null;
+    protected Firewall $firewall;
 
     protected function setUp(): void
     {
@@ -43,7 +43,9 @@ class FirewallTest extends AppKernelTestCase
         $event->externalUpdatedAt = $now;
 
         $this->firewall->filterEventExploration($exploration, $event);
-        self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
+        $reject = $exploration->getReject();
+        self::assertNotNull($reject);
+        self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         // L'événement doit être valide car il a été mis à jour
@@ -52,7 +54,9 @@ class FirewallTest extends AppKernelTestCase
         $event->externalUpdatedAt = $tomorrow;
 
         $this->firewall->filterEventExploration($exploration, $event);
-        self::assertEquals(Reject::VALID, $exploration->getReject()->getReason());
+        $reject = $exploration->getReject();
+        self::assertNotNull($reject);
+        self::assertEquals(Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         // L'événement ne doit pas être valide car la version du firewall a changé mais qu'il n'a pas changé
@@ -61,7 +65,9 @@ class FirewallTest extends AppKernelTestCase
         $event->externalUpdatedAt = $now;
 
         $this->firewall->filterEventExploration($exploration, $event);
-        self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
+        $reject = $exploration->getReject();
+        self::assertNotNull($reject);
+        self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         // L'événement doit être valide car la version du firewall a changé et qu'il n'était pas valide avant
@@ -70,7 +76,9 @@ class FirewallTest extends AppKernelTestCase
         $event->reject = new Reject();
 
         $this->firewall->filterEventExploration($exploration, $event);
-        self::assertEquals(Reject::VALID, $exploration->getReject()->getReason());
+        $reject = $exploration->getReject();
+        self::assertNotNull($reject);
+        self::assertEquals(Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         // L'événement ne doit pas être mis à jour car son créateur l'a supprimé
@@ -80,7 +88,9 @@ class FirewallTest extends AppKernelTestCase
         $event->parserVersion = 'new version';
 
         $this->firewall->filterEventExploration($exploration, $event);
-        self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $exploration->getReject()->getReason());
+        $reject = $exploration->getReject();
+        self::assertNotNull($reject);
+        self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $reject->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());
     }
 }

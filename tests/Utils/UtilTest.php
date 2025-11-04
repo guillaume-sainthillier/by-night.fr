@@ -16,7 +16,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class UtilTest extends AppKernelTestCase
 {
-    protected ?Util $utils = null;
+    protected Util $utils;
 
     protected function setUp(): void
     {

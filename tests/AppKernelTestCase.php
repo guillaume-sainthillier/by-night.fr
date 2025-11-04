@@ -11,9 +11,12 @@
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
 
 abstract class AppKernelTestCase extends KernelTestCase
 {
+    use Factories;
+
     protected function setUp(): void
     {
         static::bootKernel();
