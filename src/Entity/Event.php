@@ -411,7 +411,36 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\PreUpdate]
     public function majEndDate(): void
     {
-        if (null === $this->endDate) {
+        // Sync legacy date fields from dateTimes for backward compatibility
+        // These fields are kept in DB for existing queries during migration period
+        if (!$this->dateTimes->isEmpty()) {
+            $earliestStart = null;
+            $latestEnd = null;
+
+            foreach ($this->dateTimes as $dateTime) {
+                $start = $dateTime->getStartDateTime();
+                $end = $dateTime->getEndDateTime();
+
+                if (null === $earliestStart || $start < $earliestStart) {
+                    $earliestStart = $start;
+                }
+                if (null === $latestEnd || $end > $latestEnd) {
+                    $latestEnd = $end;
+                }
+            }
+
+            if (null !== $earliestStart) {
+                // Store as DATE only (remove time component)
+                $this->startDate = (clone $earliestStart)->setTime(0, 0);
+            }
+            if (null !== $latestEnd) {
+                // Store as DATE only (remove time component)
+                $this->endDate = (clone $latestEnd)->setTime(0, 0);
+            }
+        }
+
+        // Fallback for legacy code path
+        if (null === $this->endDate && null !== $this->startDate) {
             $this->endDate = $this->startDate;
         }
     }

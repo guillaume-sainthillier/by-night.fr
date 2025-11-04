@@ -64,11 +64,6 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $entity->addDateTime($eventDateTime);
         }
 
-        // Keep legacy date fields for backward compatibility during migration
-        // These will be deprecated once all code uses dateTimes
-        $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
-        $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
-
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
             $entity->setCreatedAt($dto->createdAt);
@@ -95,7 +90,6 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setCategory($dto->category);
         $entity->setName($dto->name);
         $entity->setDescription($dto->description);
-        $entity->setHours($dto->hours);
         $entity->setPrices($dto->prices);
         $entity->setStatus($dto->status);
         $entity->setMailContacts($dto->emailContacts);
