@@ -80,10 +80,8 @@ class ChunkUtilsTest extends TestCase
 
         self::assertCount(1, $result);
         $classResult = $result[stdClass::class];
-        self::assertIsArray($classResult);
         self::assertCount(1, $classResult);
         $chunk = $classResult[0];
-        self::assertIsArray($chunk);
         self::assertCount(2, $chunk);
     }
 
@@ -101,14 +99,10 @@ class ChunkUtilsTest extends TestCase
 
         self::assertCount(1, $result);
         $classResult = $result[stdClass::class];
-        self::assertIsArray($classResult);
         self::assertCount(3, $classResult); // 3 chunks: [2, 2, 1]
         $chunk0 = $classResult[0];
         $chunk1 = $classResult[1];
         $chunk2 = $classResult[2];
-        self::assertIsArray($chunk0);
-        self::assertIsArray($chunk1);
-        self::assertIsArray($chunk2);
         self::assertCount(2, $chunk0);
         self::assertCount(2, $chunk1);
         self::assertCount(1, $chunk2);
@@ -125,11 +119,8 @@ class ChunkUtilsTest extends TestCase
         $result = ChunkUtils::getNestedChunksByClass($objects, 2);
 
         $classResult = $result[stdClass::class];
-        self::assertIsArray($classResult);
         $chunk0 = $classResult[0];
         $chunk1 = $classResult[1];
-        self::assertIsArray($chunk0);
-        self::assertIsArray($chunk1);
         self::assertArrayHasKey(0, $chunk0);
         self::assertArrayHasKey(1, $chunk0);
         self::assertArrayHasKey(2, $chunk1);
@@ -148,8 +139,6 @@ class ChunkUtilsTest extends TestCase
         self::assertCount(2, $result);
         $stdClassResult = $result[stdClass::class];
         $arrayObjectResult = $result[ArrayObject::class];
-        self::assertIsArray($stdClassResult);
-        self::assertIsArray($arrayObjectResult);
         self::assertCount(2, $stdClassResult); // 2 chunks of stdClass
         self::assertCount(1, $arrayObjectResult); // 1 chunk of ArrayObject
     }
@@ -165,14 +154,10 @@ class ChunkUtilsTest extends TestCase
         $result = ChunkUtils::getNestedChunksByClass($objects, 1);
 
         $classResult = $result[stdClass::class];
-        self::assertIsArray($classResult);
         self::assertCount(3, $classResult);
         $chunk0 = $classResult[0];
         $chunk1 = $classResult[1];
         $chunk2 = $classResult[2];
-        self::assertIsArray($chunk0);
-        self::assertIsArray($chunk1);
-        self::assertIsArray($chunk2);
         self::assertCount(1, $chunk0);
         self::assertCount(1, $chunk1);
         self::assertCount(1, $chunk2);
