@@ -19,12 +19,15 @@ use App\Entity\UserEvent;
 use App\Invalidator\TagsInvalidator;
 use Exception;
 use FOS\HttpCacheBundle\CacheManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class TagsInvalidatorTest extends TestCase
 {
+    /** @var CacheManager&MockObject */
     private CacheManager $cacheManager;
+    /** @var LoggerInterface&MockObject */
     private LoggerInterface $logger;
 
     protected function setUp(): void

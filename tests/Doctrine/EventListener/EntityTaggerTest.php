@@ -20,6 +20,7 @@ use App\Entity\UserEvent;
 use App\Invalidator\TagsInvalidator;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use FOS\HttpCacheBundle\CacheManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -27,6 +28,7 @@ use stdClass;
 class EntityTaggerTest extends TestCase
 {
     private TagsInvalidator $invalidator;
+    /** @var CacheManager&MockObject */
     private CacheManager $cacheManager;
     private EntityTagger $tagger;
 
