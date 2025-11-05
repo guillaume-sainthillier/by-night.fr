@@ -209,6 +209,16 @@ chmod -R 777 var
 
 This is automatically handled by `.laminas-ci/pre-run.sh` in CI.
 
+### DAMA Bundle with Read-Only Entities
+
+The project has several entities marked as `readOnly: true`:
+- `City`, `ZipCity`, `ParserHistory`, `AdminZone*`
+
+To prevent conflicts with DAMA bundle's transaction handling:
+- `enable_static_connection: false` is set in `dama_doctrine_test_bundle.yaml`
+- This allows read-only entities to work correctly with transaction rollback
+- Test isolation still works properly through DAMA's transaction wrapping
+
 ### Schema Not Found Errors
 
 If you see table not found errors:

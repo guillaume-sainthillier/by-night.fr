@@ -1,5 +1,7 @@
 when@test:
     dama_doctrine_test:
-        enable_static_connection: true
+        # Disable static connection to avoid conflicts with read-only entities
+        # Read-only entities: City, ZipCity, ParserHistory, AdminZone*
+        enable_static_connection: false
         enable_static_meta_data_cache: true
         enable_static_query_cache: true
