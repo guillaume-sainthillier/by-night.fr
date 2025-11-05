@@ -12,6 +12,9 @@
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
+        <!-- Override DATABASE_URL if needed for your test environment -->
+        <!-- <env name="DATABASE_URL" value="sqlite:///:memory:" /> -->
+        <!-- <env name="DATABASE_URL" value="mysql://user:password@127.0.0.1:3306/test_db?serverVersion=8.0" /> -->
     </php>
 
     <testsuites>
