@@ -9,5 +9,11 @@ set -ex
 mkdir -p var
 chmod 777 var
 
+# Remove any existing test database to ensure clean state with proper permissions
+rm -f var/data_test.db
+
 # Create database schema
 bin/console doctrine:schema:create --env=test --no-interaction
+
+# Ensure the database file is writable
+chmod 666 var/data_test.db 2>/dev/null || true
