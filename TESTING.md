@@ -151,30 +151,32 @@ Integration tests require a database connection and are **excluded by default** 
 
 Before running database tests:
 
-1. **Set up test database**:
+1. **Set up test database schema**:
    ```bash
-   php bin/console doctrine:database:create --env=test
+   # For SQLite (default in .env.test), database file is created automatically
    php bin/console doctrine:schema:create --env=test
+
+   # For MySQL/PostgreSQL, you may need to create the database first:
+   # php bin/console doctrine:database:create --env=test
+   # php bin/console doctrine:schema:create --env=test
    ```
 
-2. **Run integration tests with database group**:
+2. **Run all tests** (integration tests included):
    ```bash
-   vendor/bin/phpunit --group database
+   vendor/bin/phpunit
    ```
 
    Or run specific test file:
    ```bash
-   vendor/bin/phpunit tests/Handler/DoctrineEventHandlerTest.php --group database
+   vendor/bin/phpunit tests/Handler/DoctrineEventHandlerTest.php
    ```
 
-### Running Tests Without Database (CI Default)
+### How It Works in CI
 
-By default, database tests are excluded:
-```bash
-vendor/bin/phpunit
-```
-
-This runs only utility tests that don't require a database connection.
+CI automatically:
+- Installs the `pdo_sqlite` extension (via `.laminas-ci.json`)
+- Creates the database schema (via `.laminas-ci/pre-run.sh`)
+- Runs all tests including integration tests with full database isolation (via DAMA bundle)
 
 ## Notes
 
