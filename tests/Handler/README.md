@@ -194,6 +194,21 @@ sudo apt-get install php-mysql
 sudo apt-get install php-pgsql
 ```
 
+### Read-Only Database Errors
+
+If you see "attempt to write a readonly database" errors:
+```
+Doctrine\DBAL\Exception\ReadOnlyException: attempt to write a readonly database
+```
+
+**Solution**: Ensure the var directory has write permissions:
+```bash
+mkdir -p var
+chmod -R 777 var
+```
+
+This is automatically handled by `.laminas-ci/pre-run.sh` in CI.
+
 ### Schema Not Found Errors
 
 If you see table not found errors:
