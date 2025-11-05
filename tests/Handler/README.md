@@ -131,11 +131,13 @@ This is configured in `phpunit.xml.dist` and works automatically.
 
 ### CI/CD Integration
 
-CI is configured to:
-1. Install PHP SQLite extension via `.laminas-ci/pre-install.sh`
-2. Create test database and schema via `.laminas-ci.json` pre_test hook
-3. Run all tests including integration tests
-4. Use SQLite from `.env.test` for fast, reliable testing
+CI is configured via Laminas CI:
+1. **`.laminas-ci.json`**: Declares `pdo_sqlite` extension requirement
+2. **`.laminas-ci/pre-run.sh`**: Creates database and schema before tests
+3. **`.env.test`**: Configures SQLite database for fast, reliable testing
+4. **DAMA Bundle**: Provides automatic transaction rollback for test isolation
+
+All tests run automatically in CI with proper database support.
 
 ## Test Implementation Details
 
