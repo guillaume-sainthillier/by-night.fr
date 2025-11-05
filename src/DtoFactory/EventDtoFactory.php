@@ -29,8 +29,6 @@ final class EventDtoFactory
         $event->externalId = $entity->getExternalId();
         $event->externalOrigin = $entity->getExternalOrigin();
         $event->externalUpdatedAt = $entity->getExternalUpdatedAt();
-        $event->startDate = clone $entity->getStartDate();
-        $event->endDate = clone $entity->getEndDate();
         $event->createdAt = clone $entity->getCreatedAt();
         $event->updatedAt = clone $entity->getUpdatedAt();
         $event->imageFile = $entity->getImageFile();
@@ -41,7 +39,6 @@ final class EventDtoFactory
         $event->category = $entity->getCategory();
         $event->name = $entity->getName();
         $event->description = $entity->getDescription();
-        $event->hours = $entity->getHours();
         $event->prices = $entity->getPrices();
         $event->status = $entity->getStatus();
         $event->emailContacts = $entity->getMailContacts();
