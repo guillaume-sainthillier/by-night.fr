@@ -1,10 +1,6 @@
 @import '../core';
 
 $s2bs5-border-color: #ced4da;
-// Fix for Sass unit calculation issue in select2-bootstrap-5-theme
-$s2bs5-height-inner: 1.5rem;
-$s2bs5-height-inner-sm: 1.5em;
-$s2bs5-height-inner-lg: 1.5em;
 
 @import 'select2/src/scss/core.scss';
 @import 'select2-bootstrap-5-theme/src/select2-bootstrap-5-theme.scss';
