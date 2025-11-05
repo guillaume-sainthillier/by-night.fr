@@ -75,6 +75,8 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
 
 ## Running the Tests
 
+**Important**: These tests use **DAMA Doctrine Test Bundle** for automatic transaction rollback, providing test isolation without manual cleanup.
+
 ### Prerequisites
 
 1. **Database Setup**: These are integration tests that require a working database connection.
@@ -102,9 +104,9 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
 
 ### Running the Tests
 
-Run all handler tests:
+Run all tests (integration tests will run automatically):
 ```bash
-vendor/bin/phpunit tests/Handler/
+vendor/bin/phpunit
 ```
 
 Run only the DoctrineEventHandlerTest:
@@ -117,12 +119,23 @@ Run a specific test method:
 vendor/bin/phpunit --filter testInsertNewEvent tests/Handler/DoctrineEventHandlerTest.php
 ```
 
+### Test Isolation with DAMA Bundle
+
+These tests use **DAMA Doctrine Test Bundle** which:
+- Automatically wraps each test in a database transaction
+- Rolls back the transaction after each test completes
+- Ensures tests don't interfere with each other
+- No manual database cleanup required
+
+This is configured in `phpunit.xml.dist` and works automatically.
+
 ### CI/CD Integration
 
-These tests are designed to run in your CI/CD pipeline. Ensure your CI environment has:
-- A test database configured
-- Required PHP extensions installed
-- Database schema created before test execution
+CI is configured to:
+1. Install PHP SQLite extension via `.laminas-ci/pre-install.sh`
+2. Create test database and schema via `.laminas-ci.json` pre_test hook
+3. Run all tests including integration tests
+4. Use SQLite from `.env.test` for fast, reliable testing
 
 ## Test Implementation Details
 

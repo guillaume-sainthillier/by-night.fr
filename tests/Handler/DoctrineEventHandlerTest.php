@@ -24,6 +24,12 @@ use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTime;
 
+/**
+ * Integration tests for DoctrineEventHandler.
+ *
+ * These tests require a working database connection and use DAMA Doctrine Test Bundle
+ * for automatic transaction rollback between tests.
+ */
 class DoctrineEventHandlerTest extends AppKernelTestCase
 {
     private DoctrineEventHandler $handler;
@@ -291,7 +297,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
             $dto->description = "This is batch event number {$i} with sufficient description length";
             $dto->startDate = new DateTime("+{$i} days");
             $dto->endDate = new DateTime("+{$i} days +2 hours");
-            $dto->externalId = sprintf('batch-test-%03d', $i);
+            $dto->externalId = \sprintf('batch-test-%03d', $i);
             $dto->externalOrigin = 'test-parser';
             $dto->parserVersion = '1.0';
 

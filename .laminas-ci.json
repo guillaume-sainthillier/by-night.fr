@@ -18,5 +18,6 @@
   ],
   "additional_composer_arguments": [
     "--ignore-platform-req=ext-*"
-  ]
+  ],
+  "pre_test": "bin/console doctrine:database:create --env=test --if-not-exists && bin/console doctrine:schema:create --env=test"
 }

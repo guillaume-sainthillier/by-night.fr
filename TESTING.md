@@ -145,7 +145,11 @@ The test suite currently includes:
 
 ## Running Integration Tests
 
-Integration tests require a database connection. Before running:
+Integration tests require a database connection and are **excluded by default** to ensure CI passes without database setup.
+
+### Running Database Tests Locally
+
+Before running database tests:
 
 1. **Set up test database**:
    ```bash
@@ -153,10 +157,24 @@ Integration tests require a database connection. Before running:
    php bin/console doctrine:schema:create --env=test
    ```
 
-2. **Run integration tests**:
+2. **Run integration tests with database group**:
    ```bash
-   vendor/bin/phpunit tests/Handler/
+   vendor/bin/phpunit --group database
    ```
+
+   Or run specific test file:
+   ```bash
+   vendor/bin/phpunit tests/Handler/DoctrineEventHandlerTest.php --group database
+   ```
+
+### Running Tests Without Database (CI Default)
+
+By default, database tests are excluded:
+```bash
+vendor/bin/phpunit
+```
+
+This runs only utility tests that don't require a database connection.
 
 ## Notes
 
