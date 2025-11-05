@@ -17,7 +17,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 #[ORM\Index(name: 'zip_city_postal_code_name_idx', columns: ['country_id', 'postal_code', 'name'])]
-#[ORM\Entity(repositoryClass: ZipCityRepository::class, readOnly: true)]
+#[ORM\Entity(repositoryClass: ZipCityRepository::class)]
 #[Serializer\ExclusionPolicy('ALL')]
 class ZipCity
 {

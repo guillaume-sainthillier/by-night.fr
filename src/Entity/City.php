@@ -20,7 +20,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 
-#[ORM\Entity(repositoryClass: CityRepository::class, readOnly: true)]
+#[ORM\Entity(repositoryClass: CityRepository::class)]
 #[ExclusionPolicy('NONE')]
 class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
