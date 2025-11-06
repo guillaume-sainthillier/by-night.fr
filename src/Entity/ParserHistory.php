@@ -16,7 +16,7 @@ use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ParserHistoryRepository::class, readOnly: true)]
+#[ORM\Entity(repositoryClass: ParserHistoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ParserHistory
 {

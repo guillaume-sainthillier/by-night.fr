@@ -30,7 +30,7 @@ use Stringable;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string', length: 10)]
 #[ORM\DiscriminatorMap(['PPL' => 'City', 'ADM1' => 'AdminZone1', 'ADM2' => 'AdminZone2'])]
-#[ORM\Entity(repositoryClass: AdminZoneRepository::class, readOnly: true)]
+#[ORM\Entity(repositoryClass: AdminZoneRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ExclusionPolicy('NONE')]
 abstract class AdminZone implements Stringable

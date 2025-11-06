@@ -13,7 +13,7 @@ namespace App\Entity;
 use App\Repository\AdminZone2Repository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AdminZone2Repository::class, readOnly: true)]
+#[ORM\Entity(repositoryClass: AdminZone2Repository::class)]
 class AdminZone2 extends AdminZone
 {
     #[ORM\ManyToOne(targetEntity: AdminZone1::class, fetch: 'EXTRA_LAZY')]
