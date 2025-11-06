@@ -254,7 +254,6 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
             'city' => $city,
             'country' => $country,
             'externalId' => 'place-msg-001',
-            'externalOrigin' => 'test-parser',
         ]);
 
         // Create event DTO with place reference

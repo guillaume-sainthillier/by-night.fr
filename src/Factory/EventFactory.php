@@ -35,6 +35,7 @@ final class EventFactory extends PersistentProxyObjectFactory
             'startDate' => $startDate,
             'endDate' => $endDate,
             'place' => PlaceFactory::new(),
+            'placeName' => self::faker()->company(),
             'user' => UserFactory::new(),
             'latitude' => self::faker()->latitude(),
             'longitude' => self::faker()->longitude(),
