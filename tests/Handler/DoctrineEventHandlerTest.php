@@ -10,7 +10,6 @@
 
 namespace App\Tests\Handler;
 
-use App\Dto\CityDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
