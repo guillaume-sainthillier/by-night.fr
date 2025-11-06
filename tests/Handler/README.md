@@ -140,6 +140,7 @@ CI is configured via Laminas CI:
 2. **`.laminas-ci/pre-run.sh`**: Creates database schema before tests (SQLite database file is created automatically)
 3. **`.env.test`**: Configures SQLite database for fast, reliable testing
 4. **DAMA Bundle**: Provides automatic transaction rollback for test isolation
+5. **Messenger**: Uses in-memory transport (no RabbitMQ/AMQP needed in tests)
 
 All tests run automatically in CI with proper database support.
 
