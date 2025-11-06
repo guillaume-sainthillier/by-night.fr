@@ -10,6 +10,7 @@
 
 namespace App\Tests\Handler;
 
+use App\Dto\CityDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
@@ -253,7 +254,6 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
             'street' => '4 Pennsylvania Plaza',
             'city' => $city,
             'country' => $country,
-            'externalId' => 'place-msg-001',
         ]);
 
         // Create event DTO with place reference
@@ -266,12 +266,17 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
 
-        // Reference the existing place by external ID
+        // Reference the existing place by name+street+city (standard matching strategy)
         $placeDto = new PlaceDto();
         $placeDto->name = 'Madison Square Garden';
         $placeDto->street = '4 Pennsylvania Plaza';
-        $placeDto->externalId = 'place-msg-001';
-        $placeDto->externalOrigin = 'test-parser';
+
+        // Create a matching CityDto to ensure place matching works
+        $cityDto = new CityDto();
+        $cityDto->name = 'New York';
+        $cityDto->entityId = $city->getId();
+        $placeDto->city = $cityDto;
+
         $dto->place = $placeDto;
 
         // Act: Insert the event
