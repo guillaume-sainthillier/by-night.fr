@@ -9,27 +9,6 @@
         "command": "export APP_ENV=prod; bin/console lint:container && bin/console lint:yaml config --parse-tags && bin/console lint:twig templates && bin/console doctrine:schema:validate --skip-sync",
         "php": "@lowest"
       }
-    },
-    {
-      "name": "PHP-CS-Fixer",
-      "job": {
-        "command": "vendor/bin/php-cs-fixer fix --dry-run --diff --verbose",
-        "php": "@latest"
-      }
-    },
-    {
-      "name": "Twig-CS-Fixer",
-      "job": {
-        "command": "vendor/bin/twig-cs-fixer lint templates",
-        "php": "@latest"
-      }
-    },
-    {
-      "name": "Rector",
-      "job": {
-        "command": "vendor/bin/rector process --dry-run",
-        "php": "@latest"
-      }
     }
   ],
   "exclude": [
