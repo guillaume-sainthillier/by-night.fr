@@ -26,6 +26,7 @@ final class CityFactory extends PersistentProxyObjectFactory
     protected function defaults(): array
     {
         return [
+            'id' => self::faker()->unique()->numberBetween(1, 999999),
             'name' => self::faker()->city(),
             'latitude' => self::faker()->latitude(),
             'longitude' => self::faker()->longitude(),
