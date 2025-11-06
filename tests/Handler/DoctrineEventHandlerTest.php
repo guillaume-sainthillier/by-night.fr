@@ -271,11 +271,8 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Madison Square Garden';
         $placeDto->street = '4 Pennsylvania Plaza';
 
-        // Create a matching CityDto to ensure place matching works
-        $cityDto = new CityDto();
-        $cityDto->name = 'New York';
-        $cityDto->entityId = $city->getId();
-        $placeDto->city = $cityDto;
+        // Set the existing place's entity ID directly to ensure it's reused
+        $placeDto->entityId = $existingPlace->getId();
 
         $dto->place = $placeDto;
 
