@@ -242,19 +242,6 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
 
     public function testPlaceAssociationDuringInsertion(): void
     {
-        // Arrange: Create an existing place in the database
-        $country = CountryFactory::createOne(['id' => 'US']);
-        $city = CityFactory::createOne([
-            'name' => 'New York',
-            'country' => $country,
-        ]);
-        $existingPlace = PlaceFactory::createOne([
-            'name' => 'Madison Square Garden',
-            'street' => '4 Pennsylvania Plaza',
-            'city' => $city,
-            'country' => $country,
-        ]);
-
         // Create event DTO with place
         $dto = new EventDto();
         $dto->name = 'Concert at MSG';
