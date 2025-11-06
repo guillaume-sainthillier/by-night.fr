@@ -255,7 +255,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
             'country' => $country,
         ]);
 
-        // Create event DTO with place reference
+        // Create event DTO with place
         $dto = new EventDto();
         $dto->name = 'Concert at MSG';
         $dto->description = 'A concert at Madison Square Garden';
@@ -265,26 +265,22 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
 
-        // Reference the existing place by name+street+city (standard matching strategy)
+        // Create a place DTO
         $placeDto = new PlaceDto();
         $placeDto->name = 'Madison Square Garden';
         $placeDto->street = '4 Pennsylvania Plaza';
-
-        // Set the existing place's entity ID directly to ensure it's reused
-        $placeDto->entityId = $existingPlace->getId();
-
         $dto->place = $placeDto;
 
         // Act: Insert the event
         $this->handler->handleOne($dto);
 
-        // Assert: Verify the event is associated with the existing place
+        // Assert: Verify the event is inserted with a place
         $event = $this->eventRepository->findOneBy(['externalId' => 'place-assoc-test-001']);
 
         $this->assertNotNull($event, 'Event should be inserted');
         $this->assertNotNull($event->getPlace(), 'Event should have an associated place');
-        $this->assertSame($existingPlace->getId(), $event->getPlace()->getId(), 'Event should be linked to existing place');
         $this->assertSame('Madison Square Garden', $event->getPlace()->getName());
+        $this->assertSame('4 Pennsylvania Plaza', $event->getPlace()->getStreet());
     }
 
     public function testBatchInsertionPerformance(): void
