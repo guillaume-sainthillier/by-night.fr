@@ -5,6 +5,9 @@ set -ex
 # This script runs before CI jobs
 # Database setup only runs for PHPUnit jobs
 
+# Create var/tools directory for tools like Twig-CS-Fixer, PHPStan, etc.
+mkdir -p var/tools
+
 # Only create database for PHPUnit jobs
 if [[ "${JOB}" =~ "phpunit" ]] || [[ "${JOB}" =~ "PHPUnit" ]]; then
     # Ensure var directory exists and is writable, remove old database
