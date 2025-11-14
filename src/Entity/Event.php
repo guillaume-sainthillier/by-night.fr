@@ -219,6 +219,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, EventDateTime>
+     */
+    #[ORM\OneToMany(targetEntity: EventDateTime::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    #[ORM\OrderBy(['startDateTime' => Criteria::ASC])]
+    private Collection $dateTimes;
+
     #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]
     private ?string $facebookOwnerId = null;
 
@@ -284,6 +291,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->startDate = new DateTime();
         $this->userEvents = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->dateTimes = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }
@@ -403,7 +411,36 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\PreUpdate]
     public function majEndDate(): void
     {
-        if (null === $this->endDate) {
+        // Sync legacy date fields from dateTimes for backward compatibility
+        // These fields are kept in DB for existing queries during migration period
+        if (!$this->dateTimes->isEmpty()) {
+            $earliestStart = null;
+            $latestEnd = null;
+
+            foreach ($this->dateTimes as $dateTime) {
+                $start = $dateTime->getStartDateTime();
+                $end = $dateTime->getEndDateTime();
+
+                if (null === $earliestStart || $start < $earliestStart) {
+                    $earliestStart = $start;
+                }
+                if (null === $latestEnd || $end > $latestEnd) {
+                    $latestEnd = $end;
+                }
+            }
+
+            if (null !== $earliestStart) {
+                // Store as DATE only (remove time component)
+                $this->startDate = (clone $earliestStart)->setTime(0, 0);
+            }
+            if (null !== $latestEnd) {
+                // Store as DATE only (remove time component)
+                $this->endDate = (clone $latestEnd)->setTime(0, 0);
+            }
+        }
+
+        // Fallback for legacy code path
+        if (null === $this->endDate && null !== $this->startDate) {
             $this->endDate = $this->startDate;
         }
     }
@@ -1175,5 +1212,76 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function isArchive(): ?bool
     {
         return $this->archive;
+    }
+
+    /**
+     * @return Collection<int, EventDateTime>
+     */
+    public function getDateTimes(): Collection
+    {
+        return $this->dateTimes;
+    }
+
+    public function addDateTime(EventDateTime $dateTime): self
+    {
+        if (!$this->dateTimes->contains($dateTime)) {
+            $this->dateTimes[] = $dateTime;
+            $dateTime->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDateTime(EventDateTime $dateTime): self
+    {
+        if ($this->dateTimes->contains($dateTime)) {
+            $this->dateTimes->removeElement($dateTime);
+            // set the owning side to null (unless already changed)
+            if ($dateTime->getEvent() === $this) {
+                $dateTime->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the earliest start date from all date/time slots.
+     * Falls back to the legacy startDate field if no slots exist.
+     */
+    public function getEarliestStartDate(): ?DateTime
+    {
+        if ($this->dateTimes->isEmpty()) {
+            return $this->startDate;
+        }
+
+        $earliest = null;
+        foreach ($this->dateTimes as $dateTime) {
+            if (null === $earliest || $dateTime->getStartDateTime() < $earliest) {
+                $earliest = $dateTime->getStartDateTime();
+            }
+        }
+
+        return $earliest;
+    }
+
+    /**
+     * Get the latest end date from all date/time slots.
+     * Falls back to the legacy endDate field if no slots exist.
+     */
+    public function getLatestEndDate(): ?DateTime
+    {
+        if ($this->dateTimes->isEmpty()) {
+            return $this->endDate;
+        }
+
+        $latest = null;
+        foreach ($this->dateTimes as $dateTime) {
+            if (null === $latest || $dateTime->getEndDateTime() > $latest) {
+                $latest = $dateTime->getEndDateTime();
+            }
+        }
+
+        return $latest;
     }
 }

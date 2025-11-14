@@ -12,6 +12,7 @@ namespace App\DtoFactory;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Dto\UserDto;
@@ -28,8 +29,6 @@ final class EventDtoFactory
         $event->externalId = $entity->getExternalId();
         $event->externalOrigin = $entity->getExternalOrigin();
         $event->externalUpdatedAt = $entity->getExternalUpdatedAt();
-        $event->startDate = clone $entity->getStartDate();
-        $event->endDate = clone $entity->getEndDate();
         $event->createdAt = clone $entity->getCreatedAt();
         $event->updatedAt = clone $entity->getUpdatedAt();
         $event->imageFile = $entity->getImageFile();
@@ -40,7 +39,6 @@ final class EventDtoFactory
         $event->category = $entity->getCategory();
         $event->name = $entity->getName();
         $event->description = $entity->getDescription();
-        $event->hours = $entity->getHours();
         $event->prices = $entity->getPrices();
         $event->status = $entity->getStatus();
         $event->emailContacts = $entity->getMailContacts();
@@ -48,6 +46,14 @@ final class EventDtoFactory
         $event->websiteContacts = $entity->getWebsiteContacts();
         $event->latitude = $entity->getLatitude();
         $event->longitude = $entity->getLongitude();
+
+        // Convert EventDateTime entities to DTOs
+        foreach ($entity->getDateTimes() as $dateTime) {
+            $event->dateTimes[] = new EventDateTimeDto(
+                clone $dateTime->getStartDateTime(),
+                clone $dateTime->getEndDateTime()
+            );
+        }
 
         $place = new PlaceDto();
         $place->name = $entity->getPlaceName();

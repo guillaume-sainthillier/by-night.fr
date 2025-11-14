@@ -33,33 +33,34 @@
                 </a>
             </h3>
             <div class="detail-item">
-                {% set startDate = event.startDate|date('d/m/Y') %}
-                {% set endDate = event.endDate|date('d/m/Y') %}
-
                 <i class="icon fa fa-calendar-days"></i>
                 <div>
-                    {% if event.endDate == null or event.startDate == event.endDate %}
-                        {% if microdata %}
-                            <meta itemprop="endDate" content="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}" />
+                    {% if event.dateTimes|length > 0 %}
+                        {% set firstDateTime = event.dateTimes|first %}
+                        {% if firstDateTime.startDateTime|date('Y-m-d') == firstDateTime.endDateTime|date('Y-m-d') %}
+                            {% if microdata %}
+                                <meta itemprop="endDate" content="{{ firstDateTime.endDateTime|date('c') }}" />
+                            {% endif %}
+                            <time {% if microdata %}itemprop="startDate"{% endif %}
+                                  datetime="{{ firstDateTime.startDateTime|date('c') }}">
+                                {{ firstDateTime.startDateTime|date('d/m/Y') }}
+                            </time>
+                            <small class="text-muted">{{ firstDateTime.startDateTime|date('H:i') }} - {{ firstDateTime.endDateTime|date('H:i') }}</small>
+                        {% else %}
+                            <time {% if microdata %}itemprop="startDate"{% endif %}
+                                  datetime="{{ firstDateTime.startDateTime|date('c') }}">
+                                {{ firstDateTime.startDateTime|date('d/m/Y H:i') }}
+                            </time>
+                            -
+                            <time {% if microdata %}itemprop="endDate"{% endif %}
+                                  datetime="{{ firstDateTime.endDateTime|date('c') }}">
+                                {{ firstDateTime.endDateTime|date('d/m/Y H:i') }}
+                            </time>
                         {% endif %}
-
-                        <time {% if microdata %}itemprop="startDate"{% endif %}
-                              datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
-                            {{ startDate }}
-                        </time>
-                    {% else %}
-                        <time {% if microdata %}itemprop="startDate"{% endif %}
-                              datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
-                            {{ startDate }}
-                        </time>
-                        -
-
-                        <time {% if microdata %}itemprop="endDate"{% endif %}
-                              datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">
-                            {{ endDate }}
-                        </time>
+                        {% if event.dateTimes|length > 1 %}
+                            <small class="text-muted">+{{ event.dateTimes|length - 1 }} date(s)</small>
+                        {% endif %}
                     {% endif %}
-                    <small class="text-muted">{% if event.hours %} - {{ event.hours }}{% endif %}</small>
                 </div>
             </div>
             {% set place = event.place %}

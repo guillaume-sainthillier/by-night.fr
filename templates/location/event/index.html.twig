@@ -78,30 +78,40 @@
                     <div class="card-body">
                         <div class="detail-item">
                             <i class="icon fa fa-calendar-days"></i>
-                            <h2>
-                                {% set dateDebut = event.startDate|date('d/m/Y') %}
-                                {% set dateFin = event.endDate|date('d/m/Y') %}
-
-                                {% if event.endDate == null or event.startDate == event.endDate %}
-                                    Le
-                                    <time itemprop="startDate"
-                                          datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
+                            <div>
+                                {% if event.dateTimes|length == 1 %}
+                                    {% set dateTime = event.dateTimes|first %}
+                                    <h2>
+                                        {% if dateTime.startDateTime|date('Y-m-d') == dateTime.endDateTime|date('Y-m-d') %}
+                                            Le
+                                            <time itemprop="startDate" datetime="{{ dateTime.startDateTime|date('c') }}">{{ dateTime.startDateTime|format_date('full') }}</time>
+                                            de {{ dateTime.startDateTime|date('H:i') }} à {{ dateTime.endDateTime|date('H:i') }}
+                                        {% else %}
+                                            Du
+                                            <time itemprop="startDate" datetime="{{ dateTime.startDateTime|date('c') }}">{{ dateTime.startDateTime|format_datetime('full', 'short') }}</time>
+                                            au
+                                            <time itemprop="endDate" datetime="{{ dateTime.endDateTime|date('c') }}">{{ dateTime.endDateTime|format_datetime('full', 'short') }}</time>
+                                        {% endif %}
+                                    </h2>
                                 {% else %}
-                                    Du
-                                    <time itemprop="startDate"
-                                          datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
-                                    au
-                                    <time itemprop="endDate"
-                                          datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">{{ event.endDate|format_date('full') }}</time>
+                                    <h2>Dates et horaires :</h2>
+                                    <ul class="list-unstyled">
+                                        {% for dateTime in event.dateTimes %}
+                                            <li class="mb-2">
+                                                {% if dateTime.startDateTime|date('Y-m-d') == dateTime.endDateTime|date('Y-m-d') %}
+                                                    <time datetime="{{ dateTime.startDateTime|date('c') }}">{{ dateTime.startDateTime|format_date('full') }}</time>
+                                                    : {{ dateTime.startDateTime|date('H:i') }} - {{ dateTime.endDateTime|date('H:i') }}
+                                                {% else %}
+                                                    <time datetime="{{ dateTime.startDateTime|date('c') }}">{{ dateTime.startDateTime|format_datetime('full', 'short') }}</time>
+                                                    -
+                                                    <time datetime="{{ dateTime.endDateTime|date('c') }}">{{ dateTime.endDateTime|format_datetime('full', 'short') }}</time>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
                                 {% endif %}
-                            </h2>
-                        </div>
-                        {% if event.hours %}
-                            <div class="detail-item">
-                                <i class="icon fa fa-clock"></i>
-                                <p>{{ event.hours }}</p>
                             </div>
-                        {% endif %}
+                        </div>
 
                         <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
                             <meta name="url" content="{{ path('app_agenda_by_place', {slug: place.slug, location: place.locationSlug}) }}">

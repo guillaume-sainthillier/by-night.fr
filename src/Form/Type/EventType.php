@@ -11,9 +11,9 @@
 namespace App\Form\Type;
 
 use App\Dto\EventDto;
-use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,8 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
@@ -30,17 +28,7 @@ final class EventType extends AbstractType
 {
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,
-        private readonly DateRangeBuilder $dateRangeBuilder,
     ) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function finishView(FormView $view, FormInterface $form, array $options): void
-    {
-        parent::finishView($view, $form, $options);
-        $this->dateRangeBuilder->finishView($view, $form);
     }
 
     /**
@@ -48,8 +36,22 @@ final class EventType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->dateRangeBuilder->addDateFields($builder, 'startDate', 'endDate');
         $builder
+            ->add('dateTimes', CollectionType::class, [
+                'entry_type' => EventDateTimeType::class,
+                'required' => true,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => 'Dates et horaires',
+                'entry_options' => [
+                    'label' => false,
+                ],
+                'attr' => [
+                    'class' => 'event-date-times-collection',
+                    'data-prototype-text' => 'Ajouter une date/heure',
+                ],
+            ])
             ->add('name', TextType::class, [
                 'label' => 'Titre',
                 'attr' => [
@@ -68,13 +70,6 @@ final class EventType extends AbstractType
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
-            ])
-            ->add('hours', TextType::class, [
-                'label' => 'Horaires',
-                'required' => false,
-                'attr' => [
-                    'placeholder' => 'A 20h, de 21h à minuit',
-                ],
             ])
             ->add('prices', TextType::class, [
                 'label' => 'Tarif',

@@ -12,6 +12,7 @@ namespace App\Parser\Common;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Dto\EventDateTimeDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
@@ -67,18 +68,16 @@ final class SowProgParser extends AbstractParser
         $events = $response->toArray();
 
         foreach ($events['eventDescription'] as $eventAsArray) {
-            foreach ($eventAsArray['eventSchedule']['eventScheduleDate'] as $scheduledEventAsArray) {
-                $event = $this->arrayToDto($eventAsArray, $scheduledEventAsArray);
-                if (null === $event) {
-                    continue;
-                }
-
-                $this->publish($event);
+            $event = $this->arrayToDto($eventAsArray);
+            if (null === $event) {
+                continue;
             }
+
+            $this->publish($event);
         }
     }
 
-    private function arrayToDto(array $data, array $scheduleData): ?EventDto
+    private function arrayToDto(array $data): ?EventDto
     {
         if (!isset($data['location'])) {
             return null;
@@ -92,22 +91,40 @@ final class SowProgParser extends AbstractParser
             return null;
         }
 
+        if (empty($data['eventSchedule']['eventScheduleDate'])) {
+            return null;
+        }
+
         $locationData = $data['location'];
         $eventData = $data['event'];
         $contactData = $locationData['contact'];
 
-        $hours = null;
-        if ($scheduleData['startHour'] && $scheduleData['startHour'] !== $scheduleData['endHour']) {
-            $hours = \sprintf(
-                'De %s à %s',
-                str_replace(':', 'h', (string) $scheduleData['startHour']),
-                str_replace(':', 'h', (string) $scheduleData['endHour'])
-            );
-        } elseif ($scheduleData['startHour']) {
-            $hours = \sprintf(
-                'À %s',
-                str_replace(':', 'h', (string) $scheduleData['startHour'])
-            );
+        // Build date/time slots from all schedule dates
+        $dateTimeDtos = [];
+        foreach ($data['eventSchedule']['eventScheduleDate'] as $scheduleData) {
+            $startDate = new DateTimeImmutable($scheduleData['date']);
+            $endDate = new DateTimeImmutable($scheduleData['endDate']);
+
+            // Apply time components if available
+            if (!empty($scheduleData['startHour'])) {
+                $timeParts = explode(':', $scheduleData['startHour']);
+                if (count($timeParts) >= 2) {
+                    $startDate = $startDate->setTime((int) $timeParts[0], (int) $timeParts[1]);
+                }
+            }
+
+            if (!empty($scheduleData['endHour'])) {
+                $timeParts = explode(':', $scheduleData['endHour']);
+                if (count($timeParts) >= 2) {
+                    $endDate = $endDate->setTime((int) $timeParts[0], (int) $timeParts[1]);
+                }
+            }
+
+            $dateTimeDtos[] = new EventDateTimeDto($startDate, $endDate);
+        }
+
+        if (empty($dateTimeDtos)) {
+            return null;
         }
 
         $description = null;
@@ -136,7 +153,7 @@ final class SowProgParser extends AbstractParser
         $event->name = $eventData['title'];
         $event->description = $eventData['description'];
         $event->source = 'https://www.sowprog.com/';
-        $event->externalId = \sprintf('%s-%s', $data['id'], $scheduleData['id']);
+        $event->externalId = (string) $data['id'];
         $event->imageUrl = $eventData['picture'] ?? $eventData['thumbnail'] ?? null;
         if ($event->imageUrl) {
             $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', $event->imageUrl);
@@ -145,9 +162,7 @@ final class SowProgParser extends AbstractParser
         $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp((int) round($data['modificationDate'] / 1_000));
         $event->type = $eventData['eventType']['label'];
         $event->category = $eventData['eventStyle']['label'];
-        $event->startDate = new DateTimeImmutable($scheduleData['date']);
-        $event->endDate = new DateTimeImmutable($scheduleData['endDate']);
-        $event->hours = $hours;
+        $event->dateTimes = $dateTimeDtos;
         $event->websiteContacts = $websiteContacts;
         $event->prices = $prices;
         $event->latitude = (float) $contactData['lattitude'];
