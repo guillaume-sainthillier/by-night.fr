@@ -135,7 +135,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $reservationEmail = null;
 
     /** @deprecated  */
-    #[Assert\Url]
+    #[Assert\Url(requireTld: false)]
     #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $reservationInternet = null;
 

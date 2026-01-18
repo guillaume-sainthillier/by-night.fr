@@ -114,7 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
     private bool $showSocials = true;
 
-    #[Assert\Url]
+    #[Assert\Url(requireTld: false)]
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $website = null;
