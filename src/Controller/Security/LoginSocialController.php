@@ -12,7 +12,6 @@ namespace App\Controller\Security;
 
 use App\Controller\AbstractController;
 use App\Entity\User;
-use App\OAuth\TwitterOAuth;
 use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,23 +27,14 @@ final class LoginSocialController extends AbstractController
     }
 
     #[Route(path: '/{service<%patterns.social%>}', name: 'login_social_start', methods: ['GET', 'POST'])]
-    public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth): Response
+    public function connect(string $service, ClientRegistry $clientRegistry): Response
     {
-        switch ($service) {
-            case 'facebook':
-                $scopes = ['public_profile', 'email'];
-                break;
-            case 'google':
-                $scopes = ['email', 'profile'];
-                break;
-            case 'twitter':
-                return $this->redirectToRoute('login_social_check', [
-                    'service' => $service,
-                ]);
-            default:
-                $scopes = [];
-                break;
-        }
+        $scopes = match ($service) {
+            'facebook' => ['public_profile', 'email'],
+            'google' => ['email', 'profile'],
+            'twitter' => ['users.email', 'users.read', 'tweet.read', 'offline.access'],
+            default => [],
+        };
 
         return $clientRegistry
             ->getClient($service)

@@ -10,18 +10,16 @@
 
 namespace App\Security;
 
-use App\OAuth\TwitterAccessToken;
-use App\OAuth\TwitterOAuth;
-use App\OAuth\TwitterUser;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\FacebookUser;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Token\AccessToken;
+use Smolblog\OAuth2\Client\Provider\TwitterUser;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 final readonly class OAuthDataProvider
 {
-    public function __construct(private ClientRegistry $clientRegistry, private TwitterOAuth $twitterOAuth)
+    public function __construct(private ClientRegistry $clientRegistry)
     {
     }
 
@@ -33,12 +31,8 @@ final readonly class OAuthDataProvider
             'expires' => $token->getExpires(),
         ];
 
-        if ($token instanceof TwitterAccessToken) {
-            $user = $this->twitterOAuth->fetchUserFromToken($token);
-        } else {
-            $client = $this->clientRegistry->getClient($serviceName);
-            $user = $client->fetchUserFromToken($token);
-        }
+        $client = $this->clientRegistry->getClient($serviceName);
+        $user = $client->fetchUserFromToken($token);
 
         match (true) {
             $user instanceof FacebookUser => $datas += [
@@ -60,9 +54,9 @@ final readonly class OAuthDataProvider
             $user instanceof TwitterUser => $datas += [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
-                'profilePicture' => $user->getProfilePicture(),
+                'profilePicture' => $user->getImageUrl(),
                 'realname' => $user->getName(),
-                'nickname' => $user->getScreenName(),
+                'nickname' => $user->getUsername(),
             ],
             default => throw new AuthenticationException(\sprintf('Unable to guess how to find user for service "%s"', $serviceName)),
         };

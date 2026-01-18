@@ -16,14 +16,30 @@ knpu_oauth2_client:
             redirect_params: { service: 'facebook_admin' }
             graph_api_version: v2.12
         google:
-            type:                google
-            client_id:           '%env(GOOGLE_API_ID)%'
-            client_secret:       '%env(GOOGLE_API_SECRET)%'
+            type: google
+            client_id: '%env(GOOGLE_API_ID)%'
+            client_secret: '%env(GOOGLE_API_SECRET)%'
             redirect_route: login_social_check
             redirect_params: { service: 'google' }
         google_admin:
-            type:                google
-            client_id:           '%env(GOOGLE_API_ID)%'
-            client_secret:       '%env(GOOGLE_API_SECRET)%'
+            type: google
+            client_id: '%env(GOOGLE_API_ID)%'
+            client_secret: '%env(GOOGLE_API_SECRET)%'
             redirect_route: admin_login_social_check
             redirect_params: { service: 'google_admin' }
+        twitter:
+            type: generic
+            provider_class: Smolblog\OAuth2\Client\Provider\Twitter
+            client_class: KnpU\OAuth2ClientBundle\Client\OAuth2PKCEClient
+            client_id: '%env(TWITTER_CLIENT_ID)%'
+            client_secret: '%env(TWITTER_CLIENT_SECRET)%'
+            redirect_route: login_social_check
+            redirect_params: { service: 'twitter' }
+        twitter_admin:
+            type: generic
+            provider_class: Smolblog\OAuth2\Client\Provider\Twitter
+            client_class: KnpU\OAuth2ClientBundle\Client\OAuth2PKCEClient
+            client_id: '%env(TWITTER_CLIENT_ID)%'
+            client_secret: '%env(TWITTER_CLIENT_SECRET)%'
+            redirect_route: admin_login_social_check
+            redirect_params: { service: 'twitter_admin' }

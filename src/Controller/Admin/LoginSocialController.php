@@ -12,10 +12,8 @@ namespace App\Controller\Admin;
 
 use App\App\SocialManager;
 use App\Controller\AbstractController;
-use App\OAuth\TwitterOAuth;
 use App\Security\OAuthDataProvider;
 use App\Social\Social;
-use App\Social\SocialProvider;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,14 +23,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class LoginSocialController extends AbstractController
 {
     #[Route(path: '/check-{service<%patterns.admin_social%>}', name: 'admin_login_social_check', methods: ['GET', 'POST'])]
-    public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider, TwitterOAuth $twitterOAuth): Response
+    public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider): Response
     {
-        if (SocialProvider::TWITTER_ADMIN === $service) {
-            $accessToken = $twitterOAuth->getAccessToken();
-        } else {
-            $client = $clientRegistry->getClient($service);
-            $accessToken = $client->getAccessToken();
-        }
+        $client = $clientRegistry->getClient($service);
+        $accessToken = $client->getAccessToken();
 
         $datas = $OAuthDataProvider->getDatasFromToken($service, $accessToken);
         $appOAuth = $socialManager->getAppOAuth();
@@ -48,20 +42,13 @@ final class LoginSocialController extends AbstractController
     }
 
     #[Route(path: '/{service<%patterns.admin_social%>}', name: 'admin_login_social_start', methods: ['GET'])]
-    public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth): Response
+    public function connect(string $service, ClientRegistry $clientRegistry): Response
     {
-        switch ($service) {
-            case 'facebook_admin':
-                $scopes = ['public_profile', 'email', 'pages_show_list', 'manage_pages'];
-                break;
-            case 'twitter_admin':
-                return $this->redirectToRoute('admin_login_social_check', [
-                    'service' => $service,
-                ]);
-            default:
-                $scopes = [];
-                break;
-        }
+        $scopes = match ($service) {
+            'facebook_admin' => ['public_profile', 'email', 'pages_show_list', 'manage_pages'],
+            'twitter_admin' => ['users.read', 'tweet.read', 'offline.access'],
+            default => [],
+        };
 
         return $clientRegistry
             ->getClient($service)

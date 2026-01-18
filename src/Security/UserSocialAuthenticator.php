@@ -11,17 +11,11 @@
 namespace App\Security;
 
 use App\Entity\User;
-use App\OAuth\TwitterAccessToken;
-use App\OAuth\TwitterOAuth;
 use App\Repository\UserRepository;
 use App\Social\SocialProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use KnpU\OAuth2ClientBundle\Exception\InvalidStateException;
-use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
-use KnpU\OAuth2ClientBundle\Security\Exception\InvalidStateAuthenticationException;
-use KnpU\OAuth2ClientBundle\Security\Exception\NoAuthCodeAuthenticationException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +39,6 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         private readonly UserAuthenticatorInterface $userAuthenticator,
         private readonly SocialProvider $socialProvider,
         private readonly OAuthDataProvider $oAuthDataProvider,
-        private readonly TwitterOAuth $twitterOAuth,
         private readonly UserRepository $userRepository,
     ) {
     }
@@ -70,14 +63,8 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
     public function authenticate(Request $request): Passport
     {
         $service = $request->attributes->get('service');
-
-        // Still use Oauth 1.0...
-        if (SocialProvider::TWITTER === $service) {
-            $accessToken = $this->fetchTwitterAccessToken();
-        } else {
-            $client = $this->clientRegistry->getClient($service);
-            $accessToken = $this->fetchAccessToken($client);
-        }
+        $client = $this->clientRegistry->getClient($service);
+        $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $service) {
@@ -150,16 +137,5 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
             $this->router->generate('app_login'),
             Response::HTTP_TEMPORARY_REDIRECT
         );
-    }
-
-    private function fetchTwitterAccessToken(): TwitterAccessToken
-    {
-        try {
-            return $this->twitterOAuth->getAccessToken();
-        } catch (MissingAuthorizationCodeException) {
-            throw new NoAuthCodeAuthenticationException();
-        } catch (InvalidStateException $invalidStateException) {
-            throw new InvalidStateAuthenticationException($invalidStateException);
-        }
     }
 }
