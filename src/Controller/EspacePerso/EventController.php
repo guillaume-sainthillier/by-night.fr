@@ -33,10 +33,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class EventController extends BaseController
 {
-    /**
-     * @var int
-     */
-    private const EVENT_PER_PAGE = 50;
+    private const int EVENT_PER_PAGE = 50;
 
     #[Route(path: '/mes-soirees', name: 'app_event_list', methods: ['GET'])]
     public function index(Request $request, EventRepository $eventRepository): Response
@@ -75,7 +72,7 @@ final class EventController extends BaseController
             $event = $entityManager->getReference(Event::class, $eventDto->entityId);
             $event->setParticipations(1);
 
-            $userEvent = (new UserEvent())
+            $userEvent = new UserEvent()
                 ->setUser($user)
                 ->setGoing(true);
             $event->addUserEvent($userEvent);

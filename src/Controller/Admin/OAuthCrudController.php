@@ -15,9 +15,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 
 abstract class OAuthCrudController extends AbstractCrudController
 {
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
@@ -46,6 +48,7 @@ abstract class OAuthCrudController extends AbstractCrudController
                 'id', ]);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $facebookId = TextField::new('facebook_id');

@@ -28,7 +28,7 @@ final class ComparatorTest extends AppKernelTestCase
     {
         parent::setUp();
 
-        $this->comparator = static::getContainer()->get(Comparator::class);
+        $this->comparator = self::getContainer()->get(Comparator::class);
     }
 
     #[DataProvider('matchingScorePlaceProvider')]

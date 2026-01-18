@@ -25,10 +25,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/api')]
 final class CityController extends AbstractController
 {
-    /**
-     * @var int
-     */
-    public const MAX_RESULTS = 7;
+    public const int MAX_RESULTS = 7;
 
     #[Route(path: '/villes', name: 'app_api_city', methods: ['GET'])]
     #[ReverseProxy(expires: '1 year')]

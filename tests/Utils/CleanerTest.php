@@ -27,7 +27,7 @@ final class CleanerTest extends AppKernelTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->cleaner = static::getContainer()->get(Cleaner::class);
+        $this->cleaner = self::getContainer()->get(Cleaner::class);
     }
 
     public function testCleanEventSetsEndDateWhenNull(): void

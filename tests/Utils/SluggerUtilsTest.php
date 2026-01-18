@@ -22,7 +22,7 @@ final class SluggerUtilsTest extends AppKernelTestCase
     {
         parent::setUp();
         // Initialize the SluggerUtils with the container's slugger
-        static::getContainer()->get(SluggerUtils::class);
+        self::getContainer()->get(SluggerUtils::class);
     }
 
     #[DataProvider('slugProvider')]

@@ -114,7 +114,7 @@ final class IndexController extends BaseController
             $final_datas['data'][$key] = $datas[$key] ?? 0;
         }
 
-        return array_map('array_values', $final_datas);
+        return array_map(array_values(...), $final_datas);
     }
 
     /**

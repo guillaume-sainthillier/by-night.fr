@@ -40,8 +40,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->handler = static::getContainer()->get(DoctrineEventHandler::class);
-        $this->eventRepository = static::getContainer()->get(EventRepository::class);
+        $this->handler = self::getContainer()->get(DoctrineEventHandler::class);
+        $this->eventRepository = self::getContainer()->get(EventRepository::class);
     }
 
     public function testInsertNewEvent(): void

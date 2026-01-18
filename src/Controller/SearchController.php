@@ -24,10 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/recherche')]
 final class SearchController extends AbstractController
 {
-    /**
-     * @var int
-     */
-    private const ITEMS_PER_PAGE = 20;
+    private const int ITEMS_PER_PAGE = 20;
 
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
     public function index(Request $request, RepositoryManagerInterface $rm): Response
@@ -85,7 +82,7 @@ final class SearchController extends AbstractController
     {
         /** @var EventElasticaRepository $repoSearch */
         $repoSearch = $rm->getRepository(Event::class);
-        $search = (new SearchEvent())->setTerm($query);
+        $search = new SearchEvent()->setTerm($query);
 
         return $repoSearch->findWithSearch($search);
     }

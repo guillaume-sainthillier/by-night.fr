@@ -24,7 +24,7 @@ final class UtilTest extends AppKernelTestCase
     {
         parent::setUp();
 
-        $this->utils = static::getContainer()->get(Util::class);
+        $this->utils = self::getContainer()->get(Util::class);
     }
 
     #[DataProvider('nonNumericCharsProvider')]

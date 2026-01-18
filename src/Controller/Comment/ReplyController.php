@@ -22,10 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class ReplyController extends BaseController
 {
-    /**
-     * @var int
-     */
-    public const REPLIES_PER_PAGE = 5;
+    public const int REPLIES_PER_PAGE = 5;
 
     #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', methods: ['GET'])]
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response

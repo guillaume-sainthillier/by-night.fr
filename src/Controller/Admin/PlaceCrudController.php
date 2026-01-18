@@ -21,6 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 
 final class PlaceCrudController extends AbstractCrudController
 {
@@ -29,6 +30,7 @@ final class PlaceCrudController extends AbstractCrudController
         return Place::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -51,6 +53,7 @@ final class PlaceCrudController extends AbstractCrudController
             ]);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $panel1 = FormField::addPanel('Informations');
