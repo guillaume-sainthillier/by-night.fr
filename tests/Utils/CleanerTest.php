@@ -19,7 +19,7 @@ use DateTime;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class CleanerTest extends AppKernelTestCase
+final class CleanerTest extends AppKernelTestCase
 {
     private Cleaner $cleaner;
 

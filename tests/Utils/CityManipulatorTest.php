@@ -14,7 +14,7 @@ use App\Utils\CityManipulator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class CityManipulatorTest extends TestCase
+final class CityManipulatorTest extends TestCase
 {
     private CityManipulator $manipulator;
 

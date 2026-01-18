@@ -30,7 +30,7 @@ use Override;
  * These tests require a working database connection and use DAMA Doctrine Test Bundle
  * for automatic transaction rollback between tests.
  */
-class DoctrineEventHandlerTest extends AppKernelTestCase
+final class DoctrineEventHandlerTest extends AppKernelTestCase
 {
     private DoctrineEventHandler $handler;
 

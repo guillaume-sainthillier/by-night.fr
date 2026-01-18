@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
-class EntityTaggerTest extends TestCase
+final class EntityTaggerTest extends TestCase
 {
     private TagsInvalidator $invalidator;
 

@@ -15,7 +15,7 @@ use App\Utils\SluggerUtils;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class SluggerUtilsTest extends AppKernelTestCase
+final class SluggerUtilsTest extends AppKernelTestCase
 {
     #[Override]
     protected function setUp(): void

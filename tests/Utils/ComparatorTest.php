@@ -19,7 +19,7 @@ use App\Utils\Comparator;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class ComparatorTest extends AppKernelTestCase
+final class ComparatorTest extends AppKernelTestCase
 {
     private Comparator $comparator;
 

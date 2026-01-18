@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ReverseProxySubscriberTest extends TestCase
+final class ReverseProxySubscriberTest extends TestCase
 {
     public function testGetSubscribedEvents(): void
     {

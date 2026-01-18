@@ -15,7 +15,7 @@ use App\Utils\Util;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class UtilTest extends AppKernelTestCase
+final class UtilTest extends AppKernelTestCase
 {
     protected Util $utils;
 
