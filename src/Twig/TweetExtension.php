@@ -10,18 +10,11 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension as Extension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-final class TweetExtension extends Extension
+final class TweetExtension
 {
-    public function getFilters(): array
-    {
-        return [
-            new TwigFilter('tweet', $this->tweet(...)),
-        ];
-    }
-
+    #[AsTwigFilter(name: 'tweet')]
     public function tweet(?string $tweet): ?string
     {
         $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';

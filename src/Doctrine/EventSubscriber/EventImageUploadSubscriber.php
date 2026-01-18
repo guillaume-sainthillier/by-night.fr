@@ -12,10 +12,11 @@ namespace App\Doctrine\EventSubscriber;
 
 use App\Entity\Event;
 use App\Handler\EventHandler;
-use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Events;
 
-final class EventImageUploadSubscriber implements EventSubscriberInterface
+#[AsDoctrineListener(event: Events::preFlush)]
+final class EventImageUploadSubscriber
 {
     /** @var Event[] */
     private array $eventsToHandle = [];
@@ -23,13 +24,6 @@ final class EventImageUploadSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly EventHandler $eventHandler,
     ) {
-    }
-
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::preFlush,
-        ];
     }
 
     public function preFlush(): void

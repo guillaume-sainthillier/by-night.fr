@@ -14,6 +14,7 @@ use App\Entity\Country;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 
 final class CountryCrudController extends AbstractCrudController
 {
@@ -22,6 +23,7 @@ final class CountryCrudController extends AbstractCrudController
         return Country::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -39,6 +41,7 @@ final class CountryCrudController extends AbstractCrudController
             ]);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $id = TextField::new('id', 'ID');

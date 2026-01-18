@@ -13,7 +13,6 @@ namespace App\Tests\Handler;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
-use App\Entity\Place;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
@@ -23,6 +22,7 @@ use App\Handler\DoctrineEventHandler;
 use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTime;
+use Override;
 
 /**
  * Integration tests for DoctrineEventHandler.
@@ -33,8 +33,10 @@ use DateTime;
 class DoctrineEventHandlerTest extends AppKernelTestCase
 {
     private DoctrineEventHandler $handler;
+
     private EventRepository $eventRepository;
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -58,6 +60,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Test Venue';
         $placeDto->street = '123 Test Street';
+
         $dto->place = $placeDto;
 
         // Act: Insert the event
@@ -114,6 +117,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Updated Venue';
         $placeDto->street = '456 Updated Street';
+
         $dto->place = $placeDto;
 
         $this->handler->handleOne($dto);
@@ -143,6 +147,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto1 = new PlaceDto();
         $placeDto1->name = 'Test Venue';
         $placeDto1->street = '789 Test Ave';
+
         $dto1->place = $placeDto1;
 
         // First insertion
@@ -161,6 +166,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto2 = new PlaceDto();
         $placeDto2->name = 'Test Venue';
         $placeDto2->street = '789 Test Ave';
+
         $dto2->place = $placeDto2;
 
         // Act: Second insertion with same external ID
@@ -182,17 +188,17 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $dtos = [];
         for ($i = 1; $i <= 3; ++$i) {
             $dto = new EventDto();
-            $dto->name = "Event Number {$i}";
-            $dto->description = "Description for event {$i}";
-            $dto->startDate = new DateTime("+{$i} weeks");
-            $dto->endDate = new DateTime("+{$i} weeks +1 hour");
-            $dto->externalId = "multi-test-00{$i}";
+            $dto->name = 'Event Number ' . $i;
+            $dto->description = 'Description for event ' . $i;
+            $dto->startDate = new DateTime(\sprintf('+%d weeks', $i));
+            $dto->endDate = new DateTime(\sprintf('+%d weeks +1 hour', $i));
+            $dto->externalId = 'multi-test-00' . $i;
             $dto->externalOrigin = 'test-parser';
             $dto->parserVersion = '1.0';
 
             $placeDto = new PlaceDto();
-            $placeDto->name = "Venue {$i}";
-            $placeDto->street = "{$i}00 Street";
+            $placeDto->name = 'Venue ' . $i;
+            $placeDto->street = $i . '00 Street';
             $dto->place = $placeDto;
 
             $dtos[] = $dto;
@@ -229,6 +235,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Test Venue';
         $placeDto->street = '123 Street';
+
         $dto->place = $placeDto;
 
         // Act: Try to insert the invalid event
@@ -256,6 +263,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Madison Square Garden';
         $placeDto->street = '4 Pennsylvania Plaza';
+
         $dto->place = $placeDto;
 
         // Act: Insert the event
@@ -276,17 +284,17 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $dtos = [];
         for ($i = 1; $i <= 10; ++$i) {
             $dto = new EventDto();
-            $dto->name = "Batch Event {$i}";
-            $dto->description = "This is batch event number {$i} with sufficient description length";
-            $dto->startDate = new DateTime("+{$i} days");
-            $dto->endDate = new DateTime("+{$i} days +2 hours");
+            $dto->name = 'Batch Event ' . $i;
+            $dto->description = \sprintf('This is batch event number %d with sufficient description length', $i);
+            $dto->startDate = new DateTime(\sprintf('+%d days', $i));
+            $dto->endDate = new DateTime(\sprintf('+%d days +2 hours', $i));
             $dto->externalId = \sprintf('batch-test-%03d', $i);
             $dto->externalOrigin = 'test-parser';
             $dto->parserVersion = '1.0';
 
             $placeDto = new PlaceDto();
-            $placeDto->name = "Batch Venue {$i}";
-            $placeDto->street = "Batch Street {$i}";
+            $placeDto->name = 'Batch Venue ' . $i;
+            $placeDto->street = 'Batch Street ' . $i;
             $dto->place = $placeDto;
 
             $dtos[] = $dto;
@@ -326,6 +334,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Contact Test Venue';
         $placeDto->street = '999 Contact St';
+
         $dto->place = $placeDto;
 
         // Act: Insert the event
@@ -355,6 +364,7 @@ class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Timestamp Venue';
         $placeDto->street = '111 Time St';
+
         $dto->place = $placeDto;
 
         // Act: Insert the event

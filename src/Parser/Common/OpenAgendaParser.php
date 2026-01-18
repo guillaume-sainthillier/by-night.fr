@@ -29,10 +29,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class OpenAgendaParser extends AbstractParser
 {
-    /**
-     * @var int
-     */
-    private const EVENT_BATCH_SIZE = 300;
+    private const int EVENT_BATCH_SIZE = 300;
 
     public function __construct(
         LoggerInterface $logger,
@@ -84,8 +81,8 @@ final class OpenAgendaParser extends AbstractParser
     private function getAgendaEvents(bool $incremental, int $agendaId): iterable
     {
         $filter = $incremental
-            ? ['updatedAt' => ['gte' => (new DateTimeImmutable('yesterday', new DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
-            : ['timings' => ['gte' => (new DateTimeImmutable('now', new DateTimeZone('UTC')))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
+            ? ['updatedAt' => ['gte' => new DateTimeImmutable('yesterday', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
+            : ['timings' => ['gte' => new DateTimeImmutable('now', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
 
         $after = [];
         while (true) {

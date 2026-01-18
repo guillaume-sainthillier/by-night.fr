@@ -12,18 +12,11 @@ namespace App\Twig;
 
 use App\Invalidator\TagsInvalidator;
 use RuntimeException;
-use Twig\Extension\AbstractExtension as Extension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-final class TagsExtension extends Extension
+final class TagsExtension
 {
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('tags', $this->getTags(...)),
-        ];
-    }
-
+    #[AsTwigFunction(name: 'tags')]
     public function getTags(string $type, mixed $object = null): string
     {
         return match ($type) {

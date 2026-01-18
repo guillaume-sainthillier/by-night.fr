@@ -68,7 +68,7 @@ final readonly class UserHandler
                 $file = new DeletableFile($tempPath, $filename, null, null, true);
                 $user->setImageSystemFile($file);
             } else {
-                $user->setImageSystemFile(null);
+                $user->setImageSystemFile();
             }
         }
     }

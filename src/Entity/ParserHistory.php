@@ -21,6 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
 class ParserHistory
 {
     use EntityIdentityTrait;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $startDate;
 

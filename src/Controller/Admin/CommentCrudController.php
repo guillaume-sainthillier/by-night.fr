@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Override;
 
 final class CommentCrudController extends AbstractCrudController
 {
@@ -26,6 +27,7 @@ final class CommentCrudController extends AbstractCrudController
         return Comment::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -34,6 +36,7 @@ final class CommentCrudController extends AbstractCrudController
             ->setSearchFields(['id', 'comment', 'user.username', 'user.email']);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $id = IdField::new('id', 'ID');

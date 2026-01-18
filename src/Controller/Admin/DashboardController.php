@@ -29,6 +29,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Override;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,6 +41,7 @@ final class DashboardController extends AbstractDashboardController
     }
 
     #[Route(path: '/', name: 'admin', methods: ['GET', 'POST'])]
+    #[Override]
     public function index(): Response
     {
         // redirect to some CRUD controller
@@ -51,12 +53,14 @@ final class DashboardController extends AbstractDashboardController
         return $this->redirect($url);
     }
 
+    #[Override]
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
             ->setTitle('By Night Administration');
     }
 
+    #[Override]
     public function configureCrud(): Crud
     {
         return Crud::new()
@@ -64,6 +68,7 @@ final class DashboardController extends AbstractDashboardController
         ;
     }
 
+    #[Override]
     public function configureActions(): Actions
     {
         return parent::configureActions()
@@ -73,6 +78,7 @@ final class DashboardController extends AbstractDashboardController
         ;
     }
 
+    #[Override]
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToUrl('Back to Home', 'fas fa-home', '../')->setLinkTarget('_blank')->setLinkRel('noreferrer');
@@ -97,6 +103,7 @@ final class DashboardController extends AbstractDashboardController
     /**
      * @param User $user
      */
+    #[Override]
     public function configureUserMenu(UserInterface $user): UserMenu
     {
         // Usually it's better to call the parent method because that gives you a

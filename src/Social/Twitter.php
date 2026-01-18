@@ -13,6 +13,7 @@ namespace App\Social;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\App\Location;
 use Exception;
+use Override;
 
 final class Twitter extends Social
 {
@@ -59,6 +60,7 @@ final class Twitter extends Social
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function getInfoProperties(): array
     {
         return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'nickname', 'email', 'profilePicture'];

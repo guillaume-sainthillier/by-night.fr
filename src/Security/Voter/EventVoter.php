@@ -15,6 +15,7 @@ use App\Entity\User;
 use LogicException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
@@ -22,20 +23,11 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  */
 final class EventVoter extends Voter
 {
-    /**
-     * @var string
-     */
-    public const CREATE = 'event.create';
+    public const string CREATE = 'event.create';
 
-    /**
-     * @var string
-     */
-    public const EDIT = 'event.edit';
+    public const string EDIT = 'event.edit';
 
-    /**
-     * @var string
-     */
-    public const DELETE = 'event.delete';
+    public const string DELETE = 'event.delete';
 
     public function __construct(private readonly Security $security)
     {
@@ -44,7 +36,7 @@ final class EventVoter extends Voter
     /**
      * {@inheritDoc}
      */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();
 

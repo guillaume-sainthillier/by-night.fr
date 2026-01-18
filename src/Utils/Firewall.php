@@ -19,10 +19,7 @@ use DateTimeInterface;
 
 final class Firewall
 {
-    /**
-     * @var string
-     */
-    public const VERSION = '1.1';
+    public const string VERSION = '1.1';
 
     /** @var ParserData[] */
     private array $parserDatas = [];
@@ -109,7 +106,7 @@ final class Firewall
         if ($dto->getExternalId()) {
             $parserData = $this->getExploration($dto->getExternalId());
             if (null === $parserData) {
-                $parserData = (new ParserData())
+                $parserData = new ParserData()
                     ->setExternalId($dto->getExternalId())
                     ->setExternalOrigin($dto->getExternalOrigin())
                     ->setLastUpdated(null === $dto->getExternalUpdatedAt() ? null : DateTime::createFromInterface($dto->getExternalUpdatedAt()))
@@ -140,7 +137,7 @@ final class Firewall
     private function isSPAMContent(?string $content): bool
     {
         $content = mb_strtolower($content ?? '');
-        $black_list = array_map('mb_strtolower', [
+        $black_list = array_map(mb_strtolower(...), [
             'Buy && sell tickets at', 'Please join', 'Invite Friends', 'Buy Tickets',
             'Find Local Concerts', 'reverbnation.com', 'pastaparty.com', 'evrd.us',
             'farishams.com', 'ty-segall.com',
@@ -158,13 +155,7 @@ final class Firewall
             "Retour de l'être aimé", 'valise magique',
         ]);
 
-        foreach ($black_list as $black_word) {
-            if (mb_strstr($content, $black_word)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($black_list, fn ($black_word) => mb_strstr($content, (string) $black_word));
     }
 
     public function getExploration(?string $externalId): ?ParserData
@@ -198,7 +189,7 @@ final class Firewall
         if (null !== $dto->place->getExternalId()) {
             $parserData = $this->getExploration($dto->place->getExternalId());
             if (null === $parserData) {
-                $parserData = (new ParserData())
+                $parserData = new ParserData()
                     ->setExternalId($dto->place->getExternalId())
                     ->setExternalOrigin($dto->place->getExternalOrigin())
                     ->setReject($dto->place->reject)

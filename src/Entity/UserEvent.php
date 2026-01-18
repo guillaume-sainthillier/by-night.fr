@@ -21,6 +21,7 @@ class UserEvent implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
+
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $going = false;
 

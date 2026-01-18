@@ -25,15 +25,9 @@ use ZipArchive;
 
 final readonly class CountryImporter
 {
-    /**
-     * @var int
-     */
-    private const ZIP_CODES_PER_TRANSACTION = 500;
+    private const int ZIP_CODES_PER_TRANSACTION = 500;
 
-    /**
-     * @var int
-     */
-    private const CITIES_PER_TRANSACTION = 50;
+    private const int CITIES_PER_TRANSACTION = 50;
 
     public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
     {
@@ -77,7 +71,7 @@ final readonly class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 3_000, "\t"))) {
+        while (false !== ($data = fgetcsv($fd, 3_000, "\t", escape: '\\'))) {
             if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
                 continue;
             }
@@ -221,7 +215,7 @@ final readonly class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 1_000, "\t"))) {
+        while (false !== ($data = fgetcsv($fd, 1_000, "\t", escape: '\\'))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }

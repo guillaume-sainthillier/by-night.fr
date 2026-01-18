@@ -12,10 +12,7 @@ namespace App\Social;
 
 final class FacebookAdmin extends Facebook
 {
-    /**
-     * @var string
-     */
-    private const BASE_GRAPH_URL = 'https://graph.facebook.com';
+    private const string BASE_GRAPH_URL = 'https://graph.facebook.com';
 
     /**
      * @return string[]

@@ -18,6 +18,7 @@ use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTimeImmutable;
+use Override;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -31,20 +32,11 @@ use ZipArchive;
 
 final class DataTourismeParser extends AbstractParser
 {
-    /**
-     * @var string
-     */
-    private const UUID_REGEX = '#^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$#';
+    private const string UUID_REGEX = '#^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$#';
 
-    /**
-     * @var string
-     */
-    private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
+    private const string INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
 
-    /**
-     * @var string
-     */
-    private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
+    private const string UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
     private readonly PropertyAccessorInterface $propertyAccessor;
 
@@ -75,6 +67,7 @@ final class DataTourismeParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public static function getParserVersion(): string
     {
         return '1.2';

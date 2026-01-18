@@ -26,11 +26,11 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 {
     public function __construct(
         /** @var ObjectPersister */
-        private readonly ObjectPersisterInterface $decorated,
-        private readonly Index $index,
-        private readonly array $options,
-        private readonly MessageBusInterface $messageBus,
-        private readonly LoggerInterface $logger,
+        private ObjectPersisterInterface $decorated,
+        private Index $index,
+        private array $options,
+        private MessageBusInterface $messageBus,
+        private LoggerInterface $logger,
     ) {
     }
 

@@ -27,20 +27,23 @@ use League\Glide\Manipulators\Sharpen;
 use League\Glide\Manipulators\Size;
 use League\Glide\Manipulators\Watermark;
 use League\Glide\Server;
+use Override;
 
 final class ServerFactory extends \League\Glide\ServerFactory
 {
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public static function create(array $config = []): Server
     {
-        return (new self($config))->getServer();
+        return new self($config)->getServer();
     }
 
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getManipulators(): array
     {
         return [

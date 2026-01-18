@@ -22,6 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 class ParserData
 {
     use EntityIdentityTrait;
+
     #[ORM\Column(type: Types::STRING, length: 127)]
     private ?string $externalId = null;
 

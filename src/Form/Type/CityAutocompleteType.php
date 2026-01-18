@@ -11,6 +11,7 @@
 namespace App\Form\Type;
 
 use App\Form\Builder\DateRangeBuilder;
+use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -56,9 +57,7 @@ final class CityAutocompleteType extends AbstractType
                 ],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez choisir une ville pour continuer',
-                    ]),
+                    new NotBlank(message: 'Veuillez choisir une ville pour continuer'),
                 ],
             ]);
     }
@@ -76,6 +75,7 @@ final class CityAutocompleteType extends AbstractType
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getBlockPrefix(): string
     {
         return '';

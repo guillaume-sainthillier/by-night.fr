@@ -14,6 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CountryDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\CountryRepository;
+use Override;
 
 final class CountryEntityProvider extends AbstractEntityProvider
 {
@@ -31,6 +32,7 @@ final class CountryEntityProvider extends AbstractEntityProvider
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getEntity(object $dto): ?object
     {
         $entity = parent::getEntity($dto);

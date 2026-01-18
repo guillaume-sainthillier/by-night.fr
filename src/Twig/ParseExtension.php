@@ -10,20 +10,11 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension as Extension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-final class ParseExtension extends Extension
+final class ParseExtension
 {
-    public function getFilters(): array
-    {
-        return [
-            new TwigFilter('parse_tags', $this->parseTags(...)),
-            new TwigFilter('ensure_protocol', $this->ensureProtocol(...)),
-            new TwigFilter('resume', $this->resume(...)),
-        ];
-    }
-
+    #[AsTwigFilter(name: 'ensure_protocol')]
     public function ensureProtocol(?string $link): ?string
     {
         if (!preg_match('#^(http|https|ftp)#', (string) $link)) {
@@ -33,6 +24,7 @@ final class ParseExtension extends Extension
         return $link;
     }
 
+    #[AsTwigFilter(name: 'parse_tags')]
     public function parseTags(?string $texte): ?string
     {
         $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', (string) $texte);
@@ -45,6 +37,7 @@ final class ParseExtension extends Extension
         return strip_tags((string) $texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
     }
 
+    #[AsTwigFilter(name: 'resume')]
     public function resume(?string $text): string
     {
         if (null === $text) {

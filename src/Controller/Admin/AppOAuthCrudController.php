@@ -12,6 +12,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\AppOAuth;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Override;
 
 final class AppOAuthCrudController extends OAuthCrudController
 {
@@ -20,6 +21,7 @@ final class AppOAuthCrudController extends OAuthCrudController
         return AppOAuth::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)

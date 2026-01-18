@@ -10,6 +10,7 @@
 
 namespace App\Form\Type;
 
+use Override;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormInterface;
@@ -21,6 +22,7 @@ final class HiddenDateType extends DateType
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         parent::finishView($view, $form, $options);
@@ -30,6 +32,7 @@ final class HiddenDateType extends DateType
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
@@ -41,6 +44,7 @@ final class HiddenDateType extends DateType
         ]);
     }
 
+    #[Override]
     public function getParent(): string
     {
         return HiddenType::class;

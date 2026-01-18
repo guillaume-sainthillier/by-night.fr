@@ -27,6 +27,7 @@ class TagsInvalidatorTest extends TestCase
 {
     /** @var CacheManager&MockObject */
     private CacheManager $cacheManager;
+
     /** @var LoggerInterface&MockObject */
     private LoggerInterface $logger;
 

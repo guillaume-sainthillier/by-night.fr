@@ -36,6 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
+
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
     #[ORM\GeneratedValue]

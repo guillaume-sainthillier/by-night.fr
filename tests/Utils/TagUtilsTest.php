@@ -89,7 +89,7 @@ class TagUtilsTest extends TestCase
 
     public function testGetTagTermsWithSpecialCharacters(): void
     {
-        $result = TagUtils::getTagTerms('rock&roll,hip-hop,drum\'n\'bass');
+        $result = TagUtils::getTagTerms("rock&roll,hip-hop,drum'n'bass");
 
         self::assertContains('rock&roll', $result);
         self::assertContains('hip-hop', $result);

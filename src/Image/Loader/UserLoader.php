@@ -12,6 +12,7 @@ namespace App\Image\Loader;
 
 use App\Entity\User;
 use App\Picture\UserProfilePicture;
+use Override;
 
 final class UserLoader extends AbstractImageLoader
 {
@@ -22,6 +23,7 @@ final class UserLoader extends AbstractImageLoader
     ) {
     }
 
+    #[Override]
     public function getDefaultParams(array $params): array
     {
         [

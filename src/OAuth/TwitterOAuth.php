@@ -21,15 +21,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 final readonly class TwitterOAuth
 {
-    /**
-     * @var string
-     */
-    private const OAUTH_TOKEN_SESSION_KEY = '_oauth_token';
+    private const string OAUTH_TOKEN_SESSION_KEY = '_oauth_token';
 
-    /**
-     * @var string
-     */
-    private const OAUTH_TOKEN_SECRET_SESSION_KEY = '_oauth_token_secret';
+    private const string OAUTH_TOKEN_SECRET_SESSION_KEY = '_oauth_token_secret';
 
     public function __construct(private string $clientId, private string $clientSecret, private RequestStack $requestStack)
     {

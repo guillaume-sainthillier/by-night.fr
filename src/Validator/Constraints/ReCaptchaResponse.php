@@ -10,12 +10,14 @@
 
 namespace App\Validator\Constraints;
 
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 final class ReCaptchaResponse extends Constraint
 {
     public string $message = 'Le captcha est incorrect.';
 
+    #[Override]
     public function validatedBy(): string
     {
         return self::class . 'Validator';

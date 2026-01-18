@@ -11,6 +11,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use Override;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,10 +34,7 @@ final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
 
-    /**
-     * @var string
-     */
-    private const LOGIN_ROUTE = 'app_login';
+    private const string LOGIN_ROUTE = 'app_login';
 
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
@@ -88,6 +86,7 @@ final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
         return new RedirectResponse($this->urlGenerator->generate('app_event_list'));
     }
 
+    #[Override]
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         if ($request->isXmlHttpRequest()) {

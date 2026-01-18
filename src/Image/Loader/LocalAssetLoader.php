@@ -11,6 +11,7 @@
 namespace App\Image\Loader;
 
 use App\Helper\AssetHelper;
+use Override;
 
 final class LocalAssetLoader extends AbstractImageLoader
 {
@@ -20,6 +21,7 @@ final class LocalAssetLoader extends AbstractImageLoader
     ) {
     }
 
+    #[Override]
     public function getDefaultParams(array $params): array
     {
         [

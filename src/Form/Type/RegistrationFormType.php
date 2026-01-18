@@ -39,9 +39,7 @@ final class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'type' => PasswordType::class,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
+                    new NotBlank(message: 'Please enter a password'),
                 ],
                 'options' => [
                     'attr' => [

@@ -18,15 +18,13 @@ use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTimeImmutable;
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class SowProgParser extends AbstractParser
 {
-    /**
-     * @var string
-     */
-    private const BASE_URI = 'https://agenda.sowprog.com';
+    private const string BASE_URI = 'https://agenda.sowprog.com';
 
     private readonly HttpClientInterface $client;
 
@@ -142,7 +140,7 @@ final class SowProgParser extends AbstractParser
             $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', $event->imageUrl);
         }
 
-        $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp((int) round($data['modificationDate'] / 1_000));
+        $event->externalUpdatedAt = new DateTimeImmutable()->setTimestamp((int) round($data['modificationDate'] / 1_000));
         $event->type = $eventData['eventType']['label'];
         $event->category = $eventData['eventStyle']['label'];
         $event->startDate = new DateTimeImmutable($scheduleData['date']);
@@ -187,6 +185,7 @@ final class SowProgParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public static function getParserVersion(): string
     {
         return '1.2';
