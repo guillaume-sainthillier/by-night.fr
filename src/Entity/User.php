@@ -31,7 +31,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[Vich\Uploadable]
 #[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cet email')]
