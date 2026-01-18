@@ -16,7 +16,6 @@ use App\Controller\AbstractController as BaseController;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
 use App\Repository\EventRepository;
-use App\Social\Twitter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -26,40 +25,7 @@ final class WidgetsController extends BaseController
     /**
      * @var int
      */
-    public const TWEET_LIMIT = 25;
-
-    /**
-     * @var int
-     */
     public const WIDGET_ITEM_LIMIT = 7;
-
-    #[Route(path: '/tweeter-feed/{max_id}', name: 'app_widget_tweeter', requirements: ['max_id' => '\d+'], methods: ['GET'])]
-    #[ReverseProxy(expires: '1 hour')]
-    public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, ?int $max_id = null): Response
-    {
-        $results = $disableTwitterFeed ? [] : $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
-        $nextLink = null;
-        if (isset($results['search_metadata']['next_results'])) {
-            parse_str((string) $results['search_metadata']['next_results'], $infos);
-
-            if (isset($infos['?max_id'])) {
-                $nextLink = $this->generateUrl('app_widget_tweeter', [
-                    'location' => $location->getSlug(),
-                    'max_id' => $infos['?max_id'],
-                ]);
-            }
-        }
-
-        if (!isset($results['statuses'])) {
-            $results['statuses'] = [];
-        }
-
-        return $this->render('location/hinclude/tweets.html.twig', [
-            'tweets' => $results['statuses'],
-            'hasNextLink' => $nextLink,
-            'location' => $location,
-        ]);
-    }
 
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}', name: 'app_widget_next_events', methods: ['GET'])]
     #[ReverseProxy(expires: 'tomorrow')]
