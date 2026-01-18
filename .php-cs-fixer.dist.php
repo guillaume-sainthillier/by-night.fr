@@ -19,6 +19,7 @@ EOF;
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
     ->exclude('var')
+    ->exclude('node_modules')
     ->notPath('config/preload.php')
     ->notPath('config/reference.php')
 ;
