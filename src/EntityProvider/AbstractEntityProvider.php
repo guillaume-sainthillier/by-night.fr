@@ -29,7 +29,6 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
      */
     public function clear(): void
     {
-        unset($this->entities); // Call GC
         $this->entities = [];
     }
 
