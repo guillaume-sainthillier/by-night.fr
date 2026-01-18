@@ -60,7 +60,6 @@
         "pagerfanta/twig": "^4",
         "php-amqplib/rabbitmq-bundle": "^2.19",
         "presta/sitemap-bundle": "^4.2",
-        "runtime/frankenphp-symfony": "^0.2.0",
         "sentry/sentry-symfony": "^5.8.3",
         "social-links/social-links": "^1.17",
         "stof/doctrine-extensions-bundle": "^1.15.2",
