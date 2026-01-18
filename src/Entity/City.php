@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
+use Override;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 #[ExclusionPolicy('NONE')]
@@ -29,7 +30,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     protected ?AdminZone $parent = null;
 
     /** @var Collection<int, ZipCity> */
-    #[ORM\OneToMany(targetEntity: ZipCity::class, fetch: 'EXTRA_LAZY', mappedBy: 'parent')]
+    #[ORM\OneToMany(targetEntity: ZipCity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY')]
     protected Collection $zipCities;
 
     public function __construct()
@@ -39,11 +40,13 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
 
     #[Groups(['elasticsearch:city:details'])]
     #[VirtualProperty(name: 'country')]
+    #[Override]
     public function getCountry(): ?Country
     {
         return parent::getCountry();
     }
 
+    #[Override]
     public function __toString(): string
     {
         return $this->getFullName();
@@ -91,6 +94,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         return $postalCodes;
     }
 
+    #[Override]
     public function setCountry(?Country $country): static
     {
         $this->country = $country;

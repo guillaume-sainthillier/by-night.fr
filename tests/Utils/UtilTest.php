@@ -12,12 +12,14 @@ namespace App\Tests\Utils;
 
 use App\Tests\AppKernelTestCase;
 use App\Utils\Util;
+use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class UtilTest extends AppKernelTestCase
 {
     protected Util $utils;
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();

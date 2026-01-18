@@ -93,7 +93,7 @@ final class ParserHistoryHandler
 
     public function start(): void
     {
-        $this->parserHistory = (new ParserHistory())->setStartDate(new DateTime());
+        $this->parserHistory = new ParserHistory()->setStartDate(new DateTime());
     }
 
     public function reset(): void

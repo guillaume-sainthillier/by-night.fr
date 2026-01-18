@@ -85,12 +85,6 @@
                     <span>Membres</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#actus">
-                    <i class="icon fab fa-twitter"></i>
-                    <span>Actus</span>
-                </a>
-            </li>
         </ul>
     </div>
 
@@ -112,10 +106,6 @@
 {% endblock %}
 
 {% block widgets -%}
-    <!-- Twitter -->
-    {{ include('location/widget/twitter.html.twig') }}
-    <!-- ./Twitter -->
-
     {% if social_manager.facebookIdPage %}
         <!-- Facebook -->
         {{ include('location/widget/facebook.html.twig') }}
@@ -136,5 +126,4 @@
 
 {% block js %}
     {{ encore_entry_script_tags('agenda') }}
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 {% endblock %}

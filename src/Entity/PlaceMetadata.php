@@ -23,6 +23,7 @@ use Stringable;
 class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
 {
     use EntityIdentityTrait;
+
     #[ORM\ManyToOne(targetEntity: Place::class, inversedBy: 'metadatas')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Place $place = null;

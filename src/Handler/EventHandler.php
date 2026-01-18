@@ -25,10 +25,7 @@ use Vich\UploaderBundle\Handler\UploadHandler;
 
 final readonly class EventHandler
 {
-    /**
-     * @var int
-     */
-    private const MAX_CONCURRENT_REQUESTS = 50;
+    private const int MAX_CONCURRENT_REQUESTS = 50;
 
     public function __construct(
         private Cleaner $cleaner,
@@ -132,7 +129,7 @@ final readonly class EventHandler
 
         if (0 === $octets) {
             $event->setImageSystemHash(null);
-            $event->setImageSystemFile(null);
+            $event->setImageSystemFile();
 
             return;
         }

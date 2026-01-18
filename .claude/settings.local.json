@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(php -l:*)",
+      "Bash(php:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__repomix__pack_codebase",
+      "mcp__context7__query-docs",
+      "WebSearch",
+      "mcp__repomix__grep_repomix_output",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.x.com)",
+      "Bash(composer require:*)",
+      "Bash(composer remove:*)"
+    ]
+  }
+}

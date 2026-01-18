@@ -19,6 +19,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Override;
 
 /**
  * @extends ServiceEntityRepository<City>
@@ -44,6 +45,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         ;
     }
 
+    #[Override]
     public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
     {
         return parent::createQueryBuilder($alias, $indexBy)

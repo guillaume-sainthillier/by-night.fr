@@ -25,7 +25,7 @@ final readonly class MailerManager
 
     public function sendConfirmEmailEmail(User $user, array $context): void
     {
-        $email = (new TemplatedEmail())
+        $email = new TemplatedEmail()
             ->to($user->getEmail())
             ->subject('Confirmez votre adresse mail')
             ->htmlTemplate('email/confirmation-email.html.twig')
@@ -36,7 +36,7 @@ final readonly class MailerManager
 
     public function sendResetPasswordEmail(User $user, ResetPasswordToken $resetPasswordToken, int $tokenLifeTime): void
     {
-        $email = (new TemplatedEmail())
+        $email = new TemplatedEmail()
             ->to($user->getEmail())
             ->subject('Changement de mot de passe')
             ->htmlTemplate('email/reset-password.html.twig')

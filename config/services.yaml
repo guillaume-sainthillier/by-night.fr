@@ -1,5 +1,8 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
@@ -8,7 +11,6 @@ parameters:
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
     twitter_id_page: 'By__Night'
     disable_polled_feeds: '%kernel.debug%'
-    twitter.baseurl: https://api.twitter.com/1.1
     patterns.path: '.+'
     patterns.page: '[1-9](\d*)'
     patterns.id: '\d+'
@@ -37,7 +39,6 @@ services:
             $awinApiKey: '%env(AWIN_API_KEY)%'
             $dataTourismeAppKey: '%env(DATATOURISME_APP_KEY)%'
             $monitor: '%env(APP_MONITOR)%'
-            $disableTwitterFeed: '%disable_polled_feeds%'
             $s3ThumbServer: '@app.s3_thumb_server'
             $assetThumbServer: '@app.asset_thumb_server'
             $dataDir: '%kernel.project_dir%/var/datas'
@@ -102,22 +103,17 @@ services:
         arguments:
             $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
 
-    App\Social\Twitter:
-        arguments:
-            $config: { id: '%env(TWITTER_API_ID)%', secret: '%env(TWITTER_API_SECRET)%' }
-
     App\Social\Google:
+        arguments:
+            $config: { id: 'unused', secret: 'unused' }
+
+    App\Social\Twitter:
         arguments:
             $config: { id: 'unused', secret: 'unused' }
 
     App\Social\Facebook:
         arguments:
             $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
-
-    App\OAuth\TwitterOAuth:
-        arguments:
-            $clientId: '%env(TWITTER_API_ID)%'
-            $clientSecret: '%env(TWITTER_API_SECRET)%'
 
     App\Archive\EventArchivator:
         arguments:

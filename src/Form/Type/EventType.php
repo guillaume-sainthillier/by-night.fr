@@ -13,6 +13,7 @@ namespace App\Form\Type;
 use App\Dto\EventDto;
 use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
+use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -191,6 +192,7 @@ final class EventType extends AbstractType
         ]);
     }
 
+    #[Override]
     public function getBlockPrefix(): string
     {
         return 'app_event';

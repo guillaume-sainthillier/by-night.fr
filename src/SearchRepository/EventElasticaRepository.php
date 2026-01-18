@@ -23,30 +23,15 @@ use Pagerfanta\PagerfantaInterface;
 
 final class EventElasticaRepository extends Repository
 {
-    /**
-     * @var string
-     */
-    public const EXPO_TERMS = 'exposition, salon';
+    public const string EXPO_TERMS = 'exposition, salon';
 
-    /**
-     * @var string
-     */
-    public const CONCERT_TERMS = 'concert, musique, artiste';
+    public const string CONCERT_TERMS = 'concert, musique, artiste';
 
-    /**
-     * @var string
-     */
-    public const FAMILY_TERMS = 'famille, enfants';
+    public const string FAMILY_TERMS = 'famille, enfants';
 
-    /**
-     * @var string
-     */
-    public const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
+    public const string SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
 
-    /**
-     * @var string
-     */
-    public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
+    public const string STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
     public function findWithSearch(SearchEvent $search): PagerfantaInterface
     {

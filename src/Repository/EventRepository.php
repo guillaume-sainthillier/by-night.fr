@@ -21,6 +21,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Override;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -97,6 +98,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('p.country', 'c3');
     }
 
+    #[Override]
     public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
     {
         $qb = parent::createQueryBuilder($alias, $indexBy);
@@ -490,6 +492,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getQuery()
             ->getArrayResult();
 
-        return array_map('current', $results);
+        return array_map(current(...), $results);
     }
 }

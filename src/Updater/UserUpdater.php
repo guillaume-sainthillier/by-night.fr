@@ -23,10 +23,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class UserUpdater extends Updater
 {
-    /**
-     * @var int
-     */
-    private const PAGINATION_SIZE = 50;
+    private const int PAGINATION_SIZE = 50;
 
     public function __construct(
         EntityManagerInterface $entityManager,

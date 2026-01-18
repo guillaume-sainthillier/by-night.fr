@@ -10,6 +10,8 @@
 
 namespace App\Image\Loader;
 
+use Override;
+
 final class UrlLoader extends AbstractImageLoader
 {
     public function getUrl(array $params): string
@@ -22,6 +24,7 @@ final class UrlLoader extends AbstractImageLoader
         return !empty($params['url']) || ($params['loader'] ?? null) === 'url';
     }
 
+    #[Override]
     public function getDefaultParams(array $params): array
     {
         [

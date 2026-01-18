@@ -28,6 +28,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use Override;
 
 final class EventCrudController extends AbstractCrudController
 {
@@ -36,6 +37,7 @@ final class EventCrudController extends AbstractCrudController
         return Event::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -71,6 +73,7 @@ final class EventCrudController extends AbstractCrudController
             ]);
     }
 
+    #[Override]
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
@@ -78,6 +81,7 @@ final class EventCrudController extends AbstractCrudController
             ->add(UserWithEventFilter::new('WithUser'));
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $panel1 = FormField::addPanel('Informations');

@@ -20,10 +20,7 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 final readonly class EventArchivator
 {
-    /**
-     * @var int
-     */
-    public const ITEMS_PER_TRANSACTION = 5_000;
+    public const int ITEMS_PER_TRANSACTION = 5_000;
 
     public function __construct(private EntityManagerInterface $entityManager, private ObjectPersisterInterface $objectPersister, private EventRepository $eventRepository)
     {

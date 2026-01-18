@@ -35,10 +35,7 @@ use Psr\Log\LoggerInterface;
 
 final readonly class DoctrineEventHandler
 {
-    /**
-     * @var int
-     */
-    private const CHUNK_SIZE = 50;
+    private const int CHUNK_SIZE = 50;
 
     private ParserHistoryHandler $parserHistoryHandler;
 
@@ -289,7 +286,7 @@ final readonly class DoctrineEventHandler
      */
     private function getAllowedEvents(array $dtos): array
     {
-        return array_filter($dtos, fn (EventDto $dto) => $this->firewall->isEventDtoValid($dto));
+        return array_filter($dtos, $this->firewall->isEventDtoValid(...));
     }
 
     /**

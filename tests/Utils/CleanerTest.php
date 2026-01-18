@@ -16,12 +16,14 @@ use App\Dto\PlaceDto;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Cleaner;
 use DateTime;
+use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class CleanerTest extends AppKernelTestCase
 {
     private Cleaner $cleaner;
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();

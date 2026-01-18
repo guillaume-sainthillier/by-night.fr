@@ -33,7 +33,7 @@ use Stringable;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[Vich\Uploadable]
 #[ORM\Index(name: 'event_slug_idx', columns: ['slug'])]
@@ -51,10 +51,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 {
     use EntityTimestampableTrait;
 
-    /**
-     * @var string
-     */
-    final public const INDEX_FROM = '-6 months';
+    final public const string INDEX_FROM = '-6 months';
 
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
@@ -138,7 +135,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $reservationEmail = null;
 
     /** @deprecated  */
-    #[Assert\Url]
+    #[Assert\Url(requireTld: false)]
     #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $reservationInternet = null;
 

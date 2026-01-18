@@ -12,14 +12,17 @@ namespace App\Controller\Admin;
 
 use App\Entity\City;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Override;
 
 final class CityCrudController extends AdminZoneCrudController
 {
+    #[Override]
     public static function getEntityFqcn(): string
     {
         return City::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud

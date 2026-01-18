@@ -83,7 +83,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
             }
 
             $tags = $event['category'] . ',' . $event['type'] . ',' . $event['theme'];
-            $tags = array_unique(array_map('trim', array_map('ucfirst', array_filter(preg_split('#[,/]#', $tags)))));
+            $tags = array_unique(array_map(trim(...), array_map(ucfirst(...), array_filter(preg_split('#[,/]#', $tags)))));
 
             foreach ($tags as $tag) {
                 if (isset($cache[$tag])) {

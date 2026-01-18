@@ -12,11 +12,12 @@ namespace App\Doctrine\EntityListener;
 
 use App\Entity\User;
 use App\Security\EmailVerifier;
-use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 
-final class UserEmailEntityListener implements EventSubscriberInterface
+#[AsDoctrineListener(event: Events::postFlush)]
+final class UserEmailEntityListener
 {
     /** @var User[] */
     private array $queue = [];
@@ -51,13 +52,6 @@ final class UserEmailEntityListener implements EventSubscriberInterface
 
         unset($this->queue); // calls gc
         $this->queue = [];
-    }
-
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::postFlush,
-        ];
     }
 
     private function handleUserEmail(User $user): void

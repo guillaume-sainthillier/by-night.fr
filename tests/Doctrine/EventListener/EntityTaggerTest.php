@@ -28,8 +28,10 @@ use stdClass;
 class EntityTaggerTest extends TestCase
 {
     private TagsInvalidator $invalidator;
+
     /** @var CacheManager&MockObject */
     private CacheManager $cacheManager;
+
     private EntityTagger $tagger;
 
     protected function setUp(): void

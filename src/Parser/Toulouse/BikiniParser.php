@@ -19,10 +19,7 @@ use DateTime;
 
 final class BikiniParser extends AbstractParser
 {
-    /**
-     * @var string
-     */
-    private const EVENTS_URL = 'https://lebikini.com/events.json';
+    private const string EVENTS_URL = 'https://lebikini.com/events.json';
 
     public static function getParserName(): string
     {
@@ -55,7 +52,7 @@ final class BikiniParser extends AbstractParser
         }
 
         $placeParts = explode("\n", (string) $data['place']['address']);
-        $placeParts = array_map('trim', $placeParts);
+        $placeParts = array_map(trim(...), $placeParts);
 
         $event = new EventDto();
         $event->fromData = self::getParserName();

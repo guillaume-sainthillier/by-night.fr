@@ -13,6 +13,7 @@ namespace App\Repository;
 use App\Entity\ParserHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Override;
 
 /**
  * @extends ServiceEntityRepository<ParserHistory>
@@ -31,6 +32,7 @@ final class ParserHistoryRepository extends ServiceEntityRepository
     /**
      * @return ParserHistory[]
      */
+    #[Override]
     public function findAll(): array
     {
         return $this->findBy([], ['id' => 'DESC']);

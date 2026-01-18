@@ -17,17 +17,11 @@ with this source code in the file LICENSE.
 EOF;
 
 $finder = PhpCsFixer\Finder::create()
-    ->in([
-        __DIR__ . '/migrations',
-        __DIR__ . '/public',
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-    ])
-    ->append([
-        __FILE__,
-        __DIR__ . '/.twig-cs-fixer.php',
-        __DIR__ . '/rector.php',
-    ])
+    ->in(__DIR__)
+    ->exclude('var')
+    ->exclude('node_modules')
+    ->notPath('config/preload.php')
+    ->notPath('config/reference.php')
 ;
 
 $config = new PhpCsFixer\Config();

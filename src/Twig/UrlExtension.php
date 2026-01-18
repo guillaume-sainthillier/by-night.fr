@@ -10,11 +10,13 @@
 
 namespace App\Twig;
 
+use Override;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
 final class UrlExtension extends Extension
 {
+    #[Override]
     public function getFilters(): array
     {
         return [

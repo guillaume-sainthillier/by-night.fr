@@ -11,6 +11,7 @@
 namespace App\Twig;
 
 use App\Helper\AssetHelper;
+use Override;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
 
@@ -21,6 +22,7 @@ final class AssetExtension extends Extension
     ) {
     }
 
+    #[Override]
     public function getFunctions(): array
     {
         return [

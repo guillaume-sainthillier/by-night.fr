@@ -10,11 +10,13 @@
 
 namespace App\Twig;
 
+use Override;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 final class ImageExtension extends AbstractExtension
 {
+    #[Override]
     public function getFunctions(): array
     {
         return [

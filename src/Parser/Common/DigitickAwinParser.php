@@ -12,9 +12,11 @@ namespace App\Parser\Common;
 
 use App\Dto\EventDto;
 use LogicException;
+use Override;
 
 final class DigitickAwinParser extends AbstractAwinParser
 {
+    #[Override]
     public function isEnabled(): bool
     {
         return false;

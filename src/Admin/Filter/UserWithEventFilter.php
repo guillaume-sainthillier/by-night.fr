@@ -24,7 +24,7 @@ final class UserWithEventFilter implements FilterInterface
 
     public static function new(string $propertyName, ?string $label = null): self
     {
-        return (new self())
+        return new self()
             ->setFilterFqcn(self::class)
             ->setProperty($propertyName)
             ->setLabel($label)

@@ -13,18 +13,18 @@ security:
                 - legacy
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
+        ROLE_ADMIN: ROLE_USER
         ROLE_SUPER_ADMIN: ROLE_USER
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-      users:
+        users:
             entity:
                 class: App\Entity\User
 
     firewalls:
         dev:
-            pattern:  ^/(_(profiler|wdt)|bundles|thumb|thumb-asset|media|uploads)/
+            pattern: ^/(_(profiler|wdt)|bundles|thumb|thumb-asset|media|uploads)/
             security: false
         main:
             lazy: true
@@ -34,8 +34,8 @@ security:
 
             entry_point: App\Security\UserFormAuthenticator
             custom_authenticators:
-              - App\Security\UserSocialAuthenticator
-              - App\Security\UserFormAuthenticator
+                - App\Security\UserSocialAuthenticator
+                - App\Security\UserFormAuthenticator
 
             logout:
                 delete_cookies: ['PHPSESSID']
@@ -43,7 +43,7 @@ security:
             switch_user: { role: ROLE_ADMIN }
 
     # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+    # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/login-social/service/eventbrite, roles: ROLE_ADMIN }
         - { path: ^/_administration, roles: ROLE_ADMIN }
@@ -60,10 +60,8 @@ security:
 when@test:
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
+            # Password hashers are resource-intensive by design to ensure security.
+            # In tests, it's safe to reduce their cost to improve performance.
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
                 cost: 4 # Lowest possible value for bcrypt

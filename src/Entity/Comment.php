@@ -24,6 +24,7 @@ class Comment implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
+
     #[Assert\Length(min: 3, minMessage: 'Le commentaire doit faire au moins {{ limit }} caractères')]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     #[ORM\Column(type: Types::TEXT)]

@@ -16,7 +16,7 @@ use League\Glide\Manipulators\Blur;
 use League\Glide\Manipulators\Size;
 
 /**
- * @property string $thumb
+ * @property string|null $thumb
  */
 final class Thumb extends BaseManipulator
 {

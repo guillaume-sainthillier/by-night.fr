@@ -28,8 +28,8 @@ class AppFixtures extends Fixture
         $toulouse = CityFactory::toulouse()->create();
 
         // Create Toulouse zip codes
-        $toulouse31000 = ZipCityFactory::toulouse31000()->create();
-        $toulouse31500 = ZipCityFactory::toulouse31500()->create();
+        ZipCityFactory::toulouse31000()->create();
+        ZipCityFactory::toulouse31500()->create();
 
         // Create some places in Toulouse
         PlaceFactory::createMany(10, [

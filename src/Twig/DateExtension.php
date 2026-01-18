@@ -12,25 +12,17 @@ namespace App\Twig;
 
 use DateTime;
 use DateTimeInterface;
-use Twig\Extension\AbstractExtension as Extension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-final class DateExtension extends Extension
+final class DateExtension
 {
-    public function getFilters(): array
-    {
-        return [
-            new TwigFilter('diff_date', $this->diffDate(...)),
-            new TwigFilter('stats_diff_date', $this->statsDiffDate(...)),
-            new TwigFilter('datetime', $this->getDateTime(...)),
-        ];
-    }
-
+    #[AsTwigFilter(name: 'datetime')]
     public function getDateTime(string $string): DateTime
     {
         return new DateTime($string);
     }
 
+    #[AsTwigFilter(name: 'diff_date')]
     public function diffDate(DateTimeInterface $date): string
     {
         return $this->statsDiffDate($date)['full'];
@@ -41,6 +33,7 @@ final class DateExtension extends Extension
      *
      * @psalm-return array{short: string, long: string, full: string}
      */
+    #[AsTwigFilter(name: 'stats_diff_date')]
     public function statsDiffDate(DateTimeInterface $date): array
     {
         $diff = $date->diff(new DateTime());

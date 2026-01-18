@@ -21,10 +21,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 final class ToulouseParser extends AbstractParser
 {
-    /**
-     * @var string
-     */
-    private const DOWNLOAD_URL = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true';
+    private const string DOWNLOAD_URL = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true';
 
     /**
      * {@inheritDoc}
@@ -65,7 +62,7 @@ final class ToulouseParser extends AbstractParser
         fgetcsv($fic, 0, ';', '"', '"'); // Ouverture de la première ligne
 
         while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = array_map(static fn ($e) => Encoding::toUTF8($e), $cursor);
+            $tab = array_map(Encoding::toUTF8(...), $cursor);
 
             if (!$tab[1] && !$tab[2]) {
                 continue;

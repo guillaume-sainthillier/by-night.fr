@@ -12,13 +12,7 @@ namespace App\Event;
 
 final class Events
 {
-    /**
-     * @var string
-     */
-    public const CHECK_EVENT_URL = 'app.check_event';
+    public const string CHECK_EVENT_URL = 'app.check_event';
 
-    /**
-     * @var string
-     */
-    public const CHECK_USER_URL = 'app.check_user';
+    public const string CHECK_USER_URL = 'app.check_user';
 }

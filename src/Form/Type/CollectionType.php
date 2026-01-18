@@ -10,6 +10,7 @@
 
 namespace App\Form\Type;
 
+use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType as BaseCollectionType;
 use Symfony\Component\Form\FormInterface;
@@ -69,11 +70,13 @@ final class CollectionType extends AbstractType
         ]);
     }
 
+    #[Override]
     public function getParent(): string
     {
         return BaseCollectionType::class;
     }
 
+    #[Override]
     public function getBlockPrefix(): string
     {
         return 'app_collection';

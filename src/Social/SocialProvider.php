@@ -14,35 +14,17 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class SocialProvider
 {
-    /**
-     * @var string
-     */
-    public const FACEBOOK = 'facebook';
+    public const string FACEBOOK = 'facebook';
 
-    /**
-     * @var string
-     */
-    public const FACEBOOK_ADMIN = 'facebook_admin';
+    public const string FACEBOOK_ADMIN = 'facebook_admin';
 
-    /**
-     * @var string
-     */
-    public const TWITTER = 'twitter';
+    public const string TWITTER = 'twitter';
 
-    /**
-     * @var string
-     */
-    public const TWITTER_ADMIN = 'twitter_admin';
+    public const string TWITTER_ADMIN = 'twitter_admin';
 
-    /**
-     * @var string
-     */
-    public const GOOGLE = 'google';
+    public const string GOOGLE = 'google';
 
-    /**
-     * @var string
-     */
-    public const GOOGLE_ADMIN = 'google_admin';
+    public const string GOOGLE_ADMIN = 'google_admin';
 
     private array $socials;
 

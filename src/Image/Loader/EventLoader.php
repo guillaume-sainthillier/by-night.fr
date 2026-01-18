@@ -13,6 +13,7 @@ namespace App\Image\Loader;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Picture\EventProfilePicture;
+use Override;
 
 final class EventLoader extends AbstractImageLoader
 {
@@ -22,6 +23,7 @@ final class EventLoader extends AbstractImageLoader
     ) {
     }
 
+    #[Override]
     public function getDefaultParams(array $params): array
     {
         [

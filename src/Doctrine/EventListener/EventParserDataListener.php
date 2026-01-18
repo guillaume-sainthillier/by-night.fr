@@ -37,7 +37,7 @@ final readonly class EventParserDataListener
         ]);
 
         if (null === $parserData) {
-            $parserData = (new ParserData())
+            $parserData = new ParserData()
                 ->setExternalId($entity->getExternalId())
                 ->setExternalOrigin($entity->getExternalOrigin())
             ;

@@ -55,7 +55,7 @@ class CityManipulatorTest extends TestCase
         $result = $this->manipulator->getCityNameAlternatives($city);
 
         foreach ($expectedContains as $expected) {
-            self::assertContains($expected, $result, "Expected '$expected' to be in alternatives for '$city'");
+            self::assertContains($expected, $result, \sprintf("Expected '%s' to be in alternatives for '%s'", $expected, $city));
         }
     }
 

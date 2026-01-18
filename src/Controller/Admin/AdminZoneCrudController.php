@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 use RuntimeException;
 
 class AdminZoneCrudController extends AbstractCrudController
@@ -27,6 +28,7 @@ class AdminZoneCrudController extends AbstractCrudController
         return AdminZone::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -35,6 +37,7 @@ class AdminZoneCrudController extends AbstractCrudController
             ->setSearchFields(['id', 'slug', 'name', 'latitude', 'longitude', 'population', 'admin1Code', 'admin2Code']);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $slug = TextField::new('slug');

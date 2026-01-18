@@ -23,29 +23,23 @@ final readonly class ImageHelper
     /**
      * @var float[]|int[]
      */
-    private const DEFAULT_PIXEL_DENSITIES = [0.25, 0.5, 1, 2];
+    private const array DEFAULT_PIXEL_DENSITIES = [0.25, 0.5, 1, 2];
 
     /**
      * @var int[]
      */
-    private const DEFAULT_BREAKPOINTS = [750, 1080, 1366, 1920];
+    private const array DEFAULT_BREAKPOINTS = [750, 1080, 1366, 1920];
 
     /**
      * @var int[]
      */
-    private const EVERY_BREAKPOINT = [
+    private const array EVERY_BREAKPOINT = [
         320, 654, 768, 1024, 1366, 1600, 1920, 2048, 2560, 3440, 3840, 4096,
     ];
 
-    /**
-     * @var int
-     */
-    private const DEFAULT_FLUID_WIDTH = 800;
+    private const int DEFAULT_FLUID_WIDTH = 800;
 
-    /**
-     * @var int
-     */
-    private const DEFAULT_FIXED_WIDTH = 800;
+    private const int DEFAULT_FIXED_WIDTH = 800;
 
     private array $defaultParams;
 
@@ -231,7 +225,7 @@ final readonly class ImageHelper
             }
 
             if (\is_array($value)) {
-                $value = array_filter(array_map('trim', $value));
+                $value = array_filter(array_map(trim(...), $value));
             }
 
             if ([] === $value) {

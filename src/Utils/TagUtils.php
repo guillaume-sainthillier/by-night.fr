@@ -17,6 +17,6 @@ final class TagUtils
      */
     public static function getTagTerms(string $tag): array
     {
-        return array_values(array_filter(array_unique(array_map('trim', preg_split('#[,/]#', $tag)))));
+        return array_values(array_filter(array_unique(array_map(trim(...), preg_split('#[,/]#', $tag)))));
     }
 }

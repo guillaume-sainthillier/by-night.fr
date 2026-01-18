@@ -14,6 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CityDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\CityRepository;
+use Override;
 
 final class CityEntityProvider extends AbstractEntityProvider
 {
@@ -34,6 +35,7 @@ final class CityEntityProvider extends AbstractEntityProvider
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getEntity(object $dto): ?object
     {
         $entity = parent::getEntity($dto);

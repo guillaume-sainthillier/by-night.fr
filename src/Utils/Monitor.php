@@ -68,7 +68,7 @@ final class Monitor
         $datas = $datas[0] ?? [$datas];
         $headers = array_keys($datas[0]);
 
-        (new Table(self::$output))
+        new Table(self::$output)
             ->setHeaders($headers)
             ->setRows($datas)
             ->render();

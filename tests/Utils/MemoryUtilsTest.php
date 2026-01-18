@@ -29,7 +29,7 @@ class MemoryUtilsTest extends TestCase
 
         // Should contain one of the memory units
         $hasUnit = preg_match('/\s+(b|kb|mb|gb|tb|pb)$/i', $result);
-        self::assertEquals(1, $hasUnit, "Result should contain a memory unit: $result");
+        self::assertEquals(1, $hasUnit, 'Result should contain a memory unit: ' . $result);
     }
 
     public function testGetPeakMemoryUsageReturnsString(): void
@@ -44,7 +44,7 @@ class MemoryUtilsTest extends TestCase
         $result = MemoryUtils::getPeakMemoryUsage();
 
         $hasUnit = preg_match('/\s+(b|kb|mb|gb|tb|pb)$/i', $result);
-        self::assertEquals(1, $hasUnit, "Result should contain a memory unit: $result");
+        self::assertEquals(1, $hasUnit, 'Result should contain a memory unit: ' . $result);
     }
 
     public function testGetMemoryUsageWithRealUsage(): void
@@ -61,7 +61,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $result = $method->invoke(null, 512);
 
@@ -72,7 +71,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $result = $method->invoke(null, 1024);
 
@@ -83,7 +81,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $result = $method->invoke(null, 1024 * 1024);
 
@@ -94,7 +91,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $result = $method->invoke(null, 1024 * 1024 * 1024);
 
@@ -105,7 +101,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $result = $method->invoke(null, 1536); // 1.5 KB
         self::assertIsString($result);
@@ -118,7 +113,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $result = $method->invoke(null, 0);
         self::assertIsString($result);
@@ -130,7 +124,6 @@ class MemoryUtilsTest extends TestCase
     {
         $reflection = new ReflectionClass(MemoryUtils::class);
         $method = $reflection->getMethod('formatMemory');
-        $method->setAccessible(true);
 
         $petabyte = 1024 ** 5;
         $result = $method->invoke(null, $petabyte);
