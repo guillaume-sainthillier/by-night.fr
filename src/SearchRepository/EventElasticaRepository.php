@@ -122,6 +122,22 @@ final class EventElasticaRepository extends Repository
             $sortByScore = true;
             $query = new MultiMatch();
             $query
+                ->setFields([
+                    'name^5',
+                    'name.heavy^5',
+                    'place_name^3',
+                    'place.name^3',
+                    'place_city^2',
+                    'place.city_name^2',
+                    'place.city_postal_code^3',
+                    'place_postal_code',
+                    'place_street',
+                    'place.street',
+                    'description',
+                    'description.heavy',
+                    'theme',
+                    'type',
+                ])
                 ->setFuzziness('auto')
                 ->setOperator('AND')
                 ->setQuery($search->getTerm())

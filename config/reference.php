@@ -692,35 +692,26 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type FosElasticaConfig = array{
  *     clients?: array<string, array{ // Default: []
- *         connections?: list<array{ // Default: []
- *             url?: scalar|null|Param,
- *             username?: scalar|null|Param,
- *             password?: scalar|null|Param,
- *             host?: scalar|null|Param,
- *             port?: scalar|null|Param,
- *             proxy?: scalar|null|Param,
- *             auth_type?: scalar|null|Param,
- *             http_error_codes?: list<scalar|null|Param>,
- *             aws_access_key_id?: scalar|null|Param,
- *             aws_secret_access_key?: scalar|null|Param,
- *             aws_region?: scalar|null|Param,
- *             aws_session_token?: scalar|null|Param,
- *             aws_credential_provider?: scalar|null|Param,
- *             ssl?: bool|Param, // Default: false
- *             logger?: scalar|null|Param, // Default: "fos_elastica.logger"
- *             compression?: bool|Param, // Default: false
- *             headers?: array<string, scalar|null|Param>,
- *             curl?: array<string, scalar|null|Param>,
- *             transport?: scalar|null|Param,
- *             timeout?: scalar|null|Param,
- *             connectTimeout?: scalar|null|Param,
- *             retryOnConflict?: scalar|null|Param, // Default: 0
- *             persistent?: bool|Param, // Default: true
- *         }>,
- *         timeout?: scalar|null|Param,
- *         connectTimeout?: scalar|null|Param,
- *         headers?: scalar|null|Param,
- *         connectionStrategy?: scalar|null|Param, // Default: "Simple"
+ *         hosts?: list<scalar|null|Param>,
+ *         username?: scalar|null|Param,
+ *         password?: scalar|null|Param,
+ *         http_client?: scalar|null|Param,
+ *         cloud_id?: scalar|null|Param,
+ *         retries?: scalar|null|Param,
+ *         api_key?: scalar|null|Param,
+ *         http_error_codes?: list<scalar|null|Param>,
+ *         logger?: scalar|null|Param, // Default: "fos_elastica.logger"
+ *         client_config?: array{
+ *             ssl_cert?: scalar|null|Param,
+ *             ssl_key?: scalar|null|Param,
+ *             ssl_verify?: scalar|null|Param,
+ *             ssl_ca?: scalar|null|Param,
+ *         },
+ *         client_options?: array<string, scalar|null|Param>,
+ *         headers?: array<string, scalar|null|Param>,
+ *         timeout?: scalar|null|Param, // Default: 30
+ *         retry_on_conflict?: scalar|null|Param, // Default: 0
+ *         connection_strategy?: scalar|null|Param, // Default: "Simple"
  *     }>,
  *     indexes?: array<string, array{ // Default: []
  *         index_name?: scalar|null|Param, // Defaults to the name of the index, but can be modified if the index name is different in ElasticSearch
@@ -862,7 +853,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     }>,
  *     index_templates?: array<string, null|array{ // Default: []
  *         template_name?: scalar|null|Param, // Defaults to the name of the index template, but can be modified if the index name is different in ElasticSearch
- *         template?: scalar|null|Param,
  *         index_patterns?: list<scalar|null|Param>,
  *         client?: scalar|null|Param,
  *         settings?: mixed, // Default: []

@@ -152,12 +152,6 @@
     "erusev/parsedown": {
         "version": "1.7.4"
     },
-    "ezimuel/guzzlestreams": {
-        "version": "3.0.1"
-    },
-    "ezimuel/ringphp": {
-        "version": "1.2.0"
-    },
     "friendsofphp/php-cs-fixer": {
         "version": "3.92",
         "recipe": {
@@ -305,9 +299,6 @@
     },
     "nikic/php-parser": {
         "version": "v4.9.1"
-    },
-    "nyholm/dsn": {
-        "version": "2.0.1"
     },
     "nyholm/psr7": {
         "version": "1.0",
@@ -698,9 +689,6 @@
         "version": "v1.18.1"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.18.1"
-    },
-    "symfony/polyfill-php73": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-php80": {

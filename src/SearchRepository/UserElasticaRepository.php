@@ -24,6 +24,11 @@ final class UserElasticaRepository extends Repository
 
         $match = new MultiMatch();
         $match
+            ->setFields([
+                'username^5',
+                'lastname^3',
+                'firstname',
+            ])
             ->setQuery($q ?? '')
             ->setFuzziness('auto')
             ->setOperator('AND')

@@ -21,6 +21,12 @@ final class CityElasticaRepository extends Repository
     {
         $query = new MultiMatch();
         $query
+            ->setFields([
+                'postal_codes^10',
+                'country.name^5',
+                'name^3',
+                'parent.name',
+            ])
             ->setFuzziness('auto')
             ->setOperator('AND')
             ->setQuery($q ?? '')

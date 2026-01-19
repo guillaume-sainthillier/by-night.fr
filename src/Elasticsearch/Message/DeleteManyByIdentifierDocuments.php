@@ -12,15 +12,20 @@ namespace App\Elasticsearch\Message;
 
 final class DeleteManyByIdentifierDocuments extends DocumentsAction
 {
+    /** @var string[] */
+    private readonly array $documentIds;
+
     /**
-     * @param string[] $documentIds
+     * @param array<string|int> $documentIds
      */
     public function __construct(
         string $indexName,
-        private readonly array $documentIds,
+        array $documentIds,
         private readonly bool|string $routing,
     ) {
         parent::__construct($indexName);
+        // Elastica 8 requires string IDs
+        $this->documentIds = array_map(strval(...), $documentIds);
     }
 
     /**
