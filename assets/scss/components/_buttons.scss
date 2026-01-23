@@ -1,79 +1,66 @@
 .btn-group,
 .btn-group-vertical {
-  margin-bottom: 0;
-  margin-top: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.btn-icon,
+.btn-action {
+    //[BUG] btn-sm and btn-xl with an icon looks broken
+    //issue #2470 fixed
+    min-width: calc(var(--#{$prefix}btn-icon-size) + (var(--#{$prefix}btn-padding-x) * 2));
+    min-height: calc(var(--#{$prefix}btn-icon-size) + (var(--#{$prefix}btn-padding-y) * 2));
 }
 
 .btn-with-icon {
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
 
-  & > span {
-    display: inline-block;
-    padding: $btn-padding-y $btn-padding-x;
-    margin-right: $btn-padding-x;
-    background: rgba(0, 0, 0, 0.1);
+    & > span {
+        display: inline-block;
+        padding: $btn-padding-y $btn-padding-x;
+        margin-right: $btn-padding-x;
+        background: rgba(0, 0, 0, 0.1);
 
-    .icon {
-      margin: 0;
+        .icon {
+            margin: 0;
+        }
     }
-  }
 }
 
 .btn-ghost-light {
-  --#{$prefix}btn-hover-bg: transparent;
-  --#{$prefix}btn-hover-border: transparent;
+    --#{$prefix}btn-hover-bg: transparent;
+    --#{$prefix}btn-hover-border: transparent;
 }
 
 .btn-icon-circle {
-  border-radius: 50%;
-  line-height: 1;
+    border-radius: 50%;
+    line-height: 1;
 
-  .icon {
-    margin: 0;
-  }
+    .icon {
+        margin: 0;
+    }
 
-  &.btn-sm {
-    padding: $btn-padding-x-sm;
-  }
+    &.btn-sm {
+        padding: $btn-padding-x-sm;
+    }
 }
 
 .btn-block {
-  display: block;
-  width: 100%;
-}
-
-.btn-sm,
-.btn-group-sm > .btn {
-  --#{$prefix}btn-icon-size: 1em;
-}
-
-.btn-icon-sm,
-.btn-group-icon-sm > .btn,
-.btn-group-icon-sm > .btn-group > .btn {
-  --#{$prefix}btn-icon-size: 0.875em;
-  --#{$prefix}btn-padding-x: 0.5rem;
-  --#{$prefix}btn-padding-y: 0.25rem;
-
-  .icon {
-    --#{$prefix}icon-size: 0.875em;
-  }
+    display: block;
+    width: 100%;
 }
 
 .btn-group > .btn:not(:last-child):not(.dropdown-toggle).btn-dropdown {
-  @include border-end-radius($btn-border-radius);
-}
-
-.btn-sm {
-  --#{$prefix}btn-font-size: #{$btn-font-size-sm};
+    @include border-end-radius($btn-border-radius);
 }
 
 .btn-xl {
-  @include button-size(
-                  $btn-padding-y-lg * 1.5,
-                  $btn-padding-x-lg * 1.5,
-                  $btn-font-size-lg * 1.25,
-                  $btn-border-radius-lg
-  );
+    @include button-size(
+        $btn-padding-y-lg * 1.5,
+        $btn-padding-x-lg * 1.5,
+        $btn-font-size-lg * 1.25,
+        $btn-border-radius-lg
+    );
 }

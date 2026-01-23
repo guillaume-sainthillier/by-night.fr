@@ -1,11 +1,10 @@
 @import 'core';
 
 //Vendors
+@import 'ui/tabler';
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~@fortawesome/fontawesome-free/scss/brands';
-//@import 'ui/bootstrap';
-@import 'ui/tabler';
 
 //Components
 @import 'components/alert';
@@ -44,6 +43,12 @@
 @import 'pages/event_index';
 @import 'pages/user_details';
 @import 'pages/user_event_crud';
+
+:root,
+:host,
+[data-bs-theme='light'] {
+    --#{$prefix}body-bg: #{$body-bg};
+}
 
 h1,
 h2,
