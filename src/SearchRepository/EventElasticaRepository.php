@@ -18,6 +18,7 @@ use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
+use Elastica\ResultSet;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\PagerfantaInterface;
 
@@ -177,5 +178,45 @@ final class EventElasticaRepository extends Repository
         }
 
         return $this->findPaginated($finalQuery);
+    }
+
+    public function findWithHighlights(string $query, int $limit = 5): ResultSet
+    {
+        $multiMatch = new MultiMatch();
+        $multiMatch
+            ->setFields([
+                'name^5',
+                'name.heavy^5',
+                'place_name^3',
+                'place.name^3',
+                'place_city^2',
+                'place.city_name^2',
+                'description',
+            ])
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($query);
+
+        $finalQuery = Query::create($multiMatch);
+        $finalQuery->setSize($limit);
+        $finalQuery->setSource(['id', 'name', 'slug', 'start_date', 'end_date', 'place']);
+
+        // Add highlighting
+        $finalQuery->setHighlight([
+            'fields' => [
+                'name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+                'place.name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+            ],
+        ]);
+
+        return $this->find($finalQuery);
     }
 }

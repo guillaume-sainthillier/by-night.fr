@@ -1,0 +1,182 @@
+// Autocomplete custom styles
+#autocomplete {
+    position: relative;
+    max-width: 400px;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+
+    .aa-Autocomplete {
+        width: 100%;
+    }
+
+    .aa-Form {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 0.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        overflow: hidden;
+
+        &:focus-within {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+    }
+
+    .aa-Input {
+        background: transparent;
+        color: #fff;
+        border: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    }
+
+    .aa-DetachedSearchButton {
+        background: rgba(241, 243, 244, 0.24);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        width: 100%;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+        min-width: 0;
+        overflow: hidden;
+        white-space: normal;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        // Icon: fixed width, no shrinking
+        .aa-DetachedSearchButtonIcon {
+            color: rgba(255, 255, 255, 0.7);
+            flex: 0 0 auto;
+            margin-right: 0.5rem;
+        }
+
+        // Placeholder: muted white, constrained width
+        .aa-DetachedSearchButtonPlaceholder {
+            color: rgba(255, 255, 255, 0.7);
+            flex: 1 1 0;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        // Query: full white, constrained width
+        .aa-DetachedSearchButtonQuery {
+            color: #fff;
+            flex: 1 1 0;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        // Keyboard shortcut: fixed width, no shrinking
+        kbd {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.2rem;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 0 0 auto;
+        }
+    }
+
+    .aa-Panel {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        max-width: 90vw;
+        margin-top: 0.5rem;
+    }
+
+    .aa-PanelLayout {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .aa-PanelFooter {
+        border-top: 1px solid var(--bs-border-color);
+        padding: 0.75rem 1rem;
+        background-color: var(--bs-light-bg-subtle);
+        text-align: center;
+    }
+
+    .aa-ViewAllLink {
+        color: var(--bs-primary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-block;
+        transition: all 0.2s;
+
+        &:hover {
+            color: var(--bs-primary-dark, var(--bs-primary));
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+    }
+
+    .results-panel {
+        .aa-List {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+    }
+
+    .preview-panel {
+        border-left: 1px solid var(--bs-border-color);
+        background-color: var(--bs-light-bg-subtle);
+        padding: 1rem;
+        overflow-y: auto;
+        max-height: 70vh;
+
+        h1 {
+            margin-bottom: 1rem;
+        }
+
+        .icon {
+            font-size: 3rem;
+        }
+    }
+
+    .aa-ItemIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 0.25rem;
+        background-color: var(--bs-light-bg-subtle);
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+
+        .icon {
+            font-size: 1.25rem;
+            color: var(--bs-primary);
+        }
+    }
+
+    // Mobile adjustments
+    @media (max-width: 768px) {
+        .preview-panel {
+            display: none;
+        }
+
+        .aa-Panel {
+            max-width: 95vw;
+        }
+    }
+}

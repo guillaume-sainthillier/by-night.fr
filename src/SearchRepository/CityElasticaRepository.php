@@ -12,6 +12,7 @@ namespace App\SearchRepository;
 
 use Elastica\Query;
 use Elastica\Query\MultiMatch;
+use Elastica\ResultSet;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\PagerfantaInterface;
 
@@ -38,5 +39,44 @@ final class CityElasticaRepository extends Repository
         $finalQuery->addSort(['population' => 'DESC']);
 
         return $this->findPaginated($finalQuery);
+    }
+
+    public function findWithHighlights(string $query, int $limit = 5): ResultSet
+    {
+        $multiMatch = new MultiMatch();
+        $multiMatch
+            ->setFields([
+                'postal_codes^10',
+                'country.name^5',
+                'name^3',
+                'parent.name',
+            ])
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($query);
+
+        $finalQuery = Query::create($multiMatch);
+        $finalQuery->setSize($limit);
+        $finalQuery->setSource(['id', 'name', 'slug', 'population', 'country']);
+        $finalQuery->addSort(['_score' => 'DESC']);
+        $finalQuery->addSort(['population' => 'DESC']);
+
+        // Add highlighting
+        $finalQuery->setHighlight([
+            'fields' => [
+                'name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+                'country.name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+            ],
+        ]);
+
+        return $this->find($finalQuery);
     }
 }

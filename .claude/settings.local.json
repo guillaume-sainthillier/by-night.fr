@@ -20,7 +20,9 @@
       "Bash(vendor/bin/phpstan analyse:*)",
       "Bash(bin/console debug:config:*)",
       "Bash(vendor/bin/phpunit:*)",
-      "Bash(bin/console cache:clear:*)"
+      "Bash(bin/console cache:clear:*)",
+      "Bash(yarn add:*)",
+      "Bash(yarn run dev)"
     ]
   }
 }
