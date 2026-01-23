@@ -155,7 +155,7 @@ final class Firewall
             "Retour de l'être aimé", 'valise magique',
         ]);
 
-        return array_any($black_list, fn ($black_word) => mb_strstr($content, (string) $black_word));
+        return array_any($black_list, static fn ($black_word) => mb_strstr($content, (string) $black_word));
     }
 
     public function getExploration(?string $externalId): ?ParserData

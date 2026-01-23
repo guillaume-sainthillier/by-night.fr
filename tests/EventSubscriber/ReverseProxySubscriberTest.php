@@ -46,7 +46,7 @@ final class ReverseProxySubscriberTest extends TestCase
 
         $event = new ControllerArgumentsEvent(
             $kernel,
-            fn () => new Response(),
+            static fn () => new Response(),
             [],
             $request,
             null
@@ -67,7 +67,7 @@ final class ReverseProxySubscriberTest extends TestCase
 
         $event = new ControllerArgumentsEvent(
             $kernel,
-            fn () => new Response(),
+            static fn () => new Response(),
             [],
             $request,
             null

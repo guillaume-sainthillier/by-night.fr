@@ -14,7 +14,7 @@ use function Symfony\Component\String\u;
 
 final class Util
 {
-    protected string $stopWordsRegex;
+    private string $stopWordsRegex;
 
     public function __construct()
     {
