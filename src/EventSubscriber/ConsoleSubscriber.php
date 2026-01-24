@@ -14,6 +14,7 @@ use App\Utils\Monitor;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -22,8 +23,10 @@ final class ConsoleSubscriber implements EventSubscriberInterface
     /** @var array<Stopwatch|null> */
     private array $stopwatches = [];
 
-    public function __construct(private readonly int $monitor)
-    {
+    public function __construct(
+        #[Autowire(env: 'APP_MONITOR')]
+        private readonly int $monitor,
+    ) {
     }
 
     /**

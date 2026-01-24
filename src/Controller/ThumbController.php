@@ -18,6 +18,7 @@ use League\Glide\Signatures\SignatureException;
 use League\Glide\Signatures\SignatureFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ThumbController extends Controller
 {
     public function __construct(
+        #[Autowire(param: 'kernel.secret')]
         private readonly string $secret,
         private readonly Packages $packages,
     ) {
@@ -34,8 +36,12 @@ final class ThumbController extends Controller
 
     #[Route(path: '/thumb/{path<%patterns.path%>}', name: 'thumb_s3_url', methods: ['GET'])]
     #[Cache(maxage: 31_536_000, smaxage: 31_536_000)]
-    public function thumbS3(Request $request, Server $s3ThumbServer, string $path): Response
-    {
+    public function thumbS3(
+        Request $request,
+        #[Autowire(service: 'app.s3_thumb_server')]
+        Server $s3ThumbServer,
+        string $path,
+    ): Response {
         return $this->serveFile(
             $s3ThumbServer,
             $request,
@@ -46,8 +52,12 @@ final class ThumbController extends Controller
 
     #[Route(path: '/thumb-asset/{path<%patterns.path%>}', name: 'thumb_asset_url', methods: ['GET'])]
     #[Cache(maxage: 31_536_000, smaxage: 31_536_000)]
-    public function thumbAsset(Request $request, Server $assetThumbServer, string $path): Response
-    {
+    public function thumbAsset(
+        Request $request,
+        #[Autowire(service: 'app.asset_thumb_server')]
+        Server $assetThumbServer,
+        string $path,
+    ): Response {
         return $this->serveFile(
             $assetThumbServer,
             $request,

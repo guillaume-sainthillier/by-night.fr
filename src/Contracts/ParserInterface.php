@@ -11,7 +11,9 @@
 namespace App\Contracts;
 
 use App\Dto\EventDto;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag]
 interface ParserInterface
 {
     public static function getParserName(): string;

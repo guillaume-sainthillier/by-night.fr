@@ -18,6 +18,7 @@ use App\Handler\EventHandler;
 use App\Producer\EventProducer;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -31,7 +32,9 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         HttpClientInterface $httpClient,
+        #[Autowire('%kernel.project_dir%/var/storage/temp')]
         string $tempPath,
+        #[Autowire(env: 'AWIN_API_KEY')]
         string $awinApiKey,
         private readonly CacheInterface $cache,
     ) {

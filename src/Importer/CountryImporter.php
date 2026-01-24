@@ -19,6 +19,7 @@ use App\Entity\ZipCity;
 use App\Repository\CountryRepository;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use ZipArchive;
@@ -29,8 +30,12 @@ final readonly class CountryImporter
 
     private const int CITIES_PER_TRANSACTION = 50;
 
-    public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
-    {
+    public function __construct(
+        private EntityManagerInterface $em,
+        #[Autowire('%kernel.project_dir%/var/datas')]
+        private string $dataDir,
+        private CountryRepository $countryRepository,
+    ) {
     }
 
     public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null): void

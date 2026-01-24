@@ -19,6 +19,7 @@ use App\Entity\UserEvent;
 use Exception;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class TagsInvalidator
 {
@@ -27,6 +28,7 @@ final class TagsInvalidator
     public function __construct(
         private readonly CacheManager $tagHandler,
         private readonly LoggerInterface $logger,
+        #[Autowire(env: 'bool:ENABLE_HTTP_CACHE')]
         private readonly bool $enableHttpCache,
     ) {
     }

@@ -13,12 +13,18 @@ namespace App\Handler;
 use App\Entity\User;
 use App\File\DeletableFile;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 final readonly class UserHandler
 {
-    public function __construct(private UploaderHelper $helper, private string $webDir, private string $tempPath)
-    {
+    public function __construct(
+        private UploaderHelper $helper,
+        #[Autowire('%kernel.project_dir%/public')]
+        private string $webDir,
+        #[Autowire('%kernel.project_dir%/var/storage/temp')]
+        private string $tempPath,
+    ) {
     }
 
     public function hasToUploadNewImage(?string $newContent, User $user): bool

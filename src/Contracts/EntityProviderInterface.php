@@ -10,6 +10,9 @@
 
 namespace App\Contracts;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag]
 interface EntityProviderInterface extends SupportsClassInterface
 {
     /**

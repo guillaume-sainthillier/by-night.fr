@@ -12,14 +12,17 @@ namespace App\Handler;
 
 use App\Contracts\EntityProviderInterface;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final readonly class EntityProviderHandler
 {
     /**
      * @param EntityProviderInterface[] $entityProviders
      */
-    public function __construct(private iterable $entityProviders)
-    {
+    public function __construct(
+        #[AutowireIterator(EntityProviderInterface::class)]
+        private iterable $entityProviders,
+    ) {
     }
 
     public function getEntityProvider(string $className): EntityProviderInterface

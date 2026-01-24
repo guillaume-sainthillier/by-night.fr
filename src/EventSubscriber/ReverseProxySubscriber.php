@@ -13,6 +13,7 @@ namespace App\EventSubscriber;
 use App\Annotation\ReverseProxy;
 use DateTime;
 use DateTimeZone;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -20,8 +21,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final readonly class ReverseProxySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private bool $enableHttpCache)
-    {
+    public function __construct(
+        #[Autowire(env: 'bool:ENABLE_HTTP_CACHE')]
+        private bool $enableHttpCache,
+    ) {
     }
 
     /**

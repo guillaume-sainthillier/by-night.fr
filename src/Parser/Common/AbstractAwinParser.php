@@ -17,6 +17,7 @@ use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use XMLReader;
 
@@ -27,7 +28,9 @@ abstract class AbstractAwinParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         protected HttpClientInterface $httpClient,
+        #[Autowire('%kernel.project_dir%/var/storage/temp')]
         private readonly string $tempPath,
+        #[Autowire(env: 'AWIN_API_KEY')]
         private readonly string $awinApiKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler);

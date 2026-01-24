@@ -16,11 +16,15 @@ use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    public function __construct(LoggerInterface $logger, private readonly Server $s3ThumbServer)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        #[Autowire(service: 'app.s3_thumb_server')]
+        private readonly Server $s3ThumbServer,
+    ) {
         parent::__construct($logger);
     }
 

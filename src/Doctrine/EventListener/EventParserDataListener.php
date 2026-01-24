@@ -15,8 +15,11 @@ use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
 use App\Utils\Firewall;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
+#[AsDoctrineListener(event: Events::preRemove)]
 final readonly class EventParserDataListener
 {
     public function __construct(private ParserDataRepository $parserDataRepository)

@@ -23,6 +23,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use Parsedown;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -37,6 +38,7 @@ final class OpenAgendaParser extends AbstractParser
         EventHandler $eventHandler,
         private readonly HttpClientInterface $client,
         private readonly CountryRepository $countryRepository,
+        #[Autowire(env: 'OPEN_AGENDA_KEY')]
         private readonly string $openAgendaKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler);

@@ -11,7 +11,9 @@
 namespace App\Contracts;
 
 use App\Exception\UncreatableEntityException;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag]
 interface EntityFactoryInterface extends SupportsClassInterface
 {
     /**

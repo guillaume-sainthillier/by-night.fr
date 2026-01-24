@@ -25,43 +25,6 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $memoryCache: '@redis.app_cache_pool'
-            $secret: '%kernel.secret%'
-            $webDir: '%kernel.project_dir%/public'
-            $publicDirectory: '%kernel.project_dir%/public'
-            $tempPath: '%kernel.project_dir%/var/storage/temp'
-            $facebookIdPage: '%facebook_id_page%'
-            $twitterIdPage: '%twitter_id_page%'
-            $debug: '%kernel.debug%'
-            $cloudFrontDistributionID: '%env(AWS_CLOUDFRONT_DISTRIBUTION_ID)%'
-            $openAgendaKey: '%env(OPEN_AGENDA_KEY)%'
-            $sowprogUsername: '%env(SOWPROG_USER)%'
-            $sowprogPassword: '%env(SOWPROG_PASSWORD)%'
-            $awinApiKey: '%env(AWIN_API_KEY)%'
-            $dataTourismeAppKey: '%env(DATATOURISME_APP_KEY)%'
-            $monitor: '%env(APP_MONITOR)%'
-            $s3ThumbServer: '@app.s3_thumb_server'
-            $assetThumbServer: '@app.asset_thumb_server'
-            $dataDir: '%kernel.project_dir%/var/datas'
-            $enableHttpCache: '%env(bool:ENABLE_HTTP_CACHE)%'
-            $parsers: !tagged_iterator app.parser
-            $entityProviders: !tagged_iterator app.entity_provider
-            $dtoConverters: !tagged_iterator app.dto_converter
-            $entityFactories: !tagged_iterator app.entity_factory
-            $comparators: !tagged_iterator app.comparator
-
-    _instanceof:
-        App\Contracts\ParserInterface:
-            tags: ['app.parser']
-        App\Contracts\EntityProviderInterface:
-            tags: ['app.entity_provider']
-        App\Contracts\EntityFactoryInterface:
-            tags: ['app.entity_factory']
-        App\Contracts\DtoConverterInterface:
-            tags: ['app.dto_converter']
-        App\Contracts\ComparatorInterface:
-            tags: ['app.comparator']
-        App\Contracts\ImageLoaderInterface:
-            tags: ['app.image.loader']
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -127,28 +90,10 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
-    App\Doctrine\EventListener\EventParserDataListener:
-        tags:
-            - { name: doctrine.event_listener, event: preRemove }
-
-    App\Doctrine\EventSubscriber\:
-        resource: '../src/Doctrine/EventSubscriber'
-        tags:
-            - { name: doctrine.event_subscriber }
-
     App\Doctrine\EntityListener\:
         resource: '../src/Doctrine/EntityListener'
         tags:
-            - { name: doctrine.event_subscriber }
             - { name: doctrine.orm.entity_listener, lazy: true }
-
-    App\Doctrine\EventListener\EntityTagger:
-        tags:
-            - { name: doctrine.event_listener, event: postPersist }
-            - { name: doctrine.event_listener, event: preUpdate }
-            - { name: doctrine.event_listener, event: postUpdate }
-            - { name: doctrine.event_listener, event: preRemove }
-            - { name: doctrine.event_listener, event: postFlush }
 
     Aws\S3\S3Client:
         arguments:
@@ -199,10 +144,6 @@ services:
             - source: '@assets.storage.reader'
               cache: '@thumbs.storage'
               driver: 'imagick'
-
-    App\Image\Loader\LoaderRegistry:
-        arguments:
-            - !tagged_iterator { tag: app.image.loader }
 
     FOS\ElasticaBundle\Message\Handler\AsyncPersistPageHandler:
         tags: [messenger.message_handler]

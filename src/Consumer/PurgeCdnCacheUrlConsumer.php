@@ -16,11 +16,16 @@ use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    public function __construct(LoggerInterface $logger, private readonly CloudFrontClient $client, private readonly string $cloudFrontDistributionID)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        private readonly CloudFrontClient $client,
+        #[Autowire(env: 'AWS_CLOUDFRONT_DISTRIBUTION_ID')]
+        private readonly string $cloudFrontDistributionID,
+    ) {
         parent::__construct($logger);
     }
 

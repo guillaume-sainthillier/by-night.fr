@@ -12,14 +12,17 @@ namespace App\Handler;
 
 use App\Contracts\EntityFactoryInterface;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final readonly class EntityFactoryHandler
 {
     /**
      * @param EntityFactoryInterface[] $entityFactories
      */
-    public function __construct(private iterable $entityFactories)
-    {
+    public function __construct(
+        #[AutowireIterator(EntityFactoryInterface::class)]
+        private iterable $entityFactories,
+    ) {
     }
 
     public function getFactory(string $className): EntityFactoryInterface
