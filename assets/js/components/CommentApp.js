@@ -1,11 +1,15 @@
 import $ from 'jquery'
+import AngleUpIcon from '@/js/icons/fa6-solid/AngleUp'
+import AngleDownIcon from '@/js/icons/fa6-solid/AngleDown'
+import SpinnerIcon from '@/js/icons/fa6-solid/Spinner'
+import {iconHtml} from "@/js/components/icons"
 
 export default class CommentApp {
     constructor() {
         this.options = {
-            css_up: 'fa-angle-up',
-            css_down: 'fa-angle-down',
-            css_spinner: 'fa-spinner fa-spin',
+            icon_up: AngleUpIcon,
+            icon_down: AngleDownIcon,
+            icon_spinner: SpinnerIcon,
             css_btn_list: '.btn-list',
             css_main_block_reponse: '.reponses',
             css_link_repondre: '.repondre',
@@ -49,7 +53,7 @@ export default class CommentApp {
             .click(function () {
                 const loadMore = $(this)
 
-                loadMore.find('.btn-block').prepend(`<i class='fa fa-2x ${self.options.css_spinner}'></i>`)
+                loadMore.find('.btn-block').prepend(iconHtml(self.options.icon_spinner, 'icon-spin icon-2x'))
                 loadMore.load(loadMore.data('url'), function () {
                     const commentListContainer = loadMore.find(self.options.css_block_comments)
                     self.init_load_new_reponse(loadMore) // On bind le lien de réponse des comments
@@ -90,7 +94,7 @@ export default class CommentApp {
                     answerContainer // On masque les liste de réponses et on ajoute la classe css_has_loaded_reponse au block des listes
                         .addClass(self.options.css_has_loaded_reponse)
 
-                    iconList.removeClass(self.options.css_up).addClass(self.options.css_spinner)
+                    iconList.html(iconHtml(self.options.icon_spinner, 'icon-spin'))
 
                     answerContainer.load($(this).data('url'), function () {
                         self.init_load_more_comments(answerContainer)
@@ -98,22 +102,19 @@ export default class CommentApp {
                             $(this).addClass(self.options.css_has_showed_reponses)
                         })
 
-                        iconList
-                            .removeClass(self.options.css_spinner)
-                            .removeClass(self.options.css_up)
-                            .addClass(self.options.css_down)
+                        iconList.html(iconHtml(self.options.icon_down))
                     })
                 } // Les réponses sont chargées
                 else if (!answerContainer.hasClass(self.options.css_has_showed_reponses)) {
                     // Les réponses ne sont pas affichées, on les affiche donc
                     answerContainer.show(self.options.animation_duration, function () {
                         $(this).addClass(self.options.css_has_showed_reponses)
-                        iconList.removeClass(self.options.css_up).addClass(self.options.css_down)
+                        iconList.html(iconHtml(self.options.icon_down))
                     })
                 } else {
                     answerContainer.hide(self.options.animation_duration, function () {
                         $(this).removeClass(self.options.css_has_showed_reponses)
-                        iconList.removeClass(self.options.css_down).addClass(self.options.css_up)
+                        iconList.html(iconHtml(self.options.icon_up))
                     })
                 }
             })
@@ -128,7 +129,7 @@ export default class CommentApp {
             {
                 const link = $(this)
 
-                link.data('text', link.text()).html(`<i class='fa ${self.options.css_spinner}'></i>`)
+                link.data('text', link.text()).html(iconHtml(self.options.icon_spinner, 'icon-spin'))
                 const postAnswerContainer = link
                     .closest(self.options.css_main_block_reponse)
                     .find(self.options.css_block_post_reponse) // On cherche le block du post

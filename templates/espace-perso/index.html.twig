@@ -19,7 +19,7 @@
     {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
         <div class="text-center mt-2">
             <a class="btn btn-success" href="{{ path('app_event_new') }}">
-                <i class="icon fa fa-plus"></i>
+                {{ macros.icon('fa6-solid:plus') }}
                 Nouvel événement
             </a>
         </div>
@@ -68,13 +68,13 @@
                             <td class="actions">
                                 <div class="btn-group btn-group-icon-sm">
                                     <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
-                                        <i class="icon fa fa-eye text-secondary"></i>
+                                        {{ macros.icon('fa6-solid:eye', 'text-secondary') }}
                                     </a>
                                     <a class="btn btn-icon btn-unstyled" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
-                                        <i class="icon fa fa-pencil-alt text-primary"></i>
+                                        {{ macros.icon('fa6-solid:pencil', 'text-primary') }}
                                     </a>
                                     <button type="button" class="btn btn-icon btn-unstyled" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement">
-                                        <i class="icon fa fa-trash text-danger"></i>
+                                        {{ macros.icon('fa6-solid:trash', 'text-danger') }}
                                     </button>
                                 </div>
                                 <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {id: event.id}) }}">
@@ -94,7 +94,7 @@
         </div>
     {% else %}
         <div class="alert alert-info">
-            <i class="icon fa fa-info-circle"></i>
+            {{ macros.icon('fa6-solid:circle-info') }}
             Aucun événement créé, publiez dès maintenant le vôtre !
         </div>
     {% endif %}

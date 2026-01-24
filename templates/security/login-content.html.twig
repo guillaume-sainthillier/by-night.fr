@@ -1,3 +1,4 @@
+{% import 'form/macros.html.twig' as macros %}
 {% if error %}
     <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 {% endif %}
@@ -6,19 +7,19 @@
     <div class="col-auto">
         <a class="social-facebook social big-social p-1" title="Connectez vous avec Facebook"
            href="{{ path('login_social_start', {service: 'facebook'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-facebook-f"></i>
+            {{ macros.icon('fa6-brands:facebook-f') }}
         </a>
     </div>
     <div class="col-auto">
         <a class="social-x social big-social p-1" title="Connectez vous avec X"
            href="{{ path('login_social_start', {service: 'twitter'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-x-twitter"></i>
+            {{ macros.icon('fa6-brands:x-twitter') }}
         </a>
     </div>
     <div class="col-auto">
         <a class="social-google social big-social p-1" title="Connectez vous avec Google"
            href="{{ path('login_social_start', {service: 'google'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-google"></i>
+            {{ macros.icon('fa6-brands:google') }}
         </a>
     </div>
 </div>

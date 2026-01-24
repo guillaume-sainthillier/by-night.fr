@@ -1,4 +1,5 @@
 {% extends 'layouts/default.html.twig' %}
+{% import 'form/macros.html.twig' as macros %}
 
 {% block breadcrumb %}
     {% do menu.addItem('En savoir plus', url('app_plus')) %}
@@ -15,7 +16,7 @@
             <div class="card-body">
                 <div class="row bloc align-items-center">
                     <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper even"><i class="fa fa-5x fa-cogs"></i></span>
+                        <span class="icon-wrapper even">{{ macros.icon('fa6-solid:gears', 'icon-5x') }}</span>
                     </div>
                     <div class="col-sm-8">
                         <h3 class="badge even">Configurez</h3>
@@ -35,7 +36,7 @@
             <div class="card-body">
                 <div class="row bloc align-items-center">
                     <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper odd"><i class="fa fa-5x fa-bullhorn"></i></span>
+                        <span class="icon-wrapper odd">{{ macros.icon('fa6-solid:bullhorn', 'icon-5x') }}</span>
                     </div>
                     <div class="col-sm-8">
                         <h3 class="badge odd">Communiquez</h3>
@@ -53,7 +54,7 @@
             <div class="card-body">
                 <div class="row bloc align-items-center">
                     <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper even"><i class="fa fa-5x fa-eye"></i></span>
+                        <span class="icon-wrapper even">{{ macros.icon('fa6-solid:eye', 'icon-5x') }}</span>
                     </div>
                     <div class="col-sm-8">
                         <h3 class="badge even">Contrôlez</h3>
@@ -67,7 +68,7 @@
             <div class="card-body">
                 <div class="row bloc align-items-center">
                     <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper odd"><i class="fa fa-5x fa-chart-column"></i></span>
+                        <span class="icon-wrapper odd">{{ macros.icon('fa6-solid:chart-column', 'icon-5x') }}</span>
                     </div>
                     <div class="col-sm-8">
                         <h3 class="badge odd">Analysez</h3>

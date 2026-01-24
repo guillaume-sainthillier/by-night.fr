@@ -1,6 +1,8 @@
+{% import 'form/macros.html.twig' as macros %}
+{% set icon %}{% block icon '' %}{% endset %}
 <div class="widget card {% block widget_class '' %}" {% block widget_attr '' %}>
     <h3 class="card-header">
-        <i class="text-primary fa {% block icon '' %}"></i>
+        {{ macros.icon(icon, 'text-primary') }}
         <span>{% block titre '' %}</span>
     </h3>
     <div class="card-body {% block widget_body_class '' %}">

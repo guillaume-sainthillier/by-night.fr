@@ -1,3 +1,4 @@
+{% import 'form/macros.html.twig' as macros %}
 {% extends 'espace-perso/layout.html.twig' %}
 
 {% block titre 'Créer un nouvel événement' %}
@@ -17,10 +18,10 @@
                     {# Part 1 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Votre événement' %}
-                        {% block icon 'fa-file' %}
+                        {% block icon 'fa6-solid:file' %}
 
                         {% block body %}
-                            {{ form_row(form.name, {icon_prepend: 'file-pen'}) }}
+                            {{ form_row(form.name, {icon_prepend: 'fa6-solid:file-pen'}) }}
                             {{ form_row(form.description) }}
                             {{ form_row(form.imageFile) }}
                         {% endblock %}
@@ -31,7 +32,7 @@
                     {# Part 4 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Communiquez' %}
-                        {% block icon 'fa-bullhorn' %}
+                        {% block icon 'fa6-solid:bullhorn' %}
 
                         {% block body %}
                             {{ form_row(form.websiteContacts) }}
@@ -50,16 +51,16 @@
                     {# Part 2 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Informations' %}
-                        {% block icon 'fa-file-lines' %}
+                        {% block icon 'fa6-solid:file-lines' %}
 
                         {% block body %}
                             {{ form_row(form.startDate) }}
                             {{ form_row(form.endDate) }}
-                            {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'calendar'}) }}
-                            {{ form_row(form.hours, {icon_prepend: 'clock'}) }}
-                            {{ form_row(form.category, {icon_prepend: 'masks-theater'}) }}
-                            {{ form_row(form.theme, {icon_prepend: 'vest'}) }}
-                            {{ form_row(form.prices, {icon_prepend: 'ticket'}) }}
+                            {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'fa6-solid:calendar-days'}) }}
+                            {{ form_row(form.hours, {icon_prepend: 'fa6-solid:clock'}) }}
+                            {{ form_row(form.category, {icon_prepend: 'fa6-solid:masks-theater'}) }}
+                            {{ form_row(form.theme, {icon_prepend: 'fa6-solid:vest'}) }}
+                            {{ form_row(form.prices, {icon_prepend: 'fa6-solid:ticket'}) }}
                         {% endblock %}
 
                         {% block footer_widget '' %}
@@ -68,12 +69,12 @@
                     {# Part 3 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Lieux' %}
-                        {% block icon 'fa-map-location-dot' %}
+                        {% block icon 'fa6-solid:map-location-dot' %}
 
                         {% block body %}
                             {{ form_errors(form.place) }}
-                            {{ form_row(form.place.name, {icon_prepend: 'location-dot'}) }}
-                            {{ form_row(form.address, {icon_prepend: 'location-crosshairs'}) }}
+                            {{ form_row(form.place.name, {icon_prepend: 'fa6-solid:location-dot'}) }}
+                            {{ form_row(form.address, {icon_prepend: 'fa6-solid:location-crosshairs'}) }}
 
                             <div class="ms-2 ms-sm-5 mb-5">
                                 {{ form_row(form.place.street) }}
@@ -94,11 +95,11 @@
             <hr />
             <div class="mt-2">
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
-                    <i class="icon fa fa-chevron-left"></i>
+                    {{ macros.icon('fa6-solid:chevron-left') }}
                     Retour
                 </a>
                 <button type="submit" class="ms-2 btn btn-primary">
-                    <i class="icon fa fa-save"></i>
+                    {{ macros.icon('fa6-solid:floppy-disk') }}
                     Sauvegarder
                 </button>
             </div>

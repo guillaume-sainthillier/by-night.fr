@@ -1,3 +1,4 @@
+{% import 'form/macros.html.twig' as macros %}
 <!DOCTYPE HTML>
 <!--
 _______     __  _   _ _____ _____ _    _ _______
@@ -153,7 +154,7 @@ _______     __  _   _ _____ _____ _    _ _______
 <!-- ./Modals -->
 
 <button type="button" id="toTop" class="btn btn-icon btn-primary">
-    <i class="icon fa fa-chevron-up"></i>
+    {{ macros.icon('fa6-solid:chevron-up') }}
 </button>
 
 <!-- JS -->

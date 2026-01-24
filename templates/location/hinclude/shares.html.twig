@@ -1,8 +1,9 @@
+{% import 'form/macros.html.twig' as macros %}
 <div class="row">
     {% for name, social in shares %}
         <div class="col-6">
             <a href="{{ social.shareUrl }}" class="popup share {{ name }}">
-                <i class="icon fa fa-2x fa-{{ name }}"></i>
+                {{ macros.icon('fa6-brands:' ~ name, 'icon-2x') }}
                 <span class="number number-xbig">Partager</span>
             </a>
         </div>

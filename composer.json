@@ -94,6 +94,7 @@
         "symfony/translation": "7.4.*",
         "symfony/twig-bridge": "7.4.*",
         "symfony/twig-bundle": "7.4.*",
+        "symfony/ux-icons": "^2.32",
         "symfony/validator": "7.4.*",
         "symfony/web-link": "7.4.*",
         "symfony/webpack-encore-bundle": "^2.4",

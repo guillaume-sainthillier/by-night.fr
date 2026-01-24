@@ -1,20 +1,22 @@
+{% import 'form/macros.html.twig' as macros %}
+
 <div class="row g-0 text-center mt-4">
     <div class="col-4">
         <a class="social-facebook social big-social p-1" title="Inscrivez-vous avec Facebook"
            href="{{ path('login_social_start', {service: 'facebook'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-facebook-f"></i>
+            {{ macros.icon('fa6-brands:facebook-f') }}
         </a>
     </div>
     <div class="col-4">
         <a class="social-twitter social big-social p-1" title="Inscrivez-vous avec Twitter"
            href="{{ path('login_social_start', {service: 'twitter'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-x-twitter"></i>
+            {{ macros.icon('fa6-brands:x-twitter') }}
         </a>
     </div>
     <div class="col-4">
         <a class="social-google social big-social p-1" title="Inscrivez-vous avec Google"
            href="{{ path('login_social_start', {service: 'google'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-google"></i>
+            {{ macros.icon('fa6-brands:google') }}
         </a>
     </div>
 </div>
@@ -22,7 +24,7 @@
 <div class="no-margin-form mt-4">
     {% if error is defined and error %}
         <div class="alert alert-danger">
-            <i class="icon fa fa-warning"></i>
+            {{ macros.icon('fa6-solid:triangle-exclamation') }}
             {{ error }}
         </div>
     {% endif %}

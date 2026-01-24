@@ -6,6 +6,11 @@ import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-pl
 import groupBy from 'lodash/groupBy'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
+import AngleRightIcon from '@/js/icons/fa6-solid/AngleRight'
+import MagnifyingGlassIcon from '@/js/icons/fa6-solid/MagnifyingGlass'
+import SpinnerIcon from '@/js/icons/fa6-solid/Spinner'
+import TrashIcon from '@/js/icons/fa6-solid/Trash'
+import TriangleExclamationIcon from '@/js/icons/fa6-solid/TriangleExclamation'
 
 export default function init({
     autocompleteSelector = '#autocomplete',
@@ -101,7 +106,7 @@ export default function init({
                 return render(
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                            <i className={"icon fa fa-exclamation-triangle fa-3x text-danger"}></i>
+                            <TriangleExclamationIcon className="icon-3x text-danger" />
                             <h2 className="mt-4 h5 text-danger">Erreur de recherche</h2>
                             <p className="text-muted">
                                 Une erreur est survenue lors de la recherche. Veuillez réessayer dans quelques
@@ -120,15 +125,7 @@ export default function init({
             return render(
                 <div className="aa-PanelLayout">
                     <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                        <svg
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            width="40"
-                            height="40"
-                            className="stroke-current text-muted"
-                        >
-                            <path d="M15.5 4.8c2 3 1.7 7-1 9.7h0l4.3 4.3-4.3-4.3a7.8 7.8 0 01-9.8 1m-2.2-2.2A7.8 7.8 0 0113.2 2.4M2 18L18 2" />
-                        </svg>
+                        <MagnifyingGlassIcon width="40" height="40" className="text-muted" />
                         <h2 className="mt-4 display-4">
                             Aucun résultat pour <strong>"{state.query}"</strong>.
                         </h2>
@@ -296,9 +293,7 @@ function ResultItem({ item, onRemove }) {
                             onRemove(item.id)
                         }}
                     >
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M18 7v13c0 0.276-0.111 0.525-0.293 0.707s-0.431 0.293-0.707 0.293h-10c-0.276 0-0.525-0.111-0.707-0.293s-0.293-0.431-0.293-0.707v-13zM17 5v-1c0-0.828-0.337-1.58-0.879-2.121s-1.293-0.879-2.121-0.879h-4c-0.828 0-1.58 0.337-2.121 0.879s-0.879 1.293-0.879 2.121v1h-4c-0.552 0-1 0.448-1 1s0.448 1 1 1h1v13c0 0.828 0.337 1.58 0.879 2.121s1.293 0.879 2.121 0.879h10c0.828 0 1.58-0.337 2.121-0.879s0.879-1.293 0.879-2.121v-13h1c0.552 0 1-0.448 1-1s-0.448-1-1-1zM9 5v-1c0-0.276 0.111-0.525 0.293-0.707s0.431-0.293 0.707-0.293h4c0.276 0 0.525 0.111 0.707 0.293s0.293 0.431 0.293 0.707v1zM9 11v6c0 0.552 0.448 1 1 1s1-0.448 1-1v-6c0-0.552-0.448-1-1-1s-1 0.448-1 1zM13 11v6c0 0.552 0.448 1 1 1s1-0.448 1-1v-6c0-0.552-0.448-1-1-1s-1 0.448-1 1z" />
-                        </svg>
+                        <TrashIcon width="20" height="20" />
                     </button>
                 )}
                 <button
@@ -307,9 +302,7 @@ function ResultItem({ item, onRemove }) {
                     title="Sélectionner"
                     aria-label="Sélectionner"
                 >
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                        <path d="M18.984 6.984h2.016v6h-15.188l3.609 3.609-1.406 1.406-6-6 6-6 1.406 1.406-3.609 3.609h13.172v-4.031z" />
-                    </svg>
+                    <AngleRightIcon width="20" height="20" />
                 </button>
             </div>
         </a>

@@ -1,9 +1,12 @@
 import $ from 'jquery'
 import Modal from 'bootstrap/js/dist/modal'
+import SpinnerIcon from '@/js/icons/fa6-solid/Spinner'
+import TriangleExclamationIcon from '@/js/icons/fa6-solid/TriangleExclamation'
+import { iconHtml } from '@/js/components/icons'
 
 Modal.prototype.loading = function () {
     this.setTitle('By Night')
-    this.setBody('<h3 class="text-center"><i class="fa fa-spinner text-primary fa-spin fa-3x"></i></h3>')
+    this.setBody(`<h3 class="text-center">${iconHtml(SpinnerIcon, 'text-primary icon-spin icon-3x')}</h3>`)
     this.hideButtons()
 }
 
@@ -34,7 +37,7 @@ Modal.prototype.setLittleErreur = function (msg) {
 
     element.find('.alert_little').remove()
 
-    const flashMessage = $('<div class="alert alert-danger"><i class="fa fa-warning"></i> </div>').append(msg).hide()
+    const flashMessage = $(`<div class="alert alert-danger">${iconHtml(TriangleExclamationIcon)} </div>`).append(msg).hide()
     element.find('.modal-body').prepend(flashMessage)
     flashMessage.slideDown('normal')
 }

@@ -59,6 +59,6 @@
     {{ _self.eventThumb(event, width, {placeholderPriority: true}|merge(params)) }}
 {% endmacro %}
 
-{% macro icon(name, class) %}
-    <i class="icon fa fa-{{ name }} {{ class|default(null) }}"></i>
+{% macro icon(name, class = null) %}
+    {{ ux_icon(name, {class: ('icon ' ~ class ?? '')|trim}) }}
 {% endmacro %}

@@ -31,8 +31,8 @@
                     {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
                     {{ form_row(form.from) }}
                     {{ form_row(form.to) }}
-                    {{ form_row(form.shortcut, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'calendar-alt'}) }}
-                    {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'search'}) }}
+                    {{ form_row(form.shortcut, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'fa6-solid:calendar-days'}) }}
+                    {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'fa6-solid:magnifying-glass'}) }}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary search">

@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'form/macros.html.twig' as macros %}
 
 {% block titre 'Connexion réussie' %}
 {% block meta_title 'Connexion réussie' %}
@@ -10,7 +11,7 @@
 
 {% block hwi_oauth_content -%}
     <div class="alert alert-success">
-        <i class="icon fa fa-check"></i>
+        {{ macros.icon('fa6-solid:check') }}
         {{ 'header.success'|trans({'%name%': userInformation.realName}, 'HWIOAuthBundle') }}
     </div>
     <br/>

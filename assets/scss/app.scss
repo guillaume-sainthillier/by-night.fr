@@ -2,11 +2,9 @@
 
 //Vendors
 @import 'ui/tabler';
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/brands';
 
 //Components
+@import 'components/icons';
 @import 'components/alert';
 @import 'components/autocomplete';
 @import 'components/badge';

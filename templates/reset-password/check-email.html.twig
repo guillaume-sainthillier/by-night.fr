@@ -1,4 +1,5 @@
 {% extends 'reset-password/layout.html.twig' %}
+{% import 'form/macros.html.twig' as macros %}
 
 {% block breadcrumb_reset %}
     {% do menu.addItem('Étape 2/3', url('app_check_email')) %}
@@ -6,7 +7,7 @@
 
 {% block body %}
     <div class="alert alert-success">
-        <i class="icon fa fa-check"></i>
+        {{ macros.icon('fa6-solid:check') }}
         Un e-mail a été envoyé. Il contient un lien sur lequel il vous faudra cliquer pour réinitialiser votre mot de passe.
         <br />
         <br />

@@ -1,10 +1,11 @@
+{% import 'form/macros.html.twig' as macros %}
 {% extends 'layouts/modal.html.twig' %}
 
 {% block titre 'Confirmation de suppression' %}
 
 {% block body -%}
     <div class="alert alert-warning">
-        <i class="icon fa fa-warning"></i>
+        {{ macros.icon('fa6-solid:triangle-exclamation') }}
         Vous êtes sur le point de supprimer votre compte.
         <strong> Cette action est irréversible !</strong>
     </div>

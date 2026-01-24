@@ -64,7 +64,7 @@
                 <div class="tab-pane active" id="a-venir">
                     {% if not nextEvents|length > 0 %}
                         <div class="alert alert-info">
-                            <i class="icon fa fa-info-circle"></i>
+                            {{ macros.icon('fa6-solid:circle-info') }}
                             Aucun événement de prévu pour {{ username }} !
                         </div>
                     {% else %}
@@ -74,7 +74,7 @@
                 <div class="tab-pane" id="passes">
                     {% if not previousEvents|length > 0 %}
                         <div class="alert alert-info">
-                            <i class="icon fa fa-info-circle"></i>
+                            {{ macros.icon('fa6-solid:circle-info') }}
                             Aucun événement passé pour {{ username }} !
                         </div>
                     {% else %}
