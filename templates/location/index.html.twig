@@ -1,5 +1,4 @@
 {% extends 'layouts/full.html.twig' %}
-{% do fos_httpcache_tag(tags('location', location)) %}
 
 {% block page_id 'page-location-index' %}
 {% block meta_title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}

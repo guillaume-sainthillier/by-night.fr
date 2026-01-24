@@ -3,8 +3,6 @@
     {% set microdata = true %}
 {% endif %}
 
-{{ fos_httpcache_tag(tags('event', event)) }}
-{{ fos_httpcache_tag(tags('place', event.place)) }}
 <div class="card card-event card-layout {{ cardLayout|default('') }} row g-0 scroll-item" {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
     {% if event.status %}
         <div class="col-12 alert alert-warning mb-0">

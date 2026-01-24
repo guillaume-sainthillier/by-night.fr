@@ -25,9 +25,6 @@
     "beberlei/doctrineextensions": {
         "version": "v1.2.7"
     },
-    "clue/stream-filter": {
-        "version": "v1.4.1"
-    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99"
     },
@@ -193,12 +190,6 @@
             "config/packages/fos_elastica.yaml"
         ]
     },
-    "friendsofsymfony/http-cache": {
-        "version": "2.9.2"
-    },
-    "friendsofsymfony/http-cache-bundle": {
-        "version": "3.3.0"
-    },
     "gedmo/doctrine-extensions": {
         "version": "v2.4.42"
     },
@@ -333,9 +324,6 @@
             "src/Consumer/.gitignore"
         ]
     },
-    "php-http/client-common": {
-        "version": "2.3.0"
-    },
     "php-http/discovery": {
         "version": "1.20",
         "recipe": {
@@ -350,9 +338,6 @@
     },
     "php-http/httplug": {
         "version": "2.2.0"
-    },
-    "php-http/message": {
-        "version": "1.9.0"
     },
     "php-http/promise": {
         "version": "1.1.0"

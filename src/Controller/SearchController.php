@@ -10,6 +10,7 @@
 
 namespace App\Controller;
 
+use App\App\CityManager;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Search\SearchEvent;
@@ -27,7 +28,7 @@ final class SearchController extends AbstractController
     private const int ITEMS_PER_PAGE = 20;
 
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
-    public function index(Request $request, RepositoryManagerInterface $rm): Response
+    public function index(Request $request, RepositoryManagerInterface $rm, CityManager $cityManager): Response
     {
         $q = trim($request->query->get('q') ?? '');
         $type = $request->query->get('type');
@@ -75,6 +76,7 @@ final class SearchController extends AbstractController
             'page' => $page,
             'events' => $events,
             'users' => $users,
+            'headerCity' => $cityManager->getCity(),
         ]);
     }
 

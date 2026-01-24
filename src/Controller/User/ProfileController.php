@@ -10,6 +10,7 @@
 
 namespace App\Controller\User;
 
+use App\App\CityManager;
 use App\Controller\AbstractController;
 use App\Entity\UserEvent;
 use App\Form\Type\ChangePasswordFormType;
@@ -91,7 +92,7 @@ final class ProfileController extends AbstractController
     }
 
     #[Route(path: '/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Request $request, UserPasswordHasherInterface $passwordHasher, CityManager $cityManager): Response
     {
         $user = $this->getAppUser();
         $form = $this->createForm(ProfileFormType::class, $user);
@@ -124,6 +125,7 @@ final class ProfileController extends AbstractController
             'form' => $form,
             'formChangePassword' => $formChangePassword,
             'formDelete' => $formDelete,
+            'headerCity' => $cityManager->getCity(),
         ]);
     }
 

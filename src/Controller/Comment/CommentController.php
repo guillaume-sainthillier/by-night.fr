@@ -10,7 +10,6 @@
 
 namespace App\Controller\Comment;
 
-use App\Annotation\ReverseProxy;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Entity\Event;
@@ -53,7 +52,6 @@ final class CommentController extends BaseController
     }
 
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
-    #[ReverseProxy(expires: 'tomorrow')]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comments = $this->createQueryBuilderPaginator(

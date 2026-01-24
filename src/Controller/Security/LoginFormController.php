@@ -10,7 +10,6 @@
 
 namespace App\Controller\Security;
 
-use App\Annotation\ReverseProxy;
 use App\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,7 +17,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class LoginFormController extends AbstractController
 {
-    #[ReverseProxy(expires: '1 year')]
     #[Route(path: '/login', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {

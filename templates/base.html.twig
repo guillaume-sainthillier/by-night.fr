@@ -119,9 +119,11 @@ _______     __  _   _ _____ _____ _    _ _______
 <div class="page">
     <!-- Menu -->
     {% if location is defined and location.isCity %}
-        {{ render_esi(path('app_private_header', {id: location.city.id})) }}
+        {{ include('fragments/header.html.twig', {city: location.city}) }}
+    {% elseif headerCity is defined %}
+        {{ include('fragments/header.html.twig', {city: headerCity}) }}
     {% else %}
-        {{ render_esi(path('app_private_header')) }}
+        {{ include('fragments/header.html.twig') }}
     {% endif %}
     <!-- ./Menu -->
 
@@ -143,12 +145,7 @@ _______     __  _   _ _____ _____ _    _ _______
             {% block layout %}{% endblock %}
         </div>
         <!-- Footer -->
-        {% if location is defined %}
-            {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
-            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {id: countryId})) }}
-        {% else %}
-            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
-        {% endif %}
+        {{ include('fragments/footer.html.twig') }}
         <!-- ./Footer -->
     </div>
     <!-- ./Main -->

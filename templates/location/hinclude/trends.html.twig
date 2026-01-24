@@ -1,17 +1,16 @@
-{{ fos_httpcache_tag(tags('trends', event)) }}
 
 <div class="btn-group">
 
     <button type="button" href="{{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? path('app_login') : '#' }}"
-            class="btn btn-unstyled participer btn-like-event {{ participer ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' connexion' }}"
-            data-href="{{ path('api_event_participer', {id: event.id}) }}">
+            class="btn btn-unstyled participer btn-like-event {{ trendsData.participer ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' connexion' }}"
+            data-href="{{ path('api_event_participer', {id: trendsData.event.id}) }}">
         <i class="icon fa fa-heart"></i>
     </button>
     <button class="btn btn-unstyled dropdown-toggle" type="button" data-bs-toggle="dropdown">
         <i class="icon fa fa-share-alt"></i>
     </button>
     <div class="dropdown-menu dropdown-menu-start">
-        {% for name, social in shares %}
+        {% for name, social in trendsData.shares %}
             <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
                 <span>
                     <i class="icon fab fa-{{ name }}"></i>
@@ -22,4 +21,4 @@
     </div>
 </div>
 
-<small class="ms-3 text-muted {{ count == 0 ? 'd-none' }}">{{ count }} intérêt{{ count > 1 ? 's' }}</small>
+<small class="ms-3 text-muted {{ trendsData.count == 0 ? 'd-none' }}">{{ trendsData.count }} intérêt{{ trendsData.count > 1 ? 's' }}</small>

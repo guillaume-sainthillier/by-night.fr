@@ -1,7 +1,6 @@
 {% import 'form/macros.html.twig' as macros %}
 {% extends 'layouts/default.html.twig' %}
 
-{% do fos_httpcache_tag(tags('user', user)) %}
 {% set username = user.username|capitalize %}
 
 {% block page_id 'page-user' %}

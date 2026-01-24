@@ -26,7 +26,9 @@
       "Bash(composer show:*)",
       "Bash(bin/console debug:container:*)",
       "Bash(bin/console debug:event-dispatcher:*)",
-      "Bash(bin/console:*)"
+      "Bash(bin/console:*)",
+      "Bash(find:*)",
+      "Bash(vendor/bin/php-cs-fixer fix:*)"
     ]
   }
 }

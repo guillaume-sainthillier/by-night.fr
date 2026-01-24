@@ -10,12 +10,13 @@
 
 namespace App\Controller\Location;
 
-use App\Annotation\ReverseProxy;
+use App\App\CityManager;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
+use App\Manager\WidgetsManager;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Search\SearchEvent;
@@ -36,8 +37,7 @@ final class AgendaController extends BaseController
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
-    #[ReverseProxy(expires: 'tomorrow')]
-    public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
+    public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, CityManager $cityManager, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
         // État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -94,6 +94,10 @@ final class AgendaController extends BaseController
             return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getNbPages())]));
         }
 
+        // Widget data (first page only)
+        $topEventsData = $widgetsManager->getTopEventsData($location);
+        $topUsersData = $widgetsManager->getTopUsersData();
+
         return $this->render('location/agenda/index.html.twig', [
             'location' => $location,
             'placeName' => (null !== $place) ? $place->getName() : null,
@@ -109,6 +113,10 @@ final class AgendaController extends BaseController
             'isAjax' => $isAjax,
             'routeParams' => $routeParams,
             'form' => $form,
+            'headerCity' => $location->getCity() ?? $cityManager->getCity(),
+            // Widget data
+            'topEventsData' => $topEventsData,
+            'topUsersData' => $topUsersData,
         ]);
     }
 

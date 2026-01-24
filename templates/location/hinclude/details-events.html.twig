@@ -1,16 +1,14 @@
-{{ fos_httpcache_tag('block-place') }}
-{{ fos_httpcache_tag(tags('place', place)) }}
-{% if page == 1 and events|length == 0 %}
-    <p>Aucun événement prévu à {{ place.name }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
-            un événement à {{ place.name }}</a> ?</p>
+{% if eventsData.page == 1 and eventsData.events|length == 0 %}
+    <p>Aucun événement prévu à {{ eventsData.place.name }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
+            un événement à {{ eventsData.place.name }}</a> ?</p>
 {% else %}
     {{ include('partials/event/_list-card.html.twig', {
-        events: events,
+        events: eventsData.events,
         microdata: false,
         cardLayout: 'card-layout-vertical',
     }) }}
-    {% if hasNextLink %}
-        <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
-            / {{ count }})</a>
+    {% if eventsData.hasNextLink %}
+        <a class="more-content btn btn-outline-primary btn-block" href="{{ eventsData.hasNextLink }}">Plus ({{ eventsData.current }}
+            / {{ eventsData.count }})</a>
     {% endif %}
 {% endif %}

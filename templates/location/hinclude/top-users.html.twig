@@ -1,5 +1,7 @@
-{{ include('partials/user/_list-widget.html.twig') }}
-{% if hasNextLink is defined and hasNextLink %}
-    <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">
-        Plus ({{ current }} / {{ count }})</a>
+{{ include('partials/user/_list-widget.html.twig', {
+    users: topUsersData.users,
+}) }}
+{% if topUsersData.hasNextLink %}
+    <a class="more-content btn btn-outline-primary btn-block" href="{{ topUsersData.hasNextLink }}">
+        Plus ({{ topUsersData.current }} / {{ topUsersData.count }})</a>
 {% endif %}

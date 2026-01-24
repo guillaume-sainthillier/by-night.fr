@@ -1,8 +1,4 @@
 {% import 'form/macros.html.twig' as macros %}
-{{ fos_httpcache_tag(tags('header')) }}
-{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-    {{ fos_httpcache_tag(tags('user', app.user)) }}
-{% endif %}
 <header class="navbar navbar-expand-lg text-bg-primary sticky-top" data-bs-theme="dark">
     <div class="container-lg">
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbar-main">

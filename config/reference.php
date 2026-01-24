@@ -1187,208 +1187,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enable_profiler?: bool|Param, // Whether or not to enable the profiler collector to calculate and visualize migration status. This adds some queries overhead. // Default: false
  *     transactional?: bool|Param, // Whether or not to wrap migrations in a single transaction. // Default: true
  * }
- * @psalm-type FosHttpCacheConfig = array{
- *     cacheable?: array{
- *         response?: array{
- *             additional_status?: list<scalar|null|Param>,
- *             expression?: scalar|null|Param, // Expression to decide whether response is cacheable. Replaces the default status codes. // Default: null
- *         },
- *     },
- *     cache_control?: array{
- *         defaults?: array{
- *             overwrite?: bool|Param, // Whether to overwrite existing cache headers // Default: false
- *         },
- *         ttl_header?: scalar|null|Param, // Specify the header name to use with the cache_control.reverse_proxy_ttl setting // Default: "X-Reverse-Proxy-TTL"
- *         rules?: list<array{ // Default: []
- *             match: array{
- *                 path?: scalar|null|Param, // Request path. // Default: null
- *                 query_string?: scalar|null|Param, // Request query string. // Default: null
- *                 host?: scalar|null|Param, // Request host name. // Default: null
- *                 methods?: array<string, scalar|null|Param>,
- *                 ips?: array<string, scalar|null|Param>,
- *                 attributes?: array<string, scalar|null|Param>,
- *                 additional_response_status?: list<scalar|null|Param>,
- *                 match_response?: scalar|null|Param, // Expression to decide whether response should be matched. Replaces cacheable configuration. // Default: null
- *                 expression_language?: scalar|null|Param, // Service name of a custom ExpressionLanguage to use.
- *             },
- *             headers: array{
- *                 overwrite?: "default"|true|false|Param, // Whether to overwrite cache headers for this rule, defaults to the cache_control.defaults.overwrite setting // Default: "default"
- *                 cache_control?: array{ // Add the specified cache control directives.
- *                     max_age?: scalar|null|Param,
- *                     s_maxage?: scalar|null|Param,
- *                     private?: bool|Param,
- *                     public?: bool|Param,
- *                     must_revalidate?: bool|Param,
- *                     proxy_revalidate?: bool|Param,
- *                     no_transform?: bool|Param,
- *                     no_cache?: bool|Param,
- *                     no_store?: bool|Param,
- *                     stale_if_error?: scalar|null|Param,
- *                     stale_while_revalidate?: scalar|null|Param,
- *                 },
- *                 etag?: "weak"|"strong"|false|Param, // Set a simple ETag which is just the md5 hash of the response body. You can specify which type of ETag you want by passing "strong" or "weak". // Default: false
- *                 last_modified?: scalar|null|Param, // Set a default last modified timestamp if none is set yet. Value must be parseable by DateTime
- *                 reverse_proxy_ttl?: scalar|null|Param, // Specify a custom time to live in seconds for your caching proxy. This value is sent in the custom header configured in cache_control.ttl_header. // Default: null
- *                 vary?: list<scalar|null|Param>,
- *             },
- *         }>,
- *     },
- *     proxy_client?: array{
- *         default?: "varnish"|"nginx"|"symfony"|"cloudflare"|"cloudfront"|"fastly"|"noop"|Param, // If you configure more than one proxy client, you need to specify which client is the default.
- *         varnish?: array{
- *             tags_header?: scalar|null|Param, // HTTP header to use when sending tag invalidation requests to Varnish
- *             header_length?: scalar|null|Param, // Maximum header length when invalidating tags. If there are more tags to invalidate than fit into the header, the invalidation request is split into several requests.
- *             default_ban_headers?: array<string, scalar|null|Param>,
- *             tag_mode?: "ban"|"purgekeys"|Param, // If you can enable the xkey module in Varnish, use the purgekeys mode for more efficient tag handling // Default: "ban"
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 servers_from_jsonenv?: mixed, // Addresses of the hosts the caching proxy is running on (env var that contains a json array as a string). The values may be hostnames or ips, and with :port if not the default port 80.
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: null
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *                 request_factory?: scalar|null|Param, // Service name of PSR-17 message factory. // Default: null
- *                 stream_factory?: scalar|null|Param, // Service name of PSR-17 stream factory. // Default: null
- *             },
- *         },
- *         nginx?: array{
- *             purge_location?: scalar|null|Param, // Path to trigger the purge on Nginx for different location purge. // Default: false
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 servers_from_jsonenv?: mixed, // Addresses of the hosts the caching proxy is running on (env var that contains a json array as a string). The values may be hostnames or ips, and with :port if not the default port 80.
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: null
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *                 request_factory?: scalar|null|Param, // Service name of PSR-17 message factory. // Default: null
- *                 stream_factory?: scalar|null|Param, // Service name of PSR-17 stream factory. // Default: null
- *             },
- *         },
- *         symfony?: array{
- *             tags_header?: scalar|null|Param, // HTTP header to use when sending tag invalidation requests to Symfony HttpCache // Default: "X-Cache-Tags"
- *             tags_method?: scalar|null|Param, // HTTP method for sending tag invalidation requests to Symfony HttpCache // Default: "PURGETAGS"
- *             header_length?: scalar|null|Param, // Maximum header length when invalidating tags. If there are more tags to invalidate than fit into the header, the invalidation request is split into several requests.
- *             purge_method?: scalar|null|Param, // HTTP method to use when sending purge requests to Symfony HttpCache // Default: "PURGE"
- *             use_kernel_dispatcher?: bool|Param, // Dispatches invalidation requests to the kernel directly instead of executing real HTTP requests. Requires special kernel setup! Refer to the documentation for more information. // Default: false
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 servers_from_jsonenv?: mixed, // Addresses of the hosts the caching proxy is running on (env var that contains a json array as a string). The values may be hostnames or ips, and with :port if not the default port 80.
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: null
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *                 request_factory?: scalar|null|Param, // Service name of PSR-17 message factory. // Default: null
- *                 stream_factory?: scalar|null|Param, // Service name of PSR-17 stream factory. // Default: null
- *             },
- *         },
- *         cloudflare?: array{
- *             authentication_token?: scalar|null|Param, // API authorization token, requires Zone.Cache Purge permissions
- *             zone_identifier?: scalar|null|Param, // Identifier for your Cloudflare zone you want to purge the cache for
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *             },
- *         },
- *         cloudfront?: array{ // Configure a client to interact with AWS cloudfront. You need to install jean-beru/fos-http-cache-cloudfront to work with cloudfront
- *             distribution_id?: scalar|null|Param, // Identifier for your CloudFront distribution you want to purge the cache for
- *             client?: scalar|null|Param, // AsyncAws\CloudFront\CloudFrontClient client to use // Default: null
- *             configuration?: mixed, // Client configuration from https://async-aws.com/configuration.html // Default: []
- *         },
- *         fastly?: array{ // Configure a client to interact with Fastly.
- *             service_identifier?: scalar|null|Param, // Identifier for your Fastly service account.
- *             authentication_token?: scalar|null|Param, // User token for authentication against Fastly APIs.
- *             soft_purge?: scalar|null|Param, // Boolean for doing soft purges or not on tag & URL purging. Soft purges expires the cache unlike hard purge (removal), and allow grace/stale handling within Fastly VCL. // Default: true
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: "service"
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *             },
- *         },
- *         noop?: bool|Param,
- *     },
- *     cache_manager?: array{ // Configure the cache manager. Needs a proxy_client to be configured.
- *         enabled?: true|false|"auto"|Param, // Allows to disable the invalidation manager. Enabled by default if you configure a proxy client. // Default: "auto"
- *         custom_proxy_client?: scalar|null|Param, // Service name of a custom proxy client to use. With a custom client, generate_url_type defaults to ABSOLUTE_URL and tag support needs to be explicitly enabled. If no custom proxy client is specified, the first proxy client you configured is used.
- *         generate_url_type?: "auto"|1|0|3|2|Param, // Set what URLs to generate on invalidate/refresh Route. Auto means path if base_url is set on the default proxy client, full URL otherwise. // Default: "auto"
- *     },
- *     tags?: array{
- *         enabled?: true|false|"auto"|Param, // Allows to disable tag support. Enabled by default if you configured the cache manager and have a proxy client that supports tagging. // Default: "auto"
- *         strict?: bool|Param, // Default: false
- *         expression_language?: scalar|null|Param, // Service name of a custom ExpressionLanguage to use. // Default: null
- *         response_header?: scalar|null|Param, // HTTP header that contains cache tags. Defaults to xkey-softpurge for Varnish xkey or X-Cache-Tags otherwise // Default: null
- *         separator?: scalar|null|Param, // Character(s) to use to separate multiple tags. Defaults to " " for Varnish xkey or "," otherwise // Default: null
- *         max_header_value_length?: scalar|null|Param, // If configured the tag header value will be split into multiple response headers of the same name (see "response_header" configuration key) that all do not exceed the configured "max_header_value_length" (recommended is 4KB = 4096) - configure in bytes. // Default: null
- *         rules?: list<array{ // Default: []
- *             match: array{
- *                 path?: scalar|null|Param, // Request path. // Default: null
- *                 query_string?: scalar|null|Param, // Request query string. // Default: null
- *                 host?: scalar|null|Param, // Request host name. // Default: null
- *                 methods?: array<string, scalar|null|Param>,
- *                 ips?: array<string, scalar|null|Param>,
- *                 attributes?: array<string, scalar|null|Param>,
- *             },
- *             tags?: list<scalar|null|Param>,
- *             tag_expressions?: list<scalar|null|Param>,
- *         }>,
- *     },
- *     invalidation?: array{
- *         enabled?: true|false|"auto"|Param, // Allows to disable the listener for invalidation. Enabled by default if the cache manager is configured. When disabled, the cache manager is no longer flushed automatically. // Default: "auto"
- *         expression_language?: scalar|null|Param, // Service name of a custom ExpressionLanguage to use. // Default: null
- *         rules?: list<array{ // Default: []
- *             match: array{
- *                 path?: scalar|null|Param, // Request path. // Default: null
- *                 query_string?: scalar|null|Param, // Request query string. // Default: null
- *                 host?: scalar|null|Param, // Request host name. // Default: null
- *                 methods?: array<string, scalar|null|Param>,
- *                 ips?: array<string, scalar|null|Param>,
- *                 attributes?: array<string, scalar|null|Param>,
- *             },
- *             routes: array<string, array{ // Default: []
- *                 ignore_extra_params?: bool|Param, // Default: true
- *             }>,
- *         }>,
- *     },
- *     user_context?: bool|array{ // Listener that returns the request for the user context hash as early as possible.
- *         enabled?: bool|Param, // Default: false
- *         match?: array{
- *             matcher_service?: scalar|null|Param, // Service id of a request matcher that tells whether the request is a context hash request. // Default: "fos_http_cache.user_context.request_matcher"
- *             accept?: scalar|null|Param, // Specify the accept HTTP header used for context hash requests. // Default: "application/vnd.fos.user-context-hash"
- *             method?: scalar|null|Param, // Specify the HTTP method used for context hash requests. // Default: null
- *         },
- *         hash_cache_ttl?: scalar|null|Param, // Cache the response for the hash for the specified number of seconds. Setting this to 0 will not cache those responses at all. // Default: 0
- *         always_vary_on_context_hash?: bool|Param, // Whether to always add the user context hash header name in the response Vary header. // Default: true
- *         user_identifier_headers?: list<scalar|null|Param>,
- *         session_name_prefix?: scalar|null|Param, // Prefix for session cookies. Must match your PHP session configuration. Set to false to ignore the session in user context. // Default: false
- *         user_hash_header?: scalar|null|Param, // Name of the header that contains the hash information for the context. // Default: "X-User-Context-Hash"
- *         role_provider?: bool|Param, // Whether to enable a provider that automatically adds all roles of the current user to the context. // Default: false
- *         logout_handler?: bool|array{
- *             enabled?: true|false|"auto"|Param, // Whether to enable the user context logout handler. // Default: "auto"
- *         },
- *     },
- *     flash_message?: bool|array{ // Activate the flash message listener that puts flash messages into a cookie.
- *         enabled?: bool|Param, // Default: false
- *         name?: scalar|null|Param, // Name of the cookie to set for flashes. // Default: "flashes"
- *         path?: scalar|null|Param, // Cookie path validity. // Default: "/"
- *         host?: scalar|null|Param, // Cookie host name validity. // Default: null
- *         secure?: scalar|null|Param, // Whether the cookie should only be transmitted over a secure HTTPS connection from the client. // Default: false
- *     },
- *     test?: array{
- *         cache_header?: scalar|null|Param, // HTTP cache hit/miss header // Default: "X-Cache"
- *         proxy_server?: array{ // Configure how caching proxy will be run in your tests
- *             default?: "varnish"|"nginx"|Param, // If you configure more than one proxy server, specify which client is the default.
- *             varnish?: array{
- *                 config_file: scalar|null|Param,
- *                 binary?: scalar|null|Param, // Default: "varnishd"
- *                 port?: int|Param, // Default: 6181
- *                 ip?: scalar|null|Param, // Default: "127.0.0.1"
- *             },
- *             nginx?: array{
- *                 config_file: scalar|null|Param,
- *                 binary?: scalar|null|Param, // Default: "nginx"
- *                 port?: int|Param, // Default: 8080
- *                 ip?: scalar|null|Param, // Default: "127.0.0.1"
- *             },
- *         },
- *     },
- *     debug?: bool|array{
- *         enabled?: bool|Param, // Whether to send a debug header with the response to trigger a caching proxy to send debug information. If not set, defaults to kernel.debug. // Default: true
- *         header?: scalar|null|Param, // The header to send if debug is true. // Default: "X-Cache-Debug"
- *     },
- * }
  * @psalm-type TwigConfig = array{
  *     form_themes?: list<scalar|null|Param>,
  *     globals?: array<string, array{ // Default: []
@@ -2759,7 +2557,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     doctrine?: DoctrineConfig,
  *     doctrine_migrations?: DoctrineMigrationsConfig,
- *     fos_http_cache?: FosHttpCacheConfig,
  *     twig?: TwigConfig,
  *     security?: SecurityConfig,
  *     monolog?: MonologConfig,
@@ -2787,7 +2584,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
@@ -2820,7 +2616,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
@@ -2849,7 +2644,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
