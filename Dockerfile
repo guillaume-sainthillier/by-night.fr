@@ -78,8 +78,8 @@ COPY --from=node_builder --link /app/public/build ./public/build
 COPY --link --exclude=assets --exclude=docker . .
 
 # Config
-COPY --link docker/Caddyfile /etc/caddy/Caddyfile
-COPY --link docker/worker.Caddyfile /etc/caddy/worker.Caddyfile
+COPY --link docker/Caddyfile /etc/frankenphp/Caddyfile
+COPY --link docker/worker.Caddyfile /etc/frankenphp/worker.Caddyfile
 COPY --link docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 COPY --link docker/supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 COPY --link docker/entrypoint.sh /usr/local/bin/docker-entrypoint
@@ -96,4 +96,4 @@ RUN mkdir -p /run/php var/cache var/sessions var/storage/temp var/datas public/b
 
 HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
 ENTRYPOINT ["docker-entrypoint"]
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+CMD [ "--config", "/etc/frankenphp/Caddyfile", "--adapter", "caddyfile" ]
