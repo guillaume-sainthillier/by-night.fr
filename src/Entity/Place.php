@@ -21,10 +21,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
-use JMS\Serializer\Annotation\Groups;
 use Stringable;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Index(name: 'place_name_idx', columns: ['name'])]
@@ -32,7 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
-#[ExclusionPolicy('all')]
 class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
@@ -41,7 +38,6 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?int $id = null;
 
     /**
@@ -55,12 +51,10 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?string $cityName = null;
 
     #[ORM\Column(type: Types::STRING, length: 7, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?string $cityPostalCode = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
@@ -69,7 +63,6 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\ManyToOne(targetEntity: City::class)]
     #[ORM\JoinColumn]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?City $city = null;
 
     private ?ZipCity $zipCity = null;
@@ -77,7 +70,6 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?Country $country = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
@@ -91,23 +83,19 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?string $street = null;
 
     #[ORM\Column(type: Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?float $latitude = null;
 
     #[ORM\Column(type: Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?float $longitude = null;
 
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Expose]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::STRING, length: 255)]

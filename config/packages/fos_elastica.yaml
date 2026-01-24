@@ -6,7 +6,7 @@ fos_elastica:
 
     messenger: ~
     serializer:
-        serializer: jms_serializer
+        serializer: serializer
 
     indexes:
         event:

@@ -1733,209 +1733,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     }>,
  *     role_hierarchy?: array<string, string|list<scalar|null|Param>>,
  * }
- * @psalm-type JmsSerializerConfig = array{
- *     twig_enabled?: scalar|null|Param, // Default: "default"
- *     profiler?: scalar|null|Param, // Default: true
- *     enum_support?: scalar|null|Param, // Default: false
- *     default_value_property_reader_support?: scalar|null|Param, // Default: false
- *     handlers?: array{
- *         datetime?: array{
- *             default_format?: scalar|null|Param, // Default: "Y-m-d\\TH:i:sP"
- *             default_deserialization_formats?: list<scalar|null|Param>,
- *             default_timezone?: scalar|null|Param, // Default: "UTC"
- *             cdata?: scalar|null|Param, // Default: true
- *         },
- *         array_collection?: array{
- *             initialize_excluded?: bool|Param, // Default: false
- *         },
- *         symfony_uid?: array{
- *             default_format?: scalar|null|Param, // Default: "canonical"
- *             cdata?: scalar|null|Param, // Default: true
- *         },
- *     },
- *     subscribers?: array{
- *         doctrine_proxy?: array{
- *             initialize_excluded?: bool|Param, // Default: false
- *             initialize_virtual_types?: bool|Param, // Default: false
- *         },
- *     },
- *     object_constructors?: array{
- *         doctrine?: bool|array{
- *             enabled?: bool|Param, // Default: true
- *             fallback_strategy?: "null"|"exception"|"fallback"|Param, // Default: "null"
- *         },
- *     },
- *     property_naming?: string|array{
- *         id?: scalar|null|Param,
- *         separator?: scalar|null|Param, // Default: "_"
- *         lower_case?: bool|Param, // Default: true
- *     },
- *     expression_evaluator?: string|array{
- *         id?: scalar|null|Param, // Default: "jms_serializer.expression_evaluator"
- *     },
- *     metadata?: array{
- *         warmup?: array{
- *             paths?: array{
- *                 included?: list<scalar|null|Param>,
- *                 excluded?: list<scalar|null|Param>,
- *             },
- *         },
- *         cache?: scalar|null|Param, // Default: "file"
- *         debug?: bool|Param, // Default: true
- *         file_cache?: array{
- *             dir?: scalar|null|Param, // Default: null
- *         },
- *         include_interfaces?: bool|Param, // Default: false
- *         auto_detection?: bool|Param, // Default: true
- *         infer_types_from_doc_block?: bool|Param, // Default: false
- *         infer_types_from_doctrine_metadata?: bool|Param, // Infers type information from Doctrine metadata if no explicit type has been defined for a property. // Default: true
- *         directories?: array<string, array{ // Default: []
- *             path: scalar|null|Param,
- *             namespace_prefix?: scalar|null|Param, // Default: ""
- *         }>,
- *     },
- *     visitors?: array{
- *         json_serialization?: array{
- *             depth?: scalar|null|Param,
- *             options?: scalar|null|Param, // Default: 1024
- *         },
- *         json_deserialization?: array{
- *             options?: scalar|null|Param, // Default: 0
- *             strict?: bool|Param, // Default: false
- *         },
- *         xml_serialization?: array{
- *             version?: scalar|null|Param,
- *             encoding?: scalar|null|Param,
- *             format_output?: bool|Param, // Default: false
- *             default_root_name?: scalar|null|Param,
- *             default_root_ns?: scalar|null|Param, // Default: ""
- *         },
- *         xml_deserialization?: array{
- *             doctype_whitelist?: list<scalar|null|Param>,
- *             external_entities?: bool|Param, // Default: false
- *             options?: scalar|null|Param, // Default: 0
- *         },
- *     },
- *     default_context?: array{
- *         serialization?: string|array{
- *             id?: scalar|null|Param,
- *             serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *             enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *             attributes?: array<string, scalar|null|Param>,
- *             groups?: list<scalar|null|Param>,
- *             version?: scalar|null|Param, // Application version to use in exclusion strategies
- *         },
- *         deserialization?: string|array{
- *             id?: scalar|null|Param,
- *             serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *             enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *             attributes?: array<string, scalar|null|Param>,
- *             groups?: list<scalar|null|Param>,
- *             version?: scalar|null|Param, // Application version to use in exclusion strategies
- *         },
- *     },
- *     instances?: array<string, array{ // Default: []
- *         inherit?: bool|Param, // Default: false
- *         enum_support?: scalar|null|Param, // Default: false
- *         default_value_property_reader_support?: scalar|null|Param, // Default: false
- *         handlers?: array{
- *             datetime?: array{
- *                 default_format?: scalar|null|Param, // Default: "Y-m-d\\TH:i:sP"
- *                 default_deserialization_formats?: list<scalar|null|Param>,
- *                 default_timezone?: scalar|null|Param, // Default: "UTC"
- *                 cdata?: scalar|null|Param, // Default: true
- *             },
- *             array_collection?: array{
- *                 initialize_excluded?: bool|Param, // Default: false
- *             },
- *             symfony_uid?: array{
- *                 default_format?: scalar|null|Param, // Default: "canonical"
- *                 cdata?: scalar|null|Param, // Default: true
- *             },
- *         },
- *         subscribers?: array{
- *             doctrine_proxy?: array{
- *                 initialize_excluded?: bool|Param, // Default: false
- *                 initialize_virtual_types?: bool|Param, // Default: false
- *             },
- *         },
- *         object_constructors?: array{
- *             doctrine?: bool|array{
- *                 enabled?: bool|Param, // Default: true
- *                 fallback_strategy?: "null"|"exception"|"fallback"|Param, // Default: "null"
- *             },
- *         },
- *         property_naming?: string|array{
- *             id?: scalar|null|Param,
- *             separator?: scalar|null|Param, // Default: "_"
- *             lower_case?: bool|Param, // Default: true
- *         },
- *         expression_evaluator?: string|array{
- *             id?: scalar|null|Param, // Default: "jms_serializer.expression_evaluator"
- *         },
- *         metadata?: array{
- *             warmup?: array{
- *                 paths?: array{
- *                     included?: list<scalar|null|Param>,
- *                     excluded?: list<scalar|null|Param>,
- *                 },
- *             },
- *             cache?: scalar|null|Param, // Default: "file"
- *             debug?: bool|Param, // Default: true
- *             file_cache?: array{
- *                 dir?: scalar|null|Param, // Default: null
- *             },
- *             include_interfaces?: bool|Param, // Default: false
- *             auto_detection?: bool|Param, // Default: true
- *             infer_types_from_doc_block?: bool|Param, // Default: false
- *             infer_types_from_doctrine_metadata?: bool|Param, // Infers type information from Doctrine metadata if no explicit type has been defined for a property. // Default: true
- *             directories?: array<string, array{ // Default: []
- *                 path: scalar|null|Param,
- *                 namespace_prefix?: scalar|null|Param, // Default: ""
- *             }>,
- *         },
- *         visitors?: array{
- *             json_serialization?: array{
- *                 depth?: scalar|null|Param,
- *                 options?: scalar|null|Param, // Default: 1024
- *             },
- *             json_deserialization?: array{
- *                 options?: scalar|null|Param, // Default: 0
- *                 strict?: bool|Param, // Default: false
- *             },
- *             xml_serialization?: array{
- *                 version?: scalar|null|Param,
- *                 encoding?: scalar|null|Param,
- *                 format_output?: bool|Param, // Default: false
- *                 default_root_name?: scalar|null|Param,
- *                 default_root_ns?: scalar|null|Param, // Default: ""
- *             },
- *             xml_deserialization?: array{
- *                 doctype_whitelist?: list<scalar|null|Param>,
- *                 external_entities?: bool|Param, // Default: false
- *                 options?: scalar|null|Param, // Default: 0
- *             },
- *         },
- *         default_context?: array{
- *             serialization?: string|array{
- *                 id?: scalar|null|Param,
- *                 serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *                 enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *                 attributes?: array<string, scalar|null|Param>,
- *                 groups?: list<scalar|null|Param>,
- *                 version?: scalar|null|Param, // Application version to use in exclusion strategies
- *             },
- *             deserialization?: string|array{
- *                 id?: scalar|null|Param,
- *                 serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *                 enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *                 attributes?: array<string, scalar|null|Param>,
- *                 groups?: list<scalar|null|Param>,
- *                 version?: scalar|null|Param, // Application version to use in exclusion strategies
- *             },
- *         },
- *     }>,
- * }
  * @psalm-type MonologConfig = array{
  *     use_microseconds?: scalar|null|Param, // Default: true
  *     channels?: list<scalar|null|Param>,
@@ -2965,7 +2762,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     fos_http_cache?: FosHttpCacheConfig,
  *     twig?: TwigConfig,
  *     security?: SecurityConfig,
- *     jms_serializer?: JmsSerializerConfig,
  *     monolog?: MonologConfig,
  *     vich_uploader?: VichUploaderConfig,
  *     sentry?: SentryConfig,
@@ -2994,7 +2790,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
- *         jms_serializer?: JmsSerializerConfig,
  *         monolog?: MonologConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         web_profiler?: WebProfilerConfig,
@@ -3028,7 +2823,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
- *         jms_serializer?: JmsSerializerConfig,
  *         monolog?: MonologConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         sentry?: SentryConfig,
@@ -3058,7 +2852,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
- *         jms_serializer?: JmsSerializerConfig,
  *         monolog?: MonologConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         web_profiler?: WebProfilerConfig,

@@ -14,18 +14,16 @@ use App\Repository\ZipCityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Index(name: 'zip_city_postal_code_name_idx', columns: ['country_id', 'postal_code', 'name'])]
 #[ORM\Entity(repositoryClass: ZipCityRepository::class)]
-#[Serializer\ExclusionPolicy('ALL')]
 class ZipCity
 {
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
     #[ORM\GeneratedValue('AUTO')]
-    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:city:details', 'elasticsearch:user:details'])]
-    #[Serializer\Expose]
+    #[Groups(['elasticsearch:event:details', 'elasticsearch:city:details', 'elasticsearch:user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 201, unique: true)]
