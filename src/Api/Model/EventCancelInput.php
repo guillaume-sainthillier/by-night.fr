@@ -10,10 +10,10 @@
 
 namespace App\Api\Model;
 
-final class EventCancelInput
+final readonly class EventCancelInput
 {
     public function __construct(
-        public readonly bool $cancel = true,
+        public bool $cancel = true,
     ) {
     }
 }

@@ -10,10 +10,10 @@
 
 namespace App\Api\Model;
 
-final class EventDraftInput
+final readonly class EventDraftInput
 {
     public function __construct(
-        public readonly bool $draft = true,
+        public bool $draft = true,
     ) {
     }
 }

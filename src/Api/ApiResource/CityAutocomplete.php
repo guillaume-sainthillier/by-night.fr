@@ -22,18 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/cities',
-            provider: CityAutocompleteProvider::class,
-            parameters: [
-                'q' => new QueryParameter(
-                    key: 'q',
-                    description: 'Search query for city name autocomplete',
-                    required: false,
-                    schema: ['type' => 'string', 'minLength' => 1, 'maxLength' => 100],
-                    constraints: [
-                        new Assert\Length(min: 1, max: 100),
-                    ],
-                ),
-            ],
             cacheHeaders: [
                 'max_age' => 31536000,
                 'shared_max_age' => 31536000,
@@ -42,14 +30,26 @@ use Symfony\Component\Validator\Constraints as Assert;
                 summary: 'Search for cities by name',
                 description: 'Returns a list of cities matching the search query for autocomplete purposes.',
             ),
+            provider: CityAutocompleteProvider::class,
+            parameters: [
+                'q' => new QueryParameter(
+                    key: 'q',
+                    schema: ['type' => 'string', 'minLength' => 1, 'maxLength' => 100],
+                    description: 'Search query for city name autocomplete',
+                    required: false,
+                    constraints: [
+                        new Assert\Length(min: 1, max: 100),
+                    ],
+                ),
+            ],
         ),
     ],
 )]
-final class CityAutocomplete
+final readonly class CityAutocomplete
 {
     public function __construct(
-        public readonly string $slug,
-        public readonly string $name,
+        public string $slug,
+        public string $name,
     ) {
     }
 }

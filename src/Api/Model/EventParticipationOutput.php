@@ -10,12 +10,12 @@
 
 namespace App\Api\Model;
 
-final class EventParticipationOutput
+final readonly class EventParticipationOutput
 {
     public function __construct(
-        public readonly bool $success,
-        public readonly bool $like,
-        public readonly int $likes,
+        public bool $success,
+        public bool $like,
+        public int $likes,
     ) {
     }
 }
