@@ -32,7 +32,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
     public function postIndexPopulate(PostIndexPopulateEvent $event): void
     {
         $index = $this->indexManager->getIndex($event->getIndex());
-        $index->getClient()->request('_forcemerge', 'POST', [], ['max_num_segments' => 5]);
+        $index->forcemerge(['max_num_segments' => 5]);
         $index->getSettings()->setRefreshInterval(Settings::DEFAULT_REFRESH_INTERVAL);
     }
 

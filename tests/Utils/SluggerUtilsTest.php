@@ -15,14 +15,14 @@ use App\Utils\SluggerUtils;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class SluggerUtilsTest extends AppKernelTestCase
+final class SluggerUtilsTest extends AppKernelTestCase
 {
     #[Override]
     protected function setUp(): void
     {
         parent::setUp();
         // Initialize the SluggerUtils with the container's slugger
-        static::getContainer()->get(SluggerUtils::class);
+        self::getContainer()->get(SluggerUtils::class);
     }
 
     #[DataProvider('slugProvider')]

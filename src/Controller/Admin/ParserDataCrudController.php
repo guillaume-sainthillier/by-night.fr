@@ -19,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 use RuntimeException;
 
 final class ParserDataCrudController extends AbstractCrudController
@@ -28,6 +29,7 @@ final class ParserDataCrudController extends AbstractCrudController
         return ParserData::class;
     }
 
+    #[Override]
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
@@ -35,6 +37,7 @@ final class ParserDataCrudController extends AbstractCrudController
         ;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -43,6 +46,7 @@ final class ParserDataCrudController extends AbstractCrudController
             ->setSearchFields(['externalId', 'reason', 'firewallVersion', 'parserVersion', 'id']);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $externalId = TextField::new('externalId');

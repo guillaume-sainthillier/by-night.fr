@@ -18,6 +18,7 @@ use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
+use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\PagerfantaInterface;
 
@@ -122,6 +123,22 @@ final class EventElasticaRepository extends Repository
             $sortByScore = true;
             $query = new MultiMatch();
             $query
+                ->setFields([
+                    'name^5',
+                    'name.heavy^5',
+                    'place_name^3',
+                    'place.name^3',
+                    'place_city^2',
+                    'place.city_name^2',
+                    'place.city_postal_code^3',
+                    'place_postal_code',
+                    'place_street',
+                    'place.street',
+                    'description',
+                    'description.heavy',
+                    'theme',
+                    'type',
+                ])
                 ->setFuzziness('auto')
                 ->setOperator('AND')
                 ->setQuery($search->getTerm())
@@ -161,5 +178,47 @@ final class EventElasticaRepository extends Repository
         }
 
         return $this->findPaginated($finalQuery);
+    }
+
+    /**
+     * @return list<HybridResult>
+     */
+    public function findWithHighlights(string $query, int $limit = 5): array
+    {
+        $multiMatch = new MultiMatch();
+        $multiMatch
+            ->setFields([
+                'name^5',
+                'name.heavy^5',
+                'place_name^3',
+                'place.name^3',
+                'place_city^2',
+                'place.city_name^2',
+                'description',
+            ])
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($query);
+
+        $finalQuery = Query::create($multiMatch);
+        $finalQuery->setSize($limit);
+
+        // Add highlighting
+        $finalQuery->setHighlight([
+            'fields' => [
+                'name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+                'place.name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+            ],
+        ]);
+
+        return $this->findHybrid($finalQuery, $limit);
     }
 }

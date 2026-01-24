@@ -43,9 +43,7 @@
 {% block app_collection_entry_widget_row %}
     <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
         <div class="collection-item-wrapper">
-            <div class="collection-item-header"
-                 data-toggle="collapse"
-                 data-target="#collapse-{{ child.vars.id }}">
+            <div class="collection-item-header">
                 {% with child.vars %}{{ block('inline_form_label') }}{% endwith %}
                 {% if not disabled and allow_delete %}
                     {% import 'form/macros.html.twig' as macros %}

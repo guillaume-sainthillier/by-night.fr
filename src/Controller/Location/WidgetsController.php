@@ -22,10 +22,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class WidgetsController extends BaseController
 {
-    /**
-     * @var int
-     */
-    public const WIDGET_ITEM_LIMIT = 7;
+    public const int WIDGET_ITEM_LIMIT = 7;
 
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}', name: 'app_widget_next_events', methods: ['GET'])]
     #[ReverseProxy(expires: 'tomorrow')]

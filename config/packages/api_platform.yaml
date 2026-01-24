@@ -1,0 +1,15 @@
+api_platform:
+    title: 'By Night API'
+    version: '1.0.0'
+    formats:
+        json:
+            mime_types: ['application/json']
+        jsonld:
+            mime_types: ['application/ld+json']
+    defaults:
+        stateless: false
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+    mapping:
+        paths:
+            - '%kernel.project_dir%/src/Api/ApiResource'

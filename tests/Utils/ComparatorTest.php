@@ -19,7 +19,7 @@ use App\Utils\Comparator;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class ComparatorTest extends AppKernelTestCase
+final class ComparatorTest extends AppKernelTestCase
 {
     private Comparator $comparator;
 
@@ -28,7 +28,7 @@ class ComparatorTest extends AppKernelTestCase
     {
         parent::setUp();
 
-        $this->comparator = static::getContainer()->get(Comparator::class);
+        $this->comparator = self::getContainer()->get(Comparator::class);
     }
 
     #[DataProvider('matchingScorePlaceProvider')]

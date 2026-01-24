@@ -14,7 +14,7 @@ use App\Utils\MemoryUtils;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-class MemoryUtilsTest extends TestCase
+final class MemoryUtilsTest extends TestCase
 {
     public function testGetMemoryUsageReturnsString(): void
     {

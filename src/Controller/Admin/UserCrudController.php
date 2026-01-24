@@ -24,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 
 final class UserCrudController extends AbstractCrudController
 {
@@ -32,12 +33,14 @@ final class UserCrudController extends AbstractCrudController
         return User::class;
     }
 
+    #[Override]
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
             ->disable(Action::NEW);
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -68,6 +71,7 @@ final class UserCrudController extends AbstractCrudController
             ]);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $panel1 = FormField::addPanel('Informations');

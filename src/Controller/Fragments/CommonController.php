@@ -20,10 +20,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CommonController extends AbstractController
 {
-    /**
-     * @var int
-     */
-    public const LIFE_TIME_CACHE = 86_400;
+    public const int LIFE_TIME_CACHE = 86_400;
 
     #[Route(path: '/_private/header/{id<%patterns.id%>}', name: 'app_private_header', methods: ['GET'])]
     #[ReverseProxy(expires: '+1 day')]

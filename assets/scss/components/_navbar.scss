@@ -1,3 +1,9 @@
+.navbar-nav,
+.navbar-nav .nav-item,
+.navbar-collapse {
+    min-width: 0;
+}
+
 .navbar {
     z-index: 1000; //Conflit with z-index 500 on summernote
     box-shadow: none;
@@ -30,61 +36,11 @@
         padding-right: $navbar-brand-padding-y;
     }
 
-    .nav-item.nav-avatar > a {
-        min-width: 60px;
-    }
-
     a.dropdown-item {
         .icon {
             --#{$prefix}icon-size: 1.125em;
             text-align: center;
             margin-right: 0.5rem;
-        }
-    }
-
-    .search-form {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        max-width: 720px;
-        position: relative;
-        background: rgba(241, 243, 244, 0.24);
-        transition:
-            background 100ms ease-in,
-            width 100ms ease-out;
-
-        &,
-        input,
-        input::placeholder {
-            color: $navbar-dark-color;
-        }
-
-        input {
-            height: 100%;
-            width: 100%;
-            color: $navbar-dark-color;
-            background-color: transparent;
-            border: none;
-            outline: none;
-        }
-
-        .btn {
-            color: $navbar-dark-color;
-            font-size: 1.25rem;
-        }
-
-        &.focus {
-            background: white;
-
-            &,
-            input,
-            input::placeholder {
-                color: rgba(0, 0, 0, 0.55);
-            }
-
-            .btn {
-                color: rgba(0, 0, 0, 0.55);
-            }
         }
     }
 
@@ -98,25 +54,5 @@
                 display: none;
             }
         }
-    }
-}
-
-#search-menu-backdrop {
-    background: rgba(50, 50, 50, 0.5);
-    bottom: 0;
-    left: 0;
-    opacity: 0;
-    position: fixed;
-    right: 0;
-    top: 0;
-    transition:
-        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0s 0.3s;
-    z-index: -1;
-
-    &.open {
-        opacity: 1;
-        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 999;
     }
 }

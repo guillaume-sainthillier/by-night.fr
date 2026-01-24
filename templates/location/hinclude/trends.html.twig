@@ -4,7 +4,7 @@
 
     <button type="button" href="{{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? path('app_login') : '#' }}"
             class="btn btn-unstyled participer btn-like-event {{ participer ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' connexion' }}"
-            data-href="{{ path('app_user_like', {id: event.id}) }}">
+            data-href="{{ path('api_event_participer', {id: event.id}) }}">
         <i class="icon fa fa-heart"></i>
     </button>
     <button class="btn btn-unstyled dropdown-toggle" type="button" data-bs-toggle="dropdown">

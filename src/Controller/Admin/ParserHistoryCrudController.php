@@ -19,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Override;
 use RuntimeException;
 
 final class ParserHistoryCrudController extends AbstractCrudController
@@ -28,6 +29,7 @@ final class ParserHistoryCrudController extends AbstractCrudController
         return ParserHistory::class;
     }
 
+    #[Override]
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
@@ -35,6 +37,7 @@ final class ParserHistoryCrudController extends AbstractCrudController
         ;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -43,6 +46,7 @@ final class ParserHistoryCrudController extends AbstractCrudController
             ->setSearchFields(['fromData', 'nouvellesSoirees', 'updateSoirees', 'explorations', 'id']);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $startDate = DateTimeField::new('startDate');

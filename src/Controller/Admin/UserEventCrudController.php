@@ -17,6 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use Override;
 
 final class UserEventCrudController extends AbstractCrudController
 {
@@ -25,6 +26,7 @@ final class UserEventCrudController extends AbstractCrudController
         return UserEvent::class;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -33,6 +35,7 @@ final class UserEventCrudController extends AbstractCrudController
             ->setSearchFields(['id']);
     }
 
+    #[Override]
     public function configureFields(string $pageName): iterable
     {
         $id = IdField::new('id', 'ID');

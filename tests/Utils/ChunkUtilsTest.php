@@ -15,7 +15,7 @@ use ArrayObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class ChunkUtilsTest extends TestCase
+final class ChunkUtilsTest extends TestCase
 {
     public function testGetChunksByClassWithSingleType(): void
     {

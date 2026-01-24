@@ -15,7 +15,7 @@ use App\Utils\Util;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class UtilTest extends AppKernelTestCase
+final class UtilTest extends AppKernelTestCase
 {
     protected Util $utils;
 
@@ -24,7 +24,7 @@ class UtilTest extends AppKernelTestCase
     {
         parent::setUp();
 
-        $this->utils = static::getContainer()->get(Util::class);
+        $this->utils = self::getContainer()->get(Util::class);
     }
 
     #[DataProvider('nonNumericCharsProvider')]

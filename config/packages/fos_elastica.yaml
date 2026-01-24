@@ -2,9 +2,7 @@
 fos_elastica:
     clients:
         default:
-            host: '%env(ES_HOST)%'
-            port: '%env(ES_PORT)%'
-            compression: true
+            hosts: ['%env(ELASTICSEARCH_URL)%']
 
     messenger: ~
     serializer:
@@ -78,7 +76,6 @@ fos_elastica:
                     - 'elasticsearch:event:details'
             properties:
                 name:
-                    boost: 5
                     type: text
                     analyzer: french_light
                     fields:
@@ -101,14 +98,12 @@ fos_elastica:
                 draft:
                     type: boolean
                 place_name:
-                    boost: 3
                     type: text
                     analyzer: french_natural
                 place_street:
                     type: text
                     analyzer: french_natural
                 place_city:
-                    boost: 2
                     type: text
                     analyzer: french_natural
                 place_postal_code:
@@ -124,18 +119,15 @@ fos_elastica:
                     type: object
                     properties:
                         name:
-                            boost: 3
                             type: text
                             analyzer: french_natural
                         street:
                             type: text
                             analyzer: french_natural
                         city_name:
-                            boost: 2
                             type: text
                             analyzer: french_natural
                         city_postal_code:
-                            boost: 3
                             type: text
                             analyzer: french_natural
                         city:
@@ -164,10 +156,8 @@ fos_elastica:
             properties:
                 name:
                     type: text
-                    boost: 3
                     analyzer: text_analyzer
                 postal_codes:
-                    boost: 10
                     type: text
                     analyzer: text_analyzer
                 population:
@@ -176,7 +166,6 @@ fos_elastica:
                     type: object
                     properties:
                         name:
-                            boost: 5
                             type: text
                             analyzer: text_analyzer
                 parent:
@@ -206,14 +195,12 @@ fos_elastica:
                     - 'elasticsearch:user:details'
             properties:
                 username:
-                    boost: 5
                     type: text
                     analyzer: text_analyzer
                 firstname:
                     type: text
                     analyzer: text_analyzer
                 lastname:
-                    boost: 3
                     type: text
                     analyzer: text_analyzer
             persistence:
@@ -221,3 +208,25 @@ fos_elastica:
                 repository: App\SearchRepository\UserElasticaRepository
                 provider:
                     batch_size: 1000
+
+when@test:
+    fos_elastica:
+        indexes:
+            event:
+                persistence:
+                    listener:
+                        insert: false
+                        update: false
+                        delete: false
+            city:
+                persistence:
+                    listener:
+                        insert: false
+                        update: false
+                        delete: false
+            user:
+                persistence:
+                    listener:
+                        insert: false
+                        update: false
+                        delete: false

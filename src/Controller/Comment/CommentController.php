@@ -24,10 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class CommentController extends BaseController
 {
-    /**
-     * @var int
-     */
-    public const COMMENTS_PER_PAGE = 10;
+    public const int COMMENTS_PER_PAGE = 10;
 
     #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
     public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response

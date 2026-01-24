@@ -24,10 +24,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class WidgetsController extends BaseController
 {
-    /**
-     * @var int
-     */
-    public const WIDGET_ITEM_LIMIT = 7;
+    public const int WIDGET_ITEM_LIMIT = 7;
 
     #[Route(path: '/top/membres/{page<%patterns.page%>}', name: 'app_agenda_top_users', methods: ['GET'])]
     #[ReverseProxy(expires: '6 hours')]

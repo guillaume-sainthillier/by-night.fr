@@ -13,7 +13,16 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.x.com)",
       "Bash(composer require:*)",
-      "Bash(composer remove:*)"
+      "Bash(composer remove:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:packagist.org)",
+      "Bash(composer update:*)",
+      "Bash(vendor/bin/phpstan analyse:*)",
+      "Bash(bin/console debug:config:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(bin/console cache:clear:*)",
+      "Bash(yarn add:*)",
+      "Bash(yarn run dev)"
     ]
   }
 }

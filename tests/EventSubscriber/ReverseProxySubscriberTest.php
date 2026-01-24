@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ReverseProxySubscriberTest extends TestCase
+final class ReverseProxySubscriberTest extends TestCase
 {
     public function testGetSubscribedEvents(): void
     {
@@ -46,7 +46,7 @@ class ReverseProxySubscriberTest extends TestCase
 
         $event = new ControllerArgumentsEvent(
             $kernel,
-            fn () => new Response(),
+            static fn () => new Response(),
             [],
             $request,
             null
@@ -67,7 +67,7 @@ class ReverseProxySubscriberTest extends TestCase
 
         $event = new ControllerArgumentsEvent(
             $kernel,
-            fn () => new Response(),
+            static fn () => new Response(),
             [],
             $request,
             null

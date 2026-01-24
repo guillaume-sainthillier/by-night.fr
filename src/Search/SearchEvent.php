@@ -28,9 +28,9 @@ final class SearchEvent
 
     private ?string $tag = null;
 
-    protected array $type = [];
+    private array $type = [];
 
-    protected array $lieux = [];
+    private array $lieux = [];
 
     private ?string $term = null;
 

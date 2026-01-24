@@ -46,7 +46,7 @@ final class Reject
 
     public const int BAD_COUNTRY = 262_144;
 
-    protected int $reason = self::VALID;
+    private int $reason = self::VALID;
 
     public function getReason(): int
     {

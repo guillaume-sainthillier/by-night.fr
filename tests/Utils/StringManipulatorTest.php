@@ -14,7 +14,7 @@ use App\Utils\StringManipulator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class StringManipulatorTest extends TestCase
+final class StringManipulatorTest extends TestCase
 {
     #[DataProvider('multipleSpacesProvider')]
     public function testDeleteMultipleSpaces(string $input, string $expected): void

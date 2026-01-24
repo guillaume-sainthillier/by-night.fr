@@ -12,7 +12,7 @@ import registerServices from './services'
 
 // Global listeners
 import lazyload from './global-listeners/lazyload'
-import headerSearch from './global-listeners/header-search'
+import autocomplete from './global-listeners/autocomplete'
 import scrollToTop from './global-listeners/scroll-to-top'
 
 // Listeners
@@ -40,7 +40,7 @@ class App {
     constructor() {
         this.#di = null
         this.#beforeRunListeners = []
-        this.#listeners = [headerSearch, imagePreviews, lazyload, scrollToTop]
+        this.#listeners = [autocomplete, imagePreviews, lazyload, scrollToTop]
 
         this.#pageListeners = [
             emailVerify,

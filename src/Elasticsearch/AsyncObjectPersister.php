@@ -138,12 +138,14 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
     }
 
     /**
-     * @param string[] $identifiers
+     * @param string[]|int[] $identifiers
      */
     public function doDeleteManyByIdentifiers(array $identifiers, string|bool $routing): void
     {
         try {
-            $this->index->getClient()->deleteIds($identifiers, $this->index->getName(), $routing);
+            // Elastica 8 requires string IDs
+            $stringIdentifiers = array_map(strval(...), $identifiers);
+            $this->index->getClient()->deleteIds($stringIdentifiers, $this->index->getName(), $routing);
         } catch (BulkException $e) {
             $this->log($e);
         }

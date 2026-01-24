@@ -22,9 +22,9 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
+final readonly class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-    public function __construct(protected TranslatorInterface $translator, protected RouterInterface $router)
+    public function __construct(private TranslatorInterface $translator, private RouterInterface $router)
     {
     }
 

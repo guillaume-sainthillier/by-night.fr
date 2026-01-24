@@ -18,7 +18,7 @@ use App\Utils\Firewall;
 use DateTime;
 use Override;
 
-class FirewallTest extends AppKernelTestCase
+final class FirewallTest extends AppKernelTestCase
 {
     protected Firewall $firewall;
 
@@ -27,7 +27,7 @@ class FirewallTest extends AppKernelTestCase
     {
         parent::setUp();
 
-        $this->firewall = static::getContainer()->get(Firewall::class);
+        $this->firewall = self::getContainer()->get(Firewall::class);
     }
 
     public function testExplorations(): void

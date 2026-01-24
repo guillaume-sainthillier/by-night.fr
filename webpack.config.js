@@ -71,6 +71,17 @@ Encore
     // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
 
+    // configure Babel for JSX with Preact
+    .configureBabel((config) => {
+        config.plugins.push([
+            '@babel/plugin-transform-react-jsx',
+            {
+                pragma: 'h',
+                pragmaFrag: 'Fragment',
+            },
+        ])
+    })
+
     // enables @babel/preset-env polyfills
     .configureBabelPresetEnv((config) => {
         config.useBuiltIns = 'usage'
@@ -157,6 +168,7 @@ if (Encore.isProduction()) {
                     /^note-/,
                     /^select2-container--bootstrap-5/,
                     /^fa-(plus|xmark|masks-theater|vest|file-pen|calendar|location-crosshairs|twitter|facebook)/,
+                    /^aa-/,
                 ]
             },
         })

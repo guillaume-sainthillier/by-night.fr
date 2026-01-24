@@ -23,7 +23,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class TagsInvalidatorTest extends TestCase
+final class TagsInvalidatorTest extends TestCase
 {
     /** @var CacheManager&MockObject */
     private CacheManager $cacheManager;

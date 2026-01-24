@@ -12,9 +12,9 @@ namespace App\Utils;
 
 use function Symfony\Component\String\u;
 
-final class Util
+final readonly class Util
 {
-    protected string $stopWordsRegex;
+    private string $stopWordsRegex;
 
     public function __construct()
     {

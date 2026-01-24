@@ -14,6 +14,7 @@ use App\Entity\UserOAuth;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Override;
 
 final class UserOAuthCrudController extends OAuthCrudController
 {
@@ -22,6 +23,7 @@ final class UserOAuthCrudController extends OAuthCrudController
         return UserOAuth::class;
     }
 
+    #[Override]
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
@@ -29,6 +31,7 @@ final class UserOAuthCrudController extends OAuthCrudController
         ;
     }
 
+    #[Override]
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)

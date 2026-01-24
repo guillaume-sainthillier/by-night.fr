@@ -14,7 +14,7 @@ use App\Utils\TagUtils;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class TagUtilsTest extends TestCase
+final class TagUtilsTest extends TestCase
 {
     #[DataProvider('tagTermsProvider')]
     public function testGetTagTerms(string $input, array $expected): void
