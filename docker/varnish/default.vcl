@@ -13,8 +13,6 @@ backend default {
 # Hosts allowed to send BAN requests
 acl invalidators {
     "localhost";
-    "127.0.0.1";
-    "::1";
     # docker-compose networks
     "172.19.0.0"/16;
 }

@@ -1,4 +1,4 @@
-FROM varnish:7.3-alpine
+FROM varnish:8.0-alpine
 
 USER root
 
