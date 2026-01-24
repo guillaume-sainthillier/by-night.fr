@@ -1,3 +1,6 @@
 worker {
+    env FRANKENPHP_WORKER 1
     file /app/public/index.php
+
+    {$FRANKENPHP_WORKER_CONFIG}
 }
