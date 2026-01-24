@@ -87,7 +87,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         $qb = $this->createElasticaQueryBuilder('e');
 
-        return $qb->where('e.draft = false');
+        return $qb
+            ->andWhere('e.draft = false')
+            ->addOrderBy('e.createdAt', 'DESC')
+        ;
     }
 
     public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
