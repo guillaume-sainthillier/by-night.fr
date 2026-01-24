@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/cities',
+            name: 'api_cities',
             cacheHeaders: [
                 'max_age' => 31536000,
                 'shared_max_age' => 31536000,
