@@ -26,7 +26,7 @@
     <div class="col-sm-9 col-lg-8 card-content">
         <div class="card-body">
             <h3 class="h5">
-                <a title="Tous les détails de {{ event.name }} "
+                <a title="Tous les détails de {{ event.name }}"
                    href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}"
                    {% if microdata %}itemprop="url"{% endif %}>
                     <span {% if microdata %}itemprop="name"{% endif %}>{{ event.name }}</span>
