@@ -21,8 +21,6 @@ RUN IPE_GD_WITHOUTAVIF=1 \
         pcntl \
         pdo_mysql \
         redis \
-        soap \
-        sockets \
         zip
 
 # Composer install stage
