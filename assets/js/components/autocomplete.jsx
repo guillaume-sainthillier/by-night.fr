@@ -147,12 +147,22 @@ export default function init({
                 return []
             }
 
-            const request = $.get(globalSearchUrl, { query }, null, 'json')
+            const request = $.ajax({
+                url: globalSearchUrl,
+                method: 'GET',
+                data: { q: query },
+                headers: {
+                    Accept: 'application/ld+json',
+                },
+                dataType: 'json',
+            })
+
             const results = new Promise((resolve, reject) => {
                 request
-                    .then((results) => {
+                    .then((response) => {
                         setContext({ error: null })
-                        resolve(results)
+                        // Extract results from API Platform's 'member' array
+                        resolve(response.member || [])
                     })
                     .catch((error) => {
                         console.error('Search API error:', error)

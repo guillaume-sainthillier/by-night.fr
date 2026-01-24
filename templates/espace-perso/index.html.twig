@@ -55,13 +55,13 @@
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input draft" data-href="{{ path('app_event_draft', {id: event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
+                                    <input class="form-check-input draft" data-href="{{ path('api_event_draft', {id: event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
                                     <label class="form-check-label" for="draft-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input cancel" data-href="{{ path('app_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
+                                    <input class="form-check-input cancel" data-href="{{ path('api_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status ? 'checked' }} id="cancel-event-{{ event.id }}">
                                     <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>

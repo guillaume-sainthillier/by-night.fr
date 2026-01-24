@@ -14,7 +14,12 @@ export default (di, container) => {
         }
 
         btn.attr('disabled', true)
-        $.post(btn.data('href'), { like: !btn.hasClass(options.css_active_class) }).done(function (msg) {
+        $.ajax({
+            url: btn.data('href'),
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ like: !btn.hasClass(options.css_active_class) }),
+        }).done(function (msg) {
             btn.attr('disabled', !msg.success)
             if (msg.success) {
                 btn.toggleClass(options.css_active_class, msg.like)

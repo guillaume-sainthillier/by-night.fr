@@ -11,8 +11,11 @@ $(document).ready(function () {
         const self = $(this)
 
         self.attr('disabled', true)
-        $.post(self.data('href'), {
-            draft: !self.prop('checked'),
+        $.ajax({
+            url: self.data('href'),
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ draft: !self.prop('checked') }),
         }).done(function () {
             self.attr('disabled', false)
         })
@@ -21,8 +24,11 @@ $(document).ready(function () {
     $('.cancel').change(function () {
         const self = $(this)
         self.attr('disabled', true)
-        $.post(self.data('href'), {
-            cancel: self.prop('checked'),
+        $.ajax({
+            url: self.data('href'),
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ cancel: self.prop('checked') }),
         }).done(function () {
             self.attr('disabled', false)
         })

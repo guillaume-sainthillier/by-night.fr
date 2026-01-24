@@ -18,7 +18,7 @@ use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
-use Elastica\ResultSet;
+use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\PagerfantaInterface;
 
@@ -180,7 +180,10 @@ final class EventElasticaRepository extends Repository
         return $this->findPaginated($finalQuery);
     }
 
-    public function findWithHighlights(string $query, int $limit = 5): ResultSet
+    /**
+     * @return list<HybridResult>
+     */
+    public function findWithHighlights(string $query, int $limit = 5): array
     {
         $multiMatch = new MultiMatch();
         $multiMatch
@@ -199,7 +202,6 @@ final class EventElasticaRepository extends Repository
 
         $finalQuery = Query::create($multiMatch);
         $finalQuery->setSize($limit);
-        $finalQuery->setSource(['id', 'name', 'slug', 'start_date', 'end_date', 'place']);
 
         // Add highlighting
         $finalQuery->setHighlight([
@@ -217,6 +219,6 @@ final class EventElasticaRepository extends Repository
             ],
         ]);
 
-        return $this->find($finalQuery);
+        return $this->findHybrid($finalQuery, $limit);
     }
 }
