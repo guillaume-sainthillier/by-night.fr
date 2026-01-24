@@ -39,7 +39,7 @@
             <div class="col-sm-6 col-lg-3 sites">
                 <h3 class="h4 text-info">Recherche par ville</h3>
                 <ul class="fa-ul">
-                    {% set country = location is defined ? (location.isCountry ? location.country : (location.getCity() ? location.getCity().country : null)) : null %}
+                    {% set country = app_context.country ?? city_manager.city.country ?? null %}
                     {% for city in random_cities(country) %}
                         <li>
                             <i class="icon fa fa-li fa-angle-right"></i>

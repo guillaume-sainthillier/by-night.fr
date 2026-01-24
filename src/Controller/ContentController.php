@@ -10,7 +10,6 @@
 
 namespace App\Controller;
 
-use App\App\CityManager;
 use App\Controller\AbstractController as BaseController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,34 +17,26 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ContentController extends BaseController
 {
     #[Route(path: '/cookie', name: 'app_main_cookie', methods: ['GET'])]
-    public function cookie(CityManager $cityManager): Response
+    public function cookie(): Response
     {
-        return $this->render('content/cookies.html.twig', [
-            'headerCity' => $cityManager->getCity(),
-        ]);
+        return $this->render('content/cookies.html.twig');
     }
 
     #[Route(path: '/mentions-legales', name: 'app_legal_mentions', methods: ['GET'])]
-    public function legalMentions(CityManager $cityManager): Response
+    public function legalMentions(): Response
     {
-        return $this->render('content/legal-mentions.html.twig', [
-            'headerCity' => $cityManager->getCity(),
-        ]);
+        return $this->render('content/legal-mentions.html.twig');
     }
 
     #[Route(path: '/a-propos', name: 'app_about', methods: ['GET'])]
-    public function about(CityManager $cityManager): Response
+    public function about(): Response
     {
-        return $this->render('content/about.html.twig', [
-            'headerCity' => $cityManager->getCity(),
-        ]);
+        return $this->render('content/about.html.twig');
     }
 
     #[Route(path: '/en-savoir-plus', name: 'app_plus', methods: ['GET'])]
-    public function plus(CityManager $cityManager): Response
+    public function plus(): Response
     {
-        return $this->render('content/plus.html.twig', [
-            'headerCity' => $cityManager->getCity(),
-        ]);
+        return $this->render('content/plus.html.twig');
     }
 }

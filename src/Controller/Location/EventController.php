@@ -10,8 +10,7 @@
 
 namespace App\Controller\Location;
 
-use App\App\CityManager;
-use App\App\Location;
+use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
 use App\Controller\Comment\CommentController;
 use App\Entity\Comment;
@@ -33,8 +32,10 @@ final class EventController extends BaseController
 {
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
-    public function index(Location $location, EventDispatcherInterface $eventDispatcher, CityManager $cityManager, EventProfilePicture $eventProfilePicture, CommentRepository $commentRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
+    public function index(AppContext $appContext, EventDispatcherInterface $eventDispatcher, EventProfilePicture $eventProfilePicture, CommentRepository $commentRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
     {
+        $location = $appContext->getLocation();
+
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
         if (null !== $eventCheck->getResponse()) {
@@ -84,7 +85,6 @@ final class EventController extends BaseController
         $renderData = [
             'location' => $location,
             'event' => $event,
-            'headerCity' => $location->getCity() ?? $cityManager->getCity(),
             // Trends widget
             'trendsData' => $trendsData,
             // Similar events widget

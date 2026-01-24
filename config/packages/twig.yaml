@@ -12,6 +12,8 @@ twig:
         sentry_dsn: '%env(SENTRY_DSN)%'
         app_version: '%env(APP_VERSION)%'
         event_seo: '@App\SEO\EventSEO'
+        app_context: '@App\App\AppContext'
+        city_manager: '@App\App\CityManager'
 
 when@test:
     twig:

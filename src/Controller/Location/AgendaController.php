@@ -10,7 +10,7 @@
 
 namespace App\Controller\Location;
 
-use App\App\CityManager;
+use App\App\AppContext;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
@@ -37,8 +37,10 @@ final class AgendaController extends BaseController
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
-    public function index(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, CityManager $cityManager, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
+    public function index(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
+        $location = $appContext->getLocation();
+
         // État de la page
         $isAjax = $request->isXmlHttpRequest();
         $routeParams = array_merge($request->query->all(), [
@@ -113,7 +115,6 @@ final class AgendaController extends BaseController
             'isAjax' => $isAjax,
             'routeParams' => $routeParams,
             'form' => $form,
-            'headerCity' => $location->getCity() ?? $cityManager->getCity(),
             // Widget data
             'topEventsData' => $topEventsData,
             'topUsersData' => $topUsersData,

@@ -10,7 +10,6 @@
 
 namespace App\Controller\User;
 
-use App\App\CityManager;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\User;
 use App\Event\Events;
@@ -29,7 +28,7 @@ final class IndexController extends BaseController
 {
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
-    public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, CityManager $cityManager, ?int $id = null, ?string $slug = null, ?string $username = null): Response
+    public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_index');
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
@@ -45,7 +44,6 @@ final class IndexController extends BaseController
             'previousEvents' => $eventRepository->findAllNextEvents($user, false),
             'places' => $eventRepository->findAllUserPlaces($user),
             'favoriteEventsCount' => $eventRepository->getUserFavoriteEventsCount($user),
-            'headerCity' => $cityManager->getCity(),
         ]);
     }
 

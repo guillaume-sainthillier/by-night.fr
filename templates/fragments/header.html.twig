@@ -26,6 +26,7 @@
             </div>
             <div class="offcanvas-body d-flex flex-column flex-lg-row">
                 <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
+                    {% set city = app_context.city ?? city_manager.city %}
                     {% if city %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_location_index', {location: city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>

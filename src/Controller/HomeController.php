@@ -57,7 +57,6 @@ final class HomeController extends AbstractController
         return $this->render('home/index.html.twig', [
             'autocomplete_form' => $form,
             'stats' => $stats,
-            'headerCity' => $cityManager->getCity(),
         ]);
     }
 }

@@ -28,7 +28,8 @@
       "Bash(bin/console debug:event-dispatcher:*)",
       "Bash(bin/console:*)",
       "Bash(find:*)",
-      "Bash(vendor/bin/php-cs-fixer fix:*)"
+      "Bash(vendor/bin/php-cs-fixer fix:*)",
+      "Bash(vendor/bin/twig-cs-fixer lint:*)"
     ]
   }
 }

@@ -118,13 +118,7 @@ _______     __  _   _ _____ _____ _    _ _______
 <body itemscope itemtype="http://schema.org/WebPage" id="{% block page_id 'page' %}">
 <div class="page">
     <!-- Menu -->
-    {% if location is defined and location.isCity %}
-        {{ include('fragments/header.html.twig', {city: location.city}) }}
-    {% elseif headerCity is defined %}
-        {{ include('fragments/header.html.twig', {city: headerCity}) }}
-    {% else %}
-        {{ include('fragments/header.html.twig') }}
-    {% endif %}
+    {{ include('fragments/header.html.twig') }}
     <!-- ./Menu -->
 
     {% block breadcrumb_widget %}
