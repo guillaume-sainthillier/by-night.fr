@@ -26,8 +26,7 @@ final class ConsoleSubscriber implements EventSubscriberInterface
     public function __construct(
         #[Autowire(env: 'APP_MONITOR')]
         private readonly int $monitor,
-    )
-    {
+    ) {
     }
 
     /**

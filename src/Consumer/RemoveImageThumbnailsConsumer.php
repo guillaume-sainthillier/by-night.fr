@@ -24,8 +24,7 @@ final class RemoveImageThumbnailsConsumer extends AbstractConsumer implements Ba
         LoggerInterface $logger,
         #[Autowire(service: 'app.s3_thumb_server')]
         private readonly Server $s3ThumbServer,
-    )
-    {
+    ) {
         parent::__construct($logger);
     }
 

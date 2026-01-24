@@ -90,6 +90,11 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
+    App\Doctrine\EntityListener\:
+        resource: '../src/Doctrine/EntityListener'
+        tags:
+            - { name: doctrine.orm.entity_listener, lazy: true }
+
     Aws\S3\S3Client:
         arguments:
             - version: '2006-03-01'
