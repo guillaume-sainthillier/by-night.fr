@@ -12,11 +12,13 @@ namespace App\Image\Loader;
 
 use App\Helper\AssetHelper;
 use Override;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class LocalAssetLoader extends AbstractImageLoader
 {
     public function __construct(
         private readonly AssetHelper $assetHelper,
+        #[Autowire('%kernel.project_dir%/public')]
         private readonly string $publicDirectory,
     ) {
     }

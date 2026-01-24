@@ -12,14 +12,17 @@ namespace App\Image\Loader;
 
 use App\Contracts\ImageLoaderInterface;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final readonly class LoaderRegistry
 {
     /**
      * @param iterable<ImageLoaderInterface> $loaders
      */
-    public function __construct(private iterable $loaders)
-    {
+    public function __construct(
+        #[AutowireIterator(ImageLoaderInterface::class)]
+        private iterable $loaders,
+    ) {
     }
 
     public function getLoader(array $params): ImageLoaderInterface

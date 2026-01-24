@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 #[AsCommand('app:events:import', 'Ajouter / mettre à jour des nouveaux événements')]
 final class EventsImportCommand extends Command
@@ -25,8 +26,10 @@ final class EventsImportCommand extends Command
     /**
      * @param iterable<ParserInterface> $parsers
      */
-    public function __construct(private readonly iterable $parsers)
-    {
+    public function __construct(
+        #[AutowireIterator(ParserInterface::class)]
+        private readonly iterable $parsers,
+    ) {
         parent::__construct();
     }
 

@@ -11,13 +11,17 @@
 namespace App\Helper;
 
 use League\Glide\Signatures\SignatureFactory;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 final readonly class AssetHelper
 {
-    public function __construct(private RouterInterface $router, private string $secret)
-    {
+    public function __construct(
+        private RouterInterface $router,
+        #[Autowire(param: 'kernel.secret')]
+        private string $secret,
+    ) {
     }
 
     public function getThumbS3Url(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string

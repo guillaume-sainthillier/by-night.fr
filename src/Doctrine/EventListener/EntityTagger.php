@@ -16,8 +16,15 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Invalidator\TagsInvalidator;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
+#[AsDoctrineListener(event: Events::postPersist)]
+#[AsDoctrineListener(event: Events::preUpdate)]
+#[AsDoctrineListener(event: Events::postUpdate)]
+#[AsDoctrineListener(event: Events::preRemove)]
+#[AsDoctrineListener(event: Events::postFlush)]
 final readonly class EntityTagger
 {
     public function __construct(private TagsInvalidator $eventInvalidator)

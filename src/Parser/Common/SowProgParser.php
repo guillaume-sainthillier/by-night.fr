@@ -20,6 +20,7 @@ use App\Producer\EventProducer;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class SowProgParser extends AbstractParser
@@ -33,7 +34,9 @@ final class SowProgParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         HttpClientInterface $client,
+        #[Autowire(env: 'SOWPROG_USER')]
         string $sowprogUsername,
+        #[Autowire(env: 'SOWPROG_PASSWORD')]
         string $sowprogPassword,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler);

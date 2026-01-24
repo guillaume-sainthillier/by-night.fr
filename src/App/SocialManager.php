@@ -12,6 +12,7 @@ namespace App\App;
 
 use App\Entity\AppOAuth;
 use App\Repository\AppOAuthRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class SocialManager
 {
@@ -19,8 +20,13 @@ final class SocialManager
 
     private ?AppOAuth $appOAuth = null;
 
-    public function __construct(private readonly string $facebookIdPage, private readonly string $twitterIdPage, private readonly AppOAuthRepository $appOAuthRepository)
-    {
+    public function __construct(
+        #[Autowire(param: 'facebook_id_page')]
+        private readonly string $facebookIdPage,
+        #[Autowire(param: 'twitter_id_page')]
+        private readonly string $twitterIdPage,
+        private readonly AppOAuthRepository $appOAuthRepository,
+    ) {
     }
 
     public function hasAppOAuth(): bool

@@ -23,6 +23,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -45,7 +46,9 @@ final class DataTourismeParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         private readonly HttpClientInterface $client,
+        #[Autowire('%kernel.project_dir%/var/storage/temp')]
         private readonly string $tempPath,
+        #[Autowire(env: 'DATATOURISME_APP_KEY')]
         private readonly string $dataTourismeAppKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler);

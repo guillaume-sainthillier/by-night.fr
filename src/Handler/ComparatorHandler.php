@@ -12,14 +12,17 @@ namespace App\Handler;
 
 use App\Contracts\ComparatorInterface;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final readonly class ComparatorHandler
 {
     /**
      * @param ComparatorInterface[] $comparators
      */
-    public function __construct(private iterable $comparators)
-    {
+    public function __construct(
+        #[AutowireIterator(ComparatorInterface::class)]
+        private iterable $comparators,
+    ) {
     }
 
     public function getComparator(object $dto): ComparatorInterface

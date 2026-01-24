@@ -10,6 +10,9 @@
 
 namespace App\Contracts;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag]
 interface ImageLoaderInterface
 {
     public function getUrl(array $params): string;
