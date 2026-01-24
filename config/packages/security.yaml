@@ -36,6 +36,8 @@ security:
             custom_authenticators:
                 - App\Security\UserSocialAuthenticator
                 - App\Security\UserFormAuthenticator
+            remember_me:
+                secret: '%kernel.secret%'
 
             logout:
                 delete_cookies: ['PHPSESSID']
