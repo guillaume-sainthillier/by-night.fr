@@ -6,8 +6,8 @@ import initImagePreview from '@/js/lazy-listeners/image-previews'
 import initSelects from '@/js/lazy-listeners/selects'
 
 import Widgets from '@/js/components/Widgets'
-import ChevronUpIcon from '@/js/icons/fa6-solid/ChevronUp'
-import ChevronDownIcon from '@/js/icons/fa6-solid/ChevronDown'
+import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
+import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
 import {iconHtml} from "@/js/components/icons"
 
 $(document).ready(function () {

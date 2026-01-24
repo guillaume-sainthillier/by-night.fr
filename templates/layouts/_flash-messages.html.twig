@@ -4,11 +4,11 @@
         <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
             <div class="container-lg">
                 {% if key == 'info' %}
-                    {{ macros.icon('fa6-solid:circle-info') }}
+                    {{ macros.icon('lucide:info') }}
                 {% elseif key == 'error' %}
-                    {{ macros.icon('fa6-solid:triangle-exclamation') }}
+                    {{ macros.icon('lucide:triangle-alert') }}
                 {% elseif key == 'success' %}
-                    {{ macros.icon('fa6-solid:check') }}
+                    {{ macros.icon('lucide:check') }}
                 {% endif %}
                 {{ message|trans|raw }}
             </div>

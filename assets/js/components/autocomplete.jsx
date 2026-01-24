@@ -6,11 +6,11 @@ import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-pl
 import groupBy from 'lodash/groupBy'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
-import AngleRightIcon from '@/js/icons/fa6-solid/AngleRight'
-import MagnifyingGlassIcon from '@/js/icons/fa6-solid/MagnifyingGlass'
-import SpinnerIcon from '@/js/icons/fa6-solid/Spinner'
-import TrashIcon from '@/js/icons/fa6-solid/Trash'
-import TriangleExclamationIcon from '@/js/icons/fa6-solid/TriangleExclamation'
+import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
+import SearchIcon from '@/js/icons/lucide/Search'
+import Loader2Icon from '@/js/icons/lucide/Loader2'
+import Trash2Icon from '@/js/icons/lucide/Trash2'
+import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 
 export default function init({
     autocompleteSelector = '#autocomplete',
@@ -106,7 +106,7 @@ export default function init({
                 return render(
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                            <TriangleExclamationIcon className="icon-3x text-danger" />
+                            <TriangleAlertIcon className="icon-3x text-danger" />
                             <h2 className="mt-4 h5 text-danger">Erreur de recherche</h2>
                             <p className="text-muted">
                                 Une erreur est survenue lors de la recherche. Veuillez réessayer dans quelques
@@ -125,7 +125,7 @@ export default function init({
             return render(
                 <div className="aa-PanelLayout">
                     <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                        <MagnifyingGlassIcon width="40" height="40" className="text-muted" />
+                        <SearchIcon width="40" height="40" className="text-muted" />
                         <h2 className="mt-4 display-4">
                             Aucun résultat pour <strong>"{state.query}"</strong>.
                         </h2>
@@ -293,7 +293,7 @@ function ResultItem({ item, onRemove }) {
                             onRemove(item.id)
                         }}
                     >
-                        <TrashIcon width="20" height="20" />
+                        <Trash2Icon width="20" height="20" />
                     </button>
                 )}
                 <button
@@ -302,7 +302,7 @@ function ResultItem({ item, onRemove }) {
                     title="Sélectionner"
                     aria-label="Sélectionner"
                 >
-                    <AngleRightIcon width="20" height="20" />
+                    <ChevronRightIcon width="20" height="20" />
                 </button>
             </div>
         </a>

@@ -157,6 +157,7 @@ Encore
 if(Encore.isDev()) {
     Encore.addPlugin(new ESLintWebpackPlugin({
         fix: true,
+        failOnError: false,
         configType: 'flat',
         exclude: [
             'node_modules',

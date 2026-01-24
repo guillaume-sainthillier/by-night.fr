@@ -1,15 +1,15 @@
 import $ from 'jquery'
-import AngleUpIcon from '@/js/icons/fa6-solid/AngleUp'
-import AngleDownIcon from '@/js/icons/fa6-solid/AngleDown'
-import SpinnerIcon from '@/js/icons/fa6-solid/Spinner'
+import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
+import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
+import Loader2Icon from '@/js/icons/lucide/Loader2'
 import {iconHtml} from "@/js/components/icons"
 
 export default class CommentApp {
     constructor() {
         this.options = {
-            icon_up: AngleUpIcon,
-            icon_down: AngleDownIcon,
-            icon_spinner: SpinnerIcon,
+            icon_up: ChevronUpIcon,
+            icon_down: ChevronDownIcon,
+            icon_spinner: Loader2Icon,
             css_btn_list: '.btn-list',
             css_main_block_reponse: '.reponses',
             css_link_repondre: '.repondre',

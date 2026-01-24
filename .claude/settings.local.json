@@ -30,7 +30,8 @@
       "Bash(find:*)",
       "Bash(vendor/bin/php-cs-fixer fix:*)",
       "Bash(vendor/bin/twig-cs-fixer lint:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm run icon:svg:*)"
     ]
   }
 }

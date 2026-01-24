@@ -53,7 +53,7 @@
                 {% if not disabled and allow_delete %}
                     {% import 'form/macros.html.twig' as macros %}
                     <button class="btn btn-sm rounded btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
-                        {{ macros.icon('fa6-solid:xmark') }}
+                        {{ macros.icon('lucide:x') }}
                     </button>
                 {% endif %}
             </div>
@@ -95,7 +95,7 @@
         {% if not disabled and allow_add %}
             {% import 'form/macros.html.twig' as macros %}
             <button type="button" class="add-collection btn btn-with-icon btn-unstyled mt-2">
-                <span>{{ macros.icon('fa6-solid:plus') }}</span>
+                <span>{{ macros.icon('lucide:plus') }}</span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>
         {% endif %}

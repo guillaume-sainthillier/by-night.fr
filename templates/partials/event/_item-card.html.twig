@@ -6,7 +6,7 @@
 <div class="card card-event card-layout {{ cardLayout|default('') }} row g-0 scroll-item" {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
     {% if event.status %}
         <div class="col-12 alert alert-warning mb-0">
-            {{ macros.icon('fa6-solid:triangle-exclamation') }}
+            {{ macros.icon('lucide:triangle-alert') }}
             <span {% if microdata %}itemprop="eventStatus"{% endif %}>{{ event.status }}</span>
         </div>
     {% endif %}
@@ -34,7 +34,7 @@
                 {% set startDate = event.startDate|date('d/m/Y') %}
                 {% set endDate = event.endDate|date('d/m/Y') %}
 
-                {{ macros.icon('fa6-solid:calendar-days') }}
+                {{ macros.icon('lucide:calendar-days') }}
                 <div>
                     {% if event.endDate == null or event.startDate == event.endDate %}
                         {% if microdata %}
@@ -63,7 +63,7 @@
             {% set place = event.place %}
             {% if event.placeName %}
                 <div class="detail-item" {% if microdata %}itemprop="location" itemscope itemtype="http://schema.org/Place"{% endif %}>
-                    {{ macros.icon('fa6-solid:location-dot') }}
+                    {{ macros.icon('lucide:map-pin') }}
                     <div>
                         <span {% if microdata %}itemprop="name"{% endif %} title="Sortir à {{ event.placeName }}">
                             <strong class="font-weight-normal">{{ event.placeName }}</strong>
@@ -97,13 +97,13 @@
             {% endif %}
             {% if event.prices %}
                 <div class="detail-item">
-                    {{ macros.icon('fa6-solid:ticket') }}
+                    {{ macros.icon('lucide:ticket') }}
                     <div>{{ event.prices }}</div>
                 </div>
             {% endif %}
             {% if event.user %}
                 <div class="detail-item">
-                    {{ macros.icon('fa6-solid:user') }}
+                    {{ macros.icon('lucide:user') }}
                     <div>
                         Par
                         <a class="one-line"

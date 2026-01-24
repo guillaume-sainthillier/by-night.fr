@@ -13,22 +13,22 @@
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
             {% if is_granted('IS_IMPERSONATOR') %}
                 <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index')) }}">
-                    {{ macros.icon('fa6-solid:power-off') }}
+                    {{ macros.icon('lucide:power') }}
                     Exit impersonation
                 </a>
                 <div class="dropdown-divider"></div>
             {% endif %}
             <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
-                {{ macros.icon('fa6-solid:gears') }}
+                {{ macros.icon('lucide:settings') }}
                 Mon compte
             </a>
             <a class="dropdown-item" title="Accéder à mon profil public" href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug}) }}">
-                {{ macros.icon('fa6-solid:user') }}
+                {{ macros.icon('lucide:user') }}
                 Profil public
             </a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{ path('_logout_main') }}">
-                {{ macros.icon('fa6-solid:power-off') }}
+                {{ macros.icon('lucide:power') }}
                 Déconnexion
             </a>
         </div>

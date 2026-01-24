@@ -18,10 +18,10 @@
                     {# Part 1 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Votre événement' %}
-                        {% block icon 'fa6-solid:file' %}
+                        {% block icon 'lucide:file' %}
 
                         {% block body %}
-                            {{ form_row(form.name, {icon_prepend: 'fa6-solid:file-pen'}) }}
+                            {{ form_row(form.name, {icon_prepend: 'lucide:file-edit'}) }}
                             {{ form_row(form.description) }}
                             {{ form_row(form.imageFile) }}
                         {% endblock %}
@@ -32,7 +32,7 @@
                     {# Part 4 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Communiquez' %}
-                        {% block icon 'fa6-solid:bullhorn' %}
+                        {% block icon 'lucide:megaphone' %}
 
                         {% block body %}
                             {{ form_row(form.websiteContacts) }}
@@ -51,16 +51,16 @@
                     {# Part 2 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Informations' %}
-                        {% block icon 'fa6-solid:file-lines' %}
+                        {% block icon 'lucide:file-text' %}
 
                         {% block body %}
                             {{ form_row(form.startDate) }}
                             {{ form_row(form.endDate) }}
-                            {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'fa6-solid:calendar-days'}) }}
-                            {{ form_row(form.hours, {icon_prepend: 'fa6-solid:clock'}) }}
-                            {{ form_row(form.category, {icon_prepend: 'fa6-solid:masks-theater'}) }}
-                            {{ form_row(form.theme, {icon_prepend: 'fa6-solid:vest'}) }}
-                            {{ form_row(form.prices, {icon_prepend: 'fa6-solid:ticket'}) }}
+                            {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
+                            {{ form_row(form.hours, {icon_prepend: 'lucide:clock'}) }}
+                            {{ form_row(form.category, {icon_prepend: 'lucide:drama'}) }}
+                            {{ form_row(form.theme, {icon_prepend: 'lucide:shield'}) }}
+                            {{ form_row(form.prices, {icon_prepend: 'lucide:ticket'}) }}
                         {% endblock %}
 
                         {% block footer_widget '' %}
@@ -69,12 +69,12 @@
                     {# Part 3 #}
                     {% embed 'components/widget-card.html.twig' %}
                         {% block header 'Lieux' %}
-                        {% block icon 'fa6-solid:map-location-dot' %}
+                        {% block icon 'lucide:map-pinned' %}
 
                         {% block body %}
                             {{ form_errors(form.place) }}
-                            {{ form_row(form.place.name, {icon_prepend: 'fa6-solid:location-dot'}) }}
-                            {{ form_row(form.address, {icon_prepend: 'fa6-solid:location-crosshairs'}) }}
+                            {{ form_row(form.place.name, {icon_prepend: 'lucide:map-pin'}) }}
+                            {{ form_row(form.address, {icon_prepend: 'lucide:crosshair'}) }}
 
                             <div class="ms-2 ms-sm-5 mb-5">
                                 {{ form_row(form.place.street) }}
@@ -95,11 +95,11 @@
             <hr />
             <div class="mt-2">
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
-                    {{ macros.icon('fa6-solid:chevron-left') }}
+                    {{ macros.icon('lucide:chevron-left') }}
                     Retour
                 </a>
                 <button type="submit" class="ms-2 btn btn-primary">
-                    {{ macros.icon('fa6-solid:floppy-disk') }}
+                    {{ macros.icon('lucide:save') }}
                     Sauvegarder
                 </button>
             </div>

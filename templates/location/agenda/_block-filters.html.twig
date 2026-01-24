@@ -3,7 +3,7 @@
 {{ form_errors(form) }}
 <div class="block_criteres card">
     <h2 class="card-header h3">
-        {{ macros.icon('fa6-solid:calendar-days', 'text-primary') }}
+        {{ macros.icon('lucide:calendar-days', 'text-primary') }}
         Agenda
     </h2>
     <div class="card-body">
@@ -13,16 +13,16 @@
                 {{ form_widget(form.to) }}
                 {{ form_errors(form.from) }}
                 {{ form_errors(form.to) }}
-                {{ form_row(form.shortcut, {label: 'Quand ?', icon_prepend: 'fa6-solid:calendar-days'}) }}
+                {{ form_row(form.shortcut, {label: 'Quand ?', icon_prepend: 'lucide:calendar-days'}) }}
             </div>
             <div class="col-md-6 col-lg-8">
-                {{ form_row(form.term, {icon_prepend: 'fa6-solid:magnifying-glass'}) }}
+                {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
             </div>
         </div>
         {% if search.term or search.range != 25 %}
-            {% set options = {hiddenClass: '', iconName: 'fa6-solid:chevron-up'} %}
+            {% set options = {hiddenClass: '', iconName: 'lucide:chevron-up'} %}
         {% else %}
-            {% set options = {hiddenClass: 'hidden cache', iconName: 'fa6-solid:chevron-down'} %}
+            {% set options = {hiddenClass: 'hidden cache', iconName: 'lucide:chevron-down'} %}
         {% endif %}
         <div class="d-flex flex-wrap w-100">
             <button type="submit" class="btn btn-primary">Rechercher</button>
@@ -34,7 +34,7 @@
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
                 <div class="col-md-9">
-                    {{ form_row(form.type, {icon_prepend: 'fa6-solid:masks-theater'}) }}
+                    {{ form_row(form.type, {icon_prepend: 'lucide:drama'}) }}
                 </div>
                 <div class="col-md-3">
                     {{ form_row(form.range) }}

@@ -5,16 +5,16 @@
     <button type="button" href="{{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? path('app_login') : '#' }}"
             class="btn btn-unstyled participer btn-like-event {{ trendsData.participer ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' connexion' }}"
             data-href="{{ path('api_event_participer', {id: trendsData.event.id}) }}">
-        {{ macros.icon('fa6-solid:heart') }}
+        {{ macros.icon('lucide:heart') }}
     </button>
     <button class="btn btn-unstyled dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        {{ macros.icon('fa6-solid:share-nodes') }}
+        {{ macros.icon('lucide:share-2') }}
     </button>
     <div class="dropdown-menu dropdown-menu-start">
         {% for name, social in trendsData.shares %}
             <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
                 <span>
-                    {{ macros.icon('fa6-brands:' ~ name) }}
+                    {{ macros.icon('fa7-brands:' ~ name) }}
                     Partager avec {{ name|upper }}
                 </span>
             </a>
