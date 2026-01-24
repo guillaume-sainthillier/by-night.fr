@@ -4,6 +4,8 @@ services:
         env_file:
             - .env
             - .env.local
+        volumes:
+            - ./:/app
         ports:
             - 8080:80
     worker:
@@ -26,14 +28,6 @@ services:
             - 15672:15672
         volumes:
             - rabbitmq:/var/lib/rabbitmq
-
-    #    blackfire:
-    #        image: blackfire/blackfire
-    #        environment:
-    #            - BLACKFIRE_SERVER_ID
-    #            - BLACKFIRE_SERVER_TOKEN
-    #        networks:
-    #            - local
 
     elasticsearch:
         build: docker/elasticsearch
