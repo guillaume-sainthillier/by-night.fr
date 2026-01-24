@@ -142,7 +142,12 @@ sub app_req_cookie {
         }
         set req.http.X-Cookie-State = "Cleaned";
     } else {
-        set req.http.X-Cookie-State = "Original";
+        set req.http.X-Cookie-State = "Empty";
+    }
+
+    # Store cookie for debug headers (before potentially unsetting)
+    if ("1" == std.getenv("DEBUG")) {
+        set req.http.X-Hash-Cookie = req.http.cookie;
     }
 }
 
@@ -217,6 +222,7 @@ sub vcl_deliver {
     call app_resp_headers;
     call app_resp_xkey;
     call app_resp_cachehits;
+    call app_resp_privacy;
     call app_resp_custom_ttl;
 
     return (deliver);
@@ -247,6 +253,22 @@ sub app_resp_cachehits {
             set resp.http.X-Cache-Status = "BYPASSED";
         } else {
             set resp.http.X-Cache-Status = "MISSED";
+        }
+    }
+}
+
+sub app_resp_privacy {
+    # Add X-Private/X-Public headers if debugging is enabled
+    if ("1" == std.getenv("DEBUG")) {
+        if (req.http.x-private) {
+            set resp.http.X-Private = req.http.x-private;
+        }
+        if (req.http.x-public) {
+            set resp.http.X-Public = req.http.x-public;
+        }
+        # Show which cookie was used for cache hashing
+        if (req.http.X-Hash-Cookie) {
+            set resp.http.X-Hash-Cookie = req.http.X-Hash-Cookie;
         }
     }
 }
