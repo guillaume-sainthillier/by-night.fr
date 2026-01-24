@@ -2,7 +2,7 @@
 
 # Versions
 FROM dunglas/frankenphp:1.11-php8.4-alpine AS php_upstream
-FROM node:20-alpine as node_upstream
+FROM node:24-alpine as node_upstream
 
 # Base image
 FROM php_upstream as php_base

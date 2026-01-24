@@ -3,6 +3,9 @@
     "browserslist": [
         "last 2 versions"
     ],
+    "engines": {
+        "node": ">=24.0.0"
+    },
     "dependencies": {
         "@algolia/autocomplete-js": "^1.19.4",
         "@algolia/autocomplete-plugin-recent-searches": "^1.19.4",
