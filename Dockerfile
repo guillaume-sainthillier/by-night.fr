@@ -32,19 +32,33 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV SERVER_NAME=:80
 
 COPY --link composer.json composer.lock symfony.lock ./
-RUN APP_ENV=prod composer install --no-interaction --no-dev --no-scripts --prefer-dist
+RUN --mount=type=cache,target=.cache/composer \
+    APP_ENV=prod COMPOSER_CACHE_DIR=.cache/composer composer install --no-interaction --no-dev --no-scripts --prefer-dist
 
-# Install dependencies only when needed
+# Install node dependencies
 FROM node_upstream as node_builder
 WORKDIR /app
 
+# Copy vendor directory from php_builder for Symfony UX packages
+# @symfony/stimulus-bridge needs to read controllers.json from vendor packages
+COPY --from=php_builder --link /app/vendor ./vendor
 COPY --link package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --ignore-scripts
+RUN --mount=type=cache,target=.cache/yarn \
+    YARN_CACHE_FOLDER=.cache/yarn yarn install --frozen-lockfile --ignore-scripts
 
-COPY --link webpack.config.js ./
+# Build assets
+FROM node_upstream AS node_assets_builder
+WORKDIR /app
+
+ARG APP_VERSION=dev
+ENV SENTRY_RELEASE="${APP_VERSION}"
+
+COPY --from=node_builder --link /app/node_modules ./node_modules
+COPY --from=node_builder --link /app/vendor ./vendor
 COPY --link assets ./assets
 COPY --link src ./src
 COPY --link templates ./templates
+COPY --link package.json webpack.config.js yarn.lock ./
 
 RUN mkdir -p public && \
     yarn build
@@ -73,7 +87,7 @@ RUN apk add --no-cache \
 
 # Composer install before sources
 COPY --from=php_builder --link /app/vendor ./vendor
-COPY --from=node_builder --link /app/public/build ./public/build
+COPY --from=node_assets_builder --link /app/public/build ./public/build
 
 COPY --link --exclude=assets --exclude=docker . .
 

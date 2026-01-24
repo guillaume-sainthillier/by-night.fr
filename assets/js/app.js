@@ -1,5 +1,8 @@
 import '@/scss/app.scss'
 
+// Symfony UX Stimulus
+import '../stimulus_bootstrap.js'
+
 import $ from 'jquery'
 import './vendors'
 import './overrides'

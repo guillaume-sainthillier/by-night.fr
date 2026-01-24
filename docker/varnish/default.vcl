@@ -118,7 +118,7 @@ sub app_req_static {
 
 sub app_req_non_public {
     # flag all non-public requests
-    if (req.url ~ "^/(login|login-social|inscription|verifier-email|mot-de-passe-perdu|logout|profile|commentaire|espace-perso|social|_administration|_private)" ) {
+    if (req.url ~ "^/(login-social|inscription|verifier-email|mot-de-passe-perdu|logout|profile|commentaire|espace-perso|social|_administration|_private)" ) {
         set req.http.x-private = "1";
         unset req.http.x-public;
     } else {
@@ -131,16 +131,28 @@ sub app_req_non_public {
 
 
 sub app_req_cookie {
-    if (req.http.x-private && req.http.cookie) {
+    if (req.http.cookie) {
         cookie.parse(req.http.cookie);
-        cookie.keep("PHPSESSID,REMEMBERME,app_city");
+
+        # Remove stateless CSRF cookies from cache key (they are validated by double-submit pattern)
+        # These cookies are dynamically named: submit_<token>, authenticate_<token>, logout_<token>
+        # and with __Host- prefix on HTTPS
+        cookie.filter_re("^(__Host-)?(submit|authenticate|logout)_");
+
+        if (req.http.x-private) {
+            # For private routes, only keep session-related cookies
+            cookie.keep("PHPSESSID,REMEMBERME,app_city");
+            set req.http.X-Cookie-State = "Cleaned";
+        } else {
+            set req.http.X-Cookie-State = "Original";
+        }
+
         set req.http.cookie = cookie.get_string();
 
         # If empty, unset so the builtin VCL can consider it for caching.
         if (req.http.cookie == "") {
             unset req.http.cookie;
         }
-        set req.http.X-Cookie-State = "Cleaned";
     } else {
         set req.http.X-Cookie-State = "Empty";
     }

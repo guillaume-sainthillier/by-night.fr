@@ -2,6 +2,11 @@
 {% use 'bootstrap_5_layout.html.twig' %}
 {% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label %}
 
+{# Stateless CSRF protection - add Stimulus controller to CSRF token field #}
+{%- block csrf_token_widget -%}
+    <input type="hidden" {{ block('widget_attributes') }} data-controller="csrf-protection" value="{{ value }}" />
+{%- endblock csrf_token_widget -%}
+
 {% block recaptcha_widget %}
     <div {{ block('widget_attributes') }}></div>
 {% endblock %}
