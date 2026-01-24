@@ -11,22 +11,18 @@
 namespace App\Twig;
 
 use App\Helper\AssetHelper;
-use Override;
-use Twig\Extension\AbstractExtension as Extension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-final class AssetExtension extends Extension
+final class AssetExtension
 {
     public function __construct(
         private readonly AssetHelper $assetHelper,
     ) {
     }
 
-    #[Override]
-    public function getFunctions(): array
+    #[AsTwigFunction(name: 'thumb_asset', isSafe: ['html'])]
+    public function thumbAsset(string $path, array $parameters = []): string
     {
-        return [
-            new TwigFunction('thumb_asset', $this->assetHelper->getThumbAssetUrl(...), ['is_safe' => ['html']]),
-        ];
+        return $this->assetHelper->getThumbAssetUrl($path, $parameters);
     }
 }
