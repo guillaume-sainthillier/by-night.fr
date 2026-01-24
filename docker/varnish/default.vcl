@@ -251,9 +251,13 @@ sub app_resp_cachehits {
             set resp.http.X-Cache-Hits = obj.hits;
         } elseif (obj.uncacheable) {
             set resp.http.X-Cache-Status = "BYPASSED";
+            # X-Uncacheable-Reason is set in vcl_backend_response
         } else {
             set resp.http.X-Cache-Status = "MISSED";
         }
+    } else {
+        # Remove uncacheable reason header if not in debug mode
+        unset resp.http.X-Uncacheable-Reason;
     }
 }
 
@@ -291,6 +295,7 @@ sub vcl_backend_response {
     call app_beresp_esi;
 
     if (bereq.uncacheable) {
+        set beresp.http.X-Uncacheable-Reason = "Request was uncacheable";
         return (deliver);
     }
 
@@ -325,6 +330,7 @@ sub app_beresp_grace {
 
 sub app_beresp_stale {
     if (beresp.ttl <= 0s) {
+        set beresp.http.X-Uncacheable-Reason = "TTL <= 0s";
         call app_beresp_hitmiss;
 
         return (deliver);
@@ -333,6 +339,7 @@ sub app_beresp_stale {
 
 sub app_beresp_cookie {
     if (beresp.http.Set-Cookie) {
+        set beresp.http.X-Uncacheable-Reason = "Response sets cookies (Set-Cookie header)";
         call app_beresp_hitmiss;
 
         return (deliver);
@@ -341,6 +348,7 @@ sub app_beresp_cookie {
 
 sub app_beresp_vary {
     if (beresp.http.Vary == "*") {
+        set beresp.http.X-Uncacheable-Reason = "Vary: * header";
         call app_beresp_hitmiss;
 
         return (deliver);
