@@ -1,9 +1,9 @@
 {% embed 'location/widget/template-scrollable.html.twig' %}
-    {% block titre %}Les supers membres{% endblock %}
-    {% block widget_class %}{% endblock %}
+    {% block titre 'Les supers membres' %}
+    {% block widget_class '' %}
     {% block widget_body_class 'p-0' %}
-    {% block widget_attr %}id="membres"{% endblock %}
-    {% block icon %}lucide:users{% endblock %}
+    {% block widget_attr 'id="membres"' %}
+    {% block icon 'lucide:users' %}
 
     {% block body %}
         <div class="list-group scroll-area-content">

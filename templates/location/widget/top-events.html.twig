@@ -1,9 +1,9 @@
 {% embed 'location/widget/template-scrollable.html.twig' %}
-    {% block titre %}À la une cette semaine{% endblock %}
-    {% block widget_class %}{% endblock %}
+    {% block titre 'À la une cette semaine' %}
+    {% block widget_class '' %}
     {% block widget_body_class 'p-0' %}
-    {% block widget_attr %}id="une"{% endblock %}
-    {% block icon %}lucide:star{% endblock %}
+    {% block widget_attr 'id="une"' %}
+    {% block icon 'lucide:star' %}
 
     {% block body %}
         <div class="list-group scroll-area-content">
