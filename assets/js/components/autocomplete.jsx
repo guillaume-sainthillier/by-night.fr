@@ -69,6 +69,9 @@ export default function init({
         openOnFocus: true,
         defaultActiveItemId: 0,
         detachedMediaQuery: '',
+        translations: {
+            detachedCancelButtonText: 'Annuler',
+        },
         plugins: [recentSearchesPlugin],
         render({ children, state }, root) {
             render(
