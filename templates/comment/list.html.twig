@@ -1,17 +1,11 @@
-<div class="chat">
-    <div class="chat-bubbles">
-        {% for comment in comments %}
-            {{ include('comment/item.html.twig', {comment: comment}) }}
-        {% endfor %}
-    </div>
+{% for comment in comments %}
+    {{ include('comment/item.html.twig', {comment: comment}) }}
+{% endfor %}
 
-    {% if comments.hasNextPage %}
-        {% block load_more %}
-            <div class="load_more" data-url="{{ path('app_comment_list', {id: event.id, page: comments.nextPage}) }}">
-                <button type="button" class="btn btn-outline-primary">
-                    Plus
-                </button>
-            </div>
-        {% endblock %}
-    {% endif %}
-</div>
+{% if comments.hasNextPage %}
+    <div class="load-more" data-url="{{ path('app_comment_list', {id: event.id, page: comments.nextPage}) }}">
+        <button type="button" class="btn btn-outline-primary">
+            Plus de messages
+        </button>
+    </div>
+{% endif %}

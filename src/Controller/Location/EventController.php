@@ -75,11 +75,9 @@ final class EventController extends BaseController
         $commentForm = null;
         if ($this->isGranted('ROLE_USER')) {
             $comment = new Comment();
-            $commentForm = $this
-                ->createForm(CommentType::class, $comment, [
-                    'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-                ])
-                ->createView();
+            $commentForm = $this->createForm(CommentType::class, $comment, [
+                'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+            ]);
         }
 
         $renderData = [

@@ -31,11 +31,9 @@ final class CommentController extends BaseController
         $comment = new Comment();
         $form = null;
         if ($this->isGranted('ROLE_USER')) {
-            $form = $this
-                ->createForm(CommentType::class, $comment, [
-                    'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-                ])
-                ->createView();
+            $form = $this->createForm(CommentType::class, $comment, [
+                'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+            ]);
         }
 
         $comments = $this->createQueryBuilderPaginator(
@@ -107,7 +105,7 @@ final class CommentController extends BaseController
         return new JsonResponse([
             'success' => false,
             'post' => $this->renderView('comment/form.html.twig', [
-                'form' => $form->createView(),
+                'form' => $form,
             ]),
         ]);
     }

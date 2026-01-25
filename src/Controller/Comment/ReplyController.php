@@ -37,7 +37,6 @@ final class ReplyController extends BaseController
             'comments' => $comments,
             'mainComment' => $comment,
             'page' => $page,
-            'offset' => self::REPLIES_PER_PAGE,
         ]);
     }
 
@@ -54,7 +53,7 @@ final class ReplyController extends BaseController
             'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
         ]);
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $comment->addChild($reponse);
             $em = $this->getEntityManager();
             $em->persist($comment);
@@ -62,17 +61,17 @@ final class ReplyController extends BaseController
 
             return new JsonResponse([
                 'success' => true,
-                'comment' => $this->renderView('comment/reply/details.html.twig', [
+                'comment' => $this->renderView('comment/reply/item.html.twig', [
                     'comment' => $reponse,
-                    'success' => true,
                 ]),
+                'reply_count' => \count($comment->getChildren()),
             ]);
         } elseif ($form->isSubmitted()) {
             return new JsonResponse([
                 'success' => false,
                 'post' => $this->renderView('comment/reply/form.html.twig', [
                     'comment' => $comment,
-                    'form' => $form->createView(),
+                    'form' => $form,
                 ]),
             ]);
         }

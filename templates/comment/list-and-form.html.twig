@@ -12,7 +12,11 @@
 
         {% if comments.nbResults > 0 %}
             <div class="card-body scrollable" style="max-height: 600px">
-                {{ include('comment/list.html.twig') }}
+                <div class="chat">
+                    <div class="chat-bubbles">
+                        {{ include('comment/list.html.twig') }}
+                    </div>
+                </div>
             </div>
         {% endif %}
     </div>
