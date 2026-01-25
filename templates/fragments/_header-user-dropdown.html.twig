@@ -5,6 +5,9 @@
             {{ macros.userThumb(app.user, 30, 30, {
                 placeholder: false,
                 priority: true,
+                wrapperAttr: {
+                    class: 'avatar avatar-sm',
+                },
             }) }}
             {% if show_username %}
                 <span class="d-lg-none ms-2">{{ app.user.username }}</span>

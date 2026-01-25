@@ -29,6 +29,9 @@
                 <div class="card-body text-center">
                     {{ macros.userLazyThumb(user, 200, 200, {
                         class: 'mx-auto mb-2',
+                        wrapperAttr: {
+                            class: 'avatar avatar-4xl mw-100',
+                        },
                     }) }}
                     <h2 class="mt-2">{{ username }}</h2>
                 </div>
