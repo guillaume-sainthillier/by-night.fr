@@ -1,11 +1,11 @@
-{% extends 'location/widget/template.html.twig' %}
+{% embed 'location/widget/template.html.twig' %}
+    {% block widget_body_class 'membres' %}
+    {% block titre 'Tendances' %}
+    {% block icon 'lucide:trending-up' %}
 
-{% block widget_body_class 'membres' %}
-{% block titre 'Tendances' %}
-{% block icon 'lucide:trending-up' %}
+    {% block body %}
+        {{ include('location/hinclude/trends.html.twig', trendsData) }}
+    {% endblock %}
 
-{% block body %}
-    {{ include('location/hinclude/trends.html.twig', trendsData) }}
-{% endblock %}
-
-{% block footer '' %}
+    {% block footer '' %}
+{% endembed %}

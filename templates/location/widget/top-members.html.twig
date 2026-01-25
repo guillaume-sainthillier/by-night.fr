@@ -1,15 +1,15 @@
-{% extends 'location/widget/template-scrollable.html.twig' %}
+{% embed 'location/widget/template-scrollable.html.twig' %}
+    {% block titre %}Les supers membres{% endblock %}
+    {% block widget_class %}{% endblock %}
+    {% block widget_body_class 'p-0' %}
+    {% block widget_attr %}id="membres"{% endblock %}
+    {% block icon %}lucide:users{% endblock %}
 
-{% block titre %}Les supers membres{% endblock %}
-{% block widget_class %}{% endblock %}
-{% block widget_body_class 'p-0' %}
-{% block widget_attr %}id="membres"{% endblock %}
-{% block icon %}lucide:users{% endblock %}
-
-{% block body %}
-    <div class="list-group scroll-area-content">
-        {{ include('location/hinclude/top-users.html.twig', {
-            topUsersData: topUsersData,
-        }) }}
-    </div>
-{% endblock %}
+    {% block body %}
+        <div class="list-group scroll-area-content">
+            {{ include('location/hinclude/top-users.html.twig', {
+                topUsersData: topUsersData,
+            }) }}
+        </div>
+    {% endblock %}
+{% endembed %}

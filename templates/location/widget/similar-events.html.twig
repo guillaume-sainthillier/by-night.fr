@@ -1,8 +1,8 @@
-{% extends 'location/widget/template-scrollable-horizontal.html.twig' %}
-
-{% block titre %}Événements similaires{% endblock %}
-{% block body %}
-    {{ include('location/hinclude/details-events.html.twig', {
-        eventsData: similarEventsData,
-    }) }}
-{% endblock %}
+{% embed 'location/widget/template-scrollable-horizontal.html.twig' %}
+    {% block titre %}Événements similaires{% endblock %}
+    {% block body %}
+        {{ include('location/hinclude/details-events.html.twig', {
+            eventsData: similarEventsData,
+        }) }}
+    {% endblock %}
+{% endembed %}

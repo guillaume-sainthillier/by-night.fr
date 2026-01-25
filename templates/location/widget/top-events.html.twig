@@ -1,15 +1,15 @@
-{% extends 'location/widget/template-scrollable.html.twig' %}
+{% embed 'location/widget/template-scrollable.html.twig' %}
+    {% block titre %}À la une cette semaine{% endblock %}
+    {% block widget_class %}{% endblock %}
+    {% block widget_body_class 'p-0' %}
+    {% block widget_attr %}id="une"{% endblock %}
+    {% block icon %}lucide:star{% endblock %}
 
-{% block titre %}À la une cette semaine{% endblock %}
-{% block widget_class %}{% endblock %}
-{% block widget_body_class 'p-0' %}
-{% block widget_attr %}id="une"{% endblock %}
-{% block icon %}lucide:star{% endblock %}
-
-{% block body %}
-    <div class="list-group scroll-area-content">
-        {{ include('location/hinclude/events.html.twig', {
-            topEventsData: topEventsData,
-        }) }}
-    </div>
-{% endblock %}
+    {% block body %}
+        <div class="list-group scroll-area-content">
+            {{ include('location/hinclude/events.html.twig', {
+                topEventsData: topEventsData,
+            }) }}
+        </div>
+    {% endblock %}
+{% endembed %}
