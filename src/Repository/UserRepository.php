@@ -16,6 +16,7 @@ use App\Entity\User;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -74,24 +75,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->toIterable();
     }
 
-    public function getUserFbIdsCount(DateTimeInterface $from): int
-    {
-        return (int) $this
-            ->createQueryBuilder('u')
-            ->select('count(i.facebook_id)')
-            ->join('u.oAuth', 'i')
-            ->where('u.updatedAt >= :from')
-            ->andWhere('i.facebook_id IS NOT NULL')
-            ->andWhere('u.image.name IS NULL')
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    /**
-     * @return User[]
-     */
-    public function getUsersWithInfo(DateTimeInterface $from, int $page, int $limit): array
+    public function getUsersWithInfoQueryBuilder(DateTimeInterface $from): QueryBuilder
     {
         return $this
             ->createQueryBuilder('u')
@@ -100,17 +84,10 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->where('u.updatedAt >= :from')
             ->andWhere('i.facebook_id IS NOT NULL')
             ->andWhere('u.image.name IS NULL')
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('from', $from->format('Y-m-d'));
     }
 
-    /**
-     * @return User[]
-     */
-    public function findAllTopUsers(int $page = 1, int $limit = 7): array
+    public function findAllTopUsersQueryBuilder(): QueryBuilder
     {
         return $this
             ->createQueryBuilder('u')
@@ -120,21 +97,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->leftJoin('u.oAuth', 'i')
             ->leftJoin('u.userEvents', 'c')
             ->orderBy('nb_events', Criteria::DESC)
-            ->groupBy('u.id')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
-    }
-
-    public function getCount(): int
-    {
-        return (int) $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('count(u.id)')
-            ->from(User::class, 'u')
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->groupBy('u.id');
     }
 
     public function findOneBySocial(string $email, string $infoPrefix, string $socialId): ?User

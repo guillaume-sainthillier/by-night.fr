@@ -11,19 +11,40 @@
 namespace App\Dto\WidgetData;
 
 use App\Entity\Place;
+use Pagerfanta\PagerfantaInterface;
 
 final readonly class EventsWidgetData
 {
     /**
-     * @param array<\App\Entity\Event> $events
+     * @param PagerfantaInterface<\App\Entity\Event> $paginator
      */
     public function __construct(
-        public int $page,
+        public PagerfantaInterface $paginator,
         public ?Place $place,
-        public array $events,
-        public int $current,
-        public int $count,
         public ?string $hasNextLink,
     ) {
+    }
+
+    public function getPage(): int
+    {
+        return $this->paginator->getCurrentPage();
+    }
+
+    /**
+     * @return array<\App\Entity\Event>
+     */
+    public function getEvents(): array
+    {
+        return iterator_to_array($this->paginator->getCurrentPageResults());
+    }
+
+    public function getCount(): int
+    {
+        return $this->paginator->getNbResults();
+    }
+
+    public function getCurrent(): int
+    {
+        return $this->paginator->getCurrentPage() * $this->paginator->getMaxPerPage();
     }
 }

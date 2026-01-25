@@ -20,18 +20,21 @@ use App\Entity\User;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
 use App\Repository\UserRepository;
+use App\Utils\PaginateTrait;
 use SocialLinks\Page;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final readonly class WidgetsManager
+final class WidgetsManager
 {
+    use PaginateTrait;
+
     public const int WIDGET_ITEM_LIMIT = 7;
 
     public function __construct(
-        private EventRepository $eventRepository,
-        private UserRepository $userRepository,
-        private UserEventRepository $userEventRepository,
-        private UrlGeneratorInterface $urlGenerator,
+        private readonly EventRepository $eventRepository,
+        private readonly UserRepository $userRepository,
+        private readonly UserEventRepository $userEventRepository,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -41,9 +44,13 @@ final readonly class WidgetsManager
             return null;
         }
 
-        $count = $this->eventRepository->getAllNextCount($event);
-        $current = $page * self::WIDGET_ITEM_LIMIT;
-        $hasNextLink = $current < $count ? $this->urlGenerator->generate('app_widget_next_events', [
+        $paginator = $this->createQueryBuilderPaginator(
+            $this->eventRepository->findAllNextQueryBuilder($event),
+            $page,
+            self::WIDGET_ITEM_LIMIT
+        );
+
+        $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_next_events', [
             'slug' => $event->getSlug(),
             'id' => $event->getId(),
             'location' => $location->getSlug(),
@@ -51,20 +58,21 @@ final readonly class WidgetsManager
         ]) : null;
 
         return new EventsWidgetData(
-            page: $page,
+            paginator: $paginator,
             place: $event->getPlace(),
-            events: $this->eventRepository->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
-            current: $current,
-            count: $count,
             hasNextLink: $hasNextLink,
         );
     }
 
     public function getSimilarEventsData(Event $event, Location $location, int $page = 1): EventsWidgetData
     {
-        $count = $this->eventRepository->getAllSimilarsCount($event);
-        $current = $page * self::WIDGET_ITEM_LIMIT;
-        $hasNextLink = $current < $count ? $this->urlGenerator->generate('app_widget_similar_events', [
+        $paginator = $this->createQueryBuilderPaginator(
+            $this->eventRepository->findAllSimilarsQueryBuilder($event),
+            $page,
+            self::WIDGET_ITEM_LIMIT
+        );
+
+        $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_similar_events', [
             'location' => $location->getSlug(),
             'slug' => $event->getSlug(),
             'id' => $event->getId(),
@@ -72,46 +80,47 @@ final readonly class WidgetsManager
         ]) : null;
 
         return new EventsWidgetData(
-            page: $page,
+            paginator: $paginator,
             place: $event->getPlace(),
-            events: $this->eventRepository->findAllSimilars($event, $page, self::WIDGET_ITEM_LIMIT),
-            current: $current,
-            count: $count,
             hasNextLink: $hasNextLink,
         );
     }
 
     public function getTopEventsData(Location $location, int $page = 1): TopEventsWidgetData
     {
-        $count = $this->eventRepository->getTopEventCount($location);
-        $current = $page * self::WIDGET_ITEM_LIMIT;
-        $hasNextLink = $current < $count ? $this->urlGenerator->generate('app_widget_top_events', [
+        $paginator = $this->createQueryBuilderPaginator(
+            $this->eventRepository->findTopEventsQueryBuilder($location),
+            $page,
+            self::WIDGET_ITEM_LIMIT
+        );
+
+        $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_top_events', [
             'page' => $page + 1,
             'location' => $location->getSlug(),
         ]) : null;
 
         return new TopEventsWidgetData(
+            paginator: $paginator,
             location: $location,
-            events: $this->eventRepository->findTopEvents($location, $page, self::WIDGET_ITEM_LIMIT),
             hasNextLink: $hasNextLink,
-            current: $current,
-            count: $count,
         );
     }
 
     public function getTopUsersData(int $page = 1): TopUsersWidgetData
     {
-        $count = $this->userRepository->getCount();
-        $current = $page * self::WIDGET_ITEM_LIMIT;
-        $hasNextLink = $current < $count ? $this->urlGenerator->generate('app_agenda_top_users', [
+        $paginator = $this->createQueryBuilderPaginator(
+            $this->userRepository->findAllTopUsersQueryBuilder(),
+            $page,
+            self::WIDGET_ITEM_LIMIT
+        );
+
+        $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_agenda_top_users', [
             'page' => $page + 1,
         ]) : null;
 
         return new TopUsersWidgetData(
-            users: $this->userRepository->findAllTopUsers($page, self::WIDGET_ITEM_LIMIT),
+            paginator: $paginator,
             hasNextLink: $hasNextLink,
-            current: $current,
-            count: $count,
         );
     }
 

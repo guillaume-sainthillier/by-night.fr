@@ -10,16 +10,34 @@
 
 namespace App\Dto\WidgetData;
 
+use Pagerfanta\PagerfantaInterface;
+
 final readonly class TopUsersWidgetData
 {
     /**
-     * @param array<\App\Entity\User> $users
+     * @param PagerfantaInterface<\App\Entity\User> $paginator
      */
     public function __construct(
-        public array $users,
+        public PagerfantaInterface $paginator,
         public ?string $hasNextLink,
-        public int $current,
-        public int $count,
     ) {
+    }
+
+    /**
+     * @return array<\App\Entity\User>
+     */
+    public function getUsers(): array
+    {
+        return iterator_to_array($this->paginator->getCurrentPageResults());
+    }
+
+    public function getCount(): int
+    {
+        return $this->paginator->getNbResults();
+    }
+
+    public function getCurrent(): int
+    {
+        return $this->paginator->getCurrentPage() * $this->paginator->getMaxPerPage();
     }
 }
