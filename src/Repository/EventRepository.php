@@ -237,7 +237,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getResult();
     }
 
-    public function findAllNextEvents(User $user, bool $isNext = true, int $page = 1, int $limit = 3): array
+    public function findAllNextEvents(User $user, bool $isNext = true): QueryBuilder
     {
         return $this
             ->createQueryBuilder('e')
@@ -246,11 +246,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
             ->orderBy('e.endDate', $isNext ? 'ASC' : 'DESC')
             ->setParameter('user', $user->getId())
-            ->setParameter('start_date', date('Y-m-d'))
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
+            ->setParameter('start_date', date('Y-m-d'));
     }
 
     public function getUserFavoriteEventsCount(User $user): int

@@ -2,6 +2,8 @@ import $ from 'jquery'
 import Raphael from 'raphael/raphael'
 import 'morris.js/morris.css'
 import 'morris.js/morris'
+import Loader2Icon from '@/js/icons/lucide/Loader2'
+import {iconHtml} from "@/js/components/icons"
 
 global.Raphael = Raphael
 
@@ -10,6 +12,47 @@ $(document).ready(function () {
 
     function init() {
         initCharts()
+        initLoadMoreEvents()
+    }
+
+    function initLoadMoreEvents() {
+        $('.user-events-container').each(function() {
+            const container = $(this)
+            bindLoadMore(container)
+        })
+    }
+
+    function bindLoadMore(container) {
+        container.find('.load-more').off('click').on('click', function(e) {
+            e.preventDefault()
+
+            const loadMore = $(this)
+            const btn = loadMore.find('.btn')
+
+            // Add spinner to button
+            const originalText = btn.html()
+            btn.html(iconHtml(Loader2Icon, 'icon-spin') + ' ' + originalText)
+            btn.prop('disabled', true)
+
+            $.get(loadMore.data('url'), function(html) {
+                // Remove the load-more button
+                loadMore.remove()
+
+                // Append new content
+                const $newContent = $(html)
+                container.append($newContent)
+
+                // Re-bind load-more on the new content
+                bindLoadMore(container)
+
+                // Re-initialize any page listeners on new event cards
+                window.App.dispatchPageLoadedEvent(container[0])
+            }).fail(function() {
+                // Restore button on error
+                btn.html(originalText)
+                btn.prop('disabled', false)
+            })
+        })
     }
 
     function initCharts() {

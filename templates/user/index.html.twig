@@ -60,8 +60,22 @@
         <div class="col-md-9">
             <h3>Événements</h3>
             <ul class="nav nav-pills mb-1">
-                <li class="nav-item"><a class="nav-link active" href="#a-venir" data-bs-toggle="tab">A venir</a></li>
-                <li class="nav-item"><a class="nav-link" href="#passes" data-bs-toggle="tab">Passés</a></li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#a-venir" data-bs-toggle="tab">
+                        À venir
+                        {% if nextEvents.nbResults > 0 %}
+                            <span class="badge text-bg-primary ms-1">{{ nextEvents.nbResults }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#passes" data-bs-toggle="tab">
+                        Passé{{ previousEvents.nbResults > 1 ? 's' }}
+                        {% if previousEvents.nbResults > 0 %}
+                            <span class="badge text-bg-primary ms-1">{{ previousEvents.nbResults }}</span>
+                        {% endif %}
+                    </a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="a-venir">
@@ -71,7 +85,9 @@
                             Aucun événement de prévu pour {{ username }} !
                         </div>
                     {% else %}
-                        {{ include('partials/event/_list-card.html.twig', {events: nextEvents}) }}
+                        <div class="user-events-container" data-type="next">
+                            {{ include('user/events_list.html.twig', {events: nextEvents, user: user, isNext: true}) }}
+                        </div>
                     {% endif %}
                 </div>
                 <div class="tab-pane" id="passes">
@@ -81,7 +97,9 @@
                             Aucun événement passé pour {{ username }} !
                         </div>
                     {% else %}
-                        {{ include('partials/event/_list-card.html.twig', {events: previousEvents}) }}
+                        <div class="user-events-container" data-type="previous">
+                            {{ include('user/events_list.html.twig', {events: previousEvents, user: user, isNext: false}) }}
+                        </div>
                     {% endif %}
                 </div>
             </div>
