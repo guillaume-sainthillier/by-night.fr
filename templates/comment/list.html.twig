@@ -1,7 +1,9 @@
-<div class="comments">
-    {% for comment in comments %}
-        {{ include('comment/item.html.twig', {comment: comment}) }}
-    {% endfor %}
+<div class="chat">
+    <div class="chat-bubbles">
+        {% for comment in comments %}
+            {{ include('comment/item.html.twig', {comment: comment}) }}
+        {% endfor %}
+    </div>
 
     {% if comments.hasNextPage %}
         {% block load_more %}

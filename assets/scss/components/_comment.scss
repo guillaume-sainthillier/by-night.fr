@@ -1,4 +1,4 @@
-// WhatsApp-like comment system
+// Comments container using Tabler chat component
 .comments-container {
     max-width: 900px;
     margin: 2rem auto;
@@ -19,16 +19,7 @@
         }
     }
 
-    .card {
-        border-radius: 1.25rem;
-        overflow: hidden;
-        transition: box-shadow 0.3s ease;
-
-        &:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-        }
-    }
-
+    // Comment form styles
     .card-body-form {
         padding: 1.75rem;
         background: #fff;
@@ -42,9 +33,6 @@
 
             .image-wrapper {
                 max-width: 40px;
-                border-radius: 50%;
-                overflow: hidden;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
             strong {
@@ -104,109 +92,15 @@
         }
     }
 
-    .card-body-comments {
-        padding: 1.75rem;
-        background: linear-gradient(to bottom, #fafafa 0%, #ffffff 100%);
-    }
-}
+    // Tabler chat customizations
+    .chat-bubble-author a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 600;
 
-// Comments list - WhatsApp bubble style
-.comments {
-    .comment {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-
-        // Avatar column
-        .col-auto {
-            flex-shrink: 0;
-
-            .image-wrapper {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                overflow: hidden;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-            }
-        }
-
-        // Message bubble column
-        > .col {
-            flex: 1;
-            min-width: 0;
-        }
-
-        // Message bubble with tail
-        .message-bubble {
-            background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, rgba($color-primary, 0.12) 100%);
-            border-radius: 1rem;
-            border-bottom-left-radius: 0.25rem;
-            padding: 0.875rem 1.125rem;
-            position: relative;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            max-width: 85%;
-
-            // WhatsApp-style tail
-            &::before {
-                content: '';
-                position: absolute;
-                left: -8px;
-                bottom: 0;
-                width: 0;
-                height: 0;
-                border-style: solid;
-                border-width: 0 0 12px 12px;
-                border-color: transparent transparent rgba($color-primary, 0.12) transparent;
-                filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.03));
-            }
-        }
-
-        .infos {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            flex-wrap: wrap;
-
-            a {
-                font-weight: 600;
-                color: $primary;
-                text-decoration: none;
-                font-size: 0.9375rem;
-                transition: color 0.2s ease;
-
-                &:hover {
-                    color: darken($primary, 10%);
-                    text-decoration: underline;
-                }
-            }
-
-            small {
-                font-size: 0.75rem;
-                color: rgba($dark, 0.5);
-
-                &::before {
-                    content: '•';
-                    margin-right: 0.5rem;
-                    color: rgba($dark, 0.3);
-                }
-            }
-        }
-
-        p {
-            margin: 0;
-            line-height: 1.5;
-            color: $dark;
-            font-size: 0.9375rem;
-            word-wrap: break-word;
-
-            b, strong {
-                font-weight: 600;
-            }
-
-            i, em {
-                font-style: italic;
-            }
+        &:hover {
+            color: $primary;
+            text-decoration: underline;
         }
     }
 
@@ -229,32 +123,8 @@
     }
 }
 
-// Message sending state
-.comment.is-sending {
-    opacity: 0.6;
-
-    .message-bubble {
-        background: linear-gradient(135deg, rgba($primary, 0.05) 0%, rgba($primary, 0.08) 100%);
-        position: relative;
-
-        &::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            width: 16px;
-            height: 16px;
-            margin-top: -8px;
-            border: 2px solid rgba($primary, 0.3);
-            border-top-color: $primary;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-    }
-}
-
 // Success animation for newly posted messages
-.comment.message-sent {
+.chat-item.message-sent {
     animation: messageAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -269,12 +139,6 @@
     }
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 // Responsive adjustments
 @include media-breakpoint-down(md) {
     .comments-container {
@@ -282,28 +146,12 @@
             font-size: 1.125rem;
         }
 
-        .card-body-form,
-        .card-body-comments {
+        .card-body-form {
             padding: 1.5rem;
-        }
-    }
 
-    .card-body-form {
-        padding: 1.5rem;
-
-        .comment-form-user .image-wrapper {
-            max-width: 36px;
-        }
-    }
-
-    .comments .comment {
-        .message-bubble {
-            max-width: 90%;
-        }
-
-        .col-auto .image-wrapper {
-            width: 36px;
-            height: 36px;
+            .comment-form-user .image-wrapper {
+                max-width: 36px;
+            }
         }
     }
 }
@@ -317,40 +165,13 @@
             margin-bottom: 0.75rem;
         }
 
-        .card {
-            border-radius: 1rem;
-        }
-
-        .card-body-form,
-        .card-body-comments {
+        .card-body-form {
             padding: 1.25rem;
-        }
-    }
 
-    .card-body-form {
-        padding: 1.25rem;
-
-        .comment-form-input textarea {
-            font-size: 0.875rem;
-            padding: 0.75rem 1rem;
-        }
-    }
-
-    .comments .comment {
-        gap: 0.5rem;
-
-        .message-bubble {
-            max-width: 95%;
-            padding: 0.75rem 1rem;
-
-            &::before {
-                border-width: 0 0 10px 10px;
+            .comment-form-input textarea {
+                font-size: 0.875rem;
+                padding: 0.75rem 1rem;
             }
-        }
-
-        .col-auto .image-wrapper {
-            width: 32px;
-            height: 32px;
         }
     }
 }

@@ -15,7 +15,7 @@ export default class CommentApp {
             css_btn_list: '.btn-list',
             css_main_block_reponse: '.reponses',
             css_link_repondre: '.repondre',
-            css_block_reponses: '.comments',
+            css_block_reponses: '.chat-bubbles',
             css_has_loaded_reponse: 'has_loaded_reponse',
             css_has_showed_reponses: 'has_showed_reponse',
             css_block_post_reponse: '.block_poster_reponse',
@@ -23,9 +23,9 @@ export default class CommentApp {
             css_icon_list: '.icon_list',
             css_main_block_comments: '.comments-container',
             css_load_more_comments: '.load_more',
-            css_block_comment: '.comment',
+            css_block_comment: '.chat-item',
             css_block_poster_comment: '.card-body-form',
-            css_block_comments: '.comments',
+            css_block_comments: '.chat-bubbles',
             css_heading_comments: '.heading',
             animation_duration: 400,
         }
@@ -272,18 +272,20 @@ export default class CommentApp {
                                     }
 
                                     // Check if comments body container exists
-                                    let commentsBodyContainer = mainCommentsContainer.find('.card-body-comments')
+                                    let commentsBodyContainer = mainCommentsContainer.find('.card-body.scrollable')
 
                                     // If no comments container exists yet (first comment), create one
                                     if (!commentsBodyContainer.length) {
-                                        commentsBodyContainer = $('<div class="card-body card-body-comments"></div>')
-                                        const commentsListDiv = $('<div class="comments"></div>')
-                                        commentsBodyContainer.append(commentsListDiv)
+                                        commentsBodyContainer = $('<div class="card-body scrollable" style="max-height: 600px"></div>')
+                                        const chatDiv = $('<div class="chat"></div>')
+                                        const chatBubblesDiv = $('<div class="chat-bubbles"></div>')
+                                        chatDiv.append(chatBubblesDiv)
+                                        commentsBodyContainer.append(chatDiv)
                                         mainCommentsContainer.find('.card').append(commentsBodyContainer)
                                     }
 
-                                    // Get the comments list container
-                                    const commentsList = commentsBodyContainer.find('.comments')
+                                    // Get the chat bubbles container
+                                    const commentsList = commentsBodyContainer.find('.chat-bubbles')
 
                                     // Add new comment with success animation
                                     const newComment = $(retour.comment)

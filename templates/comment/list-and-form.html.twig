@@ -5,13 +5,13 @@
             <small class="text-muted">Soyez le premier à réagir</small>
         {% endif %}
     </h3>
-    <div class="card shadow-sm border-0">
+    <div class="card">
         <div class="card-body card-body-form">
             {{ include('comment/form.html.twig') }}
         </div>
 
         {% if comments.nbResults > 0 %}
-            <div class="card-body card-body-comments">
+            <div class="card-body scrollable" style="max-height: 600px">
                 {{ include('comment/list.html.twig') }}
             </div>
         {% endif %}
