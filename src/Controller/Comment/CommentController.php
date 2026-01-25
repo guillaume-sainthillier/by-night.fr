@@ -94,10 +94,10 @@ final class CommentController extends BaseController
 
             return new JsonResponse([
                 'success' => true,
-                'comment' => $this->renderView('comment/details.html.twig', [
+                'comment' => $this->renderView('comment/item.html.twig', [
                     'comment' => $comment,
-                    'success' => true,
                 ]),
+                'count' => $comments->getNbResults(),
                 'header' => $this->renderView('comment/header.html.twig', [
                     'comments' => $comments,
                 ]),

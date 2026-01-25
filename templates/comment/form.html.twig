@@ -1,26 +1,28 @@
 {% import 'form/macros.html.twig' as macros %}
-<div class="block_poster_commentaire mb-3">
-    {% if is_granted('ROLE_USER') %}
-        {{ form_start(form) }}
+{% if is_granted('ROLE_USER') %}
+    {{ form_start(form) }}
 
-        <div class="col-user-profile">
-            {{ macros.userLazyThumb(app.user, 75, 75) }}
-            <strong class="ms-2">{{ app.user.username }}</strong>
-        </div>
-        <div>
-            {% block form_comment %}
-                {{ form_row(form.comment) }}
-            {% endblock %}
-            <button type="submit" class="btn btn-primary btn-submit">Poster</button>
-        </div>
-        {{ form_rest(form) }}
-        <hr />
-    {% else %}
-        <div class="text-center mt-4">
-            <a class="btn btn-outline-secondary connexion" title="Se connecter pour laisser un commentaire"
-               href="{{ path('app_login') }}">
-                Laisser un commentaire
-            </a>
-        </div>
-    {% endif %}
-</div>
+    <div class="comment-form-user">
+        {{ macros.userLazyThumb(app.user, 75, 75) }}
+        <strong>{{ app.user.username }}</strong>
+    </div>
+    <div class="comment-form-input">
+        {% block form_comment %}
+            {{ form_row(form.comment, {
+                attr: {
+                    placeholder: 'Écrire un commentaire...',
+                    rows: 3
+                }
+            }) }}
+        {% endblock %}
+        <button type="submit" class="btn btn-primary btn-submit">Envoyer</button>
+    </div>
+    {{ form_rest(form) }}
+{% else %}
+    <div class="text-center">
+        <a class="btn btn-outline-secondary connexion" title="Se connecter pour laisser un commentaire"
+           href="{{ path('app_login') }}">
+            Laisser un commentaire
+        </a>
+    </div>
+{% endif %}

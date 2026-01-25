@@ -1,13 +1,19 @@
 <div class="comments-container">
-    <h4 class="heading">
-        {{ comments.nbResults }} Commentaire{{ comments.nbResults > 1 ? 's' }}
+    <h3 class="heading">
+        <span>{{ comments.nbResults }} Commentaire{{ comments.nbResults > 1 ? 's' }}</span>
         {% if comments.nbResults == 0 %}
             <small class="text-muted">Soyez le premier à réagir</small>
         {% endif %}
-    </h4>
-    {{ include('comment/form.html.twig') }}
+    </h3>
+    <div class="card shadow-sm border-0">
+        <div class="card-body card-body-form">
+            {{ include('comment/form.html.twig') }}
+        </div>
 
-    {% if comments.nbResults > 0 %}
-        {{ include('comment/list.html.twig') }}
-    {% endif %}
+        {% if comments.nbResults > 0 %}
+            <div class="card-body card-body-comments">
+                {{ include('comment/list.html.twig') }}
+            </div>
+        {% endif %}
+    </div>
 </div>

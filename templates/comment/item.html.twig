@@ -1,0 +1,19 @@
+{% import 'form/macros.html.twig' as macros %}
+<div class="comment">
+    <div class="col-auto">
+        {{ macros.userThumb(comment.user, 115, 115) }}
+    </div>
+    <div class="col">
+        <div class="message-bubble">
+            <div class="infos">
+                <a href="{{ path('app_user_index', {id: comment.user.id, slug: comment.user.slug}) }}">{{ comment.user.username }}</a>
+                <small class="text-muted" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">
+                    {{ comment.createdAt|diff_date }}
+                </small>
+            </div>
+            <p>
+                {{ comment.comment|striptags('<i><b>')|nl2br|parse_tags|raw }}
+            </p>
+        </div>
+    </div>
+</div>

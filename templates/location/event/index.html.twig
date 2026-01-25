@@ -307,11 +307,10 @@
                     <div id="googleMap"></div>
                 </div>
             {% endif %}
-
-            <div class="card-body">
-                {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm}) }}
-            </div>
         </div>
+
+        {# Comments section - separate card outside main event card #}
+        {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm}) }}
 
         {% if event.placeName and nextEventsData %}
             {{ include('location/widget/next-events.html.twig', {nextEventsData: nextEventsData}) }}
