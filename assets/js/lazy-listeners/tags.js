@@ -25,22 +25,15 @@ export default (container = document) => {
         }
 
         if (tagsUrl) {
-            options.valueField = 'text'
+            options.valueField = 'id'
             options.labelField = 'text'
-            options.searchField = 'text'
+            //options.searchField = 'text'
             options.load = function (query, callback) {
                 fetch(`${tagsUrl}?q=${encodeURIComponent(query)}`, {
                     headers: { Accept: 'application/ld+json' },
                 })
                     .then((res) => res.json())
-                    .then((data) => {
-                        const items = data.member || data.results || []
-                        callback(
-                            items.map((item) => ({
-                                text: item.text || item.id,
-                            }))
-                        )
-                    })
+                    .then((data) => callback(data.member))
                     .catch(() => callback())
             }
         }

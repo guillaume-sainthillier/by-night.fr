@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import TomSelect from 'tom-select'
 import '@/scss/lazy-components/_selects.scss'
 import { isTouchDevice } from '@/js/utils/utils'
@@ -9,6 +10,7 @@ export default (container = document) => {
         } else {
             new TomSelect(el, {
                 create: false,
+                plugins: ['remove_button', 'change_listener'],
                 controlInput: null,
                 allowEmptyOption: true,
                 render: {
@@ -17,6 +19,14 @@ export default (container = document) => {
                     },
                 },
             })
+            initRefreshableSelects(el)
         }
+    })
+}
+
+export function initRefreshableSelects(element) {
+    $(element).on('refresh', function() {
+        const instance = element.tomselect
+        instance?.setValue($(element).val(), true)
     })
 }

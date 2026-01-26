@@ -10,6 +10,7 @@
         "@algolia/autocomplete-js": "^1.19.4",
         "@algolia/autocomplete-plugin-recent-searches": "^1.19.4",
         "@algolia/autocomplete-theme-classic": "^1.19.4",
+        "@googlemaps/js-api-loader": "^2.0.2",
         "@popperjs/core": "^2.11.6",
         "@sentry/browser": "^10.37.0",
         "@tabler/core": "^1.4.0",

@@ -15,7 +15,7 @@
             <div class="row">
                 <div class="col-md-6">
                     {# Part 1 #}
-                    <twig:Card header="Votre événement" icon="lucide:file" showFooter="{{ false }}">
+                    <twig:Card header="Votre événement" icon="lucide:file-text" showFooter="{{ false }}">
                         {{ form_row(form.name, {icon_prepend: 'lucide:file-edit'}) }}
                         {{ form_row(form.description) }}
                         {{ form_row(form.imageFile) }}
@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-md-6">
                     {# Part 2 #}
-                    <twig:Card header="Informations" icon="lucide:file-text" showFooter="{{ false }}">
+                    <twig:Card header="Dates et horaires" icon="lucide:calendar-days" showFooter="{{ false }}">
                         {{ form_row(form.startDate) }}
                         {{ form_row(form.endDate) }}
                         {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
@@ -64,15 +64,20 @@
                         {{ form_row(form.place.name, {icon_prepend: 'lucide:map-pin'}) }}
                         {{ form_row(form.address, {icon_prepend: 'lucide:crosshair'}) }}
 
-                        <div class="ms-2 ms-sm-5 mb-5">
-                            {{ form_row(form.place.street) }}
-                            {{ form_errors(form.place.city) }}
-                            {{ form_row(form.place.city.postalCode) }}
-                            {{ form_row(form.place.city.name) }}
-                            {{ form_row(form.place.country) }}
+                        {{ form_row(form.place.street) }}
+                        {{ form_errors(form.place.city) }}
+                        <div class="row">
+                            <div class="col-md-4">{{ form_row(form.place.city.postalCode) }}</div>
+                            <div class="col-md-8">{{ form_row(form.place.city.name) }}</div>
                         </div>
 
-                        <div id="map" data-map-id="{{ googleMapId }}"></div>
+                        {{ form_row(form.place.country) }}
+                        <twig:block name="body_after">
+                            <div class="card-body p-0">
+                                <div id="map" data-map-id="{{ googleMapId }}" data-api-key="{{ googleMapKey }}"></div>
+                            </div>
+                        </twig:block>
+
                     </twig:Card>
                 </div>
             </div>
@@ -96,10 +101,6 @@
 
 {% block css -%}
     {{ encore_entry_link_tags('espace_perso_event') }}
-{%- endblock %}
-
-{% block head_js -%}
-    <script src="https://maps.googleapis.com/maps/api/js?v=weekly&key={{ googleMapKey }}&language=fr&libraries=places,marker&loading=async"></script>
 {%- endblock %}
 
 {% block js -%}
