@@ -11,6 +11,7 @@
 namespace App\Tests\Handler;
 
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
 use App\Factory\CityFactory;
@@ -382,5 +383,129 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $createdAt = $event->getCreatedAt();
         $this->assertGreaterThanOrEqual($beforeInsert->getTimestamp(), $createdAt->getTimestamp());
         $this->assertLessThanOrEqual($afterInsert->getTimestamp(), $createdAt->getTimestamp());
+    }
+
+    public function testInsertEventWithTimesheets(): void
+    {
+        // Arrange: Create event DTO with timesheets
+        $dto = new EventDto();
+        $dto->name = 'Multi-day Festival';
+        $dto->description = 'A festival with multiple time slots over several days';
+        $dto->externalId = 'timesheet-test-001';
+        $dto->externalOrigin = 'test-parser';
+        $dto->parserVersion = '1.0';
+
+        // Create timesheets
+        $timesheet1 = new EventTimesheetDto();
+        $timesheet1->startAt = new DateTime('2024-06-15 10:00:00');
+        $timesheet1->endAt = new DateTime('2024-06-15 18:00:00');
+        $timesheet1->hours = 'De 10h à 18h';
+
+        $timesheet2 = new EventTimesheetDto();
+        $timesheet2->startAt = new DateTime('2024-06-16 12:00:00');
+        $timesheet2->endAt = new DateTime('2024-06-16 22:00:00');
+        $timesheet2->hours = 'De 12h à 22h';
+
+        $timesheet3 = new EventTimesheetDto();
+        $timesheet3->startAt = new DateTime('2024-06-17 14:00:00');
+        $timesheet3->endAt = new DateTime('2024-06-17 20:00:00');
+        $timesheet3->hours = 'De 14h à 20h';
+
+        $dto->timesheets = [$timesheet1, $timesheet2, $timesheet3];
+
+        // startDate/endDate should be computed from timesheets
+        $dto->startDate = new DateTime('2024-06-15');
+        $dto->endDate = new DateTime('2024-06-17');
+
+        $placeDto = new PlaceDto();
+        $placeDto->name = 'Festival Grounds';
+        $placeDto->street = '1 Festival Way';
+        $dto->place = $placeDto;
+
+        // Act: Insert the event
+        $this->handler->handleOne($dto);
+
+        // Assert: Verify timesheets were saved
+        $event = $this->eventRepository->findOneBy(['externalId' => 'timesheet-test-001']);
+
+        $this->assertNotNull($event, 'Event should be inserted');
+        $this->assertCount(3, $event->getTimesheets(), 'Event should have 3 timesheets');
+
+        // Verify start/end dates are computed from timesheets (min/max)
+        $this->assertEquals('2024-06-15', $event->getStartDate()->format('Y-m-d'), 'Start date should be min of timesheets');
+        $this->assertEquals('2024-06-17', $event->getEndDate()->format('Y-m-d'), 'End date should be max of timesheets');
+
+        // Verify timesheet data
+        $timesheets = $event->getTimesheets()->toArray();
+        $this->assertEquals('De 10h à 18h', $timesheets[0]->getHours());
+        $this->assertEquals('2024-06-15 10:00:00', $timesheets[0]->getStartAt()->format('Y-m-d H:i:s'));
+    }
+
+    public function testUpdateEventTimesheetsReplacesExisting(): void
+    {
+        // Arrange: Create an event with timesheets
+        $dto1 = new EventDto();
+        $dto1->name = 'Evolving Event';
+        $dto1->description = 'This event will have its timesheets updated';
+        $dto1->externalId = 'timesheet-update-001';
+        $dto1->externalOrigin = 'test-parser';
+        $dto1->parserVersion = '1.0';
+        $dto1->startDate = new DateTime('2024-07-01');
+        $dto1->endDate = new DateTime('2024-07-02');
+
+        $timesheet1 = new EventTimesheetDto();
+        $timesheet1->startAt = new DateTime('2024-07-01 10:00:00');
+        $timesheet1->endAt = new DateTime('2024-07-01 18:00:00');
+        $timesheet1->hours = 'Original hours';
+
+        $dto1->timesheets = [$timesheet1];
+
+        $placeDto = new PlaceDto();
+        $placeDto->name = 'Update Test Venue';
+        $placeDto->street = '100 Update St';
+        $dto1->place = $placeDto;
+
+        $this->handler->handleOne($dto1);
+
+        // Act: Update with new timesheets
+        $dto2 = new EventDto();
+        $dto2->name = 'Evolving Event';
+        $dto2->description = 'This event will have its timesheets updated';
+        $dto2->externalId = 'timesheet-update-001';
+        $dto2->externalOrigin = 'test-parser';
+        $dto2->parserVersion = '1.0';
+        $dto2->startDate = new DateTime('2024-07-10');
+        $dto2->endDate = new DateTime('2024-07-12');
+
+        $newTimesheet1 = new EventTimesheetDto();
+        $newTimesheet1->startAt = new DateTime('2024-07-10 09:00:00');
+        $newTimesheet1->endAt = new DateTime('2024-07-10 17:00:00');
+        $newTimesheet1->hours = 'New hours day 1';
+
+        $newTimesheet2 = new EventTimesheetDto();
+        $newTimesheet2->startAt = new DateTime('2024-07-12 11:00:00');
+        $newTimesheet2->endAt = new DateTime('2024-07-12 19:00:00');
+        $newTimesheet2->hours = 'New hours day 2';
+
+        $dto2->timesheets = [$newTimesheet1, $newTimesheet2];
+        $dto2->place = $placeDto;
+
+        $this->handler->handleOne($dto2);
+
+        // Assert: Verify timesheets were replaced
+        $event = $this->eventRepository->findOneBy(['externalId' => 'timesheet-update-001']);
+
+        $this->assertNotNull($event);
+        $this->assertCount(2, $event->getTimesheets(), 'Old timesheets should be replaced with new ones');
+
+        $timesheets = $event->getTimesheets()->toArray();
+        $hours = array_map(static fn ($t) => $t->getHours(), $timesheets);
+        $this->assertContains('New hours day 1', $hours);
+        $this->assertContains('New hours day 2', $hours);
+        $this->assertNotContains('Original hours', $hours);
+
+        // Verify dates were recomputed
+        $this->assertEquals('2024-07-10', $event->getStartDate()->format('Y-m-d'));
+        $this->assertEquals('2024-07-12', $event->getEndDate()->format('Y-m-d'));
     }
 }

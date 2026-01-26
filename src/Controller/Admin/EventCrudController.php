@@ -12,6 +12,7 @@ namespace App\Controller\Admin;
 
 use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
+use App\Form\Type\EventTimesheetEntityType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -96,6 +97,11 @@ final class EventCrudController extends AbstractCrudController
         $startDate = DateField::new('startDate');
         $endDate = DateField::new('endDate');
         $horaires = TextField::new('hours');
+        $timesheets = CollectionField::new('timesheets')
+            ->setEntryType(EventTimesheetEntityType::class)
+            ->allowAdd()
+            ->allowDelete()
+            ->setLabel('Dates et horaires');
         $descriptif = TextareaField::new('description');
         $externalUpdatedAt = DateTimeField::new('externalUpdatedAt');
         $status = TextField::new('status');
@@ -125,6 +131,10 @@ final class EventCrudController extends AbstractCrudController
         $imageName = TextField::new('image.name');
         $imageSystemName = TextField::new('imageSystem.name');
         $panel4 = FormField::addPanel('Parser');
+        $duplicateOf = AssociationField::new('duplicateOf')
+            ->setLabel('Duplicate de (redirige vers)')
+            ->autocomplete()
+            ->setHelp('Si défini, cet événement redirigera vers l\'événement principal');
         $fromData = TextField::new('fromData');
         $parserVersion = TextField::new('parserVersion');
         $source = TextField::new('source');
@@ -166,6 +176,7 @@ final class EventCrudController extends AbstractCrudController
             $startDate,
             $endDate,
             $horaires,
+            $timesheets,
             $tarif,
             $status,
             $latitude,
@@ -217,6 +228,7 @@ final class EventCrudController extends AbstractCrudController
             $imageSystemDimensions,
 
             $panel4,
+            $duplicateOf,
             $externalId,
             $externalOrigin,
             $externalUpdatedAt,

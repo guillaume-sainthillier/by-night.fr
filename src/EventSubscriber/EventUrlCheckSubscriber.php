@@ -49,6 +49,25 @@ final readonly class EventUrlCheckSubscriber implements EventSubscriberInterface
             throw new NotFoundHttpException(null === $e->getEventId() ? \sprintf('Event with slug "%s" not found', $e->getEventSlug()) : \sprintf('Event with id "%d" not found', $e->getEventId()));
         }
 
+        // Redirect duplicates to canonical event (301 for SEO)
+        if ($event->isDuplicate()) {
+            $canonical = $event->getCanonicalEvent();
+            $routeParams = array_merge([
+                'id' => $canonical->getId(),
+                'slug' => $canonical->getSlug(),
+                'location' => $canonical->getLocationSlug(),
+            ], $e->getRouteParams());
+
+            $response = new RedirectResponse(
+                $this->router->generate($e->getRouteName(), $routeParams),
+                Response::HTTP_MOVED_PERMANENTLY
+            );
+            $e->setResponse($response);
+            $e->stopPropagation();
+
+            return;
+        }
+
         if (null === $this->requestStack->getParentRequest() && (
             null === $e->getEventId()
             || $event->getSlug() !== $e->getEventSlug()

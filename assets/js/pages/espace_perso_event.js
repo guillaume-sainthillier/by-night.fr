@@ -5,6 +5,8 @@ import initImagePreview from '@/js/lazy-listeners/image-previews'
 import initSelects from '@/js/lazy-listeners/selects'
 import initTypeAHead from '@/js/lazy-listeners/typeahead'
 import initWYSIWYG from '@/js/lazy-listeners/wysiwyg'
+import initEventScheduler from '@/js/listeners/event-scheduler'
+import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 
 import 'typeahead-addresspicker/dist/typeahead-addresspicker'
 
@@ -14,6 +16,13 @@ $(document).ready(function () {
     initTypeAHead()
     initImagePreview()
     initWYSIWYG()
+
+    // Initialize event scheduler
+    const di = window.App
+    initEventScheduler(document.body, di)
+
+    // Initialize timesheet hours sync
+    initTimesheetHoursSync(document.body)
 
     init()
 })

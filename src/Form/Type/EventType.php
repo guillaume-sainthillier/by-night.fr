@@ -71,10 +71,19 @@ final class EventType extends AbstractType
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
             ])
             ->add('hours', TextType::class, [
-                'label' => 'Horaires',
+                'label' => 'Horaires (résumé)',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'A 20h, de 21h à minuit',
+                ],
+            ])
+            ->add('timesheets', CollectionType::class, [
+                'entry_type' => EventTimesheetType::class,
+                'required' => false,
+                'add_entry_label' => 'Ajouter une date',
+                'label' => 'Dates et horaires',
+                'entry_options' => [
+                    'label' => false,
                 ],
             ])
             ->add('prices', TextType::class, [

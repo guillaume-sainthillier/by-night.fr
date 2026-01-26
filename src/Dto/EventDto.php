@@ -106,6 +106,9 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?PlaceDto $place = null;
 
+    /** @var EventTimesheetDto[] */
+    public array $timesheets = [];
+
     public ?Reject $reject = null;
 
     public ?string $parserVersion = null;

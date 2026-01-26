@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa44ae5f45162ff52f342fa7b9448d1f",
+    "content-hash": "914b91fb5f91ca6a2985ac5e07bfeeee",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5685,6 +5685,63 @@
                 }
             ],
             "time": "2025-12-18T09:26:49+00:00"
+        },
+        {
+            "name": "silarhi/cursor-pagination",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silarhi/cursor-pagination.git",
+                "reference": "1995cc7cbe0f277a7f703565aa48290270c590b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silarhi/cursor-pagination/zipball/1995cc7cbe0f277a7f703565aa48290270c590b0",
+                "reference": "1995cc7cbe0f277a7f703565aa48290270c590b0",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^3.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "doctrine/data-fixtures": "^2.0",
+                "friendsofphp/php-cs-fixer": "^3.66",
+                "phpstan/phpstan": "^2",
+                "phpunit/phpunit": "^10.5.20|^11.1.3",
+                "rector/rector": "^2",
+                "symfony/cache": "^7.0",
+                "vimeo/psalm": "^5.26"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Silarhi\\CursorPagination\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SILARHI",
+                    "email": "dev@silarhi.fr"
+                }
+            ],
+            "description": "A doctrine ORM cursor based pagination library for faster batch operations.",
+            "keywords": [
+                "cursor",
+                "cursor-pagination",
+                "doctrine",
+                "orm",
+                "pagination"
+            ],
+            "support": {
+                "issues": "https://github.com/silarhi/cursor-pagination/issues",
+                "source": "https://github.com/silarhi/cursor-pagination/tree/2.0.0"
+            },
+            "time": "2025-01-06T16:16:30+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",

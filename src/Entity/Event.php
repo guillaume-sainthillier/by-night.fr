@@ -217,6 +217,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, EventTimesheet>
+     */
+    #[ORM\OneToMany(targetEntity: EventTimesheet::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    #[ORM\OrderBy(['startAt' => Criteria::ASC])]
+    #[Groups(['elasticsearch:event:details'])]
+    private Collection $timesheets;
+
     #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]
     private ?string $facebookOwnerId = null;
 
@@ -245,6 +253,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $archive = false;
+
+    /**
+     * When set, this event is a duplicate and should redirect to the canonical event.
+     * The duplicate event is kept for SEO purposes (existing URLs continue to work).
+     */
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'SET NULL')]
+    private ?Event $duplicateOf = null;
 
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
     #[ORM\Column(type: Types::STRING, length: 255)]
@@ -282,6 +298,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->startDate = new DateTime();
         $this->userEvents = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->timesheets = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }
@@ -401,7 +418,37 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\PreUpdate]
     public function majEndDate(): void
     {
-        if (null === $this->endDate) {
+        if ($this->timesheets->count() > 0) {
+            $minStart = null;
+            $maxEnd = null;
+
+            foreach ($this->timesheets as $timesheet) {
+                $start = $timesheet->getStartAt();
+                $end = $timesheet->getEndAt();
+
+                if (null !== $start && (null === $minStart || $start < $minStart)) {
+                    $minStart = $start;
+                }
+                if (null !== $end && (null === $maxEnd || $end > $maxEnd)) {
+                    $maxEnd = $end;
+                }
+            }
+
+            // Only update dates if we found valid values from timesheets
+            if (null !== $minStart) {
+                $this->startDate = DateTime::createFromInterface($minStart);
+                $this->startDate->setTime(0, 0, 0);
+            }
+            if (null !== $maxEnd) {
+                $this->endDate = DateTime::createFromInterface($maxEnd);
+                $this->endDate->setTime(0, 0, 0);
+            }
+
+            // If timesheets exist but have no valid dates, ensure endDate matches startDate
+            if (null === $minStart && null === $maxEnd && null === $this->endDate) {
+                $this->endDate = $this->startDate;
+            }
+        } elseif (null === $this->endDate) {
             $this->endDate = $this->startDate;
         }
     }
@@ -997,6 +1044,37 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
+    /**
+     * @return Collection<int, EventTimesheet>
+     */
+    public function getTimesheets(): Collection
+    {
+        return $this->timesheets;
+    }
+
+    public function addTimesheet(EventTimesheet $timesheet): self
+    {
+        if (!$this->timesheets->contains($timesheet)) {
+            $this->timesheets[] = $timesheet;
+            $timesheet->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTimesheet(EventTimesheet $timesheet): self
+    {
+        if ($this->timesheets->contains($timesheet)) {
+            $this->timesheets->removeElement($timesheet);
+            // set the owning side to null (unless already changed)
+            if ($timesheet->getEvent() === $this) {
+                $timesheet->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function getPlaceCountry(): ?Country
     {
         return $this->placeCountry;
@@ -1173,5 +1251,27 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function isArchive(): ?bool
     {
         return $this->archive;
+    }
+
+    public function getDuplicateOf(): ?self
+    {
+        return $this->duplicateOf;
+    }
+
+    public function setDuplicateOf(?self $duplicateOf): self
+    {
+        $this->duplicateOf = $duplicateOf;
+
+        return $this;
+    }
+
+    public function isDuplicate(): bool
+    {
+        return null !== $this->duplicateOf;
+    }
+
+    public function getCanonicalEvent(): self
+    {
+        return $this->duplicateOf ?? $this;
     }
 }

@@ -51,6 +51,7 @@
         "@svgr/webpack": "^8.1.0",
         "@symfony/stimulus-bridge": "^3.2.0 || ^4.0.0",
         "@symfony/webpack-encore": "^5.3.1",
+        "babel-jest": "^30.2.0",
         "core-js": "^3.48.0",
         "es6-promise": "^4.2.6",
         "eslint": "^9.39.2",
@@ -61,6 +62,7 @@
         "globals": "^17.1.0",
         "husky": "^9.1.6",
         "imports-loader": "^5.0.0",
+        "jest": "^30.2.0",
         "lint-staged": ">=16.2.7",
         "moment-locales-webpack-plugin": "^1.1.2",
         "node-sass-tilde-importer": "^1.0.2",
@@ -78,7 +80,10 @@
         "watch": "encore dev --watch",
         "build": "encore production",
         "prepare": "husky",
-        "icon:svg": "svgr --icon --out-dir assets/js/icons --ext jsx --no-index --jsx-runtime classic-preact -- assets/icons"
+        "icon:svg": "svgr --icon --out-dir assets/js/icons --ext jsx --no-index --jsx-runtime classic-preact -- assets/icons",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
     },
     "lint-staged": {
         "*.{scss,md,yaml,yml}": [

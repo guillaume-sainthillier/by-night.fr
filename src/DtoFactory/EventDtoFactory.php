@@ -13,6 +13,7 @@ namespace App\DtoFactory;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\UserDto;
 use App\Entity\Event;
@@ -77,6 +78,16 @@ final class EventDtoFactory
         $place->city = $city;
 
         $event->place = $place;
+
+        // Map timesheets from entity to DTO
+        foreach ($entity->getTimesheets() as $timesheetEntity) {
+            $timesheetDto = new EventTimesheetDto();
+            $timesheetDto->startAt = $timesheetEntity->getStartAt() ? clone $timesheetEntity->getStartAt() : null;
+            $timesheetDto->endAt = $timesheetEntity->getEndAt() ? clone $timesheetEntity->getEndAt() : null;
+            $timesheetDto->hours = $timesheetEntity->getHours();
+
+            $event->timesheets[] = $timesheetDto;
+        }
 
         return $event;
     }

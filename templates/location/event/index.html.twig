@@ -87,7 +87,32 @@
                                 {% endif %}
                             </h2>
                         </div>
-                        {% if event.hours %}
+                        {% if event.timesheets|length > 0 %}
+                            <div class="detail-item">
+                                <i class="icon fa fa-clock"></i>
+                                <div class="timesheets-list">
+                                    {% for timesheet in event.timesheets|slice(0, 10) %}
+                                        <div class="timesheet-entry">
+                                            <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
+                                                {{ timesheet.startAt|format_datetime('long', 'short') }}
+                                            </time>
+                                            {% if timesheet.startAt|date('Y-m-d') != timesheet.endAt|date('Y-m-d') %}
+                                                -
+                                                <time datetime="{{ timesheet.endAt|date('Y-m-d\\TH:i:sO') }}">
+                                                    {{ timesheet.endAt|format_datetime('long', 'short') }}
+                                                </time>
+                                            {% endif %}
+                                            {% if timesheet.hours %}
+                                                <span class="text-muted">({{ timesheet.hours }})</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                    {% if event.timesheets|length > 10 %}
+                                        <div class="text-muted">... et {{ event.timesheets|length - 10 }} autres dates</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% elseif event.hours %}
                             <div class="detail-item">
                                 <twig:Icon name="lucide:clock" />
                                 <p>{{ event.hours }}</p>

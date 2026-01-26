@@ -32,7 +32,9 @@
       "Bash(vendor/bin/twig-cs-fixer lint:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run icon:svg:*)",
-      "mcp__repomix__file_system_read_directory"
+      "mcp__repomix__file_system_read_directory",
+      "mcp__repomix__read_repomix_output",
+      "Bash(yarn test)"
     ]
   }
 }
