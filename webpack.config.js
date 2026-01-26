@@ -72,21 +72,21 @@ Encore
     .enableVersioning(Encore.isProduction())
 
     // configure Babel for JSX with Preact
-    .configureBabel((config) => {
-        config.plugins.push([
-            '@babel/plugin-transform-react-jsx',
-            {
-                pragma: 'h',
-                pragmaFrag: 'Fragment',
-            },
-        ])
-    })
+    // .configureBabel((config) => {
+    //     config.plugins.push([
+    //         '@babel/plugin-transform-react-jsx',
+    //         {
+    //             pragma: 'h',
+    //             pragmaFrag: 'Fragment',
+    //         },
+    //     ])
+    // })
 
     // enables @babel/preset-env polyfills
-    .configureBabelPresetEnv((config) => {
-        config.useBuiltIns = 'usage'
-        config.corejs = '3.23'
-    })
+    // .configureBabelPresetEnv((config) => {
+    //     config.useBuiltIns = 'usage'
+    //     config.corejs = '3.23'
+    // })
     .addPlugin(
         new MomentLocalesPlugin({
             localesToKeep: ['fr'],
@@ -182,10 +182,9 @@ if (Encore.isProduction()) {
                     path.join(__dirname, 'node_modules/lazysizes/lazysizes.js'),
                     path.join(__dirname, 'node_modules/morris.js/morris.js'),
                     path.join(__dirname, 'node_modules/raphael/raphael.js'),
-                    path.join(__dirname, 'node_modules/select2/src/js/**/*.js'),
+                    path.join(__dirname, 'node_modules/tom-select/dist/**/*.js'),
                     path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
                     path.join(__dirname, 'node_modules/summernote/src/styles/bs5/*.js'),
-                    path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
                 ],
                 {nodir: true}
             ),
@@ -198,7 +197,8 @@ if (Encore.isProduction()) {
                     /^hidden$/,
                     /^custom-/,
                     /^note-/,
-                    /^select2-container--bootstrap-5/,
+                    /^ts-/,
+                    /^tom-/,
                     /^aa-/,
                 ]
             },

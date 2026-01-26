@@ -72,7 +72,7 @@
                             {{ form_row(form.place.country) }}
                         </div>
 
-                        <div id="map"></div>
+                        <div id="map" data-map-id="{{ googleMapId }}"></div>
                     </twig:Card>
                 </div>
             </div>
@@ -99,7 +99,7 @@
 {%- endblock %}
 
 {% block head_js -%}
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={{ googleMapKey }}&language=fr&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=weekly&key={{ googleMapKey }}&language=fr&libraries=places,marker&loading=async"></script>
 {%- endblock %}
 
 {% block js -%}

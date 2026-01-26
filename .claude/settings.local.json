@@ -34,7 +34,8 @@
       "Bash(npm run icon:svg:*)",
       "mcp__repomix__file_system_read_directory",
       "mcp__repomix__read_repomix_output",
-      "Bash(yarn test)"
+      "Bash(yarn test)",
+      "WebFetch(domain:developers.google.com)"
     ]
   }
 }

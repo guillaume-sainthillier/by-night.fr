@@ -25,6 +25,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 final class EventType extends AbstractType
@@ -32,6 +33,7 @@ final class EventType extends AbstractType
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,
         private readonly DateRangeBuilder $dateRangeBuilder,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -98,6 +100,10 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
+                    'class' => 'js-tags-input',
+                    'data-tags-url' => $this->urlGenerator->generate('api_event_tags', ['type' => 'categories']),
+                    'data-tags-allow-new' => 'true',
+                    'data-tags-max-items' => '1',
                 ],
             ])
             ->add('theme', TextType::class, [
@@ -105,6 +111,9 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
+                    'class' => 'js-tags-input',
+                    'data-tags-url' => $this->urlGenerator->generate('api_event_tags', ['type' => 'themes']),
+                    'data-tags-allow-new' => 'true',
                 ],
             ])
             ->add('address', TextType::class, [

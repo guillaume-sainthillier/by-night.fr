@@ -9,6 +9,7 @@
 parameters:
     facebook_id_page: '205292952998805'
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
+    google_map_id: '%env(GOOGLE_MAP_ID)%'
     twitter_id_page: 'By__Night'
     disable_polled_feeds: '%kernel.debug%'
     patterns.path: '.+'

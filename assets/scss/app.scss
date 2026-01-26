@@ -46,6 +46,10 @@
 @import 'pages/user_event_crud';
 
 :root,
+:host {
+}
+
+:root,
 :host,
 [data-bs-theme='light'] {
     --#{$prefix}body-bg: #{$body-bg};
