@@ -5,31 +5,31 @@
                 <h3 class="h4 text-info">By Night</h3>
                 <ul class="fa-ul">
                     <li>
-                        <i class="icon fa fa-li fa-angle-right"></i>
+                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
                         <a title="A propos de By Night" href="{{ path('app_about') }}">
                             A propos
                         </a>
                     </li>
                     <li>
-                        <i class="icon fa fa-li fa-angle-right"></i>
+                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
                         <a title="En savoir plus sur la création d'événements" href="{{ path('app_plus') }}">
                             En savoir plus
                         </a>
                     </li>
                     <li>
-                        <i class="icon fa fa-li fa-angle-right"></i>
+                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
                         <a title="Accéder aux mentions légales" href="{{ path('app_legal_mentions') }}">
                             Mentions légales
                         </a>
                     </li>
                     <li>
-                        <i class="icon fa fa-li fa-angle-right"></i>
+                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
                         <a title="Accéder à notre politique sur les cookies" href="{{ path('app_main_cookie') }}">
                             Cookies
                         </a>
                     </li>
                     <li>
-                        <i class="icon fa fa-li fa-angle-right"></i>
+                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
                         <a title="Un problème, une question ? Contactez-nous" href="mailto:support@by-night.fr">
                             Contact
                         </a>
@@ -39,9 +39,10 @@
             <div class="col-sm-6 col-lg-3 sites">
                 <h3 class="h4 text-info">Recherche par ville</h3>
                 <ul class="fa-ul">
-                    {% for city in cities %}
+                    {% set country = app_context.country ?? city_manager.city.country ?? null %}
+                    {% for city in random_cities(country) %}
                         <li>
-                            <i class="icon fa fa-li fa-angle-right"></i>
+                            <twig:Icon name="lucide:chevron-right" class="fa-li" />
                             <a title="Sortir à {{ city.name }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
                                 {{ city.name }}
                             </a>
@@ -55,32 +56,32 @@
                     <div class="col-sm-6">
                         <ul class="fa-ul">
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Actualités technique autour du Web et de PHP" href="https://blog.silarhi.fr">
                                     Actualités Web & PHP
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offre de parrainage Boursorama {{ 'now'|date('Y') }}" href="https://parrainages-boursorama.fr">
                                     Parrainage Boursorama
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offre de parrainage Fortuneo {{ 'now'|date('Y') }}"
                                    href="https://offre-parrainages.fr/offres/offre-parrainage-fortuneo">
                                     Parrainage Fortuneo
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offre de parrainage ING {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-ing-direct">
                                     Parrainage ING
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offres de parrainage {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr">
                                     Offres de parrainage
                                 </a>
@@ -90,32 +91,32 @@
                     <div class="col-sm-6">
                         <ul class="fa-ul">
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Développement d'applications Web à Toulouse" href="https://silarhi.fr">
                                     Développement Web Toulouse
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offre de parrainage Hello Bank {{ 'now'|date('Y') }}"
                                    href="https://offre-parrainages.fr/offres/offre-parrainage-hello-bank">
                                     Parrainage Hello Bank
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offre de parrainage Yomoni {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-yomoni">
                                     Parrainage Yomoni
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Offre de parrainage Nalo {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-bforbank">
                                     Parrainage BforBank
                                 </a>
                             </li>
                             <li>
-                                <i class="icon fa fa-li fa-angle-right"></i>
+                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
                                 <a title="Comparatif banque" href="https://avis-banque.fr">
                                     Comparatif banque
                                 </a>

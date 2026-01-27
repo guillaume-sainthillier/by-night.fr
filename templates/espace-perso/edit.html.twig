@@ -13,7 +13,7 @@
         <form method="post" action="{{ path('app_event_delete', {id: event.id}) }}">
             <input name="_method" type="hidden" value="DELETE">
             <button type="submit" class="btn btn-danger">
-                <i class="icon fa fa-trash"></i>
+                <twig:Icon name="lucide:trash-2" />
                 Supprimer
             </button>
         </form>

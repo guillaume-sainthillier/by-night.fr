@@ -1,0 +1,71 @@
+// Icon base styling for SVG icons (symfony/ux-icons)
+.icon {
+    display: inline-block;
+    vertical-align: -0.125em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    .icon {
+        --#{$prefix}icon-size: 1em;
+    }
+}
+
+// Size variants (replacing fa-2x, fa-3x, fa-5x)
+.icon-2x {
+    width: 2em;
+    height: 2em;
+}
+
+.icon-3x {
+    width: 3em;
+    height: 3em;
+}
+
+.icon-5x {
+    width: 5em;
+    height: 5em;
+}
+
+// Animation (replacing fa-spin)
+.icon-spin {
+    animation: icon-spin 1s linear infinite;
+}
+
+@keyframes icon-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// List icon support (for fa-ul/fa-li in footer)
+.fa-ul {
+    padding-left: 2em;
+    margin-left: 0;
+    list-style: none;
+
+    > li {
+        position: relative;
+    }
+
+    .fa-li {
+        position: absolute;
+        left: -2em;
+        width: 2em;
+        text-align: center;
+    }
+}

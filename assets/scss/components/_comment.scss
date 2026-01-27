@@ -1,45 +1,208 @@
-.block_poster_commentaire {
-    .col-user-profile {
+// Comments container using Tabler chat component
+.comments-container {
+    max-width: 900px;
+    margin: 2rem auto;
+
+    .heading {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: $dark;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        flex-flow: row;
-        margin-bottom: 0.25rem;
-    }
-}
+        gap: 0.5rem;
 
-.block_poster_commentaire .col-user-profile,
-.comments .comment {
-    .image-wrapper {
-        max-width: 50px;
-    }
-
-    @include media-breakpoint-up(md) {
-        .image-wrapper {
-            max-width: 100%;
+        small {
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-left: 0.25rem;
         }
     }
-}
 
-.comments {
-    .comment {
-        margin-bottom: 30px;
+    // Comment form styles
+    .card-body-form {
+        padding: 1.75rem;
+        background: #fff;
+        border-bottom: 1px solid rgba($primary, 0.08);
 
-        .infos {
-            margin-bottom: 10px;
+        .comment-form-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
 
-            span {
-                margin-left: 10px;
+            .image-wrapper {
+                max-width: 40px;
+            }
+
+            strong {
+                font-size: 0.9375rem;
+                color: $dark;
+            }
+        }
+
+        .comment-form-input {
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            textarea {
+                border-radius: 1.5rem;
+                border: 2px solid rgba($primary, 0.2);
+                padding: 0.875rem 1.25rem;
+                font-size: 0.9375rem;
+                resize: none;
+                transition: all 0.2s ease;
+
+                &:focus {
+                    border-color: $primary;
+                    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+                }
+            }
+
+            .btn-submit {
+                border-radius: 1.5rem;
+                padding: 0.625rem 2rem;
+                font-weight: 500;
+                background: linear-gradient(135deg, $primary 0%, darken($primary, 10%) 100%);
+                border: none;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba($primary, 0.3);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        .btn-outline-secondary {
+            border-radius: 1.5rem;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             }
         }
     }
 
-    .block_reponses {
-        .comment {
-            margin-bottom: 10px;
+    // Tabler chat customizations
+    .chat-bubble-author a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+            color: $primary;
+            text-decoration: underline;
         }
     }
 
-    .block_post {
-        margin-top: 10px;
+    // Replies container
+    .replies-container {
+        .chat-bubble-reply {
+            background-color: rgba($primary, 0.05);
+            font-size: 0.875rem;
+        }
+
+        .reply-item {
+            .avatar-sm {
+                width: 32px;
+                height: 32px;
+            }
+        }
+    }
+
+    // Reply form container
+    .reply-form-container {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition:
+            max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &.is-visible {
+            max-height: 500px;
+            opacity: 1;
+        }
+    }
+
+    // Reply form - styled as chat bubble
+    .reply-form {
+        margin-top: 0.75rem;
+
+        .chat-bubble-form {
+            .chat-bubble-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.75rem;
+            }
+        }
+    }
+
+    // Load more button
+    .load-more {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+}
+
+// Success animation for newly posted messages
+.chat-item.message-sent {
+    animation: messageAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes messageAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// Responsive adjustments
+@include media-breakpoint-down(md) {
+    .comments-container {
+        .heading {
+            font-size: 1.125rem;
+        }
+
+        .card-body-form {
+            padding: 1.5rem;
+
+            .comment-form-user .image-wrapper {
+                max-width: 36px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .comments-container {
+        margin: 1.5rem auto;
+
+        .heading {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-body-form {
+            padding: 1.25rem;
+
+            .comment-form-input textarea {
+                font-size: 0.875rem;
+                padding: 0.75rem 1rem;
+            }
+        }
     }
 }

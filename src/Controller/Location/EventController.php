@@ -10,13 +10,17 @@
 
 namespace App\Controller\Location;
 
-use App\Annotation\ReverseProxy;
-use App\App\Location;
+use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
+use App\Controller\Comment\CommentController;
+use App\Entity\Comment;
 use App\Entity\Event;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
+use App\Form\Type\CommentType;
+use App\Manager\WidgetsManager;
 use App\Picture\EventProfilePicture;
+use App\Repository\CommentRepository;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
@@ -28,9 +32,10 @@ final class EventController extends BaseController
 {
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
-    #[ReverseProxy(expires: '+1 month')]
-    public function index(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
+    public function index(AppContext $appContext, EventDispatcherInterface $eventDispatcher, EventProfilePicture $eventProfilePicture, CommentRepository $commentRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
     {
+        $location = $appContext->getLocation();
+
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
         if (null !== $eventCheck->getResponse()) {
@@ -39,10 +44,56 @@ final class EventController extends BaseController
 
         $event = $eventCheck->getEvent();
 
-        return $this->render('location/event/index.html.twig', [
+        // Build Page object for social sharing
+        $link = $this->generateUrl('app_event_details', [
+            'slug' => $event->getSlug(),
+            'id' => $event->getId(),
+            'location' => $event->getLocationSlug(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $eventProfile = $eventProfilePicture->getOriginalPicture($event);
+        $page = new Page([
+            'url' => $link,
+            'title' => $event->getName(),
+            'text' => $event->getDescription(),
+            'image' => $eventProfile,
+        ]);
+
+        // Widget data (first page only)
+        $user = $this->getUser();
+        \assert($user instanceof \App\Entity\User || null === $user);
+        $trendsData = $widgetsManager->getTrendsData($event, $user, $page);
+        $nextEventsData = $widgetsManager->getNextEventsData($event, $location);
+        $similarEventsData = $widgetsManager->getSimilarEventsData($event, $location);
+
+        // Comments widget data (first page)
+        $comments = $this->createQueryBuilderPaginator(
+            $commentRepository->findAllByEventQueryBuilder($event),
+            1,
+            CommentController::COMMENTS_PER_PAGE
+        );
+
+        $commentForm = null;
+        if ($this->isGranted('ROLE_USER')) {
+            $comment = new Comment();
+            $commentForm = $this->createForm(CommentType::class, $comment, [
+                'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+            ]);
+        }
+
+        $renderData = [
             'location' => $location,
             'event' => $event,
-        ]);
+            // Trends widget
+            'trendsData' => $trendsData,
+            // Similar events widget
+            'similarEventsData' => $similarEventsData,
+            // Comments widget
+            'comments' => $comments,
+            'commentForm' => $commentForm,
+            'nextEventsData' => $nextEventsData,
+        ];
+
+        return $this->render('location/event/index.html.twig', $renderData);
     }
 
     #[Cache(expires: '+12 hours', smaxage: 43200)]

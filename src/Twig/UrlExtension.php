@@ -10,17 +10,13 @@
 
 namespace App\Twig;
 
-use Override;
-use Twig\Extension\AbstractExtension as Extension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-final class UrlExtension extends Extension
+final class UrlExtension
 {
-    #[Override]
-    public function getFilters(): array
+    #[AsTwigFilter(name: 'url_decode')]
+    public function urlDecode(string $url): string
     {
-        return [
-            new TwigFilter('url_decode', 'urldecode'),
-        ];
+        return urldecode($url);
     }
 }

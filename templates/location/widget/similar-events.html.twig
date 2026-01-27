@@ -1,10 +1,5 @@
-{% extends 'location/widget/template-scrollable-horizontal.html.twig' %}
-
-{% block titre %}Événements similaires{% endblock %}
-{% block body %}
-    {{ render_esi(controller('App\\Controller\\Location\\WidgetsController::similarEvents', {
-        slug: event.slug,
-        id: event.id,
-        location: event.locationSlug,
-    })) }}
-{% endblock %}
+<twig:Widget:ScrollableHorizontal titre="Événements similaires">
+    {{ include('location/hinclude/details-events.html.twig', {
+        eventsData: similarEventsData,
+    }) }}
+</twig:Widget:ScrollableHorizontal>

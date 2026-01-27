@@ -1,9 +1,11 @@
-{% extends 'comment/list.html.twig' %}
+{% for comment in comments %}
+    {{ include('comment/reply/item.html.twig', {comment: comment}) }}
+{% endfor %}
 
-{% block load_more %}
-    <div class="load_more" data-url="{{ path('app_comment_reponse_list', {id: mainComment.id, page: (page + 1)}) }}">
-        <button type="button" class="btn btn-primary">
-            Plus
+{% if comments.hasNextPage %}
+    <div class="load-more mt-2 ms-4 text-start" data-url="{{ path('app_comment_reponse_list', {id: mainComment.id, page: (comments.currentPage + 1)}) }}">
+        <button type="button" class="btn ms-4">
+            Plus de réponses
         </button>
     </div>
-{% endblock %}
+{% endif %}

@@ -6,6 +6,9 @@ import initImagePreview from '@/js/lazy-listeners/image-previews'
 import initSelects from '@/js/lazy-listeners/selects'
 
 import Widgets from '@/js/components/Widgets'
+import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
+import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
+import {iconHtml} from "@/js/components/icons"
 
 $(document).ready(function () {
     initDates()
@@ -118,10 +121,10 @@ $(document).ready(function () {
         const options = {
             css_hidden: 'cache',
             css_initial_hidden: 'hidden',
-            css_icon_class_open: 'fa-chevron-down',
-            css_icon_class_close: 'fa-chevron-up',
+            icon_open: iconHtml(ChevronDownIcon),
+            icon_close: iconHtml(ChevronUpIcon),
             selector_btn_criteres: '.btn_criteres',
-            selector_icon: '.fa',
+            selector_icon: '.icon-toggle',
             selector_block_criteres: '.criteres',
             selector_main_block: '.block_criteres',
             duration: 0,
@@ -131,18 +134,12 @@ $(document).ready(function () {
         const block = $(options.selector_btn_criteres)
             .click(function () {
                 if (block.hasClass(options.css_hidden)) {
-                    $(this)
-                        .find(options.selector_icon)
-                        .removeClass(options.css_icon_class_open)
-                        .addClass(options.css_icon_class_close)
+                    $(this).find(options.selector_icon).html(options.icon_close)
                     block.show(options.duration, function () {
                         $(this).removeClass(options.css_hidden)
                     })
                 } else {
-                    $(this)
-                        .find(options.selector_icon)
-                        .removeClass(options.css_icon_class_close)
-                        .addClass(options.css_icon_class_open)
+                    $(this).find(options.selector_icon).html(options.icon_open)
                     block.hide(options.duration, function () {
                         $(this).addClass(options.css_hidden)
                     })

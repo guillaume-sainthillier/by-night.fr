@@ -1,28 +1,46 @@
 import $ from 'jquery'
+import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
+import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
+import Loader2Icon from '@/js/icons/lucide/Loader2'
+import CheckIcon from '@/js/icons/lucide/Check'
+import {iconHtml} from "@/js/components/icons"
 
 export default class CommentApp {
     constructor() {
         this.options = {
-            css_up: 'fa-angle-up',
-            css_down: 'fa-angle-down',
-            css_spinner: 'fa-spinner fa-spin',
+            icon_up: ChevronUpIcon,
+            icon_down: ChevronDownIcon,
+            icon_spinner: Loader2Icon,
+            icon_check: CheckIcon,
             css_btn_list: '.btn-list',
-            css_main_block_reponse: '.reponses',
-            css_link_repondre: '.repondre',
-            css_block_reponses: '.comments',
-            css_has_loaded_reponse: 'has_loaded_reponse',
-            css_has_showed_reponses: 'has_showed_reponse',
-            css_block_post_reponse: '.block_poster_reponse',
-            css_nb_reponses: '.nb_reponses',
-            css_icon_list: '.icon_list',
+            css_main_reply_block: '.reply-thread',
+            css_reply_link: '.reply-link',
+            css_replies_container: '.chat-bubbles',
+            css_has_loaded_replies: 'has-loaded-replies',
+            css_has_shown_replies: 'has-shown-replies',
+            css_reply_form_container: '.reply-form-container',
+            css_reply_count: '.reply-count',
+            css_icon_list: '.icon-list',
             css_main_block_comments: '.comments-container',
-            css_load_more_comments: '.load_more',
-            css_block_comment: '.comment',
-            css_block_poster_comment: '.block_poster_commentaire',
-            css_block_comments: '.comments',
+            css_load_more_comments: '.load-more',
+            css_block_comment: '.chat-item',
+            css_block_poster_comment: '.card-body-form',
+            css_block_comments: '.chat-bubbles',
             css_heading_comments: '.heading',
             animation_duration: 400,
         }
+    }
+
+    /**
+     * @returns {ToastManager}
+     */
+    getToastManager() {
+        return window.App.get('toastManager')
+    }
+
+    showToast(type, message) {
+        const toastManager = this.getToastManager()
+        toastManager.createToast(type, message)
     }
 
     init() {
@@ -33,9 +51,8 @@ export default class CommentApp {
                 const commentsContainer = $(this)
                 window.App.dispatchPageLoadedEvent(commentsContainer[0]) // On bind les liens connexion/inscription
                 self.init_new_comment(commentsContainer) // On bind le formulaire d'envoi d'un nouveau comment
-                self.init_load_new_reponse(commentsContainer) // On bind le lien de réponse des comments
-                self.init_list_reponses(commentsContainer) // On bind le bouton de liste des réponses
-                self.init_maj_nb_reponses(commentsContainer) // On met à jour le boutton de liste en fonction du nombre de réponses
+                self.init_load_reply_form(commentsContainer) // On bind le lien de réponse des comments
+                self.init_update_reply_count(commentsContainer) // On met à jour le compteur de réponses
                 self.init_load_more_comments(commentsContainer)
             }
         )
@@ -48,108 +65,83 @@ export default class CommentApp {
             .off('click')
             .click(function () {
                 const loadMore = $(this)
+                const btn = loadMore.find('.btn')
+                const parentContainer = loadMore.parent()
 
-                loadMore.find('.btn-block').prepend(`<i class='fa fa-2x ${self.options.css_spinner}'></i>`)
-                loadMore.load(loadMore.data('url'), function () {
-                    const commentListContainer = loadMore.find(self.options.css_block_comments)
-                    self.init_load_new_reponse(loadMore) // On bind le lien de réponse des comments
-                    self.init_list_reponses(loadMore) // On bind le bouton de liste des réponses
-                    self.init_maj_nb_reponses(loadMore) // On met à jour le boutton de liste en fonction du nombre de réponses
-                    self.init_load_more_comments(loadMore)
+                // Add spinner to button
+                const originalText = btn.html()
+                btn.html(iconHtml(self.options.icon_spinner, 'icon-spin') + ' ' + originalText)
+                btn.prop('disabled', true)
 
-                    const commentsContainer = loadMore.closest(self.options.css_block_comments)
-                    const comments = commentListContainer.children()
-                    comments.appendTo(commentsContainer)
-                    commentListContainer.closest(self.options.css_load_more_comments).remove()
+                $.get(loadMore.data('url'), function (html) {
+                    const $temp = $(html)
+
+                    $temp.each(function() {
+                        const item = $(this)
+                        self.init_load_reply_form(item)
+                        self.init_load_more_comments(item)
+                        self.init_update_reply_count(item)
+                    })
+
+                    loadMore.replaceWith($temp)
+                    self.init_load_more_comments(parentContainer)
                 })
 
                 return false
             })
     }
 
-    init_maj_nb_reponses(comments) {
+    init_update_reply_count(comments) {
         const self = this
-        comments.find(self.options.css_nb_reponses).each(function () {
-            self.maj_nb_reponses($(this).closest(self.options.css_main_block_reponse), $(this).html())
+        comments.find(self.options.css_reply_count).each(function () {
+            self.update_reply_count($(this).closest(self.options.css_main_reply_block), $(this).html())
         })
     }
 
-    init_list_reponses(comment) {
-        const self = this
-        comment
-            .find(self.options.css_btn_list)
-            .off('click')
-            .click(function () {
-                const mainAnswerContainer = $(this).closest(self.options.css_main_block_reponse)
-
-                const answerContainer = mainAnswerContainer.find(self.options.css_block_reponses)
-                const iconList = mainAnswerContainer.find(self.options.css_icon_list)
-
-                if (!answerContainer.hasClass(self.options.css_has_loaded_reponse)) {
-                    // Les réponses ne sont pas encore chargées
-                    answerContainer // On masque les liste de réponses et on ajoute la classe css_has_loaded_reponse au block des listes
-                        .addClass(self.options.css_has_loaded_reponse)
-
-                    iconList.removeClass(self.options.css_up).addClass(self.options.css_spinner)
-
-                    answerContainer.load($(this).data('url'), function () {
-                        self.init_load_more_comments(answerContainer)
-                        $(this).show(self.options.animation_duration, function () {
-                            $(this).addClass(self.options.css_has_showed_reponses)
-                        })
-
-                        iconList
-                            .removeClass(self.options.css_spinner)
-                            .removeClass(self.options.css_up)
-                            .addClass(self.options.css_down)
-                    })
-                } // Les réponses sont chargées
-                else if (!answerContainer.hasClass(self.options.css_has_showed_reponses)) {
-                    // Les réponses ne sont pas affichées, on les affiche donc
-                    answerContainer.show(self.options.animation_duration, function () {
-                        $(this).addClass(self.options.css_has_showed_reponses)
-                        iconList.removeClass(self.options.css_up).addClass(self.options.css_down)
-                    })
-                } else {
-                    answerContainer.hide(self.options.animation_duration, function () {
-                        $(this).removeClass(self.options.css_has_showed_reponses)
-                        iconList.removeClass(self.options.css_down).addClass(self.options.css_up)
-                    })
-                }
-            })
-    }
-
-    init_load_new_reponse(comments) {
+    init_load_reply_form(comments) {
         const self = this
         comments
-            .find(self.options.css_link_repondre)
+            .find(self.options.css_reply_link)
             .off('click')
             .click(function () // Pour tous les liens répondre
             {
                 const link = $(this)
 
-                link.data('text', link.text()).html(`<i class='fa ${self.options.css_spinner}'></i>`)
+                link.data('original-html', link.html()).html(iconHtml(self.options.icon_spinner, 'icon-spin'))
                 const postAnswerContainer = link
-                    .closest(self.options.css_main_block_reponse)
-                    .find(self.options.css_block_post_reponse) // On cherche le block du post
-                postAnswerContainer.hide().load(link.data('url'), function () {
+                    .closest(self.options.css_main_reply_block)
+                    .find(self.options.css_reply_form_container) // On cherche le block du post
+                postAnswerContainer.removeClass('is-visible').load(link.data('url'), function () {
                     window.App.dispatchPageLoadedEvent(postAnswerContainer[0]) // On bind les liens connexion/inscription
-                    self.init_new_reponse(postAnswerContainer) // On bind le formulaire d'envoi d'une nouvelle réponse
-                    $(this).show(self.options.animation_duration, function () {
-                        link.text(link.data('text'))
+                    self.init_reply_form(postAnswerContainer) // On bind le formulaire d'envoi d'une nouvelle réponse
+
+                    // Add cancel button handler
+                    postAnswerContainer.find('.cancel-reply').off('click').click(function() {
+                        postAnswerContainer.removeClass('is-visible')
+                        link.html(link.data('original-html'))
+                        return false
+                    })
+
+                    // Use CSS transition for smooth animation
+                    link.html(link.data('original-html'))
+                    requestAnimationFrame(() => {
+                        $(this).addClass('is-visible')
+                        // Focus on textarea after animation starts
+                        setTimeout(() => {
+                            $(this).find('textarea').focus()
+                        }, 150)
                     })
                 })
                 return false
             })
     }
 
-    maj_nb_reponses(mainAnswerContainer, answerCount) {
+    update_reply_count(mainAnswerContainer, answerCount) {
         const self = this
-        mainAnswerContainer.find(self.options.css_btn_list).prop('disabled', answerCount === '0')
-        mainAnswerContainer.find(self.options.css_nb_reponses).html(answerCount)
+        mainAnswerContainer.find(self.options.css_reply_count).html(answerCount)
     }
 
-    init_new_reponse(answerPostContainer) {
+    init_reply_form(answerPostContainer) {
         const self = this
         $(answerPostContainer)
             .find('form')
@@ -157,30 +149,71 @@ export default class CommentApp {
             .submit(function () {
                 window.App.loadingButtons(this)
                 const form = $(this)
-                const mainAnswerContainer = answerPostContainer.closest(self.options.css_main_block_reponse)
+                const textarea = form.find('textarea')
+                const mainAnswerContainer = answerPostContainer.closest(self.options.css_main_reply_block)
 
                 $.post($(this).attr('action'), $(this).serialize())
                     .done(function (retour) {
-                        const answerContainer = mainAnswerContainer.find(self.options.css_block_reponses)
+                        let answerContainer = mainAnswerContainer.find(self.options.css_replies_container)
                         if (retour.success) {
-                            // La réponse est envoyée
-                            answerContainer.prepend(retour.comment) // On ajoute la réponse dans la liste
-                            mainAnswerContainer
-                                .find(self.options.css_block_post_reponse)
-                                .hide(self.options.animation_duration)
-                            self.maj_nb_reponses(mainAnswerContainer, retour.nb_reponses) // On met à jour le nombre de réponses
-                            const link = mainAnswerContainer.find(self.options.css_link_repondre)
+                            // Success - show toast notification
+                            self.showToast('success', 'Réponse envoyée avec succès!')
 
-                            link.replaceWith(link.text()) // On supprime le lien répondre
-                        } // L'envoie de la réponse a échoué
-                        else {
+                            // Clear textarea
+                            textarea.val('').trigger('blur')
+
+                            // Create replies container if it doesn't exist
+                            if (!answerContainer.length) {
+                                answerContainer = $('<div class="chat-bubbles replies-container mt-2 ms-5"></div>')
+                                mainAnswerContainer.append(answerContainer)
+                            }
+
+                            // Add reply with success animation
+                            const newReply = $(retour.comment)
+                            newReply.addClass('message-sent')
+                            answerContainer.prepend(newReply)
+
+                            // Scroll to new reply
+                            setTimeout(() => {
+                                newReply[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+                                setTimeout(() => newReply.removeClass('message-sent'), 500)
+                            }, 100)
+
+                            // Hide reply form
+                            mainAnswerContainer
+                                .find(self.options.css_reply_form_container)
+                                .removeClass('is-visible')
+
+                            // Update reply count
+                            self.update_reply_count(mainAnswerContainer, retour.reply_count)
+
+                            // Restore reply link
+                            const link = mainAnswerContainer.find(self.options.css_reply_link)
+                            link.html(link.data('original-html'))
+                        } else {
+                            // Error - show toast notification
+                            self.showToast('error', 'Erreur lors de l\'envoi de la réponse')
+
+                            // Replace form content with error form
                             answerPostContainer.html(retour.post)
-                            window.App.dispatchPageLoadedEvent(answerPostContainer[0]) // On bind les liens connexion/inscription
-                            self.init_new_reponse(answerPostContainer) // On bind le formulaire d'envoi d'une nouvelle réponse
+
+                            // Re-initialize form handlers and page events
+                            window.App.dispatchPageLoadedEvent(answerPostContainer[0])
+                            self.init_reply_form(answerPostContainer)
+
+                            // Re-bind cancel button
+                            answerPostContainer.find('.cancel-reply').off('click').click(function() {
+                                answerPostContainer.removeClass('is-visible')
+                                const link = mainAnswerContainer.find(self.options.css_reply_link)
+                                link.html(link.data('original-html'))
+                                return false
+                            })
                         }
                     })
-                    .always(function () // Dans tous les cas
-                    {
+                    .fail(function () {
+                        self.showToast('error', 'Une erreur est survenue')
+                    })
+                    .always(function () {
                         window.App.resetButtons(form)
                     })
 
@@ -194,47 +227,89 @@ export default class CommentApp {
             .find('form')
             .each(function () {
                 const form = $(this)
+                const textarea = form.find('textarea')
+
                 $(this)
                     .off('submit')
                     .submit(function () {
-                        window.App.loadingButtons(comment) // On bloque le bouton submit le temps du chargement
+                        window.App.loadingButtons(comment)
+
+                        // Create temporary comment element for optimistic UI
+                        const tempComment = $('<div class="comment is-sending">')
 
                         $.post($(this).attr('action'), $(this).serialize())
                             .done(function (retour) {
-                                // On poste le comment
-
                                 const mainCommentsContainer = form.closest(self.options.css_main_block_comments)
-                                const commentsContainer = mainCommentsContainer.find(self.options.css_block_comments)
                                 let postCommentContainer = mainCommentsContainer.find(
                                     self.options.css_block_poster_comment
                                 )
 
                                 if (retour.success) {
-                                    // Comment bien envoyé
-                                    postCommentContainer.hide(self.options.animation_duration)
-                                    commentsContainer.prepend(retour.comment) // On ajoute le comment à la liste
-                                    mainCommentsContainer
-                                        .find(self.options.css_heading_comments)
-                                        .replaceWith(retour.header) // On remplace le heading par le nouveau
+                                    // Success - show toast notification
+                                    self.showToast('success', 'Commentaire envoyé avec succès!')
 
-                                    const mainAnswerContainer = commentsContainer
-                                        .find(self.options.css_block_comment)
-                                        .eq(0)
-                                    self.maj_nb_reponses(mainAnswerContainer, '0') // On met à jour le nombre de réponses du comment
-                                    self.init_load_new_reponse(mainAnswerContainer) // On bind le lien de réponse du comment
-                                    self.init_list_reponses(mainAnswerContainer) // On bind le bouton de liste des réponses
-                                } // l'envoi du comment a échoué
-                                else {
-                                    postCommentContainer.replaceWith(retour.post)
-                                    postCommentContainer = mainCommentsContainer.find(
-                                        self.options.css_block_poster_comment
-                                    )
-                                    window.App.dispatchPageLoadedEvent(postCommentContainer)
+                                    // Clear textarea with animation
+                                    textarea.val('').trigger('blur')
+
+                                    // Update comment counter
+                                    if (retour.count !== undefined) {
+                                        const heading = mainCommentsContainer.find(self.options.css_heading_comments)
+                                        const plural = retour.count > 1 ? 's' : ''
+                                        heading.find('span').text(`${retour.count} Commentaire${plural}`)
+                                        // Remove "Soyez le premier à réagir" message if it exists
+                                        heading.find('small').remove()
+                                    }
+
+                                    // Check if comments body container exists
+                                    let commentsBodyContainer = mainCommentsContainer.find('.card-body.scrollable')
+
+                                    // If no comments container exists yet (first comment), create one
+                                    if (!commentsBodyContainer.length) {
+                                        commentsBodyContainer = $('<div class="card-body scrollable" style="max-height: 600px"></div>')
+                                        const chatDiv = $('<div class="chat"></div>')
+                                        const chatBubblesDiv = $('<div class="chat-bubbles"></div>')
+                                        chatDiv.append(chatBubblesDiv)
+                                        commentsBodyContainer.append(chatDiv)
+                                        mainCommentsContainer.find('.card').append(commentsBodyContainer)
+                                    }
+
+                                    // Get the chat bubbles container
+                                    const commentsList = commentsBodyContainer.find('.chat-bubbles')
+
+                                    // Add new comment with success animation
+                                    const newComment = $(retour.comment)
+                                    newComment.addClass('message-sent')
+                                    commentsList.prepend(newComment)
+
+                                    // Initialize listeners for the new comment
+                                    const mainAnswerContainer = commentsList.find(self.options.css_block_comment).eq(0)
+                                    self.update_reply_count(mainAnswerContainer, '0')
+                                    self.init_load_reply_form(mainAnswerContainer)
+
+                                    // Scroll to new comment smoothly
+                                    setTimeout(() => {
+                                        newComment[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+                                        // Remove animation class after animation completes
+                                        setTimeout(() => newComment.removeClass('message-sent'), 500)
+                                    }, 100)
+                                } else {
+                                    // Error - show toast notification
+                                    self.showToast('error', 'Erreur lors de l\'envoi du commentaire')
+
+                                    // Replace form content with error form
+                                    postCommentContainer.html(retour.post)
+
+                                    // Re-initialize form handlers and page events
+                                    window.App.dispatchPageLoadedEvent(postCommentContainer[0])
                                     self.init_new_comment(postCommentContainer)
                                 }
                             })
+                            .fail(function () {
+                                self.showToast('error', 'Une erreur est survenue')
+                            })
                             .always(function () {
                                 window.App.resetButtons(comment)
+                                tempComment.remove()
                             })
 
                         return false

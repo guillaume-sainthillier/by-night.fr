@@ -2,6 +2,11 @@
 {% use 'bootstrap_5_layout.html.twig' %}
 {% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label %}
 
+{# Stateless CSRF protection - add Stimulus controller to CSRF token field #}
+{%- block csrf_token_widget -%}
+    <input type="hidden" {{ block('widget_attributes') }} data-controller="csrf-protection" value="{{ value }}" />
+{%- endblock csrf_token_widget -%}
+
 {% block recaptcha_widget %}
     <div {{ block('widget_attributes') }}></div>
 {% endblock %}
@@ -46,9 +51,8 @@
             <div class="collection-item-header">
                 {% with child.vars %}{{ block('inline_form_label') }}{% endwith %}
                 {% if not disabled and allow_delete %}
-                    {% import 'form/macros.html.twig' as macros %}
                     <button class="btn btn-sm rounded btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
-                        {{ macros.icon('xmark') }}
+                        <twig:Icon name="lucide:x" />
                     </button>
                 {% endif %}
             </div>
@@ -88,9 +92,8 @@
             {{- form_rest(form) -}}
         </div>
         {% if not disabled and allow_add %}
-            {% import 'form/macros.html.twig' as macros %}
             <button type="button" class="add-collection btn btn-with-icon btn-unstyled mt-2">
-                <span>{{ macros.icon('plus') }}</span>
+                <span><twig:Icon name="lucide:plus" /></span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>
         {% endif %}
@@ -113,12 +116,9 @@
     {%- else -%}
         {{- form_label(form) -}}
         {% if icon_prepend or icon_append %}
-            {% embed 'components/input-icon.html.twig' with({
-                iconPrepend: icon_prepend,
-                iconAppend: icon_append,
-            }) %}
-                {% block body %}{{- form_widget(form, widget_attr) -}}{% endblock %}
-            {% endembed %}
+            <twig:InputIcon iconPrepend="{{ icon_prepend }}" iconAppend="{{ icon_append }}">
+                {{- form_widget(form, widget_attr) -}}
+            </twig:InputIcon>
         {% else %}
             {{- form_widget(form, widget_attr) -}}
         {% endif %}

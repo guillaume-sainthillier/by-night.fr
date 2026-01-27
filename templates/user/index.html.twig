@@ -1,7 +1,5 @@
-{% import 'form/macros.html.twig' as macros %}
 {% extends 'layouts/default.html.twig' %}
 
-{% do fos_httpcache_tag(tags('user', user)) %}
 {% set username = user.username|capitalize %}
 
 {% block page_id 'page-user' %}
@@ -28,9 +26,7 @@
         <div class="col-md-3">
             <div class="card fiche_profil">
                 <div class="card-body text-center">
-                    {{ macros.userLazyThumb(user, 200, 200, {
-                        class: 'mx-auto mb-2',
-                    }) }}
+                    <twig:UserThumb user="{{ user }}" width="{{ 200 }}" height="{{ 200 }}" lazy="{{ true }}" class="mx-auto mb-2" wrapperAttr="{{ {class: 'avatar avatar-4xl mw-100'} }}" />
                     <h2 class="mt-2">{{ username }}</h2>
                 </div>
                 {% if user.description %}
@@ -58,28 +54,46 @@
         <div class="col-md-9">
             <h3>Événements</h3>
             <ul class="nav nav-pills mb-1">
-                <li class="nav-item"><a class="nav-link active" href="#a-venir" data-bs-toggle="tab">A venir</a></li>
-                <li class="nav-item"><a class="nav-link" href="#passes" data-bs-toggle="tab">Passés</a></li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#a-venir" data-bs-toggle="tab">
+                        À venir
+                        {% if nextEvents.nbResults > 0 %}
+                            <span class="badge text-bg-primary ms-1">{{ nextEvents.nbResults }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#passes" data-bs-toggle="tab">
+                        Passé{{ previousEvents.nbResults > 1 ? 's' }}
+                        {% if previousEvents.nbResults > 0 %}
+                            <span class="badge text-bg-primary ms-1">{{ previousEvents.nbResults }}</span>
+                        {% endif %}
+                    </a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="a-venir">
                     {% if not nextEvents|length > 0 %}
                         <div class="alert alert-info">
-                            <i class="icon fa fa-info-circle"></i>
+                            <twig:Icon name="lucide:info" />
                             Aucun événement de prévu pour {{ username }} !
                         </div>
                     {% else %}
-                        {{ include('partials/event/_list-card.html.twig', {events: nextEvents}) }}
+                        <div class="user-events-container" data-type="next">
+                            {{ include('user/events_list.html.twig', {events: nextEvents, user: user, isNext: true}) }}
+                        </div>
                     {% endif %}
                 </div>
                 <div class="tab-pane" id="passes">
                     {% if not previousEvents|length > 0 %}
                         <div class="alert alert-info">
-                            <i class="icon fa fa-info-circle"></i>
+                            <twig:Icon name="lucide:info" />
                             Aucun événement passé pour {{ username }} !
                         </div>
                     {% else %}
-                        {{ include('partials/event/_list-card.html.twig', {events: previousEvents}) }}
+                        <div class="user-events-container" data-type="previous">
+                            {{ include('user/events_list.html.twig', {events: previousEvents, user: user, isNext: false}) }}
+                        </div>
                     {% endif %}
                 </div>
             </div>
@@ -106,7 +120,7 @@
                                          data-url="{{ path('app_user_stats', {type: 'annee', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-info" role="status">
-                                                <span class="sr-only">Loading...</span>
+                                                <span class="visually-hidden">Loading...</span>
                                             </div>
                                         </div>
                                     </div>
@@ -117,7 +131,7 @@
                                          data-url="{{ path('app_user_stats', {type: 'mois', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-success" role="status">
-                                                <span class="sr-only">Loading...</span>
+                                                <span class="visually-hidden">Loading...</span>
                                             </div>
                                         </div>
                                     </div>
@@ -128,7 +142,7 @@
                                          data-url="{{ path('app_user_stats', {type: 'semaine', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-info" role="status">
-                                                <span class="sr-only">Loading...</span>
+                                                <span class="visually-hidden">Loading...</span>
                                             </div>
                                         </div>
                                     </div>

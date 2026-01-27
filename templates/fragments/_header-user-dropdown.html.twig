@@ -1,11 +1,7 @@
-{% import 'form/macros.html.twig' as macros %}
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     <li class="nav-item dropdown nav-avatar">
         <a href="#" class="nav-link d-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
-            {{ macros.userThumb(app.user, 30, 30, {
-                placeholder: false,
-                priority: true,
-            }) }}
+            <twig:UserThumb user="{{ app.user }}" width="{{ 30 }}" height="{{ 30 }}" placeholder="{{ false }}" priority="{{ true }}" wrapperAttr="{{ {class: 'avatar avatar-sm'} }}" />
             {% if show_username %}
                 <span class="d-lg-none ms-2">{{ app.user.username }}</span>
             {% endif %}
@@ -13,22 +9,22 @@
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
             {% if is_granted('IS_IMPERSONATOR') %}
                 <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index')) }}">
-                    <i class="icon fa fa-power-off"></i>
+                    <twig:Icon name="lucide:power" />
                     Exit impersonation
                 </a>
                 <div class="dropdown-divider"></div>
             {% endif %}
             <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
-                <i class="icon fa fa-cogs"></i>
+                <twig:Icon name="lucide:settings" />
                 Mon compte
             </a>
             <a class="dropdown-item" title="Accéder à mon profil public" href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug}) }}">
-                <i class="icon fa fa-user"></i>
+                <twig:Icon name="lucide:user" />
                 Profil public
             </a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{ path('_logout_main') }}">
-                <i class="icon fa fa-power-off"></i>
+                <twig:Icon name="lucide:power" />
                 Déconnexion
             </a>
         </div>

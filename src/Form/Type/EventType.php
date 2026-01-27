@@ -116,7 +116,7 @@ final class EventType extends AbstractType
                 'label' => 'Sites de réservation',
                 'entry_options' => [
                     'label' => false,
-                    'icon-prepend' => 'globe',
+                    'icon-prepend' => 'lucide:globe',
                     'attr' => [
                         'placeholder' => 'https://monsupersite.fr',
                     ],
@@ -129,7 +129,7 @@ final class EventType extends AbstractType
                 'label' => 'Numéros de téléphone',
                 'entry_options' => [
                     'label' => false,
-                    'icon-prepend' => 'phone',
+                    'icon-prepend' => 'lucide:phone',
                     'attr' => [
                         'placeholder' => '06 01 02 03 04',
                     ],
@@ -142,7 +142,7 @@ final class EventType extends AbstractType
                 'label' => 'Emails de contact',
                 'entry_options' => [
                     'label' => false,
-                    'icon-prepend' => 'envelope',
+                    'icon-prepend' => 'lucide:mail',
                     'attr' => [
                         'placeholder' => 'vousêtes@incroyable.fr',
                     ],

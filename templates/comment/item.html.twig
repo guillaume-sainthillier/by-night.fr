@@ -1,0 +1,51 @@
+{% set isCurrentUser = app.user and app.user.id == comment.user.id %}
+<div class="chat-item reply-thread" data-comment-id="{{ comment.id }}">
+    <div class="row align-items-end">
+        <div class="col-auto">
+            <twig:UserThumb user="{{ comment.user }}" width="{{ 40 }}" height="{{ 40 }}" wrapperAttr="{{ {class: 'avatar'} }}" />
+        </div>
+        <div class="col col-lg-8">
+            <div class="chat-bubble{{ isCurrentUser ? ' chat-bubble-me' : '' }}">
+                <div class="chat-bubble-title">
+                    <div class="row">
+                        <div class="col chat-bubble-author">
+                            <a href="{{ path('app_user_index', {id: comment.user.id, slug: comment.user.slug}) }}">{{ comment.user.username }}</a>
+                        </div>
+                        <div class="col-auto chat-bubble-date small" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">
+                            {{ comment.createdAt|diff_date }}
+                            {% if is_granted('ROLE_USER') %}
+                                <button class="btn btn-sm reply-link text-muted" data-url="{{ path('app_comment_reponse_new', {id: comment.id}) }}">
+                                    <twig:Icon name="lucide:reply" class="icon-inline" /> Répondre
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-bubble-body">
+                    {{ comment.comment|striptags('<i><b>')|nl2br|parse_tags|raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {# Reply form container #}
+    <div class="reply-form-container ms-5"></div>
+
+    {# Replies container - always visible #}
+    {% set childrenSlice = comment.children|slice(0, 6) %}
+    {% if childrenSlice|length > 0 %}
+        <div class="chat-bubbles replies-container mt-2 ms-5">
+            {% for reply in childrenSlice|slice(0, 5) %}
+                {{ include('comment/reply/item.html.twig', {comment: reply}) }}
+            {% endfor %}
+
+            {# Show "Load more" if there are more than 5 replies #}
+            {% if childrenSlice|length > 5 %}
+                <div class="load-more mt-2 ms-4 text-start" data-url="{{ path('app_comment_reponse_list', {id: comment.id, page: 2}) }}">
+                    <button type="button" class="btn ms-4">
+                        Plus de réponses
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

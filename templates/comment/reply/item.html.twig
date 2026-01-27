@@ -1,0 +1,25 @@
+{% set isCurrentUser = app.user and app.user.id == comment.user.id %}
+<div class="chat-item reply-item">
+    <div class="row align-items-end">
+        <div class="col-auto">
+            <twig:UserThumb user="{{ comment.user }}" width="{{ 32 }}" height="{{ 32 }}" wrapperAttr="{{ {class: 'avatar avatar-sm'} }}" />
+        </div>
+        <div class="col col-lg-6">
+            <div class="chat-bubble chat-bubble-reply{{ isCurrentUser ? ' chat-bubble-me' : '' }}">
+                <div class="chat-bubble-title">
+                    <div class="row">
+                        <div class="col chat-bubble-author">
+                            <a href="{{ path('app_user_index', {id: comment.user.id, slug: comment.user.slug}) }}">{{ comment.user.username }}</a>
+                        </div>
+                        <div class="col-auto chat-bubble-date small" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">
+                            {{ comment.createdAt|diff_date }}
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-bubble-body">
+                    {{ comment.comment|striptags('<i><b>')|nl2br|parse_tags|raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

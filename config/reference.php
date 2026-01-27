@@ -1,12 +1,6 @@
 <?php
 
-/*
- * This file is part of By Night.
- * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+// This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
@@ -1187,208 +1181,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enable_profiler?: bool|Param, // Whether or not to enable the profiler collector to calculate and visualize migration status. This adds some queries overhead. // Default: false
  *     transactional?: bool|Param, // Whether or not to wrap migrations in a single transaction. // Default: true
  * }
- * @psalm-type FosHttpCacheConfig = array{
- *     cacheable?: array{
- *         response?: array{
- *             additional_status?: list<scalar|null|Param>,
- *             expression?: scalar|null|Param, // Expression to decide whether response is cacheable. Replaces the default status codes. // Default: null
- *         },
- *     },
- *     cache_control?: array{
- *         defaults?: array{
- *             overwrite?: bool|Param, // Whether to overwrite existing cache headers // Default: false
- *         },
- *         ttl_header?: scalar|null|Param, // Specify the header name to use with the cache_control.reverse_proxy_ttl setting // Default: "X-Reverse-Proxy-TTL"
- *         rules?: list<array{ // Default: []
- *             match: array{
- *                 path?: scalar|null|Param, // Request path. // Default: null
- *                 query_string?: scalar|null|Param, // Request query string. // Default: null
- *                 host?: scalar|null|Param, // Request host name. // Default: null
- *                 methods?: array<string, scalar|null|Param>,
- *                 ips?: array<string, scalar|null|Param>,
- *                 attributes?: array<string, scalar|null|Param>,
- *                 additional_response_status?: list<scalar|null|Param>,
- *                 match_response?: scalar|null|Param, // Expression to decide whether response should be matched. Replaces cacheable configuration. // Default: null
- *                 expression_language?: scalar|null|Param, // Service name of a custom ExpressionLanguage to use.
- *             },
- *             headers: array{
- *                 overwrite?: "default"|true|false|Param, // Whether to overwrite cache headers for this rule, defaults to the cache_control.defaults.overwrite setting // Default: "default"
- *                 cache_control?: array{ // Add the specified cache control directives.
- *                     max_age?: scalar|null|Param,
- *                     s_maxage?: scalar|null|Param,
- *                     private?: bool|Param,
- *                     public?: bool|Param,
- *                     must_revalidate?: bool|Param,
- *                     proxy_revalidate?: bool|Param,
- *                     no_transform?: bool|Param,
- *                     no_cache?: bool|Param,
- *                     no_store?: bool|Param,
- *                     stale_if_error?: scalar|null|Param,
- *                     stale_while_revalidate?: scalar|null|Param,
- *                 },
- *                 etag?: "weak"|"strong"|false|Param, // Set a simple ETag which is just the md5 hash of the response body. You can specify which type of ETag you want by passing "strong" or "weak". // Default: false
- *                 last_modified?: scalar|null|Param, // Set a default last modified timestamp if none is set yet. Value must be parseable by DateTime
- *                 reverse_proxy_ttl?: scalar|null|Param, // Specify a custom time to live in seconds for your caching proxy. This value is sent in the custom header configured in cache_control.ttl_header. // Default: null
- *                 vary?: list<scalar|null|Param>,
- *             },
- *         }>,
- *     },
- *     proxy_client?: array{
- *         default?: "varnish"|"nginx"|"symfony"|"cloudflare"|"cloudfront"|"fastly"|"noop"|Param, // If you configure more than one proxy client, you need to specify which client is the default.
- *         varnish?: array{
- *             tags_header?: scalar|null|Param, // HTTP header to use when sending tag invalidation requests to Varnish
- *             header_length?: scalar|null|Param, // Maximum header length when invalidating tags. If there are more tags to invalidate than fit into the header, the invalidation request is split into several requests.
- *             default_ban_headers?: array<string, scalar|null|Param>,
- *             tag_mode?: "ban"|"purgekeys"|Param, // If you can enable the xkey module in Varnish, use the purgekeys mode for more efficient tag handling // Default: "ban"
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 servers_from_jsonenv?: mixed, // Addresses of the hosts the caching proxy is running on (env var that contains a json array as a string). The values may be hostnames or ips, and with :port if not the default port 80.
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: null
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *                 request_factory?: scalar|null|Param, // Service name of PSR-17 message factory. // Default: null
- *                 stream_factory?: scalar|null|Param, // Service name of PSR-17 stream factory. // Default: null
- *             },
- *         },
- *         nginx?: array{
- *             purge_location?: scalar|null|Param, // Path to trigger the purge on Nginx for different location purge. // Default: false
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 servers_from_jsonenv?: mixed, // Addresses of the hosts the caching proxy is running on (env var that contains a json array as a string). The values may be hostnames or ips, and with :port if not the default port 80.
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: null
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *                 request_factory?: scalar|null|Param, // Service name of PSR-17 message factory. // Default: null
- *                 stream_factory?: scalar|null|Param, // Service name of PSR-17 stream factory. // Default: null
- *             },
- *         },
- *         symfony?: array{
- *             tags_header?: scalar|null|Param, // HTTP header to use when sending tag invalidation requests to Symfony HttpCache // Default: "X-Cache-Tags"
- *             tags_method?: scalar|null|Param, // HTTP method for sending tag invalidation requests to Symfony HttpCache // Default: "PURGETAGS"
- *             header_length?: scalar|null|Param, // Maximum header length when invalidating tags. If there are more tags to invalidate than fit into the header, the invalidation request is split into several requests.
- *             purge_method?: scalar|null|Param, // HTTP method to use when sending purge requests to Symfony HttpCache // Default: "PURGE"
- *             use_kernel_dispatcher?: bool|Param, // Dispatches invalidation requests to the kernel directly instead of executing real HTTP requests. Requires special kernel setup! Refer to the documentation for more information. // Default: false
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 servers_from_jsonenv?: mixed, // Addresses of the hosts the caching proxy is running on (env var that contains a json array as a string). The values may be hostnames or ips, and with :port if not the default port 80.
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: null
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *                 request_factory?: scalar|null|Param, // Service name of PSR-17 message factory. // Default: null
- *                 stream_factory?: scalar|null|Param, // Service name of PSR-17 stream factory. // Default: null
- *             },
- *         },
- *         cloudflare?: array{
- *             authentication_token?: scalar|null|Param, // API authorization token, requires Zone.Cache Purge permissions
- *             zone_identifier?: scalar|null|Param, // Identifier for your Cloudflare zone you want to purge the cache for
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *             },
- *         },
- *         cloudfront?: array{ // Configure a client to interact with AWS cloudfront. You need to install jean-beru/fos-http-cache-cloudfront to work with cloudfront
- *             distribution_id?: scalar|null|Param, // Identifier for your CloudFront distribution you want to purge the cache for
- *             client?: scalar|null|Param, // AsyncAws\CloudFront\CloudFrontClient client to use // Default: null
- *             configuration?: mixed, // Client configuration from https://async-aws.com/configuration.html // Default: []
- *         },
- *         fastly?: array{ // Configure a client to interact with Fastly.
- *             service_identifier?: scalar|null|Param, // Identifier for your Fastly service account.
- *             authentication_token?: scalar|null|Param, // User token for authentication against Fastly APIs.
- *             soft_purge?: scalar|null|Param, // Boolean for doing soft purges or not on tag & URL purging. Soft purges expires the cache unlike hard purge (removal), and allow grace/stale handling within Fastly VCL. // Default: true
- *             http?: array{
- *                 servers?: array<string, scalar|null|Param>,
- *                 base_url?: scalar|null|Param, // Default host name and optional path for path based invalidation. // Default: "service"
- *                 http_client?: scalar|null|Param, // Httplug async client service name to use for sending the requests. // Default: null
- *             },
- *         },
- *         noop?: bool|Param,
- *     },
- *     cache_manager?: array{ // Configure the cache manager. Needs a proxy_client to be configured.
- *         enabled?: true|false|"auto"|Param, // Allows to disable the invalidation manager. Enabled by default if you configure a proxy client. // Default: "auto"
- *         custom_proxy_client?: scalar|null|Param, // Service name of a custom proxy client to use. With a custom client, generate_url_type defaults to ABSOLUTE_URL and tag support needs to be explicitly enabled. If no custom proxy client is specified, the first proxy client you configured is used.
- *         generate_url_type?: "auto"|1|0|3|2|Param, // Set what URLs to generate on invalidate/refresh Route. Auto means path if base_url is set on the default proxy client, full URL otherwise. // Default: "auto"
- *     },
- *     tags?: array{
- *         enabled?: true|false|"auto"|Param, // Allows to disable tag support. Enabled by default if you configured the cache manager and have a proxy client that supports tagging. // Default: "auto"
- *         strict?: bool|Param, // Default: false
- *         expression_language?: scalar|null|Param, // Service name of a custom ExpressionLanguage to use. // Default: null
- *         response_header?: scalar|null|Param, // HTTP header that contains cache tags. Defaults to xkey-softpurge for Varnish xkey or X-Cache-Tags otherwise // Default: null
- *         separator?: scalar|null|Param, // Character(s) to use to separate multiple tags. Defaults to " " for Varnish xkey or "," otherwise // Default: null
- *         max_header_value_length?: scalar|null|Param, // If configured the tag header value will be split into multiple response headers of the same name (see "response_header" configuration key) that all do not exceed the configured "max_header_value_length" (recommended is 4KB = 4096) - configure in bytes. // Default: null
- *         rules?: list<array{ // Default: []
- *             match: array{
- *                 path?: scalar|null|Param, // Request path. // Default: null
- *                 query_string?: scalar|null|Param, // Request query string. // Default: null
- *                 host?: scalar|null|Param, // Request host name. // Default: null
- *                 methods?: array<string, scalar|null|Param>,
- *                 ips?: array<string, scalar|null|Param>,
- *                 attributes?: array<string, scalar|null|Param>,
- *             },
- *             tags?: list<scalar|null|Param>,
- *             tag_expressions?: list<scalar|null|Param>,
- *         }>,
- *     },
- *     invalidation?: array{
- *         enabled?: true|false|"auto"|Param, // Allows to disable the listener for invalidation. Enabled by default if the cache manager is configured. When disabled, the cache manager is no longer flushed automatically. // Default: "auto"
- *         expression_language?: scalar|null|Param, // Service name of a custom ExpressionLanguage to use. // Default: null
- *         rules?: list<array{ // Default: []
- *             match: array{
- *                 path?: scalar|null|Param, // Request path. // Default: null
- *                 query_string?: scalar|null|Param, // Request query string. // Default: null
- *                 host?: scalar|null|Param, // Request host name. // Default: null
- *                 methods?: array<string, scalar|null|Param>,
- *                 ips?: array<string, scalar|null|Param>,
- *                 attributes?: array<string, scalar|null|Param>,
- *             },
- *             routes: array<string, array{ // Default: []
- *                 ignore_extra_params?: bool|Param, // Default: true
- *             }>,
- *         }>,
- *     },
- *     user_context?: bool|array{ // Listener that returns the request for the user context hash as early as possible.
- *         enabled?: bool|Param, // Default: false
- *         match?: array{
- *             matcher_service?: scalar|null|Param, // Service id of a request matcher that tells whether the request is a context hash request. // Default: "fos_http_cache.user_context.request_matcher"
- *             accept?: scalar|null|Param, // Specify the accept HTTP header used for context hash requests. // Default: "application/vnd.fos.user-context-hash"
- *             method?: scalar|null|Param, // Specify the HTTP method used for context hash requests. // Default: null
- *         },
- *         hash_cache_ttl?: scalar|null|Param, // Cache the response for the hash for the specified number of seconds. Setting this to 0 will not cache those responses at all. // Default: 0
- *         always_vary_on_context_hash?: bool|Param, // Whether to always add the user context hash header name in the response Vary header. // Default: true
- *         user_identifier_headers?: list<scalar|null|Param>,
- *         session_name_prefix?: scalar|null|Param, // Prefix for session cookies. Must match your PHP session configuration. Set to false to ignore the session in user context. // Default: false
- *         user_hash_header?: scalar|null|Param, // Name of the header that contains the hash information for the context. // Default: "X-User-Context-Hash"
- *         role_provider?: bool|Param, // Whether to enable a provider that automatically adds all roles of the current user to the context. // Default: false
- *         logout_handler?: bool|array{
- *             enabled?: true|false|"auto"|Param, // Whether to enable the user context logout handler. // Default: "auto"
- *         },
- *     },
- *     flash_message?: bool|array{ // Activate the flash message listener that puts flash messages into a cookie.
- *         enabled?: bool|Param, // Default: false
- *         name?: scalar|null|Param, // Name of the cookie to set for flashes. // Default: "flashes"
- *         path?: scalar|null|Param, // Cookie path validity. // Default: "/"
- *         host?: scalar|null|Param, // Cookie host name validity. // Default: null
- *         secure?: scalar|null|Param, // Whether the cookie should only be transmitted over a secure HTTPS connection from the client. // Default: false
- *     },
- *     test?: array{
- *         cache_header?: scalar|null|Param, // HTTP cache hit/miss header // Default: "X-Cache"
- *         proxy_server?: array{ // Configure how caching proxy will be run in your tests
- *             default?: "varnish"|"nginx"|Param, // If you configure more than one proxy server, specify which client is the default.
- *             varnish?: array{
- *                 config_file: scalar|null|Param,
- *                 binary?: scalar|null|Param, // Default: "varnishd"
- *                 port?: int|Param, // Default: 6181
- *                 ip?: scalar|null|Param, // Default: "127.0.0.1"
- *             },
- *             nginx?: array{
- *                 config_file: scalar|null|Param,
- *                 binary?: scalar|null|Param, // Default: "nginx"
- *                 port?: int|Param, // Default: 8080
- *                 ip?: scalar|null|Param, // Default: "127.0.0.1"
- *             },
- *         },
- *     },
- *     debug?: bool|array{
- *         enabled?: bool|Param, // Whether to send a debug header with the response to trigger a caching proxy to send debug information. If not set, defaults to kernel.debug. // Default: true
- *         header?: scalar|null|Param, // The header to send if debug is true. // Default: "X-Cache-Debug"
- *     },
- * }
  * @psalm-type TwigConfig = array{
  *     form_themes?: list<scalar|null|Param>,
  *     globals?: array<string, array{ // Default: []
@@ -1732,209 +1524,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         roles?: list<scalar|null|Param>,
  *     }>,
  *     role_hierarchy?: array<string, string|list<scalar|null|Param>>,
- * }
- * @psalm-type JmsSerializerConfig = array{
- *     twig_enabled?: scalar|null|Param, // Default: "default"
- *     profiler?: scalar|null|Param, // Default: true
- *     enum_support?: scalar|null|Param, // Default: false
- *     default_value_property_reader_support?: scalar|null|Param, // Default: false
- *     handlers?: array{
- *         datetime?: array{
- *             default_format?: scalar|null|Param, // Default: "Y-m-d\\TH:i:sP"
- *             default_deserialization_formats?: list<scalar|null|Param>,
- *             default_timezone?: scalar|null|Param, // Default: "UTC"
- *             cdata?: scalar|null|Param, // Default: true
- *         },
- *         array_collection?: array{
- *             initialize_excluded?: bool|Param, // Default: false
- *         },
- *         symfony_uid?: array{
- *             default_format?: scalar|null|Param, // Default: "canonical"
- *             cdata?: scalar|null|Param, // Default: true
- *         },
- *     },
- *     subscribers?: array{
- *         doctrine_proxy?: array{
- *             initialize_excluded?: bool|Param, // Default: false
- *             initialize_virtual_types?: bool|Param, // Default: false
- *         },
- *     },
- *     object_constructors?: array{
- *         doctrine?: bool|array{
- *             enabled?: bool|Param, // Default: true
- *             fallback_strategy?: "null"|"exception"|"fallback"|Param, // Default: "null"
- *         },
- *     },
- *     property_naming?: string|array{
- *         id?: scalar|null|Param,
- *         separator?: scalar|null|Param, // Default: "_"
- *         lower_case?: bool|Param, // Default: true
- *     },
- *     expression_evaluator?: string|array{
- *         id?: scalar|null|Param, // Default: "jms_serializer.expression_evaluator"
- *     },
- *     metadata?: array{
- *         warmup?: array{
- *             paths?: array{
- *                 included?: list<scalar|null|Param>,
- *                 excluded?: list<scalar|null|Param>,
- *             },
- *         },
- *         cache?: scalar|null|Param, // Default: "file"
- *         debug?: bool|Param, // Default: true
- *         file_cache?: array{
- *             dir?: scalar|null|Param, // Default: null
- *         },
- *         include_interfaces?: bool|Param, // Default: false
- *         auto_detection?: bool|Param, // Default: true
- *         infer_types_from_doc_block?: bool|Param, // Default: false
- *         infer_types_from_doctrine_metadata?: bool|Param, // Infers type information from Doctrine metadata if no explicit type has been defined for a property. // Default: true
- *         directories?: array<string, array{ // Default: []
- *             path: scalar|null|Param,
- *             namespace_prefix?: scalar|null|Param, // Default: ""
- *         }>,
- *     },
- *     visitors?: array{
- *         json_serialization?: array{
- *             depth?: scalar|null|Param,
- *             options?: scalar|null|Param, // Default: 1024
- *         },
- *         json_deserialization?: array{
- *             options?: scalar|null|Param, // Default: 0
- *             strict?: bool|Param, // Default: false
- *         },
- *         xml_serialization?: array{
- *             version?: scalar|null|Param,
- *             encoding?: scalar|null|Param,
- *             format_output?: bool|Param, // Default: false
- *             default_root_name?: scalar|null|Param,
- *             default_root_ns?: scalar|null|Param, // Default: ""
- *         },
- *         xml_deserialization?: array{
- *             doctype_whitelist?: list<scalar|null|Param>,
- *             external_entities?: bool|Param, // Default: false
- *             options?: scalar|null|Param, // Default: 0
- *         },
- *     },
- *     default_context?: array{
- *         serialization?: string|array{
- *             id?: scalar|null|Param,
- *             serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *             enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *             attributes?: array<string, scalar|null|Param>,
- *             groups?: list<scalar|null|Param>,
- *             version?: scalar|null|Param, // Application version to use in exclusion strategies
- *         },
- *         deserialization?: string|array{
- *             id?: scalar|null|Param,
- *             serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *             enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *             attributes?: array<string, scalar|null|Param>,
- *             groups?: list<scalar|null|Param>,
- *             version?: scalar|null|Param, // Application version to use in exclusion strategies
- *         },
- *     },
- *     instances?: array<string, array{ // Default: []
- *         inherit?: bool|Param, // Default: false
- *         enum_support?: scalar|null|Param, // Default: false
- *         default_value_property_reader_support?: scalar|null|Param, // Default: false
- *         handlers?: array{
- *             datetime?: array{
- *                 default_format?: scalar|null|Param, // Default: "Y-m-d\\TH:i:sP"
- *                 default_deserialization_formats?: list<scalar|null|Param>,
- *                 default_timezone?: scalar|null|Param, // Default: "UTC"
- *                 cdata?: scalar|null|Param, // Default: true
- *             },
- *             array_collection?: array{
- *                 initialize_excluded?: bool|Param, // Default: false
- *             },
- *             symfony_uid?: array{
- *                 default_format?: scalar|null|Param, // Default: "canonical"
- *                 cdata?: scalar|null|Param, // Default: true
- *             },
- *         },
- *         subscribers?: array{
- *             doctrine_proxy?: array{
- *                 initialize_excluded?: bool|Param, // Default: false
- *                 initialize_virtual_types?: bool|Param, // Default: false
- *             },
- *         },
- *         object_constructors?: array{
- *             doctrine?: bool|array{
- *                 enabled?: bool|Param, // Default: true
- *                 fallback_strategy?: "null"|"exception"|"fallback"|Param, // Default: "null"
- *             },
- *         },
- *         property_naming?: string|array{
- *             id?: scalar|null|Param,
- *             separator?: scalar|null|Param, // Default: "_"
- *             lower_case?: bool|Param, // Default: true
- *         },
- *         expression_evaluator?: string|array{
- *             id?: scalar|null|Param, // Default: "jms_serializer.expression_evaluator"
- *         },
- *         metadata?: array{
- *             warmup?: array{
- *                 paths?: array{
- *                     included?: list<scalar|null|Param>,
- *                     excluded?: list<scalar|null|Param>,
- *                 },
- *             },
- *             cache?: scalar|null|Param, // Default: "file"
- *             debug?: bool|Param, // Default: true
- *             file_cache?: array{
- *                 dir?: scalar|null|Param, // Default: null
- *             },
- *             include_interfaces?: bool|Param, // Default: false
- *             auto_detection?: bool|Param, // Default: true
- *             infer_types_from_doc_block?: bool|Param, // Default: false
- *             infer_types_from_doctrine_metadata?: bool|Param, // Infers type information from Doctrine metadata if no explicit type has been defined for a property. // Default: true
- *             directories?: array<string, array{ // Default: []
- *                 path: scalar|null|Param,
- *                 namespace_prefix?: scalar|null|Param, // Default: ""
- *             }>,
- *         },
- *         visitors?: array{
- *             json_serialization?: array{
- *                 depth?: scalar|null|Param,
- *                 options?: scalar|null|Param, // Default: 1024
- *             },
- *             json_deserialization?: array{
- *                 options?: scalar|null|Param, // Default: 0
- *                 strict?: bool|Param, // Default: false
- *             },
- *             xml_serialization?: array{
- *                 version?: scalar|null|Param,
- *                 encoding?: scalar|null|Param,
- *                 format_output?: bool|Param, // Default: false
- *                 default_root_name?: scalar|null|Param,
- *                 default_root_ns?: scalar|null|Param, // Default: ""
- *             },
- *             xml_deserialization?: array{
- *                 doctype_whitelist?: list<scalar|null|Param>,
- *                 external_entities?: bool|Param, // Default: false
- *                 options?: scalar|null|Param, // Default: 0
- *             },
- *         },
- *         default_context?: array{
- *             serialization?: string|array{
- *                 id?: scalar|null|Param,
- *                 serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *                 enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *                 attributes?: array<string, scalar|null|Param>,
- *                 groups?: list<scalar|null|Param>,
- *                 version?: scalar|null|Param, // Application version to use in exclusion strategies
- *             },
- *             deserialization?: string|array{
- *                 id?: scalar|null|Param,
- *                 serialize_null?: scalar|null|Param, // Flag if null values should be serialized
- *                 enable_max_depth_checks?: scalar|null|Param, // Flag to enable the max-depth exclusion strategy
- *                 attributes?: array<string, scalar|null|Param>,
- *                 groups?: list<scalar|null|Param>,
- *                 version?: scalar|null|Param, // Application version to use in exclusion strategies
- *             },
- *         },
- *     }>,
  * }
  * @psalm-type MonologConfig = array{
  *     use_microseconds?: scalar|null|Param, // Default: true
@@ -2812,7 +2401,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     mercure?: bool|array{
  *         enabled?: bool|Param, // Default: false
  *         hub_url?: scalar|null|Param, // The URL sent in the Link HTTP header. If not set, will default to the URL for MercureBundle's default hub. // Default: null
- *         include_type?: bool|Param, // Always include @var in updates (including delete ones). // Default: false
+ *         include_type?: bool|Param, // Always include @type in updates (including delete ones). // Default: false
  *     },
  *     messenger?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -2948,6 +2537,26 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ...<mixed>
  *     },
  * }
+ * @psalm-type StimulusConfig = array{
+ *     controller_paths?: list<scalar|null|Param>,
+ *     controllers_json?: scalar|null|Param, // Default: "%kernel.project_dir%/assets/controllers.json"
+ * }
+ * @psalm-type UxIconsConfig = array{
+ *     icon_dir?: scalar|null|Param, // The local directory where icons are stored. // Default: "%kernel.project_dir%/assets/icons"
+ *     default_icon_attributes?: array<string, scalar|null|Param>,
+ *     icon_sets?: array<string, array{ // the icon set prefix (e.g. "acme") // Default: []
+ *         path?: scalar|null|Param, // The local icon set directory path. (cannot be used with 'alias')
+ *         alias?: scalar|null|Param, // The remote icon set identifier. (cannot be used with 'path')
+ *         icon_attributes?: array<string, scalar|null|Param>,
+ *     }>,
+ *     aliases?: array<string, string|Param>,
+ *     iconify?: bool|array{ // Configuration for the remote icon service.
+ *         enabled?: bool|Param, // Default: true
+ *         on_demand?: bool|Param, // Whether to download icons "on demand". // Default: true
+ *         endpoint?: scalar|null|Param, // The endpoint for the Iconify icons API. // Default: "https://api.iconify.design"
+ *     },
+ *     ignore_not_found?: bool|Param, // Ignore error when an icon is not found. Set to 'true' to fail silently. // Default: false
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2958,10 +2567,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     doctrine?: DoctrineConfig,
  *     doctrine_migrations?: DoctrineMigrationsConfig,
- *     fos_http_cache?: FosHttpCacheConfig,
  *     twig?: TwigConfig,
  *     security?: SecurityConfig,
- *     jms_serializer?: JmsSerializerConfig,
  *     monolog?: MonologConfig,
  *     vich_uploader?: VichUploaderConfig,
  *     sentry?: SentryConfig,
@@ -2976,6 +2583,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     twig_component?: TwigComponentConfig,
  *     api_platform?: ApiPlatformConfig,
+ *     stimulus?: StimulusConfig,
+ *     ux_icons?: UxIconsConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2986,10 +2595,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
- *         jms_serializer?: JmsSerializerConfig,
  *         monolog?: MonologConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         web_profiler?: WebProfilerConfig,
@@ -3008,6 +2615,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         api_platform?: ApiPlatformConfig,
+ *         stimulus?: StimulusConfig,
+ *         ux_icons?: UxIconsConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -3019,10 +2628,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
- *         jms_serializer?: JmsSerializerConfig,
  *         monolog?: MonologConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         sentry?: SentryConfig,
@@ -3037,6 +2644,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *         twig_component?: TwigComponentConfig,
  *         api_platform?: ApiPlatformConfig,
+ *         stimulus?: StimulusConfig,
+ *         ux_icons?: UxIconsConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -3048,10 +2657,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         fos_http_cache?: FosHttpCacheConfig,
  *         twig?: TwigConfig,
  *         security?: SecurityConfig,
- *         jms_serializer?: JmsSerializerConfig,
  *         monolog?: MonologConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         web_profiler?: WebProfilerConfig,
@@ -3070,6 +2677,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         dama_doctrine_test?: DamaDoctrineTestConfig,
  *         api_platform?: ApiPlatformConfig,
+ *         stimulus?: StimulusConfig,
+ *         ux_icons?: UxIconsConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

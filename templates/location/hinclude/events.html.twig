@@ -1,5 +1,7 @@
-{{ include('partials/event/_list-widget.html.twig') }}
-{% if hasNextLink %}
-    <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
-        / {{ count }})</a>
+{{ include('partials/event/_list-widget.html.twig', {
+    events: topEventsData.events,
+}) }}
+{% if topEventsData.hasNextLink %}
+    <a class="more-content btn btn-outline-primary btn-block" href="{{ topEventsData.hasNextLink }}">Plus ({{ topEventsData.current }}
+        / {{ topEventsData.count }})</a>
 {% endif %}

@@ -10,10 +10,10 @@
 
 namespace App\Api\Model;
 
-final class EventParticipateInput
+final readonly class EventParticipateInput
 {
     public function __construct(
-        public readonly bool $like = true,
+        public bool $like = true,
     ) {
     }
 }

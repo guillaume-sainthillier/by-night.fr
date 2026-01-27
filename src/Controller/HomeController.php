@@ -10,7 +10,6 @@
 
 namespace App\Controller;
 
-use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Form\Type\CityAutocompleteType;
 use App\Repository\EventRepository;
@@ -22,7 +21,6 @@ use Symfony\Component\Routing\Attribute\Route;
 final class HomeController extends AbstractController
 {
     #[Route(path: '/', name: 'app_index', methods: ['GET', 'POST'])]
-    #[ReverseProxy(expires: 'tomorrow')]
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
     {
         $datas = [

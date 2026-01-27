@@ -1,7 +1,6 @@
-<h4 class="heading">
-    {{ comments.nbResults }} Commentaire{{ comments.nbResults > 1 ? 's' }}
+<h3 class="heading">
+    <span>{{ comments.nbResults }} Commentaire{{ comments.nbResults > 1 ? 's' }}</span>
     {% if comments.nbResults == 0 %}
-        |
-        <small>Soyez le premier à réagir</small>
+        <small class="text-muted">Soyez le premier à réagir</small>
     {% endif %}
-</h4>
+</h3>

@@ -10,10 +10,10 @@
 
 namespace App\Api\Model;
 
-final class EventActionOutput
+final readonly class EventActionOutput
 {
     public function __construct(
-        public readonly bool $success,
+        public bool $success,
     ) {
     }
 }

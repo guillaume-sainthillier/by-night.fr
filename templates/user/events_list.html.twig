@@ -1,0 +1,13 @@
+{% for event in events %}
+    {% if event.slug %}
+        {{ include('partials/event/_item-card.html.twig') }}
+    {% endif %}
+{% endfor %}
+
+{% if events.hasNextPage %}
+    <div class="load-more text-center my-3" data-url="{{ path(isNext ? 'app_user_events_next' : 'app_user_events_previous', {id: user.id, slug: user.slug, page: events.nextPage}) }}">
+        <button type="button" class="btn btn-outline-primary">
+            Charger plus d'événements
+        </button>
+    </div>
+{% endif %}

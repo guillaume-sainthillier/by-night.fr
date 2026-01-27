@@ -14,10 +14,8 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\CityAutocomplete;
 use App\Entity\City;
-use App\Invalidator\TagsInvalidator;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use FOS\HttpCache\ResponseTagger;
 
 /**
  * @implements ProviderInterface<CityAutocomplete>
@@ -28,7 +26,6 @@ final readonly class CityAutocompleteProvider implements ProviderInterface
 
     public function __construct(
         private RepositoryManagerInterface $repositoryManager,
-        private ResponseTagger $responseTagger,
     ) {
     }
 
@@ -37,8 +34,6 @@ final readonly class CityAutocompleteProvider implements ProviderInterface
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        $this->responseTagger->addTags([TagsInvalidator::getAutocompleteCityTag()]);
-
         $term = trim((string) ($operation->getParameters()?->get('q')?->getValue() ?? ''));
         if ('' === $term) {
             return [];
@@ -53,7 +48,6 @@ final readonly class CityAutocompleteProvider implements ProviderInterface
         $output = [];
         /** @var City $city */
         foreach ($results as $city) {
-            $this->responseTagger->addTags([TagsInvalidator::getCityTag($city)]);
             $output[] = new CityAutocomplete(
                 slug: $city->getSlug(),
                 name: $city->getFullName(),

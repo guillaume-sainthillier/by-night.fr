@@ -10,7 +10,6 @@
 
 namespace App\Controller\Comment;
 
-use App\Annotation\ReverseProxy;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Entity\Event;
@@ -32,11 +31,9 @@ final class CommentController extends BaseController
         $comment = new Comment();
         $form = null;
         if ($this->isGranted('ROLE_USER')) {
-            $form = $this
-                ->createForm(CommentType::class, $comment, [
-                    'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-                ])
-                ->createView();
+            $form = $this->createForm(CommentType::class, $comment, [
+                'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+            ]);
         }
 
         $comments = $this->createQueryBuilderPaginator(
@@ -53,7 +50,6 @@ final class CommentController extends BaseController
     }
 
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
-    #[ReverseProxy(expires: 'tomorrow')]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comments = $this->createQueryBuilderPaginator(
@@ -96,10 +92,10 @@ final class CommentController extends BaseController
 
             return new JsonResponse([
                 'success' => true,
-                'comment' => $this->renderView('comment/details.html.twig', [
+                'comment' => $this->renderView('comment/item.html.twig', [
                     'comment' => $comment,
-                    'success' => true,
                 ]),
+                'count' => $comments->getNbResults(),
                 'header' => $this->renderView('comment/header.html.twig', [
                     'comments' => $comments,
                 ]),
@@ -109,7 +105,7 @@ final class CommentController extends BaseController
         return new JsonResponse([
             'success' => false,
             'post' => $this->renderView('comment/form.html.twig', [
-                'form' => $form->createView(),
+                'form' => $form,
             ]),
         ]);
     }

@@ -10,12 +10,12 @@
 
 {% block hwi_oauth_content -%}
     <div class="alert alert-success">
-        <i class="icon fa fa-check"></i>
+        <twig:Icon name="lucide:check" />
         {{ 'header.success'|trans({'%name%': userInformation.realName}, 'HWIOAuthBundle') }}
     </div>
     <br/>
     <div class="spinner-grow text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="visually-hidden">Loading...</span>
     </div>
     <span>Veuillez patienter, vous allez être redirigé vers la page d'accueil ...</span>
 {%- endblock %}

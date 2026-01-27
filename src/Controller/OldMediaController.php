@@ -10,7 +10,6 @@
 
 namespace App\Controller;
 
-use App\Annotation\ReverseProxy;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Helper\AssetHelper;
@@ -24,7 +23,6 @@ final class OldMediaController extends AbstractController
 {
     #[Route(path: '/media/cache/{filter}/{path<%patterns.path%>}', methods: ['GET'])]
     #[Route(path: '/uploads/{path<%patterns.path%>}', methods: ['GET'])]
-    #[ReverseProxy(expires: '1 year')]
     public function index(string $path, StorageInterface $storage, AssetHelper $assetHelper, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         $infos = pathinfo($path);

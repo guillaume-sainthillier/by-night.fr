@@ -10,16 +10,22 @@
 
 namespace App\EventSubscriber;
 
+use App\App\AppContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-final class CitySubscriber implements EventSubscriberInterface
+/**
+ * Updates the city cookie when a user visits a location-scoped page.
+ * Uses AppContext to determine the current city from the URL.
+ */
+final readonly class CitySubscriber implements EventSubscriberInterface
 {
-    /**
-     * {@inheritdoc}
-     */
+    public function __construct(private AppContext $appContext)
+    {
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -33,9 +39,18 @@ final class CitySubscriber implements EventSubscriberInterface
             return;
         }
 
+        // Get the current city from AppContext (set by AppContextSubscriber)
+        $city = $this->appContext->getCity();
+        if (!$city) {
+            return;
+        }
+
+        // Update cookie if it's different from the current city
         $request = $event->getRequest();
-        if ($request->attributes->has('_current_city') && $request->attributes->get('_current_city') !== $request->cookies->get('app_city')) {
-            $cookie = Cookie::create('app_city', $request->attributes->get('_current_city'), '+1 year');
+        $currentCookie = $request->cookies->get('app_city');
+
+        if ($city->getSlug() !== $currentCookie) {
+            $cookie = Cookie::create('app_city', $city->getSlug(), '+1 year');
             $event->getResponse()->headers->setCookie($cookie);
         }
     }

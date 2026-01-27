@@ -18,8 +18,8 @@ _______     __  _   _ _____ _____ _    _ _______
 
     <title>{% apply spaceless %}{%- block meta_title -%}{%- endblock -%}{% endapply %} - By Night</title>
     <meta name="title" content="{{- block('meta_title') -}}">
-    <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords %}{% endblock %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
-    <meta name="description" content="{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}">
+    <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords '' %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
+    <meta name="description" content="{% block meta_description 'By Night vous fait découvrir tous les événements du moment !' %}">
 
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=yyQOxPP629">
@@ -50,18 +50,18 @@ _______     __  _   _ _____ _____ _    _ _______
         <meta name="twitter:description" content="{{ block('og_description') }}" />
         <meta name="twitter:image:src" content="{{ block('og_image') }}" />
     {% endif %}
-    {% block twitter %}{% endblock %}
+    {% block twitter '' %}
     <!-- ./Twitter -->
 
     <!-- FB -->
     {% if social_manager.facebookIdPage %}
         <meta property="fb:page_id" content="{{ social_manager.facebookIdPage }}" />
     {% endif %}
-    {% block facebook %}{% endblock %}
+    {% block facebook '' %}
     <!-- ./FB -->
 
     <!-- Google -->
-    {% block google %}{% endblock %}
+    {% block google '' %}
     <!-- ./Google -->
 
     <!-- DC -->
@@ -70,7 +70,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta name="dc.keywords" content="{{ block('meta_full_keywords') }}" />
     <!-- ./DC -->
 
-    {% block metas %}{% endblock %}
+    {% block metas '' %}
 
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 
@@ -79,7 +79,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     {{ encore_entry_link_tags('app') }}
-    {% block css %}{% endblock %}
+    {% block css '' %}
     <!-- ./CSS -->
 
     <!-- Google Tag Manager -->
@@ -112,17 +112,13 @@ _______     __  _   _ _____ _____ _    _ _______
         }
 
     </script>
-    {% block head_js_layout %}{% endblock %}
-    {% block head_js %}{% endblock %}
+    {% block head_js_layout '' %}
+    {% block head_js '' %}
 </head>
 <body itemscope itemtype="http://schema.org/WebPage" id="{% block page_id 'page' %}">
 <div class="page">
     <!-- Menu -->
-    {% if location is defined and location.isCity %}
-        {{ render_esi(path('app_private_header', {id: location.city.id})) }}
-    {% else %}
-        {{ render_esi(path('app_private_header')) }}
-    {% endif %}
+    {{ include('fragments/header.html.twig') }}
     <!-- ./Menu -->
 
     {% block breadcrumb_widget %}
@@ -130,7 +126,7 @@ _______     __  _   _ _____ _____ _    _ _______
             <div class="container-lg">
                 {% do menu.addItem('By Night', url('app_index')) %}
 
-                {% block breadcrumb %}{% endblock %}
+                {% block breadcrumb '' %}
                 {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
             </div>
         </div>
@@ -138,17 +134,12 @@ _______     __  _   _ _____ _____ _    _ _______
 
     <!-- Main -->
     <div class="page-wrapper">
-        {% block layout_top %}{% endblock %}
+        {% block layout_top '' %}
         <div class="page-body">
-            {% block layout %}{% endblock %}
+            {% block layout '' %}
         </div>
         <!-- Footer -->
-        {% if location is defined %}
-            {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
-            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {id: countryId})) }}
-        {% else %}
-            {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
-        {% endif %}
+        {{ include('fragments/footer.html.twig') }}
         <!-- ./Footer -->
     </div>
     <!-- ./Main -->
@@ -158,11 +149,11 @@ _______     __  _   _ _____ _____ _    _ _______
 <div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-hidden="true">
     {{ include('layouts/modal.html.twig') }}
 </div>
-{% block modals %}{% endblock %}
+{% block modals '' %}
 <!-- ./Modals -->
 
 <button type="button" id="toTop" class="btn btn-icon btn-primary">
-    <i class="icon fa fa-chevron-up"></i>
+    <twig:Icon name="lucide:chevron-up" />
 </button>
 
 <!-- JS -->

@@ -15,6 +15,7 @@ use App\Handler\UserHandler;
 use App\Repository\UserRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
+use App\Utils\PaginateTrait;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,6 +24,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class UserUpdater extends Updater
 {
+    use PaginateTrait;
+
     private const int PAGINATION_SIZE = 50;
 
     public function __construct(
@@ -41,14 +44,19 @@ final class UserUpdater extends Updater
      */
     public function update(DateTimeInterface $from): void
     {
-        $repo = $this->userRepository;
-        $count = $repo->getUserFbIdsCount($from);
+        $paginator = $this->createQueryBuilderPaginator(
+            $this->userRepository->getUsersWithInfoQueryBuilder($from),
+            1,
+            self::PAGINATION_SIZE
+        );
 
+        $count = $paginator->getNbResults();
         $nbBatchs = (int) ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 1; $i <= $nbBatchs; ++$i) {
-            $users = $repo->getUsersWithInfo($from, $i, self::PAGINATION_SIZE);
+            $paginator->setCurrentPage($i);
+            $users = iterator_to_array($paginator->getCurrentPageResults());
             $fbIds = $this->extractFbIds($users);
             $fbStats = $this->facebookAdmin->getUserImagesFromIds($fbIds);
 

@@ -1,5 +1,43 @@
-{% extends 'comment/form.html.twig' %}
+{% if is_granted('ROLE_USER') %}
+    {{ form_start(form, {attr: {class: 'reply-form'}}) }}
 
-{% block form_comment %}
-    {{ form_row(form.comment, {attr: {placeholder: 'Répondez à ' ~ comment.user.username}}) }}
-{% endblock %}
+    <div class="chat-item reply-item">
+        <div class="row align-items-end">
+            <div class="col-auto">
+                <twig:UserThumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" lazy="{{ true }}" wrapperAttr="{{ {class: 'avatar avatar-sm'} }}" />
+            </div>
+            <div class="col-lg-8">
+                <div class="chat-bubble chat-bubble-me chat-bubble-reply chat-bubble-form">
+                    <div class="chat-bubble-title">
+                        <div class="row">
+                            <div class="col chat-bubble-author">
+                                {{ app.user.username }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-bubble-body">
+                        {{ form_row(form.comment, {
+                            attr: {
+                                placeholder: 'Répondez à ' ~ comment.user.username ~ '...',
+                                rows: 4,
+                            },
+                        }) }}
+                    </div>
+                    <div class="chat-bubble-actions">
+                        <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
+                        <button type="button" class="btn btn-sm cancel-reply">Annuler</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_rest(form) }}
+    {{ form_end(form) }}
+{% else %}
+    <div class="text-center">
+        <a class="btn btn-outline-secondary" title="Se connecter pour répondre"
+           href="{{ path('app_login') }}">
+            Se connecter pour répondre
+        </a>
+    </div>
+{% endif %}

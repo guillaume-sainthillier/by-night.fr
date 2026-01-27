@@ -15,90 +15,62 @@
             <div class="row">
                 <div class="col-md-6">
                     {# Part 1 #}
-                    {% embed 'components/widget-card.html.twig' %}
-                        {% block header 'Votre événement' %}
-                        {% block icon 'fa-file' %}
-
-                        {% block body %}
-                            {{ form_row(form.name, {icon_prepend: 'file-pen'}) }}
-                            {{ form_row(form.description) }}
-                            {{ form_row(form.imageFile) }}
-                        {% endblock %}
-
-                        {% block footer_widget '' %}
-                    {% endembed %}
+                    <twig:Card header="Votre événement" icon="lucide:file" showFooter="{{ false }}">
+                        {{ form_row(form.name, {icon_prepend: 'lucide:file-edit'}) }}
+                        {{ form_row(form.description) }}
+                        {{ form_row(form.imageFile) }}
+                    </twig:Card>
 
                     {# Part 4 #}
-                    {% embed 'components/widget-card.html.twig' %}
-                        {% block header 'Communiquez' %}
-                        {% block icon 'fa-bullhorn' %}
+                    <twig:Card header="Communiquez" icon="lucide:megaphone" showFooter="{{ false }}">
+                        {{ form_row(form.websiteContacts) }}
+                        {{ form_row(form.phoneContacts) }}
+                        {{ form_row(form.emailContacts) }}
 
-                        {% block body %}
-                            {{ form_row(form.websiteContacts) }}
-                            {{ form_row(form.phoneContacts) }}
-                            {{ form_row(form.emailContacts) }}
-
-                            {% if form.comment is defined %}
-                                {{ form_row(form.comment) }}
-                            {% endif %}
-                        {% endblock %}
-
-                        {% block footer_widget '' %}
-                    {% endembed %}
+                        {% if form.comment is defined %}
+                            {{ form_row(form.comment) }}
+                        {% endif %}
+                    </twig:Card>
                 </div>
                 <div class="col-md-6">
                     {# Part 2 #}
-                    {% embed 'components/widget-card.html.twig' %}
-                        {% block header 'Informations' %}
-                        {% block icon 'fa-file-lines' %}
-
-                        {% block body %}
-                            {{ form_row(form.startDate) }}
-                            {{ form_row(form.endDate) }}
-                            {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'calendar'}) }}
-                            {{ form_row(form.hours, {icon_prepend: 'clock'}) }}
-                            {{ form_row(form.category, {icon_prepend: 'masks-theater'}) }}
-                            {{ form_row(form.theme, {icon_prepend: 'vest'}) }}
-                            {{ form_row(form.prices, {icon_prepend: 'ticket'}) }}
-                        {% endblock %}
-
-                        {% block footer_widget '' %}
-                    {% endembed %}
+                    <twig:Card header="Informations" icon="lucide:file-text" showFooter="{{ false }}">
+                        {{ form_row(form.startDate) }}
+                        {{ form_row(form.endDate) }}
+                        {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
+                        {{ form_row(form.hours, {icon_prepend: 'lucide:clock'}) }}
+                        {{ form_row(form.category, {icon_prepend: 'lucide:drama'}) }}
+                        {{ form_row(form.theme, {icon_prepend: 'lucide:shield'}) }}
+                        {{ form_row(form.prices, {icon_prepend: 'lucide:ticket'}) }}
+                    </twig:Card>
 
                     {# Part 3 #}
-                    {% embed 'components/widget-card.html.twig' %}
-                        {% block header 'Lieux' %}
-                        {% block icon 'fa-map-location-dot' %}
+                    <twig:Card header="Lieux" icon="lucide:map-pinned" showFooter="{{ false }}">
+                        {{ form_errors(form.place) }}
+                        {{ form_row(form.place.name, {icon_prepend: 'lucide:map-pin'}) }}
+                        {{ form_row(form.address, {icon_prepend: 'lucide:crosshair'}) }}
 
-                        {% block body %}
-                            {{ form_errors(form.place) }}
-                            {{ form_row(form.place.name, {icon_prepend: 'location-dot'}) }}
-                            {{ form_row(form.address, {icon_prepend: 'location-crosshairs'}) }}
+                        <div class="ms-2 ms-sm-5 mb-5">
+                            {{ form_row(form.place.street) }}
+                            {{ form_errors(form.place.city) }}
+                            {{ form_row(form.place.city.postalCode) }}
+                            {{ form_row(form.place.city.name) }}
+                            {{ form_row(form.place.country) }}
+                        </div>
 
-                            <div class="ms-2 ms-sm-5 mb-5">
-                                {{ form_row(form.place.street) }}
-                                {{ form_errors(form.place.city) }}
-                                {{ form_row(form.place.city.postalCode) }}
-                                {{ form_row(form.place.city.name) }}
-                                {{ form_row(form.place.country) }}
-                            </div>
-
-                            <div id="map"></div>
-                        {% endblock %}
-
-                        {% block footer_widget '' %}
-                    {% endembed %}
+                        <div id="map"></div>
+                    </twig:Card>
 
                 </div>
             </div>
             <hr />
             <div class="mt-2">
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
-                    <i class="icon fa fa-chevron-left"></i>
+                    <twig:Icon name="lucide:chevron-left" />
                     Retour
                 </a>
                 <button type="submit" class="ms-2 btn btn-primary">
-                    <i class="icon fa fa-save"></i>
+                    <twig:Icon name="lucide:save" />
                     Sauvegarder
                 </button>
             </div>

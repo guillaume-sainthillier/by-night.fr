@@ -34,11 +34,11 @@ final class ChangePasswordFormType extends AbstractType
                         new Length(min: 6, max: 255, minMessage: 'Votre mot de passe doit comporter au moins {{ limit }} caractères'),
                     ],
                     'label' => 'Nouveau mot de passe',
-                    'icon-prepend' => 'lock',
+                    'icon-prepend' => 'lucide:key',
                 ],
                 'second_options' => [
                     'label' => 'Répetez le mot  de passe',
-                    'icon-prepend' => 'lock',
+                    'icon-prepend' => 'lucide:key',
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas',
                 // Instead of being set onto the object directly,

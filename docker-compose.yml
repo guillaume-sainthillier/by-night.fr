@@ -4,6 +4,8 @@ services:
         env_file:
             - .env
             - .env.local
+        volumes:
+            - ./:/app
         ports:
             - 8080:80
     worker:
@@ -26,14 +28,6 @@ services:
             - 15672:15672
         volumes:
             - rabbitmq:/var/lib/rabbitmq
-
-    #    blackfire:
-    #        image: blackfire/blackfire
-    #        environment:
-    #            - BLACKFIRE_SERVER_ID
-    #            - BLACKFIRE_SERVER_TOKEN
-    #        networks:
-    #            - local
 
     elasticsearch:
         build: docker/elasticsearch
@@ -58,28 +52,6 @@ services:
             - 5601:5601
         depends_on:
             - elasticsearch
-
-    varnish:
-        build:
-            context: docker/varnish
-        platform: linux/arm/v7
-        command:
-            - '/bin/sh'
-            - '-c'
-            - >
-                sed -i "s/_BACKEND_HOST_/$${BACKEND_HOST}/g" /etc/varnish/default.vcl &&
-                sed -i "s/_BACKEND_PORT_/$${BACKEND_PORT}/g" /etc/varnish/default.vcl &&
-                sed -i "s/_PUBLIC_PORT_/$${PUBLIC_PORT}/g" /etc/varnish/default.vcl &&
-                varnishd -F -f /etc/varnish/default.vcl -t 0
-        ports:
-            - '${VARNISH_PUBLIC_PORT}:80'
-        environment:
-            - 'BACKEND_HOST=${VARNISH_BACKEND_HOST}'
-            - 'BACKEND_PORT=${VARNISH_BACKEND_PORT}'
-            - 'PUBLIC_PORT=${VARNISH_PUBLIC_PORT}'
-            - 'DEBUG=${VARNISH_DEBUG}'
-        tmpfs:
-            - /var/lib/varnish/varnishd:exec
 
 volumes:
     esdata:

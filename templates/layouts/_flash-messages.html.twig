@@ -2,7 +2,13 @@
     {% for message in messages %}
         <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
             <div class="container-lg">
-                <i class="icon fa {{ key == 'info' ? 'fa-info-circle' : (key == 'error' ? 'fa-warning' : key == 'fa-success' ? 'fa-check' : key) }}"></i>
+                {% if key == 'info' %}
+                    <twig:Icon name="lucide:info" />
+                {% elseif key == 'error' %}
+                    <twig:Icon name="lucide:triangle-alert" />
+                {% elseif key == 'success' %}
+                    <twig:Icon name="lucide:check" />
+                {% endif %}
                 {{ message|trans|raw }}
             </div>
         </div>

@@ -1,0 +1,11 @@
+{% props event, width, lazy = false, placeholderPriority = false %}
+{{ image({
+    event: event,
+    loader: 'event',
+    width: width,
+    placeholderPriority: placeholderPriority or lazy,
+    attr: attributes.defaults({
+        alt: event_seo.eventShortTitle(event),
+        title: event_seo.eventShortTitle(event),
+    }).all,
+}) }}

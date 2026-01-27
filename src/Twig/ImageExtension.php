@@ -10,17 +10,20 @@
 
 namespace App\Twig;
 
-use Override;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use App\Image\Helper\ImageHelper;
+use Twig\Attribute\AsTwigFunction;
+use Twig\Environment;
 
-final class ImageExtension extends AbstractExtension
+final class ImageExtension
 {
-    #[Override]
-    public function getFunctions(): array
+    public function __construct(
+        private readonly ImageHelper $imageHelper,
+    ) {
+    }
+
+    #[AsTwigFunction(name: 'image', isSafe: ['html'], needsEnvironment: true)]
+    public function image(Environment $twig, array $params): string
     {
-        return [
-            new TwigFunction('image', [ImageRuntime::class, 'image'], ['needs_environment' => true, 'is_safe' => ['html']]),
-        ];
+        return $this->imageHelper->image($params, $twig);
     }
 }

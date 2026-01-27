@@ -37,9 +37,17 @@ final class CommentRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('c')
+            ->distinct()
+            ->leftJoin('c.children', 'children')
+            ->addSelect('children')
+            ->leftJoin('children.user', 'childUser')
+            ->addSelect('childUser')
+            ->leftJoin('c.user', 'user')
+            ->addSelect('user')
             ->where('c.event = :event AND c.parent IS NULL AND c.approved = true')
             ->setParameter('event', $event)
             ->orderBy('c.createdAt', Criteria::DESC)
+            ->addOrderBy('children.createdAt', Criteria::DESC)
         ;
     }
 

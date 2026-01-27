@@ -16,13 +16,11 @@ use App\Repository\CityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\VirtualProperty;
 use Override;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
-#[ExclusionPolicy('NONE')]
 class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     #[ORM\ManyToOne(targetEntity: AdminZone::class)]
@@ -39,7 +37,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     }
 
     #[Groups(['elasticsearch:city:details'])]
-    #[VirtualProperty(name: 'country')]
+    #[SerializedName('country')]
     #[Override]
     public function getCountry(): ?Country
     {
@@ -83,7 +81,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     }
 
     #[Groups(['elasticsearch:city:details'])]
-    #[VirtualProperty(name: 'postalCodes')]
+    #[SerializedName('postalCodes')]
     public function getPostalCodes(): array
     {
         $postalCodes = [];

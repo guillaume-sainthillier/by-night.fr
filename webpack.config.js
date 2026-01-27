@@ -43,8 +43,8 @@ Encore
             to: Encore.isProduction() ? 'images/[path][name].[hash:8].[ext]' : 'images/[path][name].[ext]',
         },
     ])
-    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
-    // .enableStimulusBridge('./assets/controllers.json')
+    // enables the Symfony UX Stimulus bridge (used in assets/stimulus_bootstrap.js)
+    .enableStimulusBridge('./assets/controllers.json')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -104,6 +104,37 @@ Encore
         options.api = 'legacy'
     })
 
+    // Configure SVGR for SVG imports from assets/icons as Preact components
+    .addRule({
+        test: /\.svg$/,
+        include: path.resolve(__dirname, 'assets/icons'),
+        use: [
+            {
+                loader: '@svgr/webpack',
+                options: {
+                    jsxRuntime: 'classic',
+                    jsxImportSource: 'preact',
+                    svgoConfig: {
+                        plugins: [
+                            {
+                                name: 'preset-default',
+                                params: {
+                                    overrides: {
+                                        removeViewBox: false,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    svgProps: {
+                        fill: 'currentColor',
+                        className: 'icon',
+                    },
+                },
+            },
+        ],
+    })
+
     // uncomment if you use TypeScript
     // .enableTypeScriptLoader()
 
@@ -126,6 +157,7 @@ Encore
 if(Encore.isDev()) {
     Encore.addPlugin(new ESLintWebpackPlugin({
         fix: true,
+        failOnError: false,
         configType: 'flat',
         exclude: [
             'node_modules',
@@ -167,7 +199,6 @@ if (Encore.isProduction()) {
                     /^custom-/,
                     /^note-/,
                     /^select2-container--bootstrap-5/,
-                    /^fa-(plus|xmark|masks-theater|vest|file-pen|calendar|location-crosshairs|twitter|facebook)/,
                     /^aa-/,
                 ]
             },

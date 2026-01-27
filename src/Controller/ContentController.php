@@ -10,12 +10,10 @@
 
 namespace App\Controller;
 
-use App\Annotation\ReverseProxy;
 use App\Controller\AbstractController as BaseController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[ReverseProxy(expires: '1 year')]
 final class ContentController extends BaseController
 {
     #[Route(path: '/cookie', name: 'app_main_cookie', methods: ['GET'])]

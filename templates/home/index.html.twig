@@ -14,10 +14,10 @@
                     {{ form_start(autocomplete_form, {attr: {class: 'form-city-picker m-0'}}) }}
                     {{ form_errors(autocomplete_form) }}
 
-                    {{ form_row(autocomplete_form.shortcut, {label: 'Je veux sortir', attr: {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}, icon_prepend: 'calendar-alt'}) }}
+                    {{ form_row(autocomplete_form.shortcut, {label: 'Je veux sortir', attr: {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}, icon_prepend: 'lucide:calendar-days'}) }}
                     {{ form_row(autocomplete_form.from) }}
                     {{ form_row(autocomplete_form.to) }}
-                    {{ form_row(autocomplete_form.name, {label: 'À', icon_prepend: 'location-dot'}) }}
+                    {{ form_row(autocomplete_form.name, {label: 'À', icon_prepend: 'lucide:map-pin'}) }}
                     <div class="text-center">
                         <button class="btn btn-primary choose-city-action" type="submit" disabled>
                             C'est parti
@@ -63,7 +63,7 @@
 {% block head_js %}
     <script>
         var AppConfig = {
-            "apiCityURL": "{{ url('app_api_city') }}?q=%QUERY"
+            "apiCityURL": "{{ url('api_cities') }}?q=%QUERY"
         };
     </script>
 {% endblock %}

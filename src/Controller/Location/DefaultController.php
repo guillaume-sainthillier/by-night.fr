@@ -10,8 +10,7 @@
 
 namespace App\Controller\Location;
 
-use App\Annotation\ReverseProxy;
-use App\App\Location;
+use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
 use App\Form\Type\SimpleEventSearchType;
 use App\Repository\EventRepository;
@@ -22,9 +21,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DefaultController extends BaseController
 {
     #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
-    #[ReverseProxy(expires: 'tomorrow')]
-    public function index(Location $location, EventRepository $eventRepository): Response
+    public function index(AppContext $appContext, EventRepository $eventRepository): Response
     {
+        $location = $appContext->getLocation();
+
         $datas = [
             'from' => new DateTime(),
         ];

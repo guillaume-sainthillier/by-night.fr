@@ -87,7 +87,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         $qb = $this->createElasticaQueryBuilder('e');
 
-        return $qb->where('e.draft = false');
+        return $qb
+            ->andWhere('e.draft = false')
+            ->addOrderBy('e.createdAt', 'DESC')
+        ;
     }
 
     public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
@@ -234,7 +237,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getResult();
     }
 
-    public function findAllNextEvents(User $user, bool $isNext = true, int $page = 1, int $limit = 3): array
+    public function findAllNextEvents(User $user, bool $isNext = true): QueryBuilder
     {
         return $this
             ->createQueryBuilder('e')
@@ -243,11 +246,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
             ->orderBy('e.endDate', $isNext ? 'ASC' : 'DESC')
             ->setParameter('user', $user->getId())
-            ->setParameter('start_date', date('Y-m-d'))
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
+            ->setParameter('start_date', date('Y-m-d'));
     }
 
     public function getUserFavoriteEventsCount(User $user): int
@@ -308,28 +307,15 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->execute();
     }
 
-    /**
-     * @return array<Event>
-     */
-    public function findAllSimilars(Event $event, ?int $page = 1, int $limit = 7): array
-    {
-        return $this
-            ->getFindAllSimilarsBuilder($event)
-            ->orderBy('e.name', Criteria::ASC)
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
-    }
-
-    private function getFindAllSimilarsBuilder(Event $event): QueryBuilder
+    public function findAllSimilarsQueryBuilder(Event $event): QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('e')
             ->where('e.startDate = :from')
             ->andWhere('e.id != :id')
             ->setParameter('from', $event->getStartDate()->format('Y-m-d'))
-            ->setParameter('id', $event->getId());
+            ->setParameter('id', $event->getId())
+            ->orderBy('e.name', Criteria::ASC);
 
         if (null !== $event->getPlace()->getCity()) {
             $qb
@@ -344,16 +330,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $qb;
     }
 
-    public function getAllSimilarsCount(Event $event): int
-    {
-        return (int) $this
-            ->getFindAllSimilarsBuilder($event)
-            ->select('count(e.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function findAllNext(Event $event, int $page = 1, int $limit = 7): array
+    public function findAllNextQueryBuilder(Event $event): QueryBuilder
     {
         $from = new DateTime();
 
@@ -363,47 +340,19 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('e.endDate', Criteria::ASC)
             ->setParameter('end_date', $from->format('Y-m-d'))
             ->setParameter('id', $event->getId())
-            ->setParameter('place', $event->getPlace()->getId())
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
+            ->setParameter('place', $event->getPlace()->getId());
     }
 
-    public function getAllNextCount(Event $event): int
-    {
-        $from = new DateTime();
-
-        return (int) $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->select('count(e.id)')
-            ->from($this->getEntityName(), 'e')
-            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place')
-            ->setParameter('end_date', $from->format('Y-m-d'))
-            ->setParameter('id', $event->getId())
-            ->setParameter('place', $event->getPlace()->getId())
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function getTopEventCount(Location $location): int
-    {
-        return (int) $this
-            ->getTopEventBuilder($location)
-            ->select('count(e.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    private function getTopEventBuilder(Location $location): QueryBuilder
+    public function findTopEventsQueryBuilder(Location $location): QueryBuilder
     {
         $du = new DateTime();
         $au = new DateTime('sunday this week');
 
         $qb = $this
             ->createQueryBuilder('e')
-            ->where('e.endDate BETWEEN :from AND :to');
+            ->where('e.endDate BETWEEN :from AND :to')
+            ->orderBy('e.endDate', Criteria::ASC)
+            ->addOrderBy('e.participations', Criteria::DESC);
 
         if ($location->isCity()) {
             $qb
@@ -418,18 +367,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $qb
             ->setParameter('from', $du->format('Y-m-d'))
             ->setParameter('to', $au->format('Y-m-d'));
-    }
-
-    public function findTopEvents(Location $location, int $page = 1, int $limit = 7): array
-    {
-        return $this
-            ->getTopEventBuilder($location)
-            ->orderBy('e.endDate', Criteria::ASC)
-            ->addOrderBy('e.participations', Criteria::DESC)
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
     }
 
     public function findUpcomingEventsQueryBuilder(Location $location): QueryBuilder

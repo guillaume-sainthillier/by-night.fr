@@ -1,5 +1,4 @@
 {% extends 'layouts/full.html.twig' %}
-{% do fos_httpcache_tag(tags('location', location)) %}
 
 {% block page_id 'page-location-index' %}
 {% block meta_title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
@@ -32,8 +31,8 @@
                     {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
                     {{ form_row(form.from) }}
                     {{ form_row(form.to) }}
-                    {{ form_row(form.shortcut, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'calendar-alt'}) }}
-                    {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'search'}) }}
+                    {{ form_row(form.shortcut, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'lucide:calendar-days'}) }}
+                    {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'lucide:search'}) }}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary search">

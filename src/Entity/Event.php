@@ -27,10 +27,11 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type;
 use Stringable;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
@@ -80,12 +81,12 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Type("DateTimeInterface<'Y-m-d'>")]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTime $startDate;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
-    #[Type("DateTimeInterface<'Y-m-d'>")]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTime $endDate = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]

@@ -24,39 +24,35 @@ use App\Api\Processor\EventParticipateProcessor;
 use App\Entity\Event;
 use App\Security\Voter\EventVoter;
 
-#[ApiResource(
-    shortName: 'Event',
-    stateOptions: new Options(entityClass: Event::class),
-    operations: [
-        new Put(
-            uriTemplate: '/events/{id}/cancel',
-            name: 'api_event_cancel',
-            input: EventCancelInput::class,
-            output: EventActionOutput::class,
-            processor: EventCancelProcessor::class,
-            security: "is_granted('" . EventVoter::EDIT . "', object)",
-            securityMessage: 'You are not allowed to edit this event.',
-        ),
-        new Put(
-            uriTemplate: '/events/{id}/draft',
-            name: 'api_event_draft',
-            input: EventDraftInput::class,
-            output: EventActionOutput::class,
-            processor: EventDraftProcessor::class,
-            security: "is_granted('" . EventVoter::EDIT . "', object)",
-            securityMessage: 'You are not allowed to edit this event.',
-        ),
-        new Put(
-            uriTemplate: '/events/{id}/participer',
-            name: 'api_event_participer',
-            input: EventParticipateInput::class,
-            output: EventParticipationOutput::class,
-            processor: EventParticipateProcessor::class,
-            security: "is_granted('ROLE_USER')",
-            securityMessage: 'You must be logged in to participate.',
-        ),
-    ],
-)]
+#[ApiResource(shortName: 'Event', operations: [
+    new Put(
+        uriTemplate: '/events/{id}/cancel',
+        security: "is_granted('" . EventVoter::EDIT . "', object)",
+        securityMessage: 'You are not allowed to edit this event.',
+        input: EventCancelInput::class,
+        output: EventActionOutput::class,
+        name: 'api_event_cancel',
+        processor: EventCancelProcessor::class,
+    ),
+    new Put(
+        uriTemplate: '/events/{id}/draft',
+        security: "is_granted('" . EventVoter::EDIT . "', object)",
+        securityMessage: 'You are not allowed to edit this event.',
+        input: EventDraftInput::class,
+        output: EventActionOutput::class,
+        name: 'api_event_draft',
+        processor: EventDraftProcessor::class,
+    ),
+    new Put(
+        uriTemplate: '/events/{id}/participer',
+        security: "is_granted('ROLE_USER')",
+        securityMessage: 'You must be logged in to participate.',
+        input: EventParticipateInput::class,
+        output: EventParticipationOutput::class,
+        name: 'api_event_participer',
+        processor: EventParticipateProcessor::class,
+    ),
+], stateOptions: new Options(entityClass: Event::class))]
 final class EventAction
 {
 }

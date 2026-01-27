@@ -22,13 +22,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation as Serializer;
 use Serializable;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue]
-    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details'])]
+    #[Groups(['elasticsearch:event:details', 'elasticsearch:user:details'])]
     private ?int $id = null;
 
     #[Assert\Length(max: 180)]
@@ -59,7 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[Assert\Length(max: 180)]
     #[ORM\Column(type: Types::STRING, length: 180, unique: true)]
-    #[Serializer\Groups(['elasticsearch:user:details'])]
+    #[Groups(['elasticsearch:user:details'])]
     private ?string $username = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
@@ -83,12 +83,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    #[Serializer\Groups(['elasticsearch:user:details'])]
+    #[Groups(['elasticsearch:user:details'])]
     private ?string $firstname = null;
 
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    #[Serializer\Groups(['elasticsearch:user:details'])]
+    #[Groups(['elasticsearch:user:details'])]
     private ?string $lastname = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

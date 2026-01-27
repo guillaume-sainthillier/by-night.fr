@@ -6,24 +6,24 @@
     <div class="col-auto">
         <a class="social-facebook social big-social p-1" title="Connectez vous avec Facebook"
            href="{{ path('login_social_start', {service: 'facebook'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-facebook-f"></i>
+            <twig:Icon name="fa7-brands:facebook-f" />
         </a>
     </div>
     <div class="col-auto">
         <a class="social-x social big-social p-1" title="Connectez vous avec X"
            href="{{ path('login_social_start', {service: 'twitter'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-x-twitter"></i>
+            <twig:Icon name="fa7-brands:x-twitter" />
         </a>
     </div>
     <div class="col-auto">
         <a class="social-google social big-social p-1" title="Connectez vous avec Google"
            href="{{ path('login_social_start', {service: 'google'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
-            <i class="icon fab fa-google"></i>
+            <twig:Icon name="fa7-brands:google" />
         </a>
     </div>
 </div>
 
-<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+<input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}" />
 
 <div class="mb-3">
     <label for="username">Nom d'utilisateur</label>

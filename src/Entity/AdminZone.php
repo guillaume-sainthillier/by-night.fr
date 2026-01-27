@@ -14,13 +14,10 @@ use App\Repository\AdminZoneRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use Stringable;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
  * OAuth.
@@ -32,7 +29,6 @@ use Stringable;
 #[ORM\DiscriminatorMap(['PPL' => 'City', 'ADM1' => 'AdminZone1', 'ADM2' => 'AdminZone2'])]
 #[ORM\Entity(repositoryClass: AdminZoneRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ExclusionPolicy('NONE')]
 abstract class AdminZone implements Stringable
 {
     #[ORM\Column(type: Types::INTEGER)]
@@ -41,7 +37,7 @@ abstract class AdminZone implements Stringable
     protected ?int $id = null;
 
     #[ORM\Column(length: 200, unique: true)]
-    #[Exclude]
+    #[Ignore]
     #[Gedmo\Slug(fields: ['name'])]
     protected ?string $slug = null;
 
@@ -63,11 +59,11 @@ abstract class AdminZone implements Stringable
     protected ?Country $country = null;
 
     #[ORM\Column(name: 'admin1_code', type: Types::STRING, length: 20, nullable: true)]
-    #[Exclude]
+    #[Ignore]
     protected ?string $admin1Code = null;
 
     #[ORM\Column(name: 'admin2_code', type: Types::STRING, length: 80, nullable: true)]
-    #[Exclude]
+    #[Ignore]
     protected ?string $admin2Code = null;
 
     /**
@@ -76,8 +72,6 @@ abstract class AdminZone implements Stringable
      * @psalm-return array{lat: float, lon: float}
      */
     #[Groups(['elasticsearch:city:details', 'elasticsearch:event:details'])]
-    #[Expose]
-    #[VirtualProperty]
     #[SerializedName('location')]
     public function getLocation(): array
     {

@@ -8,14 +8,14 @@
     {% if oAuth.facebookAccessToken %}
         <a class="social-facebook social" href="https://www.facebook.com/{{ oAuth.facebookId }}"
            title="{{ oAuth.facebookRealname }} sur Facebook">
-            <i class="icon fab fa-facebook-f"></i>
+            <twig:Icon name="fa7-brands:facebook-f" />
         </a>
     {% endif %}
 
     {% if oAuth.twitterNickname %}
         <a class="social-twitter social" href="https://twitter.com/{{ oAuth.twitterNickname }}"
            title="{{ oAuth.twitterRealname }} sur Twitter">
-            <i class="icon fab fa-x-twitter"></i>
+            <twig:Icon name="fa7-brands:x-twitter" />
         </a>
     {% endif %}
 {% endif %}

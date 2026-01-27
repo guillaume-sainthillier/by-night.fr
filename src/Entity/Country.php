@@ -16,32 +16,30 @@ use App\Repository\CountryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
 use Stringable;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
-#[ExclusionPolicy('NONE')]
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Country implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     #[ORM\Column(type: Types::STRING, length: 2)]
     #[ORM\Id]
-    #[Serializer\Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
+    #[Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 63, unique: true)]
-    #[Exclude]
+    #[Ignore]
     #[Gedmo\Slug(fields: ['name'], prefix: 'c--')]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::STRING, length: 5, nullable: true)]
-    #[Exclude]
+    #[Ignore]
     private ?string $locale = null;
 
     #[ORM\Column(type: Types::STRING, length: 63)]
-    #[Serializer\Groups(['elasticsearch:city:details'])]
+    #[Groups(['elasticsearch:city:details'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::STRING, length: 63)]
@@ -51,11 +49,11 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     private ?string $atDisplayName = null;
 
     #[ORM\Column(type: Types::STRING, length: 63)]
-    #[Exclude]
+    #[Ignore]
     private ?string $capital = null;
 
     #[ORM\Column(type: Types::STRING, length: 511, nullable: true)]
-    #[Exclude]
+    #[Ignore]
     private ?string $postalCodeRegex = null;
 
     public function __toString(): string

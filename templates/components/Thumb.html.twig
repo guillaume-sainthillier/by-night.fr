@@ -1,0 +1,7 @@
+{% props path, width, height %}
+<img {{ attributes.defaults({class: 'img-fluid'}) }}
+     width="{{ width }}"
+     height="{{ height }}"
+     src="{{ thumb_asset(asset(path, 'local'), {h: height, w: width}) }}"
+     srcset="{{ thumb_asset(asset(path, 'local'), {h: height, w: width, dpr: 2}) }} 2x"
+/>

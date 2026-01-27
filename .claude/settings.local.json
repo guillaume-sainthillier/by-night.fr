@@ -22,7 +22,17 @@
       "Bash(vendor/bin/phpunit:*)",
       "Bash(bin/console cache:clear:*)",
       "Bash(yarn add:*)",
-      "Bash(yarn run dev)"
+      "Bash(yarn run dev)",
+      "Bash(composer show:*)",
+      "Bash(bin/console debug:container:*)",
+      "Bash(bin/console debug:event-dispatcher:*)",
+      "Bash(bin/console:*)",
+      "Bash(find:*)",
+      "Bash(vendor/bin/php-cs-fixer fix:*)",
+      "Bash(vendor/bin/twig-cs-fixer lint:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run icon:svg:*)",
+      "mcp__repomix__file_system_read_directory"
     ]
   }
 }

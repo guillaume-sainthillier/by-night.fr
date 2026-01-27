@@ -30,7 +30,7 @@ final class EventActionTest extends ApiTestCase
     {
         $event = EventFactory::createOne();
 
-        static::createClient()->request('PUT', \sprintf('/api/events/%d/cancel', $event->getId()), [
+        self::createClient()->request('PUT', \sprintf('/api/events/%d/cancel', $event->getId()), [
             'json' => ['cancel' => true],
         ]);
 
@@ -43,7 +43,7 @@ final class EventActionTest extends ApiTestCase
         $otherUser = UserFactory::createOne();
         $event = EventFactory::createOne(['user' => $owner]);
 
-        self::createAuthenticatedClient($otherUser)->request('PUT', \sprintf('/api/events/%d/cancel', $event->getId()), [
+        $this->createAuthenticatedClient($otherUser)->request('PUT', \sprintf('/api/events/%d/cancel', $event->getId()), [
             'json' => ['cancel' => true],
         ]);
 
@@ -56,7 +56,7 @@ final class EventActionTest extends ApiTestCase
         $event = EventFactory::createOne(['user' => $user, 'status' => null]);
         $eventId = $event->getId();
 
-        self::createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/cancel', $eventId), [
+        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/cancel', $eventId), [
             'headers' => ['Accept' => 'application/json'],
             'json' => ['cancel' => true],
         ]);
@@ -75,7 +75,7 @@ final class EventActionTest extends ApiTestCase
         $event = EventFactory::createOne(['user' => $user, 'status' => 'ANNULÉ']);
         $eventId = $event->getId();
 
-        self::createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/cancel', $eventId), [
+        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/cancel', $eventId), [
             'json' => ['cancel' => false],
         ]);
 
@@ -89,7 +89,7 @@ final class EventActionTest extends ApiTestCase
     {
         $event = EventFactory::createOne();
 
-        static::createClient()->request('PUT', \sprintf('/api/events/%d/draft', $event->getId()), [
+        self::createClient()->request('PUT', \sprintf('/api/events/%d/draft', $event->getId()), [
             'json' => ['draft' => true],
         ]);
 
@@ -102,7 +102,7 @@ final class EventActionTest extends ApiTestCase
         $otherUser = UserFactory::createOne();
         $event = EventFactory::createOne(['user' => $owner]);
 
-        self::createAuthenticatedClient($otherUser)->request('PUT', \sprintf('/api/events/%d/draft', $event->getId()), [
+        $this->createAuthenticatedClient($otherUser)->request('PUT', \sprintf('/api/events/%d/draft', $event->getId()), [
             'json' => ['draft' => true],
         ]);
 
@@ -115,7 +115,7 @@ final class EventActionTest extends ApiTestCase
         $event = EventFactory::createOne(['user' => $user, 'draft' => false]);
         $eventId = $event->getId();
 
-        self::createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/draft', $eventId), [
+        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/draft', $eventId), [
             'headers' => ['Accept' => 'application/json'],
             'json' => ['draft' => true],
         ]);
@@ -134,7 +134,7 @@ final class EventActionTest extends ApiTestCase
         $event = EventFactory::createOne(['user' => $user, 'draft' => true]);
         $eventId = $event->getId();
 
-        self::createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/draft', $eventId), [
+        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/draft', $eventId), [
             'json' => ['draft' => false],
         ]);
 
@@ -148,7 +148,7 @@ final class EventActionTest extends ApiTestCase
     {
         $event = EventFactory::createOne();
 
-        static::createClient()->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
+        self::createClient()->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
             'json' => ['like' => true],
         ]);
 
@@ -161,7 +161,7 @@ final class EventActionTest extends ApiTestCase
         $event = EventFactory::createOne(['participations' => 0]);
         $eventId = $event->getId();
 
-        self::createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/participer', $eventId), [
+        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/participer', $eventId), [
             'headers' => ['Accept' => 'application/json'],
             'json' => ['like' => true],
         ]);
@@ -180,7 +180,7 @@ final class EventActionTest extends ApiTestCase
         $event = EventFactory::createOne(['participations' => 1]);
         $eventId = $event->getId();
 
-        $client = self::createAuthenticatedClient($user);
+        $client = $this->createAuthenticatedClient($user);
 
         // First participate
         $client->request('PUT', \sprintf('/api/events/%d/participer', $eventId), [
@@ -200,17 +200,17 @@ final class EventActionTest extends ApiTestCase
     {
         $user = UserFactory::createOne();
 
-        self::createAuthenticatedClient($user)->request('PUT', '/api/events/999999/cancel', [
+        $this->createAuthenticatedClient($user)->request('PUT', '/api/events/999999/cancel', [
             'json' => ['cancel' => true],
         ]);
 
         self::assertResponseStatusCodeSame(404);
     }
 
-    private static function createAuthenticatedClient(UserInterface|Proxy $user): Client
+    private function createAuthenticatedClient(UserInterface|Proxy $user): Client
     {
         $user = $user instanceof Proxy ? $user->_real() : $user;
-        $client = static::createClient();
+        $client = self::createClient();
         $client->loginUser($user);
 
         return $client;
