@@ -24,6 +24,7 @@ import formCollection from './listeners/form-collection'
 import formErrors from './listeners/form-errors'
 import formTarget from './listeners/form-target'
 import imagePreviews from './listeners/image-previews'
+import impersonate from './listeners/impersonate'
 import like from './listeners/like'
 import loadMore from './listeners/load-more'
 import login from './listeners/login'
@@ -50,6 +51,7 @@ class App {
             formCollection,
             formErrors,
             formTarget,
+            impersonate,
             like,
             loadMore,
             login,
