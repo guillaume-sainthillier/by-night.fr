@@ -1,4 +1,3 @@
-{% import 'form/macros.html.twig' as macros %}
 {% if user.showSocials %}
     {% set oAuth = user.oAuth %}
 
@@ -9,14 +8,14 @@
     {% if oAuth.facebookAccessToken %}
         <a class="social-facebook social" href="https://www.facebook.com/{{ oAuth.facebookId }}"
            title="{{ oAuth.facebookRealname }} sur Facebook">
-            {{ macros.icon('fa7-brands:facebook-f') }}
+            <twig:Icon name="fa7-brands:facebook-f" />
         </a>
     {% endif %}
 
     {% if oAuth.twitterNickname %}
         <a class="social-twitter social" href="https://twitter.com/{{ oAuth.twitterNickname }}"
            title="{{ oAuth.twitterRealname }} sur Twitter">
-            {{ macros.icon('fa7-brands:x-twitter') }}
+            <twig:Icon name="fa7-brands:x-twitter" />
         </a>
     {% endif %}
 {% endif %}

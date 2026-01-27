@@ -1,9 +1,8 @@
-{% import 'form/macros.html.twig' as macros %}
 {% set isCurrentUser = app.user and app.user.id == comment.user.id %}
 <div class="chat-item reply-thread" data-comment-id="{{ comment.id }}">
     <div class="row align-items-end">
         <div class="col-auto">
-            {{ macros.userThumb(comment.user, 40, 40, {wrapperAttr: {class: 'avatar'}}) }}
+            <twig:UserThumb user="{{ comment.user }}" width="{{ 40 }}" height="{{ 40 }}" wrapperAttr="{{ {class: 'avatar'} }}" />
         </div>
         <div class="col col-lg-8">
             <div class="chat-bubble{{ isCurrentUser ? ' chat-bubble-me' : '' }}">
@@ -16,7 +15,7 @@
                             {{ comment.createdAt|diff_date }}
                             {% if is_granted('ROLE_USER') %}
                                 <button class="btn btn-sm reply-link text-muted" data-url="{{ path('app_comment_reponse_new', {id: comment.id}) }}">
-                                    {{ macros.icon('lucide:reply', 'icon-inline') }} Répondre
+                                    <twig:Icon name="lucide:reply" class="icon-inline" /> Répondre
                                 </button>
                             {% endif %}
                         </div>

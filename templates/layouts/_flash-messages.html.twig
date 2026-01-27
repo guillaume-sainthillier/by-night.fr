@@ -1,14 +1,13 @@
-{% import 'form/macros.html.twig' as macros %}
 {% for key, messages in app.flashes %}
     {% for message in messages %}
         <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
             <div class="container-lg">
                 {% if key == 'info' %}
-                    {{ macros.icon('lucide:info') }}
+                    <twig:Icon name="lucide:info" />
                 {% elseif key == 'error' %}
-                    {{ macros.icon('lucide:triangle-alert') }}
+                    <twig:Icon name="lucide:triangle-alert" />
                 {% elseif key == 'success' %}
-                    {{ macros.icon('lucide:check') }}
+                    <twig:Icon name="lucide:check" />
                 {% endif %}
                 {{ message|trans|raw }}
             </div>

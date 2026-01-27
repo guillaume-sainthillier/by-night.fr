@@ -1,9 +1,8 @@
-{% import 'form/macros.html.twig' as macros %}
 {% if is_granted('ROLE_USER') %}
     {{ form_start(form) }}
 
     <div class="comment-form-user">
-        {{ macros.userLazyThumb(app.user, 75, 75) }}
+        <twig:UserThumb user="{{ app.user }}" width="{{ 75 }}" height="{{ 75 }}" lazy="{{ true }}" />
         <strong>{{ app.user.username }}</strong>
     </div>
     <div class="comment-form-input">
