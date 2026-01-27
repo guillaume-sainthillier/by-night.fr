@@ -1,9 +1,8 @@
-{% import 'form/macros.html.twig' as macros %}
 {{ form_start(form, {attr: {id: 'search-form'}}) }}
 {{ form_errors(form) }}
 <div class="block_criteres card">
     <h2 class="card-header h3">
-        {{ macros.icon('lucide:calendar-days', 'text-primary') }}
+        <twig:Icon name="lucide:calendar-days" class="text-primary" />
         Agenda
     </h2>
     <div class="card-body">
@@ -27,7 +26,7 @@
         <div class="d-flex flex-wrap w-100">
             <button type="submit" class="btn btn-primary">Rechercher</button>
             <button type="button" class="ms-auto btn_criteres btn btn-sm btn-outline-secondary mt-2 mt-sm-0">
-                <span class="icon-toggle">{{ macros.icon(options.iconName) }}</span>
+                <span class="icon-toggle"><twig:Icon name="{{ options.iconName }}" /></span>
                 Recherche avancée
             </button>
         </div>

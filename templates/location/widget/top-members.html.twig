@@ -1,15 +1,7 @@
-{% embed 'location/widget/template-scrollable.html.twig' %}
-    {% block titre 'Les supers membres' %}
-    {% block widget_class '' %}
-    {% block widget_body_class 'p-0' %}
-    {% block widget_attr 'id="membres"' %}
-    {% block icon 'lucide:users' %}
-
-    {% block body %}
-        <div class="list-group scroll-area-content">
-            {{ include('location/hinclude/top-users.html.twig', {
-                topUsersData: topUsersData,
-            }) }}
-        </div>
-    {% endblock %}
-{% endembed %}
+<twig:Widget:Scrollable titre="Les supers membres" icon="lucide:users" bodyClass="p-0" id="membres">
+    <div class="list-group scroll-area-content">
+        {{ include('location/hinclude/top-users.html.twig', {
+            topUsersData: topUsersData,
+        }) }}
+    </div>
+</twig:Widget:Scrollable>

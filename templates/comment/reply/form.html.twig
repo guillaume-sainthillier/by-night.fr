@@ -1,11 +1,10 @@
-{% import 'form/macros.html.twig' as macros %}
 {% if is_granted('ROLE_USER') %}
     {{ form_start(form, {attr: {class: 'reply-form'}}) }}
 
     <div class="chat-item reply-item">
         <div class="row align-items-end">
             <div class="col-auto">
-                {{ macros.userLazyThumb(app.user, 32, 32, {wrapperAttr: {class: 'avatar avatar-sm'}}) }}
+                <twig:UserThumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" lazy="{{ true }}" wrapperAttr="{{ {class: 'avatar avatar-sm'} }}" />
             </div>
             <div class="col-lg-8">
                 <div class="chat-bubble chat-bubble-me chat-bubble-reply chat-bubble-form">

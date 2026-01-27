@@ -1,6 +1,4 @@
 {% extends 'layouts/stretch.html.twig' %}
-
-{% import 'form/macros.html.twig' as macros %}
 {% set nameSoiree = event_seo.getEventShortTitle(event) %}
 {% set horaires = event_seo.getEventDateTime(event) %}
 {% set descriptionSoiree = event.description|parse_tags|raw %}
@@ -48,7 +46,7 @@
 {% block body -%}
     {% if event.draft %}
         <div class="alert alert-warning">
-            {{ macros.icon('lucide:triangle-alert') }}
+            <twig:Icon name="lucide:triangle-alert" />
             Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
         </div>
     {% else %}
@@ -57,26 +55,20 @@
                 {% if event.status %}
                     <div class="col-12">
                         <div class="alert alert-warning mb-0">
-                            {{ macros.icon('lucide:triangle-alert') }}
+                            <twig:Icon name="lucide:triangle-alert" />
                             <span itemprop="eventStatus">Informations de dernière minute : {{ event.status }}</span>
                         </div>
                     </div>
                 {% endif %}
                 <div class="col-lg-7">
                     <a class="image-gallery" href="{{ original }}" title="{{ nameSoiree }}">
-                        {{ macros.eventThumb(event, 800, {
-                            placeholderPriority: true,
-                            attr: {
-                                class: 'img',
-                                itemprop: 'image',
-                            },
-                        }) }}
+                        <twig:EventThumb event="{{ event }}" width="{{ 800 }}" placeholderPriority="{{ true }}" class="img" itemprop="image" />
                     </a>
                 </div>
                 <div class="col-lg-5 event-details">
                     <div class="card-body">
                         <div class="detail-item">
-                            {{ macros.icon('lucide:calendar-days') }}
+                            <twig:Icon name="lucide:calendar-days" />
                             <h2>
                                 {% set dateDebut = event.startDate|date('d/m/Y') %}
                                 {% set dateFin = event.endDate|date('d/m/Y') %}
@@ -97,7 +89,7 @@
                         </div>
                         {% if event.hours %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:clock') }}
+                                <twig:Icon name="lucide:clock" />
                                 <p>{{ event.hours }}</p>
                             </div>
                         {% endif %}
@@ -106,7 +98,7 @@
                             <meta name="url" content="{{ path('app_agenda_by_place', {slug: place.slug, location: place.locationSlug}) }}">
 
                             {% if event.placeName %}
-                                {{ macros.icon('lucide:map-pin') }}
+                                <twig:Icon name="lucide:map-pin" />
                             {% endif %}
                             <div>
                                 {% set mapParameter = 'place?q=' %}
@@ -161,7 +153,7 @@
 
                         {% if event.prices %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:ticket') }}
+                                <twig:Icon name="lucide:ticket" />
                                 <p>{{ event.prices }}</p>
                             </div>
                         {% endif %}
@@ -178,7 +170,7 @@
                         {% endif %}
                         {% if event.user %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:user') }}
+                                <twig:Icon name="lucide:user" />
                                 <p>
                                     Par
                                     <a href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}"
@@ -202,7 +194,7 @@
                     <div class="col-sm-4 my-3 my-md-0 event-details">
                         {% for phoneContact in event.phoneContacts %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:phone') }}
+                                <twig:Icon name="lucide:phone" />
                                 <p class="one-line">
                                     <a href="tel:{{ phoneContact }}">{{ phoneContact }}</a>
                                 </p>
@@ -210,7 +202,7 @@
                         {% endfor %}
                         {% for websiteContact in event.websiteContacts %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:globe') }}
+                                <twig:Icon name="lucide:globe" />
                                 <p class="one-line">
                                     <a rel="nofollow" href="{{ websiteContact|ensure_protocol }}">{{ websiteContact }}</a>
                                 </p>
@@ -218,7 +210,7 @@
                         {% endfor %}
                         {% for mailContact in event.mailContacts %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:mail') }}
+                                <twig:Icon name="lucide:mail" />
                                 <p class="one-line">
                                     <a href="mailto:{{ mailContact }}">{{ mailContact }}</a>
                                 </p>
@@ -226,7 +218,7 @@
                         {% endfor %}
                         {% if event.facebookEventId %}
                             <div class="detail-item">
-                                {{ macros.icon('fa7-brands:facebook-f') }}
+                                <twig:Icon name="fa7-brands:facebook-f" />
                                 <p class="one-line">
                                     {% set lien = 'https://www.facebook.com/events/' ~ event.facebookEventId %}
                                     <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
@@ -235,7 +227,7 @@
                         {% endif %}
 
                         <div class="detail-item">
-                            {{ macros.icon('lucide:tags') }}
+                            <twig:Icon name="lucide:tags" />
                             <p class="tags">
                                 {% if event.place.country %}
                                     <a class="badge text-bg-info"
@@ -272,7 +264,7 @@
 
                         {% if event.source %}
                             <div class="detail-item">
-                                {{ macros.icon('lucide:info') }}
+                                <twig:Icon name="lucide:info" />
                                 <p>
                                     Source : <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
                                 </p>
@@ -284,7 +276,7 @@
                             {% if not maPatisserieDisplayed and (word in event.description|lower or word in event.name|lower) %}
                                 {% set maPatisserieDisplayed = true %}
                                 <div class="detail-item">
-                                    {{ macros.icon('lucide:cake') }}
+                                    <twig:Icon name="lucide:cake" />
                                     <p>
                                         <a href="https://mapatisserie.fr">Blog de pâtisserie</a>
                                     </p>

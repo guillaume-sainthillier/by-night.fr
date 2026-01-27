@@ -1,8 +1,5 @@
-{% embed 'location/widget/template-scrollable-horizontal.html.twig' %}
-    {% block titre 'Événements similaires' %}
-    {% block body %}
-        {{ include('location/hinclude/details-events.html.twig', {
-            eventsData: similarEventsData,
-        }) }}
-    {% endblock %}
-{% endembed %}
+<twig:Widget:ScrollableHorizontal titre="Événements similaires">
+    {{ include('location/hinclude/details-events.html.twig', {
+        eventsData: similarEventsData,
+    }) }}
+</twig:Widget:ScrollableHorizontal>

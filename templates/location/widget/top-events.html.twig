@@ -1,15 +1,7 @@
-{% embed 'location/widget/template-scrollable.html.twig' %}
-    {% block titre 'À la une cette semaine' %}
-    {% block widget_class '' %}
-    {% block widget_body_class 'p-0' %}
-    {% block widget_attr 'id="une"' %}
-    {% block icon 'lucide:star' %}
-
-    {% block body %}
-        <div class="list-group scroll-area-content">
-            {{ include('location/hinclude/events.html.twig', {
-                topEventsData: topEventsData,
-            }) }}
-        </div>
-    {% endblock %}
-{% endembed %}
+<twig:Widget:Scrollable titre="À la une cette semaine" icon="lucide:star" bodyClass="p-0" id="une">
+    <div class="list-group scroll-area-content">
+        {{ include('location/hinclude/events.html.twig', {
+            topEventsData: topEventsData,
+        }) }}
+    </div>
+</twig:Widget:Scrollable>

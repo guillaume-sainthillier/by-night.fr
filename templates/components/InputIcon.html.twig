@@ -1,0 +1,14 @@
+{% props iconPrepend = null, iconAppend = null %}
+<div {{ attributes.defaults({class: 'input-icon'}) }}>
+    {% if iconPrepend %}
+        <span class="input-icon-addon">
+            <twig:Icon name="{{ iconPrepend }}" />
+        </span>
+    {% endif %}
+    {% block content %}{% endblock %}
+    {% if iconAppend %}
+        <span class="input-icon-addon">
+            <twig:Icon name="{{ iconAppend }}" />
+        </span>
+    {% endif %}
+</div>

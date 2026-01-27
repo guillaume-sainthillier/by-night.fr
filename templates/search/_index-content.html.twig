@@ -15,17 +15,13 @@
                             <div class="col-md-6 col-lg-8">
                                 <div class="mb-3">
                                     <label for="search">Je cherche</label>
-                                    {% embed 'components/input-icon.html.twig' with({
-                                        iconPrepend: 'lucide:search',
-                                    }) %}
-                                        {% block body %}
-                                            <input name="q"
-                                                   id="search"
-                                                   class="form-control"
-                                                   type="search"
-                                                   value="{{ term }}">
-                                        {% endblock %}
-                                    {% endembed %}
+                                    <twig:InputIcon iconPrepend="lucide:search">
+                                        <input name="q"
+                                               id="search"
+                                               class="form-control"
+                                               type="search"
+                                               value="{{ term }}">
+                                    </twig:InputIcon>
 
                                 </div>
                             </div>

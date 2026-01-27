@@ -1,8 +1,6 @@
-{% embed 'location/widget/template-scrollable-horizontal.html.twig' %}
-    {% block titre %}{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small>{% endblock %}
-    {% block body %}
-        {{ include('location/hinclude/details-events.html.twig', {
-            eventsData: nextEventsData,
-        }) }}
-    {% endblock %}
-{% endembed %}
+<twig:Widget:ScrollableHorizontal>
+    <twig:block name="titre">{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small></twig:block>
+    {{ include('location/hinclude/details-events.html.twig', {
+        eventsData: nextEventsData,
+    }) }}
+</twig:Widget:ScrollableHorizontal>

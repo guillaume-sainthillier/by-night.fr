@@ -1,9 +1,8 @@
-{% import 'form/macros.html.twig' as macros %}
 {% set isCurrentUser = app.user and app.user.id == comment.user.id %}
 <div class="chat-item reply-item">
     <div class="row align-items-end">
         <div class="col-auto">
-            {{ macros.userThumb(comment.user, 32, 32, {wrapperAttr: {class: 'avatar avatar-sm'}}) }}
+            <twig:UserThumb user="{{ comment.user }}" width="{{ 32 }}" height="{{ 32 }}" wrapperAttr="{{ {class: 'avatar avatar-sm'} }}" />
         </div>
         <div class="col col-lg-6">
             <div class="chat-bubble chat-bubble-reply{{ isCurrentUser ? ' chat-bubble-me' : '' }}">

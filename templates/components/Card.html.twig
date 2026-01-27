@@ -1,0 +1,15 @@
+{% props header = null, icon = null, bodyClass = '', showFooter = true %}
+<div {{ attributes.defaults({class: 'widget card'}) }}>
+    <h3 class="card-header">
+        {% if icon %}<twig:Icon name="{{ icon }}" class="text-primary" />{% endif %}
+        <span>{% block header %}{{ header }}{% endblock %}</span>
+    </h3>
+    <div class="card-body {{ bodyClass }}">
+        {% block content %}{% endblock %}
+    </div>
+    {% if showFooter %}
+        <div class="card-footer">
+            {% block footer %}{% endblock %}
+        </div>
+    {% endif %}
+</div>

@@ -1,4 +1,3 @@
-{% import 'form/macros.html.twig' as macros %}
 {% extends 'layouts/default.html.twig' %}
 
 {% set user = app.user %}
@@ -14,25 +13,25 @@
     <ul class="nav nav-pills nav-fill mb-1 justify-content-center">
         <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#profil" aria-controls="profil">
-                {{ macros.icon('lucide:user') }}
+                <twig:Icon name="lucide:user" />
                 <span class="d-none d-sm-block d-md-inline-block">Profil</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#socials" aria-controls="socials">
-                {{ macros.icon('fa7-brands:facebook-f') }}
+                <twig:Icon name="fa7-brands:facebook-f" />
                 <span class="d-none d-sm-block d-md-inline-block">Réseaux sociaux</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#password" aria-controls="password">
-                {{ macros.icon('lucide:key') }}
+                <twig:Icon name="lucide:key" />
                 <span class="d-none d-sm-block d-md-inline-block">Mot de passe</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#supprimer" aria-controls="supprimer">
-                {{ macros.icon('lucide:trash-2') }}
+                <twig:Icon name="lucide:trash-2" />
                 <span class="d-none d-sm-block d-md-inline-block">Supprimer le compte</span>
             </a>
         </li>

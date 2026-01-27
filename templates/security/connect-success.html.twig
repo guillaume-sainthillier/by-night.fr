@@ -1,5 +1,4 @@
 {% extends 'base.html.twig' %}
-{% import 'form/macros.html.twig' as macros %}
 
 {% block titre 'Connexion réussie' %}
 {% block meta_title 'Connexion réussie' %}
@@ -11,7 +10,7 @@
 
 {% block hwi_oauth_content -%}
     <div class="alert alert-success">
-        {{ macros.icon('lucide:check') }}
+        <twig:Icon name="lucide:check" />
         Bienvenue {{ userInformation.name }}
     </div>
     <br/>

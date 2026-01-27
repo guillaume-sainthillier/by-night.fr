@@ -1,11 +1,3 @@
-{% embed 'location/widget/template.html.twig' %}
-    {% block widget_body_class 'membres' %}
-    {% block titre 'Tendances' %}
-    {% block icon 'lucide:trending-up' %}
-
-    {% block body %}
-        {{ include('location/hinclude/trends.html.twig', trendsData) }}
-    {% endblock %}
-
-    {% block footer '' %}
-{% endembed %}
+<twig:Widget:Card titre="Tendances" icon="lucide:trending-up" bodyClass="membres" showFooter="{{ false }}">
+    {{ include('location/hinclude/trends.html.twig', trendsData) }}
+</twig:Widget:Card>
