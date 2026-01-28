@@ -11,6 +11,16 @@
             </div>
         </div>
     {% endif %}
+    <div class="alert alert-dismissible fade show alert-info" id="feedback-banner">
+        <div class="{{ block('container_class') }}">
+            <twig:Icon name="lucide:message-circle" />
+            <strong>Nouveau !</strong> Nous avons amélioré la gestion de vos événements.
+            <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                Donnez-nous votre avis
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    </div>
 {% endblock %}
 
 {% block title_after %}
@@ -105,3 +115,36 @@
 {% block js -%}
     {{ encore_entry_script_tags('espace_perso_list') }}
 {%- endblock %}
+
+{% block modals %}
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="feedbackModalLabel">Donnez-nous votre avis</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">
+                        Nous avons récemment mis à jour le système de gestion de vos événements.
+                        Votre avis nous aide à améliorer l'expérience !
+                    </p>
+                    <form id="feedback-form" data-action="{{ path('api_feedback') }}">
+                        <div class="mb-3">
+                            <label for="feedback-message" class="form-label">Votre message</label>
+                            <textarea class="form-control" id="feedback-message" rows="5" placeholder="Partagez votre avis sur le nouveau système..." required minlength="10"></textarea>
+                            <div class="invalid-feedback" id="feedback-error"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" form="feedback-form" class="btn btn-primary">
+                        <twig:Icon name="lucide:send" />
+                        Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
