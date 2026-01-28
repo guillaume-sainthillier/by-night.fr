@@ -39,6 +39,7 @@ final class EventDtoFactory
         $event->fromData = $entity->getFromData();
         $event->address = $entity->getAddress();
         $event->category = $entity->getCategory();
+        $event->theme = $entity->getTheme();
         $event->name = $entity->getName();
         $event->description = $entity->getDescription();
         $event->hours = $entity->getHours();
