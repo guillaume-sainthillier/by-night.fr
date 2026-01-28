@@ -1,0 +1,9 @@
+<h1>Nouveau feedback utilisateur</h1>
+
+<p>
+    <strong>De :</strong> {{ user.username }} ({{ user.email }})<br>
+    <strong>Date :</strong> {{ 'now'|date('d/m/Y H:i') }}
+</p>
+
+<h2>Message :</h2>
+<p>{{ message|nl2br }}</p>

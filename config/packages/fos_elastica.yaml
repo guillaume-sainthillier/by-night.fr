@@ -10,7 +10,7 @@ fos_elastica:
 
     indexes:
         event:
-            indexable_callback: isIndexable
+            indexable_callback: ['@App\Elasticsearch\EventIndexableChecker', 'isIndexable']
             settings:
                 analysis:
                     filter:
@@ -95,6 +95,15 @@ fos_elastica:
                 end_date:
                     type: date
                     format: yyyy-MM-dd
+                timesheets:
+                    type: nested
+                    properties:
+                        start_at:
+                            type: date
+                            format: "yyyy-MM-dd'T'HH:mm:ss"
+                        end_at:
+                            type: date
+                            format: "yyyy-MM-dd'T'HH:mm:ss"
                 draft:
                     type: boolean
                 place_name:

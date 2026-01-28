@@ -44,6 +44,15 @@
     {{ form_row(child, attr|merge({label: false})) }}
 {% endblock %}
 
+{# Custom layout for EventTimesheetType - display startAt and endAt in the same row #}
+{% block _app_event_timesheets_entry_widget %}
+    <div class="row form-group">
+        {{ form_row(form.startAt) }}
+        {{ form_row(form.endAt) }}
+    </div>
+    {{ form_row(form.hours) }}
+{% endblock %}
+
 {# Special block in order to let child redefine whole block #}
 {% block app_collection_entry_widget_row %}
     <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>

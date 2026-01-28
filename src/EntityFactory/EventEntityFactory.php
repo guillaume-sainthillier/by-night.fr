@@ -14,6 +14,7 @@ use App\Contracts\EntityFactoryInterface;
 use App\Doctrine\EventSubscriber\EventImageUploadSubscriber;
 use App\Dto\EventDto;
 use App\Entity\Event;
+use App\Entity\EventTimesheet;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EntityProviderHandler;
@@ -48,8 +49,16 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setExternalOrigin($dto->externalOrigin);
 
         $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTime::createFromInterface($dto->externalUpdatedAt));
-        $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
-        $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
+
+        // Sync timesheets from DTO
+        $this->syncTimesheets($entity, $dto);
+
+        // Only set startDate/endDate directly if no timesheets are provided
+        // When timesheets exist, the Event::majEndDate() lifecycle callback will compute them
+        if ([] === $dto->timesheets) {
+            $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
+            $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
+        }
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
@@ -75,6 +84,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setFromData($dto->fromData);
         $entity->setSource($dto->source);
         $entity->setCategory($dto->category);
+        $entity->setTheme($dto->theme);
         $entity->setName($dto->name);
         $entity->setDescription($dto->description);
         $entity->setHours($dto->hours);
@@ -110,5 +120,66 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         return $entity;
+    }
+
+    /**
+     * Sync timesheets from DTO to entity.
+     * - Updates hours for existing timesheets (matching start/end dates)
+     * - Adds new timesheets from DTO
+     * - Removes timesheets not present in DTO
+     */
+    private function syncTimesheets(Event $entity, EventDto $dto): void
+    {
+        $existingTimesheets = $entity->getTimesheets()->toArray();
+
+        // Build a map of existing timesheets by their start/end dates for quick lookup
+        $existingMap = [];
+        foreach ($existingTimesheets as $existing) {
+            $key = $this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt());
+            $existingMap[$key] = $existing;
+        }
+
+        // Track which DTOs we've processed
+        $processedKeys = [];
+
+        // Process DTOs: update existing or add new
+        foreach ($dto->timesheets as $timesheetDto) {
+            $startAt = null === $timesheetDto->startAt ? null : DateTime::createFromInterface($timesheetDto->startAt);
+            $endAt = null === $timesheetDto->endAt ? null : DateTime::createFromInterface($timesheetDto->endAt);
+            $key = $this->getTimesheetKey($startAt, $endAt);
+
+            if (isset($existingMap[$key])) {
+                // Update existing timesheet hours
+                $existingMap[$key]->setHours($timesheetDto->hours);
+            } else {
+                // Add new timesheet
+                $timesheet = new EventTimesheet();
+                $timesheet->setStartAt($startAt);
+                $timesheet->setEndAt($endAt);
+                $timesheet->setHours($timesheetDto->hours);
+                $entity->addTimesheet($timesheet);
+            }
+
+            $processedKeys[] = $key;
+        }
+
+        // Remove timesheets that are not in the DTO
+        foreach ($existingTimesheets as $existing) {
+            $key = $this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt());
+            if (!\in_array($key, $processedKeys, true)) {
+                $entity->removeTimesheet($existing);
+            }
+        }
+    }
+
+    /**
+     * Generate a unique key for a timesheet based on start and end dates.
+     */
+    private function getTimesheetKey(?DateTime $startAt, ?DateTime $endAt): string
+    {
+        $start = $startAt?->format('Y-m-d H:i:s') ?? 'null';
+        $end = $endAt?->format('Y-m-d H:i:s') ?? 'null';
+
+        return $start . '|' . $end;
     }
 }

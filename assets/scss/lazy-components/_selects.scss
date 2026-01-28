@@ -1,11 +1,8 @@
 @import '../core';
+@import 'tom-select/dist/scss/tom-select.bootstrap5';
+@import 'tom-select/dist/scss/tom-select';
+@import '@tabler/core/scss/vendor/tom-select';
 
-$s2bs5-border-color: #ced4da;
-//$s2bs5-height-inner: 2.5rem;
-
-@import 'select2/src/scss/core.scss';
-@import 'select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css';
-
-.select2-container {
-    display: block;
+.ts-wrapper.required:after {
+    content: '';
 }

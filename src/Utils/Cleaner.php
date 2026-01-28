@@ -12,6 +12,7 @@ namespace App\Utils;
 
 use App\Dto\CityDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 
 final readonly class Cleaner
@@ -38,6 +39,16 @@ final readonly class Cleaner
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
         $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
         $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
+
+        // Clean timesheets
+        foreach ($dto->timesheets as $timesheet) {
+            $this->cleanEventTimesheet($timesheet);
+        }
+    }
+
+    public function cleanEventTimesheet(EventTimesheetDto $dto): void
+    {
+        $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
     }
 
     private function clean(?string $string): string

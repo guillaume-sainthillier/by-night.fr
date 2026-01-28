@@ -14,6 +14,9 @@ doctrine:
     orm:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        dql:
+            string_functions:
+                REGEXP: DoctrineExtensions\Query\Mysql\Regexp
         identity_generation_preferences:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
         auto_mapping: true

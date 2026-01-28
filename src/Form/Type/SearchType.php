@@ -54,6 +54,8 @@ final class SearchType extends AbstractType
                 'label' => 'Quoi ?',
                 'multiple' => true,
                 'expanded' => false,
+                'disabled' => [] === $options['types_manif'],
+                'help' => [] === $options['types_manif'] ? 'Aucun type d\'événement disponible pour cette localisation.' : null,
                 'required' => false,
                 'placeholder' => 'Tous les types',
                 'attr' => [

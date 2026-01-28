@@ -12,6 +12,7 @@ namespace App\Tests\Utils;
 
 use App\Dto\CityDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Cleaner;
@@ -152,5 +153,59 @@ final class CleanerTest extends AppKernelTestCase
         $this->cleaner->cleanCity($dto);
 
         self::assertEquals('Saint-Lys', $dto->name);
+    }
+
+    public function testCleanEventTimesheetTruncatesLongHours(): void
+    {
+        $dto = new EventTimesheetDto();
+        $dto->hours = str_repeat('a', 300);
+
+        $this->cleaner->cleanEventTimesheet($dto);
+
+        self::assertNotNull($dto->hours);
+        self::assertEquals(255, \strlen($dto->hours));
+    }
+
+    public function testCleanEventTimesheetSetsNullForEmptyHours(): void
+    {
+        $dto = new EventTimesheetDto();
+        $dto->hours = '';
+
+        $this->cleaner->cleanEventTimesheet($dto);
+
+        self::assertNull($dto->hours);
+    }
+
+    public function testCleanEventTimesheetPreservesValidHours(): void
+    {
+        $dto = new EventTimesheetDto();
+        $dto->hours = 'De 20h à 23h';
+
+        $this->cleaner->cleanEventTimesheet($dto);
+
+        self::assertEquals('De 20h à 23h', $dto->hours);
+    }
+
+    public function testCleanEventCleansNestedTimesheets(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+
+        $timesheet1 = new EventTimesheetDto();
+        $timesheet1->hours = str_repeat('a', 300);
+        $timesheet1->startAt = new DateTime('2024-01-15 10:00:00');
+        $timesheet1->endAt = new DateTime('2024-01-15 18:00:00');
+
+        $timesheet2 = new EventTimesheetDto();
+        $timesheet2->hours = '';
+        $timesheet2->startAt = new DateTime('2024-01-16 10:00:00');
+        $timesheet2->endAt = new DateTime('2024-01-16 18:00:00');
+
+        $dto->timesheets = [$timesheet1, $timesheet2];
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertEquals(255, \strlen($dto->timesheets[0]->hours));
+        self::assertNull($dto->timesheets[1]->hours);
     }
 }

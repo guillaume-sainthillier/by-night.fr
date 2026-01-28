@@ -13,6 +13,7 @@ namespace App\Parser\Common;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
@@ -183,18 +184,36 @@ final class OpenAgendaParser extends AbstractParser
             return null;
         }
 
+        // Build timesheets from timings array
         $timings = $data['timings'];
-        $startDate = current($timings);
-        $endDate = end($timings);
-        $startDate = new DateTimeImmutable($startDate['begin']);
-        $endDate = new DateTimeImmutable($endDate['end']);
+        $timesheets = [];
+        $allHours = [];
 
-        $hours = null;
-        if ($startDate->format('Y-m-d') !== $endDate->format('Y-m-d')) {
-            $hours = \sprintf('De %s à %s', $startDate->format("H\hi"), $endDate->format("H\hi"));
-        } else {
-            $hours = \sprintf('A %s', $startDate->format("H\hi"));
+        foreach ($timings as $timing) {
+            $timesheetDto = new EventTimesheetDto();
+            $timesheetDto->startAt = new DateTimeImmutable($timing['begin']);
+            $timesheetDto->endAt = new DateTimeImmutable($timing['end']);
+
+            // Generate hours string for this timing
+            if ($timesheetDto->startAt->format('Y-m-d') !== $timesheetDto->endAt->format('Y-m-d')) {
+                $timesheetDto->hours = \sprintf('De %s à %s', $timesheetDto->startAt->format("H\hi"), $timesheetDto->endAt->format("H\hi"));
+            } else {
+                $timesheetDto->hours = \sprintf('A %s', $timesheetDto->startAt->format("H\hi"));
+            }
+
+            $timesheets[] = $timesheetDto;
+            $allHours[$timesheetDto->hours] = true;
         }
+
+        // Compute aggregate start/end dates for backwards compatibility
+        $firstTiming = reset($timings);
+        $lastTiming = end($timings);
+        $startDate = new DateTimeImmutable($firstTiming['begin']);
+        $endDate = new DateTimeImmutable($lastTiming['end']);
+
+        // Generate aggregate hours string - use first unique hour if all are the same,
+        // otherwise use the first hour from the list (most relevant for display)
+        $hours = array_key_first($allHours);
 
         $mdParser = new Parsedown();
         $description = $mdParser->text($data['longDescription'] ?? $data['description']);
@@ -251,6 +270,7 @@ final class OpenAgendaParser extends AbstractParser
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
+        $event->timesheets = $timesheets;
         $event->prices = $data['conditions'] ?? null;
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];

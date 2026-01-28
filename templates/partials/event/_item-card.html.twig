@@ -56,7 +56,14 @@
                             {{ endDate }}
                         </time>
                     {% endif %}
-                    <small class="text-muted">{% if event.hours %} - {{ event.hours }}{% endif %}</small>
+                    <small class="text-muted">
+                        {%- if event.timesheets|length > 0 and event.timesheets|first.hours %}
+                            - {{ event.timesheets|first.hours }}
+                            {%- if event.timesheets|length > 1 %} (+{{ event.timesheets|length - 1 }}){% endif %}
+                        {%- elseif event.hours %}
+                            - {{ event.hours }}
+                        {%- endif -%}
+                    </small>
                 </div>
             </div>
             {% set place = event.place %}

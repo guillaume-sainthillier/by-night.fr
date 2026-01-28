@@ -1,18 +1,21 @@
-import 'select2'
+import TomSelect from 'tom-select'
 import '@/scss/lazy-components/_selects.scss'
-import $ from 'jquery'
 import { isTouchDevice } from '@/js/utils/utils'
 
 export default (container = document) => {
-    $('select.form-select:not(.hidden)', container).each(function () {
+    container.querySelectorAll('select.form-select:not(.hidden):not(.tomselected)').forEach((el) => {
         if (isTouchDevice()) {
-            $(this).attr('size', $(this).attr('size') || 1)
+            el.setAttribute('size', el.getAttribute('size') || 1)
         } else {
-            $(this).select2({
-                theme: 'bootstrap-5',
-                minimumResultsForSearch: 10,
-                placeholder: $(this).attr('placeholder'),
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            new TomSelect(el, {
+                create: false,
+                controlInput: null,
+                allowEmptyOption: true,
+                render: {
+                    no_results() {
+                        return '<div class="no-results">Aucun r\u00e9sultat</div>'
+                    },
+                },
             })
         }
     })
