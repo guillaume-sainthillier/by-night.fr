@@ -115,8 +115,8 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertFalse($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE));
-        self::assertFalse($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE_INTERVAL));
+        self::assertFalse($dto->reject->isBadEventDate());
+        self::assertFalse($dto->reject->isBadEventDateInterval());
     }
 
     public function testTimesheetWithNullStartAtFailsValidation(): void
@@ -131,7 +131,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertTrue($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE));
+        self::assertTrue($dto->reject->isBadEventDate());
     }
 
     public function testTimesheetWithNullEndAtFailsValidation(): void
@@ -146,7 +146,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertTrue($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE));
+        self::assertTrue($dto->reject->isBadEventDate());
     }
 
     public function testTimesheetWithEndBeforeStartFailsValidation(): void
@@ -161,7 +161,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertTrue($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE_INTERVAL));
+        self::assertTrue($dto->reject->isBadEventDateInterval());
     }
 
     public function testMultipleTimesheetsWithOneInvalidFailsValidation(): void
@@ -180,7 +180,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertTrue($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE_INTERVAL));
+        self::assertTrue($dto->reject->isBadEventDateInterval());
     }
 
     public function testEmptyTimesheetsUsesDirectDates(): void
@@ -192,8 +192,8 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertFalse($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE));
-        self::assertFalse($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE_INTERVAL));
+        self::assertFalse($dto->reject->isBadEventDate());
+        self::assertFalse($dto->reject->isBadEventDateInterval());
     }
 
     public function testEmptyTimesheetsWithInvalidDirectDatesFailsValidation(): void
@@ -205,7 +205,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        self::assertTrue($dto->reject->isRejectReason(Reject::BAD_EVENT_DATE_INTERVAL));
+        self::assertTrue($dto->reject->isBadEventDateInterval());
     }
 
     private function createValidEventDto(): EventDto
