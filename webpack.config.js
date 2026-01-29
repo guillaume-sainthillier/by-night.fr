@@ -72,21 +72,21 @@ Encore
     .enableVersioning(Encore.isProduction())
 
     // configure Babel for JSX with Preact
-    // .configureBabel((config) => {
-    //     config.plugins.push([
-    //         '@babel/plugin-transform-react-jsx',
-    //         {
-    //             pragma: 'h',
-    //             pragmaFrag: 'Fragment',
-    //         },
-    //     ])
-    // })
+    .configureBabel((config) => {
+        config.plugins.push([
+            '@babel/plugin-transform-react-jsx',
+            {
+                pragma: 'h',
+                pragmaFrag: 'Fragment',
+            },
+        ])
+    })
 
     // enables @babel/preset-env polyfills
-    // .configureBabelPresetEnv((config) => {
-    //     config.useBuiltIns = 'usage'
-    //     config.corejs = '3.23'
-    // })
+    .configureBabelPresetEnv((config) => {
+        config.useBuiltIns = 'usage'
+        config.corejs = '3.23'
+    })
     .addPlugin(
         new MomentLocalesPlugin({
             localesToKeep: ['fr'],
