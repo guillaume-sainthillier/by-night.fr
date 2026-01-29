@@ -20,6 +20,7 @@ export default [
     {
         rules: {
             semi: ['error', 'never'],
+            'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         },
     },
 ]
