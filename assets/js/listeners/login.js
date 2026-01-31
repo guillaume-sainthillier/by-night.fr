@@ -17,7 +17,7 @@ export default (di, container) => {
                     submitButton.button('reset')
 
                     if (!data.success) {
-                        $dialog.modal('setLittleErreur', data.message)
+                        $dialog.modal('setSmallError', data.message)
                     } else {
                         $dialog.modal('hide')
                         window.location.reload()
@@ -26,14 +26,14 @@ export default (di, container) => {
                     .fail(function (jqXHR) {
                         if(jqXHR.status === 422) {
                             $dialog.html(jqXHR.responseText)
-                            handleLogin($dialog) // ne rien mettre après
+                            handleLogin($dialog) // don't add anything after this
                         }
                     })
                 return false
             })
     }
 
-    $('.connexion', container)
+    $('.login', container)
         .off('click')
         .click(function (e) {
             e.preventDefault()

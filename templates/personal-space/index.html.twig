@@ -1,6 +1,6 @@
-{% extends 'espace-perso/layout.html.twig' %}
+{% extends 'personal-space/layout.html.twig' %}
 
-{% block titre 'Mes événements' %}
+{% block title 'Mes événements' %}
 {% block meta_title 'Mes événements' %}
 
 {% block title_after %}
@@ -89,11 +89,11 @@
 {%- endblock %}
 
 {% block css -%}
-    {{ encore_entry_link_tags('espace_perso_list') }}
+    {{ encore_entry_link_tags('personal_space_list') }}
 {%- endblock %}
 
 {% block js -%}
-    {{ encore_entry_script_tags('espace_perso_list') }}
+    {{ encore_entry_script_tags('personal_space_list') }}
 {%- endblock %}
 
 {% block modals %}

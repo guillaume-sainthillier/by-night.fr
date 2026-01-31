@@ -21,10 +21,10 @@ app.security:
         namespace: App\Controller\Security
     type: attribute
 
-app.espace_perso:
+app.personal_space:
     resource:
-        path: ../src/Controller/EspacePerso
-        namespace: App\Controller\EspacePerso
+        path: ../src/Controller/PersonalSpace
+        namespace: App\Controller\PersonalSpace
     prefix: /espace-perso
     type: attribute
 

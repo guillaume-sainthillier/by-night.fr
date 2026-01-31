@@ -58,7 +58,7 @@ final class ProfileController extends AbstractController
                 if ($userEvent->getGoing()) {
                     $event->setParticipations($event->getParticipations() - 1);
                 } else {
-                    $event->setInterets($event->getInterets() - 1);
+                    $event->setInterests($event->getInterests() - 1);
                 }
 
                 $em->remove($userEvent);

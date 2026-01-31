@@ -2,7 +2,7 @@
 
 {% set user = app.user %}
 
-{% block titre user.username %}
+{% block title user.username %}
 {% block meta_title user.username %}
 
 {% block breadcrumb -%}
@@ -12,7 +12,7 @@
 {% block body -%}
     <ul class="nav nav-pills nav-fill mb-1 justify-content-center">
         <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#profil" aria-controls="profil">
+            <a class="nav-link active" data-bs-toggle="tab" href="#profile" aria-controls="profile">
                 <twig:Icon name="lucide:user" />
                 <span class="d-none d-sm-block d-md-inline-block">Profil</span>
             </a>
@@ -30,7 +30,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#supprimer" aria-controls="supprimer">
+            <a class="nav-link" data-bs-toggle="tab" href="#delete" aria-controls="delete">
                 <twig:Icon name="lucide:trash-2" />
                 <span class="d-none d-sm-block d-md-inline-block">Supprimer le compte</span>
             </a>
@@ -38,7 +38,7 @@
     </ul>
 
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="profil" role="tabpanel">
+        <div class="tab-pane fade show active" id="profile" role="tabpanel">
             {{ form_start(form, {action: path('app_user_edit'), attr: {enctype: 'multipart/form-data'}}) }}
             <div class="card">
                 <h2 class="card-header">Profil</h2>
@@ -112,7 +112,7 @@
             {{ form_rest(formChangePassword) }}
             {{ form_end(formChangePassword) }}
         </div>
-        <div class="tab-pane fade" id="supprimer" role="tabpanel">
+        <div class="tab-pane fade" id="delete" role="tabpanel">
             <div class="card">
                 <h2 class="card-header">Supprimer le compte</h2>
                 <div class="card-body">

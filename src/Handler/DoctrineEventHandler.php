@@ -67,13 +67,13 @@ final readonly class DoctrineEventHandler
             return;
         }
 
-        // On récupère toutes les explorations existantes pour ces événements
+        // Retrieve all existing explorations for these events
         $this->loadExternalIdsData($dtos);
 
-        // Grace à ça, on peut déjà filtrer une bonne partie des événements
+        // With this, we can already filter a good portion of events
         $this->filterEvents($dtos);
 
-        // On met ensuite à jour le statut de ces explorations en base
+        // Then update the status of these explorations in the database
         $this->flushParserData();
 
         $allowedEvents = $this->getAllowedEvents($dtos);
@@ -144,12 +144,12 @@ final readonly class DoctrineEventHandler
             if (null !== $dto->getExternalId()) {
                 $exploration = $this->firewall->getExploration($dto->getExternalId());
 
-                // Une exploration a déjà eu lieu
+                // An exploration has already taken place
                 if (null !== $exploration) {
                     $this->firewall->filterEventExploration($exploration, $dto);
                     $reject = $exploration->getReject();
 
-                    // Celle-ci a déjà conduit à l'élimination de l'événement
+                    // This already led to the rejection of the event
                     if (false === $reject->isValid()) {
                         $dto->reject->setReason($reject->getReason());
 
@@ -158,7 +158,7 @@ final readonly class DoctrineEventHandler
                 }
             }
 
-            // Même algorithme pour le lieu
+            // Same algorithm for the place
             if (null !== $dto->place && null !== $dto->place->getExternalId()) {
                 $exploration = $this->firewall->getExploration($dto->place->getExternalId());
 
@@ -176,7 +176,7 @@ final readonly class DoctrineEventHandler
 
     public function guessEventLocation(PlaceDto $dto): void
     {
-        // Pas besoin de trouver un lieu déjà blacklisté
+        // No need to find an already blacklisted place
         if (false === $dto->reject->isValid()) {
             return;
         }
@@ -186,13 +186,13 @@ final readonly class DoctrineEventHandler
 
     private function guessPlaceCity(PlaceDto $dto): void
     {
-        // Recherche du pays en premier lieu
+        // Search for the country first
         if (null !== $dto->country && null !== $dto->country->name && null === $dto->country->code) {
             $country = $this->countryRepository->findOneByName($dto->country->name);
             $dto->country->code = $country?->getId();
         }
 
-        // Pas de pays détecté -> next
+        // No country detected -> next
         if (null === $dto->country || null === $dto->country->code) {
             if ($dto->country?->name) {
                 $dto->reject->addReason(Reject::BAD_COUNTRY);
@@ -207,16 +207,16 @@ final readonly class DoctrineEventHandler
             return;
         }
 
-        // Location fournie -> Vérification dans la base des villes existantes
+        // Location provided -> Verification in the existing cities database
         $zipCity = null;
         $city = null;
 
-        // Ville + CP
+        // City + Postal Code
         if ($dto->city->name && $dto->city->postalCode) {
             $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->city->postalCode, $dto->city->name, $dto->country->code);
         }
 
-        // Ville
+        // City
         if (!$zipCity && $dto->city->name) {
             $zipCities = $this->repoZipCity->findAllByCity($dto->city->name, $dto->country->code);
             if (1 === \count($zipCities)) {
@@ -224,7 +224,7 @@ final readonly class DoctrineEventHandler
             }
         }
 
-        // CP
+        // Postal Code
         if (!$zipCity && $dto->city->postalCode) {
             $zipCities = $this->repoZipCity->findAllByPostalCode($dto->city->postalCode, $dto->country->code);
             if (1 === \count($zipCities)) {

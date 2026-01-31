@@ -6,56 +6,56 @@ export default class SocialLogin {
         const self = this
         self.initOnOff()
 
-        // Actions par défaut
+        // Default actions
         $('body')
-            .on('wantConnect', function (event, ck) {
-                self.launchSocialConnect(ck)
+            .on('wantConnect', function (event, checkbox) {
+                self.launchSocialConnect(checkbox)
             })
-            .on('wantDisconnect', function (event, ck) {
-                self.launchSocialDisconnect(ck)
+            .on('wantDisconnect', function (event, checkbox) {
+                self.launchSocialDisconnect(checkbox)
             })
-            .on('hasDisconnected', function (event, ck) {
-                self.onDisconnectedSocial(ck)
+            .on('hasDisconnected', function (event, checkbox) {
+                self.onDisconnectedSocial(checkbox)
             })
             .on('hasConnected', function (event, ui) {
-                const ck = ui.target
+                const checkbox = ui.target
                 const { user } = ui
 
-                const configBlock = $(ck).closest('.bloc_config')
+                const configBlock = $(checkbox).closest('.config-block')
 
-                $(ck).prop('checked', true)
+                $(checkbox).prop('checked', true)
                 configBlock.find('.username').text(user.username)
             })
     }
 
     initOnOff() {
-        $('.bloc_config input:checkbox').each(function () {
+        $('.config-block input:checkbox').each(function () {
             $(this)
                 .off('change')
                 .change(function () {
-                    const ck = $(this)
-                    $(ck).prop('checked', !$(ck).prop('checked'))
-                    if ($(ck).prop('checked')) {
-                        // Déconnexion
-                        $('body').trigger('wantDisconnect', ck)
-                    } // Connexion
+                    const checkbox = $(this)
+                    $(checkbox).prop('checked', !$(checkbox).prop('checked'))
+                    if ($(checkbox).prop('checked')) {
+                        // Disconnect
+                        $('body').trigger('wantDisconnect', checkbox)
+                    } // Connect
                     else {
-                        $('body').trigger('wantConnect', ck)
+                        $('body').trigger('wantConnect', checkbox)
                     }
                 })
         })
     }
 
     // Deps: ['app/App']
-    launchSocialConnect(ck) {
-        popup($(ck).data('href-connect'), ck)
+    launchSocialConnect(checkbox) {
+        popup($(checkbox).data('href-connect'), checkbox)
     }
 
-    launchSocialDisconnect(ck) {
+    launchSocialDisconnect(checkbox) {
         const self = this
         const dialog = $('#dialog_details').modal('loading').modal('show')
 
-        dialog.load($(ck).data('href-disconnect'), function () {
+        dialog.load($(checkbox).data('href-disconnect'), function () {
             self.initModalCheckbox(dialog.modal('getBody').find('input:checkbox'))
             dialog
                 .find('form')
@@ -64,27 +64,27 @@ export default class SocialLogin {
                     dialog.modal('loading')
                     $.post($(this).attr('action')).done(function () {
                         dialog.modal('hide')
-                        $('body').trigger('hasDisconnected', $(ck))
+                        $('body').trigger('hasDisconnected', $(checkbox))
                     })
                     return false
                 })
         })
     }
 
-    onDisconnectedSocial(ck) {
-        const configBlock = $(ck).closest('.bloc_config')
+    onDisconnectedSocial(checkbox) {
+        const configBlock = $(checkbox).closest('.config-block')
 
-        $(ck).prop('checked', false)
+        $(checkbox).prop('checked', false)
         configBlock.find('.username').text('')
     }
 
     /**
      *
-     * @param {jQuery} ck
+     * @param {jQuery} checkbox
      * @returns {undefined}
      */
-    initModalCheckbox(ck) {
-        $(ck)
+    initModalCheckbox(checkbox) {
+        $(checkbox)
             .off('click')
             .click(function () {
                 const alert = $(this).closest('.modal-body').find('.alert')

@@ -1,10 +1,10 @@
 import $ from 'jquery'
 
 export default class Widgets {
-    init(selecteur) {
+    init(selector) {
         const self = this
         $(document).ready(function () {
-            self.initMoreWidgets($('.widget', selecteur || document))
+            self.initMoreWidgets($('.widget', selector || document))
         })
     }
 

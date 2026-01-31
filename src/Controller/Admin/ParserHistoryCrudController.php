@@ -45,7 +45,7 @@ final class ParserHistoryCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Historique')
             ->setEntityLabelInPlural('Historiques')
-            ->setSearchFields(['fromData', 'nouvellesSoirees', 'updateSoirees', 'explorations', 'id']);
+            ->setSearchFields(['fromData', 'newEvents', 'updatedEvents', 'explorations', 'id']);
     }
 
     #[Override]
@@ -54,19 +54,19 @@ final class ParserHistoryCrudController extends AbstractCrudController
         $startDate = DateTimeField::new('startDate');
         $fromData = TextField::new('fromData');
         $endDate = DateTimeField::new('endDate');
-        $nouvellesSoirees = IntegerField::new('nouvellesSoirees');
-        $updateSoirees = IntegerField::new('updateSoirees');
+        $newEvents = IntegerField::new('newEvents');
+        $updatedEvents = IntegerField::new('updatedEvents');
         $explorations = IntegerField::new('explorations');
         $id = IdField::new('id', 'ID');
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$id, $startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$id, $startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$startDate, $fromData, $endDate, $nouvellesSoirees, $updateSoirees, $explorations];
+            return [$startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
         }
 
         throw new RuntimeException(\sprintf('Unable to configure fields for page "%s"', $pageName));

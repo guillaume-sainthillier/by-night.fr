@@ -46,13 +46,13 @@ export default class CommentApp {
     init() {
         const self = this
         $(self.options.css_main_block_comments).each(
-            function () // On parcours les div comments (1 par page normalement)
+            function () // Iterate through comments divs (normally 1 per page)
             {
                 const commentsContainer = $(this)
-                window.App.dispatchPageLoadedEvent(commentsContainer[0]) // On bind les liens connexion/inscription
-                self.init_new_comment(commentsContainer) // On bind le formulaire d'envoi d'un nouveau comment
-                self.init_load_reply_form(commentsContainer) // On bind le lien de réponse des comments
-                self.init_update_reply_count(commentsContainer) // On met à jour le compteur de réponses
+                window.App.dispatchPageLoadedEvent(commentsContainer[0]) // Bind login/register links
+                self.init_new_comment(commentsContainer) // Bind new comment form submission
+                self.init_load_reply_form(commentsContainer) // Bind reply links for comments
+                self.init_update_reply_count(commentsContainer) // Update reply counter
                 self.init_load_more_comments(commentsContainer)
             }
         )
@@ -103,17 +103,17 @@ export default class CommentApp {
         comments
             .find(self.options.css_reply_link)
             .off('click')
-            .click(function () // Pour tous les liens répondre
+            .click(function () // For all reply links
             {
                 const link = $(this)
 
                 link.data('original-html', link.html()).html(iconHtml(self.options.icon_spinner, 'icon-spin'))
                 const postAnswerContainer = link
                     .closest(self.options.css_main_reply_block)
-                    .find(self.options.css_reply_form_container) // On cherche le block du post
+                    .find(self.options.css_reply_form_container) // Find the post block
                 postAnswerContainer.removeClass('is-visible').load(link.data('url'), function () {
-                    window.App.dispatchPageLoadedEvent(postAnswerContainer[0]) // On bind les liens connexion/inscription
-                    self.init_reply_form(postAnswerContainer) // On bind le formulaire d'envoi d'une nouvelle réponse
+                    window.App.dispatchPageLoadedEvent(postAnswerContainer[0]) // Bind login/register links
+                    self.init_reply_form(postAnswerContainer) // Bind new reply form submission
 
                     // Add cancel button handler
                     postAnswerContainer.find('.cancel-reply').off('click').click(function() {
@@ -153,9 +153,9 @@ export default class CommentApp {
                 const mainAnswerContainer = answerPostContainer.closest(self.options.css_main_reply_block)
 
                 $.post($(this).attr('action'), $(this).serialize())
-                    .done(function (retour) {
+                    .done(function (response) {
                         let answerContainer = mainAnswerContainer.find(self.options.css_replies_container)
-                        if (retour.success) {
+                        if (response.success) {
                             // Success - show toast notification
                             self.showToast('success', 'Réponse envoyée avec succès!')
 
@@ -169,7 +169,7 @@ export default class CommentApp {
                             }
 
                             // Add reply with success animation
-                            const newReply = $(retour.comment)
+                            const newReply = $(response.comment)
                             newReply.addClass('message-sent')
                             answerContainer.prepend(newReply)
 
@@ -185,7 +185,7 @@ export default class CommentApp {
                                 .removeClass('is-visible')
 
                             // Update reply count
-                            self.update_reply_count(mainAnswerContainer, retour.reply_count)
+                            self.update_reply_count(mainAnswerContainer, response.reply_count)
 
                             // Restore reply link
                             const link = mainAnswerContainer.find(self.options.css_reply_link)
@@ -195,7 +195,7 @@ export default class CommentApp {
                             self.showToast('error', 'Erreur lors de l\'envoi de la réponse')
 
                             // Replace form content with error form
-                            answerPostContainer.html(retour.post)
+                            answerPostContainer.html(response.post)
 
                             // Re-initialize form handlers and page events
                             window.App.dispatchPageLoadedEvent(answerPostContainer[0])
@@ -238,13 +238,13 @@ export default class CommentApp {
                         const tempComment = $('<div class="comment is-sending">')
 
                         $.post($(this).attr('action'), $(this).serialize())
-                            .done(function (retour) {
+                            .done(function (response) {
                                 const mainCommentsContainer = form.closest(self.options.css_main_block_comments)
                                 let postCommentContainer = mainCommentsContainer.find(
                                     self.options.css_block_poster_comment
                                 )
 
-                                if (retour.success) {
+                                if (response.success) {
                                     // Success - show toast notification
                                     self.showToast('success', 'Commentaire envoyé avec succès!')
 
@@ -252,10 +252,10 @@ export default class CommentApp {
                                     textarea.val('').trigger('blur')
 
                                     // Update comment counter
-                                    if (retour.count !== undefined) {
+                                    if (response.count !== undefined) {
                                         const heading = mainCommentsContainer.find(self.options.css_heading_comments)
-                                        const plural = retour.count > 1 ? 's' : ''
-                                        heading.find('span').text(`${retour.count} Commentaire${plural}`)
+                                        const plural = response.count > 1 ? 's' : ''
+                                        heading.find('span').text(`${response.count} Commentaire${plural}`)
                                         // Remove "Soyez le premier à réagir" message if it exists
                                         heading.find('small').remove()
                                     }
@@ -277,7 +277,7 @@ export default class CommentApp {
                                     const commentsList = commentsBodyContainer.find('.chat-bubbles')
 
                                     // Add new comment with success animation
-                                    const newComment = $(retour.comment)
+                                    const newComment = $(response.comment)
                                     newComment.addClass('message-sent')
                                     commentsList.prepend(newComment)
 
@@ -297,7 +297,7 @@ export default class CommentApp {
                                     self.showToast('error', 'Erreur lors de l\'envoi du commentaire')
 
                                     // Replace form content with error form
-                                    postCommentContainer.html(retour.post)
+                                    postCommentContainer.html(response.post)
 
                                     // Re-initialize form handlers and page events
                                     window.App.dispatchPageLoadedEvent(postCommentContainer[0])

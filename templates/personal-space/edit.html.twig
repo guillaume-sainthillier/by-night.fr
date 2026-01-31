@@ -1,9 +1,9 @@
-{% extends 'espace-perso/new.html.twig' %}
+{% extends 'personal-space/new.html.twig' %}
 
 {% block meta_title event.name %}
-{% block titre event.name %}
+{% block title event.name %}
 
-{% block breadcrumb_espace -%}
+{% block breadcrumb_personal_space -%}
     {% do menu.addItem(event.name, url('app_event_edit', {id: event.id})) %}
 {%- endblock %}
 

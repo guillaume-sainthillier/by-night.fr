@@ -2,14 +2,14 @@ import $ from 'jquery'
 
 export default (di, container) => {
     const options = {
-        css_selecteur_like: '.btn-like-event',
+        css_selector_like: '.btn-like-event',
         css_active_class: 'btn-primary',
     }
 
-    $(options.css_selecteur_like, container).click(function () {
+    $(options.css_selector_like, container).click(function () {
         const btn = $(this)
 
-        if (btn.hasClass('connexion')) {
+        if (btn.hasClass('login')) {
             return false
         }
 
