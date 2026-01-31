@@ -59,6 +59,7 @@
         "php-amqplib/rabbitmq-bundle": "^2.19",
         "presta/sitemap-bundle": "^4.2",
         "sentry/sentry-symfony": "^5.8.3",
+        "silarhi/cursor-pagination": "^2.0",
         "smolblog/oauth2-twitter": "^1.2",
         "social-links/social-links": "^1.17",
         "stof/doctrine-extensions-bundle": "^1.15.3",

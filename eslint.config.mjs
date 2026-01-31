@@ -8,6 +8,7 @@ export default [
             globals: {
                 ... globals.browser,
                 ... globals.node,
+                ... globals.jest,
             },
         },
     },
@@ -19,6 +20,7 @@ export default [
     {
         rules: {
             semi: ['error', 'never'],
+            'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         },
     },
 ]

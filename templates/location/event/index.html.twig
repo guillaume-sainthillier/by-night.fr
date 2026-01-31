@@ -70,9 +70,6 @@
                         <div class="detail-item">
                             <twig:Icon name="lucide:calendar-days" />
                             <h2>
-                                {% set dateDebut = event.startDate|date('d/m/Y') %}
-                                {% set dateFin = event.endDate|date('d/m/Y') %}
-
                                 {% if event.endDate == null or event.startDate == event.endDate %}
                                     Le
                                     <time itemprop="startDate"
@@ -87,10 +84,44 @@
                                 {% endif %}
                             </h2>
                         </div>
+
                         {% if event.hours %}
                             <div class="detail-item">
                                 <twig:Icon name="lucide:clock" />
                                 <p>{{ event.hours }}</p>
+                            </div>
+                        {% endif %}
+
+                        {% if event.timesheets|length > 1 %}
+                            <div class="detail-item">
+                                <twig:Icon name="lucide:calendar-days" />
+                                <div>
+                                    <div class="mb-1">Détail des dates :</div>
+                                    <div class="timesheets-list">
+                                        {% for timesheet in event.timesheets %}
+                                            <div class="timesheet-entry">
+                                                {% if timesheet.startAt|date('Y-m-d') == timesheet.endAt|date('Y-m-d') %}
+                                                    Le
+                                                    <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
+                                                        {{ timesheet.startAt|format_date('full') }}
+                                                    </time>
+                                                {% else %}
+                                                    Du
+                                                    <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
+                                                        {{ timesheet.startAt|format_date('full') }}
+                                                    </time>
+                                                    au
+                                                    <time datetime="{{ timesheet.endAt|date('Y-m-d\\TH:i:sO') }}">
+                                                        {{ timesheet.endAt|format_date('full') }}
+                                                    </time>
+                                                {% endif %}
+                                                {% if timesheet.hours %}
+                                                    <span class="text-muted">({{ timesheet.hours }})</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         {% endif %}
 

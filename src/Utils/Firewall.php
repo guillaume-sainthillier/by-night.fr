@@ -93,10 +93,25 @@ final class Firewall
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
-        // Pas de dates valides fournies
-        if (!$dto->startDate instanceof DateTimeInterface
+        // Validate dates - either from timesheets or direct fields
+        if ([] !== $dto->timesheets) {
+            // Validate each timesheet entry
+            foreach ($dto->timesheets as $timesheet) {
+                if (!$timesheet->startAt instanceof DateTimeInterface
+                    || !$timesheet->endAt instanceof DateTimeInterface
+                ) {
+                    $dto->reject->addReason(Reject::BAD_EVENT_DATE);
+                    break;
+                }
+                if ($timesheet->endAt < $timesheet->startAt) {
+                    $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
+                    break;
+                }
+            }
+        } elseif (!$dto->startDate instanceof DateTimeInterface
             || !$dto->endDate instanceof DateTimeInterface
         ) {
+            // Pas de dates valides fournies
             $dto->reject->addReason(Reject::BAD_EVENT_DATE);
         } elseif ($dto->endDate < $dto->startDate) {
             $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);

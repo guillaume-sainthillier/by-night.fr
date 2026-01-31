@@ -24,12 +24,12 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 ```bash
 # Install dependencies
 composer install
-npm install
+yarn install
 
 # Build frontend assets
-npm run dev          # Development build
-npm run watch        # Watch mode
-npm run build        # Production build
+yarn run dev          # Development build
+yarn run watch        # Watch mode
+yarn run build        # Production build
 
 # Start local services (requires Docker)
 docker-compose up -d

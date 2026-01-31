@@ -1,0 +1,59 @@
+.event-scheduler {
+    // Icon sizing in selectgroup
+    .form-selectgroup-label {
+        svg.icon {
+            width: 2rem;
+            height: 2rem;
+        }
+    }
+
+    // Full width selectgroup with evenly spaced items
+    .form-selectgroup-full {
+        display: flex;
+
+        .form-selectgroup-item {
+            flex: 1 0 0%;
+        }
+    }
+
+    // Time inputs
+    .time-inputs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+
+        @media (max-width: 576px) {
+            flex-direction: column;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+    }
+
+    // Preview section
+    .preview {
+        background: #f8f9fa;
+        border-left: 4px solid #0d6efd;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+
+        .preview-count {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #0d6efd;
+        }
+    }
+
+    // Generate button
+    .btn-generate {
+        width: 100%;
+    }
+
+    // Alert styling
+    .alert {
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+    }
+}

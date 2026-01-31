@@ -33,7 +33,7 @@ final class DateRangeBuilder
         $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($form->get('shortcut')->getConfig()->getOption('ranges'), \JSON_THROW_ON_ERROR);
     }
 
-    public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName): void
+    public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName, array $shortcutOptions = []): void
     {
         $ranges = [
             "N'importe quand" => [new DateTime('now')->format('Y-m-d'), null],
@@ -43,10 +43,10 @@ final class DateRangeBuilder
             'Cette semaine' => [new DateTime('monday this week')->format('Y-m-d'), new DateTime('sunday this week')->format('Y-m-d')],
             'Ce mois' => [new DateTime('first day of this month')->format('Y-m-d'), new DateTime('last day of this month')->format('Y-m-d')],
         ];
-        $this->addDateFields($builder, $fromName, $toName, $ranges);
+        $this->addDateFields($builder, $fromName, $toName, $ranges, $shortcutOptions);
     }
 
-    public function addDateFields(FormBuilderInterface $builder, string $fromName, string $toName, array $ranges = []): void
+    public function addDateFields(FormBuilderInterface $builder, string $fromName, string $toName, array $ranges = [], array $shortcutOptions = []): void
     {
         $builder
             ->add($fromName, HiddenDateType::class)
@@ -55,6 +55,7 @@ final class DateRangeBuilder
                 'from' => $fromName,
                 'to' => $toName,
                 'ranges' => $ranges,
+                ...$shortcutOptions,
             ])
             ->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($ranges) {
                 $form = $event->getForm();

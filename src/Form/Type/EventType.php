@@ -25,6 +25,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 final class EventType extends AbstractType
@@ -32,6 +33,7 @@ final class EventType extends AbstractType
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,
         private readonly DateRangeBuilder $dateRangeBuilder,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -71,10 +73,19 @@ final class EventType extends AbstractType
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
             ])
             ->add('hours', TextType::class, [
-                'label' => 'Horaires',
+                'label' => 'Horaires affichés',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'A 20h, de 21h à minuit',
+                ],
+            ])
+            ->add('timesheets', CollectionType::class, [
+                'entry_type' => EventTimesheetType::class,
+                'required' => false,
+                'add_entry_label' => 'Ajouter une date',
+                'label' => false,
+                'entry_options' => [
+                    'label' => false,
                 ],
             ])
             ->add('prices', TextType::class, [
@@ -89,6 +100,10 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
+                    'class' => 'js-tags-input',
+                    'data-tags-url' => $this->urlGenerator->generate('api_event_tags', ['type' => 'categories']),
+                    'data-tags-allow-new' => 'true',
+                    'data-tags-max-items' => '1',
                 ],
             ])
             ->add('theme', TextType::class, [
@@ -96,6 +111,9 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
+                    'class' => 'js-tags-input',
+                    'data-tags-url' => $this->urlGenerator->generate('api_event_tags', ['type' => 'themes']),
+                    'data-tags-allow-new' => 'true',
                 ],
             ])
             ->add('address', TextType::class, [

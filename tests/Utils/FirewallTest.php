@@ -11,6 +11,7 @@
 namespace App\Tests\Utils;
 
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
@@ -94,5 +95,128 @@ final class FirewallTest extends AppKernelTestCase
         self::assertNotNull($reject);
         self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $reject->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());
+    }
+
+    public function testValidTimesheetsPassValidation(): void
+    {
+        $dto = $this->createValidEventDto();
+
+        $timesheet1 = new EventTimesheetDto();
+        $timesheet1->startAt = new DateTime('2024-01-15 10:00:00');
+        $timesheet1->endAt = new DateTime('2024-01-15 18:00:00');
+
+        $timesheet2 = new EventTimesheetDto();
+        $timesheet2->startAt = new DateTime('2024-01-20 14:00:00');
+        $timesheet2->endAt = new DateTime('2024-01-20 22:00:00');
+
+        $dto->timesheets = [$timesheet1, $timesheet2];
+        $dto->startDate = null;
+        $dto->endDate = null;
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertFalse($dto->reject->isBadEventDate());
+        self::assertFalse($dto->reject->isBadEventDateInterval());
+    }
+
+    public function testTimesheetWithNullStartAtFailsValidation(): void
+    {
+        $dto = $this->createValidEventDto();
+
+        $timesheet = new EventTimesheetDto();
+        $timesheet->startAt = null;
+        $timesheet->endAt = new DateTime('2024-01-15 18:00:00');
+
+        $dto->timesheets = [$timesheet];
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->isBadEventDate());
+    }
+
+    public function testTimesheetWithNullEndAtFailsValidation(): void
+    {
+        $dto = $this->createValidEventDto();
+
+        $timesheet = new EventTimesheetDto();
+        $timesheet->startAt = new DateTime('2024-01-15 10:00:00');
+        $timesheet->endAt = null;
+
+        $dto->timesheets = [$timesheet];
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->isBadEventDate());
+    }
+
+    public function testTimesheetWithEndBeforeStartFailsValidation(): void
+    {
+        $dto = $this->createValidEventDto();
+
+        $timesheet = new EventTimesheetDto();
+        $timesheet->startAt = new DateTime('2024-01-15 18:00:00');
+        $timesheet->endAt = new DateTime('2024-01-15 10:00:00'); // End before start
+
+        $dto->timesheets = [$timesheet];
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->isBadEventDateInterval());
+    }
+
+    public function testMultipleTimesheetsWithOneInvalidFailsValidation(): void
+    {
+        $dto = $this->createValidEventDto();
+
+        $validTimesheet = new EventTimesheetDto();
+        $validTimesheet->startAt = new DateTime('2024-01-15 10:00:00');
+        $validTimesheet->endAt = new DateTime('2024-01-15 18:00:00');
+
+        $invalidTimesheet = new EventTimesheetDto();
+        $invalidTimesheet->startAt = new DateTime('2024-01-20 18:00:00');
+        $invalidTimesheet->endAt = new DateTime('2024-01-20 10:00:00'); // Invalid
+
+        $dto->timesheets = [$validTimesheet, $invalidTimesheet];
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->isBadEventDateInterval());
+    }
+
+    public function testEmptyTimesheetsUsesDirectDates(): void
+    {
+        $dto = $this->createValidEventDto();
+        $dto->timesheets = [];
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->endDate = new DateTime('2024-01-20');
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertFalse($dto->reject->isBadEventDate());
+        self::assertFalse($dto->reject->isBadEventDateInterval());
+    }
+
+    public function testEmptyTimesheetsWithInvalidDirectDatesFailsValidation(): void
+    {
+        $dto = $this->createValidEventDto();
+        $dto->timesheets = [];
+        $dto->startDate = new DateTime('2024-01-20');
+        $dto->endDate = new DateTime('2024-01-15'); // End before start
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->isBadEventDateInterval());
+    }
+
+    private function createValidEventDto(): EventDto
+    {
+        $dto = new EventDto();
+        $dto->reject = new Reject();
+        $dto->name = 'Test Event Name';
+        $dto->description = 'This is a valid event description with enough characters.';
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->endDate = new DateTime('2024-01-20');
+
+        return $dto;
     }
 }

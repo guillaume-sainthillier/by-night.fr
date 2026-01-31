@@ -7,6 +7,7 @@
     <div class="card-body {{ bodyClass }}">
         {% block content %}{% endblock %}
     </div>
+    {% block body_after '' %}
     {% if showFooter %}
         <div class="card-footer">
             {% block footer %}{% endblock %}

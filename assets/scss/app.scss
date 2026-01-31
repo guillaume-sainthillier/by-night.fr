@@ -17,6 +17,7 @@
 @import 'components/comment';
 @import 'components/criteres';
 @import 'components/event';
+@import 'components/event-scheduler';
 @import 'components/footer';
 @import 'components/form';
 @import 'components/images';
@@ -43,6 +44,13 @@
 @import 'pages/event_index';
 @import 'pages/user_details';
 @import 'pages/user_event_crud';
+
+:root,
+:host {
+    @include media-breakpoint-up(lg) {
+        margin-left: 0;
+    }
+}
 
 :root,
 :host,

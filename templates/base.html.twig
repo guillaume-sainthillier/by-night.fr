@@ -158,9 +158,8 @@ _______     __  _   _ _____ _____ _    _ _______
 
 <!-- JS -->
 {{ encore_entry_script_tags('app') }}
-{%- block js -%}{%- endblock -%}
 <script>
-  window.addEventListener('load', function () {
+    $(document).ready(function () {
     App.run({{ {
         environment: app.environment,
         locale: app.request.locale,
@@ -170,6 +169,7 @@ _______     __  _   _ _____ _____ _    _ _______
     }|json_encode|raw }});
   });
 </script>
+{%- block js -%}{%- endblock -%}
 <script type="text/javascript">
   $(document).ready(function () {
     $.cookieBar({

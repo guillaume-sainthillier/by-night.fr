@@ -48,6 +48,20 @@ final readonly class MailerManager
         $this->sendMail($email);
     }
 
+    public function sendFeedbackEmail(User $user, string $message, string $recipientEmail): void
+    {
+        $email = new TemplatedEmail()
+            ->to($recipientEmail)
+            ->subject('Feedback utilisateur - By Night')
+            ->htmlTemplate('email/feedback.html.twig')
+            ->context([
+                'user' => $user,
+                'message' => $message,
+            ]);
+
+        $this->sendMail($email);
+    }
+
     private function sendMail(Email $email): void
     {
         $email->from(new Address('support@by-night.fr', 'By Night'));
