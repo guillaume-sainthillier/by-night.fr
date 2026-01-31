@@ -48,6 +48,46 @@
     }
 }
 
+// Wrapper for vich image widget layouts
+.vich-image-wrapper {
+    // Vertical layout (default): stacked elements
+    &:not(.vich-image-horizontal) {
+        .vich-image-existing {
+            margin-bottom: $spacer;
+        }
+    }
+
+    // Horizontal layout: side by side on md+
+    &.vich-image-horizontal {
+        @include media-breakpoint-up(md) {
+            display: flex;
+            gap: $spacer;
+            align-items: stretch;
+
+            .vich-image-existing {
+                flex: 0 0 auto;
+                max-width: 200px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .dropzone {
+                flex: 1;
+                min-width: 0; // Allow shrinking below content size
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            .vich-image-existing {
+                margin-bottom: $spacer;
+            }
+        }
+    }
+}
+
 .vich-image-existing {
     img {
         max-height: 200px;

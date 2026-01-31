@@ -60,6 +60,7 @@ final class ProfileFormType extends AbstractType
                 'required' => false,
                 'label' => 'Photo de profil',
                 'delete_label' => "Supprimer l'image de profil",
+                'layout' => 'horizontal',
                 'thumb_params' => [
                     'height' => 200,
                 ],
