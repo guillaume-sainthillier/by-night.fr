@@ -12,32 +12,39 @@
 {% endblock %}
 
 {% block vich_image_widget %}
+    {% set has_existing_image = download_uri is defined and download_uri %}
+
+    {% if has_existing_image %}
+        <div class="vich-image-existing mb-3">
+            <a class="image-gallery" href="{{ download_uri }}">
+                {{ image(image_thumb_params) }}
+            </a>
+            {% if has_uploaded_image is defined and has_uploaded_image and form.delete is defined %}
+                <div class="delete-image mt-2">
+                    {{ form_row(form.delete) }}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
     <div class="dropzone">
-        {% if download_uri is defined and download_uri %}
-            <div class="dropzone-existing">
-                <a class="image-gallery" href="{{ download_uri }}">
-                    {{ image(image_thumb_params) }}
-                </a>
-            </div>
-        {% endif %}
+        <div class="dropzone-preview d-none"></div>
 
-        <div class="dropzone-preview {{ download_uri is defined and download_uri ? 'd-none' : '' }}"></div>
-
-        <div class="dropzone-placeholder {{ download_uri is defined and download_uri ? 'd-none' : '' }}">
+        <div class="dropzone-placeholder">
             <div class="dropzone-icon">
-                <twig:Icon name="lucide:image-up" />
+                <twig:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
             </div>
-            <div class="dropzone-text">Glissez-déposez une image ou cliquez pour parcourir</div>
+            <div class="dropzone-text">
+                {% if has_existing_image %}
+                    Glissez une nouvelle image pour remplacer l'actuelle
+                {% else %}
+                    Glissez-déposez une image ou cliquez pour parcourir
+                {% endif %}
+            </div>
             <div class="dropzone-hint text-muted">PNG, JPG ou GIF</div>
         </div>
 
         {{ form_widget(form.file) }}
-
-        {% if form.delete is defined %}
-            <div class="delete-image">
-                {{ form_row(form.delete) }}
-            </div>
-        {% endif %}
     </div>
 {% endblock %}
 

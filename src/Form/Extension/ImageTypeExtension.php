@@ -38,16 +38,21 @@ final class ImageTypeExtension extends AbstractTypeExtension
     {
         $object = $form->getParent()->getData();
         $view->vars['image_thumb_params'] = [];
+        $view->vars['has_uploaded_image'] = false;
 
         if (null !== $object) {
             if ($object instanceof Event || $object instanceof EventDto) {
+                $pictureData = $this->eventProfilePicture->getPicturePathAndSource($object);
                 $view->vars['download_uri'] = $this->eventProfilePicture->getOriginalPicture($object);
+                $view->vars['has_uploaded_image'] = 'upload' === $pictureData['source'];
                 $view->vars['image_thumb_params'] = array_merge([
                     'event' => $object,
                     'loader' => 'event',
                 ], $options['thumb_params']);
             } elseif ($object instanceof User || $object instanceof UserDto) {
+                $pictureData = $this->userProfilePicture->getPicturePathAndSource($object);
                 $view->vars['download_uri'] = $this->userProfilePicture->getOriginalProfilePicture($object);
+                $view->vars['has_uploaded_image'] = 'upload' === $pictureData['source'];
                 $view->vars['image_thumb_params'] = array_merge([
                     'user' => $object,
                     'loader' => 'user',

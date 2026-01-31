@@ -48,9 +48,7 @@
     }
 }
 
-.dropzone-existing {
-    margin-bottom: 1rem;
-
+.vich-image-existing {
     img {
         max-height: 200px;
         object-fit: contain;
@@ -72,10 +70,4 @@
         white-space: nowrap;
         border: 0;
     }
-}
-
-// Delete checkbox styling within dropzone
-.dropzone .delete-image {
-    margin-top: 1rem;
-    text-align: left;
 }
