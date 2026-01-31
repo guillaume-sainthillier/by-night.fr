@@ -29,7 +29,7 @@ final readonly class EventRedirectManager
     /**
      * Get event entity, throwing RedirectException if URL needs correction.
      *
-     * @throws RedirectException      when URL needs to be redirected (SEO)
+     * @throws RedirectException     when URL needs to be redirected (SEO)
      * @throws NotFoundHttpException when event is not found
      */
     public function getEvent(
@@ -47,23 +47,14 @@ final readonly class EventRedirectManager
         }
 
         if (null === $event) {
-            throw new NotFoundHttpException(null === $eventId
-                ? \sprintf('Event with slug "%s" not found', $eventSlug)
-                : \sprintf('Event with id "%d" not found', $eventId)
-            );
+            throw new NotFoundHttpException(null === $eventId ? \sprintf('Event with slug "%s" not found', $eventSlug) : \sprintf('Event with id "%d" not found', $eventId));
         }
 
         // Redirect duplicates to canonical event (301 for SEO)
         if ($event->isDuplicate()) {
             $canonical = $event->getCanonicalEvent();
 
-            throw new RedirectException(
-                $this->router->generate($routeName, array_merge([
-                    'id' => $canonical->getId(),
-                    'slug' => $canonical->getSlug(),
-                    'location' => $canonical->getLocationSlug(),
-                ], $routeParams))
-            );
+            throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $canonical->getId(), 'slug' => $canonical->getSlug(), 'location' => $canonical->getLocationSlug()], $routeParams)));
         }
 
         // Check for URL mismatch (wrong slug, id, or location)
@@ -72,13 +63,7 @@ final readonly class EventRedirectManager
             || $event->getSlug() !== $eventSlug
             || $event->getLocationSlug() !== $locationSlug
         )) {
-            throw new RedirectException(
-                $this->router->generate($routeName, array_merge([
-                    'id' => $event->getId(),
-                    'slug' => $event->getSlug(),
-                    'location' => $event->getLocationSlug(),
-                ], $routeParams))
-            );
+            throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $event->getId(), 'slug' => $event->getSlug(), 'location' => $event->getLocationSlug()], $routeParams)));
         }
 
         return $event;

@@ -29,7 +29,7 @@ final readonly class UserRedirectManager
     /**
      * Get user entity, throwing RedirectException if URL needs correction.
      *
-     * @throws RedirectException      when URL needs to be redirected (SEO)
+     * @throws RedirectException     when URL needs to be redirected (SEO)
      * @throws NotFoundHttpException when user is not found
      */
     public function getUser(
@@ -47,10 +47,7 @@ final readonly class UserRedirectManager
         }
 
         if (null === $user) {
-            throw new NotFoundHttpException(null === $userId
-                ? \sprintf('User with username "%s" not found', $userUsername)
-                : \sprintf('User with id "%d" not found', $userId)
-            );
+            throw new NotFoundHttpException(null === $userId ? \sprintf('User with username "%s" not found', $userUsername) : \sprintf('User with id "%d" not found', $userId));
         }
 
         // Check for URL mismatch (wrong slug or username)
@@ -59,12 +56,7 @@ final readonly class UserRedirectManager
             || (null !== $userSlug && $user->getSlug() !== $userSlug)
             || (null !== $userUsername && $user->getUserIdentifier() !== $userUsername)
         )) {
-            throw new RedirectException(
-                $this->router->generate($routeName, array_merge([
-                    'id' => $user->getId(),
-                    'slug' => $user->getSlug(),
-                ], $routeParams))
-            );
+            throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $routeParams)));
         }
 
         return $user;
