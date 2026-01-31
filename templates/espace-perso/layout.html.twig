@@ -4,3 +4,23 @@
     {% do menu.addItem('Mes événements', url('app_event_list')) %}
     {% block breadcrumb_espace %}{% endblock %}
 {% endblock %}
+
+{% block layout_header %}
+    {% if not app.user.verified %}
+        <div class="alert alert-dismissible fade show alert-info">
+            <div class="{{ block('container_class') }}">
+                Votre email n'est pas vérifié. En raison de nombreaux abus, vous devez désormais <a href="{{ path('app_send_verification_email') }}" class="email-verify"><strong>vérifier votre email</strong></a> pour créer des événéments sur la plateforme.
+            </div>
+        </div>
+    {% endif %}
+    <div class="alert alert-dismissible fade show alert-info" id="feedback-banner">
+        <div class="{{ block('container_class') }}">
+            <twig:Icon name="lucide:message-circle" />
+            <strong>Nouveau !</strong> Nous avons amélioré la gestion de vos événements.
+            <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                Donnez-nous votre avis !
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    </div>
+{% endblock %}
