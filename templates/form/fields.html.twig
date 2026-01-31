@@ -50,29 +50,52 @@
 
 {%- block hidden_date_row -%}
     {{ form_widget(form) }}
-{%- endblock hidden_date_row -%}
+{%- endblock hidden_date_row -%}based
 
 {% block app_collection_entry_form_row %}
-    {{ form_row(child, attr|merge({label: false})) }}
+    {{ form_row(child, attr|merge({label: false, row_class: row_class|default('form-group')})) }}
 {% endblock %}
 
 {# Special block in order to let child redefine whole block #}
 {% block app_collection_entry_widget_row %}
-    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <div class="collection-item-wrapper">
-            <div class="collection-item-header">
-                {% with child.vars %}{{ block('inline_form_label') }}{% endwith %}
-                {% if not disabled and allow_delete %}
-                    <button class="btn btn-sm rounded btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
-                        <twig:Icon name="lucide:x" />
-                    </button>
-                {% endif %}
+    {% if layout == 'simple' %}
+        {{- block('app_collection_entry_widget_row_simple') -}}
+    {% else %}
+        {{- block('app_collection_entry_widget_row_complex') -}}
+    {% endif %}
+{% endblock %}
+
+{% block app_collection_entry_widget_row_simple %}
+    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item row g-2 align-items-start')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="col">
+            {% with child.vars|merge({row_class: ''}) %}
+                {{- block('app_collection_entry_form_row') -}}
+            {% endwith %}
+        </div>
+        {% if not disabled and allow_delete %}
+            <div class="col-auto">
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                    <twig:Icon name="lucide:x" />
+                </button>
             </div>
-            <div id="collapse-{{ child.vars.id }}" class="collection-item-body collapse show">
-                {% with child.vars %}
-                    {{- block('app_collection_entry_form_row') -}}
-                {% endwith %}
-            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block app_collection_entry_widget_row_complex %}
+    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item accordion-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="accordion-header d-flex align-items-center">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ child.vars.id }}" aria-expanded="true" aria-controls="collapse-{{ child.vars.id }}">
+                {% with child.vars %}{{ label }}{% endwith %}
+            </button>
+            {% if not disabled and allow_delete %}
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                    <twig:Icon name="lucide:x" />
+                </button>
+            {% endif %}
+        </div>
+        <div id="collapse-{{ child.vars.id }}" class="accordion-collapse collapse show">
+            {{ form_widget(child, {attr: {class: 'accordion-body'}}) }}
         </div>
     </div>
 {% endblock %}
@@ -84,12 +107,12 @@
 
 {% block app_collection_widget %}
     <div class="collection-wrapper">
+        {% set attr = attr|merge({class: (attr.class|default('') ~ (layout == 'complex' ? ' accordion' : ''))|trim}) %}
         {% if prototype is defined and not prototype.rendered %}
             {% set child = prototype %}
             {% set attr = attr|merge({
                 'data-prototype': block('app_collection_entry_widget_row'),
                 'data-prototype-name': prototype.vars.name,
-                class: attr.class|default(''),
             }) %}
         {% endif %}
         <div {{ block('widget_container_attributes') }}>
