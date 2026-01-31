@@ -41,7 +41,7 @@ final class AgendaController extends BaseController
     {
         $location = $appContext->getLocation();
 
-        // État de la page
+        // Page state
         $isAjax = $request->isXmlHttpRequest();
         $routeParams = array_merge($request->query->all(), [
             'page' => $page + 1,
@@ -55,7 +55,7 @@ final class AgendaController extends BaseController
             $routeParams['slug'] = $slug;
         }
 
-        // Recherche des événements
+        // Search for events
         $search = new SearchEvent();
         $place = null;
         if (null !== $slug) {
@@ -70,9 +70,9 @@ final class AgendaController extends BaseController
         }
 
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
-        // Récupération des lieux, types événements et villes
+        // Retrieve places, event types and cities
         $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
-        // Création du formulaire
+        // Create the form
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
             'method' => 'get',

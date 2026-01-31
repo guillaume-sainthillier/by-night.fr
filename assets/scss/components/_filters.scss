@@ -1,23 +1,23 @@
-.block_criteres {
+.filter-block {
     margin-bottom: 20px;
 
     select[multiple].form-control {
         display: none;
     }
 
-    .btn_shorcuts {
+    .shortcuts-btn {
         .btn {
             margin-top: 0;
             margin-bottom: 0;
         }
     }
 
-    .btn_criteres {
+    .filter-toggle-btn {
         margin-bottom: 0;
     }
 }
 
-.criteres {
+.filters {
     margin-top: 10px;
 }
 

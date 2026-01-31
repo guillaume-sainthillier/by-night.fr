@@ -64,8 +64,8 @@ final class ParserHistoryHandler
             ->parserHistory
             ->setEndDate(new DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
-            ->setNouvellesSoirees($this->getNbInserts())
-            ->setUpdateSoirees($this->getNbUpdates())
+            ->setNewEvents($this->getNbInserts())
+            ->setUpdatedEvents($this->getNbUpdates())
             ->setFromData('?');
 
         return $this->parserHistory;

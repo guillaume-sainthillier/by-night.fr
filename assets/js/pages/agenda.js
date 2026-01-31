@@ -114,24 +114,22 @@ $(document).ready(function () {
         })
     }
 
-    /**
-     *
-     */
+    // Initialize the filters toggle behavior
     function initCriterions() {
         const options = {
             css_hidden: 'cache',
             css_initial_hidden: 'hidden',
             icon_open: iconHtml(ChevronDownIcon),
             icon_close: iconHtml(ChevronUpIcon),
-            selector_btn_criteres: '.btn_criteres',
+            selector_filter_btn: '.filter-toggle-btn',
             selector_icon: '.icon-toggle',
-            selector_block_criteres: '.criteres',
-            selector_main_block: '.block_criteres',
+            selector_filters: '.filters',
+            selector_filter_block: '.filter-block',
             duration: 0,
         }
 
-        // Bon bloc indigeste :)
-        const block = $(options.selector_btn_criteres)
+        // Toggle block logic
+        const block = $(options.selector_filter_btn)
             .click(function () {
                 if (block.hasClass(options.css_hidden)) {
                     $(this).find(options.selector_icon).html(options.icon_close)
@@ -145,10 +143,10 @@ $(document).ready(function () {
                     })
                 }
             })
-            .closest(options.selector_main_block)
-            .find(options.selector_block_criteres)
+            .closest(options.selector_filter_block)
+            .find(options.selector_filters)
 
-        // Pas de besoins d'ouvrir la recherche avancée
+        // No need to open advanced search by default
         if (block.hasClass(options.css_hidden)) {
             block.hide().removeClass(options.css_initial_hidden)
         }
