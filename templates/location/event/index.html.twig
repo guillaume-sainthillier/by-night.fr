@@ -50,6 +50,10 @@
 {% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
 {% block og_image original %}
 
+{% block json_ld %}
+    {{ event_json_ld(event) }}
+{% endblock %}
+
 {% block body -%}
     {% if event.draft %}
         <div class="alert alert-warning">
@@ -63,13 +67,13 @@
                     <div class="col-12">
                         <div class="alert alert-warning mb-0">
                             <twig:Icon name="lucide:triangle-alert" />
-                            <span itemprop="eventStatus">Informations de dernière minute : {{ event.status }}</span>
+                            <span>Informations de dernière minute : {{ event.status }}</span>
                         </div>
                     </div>
                 {% endif %}
                 <div class="col-lg-7">
                     <a class="image-gallery" href="{{ original }}" title="{{ eventShortName }}">
-                        <twig:EventThumb event="{{ event }}" width="{{ 800 }}" placeholderPriority="{{ true }}" class="img" itemprop="image" />
+                        <twig:EventThumb event="{{ event }}" width="{{ 800 }}" placeholderPriority="{{ true }}" class="img" />
                     </a>
                 </div>
                 <div class="col-lg-5 event-details">
@@ -79,15 +83,12 @@
                             <h2>
                                 {% if event.endDate == null or event.startDate == event.endDate %}
                                     Le
-                                    <time itemprop="startDate"
-                                          datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
+                                    <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
                                 {% else %}
                                     Du
-                                    <time itemprop="startDate"
-                                          datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
+                                    <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
                                     au
-                                    <time itemprop="endDate"
-                                          datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">{{ event.endDate|format_date('full') }}</time>
+                                    <time datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">{{ event.endDate|format_date('full') }}</time>
                                 {% endif %}
                             </h2>
                         </div>
@@ -132,9 +133,7 @@
                             </div>
                         {% endif %}
 
-                        <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
-                            <meta name="url" content="{{ path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) }}">
-
+                        <div class="detail-item">
                             {% if event.placeName %}
                                 <twig:Icon name="lucide:map-pin" />
                             {% endif %}
@@ -144,31 +143,26 @@
                                 {% if event.placeName %}
                                     {% set mapValue = event.placeName %}
                                     <h2 class="mb-0">
-                                        <strong class="font-weight-normal" itemprop="name">{{ event.placeName }}</strong>
+                                        <strong class="font-weight-normal">{{ event.placeName }}</strong>
                                     </h2>
                                 {% endif %}
 
                                 {% if event.placeCity %}
-                                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                                        {% if event.place and event.place.city %}
-                                            <meta itemprop="addressCountry" content="{{ event.place.city.country.id }}" />
-                                        {% endif %}
-
+                                    <div>
                                         {% if event.placeStreet %}
-                                            <div itemprop="streetAddress">{{ event.placeStreet }}</div>
+                                            <div>{{ event.placeStreet }}</div>
                                         {% endif %}
 
                                         {% if event.placeCity or event.placePostalCode %}
                                             <div>
                                                 {% if event.placePostalCode %}
-                                                    <span itemprop="postalCode">{{ event.placePostalCode }}</span>
+                                                    <span>{{ event.placePostalCode }}</span>
                                                 {% endif %}
 
                                                 {% if event.placeCity %}
                                                     {% set mapValue = mapValue ~ ' ' ~ event.placeCity %}
                                                     {% if event.place and event.place.city %}
-                                                        <meta name="url" content="{{ path('app_agenda_index', {location: place.locationSlug}) }}">
-                                                        <strong class="font-weight-normal" itemprop="addressLocality">{{ event.placeCity }}</strong>
+                                                        <strong class="font-weight-normal">{{ event.placeCity }}</strong>
                                                     {% endif %}
                                                 {% endif %}
                                             </div>
@@ -177,10 +171,6 @@
                                 {% endif %}
 
                                 {% if event.latitude and event.longitude %}
-                                    <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                        <meta itemprop="latitude" content="{{ event.latitude }}" />
-                                        <meta itemprop="longitude" content="{{ event.longitude }}" />
-                                    </span>
                                     {% if not place.city %}
                                         {% set mapParameter = 'place?q=' %}
                                         {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
@@ -226,7 +216,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div itemprop="description" class="col-sm-8">
+                    <div class="col-sm-8">
                         {{ eventDescription|raw }}
                     </div>
                     <div class="col-sm-4 my-3 my-md-0 event-details">
