@@ -83,6 +83,7 @@
         "build": "encore production",
         "prepare": "husky",
         "icon:svg": "svgr --icon --out-dir assets/js/icons --ext jsx --no-index --jsx-runtime classic-preact -- assets/icons",
+        "lint": "eslint assets/**/*.{js,jsx}",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage"
