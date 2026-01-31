@@ -14,7 +14,7 @@ use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
 use App\Form\Type\SimpleEventSearchType;
 use App\Repository\EventRepository;
-use DateTime;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -25,15 +25,15 @@ final class DefaultController extends BaseController
     {
         $location = $appContext->getLocation();
 
-        $datas = [
-            'from' => new DateTime(),
+        $data = [
+            'from' => new DateTimeImmutable('now'),
         ];
+        $form = $this->createForm(SimpleEventSearchType::class, $data);
         $events = $this->createQueryBuilderPaginator(
             $eventRepository->findUpcomingEventsQueryBuilder($location),
             1,
             7
         );
-        $form = $this->createForm(SimpleEventSearchType::class, $datas);
 
         return $this->render('location/index.html.twig', [
             'location' => $location,

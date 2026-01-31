@@ -38,16 +38,14 @@
                 <div class="col-md-6">
                     {# Part 2 #}
                     <twig:Card header="Dates et horaires" icon="lucide:calendar-days" showFooter="{{ false }}">
-                        {{ form_row(form.startDate) }}
-                        {{ form_row(form.endDate) }}
-                        {{ form_row(form.shortcut, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
+                        {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
                         {{ form_row(form.hours, {icon_prepend: 'lucide:clock'}) }}
 
                         {# Event Scheduler Component #}
                         <div id="event-scheduler-root"
                              class="form-group"
-                             data-start-date-field="{{ form.startDate.vars.id }}"
-                             data-end-date-field="{{ form.endDate.vars.id }}"
+                             data-start-date-field="{{ form.dateRange.from.vars.id }}"
+                             data-end-date-field="{{ form.dateRange.to.vars.id }}"
                              data-collection-id="{{ form.timesheets.vars.id }}"
                              data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}">
                             <p class="text-muted">Chargement...</p>

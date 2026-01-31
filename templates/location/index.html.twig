@@ -29,9 +29,7 @@
             <div class="no-margin-form card search_container">
                 <div class="card-body">
                     {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
-                    {{ form_row(form.from) }}
-                    {{ form_row(form.to) }}
-                    {{ form_row(form.shortcut, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'lucide:calendar-days'}) }}
+                    {{ form_row(form.dateRange, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'lucide:calendar-days'}) }}
                     {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'lucide:search'}) }}
 
                     <div class="text-center">
@@ -101,7 +99,7 @@
                 link: path('app_agenda_by_type', {type: 'etudiant', location: location.slug}),
                 title_link: 'Soirées étudiantes ' ~ location.atName,
                 text: "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
-                            d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en 
+                            d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en
                             <strong>discothèque</strong> ce soir ? " ~ location.appName ~ " regroupe
                             <strong>l'agenda des soirées</strong> rien que pour vous !",
             }, {
@@ -129,7 +127,7 @@
                 link: path('app_agenda_by_type', {type: 'exposition', location: location.slug}),
                 title_link: 'Les expos ' ~ location.atName,
                 text: 'Les <strong>expos ' ~ location.atName ~ "</strong> sont nombreuses ! Envie d'aller visiter les
-                    <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
+                    <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir
                     les <strong>expos à voir " ~ location.atName ~ "</strong> ? C'est par ici !",
             }, {
                 title: 'Organisateur',

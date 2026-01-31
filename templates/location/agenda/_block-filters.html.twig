@@ -8,11 +8,7 @@
     <div class="card-body">
         <div class="row main-filters">
             <div class="col-md-6 col-lg-4">
-                {{ form_widget(form.from) }}
-                {{ form_widget(form.to) }}
-                {{ form_errors(form.from) }}
-                {{ form_errors(form.to) }}
-                {{ form_row(form.shortcut, {label: 'Quand ?', icon_prepend: 'lucide:calendar-days'}) }}
+                {{ form_row(form.dateRange, {label: 'Quand ?', icon_prepend: 'lucide:calendar-days'}) }}
             </div>
             <div class="col-md-6 col-lg-8">
                 {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}

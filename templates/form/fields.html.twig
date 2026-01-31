@@ -59,12 +59,20 @@
 {% endblock %}
 
 {%- block date_range_row -%}
-    {{ form_widget(form[date_range_from_field]) }}
-    {% if date_range_to_field is not null %}
-        {{ form_widget(form[date_range_to_field]) }}
+    {{ form_widget(form.from) }}
+    {% if form.to is defined %}
+        {{ form_widget(form.to) }}
     {% endif %}
-    {{ form_row(form.range, row_attr) }}
-{%- endblock date_range_row -%}
+    {% set range_options = {
+        icon_prepend: icon_prepend|default(null),
+        icon_append: icon_append|default(null),
+    }|merge(label is defined ? {label: label} : {}) %}
+    {{ form_row(form.range, range_options) }}
+    {{ form_errors(form.from) }}
+    {% if form.to is defined %}
+        {{ form_errors(form.to) }}
+    {% endif %}
+{%- endblock -%}
 
 {% block app_collection_entry_form_row %}
     {{ form_row(child, attr|merge({label: false, row_class: row_class|default('form-group')})) }}
