@@ -39,6 +39,7 @@ final class ImageTypeExtension extends AbstractTypeExtension
         $object = $form->getParent()->getData();
         $view->vars['image_thumb_params'] = [];
         $view->vars['has_uploaded_image'] = false;
+        $view->vars['layout'] = $options['layout'];
 
         if (null !== $object) {
             if ($object instanceof Event || $object instanceof EventDto) {
@@ -68,9 +69,11 @@ final class ImageTypeExtension extends AbstractTypeExtension
     {
         $resolver->setDefaults([
             'translation_domain' => 'messages',
+            'layout' => 'vertical',
         ]);
         $resolver->setRequired(['thumb_params']);
         $resolver->setAllowedTypes('thumb_params', 'array');
+        $resolver->setAllowedValues('layout', ['vertical', 'horizontal']);
     }
 
     /**
