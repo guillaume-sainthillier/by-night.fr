@@ -58,9 +58,11 @@
     </div>
 {% endblock %}
 
-{%- block hidden_date_row -%}
-    {{ form_widget(form) }}
-{%- endblock hidden_date_row -%}based
+{%- block date_range_row -%}
+    {{ form_widget(form[date_range_from_field]) }}
+    {{ form_widget(form[date_range_to_field]) }}
+    {{ form_row(form.range, row_attr) }}
+{%- endblock date_range_row -%}
 
 {% block app_collection_entry_form_row %}
     {{ form_row(child, attr|merge({label: false, row_class: row_class|default('form-group')})) }}
