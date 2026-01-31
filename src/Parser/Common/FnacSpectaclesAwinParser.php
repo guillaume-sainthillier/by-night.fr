@@ -25,7 +25,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class FnacSpectaclesAwinParser extends AbstractAwinParser
 {
-    private const string DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/23455/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,is_for_sale,custom_1,valid_to,product_short_description,custom_2,custom_4,custom_6,custom_3,Tickets%3Avenue_address,Tickets%3Alatitude,Tickets%3Alongitude/format/xml-tree/compression/gzip/';
+    private const string DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/23455/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,is_for_sale,custom_1,valid_to,product_short_description,custom_2,custom_4,custom_6,custom_3,Tickets%3Avenue_address,Tickets%3Alatitude,Tickets%3Alongitude/format/csv/compression/gzip/';
 
     public function __construct(
         LoggerInterface $logger,
@@ -122,8 +122,8 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'], $data['product_short_description'])));
         $event->imageUrl = $this->getImageUrl($data['merchant_image_url']);
         $event->prices = \sprintf('%s€', $data['search_price']);
-        $event->latitude = (float) $data['latitude'];
-        $event->longitude = (float) $data['longitude'];
+        $event->latitude = (float) $data['Tickets:latitude'];
+        $event->longitude = (float) $data['Tickets:longitude'];
 
         $place = new PlaceDto();
         $place->name = $data['custom_2'];
@@ -132,13 +132,13 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             '%s %s %s %s %s',
             $data['custom_2'],
             $data['custom_6'],
-            $data['venue_address'],
+            $data['Tickets:venue_address'],
             $data['custom_4'],
             $data['custom_3'],
         ));
 
         $city = new CityDto();
-        $city->name = $data['venue_address'];
+        $city->name = $data['Tickets:venue_address'];
         $city->postalCode = $data['custom_4'];
 
         $country = new CountryDto();
