@@ -13,7 +13,7 @@
 {% if page > 1 %} (Page {{ page }}){% endif %}
 {%- endblock -%}
 
-{%- block titre -%}
+{%- block title -%}
 {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.cityName -}}
 {% elseif tag is not null %}{{- tag|capitalize -}}
 {% elseif type == 'exposition' %}Expositions
@@ -46,10 +46,10 @@
     {% endif %}
 {% endblock %}
 
-{% block og_title block('titre')|striptags %}
+{% block og_title block('title')|striptags %}
 
 {% block meta_description -%}
-    {{ block('titre')|striptags }}.
+    {{ block('title')|striptags }}.
     {% if location.isCountry %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.country.atDisplayName }}.{% endif %}
     {% if location.isCity %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir à {{ location.city.name }}.{% endif %}
 {%- endblock %}
@@ -73,13 +73,13 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#une">
+                <a class="nav-link" href="#featured">
                     <twig:Icon name="lucide:star" />
                     <span>A la une</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#membres">
+                <a class="nav-link" href="#members">
                     <twig:Icon name="lucide:users" />
                     <span>Membres</span>
                 </a>

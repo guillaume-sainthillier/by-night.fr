@@ -232,13 +232,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?int $fbParticipations = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private ?int $fbInterets = null;
+    private ?int $fbInterests = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $participations = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private ?int $interets = null;
+    private ?int $interests = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $source = null;
@@ -416,7 +416,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-    public function majEndDate(): void
+    public function updateEndDate(): void
     {
         if ($this->timesheets->count() > 0) {
             $minStart = null;
@@ -850,14 +850,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getFbInterets(): ?int
+    public function getFbInterests(): ?int
     {
-        return $this->fbInterets;
+        return $this->fbInterests;
     }
 
-    public function setFbInterets(?int $fbInterets): self
+    public function setFbInterests(?int $fbInterests): self
     {
-        $this->fbInterets = $fbInterets;
+        $this->fbInterests = $fbInterests;
 
         return $this;
     }
@@ -874,14 +874,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getInterets(): ?int
+    public function getInterests(): ?int
     {
-        return $this->interets;
+        return $this->interests;
     }
 
-    public function setInterets(?int $interets): self
+    public function setInterests(?int $interests): self
     {
-        $this->interets = $interets;
+        $this->interests = $interests;
 
         return $this;
     }

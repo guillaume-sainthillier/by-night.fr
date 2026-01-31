@@ -40,7 +40,7 @@ final class SearchController extends AbstractController
         $events = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
         $users = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
         if ('' !== $q) {
-            if (!$type || 'evenements' === $type) { // Recherche d'événements
+            if (!$type || 'evenements' === $type) { // Search for events
                 $events = $this->searchEvents($rm, $q);
                 $this->updatePaginator($events, $page, self::ITEMS_PER_PAGE);
 
@@ -54,7 +54,7 @@ final class SearchController extends AbstractController
                 }
             }
 
-            if (!$type || 'membres' === $type) { // Recherche de membres
+            if (!$type || 'membres' === $type) { // Search for members
                 $users = $this->searchUsers($rm, $q);
                 $this->updatePaginator($users, $page, self::ITEMS_PER_PAGE);
 

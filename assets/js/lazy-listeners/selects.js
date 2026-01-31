@@ -10,12 +10,11 @@ export default (container = document) => {
         } else {
             new TomSelect(el, {
                 create: false,
-                plugins: ['remove_button', 'change_listener'],
-                controlInput: null,
+                plugins: ['remove_button'],
                 allowEmptyOption: true,
                 render: {
                     no_results() {
-                        return '<div class="no-results">Aucun r\u00e9sultat</div>'
+                        return '<div class="no-results">Aucun résultat</div>'
                     },
                 },
             })

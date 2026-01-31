@@ -1,7 +1,7 @@
-{% props titre = null, scrollAreaClass = '' %}
+{% props header = null, scrollAreaClass = '' %}
 <div {{ attributes.defaults({class: 'widget active'}) }}>
     <h3>
-        <span>{% block titre %}{{ titre }}{% endblock %}</span>
+        <span>{% block header %}{{ header }}{% endblock %}</span>
     </h3>
     <div class="scroll-wrapper">
         <div class="scroll-area scroll-area-horizontal {{ scrollAreaClass }}">

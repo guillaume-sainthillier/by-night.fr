@@ -8,6 +8,13 @@ form {
     margin-bottom: 1rem;
 }
 
+.accordion-body,
+.card-body {
+    > .form-group:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .form-control[readonly].form-control-readonly {
     background-color: $input-bg;
 }
@@ -41,6 +48,8 @@ Icon input
     .form-select:not(:first-child),
     .collection-item:not(:first-child) .form-control,
     .collection-item:not(:first-child) .form-select,
+    .autoComplete_wrapper:not(:first-child) .form-control,
+    .autoComplete_wrapper:not(:first-child) .form-select,
     .form-control:not(:first-child):invalid,
     .form-select:not(:first-child):invalid,
     .form-control.is-invalid:not(:first-child),
@@ -55,6 +64,8 @@ Icon input
     .form-select:not(:last-child),
     .collection-item:not(:last-child) .form-control,
     .collection-item:not(:last-child) .form-select,
+    .autoComplete_wrapper:not(:last-child) .form-control,
+    .autoComplete_wrapper:not(:last-child) .form-select,
     .ts-wrapper:not(:last-child) .ts-control,
     .ts-wrapper:not(:last-child).multi.has-items .ts-control,
     .collection-item:not(:last-child) .ts-wrapper .ts-control {

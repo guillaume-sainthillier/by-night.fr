@@ -2,20 +2,20 @@
     {% set oAuth = user.oAuth %}
 
     {% if oAuth and (oAuth.facebookAccessToken or oAuth.twitterNickname) %}
-        <hr/>
-    {% endif %}
+        <div class="card-body">
+            {% if oAuth.facebookAccessToken %}
+                <a class="social-facebook social" href="https://www.facebook.com/{{ oAuth.facebookId }}"
+                   title="{{ oAuth.facebookRealname }} sur Facebook">
+                    <twig:Icon name="fa7-brands:facebook-f"/>
+                </a>
+            {% endif %}
 
-    {% if oAuth.facebookAccessToken %}
-        <a class="social-facebook social" href="https://www.facebook.com/{{ oAuth.facebookId }}"
-           title="{{ oAuth.facebookRealname }} sur Facebook">
-            <twig:Icon name="fa7-brands:facebook-f" />
-        </a>
-    {% endif %}
-
-    {% if oAuth.twitterNickname %}
-        <a class="social-twitter social" href="https://twitter.com/{{ oAuth.twitterNickname }}"
-           title="{{ oAuth.twitterRealname }} sur Twitter">
-            <twig:Icon name="fa7-brands:x-twitter" />
-        </a>
+            {% if oAuth.twitterNickname %}
+                <a class="social-twitter social" href="https://twitter.com/{{ oAuth.twitterNickname }}"
+                   title="{{ oAuth.twitterRealname }} sur Twitter">
+                    <twig:Icon name="fa7-brands:x-twitter"/>
+                </a>
+            {% endif %}
+        </div>
     {% endif %}
 {% endif %}

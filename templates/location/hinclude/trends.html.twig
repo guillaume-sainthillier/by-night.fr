@@ -1,7 +1,7 @@
 <div class="btn-group">
 
     <button type="button" href="{{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? path('app_login') : '#' }}"
-            class="btn btn-unstyled participer btn-like-event {{ trendsData.participer ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' connexion' }}"
+            class="btn btn-unstyled participate btn-like-event {{ trendsData.participate ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' login' }}"
             data-href="{{ path('api_event_participer', {id: trendsData.event.id}) }}">
         <twig:Icon name="lucide:heart" />
     </button>

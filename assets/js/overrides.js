@@ -10,13 +10,13 @@ Modal.prototype.loading = function () {
     this.hideButtons()
 }
 
-Modal.prototype.hideButtons = function (selecteur) {
+Modal.prototype.hideButtons = function (selector) {
     const element = $(this._element)
-    element.find(`.modal-footer :not(${selecteur || '.btn_retour'})`).addClass('hidden')
+    element.find(`.modal-footer :not(${selector || '.btn_back'})`).addClass('hidden')
 }
-Modal.prototype.setTitle = function (titre) {
+Modal.prototype.setTitle = function (title) {
     const element = $(this._element)
-    element.find('.modal-title').html(titre)
+    element.find('.modal-title').html(title)
 }
 Modal.prototype.setBody = function (body) {
     const element = $(this._element)
@@ -26,13 +26,13 @@ Modal.prototype.getBody = function () {
     const element = $(this._element)
     return element.find('.modal-body')
 }
-Modal.prototype.setErreur = function (msg) {
+Modal.prototype.setError = function (msg) {
     this.setTitle('Une erreur est survenue')
     this.setBody(msg)
     this.hideButtons()
 }
 
-Modal.prototype.setLittleErreur = function (msg) {
+Modal.prototype.setSmallError = function (msg) {
     const element = $(this._element)
 
     element.find('.alert_little').remove()
@@ -47,18 +47,18 @@ $.ajaxSetup({
         if (textStatus === 404 || textStatus === 500) {
             let message = error.statusText
             try {
-                const erreurs = JSON.parse(error.responseText)
+                const errors = JSON.parse(error.responseText)
 
                 message = ''
-                $.each(erreurs, function (k, erreur) {
-                    message = `${erreur.message}<br />`
+                $.each(errors, function (k, err) {
+                    message = `${err.message}<br />`
                 })
             } catch (e) {
                 /* eslint no-unused-vars: "off" */
             }
 
             const dialog = $('#dialog_details')
-            dialog.modal('setErreur', message).modal('show')
+            dialog.modal('setError', message).modal('show')
         }
     },
 })

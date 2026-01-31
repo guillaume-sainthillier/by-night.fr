@@ -23,7 +23,7 @@ class EventTest extends TestCase
         $event->setStartDate(new DateTime('2024-01-15'));
         $event->setEndDate(null);
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         self::assertNotNull($event->getEndDate());
         self::assertEquals('2024-01-15', $event->getEndDate()->format('Y-m-d'));
@@ -35,7 +35,7 @@ class EventTest extends TestCase
         $event->setStartDate(new DateTime('2024-01-15'));
         $event->setEndDate(new DateTime('2024-01-20'));
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         self::assertEquals('2024-01-20', $event->getEndDate()->format('Y-m-d'));
     }
@@ -60,7 +60,7 @@ class EventTest extends TestCase
         $timesheet3->setEndAt(new DateTime('2024-01-10 17:00:00'));
         $event->addTimesheet($timesheet3);
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         // startDate should be min of all startAt (2024-01-10), time set to 00:00:00
         self::assertEquals('2024-01-10', $event->getStartDate()->format('Y-m-d'));
@@ -80,7 +80,7 @@ class EventTest extends TestCase
         $timesheet->setEndAt(new DateTime('2024-01-15 18:00:00'));
         $event->addTimesheet($timesheet);
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         self::assertEquals('2024-01-15', $event->getStartDate()->format('Y-m-d'));
         self::assertEquals('2024-01-15', $event->getEndDate()->format('Y-m-d'));
@@ -98,7 +98,7 @@ class EventTest extends TestCase
         $timesheet->setEndAt(null);
         $event->addTimesheet($timesheet);
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         // When timesheets have null dates, should fallback to setting endDate = startDate
         self::assertEquals($event->getStartDate(), $event->getEndDate());

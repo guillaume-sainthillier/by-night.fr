@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Controller\EspacePerso;
+namespace App\Controller\PersonalSpace;
 
 use App\Controller\AbstractController as BaseController;
 use App\Dto\EventDto;
@@ -44,7 +44,7 @@ final class EventController extends BaseController
             self::EVENT_PER_PAGE
         );
 
-        return $this->render('espace-perso/index.html.twig', [
+        return $this->render('personal-space/index.html.twig', [
             'events' => $events,
         ]);
     }
@@ -95,7 +95,7 @@ final class EventController extends BaseController
             return $this->redirectToRoute('app_event_list');
         }
 
-        return $this->render('espace-perso/new.html.twig', [
+        return $this->render('personal-space/new.html.twig', [
             'form' => $form,
         ]);
     }
@@ -119,7 +119,7 @@ final class EventController extends BaseController
             return $this->redirectToRoute('app_event_list');
         }
 
-        return $this->render('espace-perso/edit.html.twig', [
+        return $this->render('personal-space/edit.html.twig', [
             'form' => $form,
             'event' => $event,
         ]);

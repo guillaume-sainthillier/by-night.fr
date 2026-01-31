@@ -1,14 +1,14 @@
-{% extends 'espace-perso/layout.html.twig' %}
+{% extends 'personal-space/layout.html.twig' %}
 
-{% block titre 'Créer un nouvel événement' %}
+{% block title 'Créer un nouvel événement' %}
 {% block meta_title 'Nouvel événement' %}
 
-{% block breadcrumb_espace -%}
+{% block breadcrumb_personal_space -%}
     {% do menu.addItem('Nouveau', url('app_event_new')) %}
 {%- endblock %}
 
 {% block body -%}
-    <div class="mb-4 mon_evenement">
+    <div class="mb-4 my-event">
         {% block body_form %}
             {{ form_start(form) }}
             {{ form_errors(form) }}
@@ -98,9 +98,9 @@
 {%- endblock %}
 
 {% block css -%}
-    {{ encore_entry_link_tags('espace_perso_event') }}
+    {{ encore_entry_link_tags('personal_space_event') }}
 {%- endblock %}
 
 {% block js -%}
-    {{ encore_entry_script_tags('espace_perso_event') }}
+    {{ encore_entry_script_tags('personal_space_event') }}
 {%- endblock %}

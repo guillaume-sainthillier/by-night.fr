@@ -32,10 +32,10 @@ class ParserHistory
     private ?string $fromData = null;
 
     #[ORM\Column(type: Types::INTEGER)]
-    private int $nouvellesSoirees = 0;
+    private int $newEvents = 0;
 
     #[ORM\Column(type: Types::INTEGER)]
-    private int $updateSoirees = 0;
+    private int $updatedEvents = 0;
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $explorations = 0;
@@ -47,15 +47,15 @@ class ParserHistory
     }
 
     #[ORM\PrePersist]
-    public function majEndDate(): void
+    public function updateEndDate(): void
     {
         $this->setEndDate(new DateTime());
     }
 
     /**
-     * Get duree.
+     * Get duration in seconds.
      */
-    public function getDuree(): int
+    public function getDuration(): int
     {
         return $this->endDate->getTimestamp() - $this->startDate->getTimestamp();
     }
@@ -96,26 +96,26 @@ class ParserHistory
         return $this;
     }
 
-    public function getNouvellesSoirees(): ?int
+    public function getNewEvents(): ?int
     {
-        return $this->nouvellesSoirees;
+        return $this->newEvents;
     }
 
-    public function setNouvellesSoirees(int $nouvellesSoirees): self
+    public function setNewEvents(int $newEvents): self
     {
-        $this->nouvellesSoirees = $nouvellesSoirees;
+        $this->newEvents = $newEvents;
 
         return $this;
     }
 
-    public function getUpdateSoirees(): ?int
+    public function getUpdatedEvents(): ?int
     {
-        return $this->updateSoirees;
+        return $this->updatedEvents;
     }
 
-    public function setUpdateSoirees(int $updateSoirees): self
+    public function setUpdatedEvents(int $updatedEvents): self
     {
-        $this->updateSoirees = $updateSoirees;
+        $this->updatedEvents = $updatedEvents;
 
         return $this;
     }

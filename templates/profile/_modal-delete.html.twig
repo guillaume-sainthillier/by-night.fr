@@ -1,12 +1,14 @@
 {% extends 'layouts/modal.html.twig' %}
 
-{% block titre 'Confirmation de suppression' %}
+{% block title 'Confirmation de suppression' %}
 
 {% block body -%}
     <div class="alert alert-warning">
         <twig:Icon name="lucide:triangle-alert" />
-        Vous êtes sur le point de supprimer votre compte.
-        <strong> Cette action est irréversible !</strong>
+        <div>
+            Vous êtes sur le point de supprimer votre compte.
+            <strong> Cette action est irréversible !</strong>
+            </div>
     </div>
 
     {{ form_row(formDelete.delete_events, {label: 'Supprimer mes événements'}) }}

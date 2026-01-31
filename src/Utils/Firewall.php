@@ -73,22 +73,22 @@ final class Firewall
 
     private function filterEventInfos(EventDto $dto): void
     {
-        // Le nom de l'événement doit comporter au moins 3 caractères
+        // Event name must have at least 3 characters
         if (!$dto->isAffiliate() && !$this->checkMinLengthValidity($dto->name, 3)) {
             $dto->reject->addReason(Reject::BAD_EVENT_NAME);
         }
 
-        // La description de l'événement doit comporter au moins 20 caractères
+        // Event description must have at least 10 characters
         if (!$dto->isAffiliate() && !$this->checkMinLengthValidity($dto->description, 10)) {
             $dto->reject->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
-        // Pas de SPAM dans la description
+        // No SPAM in description
         if (!$dto->isAffiliate() && $this->isSPAMContent($dto->description)) {
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
-        // Pas de SPAM dans le titre
+        // No SPAM in title
         if (!$dto->isAffiliate() && $this->isSPAMContent($dto->name)) {
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
@@ -111,13 +111,13 @@ final class Firewall
         } elseif (!$dto->startDate instanceof DateTimeInterface
             || !$dto->endDate instanceof DateTimeInterface
         ) {
-            // Pas de dates valides fournies
+            // No valid dates provided
             $dto->reject->addReason(Reject::BAD_EVENT_DATE);
         } elseif ($dto->endDate < $dto->startDate) {
             $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
-        // Observation de l'événement
+        // Event observation
         if ($dto->getExternalId()) {
             $parserData = $this->getExploration($dto->getExternalId());
             if (null === $parserData) {
@@ -132,7 +132,7 @@ final class Firewall
 
                 $this->addParserData($parserData);
             } else {
-                // Pas besoin de paniquer l'EM si les dates sont équivalentes
+                // No need to panic the EM if dates are equivalent
                 if ($parserData->getLastUpdated()?->format('Y-m-d H:i:s') !== $dto->getExternalUpdatedAt()?->format('Y-m-d H:i:s')) {
                     $parserData->setLastUpdated(null === $dto->getExternalUpdatedAt() ? null : DateTime::createFromInterface($dto->getExternalUpdatedAt()));
                 }

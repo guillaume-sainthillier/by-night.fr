@@ -268,7 +268,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $this->getTrendsCount($event);
     }
 
-    public function getInteretTrendsCount(Event $event): int
+    public function getInterestTrendsCount(Event $event): int
     {
         return $this->getTrendsCount($event, false);
     }

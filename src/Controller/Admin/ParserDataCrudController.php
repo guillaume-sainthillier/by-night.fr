@@ -11,6 +11,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ParserData;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -22,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 use RuntimeException;
 
+#[AdminRoute(path: '/parser-data', name: 'parser_data')]
 final class ParserDataCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
