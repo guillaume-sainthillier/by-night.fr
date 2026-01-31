@@ -22,8 +22,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Tag[]    findAll()
  * @method Tag[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-final class TagRepository extends ServiceEntityRepository
+class TagRepository extends ServiceEntityRepository
 {
+    /** @var array<string, Tag> In-memory cache of created tags by lowercase name */
+    private array $createdTags = [];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tag::class);
@@ -31,10 +34,18 @@ final class TagRepository extends ServiceEntityRepository
 
     /**
      * Find a tag by name or create a new one if it doesn't exist.
+     * Uses in-memory cache to return the same Tag instance within a request.
      */
     public function findOrCreateByName(string $name): Tag
     {
         $name = trim($name);
+        $cacheKey = mb_strtolower($name);
+
+        // Check in-memory cache first
+        if (isset($this->createdTags[$cacheKey])) {
+            return $this->createdTags[$cacheKey];
+        }
+
         $tag = $this->findOneByName($name);
 
         if (null === $tag) {
@@ -42,6 +53,9 @@ final class TagRepository extends ServiceEntityRepository
             $tag->setName($name);
             $this->getEntityManager()->persist($tag);
         }
+
+        // Cache for future calls within the same request
+        $this->createdTags[$cacheKey] = $tag;
 
         return $tag;
     }
