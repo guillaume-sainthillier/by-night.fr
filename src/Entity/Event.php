@@ -418,39 +418,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\PreUpdate]
     public function updateEndDate(): void
     {
-        if ($this->timesheets->count() > 0) {
-            $minStart = null;
-            $maxEnd = null;
-
-            foreach ($this->timesheets as $timesheet) {
-                $start = $timesheet->getStartAt();
-                $end = $timesheet->getEndAt();
-
-                if (null !== $start && (null === $minStart || $start < $minStart)) {
-                    $minStart = $start;
-                }
-                if (null !== $end && (null === $maxEnd || $end > $maxEnd)) {
-                    $maxEnd = $end;
-                }
-            }
-
-            // Only update dates if we found valid values from timesheets
-            if (null !== $minStart) {
-                $this->startDate = DateTime::createFromInterface($minStart);
-                $this->startDate->setTime(0, 0, 0);
-            }
-            if (null !== $maxEnd) {
-                $this->endDate = DateTime::createFromInterface($maxEnd);
-                $this->endDate->setTime(0, 0, 0);
-            }
-
-            // If timesheets exist but have no valid dates, ensure endDate matches startDate
-            if (null === $minStart && null === $maxEnd && null === $this->endDate) {
-                $this->endDate = $this->startDate;
-            }
-        } elseif (null === $this->endDate) {
-            $this->endDate = $this->startDate;
-        }
+        $this->endDate ??= $this->startDate;
     }
 
     public function getLocationSlug(): ?string
