@@ -16,7 +16,6 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
-use App\Entity\Tag;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTime;

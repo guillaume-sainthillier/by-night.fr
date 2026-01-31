@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
 #[AsCommand('app:events:migrate-tags', 'Migrate category/theme strings to Tag entities')]
 final class EventsTagMigrateCommand extends Command
@@ -72,7 +73,7 @@ final class EventsTagMigrateCommand extends Command
                     } else {
                         ++$skippedCount;
                     }
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     ++$errorCount;
                     if ($io->isVerbose()) {
                         $io->warning(\sprintf('Error migrating event #%d: %s', $event->getId(), $e->getMessage()));

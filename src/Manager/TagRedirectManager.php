@@ -55,11 +55,7 @@ final readonly class TagRedirectManager
         }
 
         if (null === $tag) {
-            throw new NotFoundHttpException(
-                null === $tagId
-                    ? \sprintf('Tag with slug "%s" not found', $tagSlug)
-                    : \sprintf('Tag with id "%d" not found', $tagId)
-            );
+            throw new NotFoundHttpException(null === $tagId ? \sprintf('Tag with slug "%s" not found', $tagSlug) : \sprintf('Tag with id "%d" not found', $tagId));
         }
 
         // Check for URL mismatch (missing ID or wrong slug)
@@ -68,14 +64,7 @@ final readonly class TagRedirectManager
             null === $tagId
             || $tag->getSlug() !== $tagSlug
         )) {
-            throw new RedirectException($this->router->generate(
-                $routeName,
-                array_merge([
-                    'id' => $tag->getId(),
-                    'slug' => $tag->getSlug(),
-                    'location' => $locationSlug,
-                ], $routeParams)
-            ));
+            throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $tag->getId(), 'slug' => $tag->getSlug(), 'location' => $locationSlug], $routeParams)));
         }
 
         return $tag;

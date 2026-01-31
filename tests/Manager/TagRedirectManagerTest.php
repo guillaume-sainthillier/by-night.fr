@@ -16,6 +16,7 @@ use App\Manager\TagRedirectManager;
 use App\Repository\TagRepository;
 use Override;
 use PHPUnit\Framework\MockObject\MockObject;
+use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -138,7 +139,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         // Second call with "concert" (slugified) returns the tag
         $this->tagRepository
             ->method('findOneBySlug')
-            ->willReturnCallback(fn (string $slug) => $slug === 'concert' ? $tag : null);
+            ->willReturnCallback(static fn (string $slug) => 'concert' === $slug ? $tag : null);
 
         $this->requestStack
             ->method('getParentRequest')
@@ -265,7 +266,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         // "Théâtre" slugified becomes "theatre"
         $this->tagRepository
             ->method('findOneBySlug')
-            ->willReturnCallback(fn (string $slug) => $slug === 'theatre' ? $tag : null);
+            ->willReturnCallback(static fn (string $slug) => 'theatre' === $slug ? $tag : null);
 
         $this->requestStack
             ->method('getParentRequest')
@@ -288,7 +289,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         $tag->setName($name);
 
         // Use reflection to set the ID since it's normally auto-generated
-        $reflection = new \ReflectionClass($tag);
+        $reflection = new ReflectionClass($tag);
         $idProperty = $reflection->getProperty('id');
         $idProperty->setValue($tag, $id);
 
