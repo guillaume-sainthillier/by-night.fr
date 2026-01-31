@@ -105,7 +105,8 @@ final class EventsTagMigrateCommand extends Command
     private function createEventsQueryBuilder(bool $force): QueryBuilder
     {
         $qb = $this->eventRepository->createQueryBuilder('e')
-            ->where('e.category IS NOT NULL OR e.theme IS NOT NULL');
+            ->where('(e.category IS NOT NULL AND e.category != :empty) OR (e.theme IS NOT NULL AND e.theme != :empty)')
+            ->setParameter('empty', '');
 
         if (!$force) {
             // Only process events that haven't been migrated yet
@@ -132,11 +133,6 @@ final class EventsTagMigrateCommand extends Command
     {
         $category = $event->getCategory();
         $theme = $event->getTheme();
-
-        // Skip if nothing to migrate
-        if ((null === $category || '' === $category) && (null === $theme || '' === $theme)) {
-            return false;
-        }
 
         // Convert strings to Tag entities
         $result = $this->tagConverter->convert($category, $theme);

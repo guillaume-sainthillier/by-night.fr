@@ -26,7 +26,7 @@
         {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_index', {location: location.city.slug})) %}
     {% endif %}
 
-    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, slug: place.slug})) %}
+    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, placeSlug: place.slug})) %}
     {% do menu.addItem(event.name, url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})) %}
 {% endblock %}
 
@@ -133,7 +133,7 @@
                         {% endif %}
 
                         <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
-                            <meta name="url" content="{{ path('app_agenda_by_place', {slug: place.slug, location: place.locationSlug}) }}">
+                            <meta name="url" content="{{ path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) }}">
 
                             {% if event.placeName %}
                                 <twig:Icon name="lucide:map-pin" />
@@ -285,7 +285,7 @@
                                 {% if event.placeName %}
                                     <a class="badge text-bg-info"
                                        title="Sortir à {{ event.placeName }}"
-                                       href="{{ path('app_agenda_by_place', {slug: event.place.slug, location: event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_by_place', {placeSlug: event.place.slug, location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements à {{ event.placeName }}</strong>
                                     </a>
                                 {% endif %}
@@ -293,7 +293,7 @@
                                 {% for tag in allTags %}
                                     <a class="badge text-bg-info"
                                        title="{{ tag.name }} {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_by_tag', {slug: tag.slug, id: tag.id, location: event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_by_tag', {tagSlug: tag.slug, tagId: tag.id, location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">{{ tag.name }} {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endfor %}
