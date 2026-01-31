@@ -29,10 +29,9 @@ final class EventSEO
 
         $description .= \sprintf(' %s.', ucfirst($this->getEventDateTime($event)));
 
-        $tags = $event->getDistinctTags();
-
-        if ([] !== $tags) {
-            $description .= \sprintf(' %s.', implode(', ', array_keys($tags)));
+        $tagNames = $this->getTagNames($event);
+        if ([] !== $tagNames) {
+            $description .= \sprintf(' %s.', implode(', ', $tagNames));
         }
 
         if ($event->getFbParticipations() + $event->getFbInterests() > 50) {
@@ -93,5 +92,23 @@ final class EventSEO
         }
 
         return $shortTitle;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTagNames(Event $event): array
+    {
+        $tagNames = [];
+
+        if (null !== $event->getCategoryTag()) {
+            $tagNames[] = $event->getCategoryTag()->getName();
+        }
+
+        foreach ($event->getThemeTags() as $tag) {
+            $tagNames[] = $tag->getName();
+        }
+
+        return $tagNames;
     }
 }

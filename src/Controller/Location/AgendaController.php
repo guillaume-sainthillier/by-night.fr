@@ -19,11 +19,10 @@ use App\Entity\Tag;
 use App\Form\Type\SearchType;
 use App\Manager\TagRedirectManager;
 use App\Manager\WidgetsManager;
-use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
+use App\Repository\TagRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
-use App\Utils\TagUtils;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +37,7 @@ final class AgendaController extends BaseController
     #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
-    public function index(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $slug = null): Response
+    public function index(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, TagRepository $tagRepository, PlaceRepository $placeRepository, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $slug = null): Response
     {
         $location = $appContext->getLocation();
 
@@ -69,8 +68,8 @@ final class AgendaController extends BaseController
         }
 
         $formAction = $this->handleSearch($search, $location, $type, $place);
-        // Retrieve places, event types and cities
-        $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
+        // Retrieve tag types for filter
+        $types_manif = $this->getTypesEvenements($memoryCache, $tagRepository);
         // Create the form
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
@@ -124,14 +123,14 @@ final class AgendaController extends BaseController
      * Canonical tag route with ID in URL.
      */
     #[Route(path: '/agenda/tag/{slug}--{id}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function byTag(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, WidgetsManager $widgetsManager, TagRedirectManager $tagRedirectManager, string $slug, int $id, int $page = 1): Response
+    public function byTag(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, TagRepository $tagRepository, WidgetsManager $widgetsManager, TagRedirectManager $tagRedirectManager, string $slug, int $id, int $page = 1): Response
     {
         $location = $appContext->getLocation();
 
         // Get tag with SEO redirect if needed
         $tag = $tagRedirectManager->getTag($id, $slug, $location->getSlug(), 'app_agenda_by_tag', ['page' => $page]);
 
-        return $this->renderTagPage($appContext, $request, $memoryCache, $repositoryManager, $eventRepository, $widgetsManager, $tag, $page);
+        return $this->renderTagPage($appContext, $request, $memoryCache, $repositoryManager, $tagRepository, $widgetsManager, $tag, $page);
     }
 
     /**
@@ -140,7 +139,7 @@ final class AgendaController extends BaseController
      * @deprecated Use app_agenda_by_tag route instead
      */
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
-    public function byTagsLegacy(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, WidgetsManager $widgetsManager, TagRedirectManager $tagRedirectManager, string $tag, int $page = 1): Response
+    public function byTagsLegacy(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, TagRepository $tagRepository, WidgetsManager $widgetsManager, TagRedirectManager $tagRedirectManager, string $tag, int $page = 1): Response
     {
         $location = $appContext->getLocation();
 
@@ -148,10 +147,10 @@ final class AgendaController extends BaseController
         $tagEntity = $tagRedirectManager->getTag(null, $tag, $location->getSlug(), 'app_agenda_by_tag', ['page' => $page]);
 
         // If no redirect was thrown (e.g., in sub-request), render normally
-        return $this->renderTagPage($appContext, $request, $memoryCache, $repositoryManager, $eventRepository, $widgetsManager, $tagEntity, $page);
+        return $this->renderTagPage($appContext, $request, $memoryCache, $repositoryManager, $tagRepository, $widgetsManager, $tagEntity, $page);
     }
 
-    private function renderTagPage(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, WidgetsManager $widgetsManager, Tag $tag, int $page): Response
+    private function renderTagPage(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, TagRepository $tagRepository, WidgetsManager $widgetsManager, Tag $tag, int $page): Response
     {
         $location = $appContext->getLocation();
 
@@ -170,8 +169,8 @@ final class AgendaController extends BaseController
         $search->setTagId($tag->getId());
 
         $formAction = $this->generateUrl('app_agenda_by_tag', ['slug' => $tag->getSlug(), 'id' => $tag->getId(), 'location' => $location->getSlug()]);
-        // Retrieve places, event types and cities
-        $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
+        // Retrieve tag types for filter
+        $types_manif = $this->getTypesEvenements($memoryCache, $tagRepository);
         // Create the form
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
@@ -262,18 +261,15 @@ final class AgendaController extends BaseController
      *
      * @psalm-return array<string, string>
      */
-    private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location): array
+    private function getTypesEvenements(CacheInterface $cache, TagRepository $tagRepository): array
     {
-        $key = 'event.categories.v2.' . $location->getSlug();
+        $key = 'event.tags.v3';
 
-        return $cache->get($key, static function (ItemInterface $item) use ($repo, $location) {
-            $eventTypes = $repo->getEventTypes($location);
+        return $cache->get($key, static function (ItemInterface $item) use ($tagRepository) {
+            $tags = $tagRepository->findAll();
             $types = [];
-            foreach ($eventTypes as $eventType) {
-                $eventTypeTags = TagUtils::getTagTerms($eventType);
-                foreach ($eventTypeTags as $eventTypeTag) {
-                    $types[$eventTypeTag] = $eventTypeTag;
-                }
+            foreach ($tags as $tag) {
+                $types[$tag->getName()] = $tag->getName();
             }
 
             ksort($types, \SORT_NATURAL | \SORT_FLAG_CASE);

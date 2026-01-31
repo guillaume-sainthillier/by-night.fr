@@ -12,7 +12,6 @@ namespace App\Service;
 
 use App\Entity\Tag;
 use App\Repository\TagRepository;
-use App\Utils\TagUtils;
 
 final readonly class TagConverter
 {
@@ -23,6 +22,8 @@ final readonly class TagConverter
     /**
      * Parse a tag string into individual terms.
      *
+     * Splits on comma and slash separators, trims whitespace, deduplicates, and filters empty values.
+     *
      * @return string[] Normalized, deduplicated, trimmed tag names
      */
     public function parseTagString(?string $tagString): array
@@ -31,7 +32,7 @@ final readonly class TagConverter
             return [];
         }
 
-        return TagUtils::getTagTerms($tagString);
+        return array_values(array_filter(array_unique(array_map(trim(...), preg_split('#[,/]#', $tagString)))));
     }
 
     /**

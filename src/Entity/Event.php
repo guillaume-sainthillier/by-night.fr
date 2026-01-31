@@ -18,7 +18,6 @@ use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Entity\Tag;
 use App\Repository\EventRepository;
-use App\Utils\TagUtils;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use DateTimeImmutable;
@@ -462,52 +461,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->place = $place;
 
         return $this;
-    }
-
-    /**
-     * @return array<string, array{type: string, value: string}>
-     */
-    public function getDistinctTags(): array
-    {
-        $allTags = [];
-
-        // Add category tag
-        if (null !== $this->categoryTag) {
-            $allTags[$this->categoryTag->getName()] = [
-                'type' => 'category',
-                'value' => $this->categoryTag->getName(),
-            ];
-        }
-
-        // Add theme tags
-        foreach ($this->themeTags as $themeTag) {
-            $allTags[$themeTag->getName()] ??= [
-                'type' => 'tag',
-                'value' => $themeTag->getName(),
-            ];
-        }
-
-        // Fallback to legacy string fields during migration
-        if ([] === $allTags) {
-            $categoryTags = TagUtils::getTagTerms($this->category ?? '');
-            $tags = TagUtils::getTagTerms($this->category . ',' . $this->type . ',' . $this->theme);
-
-            foreach ($categoryTags as $categoryTag) {
-                $allTags[$categoryTag] = [
-                    'type' => 'category',
-                    'value' => $categoryTag,
-                ];
-            }
-
-            foreach ($tags as $tag) {
-                $allTags[$tag] ??= [
-                    'type' => 'tag',
-                    'value' => $tag,
-                ];
-            }
-        }
-
-        return $allTags;
     }
 
     public function getPlaceCountryName(): ?string

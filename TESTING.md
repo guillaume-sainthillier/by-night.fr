@@ -108,7 +108,6 @@ vendor/bin/phpunit --testdox
   - `MemoryUtilsTest` - Memory formatting and usage tracking (13 tests)
   - `SluggerUtilsTest` - URL-safe slug generation (23 tests)
   - `StringManipulatorTest` - String manipulation utilities (32 tests)
-  - `TagUtilsTest` - Tag parsing and deduplication (19 tests)
   - `UtilTest` - General utility functions (32 tests)
 - `tests/Handler/` - Integration tests (database required):
   - `DoctrineEventHandlerTest` - Event insertion and merging (9 tests)
@@ -129,7 +128,7 @@ vendor/bin/phpunit --testdox
 The test suite currently includes:
 
 ### Phase 1: Utility Tests (No Database Required)
-- **205 passing unit tests** for utility classes (293 assertions)
+- **186 passing unit tests** for utility classes
 - Tests for string manipulation, cleaning, comparison, validation, chunking, memory, and slugs
 - Comprehensive edge case coverage (empty strings, Unicode, special characters)
 - Fast execution (<1 second)

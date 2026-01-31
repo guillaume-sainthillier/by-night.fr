@@ -152,6 +152,7 @@ final class EventElasticaRepository extends Repository
         // Filter by tag ID (new Tag entity)
         if (null !== $search->getTagId()) {
             $tagFilter = new BoolQuery();
+            $tagFilter->setMinimumShouldMatch(1);
             // Match category_tag.id
             $tagFilter->addShould(new Term(['category_tag.id' => $search->getTagId()]));
             // Match theme_tags.id (nested)

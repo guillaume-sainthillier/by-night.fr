@@ -16,6 +16,7 @@ use App\Repository\TagRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final readonly class TagRedirectManager
 {
@@ -29,11 +30,11 @@ final readonly class TagRedirectManager
     /**
      * Get tag entity, throwing RedirectException if URL needs correction.
      *
-     * @param int|null $tagId       Tag ID (null for legacy routes)
-     * @param string   $tagSlug     Tag slug from URL
+     * @param int|null $tagId        Tag ID (null for legacy routes)
+     * @param string   $tagSlug      Tag slug from URL
      * @param string   $locationSlug Location slug for URL generation
-     * @param string   $routeName   Route name to redirect to
-     * @param array    $routeParams Additional route parameters
+     * @param string   $routeName    Route name to redirect to
+     * @param array    $routeParams  Additional route parameters
      *
      * @throws RedirectException     when URL needs to be redirected (SEO)
      * @throws NotFoundHttpException when tag is not found
@@ -45,11 +46,12 @@ final readonly class TagRedirectManager
         string $routeName,
         array $routeParams = [],
     ): Tag {
-        // Legacy route (slug only, no ID)
-        if (null === $tagId) {
-            $tag = $this->tagRepository->findOneBySlug($tagSlug);
-        } else {
+        if (null !== $tagId) {
+            // New route with ID - find by ID
             $tag = $this->tagRepository->find($tagId);
+        } else {
+            // Legacy route (slug only, no ID) - try multiple strategies
+            $tag = $this->findTagByLegacySlug($tagSlug);
         }
 
         if (null === $tag) {
@@ -77,5 +79,36 @@ final readonly class TagRedirectManager
         }
 
         return $tag;
+    }
+
+    /**
+     * Find a tag using legacy slug format (before migration).
+     *
+     * Old URLs used raw tag names like "/agenda/tag/Concert" or "/agenda/tag/Musique classique".
+     * We need to try multiple strategies to find the correct tag:
+     * 1. Exact slug match (for already proper slugs)
+     * 2. Slugified version of the input (handles "Concert" -> "concert")
+     * 3. Name match (handles URL-decoded names like "Musique classique")
+     */
+    private function findTagByLegacySlug(string $tagSlug): ?Tag
+    {
+        // 1. Try exact slug match first
+        $tag = $this->tagRepository->findOneBySlug($tagSlug);
+        if (null !== $tag) {
+            return $tag;
+        }
+
+        // 2. Try slugified version (handles "Concert" -> "concert", "Rock & Roll" -> "rock-roll")
+        $slugger = new AsciiSlugger('fr');
+        $normalizedSlug = $slugger->slug($tagSlug)->lower()->toString();
+        if ($normalizedSlug !== $tagSlug) {
+            $tag = $this->tagRepository->findOneBySlug($normalizedSlug);
+            if (null !== $tag) {
+                return $tag;
+            }
+        }
+
+        // 3. Try name match (handles URL-decoded names like "Musique classique")
+        return $this->tagRepository->findOneByName($tagSlug);
     }
 }
