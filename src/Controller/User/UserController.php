@@ -12,8 +12,7 @@ namespace App\Controller\User;
 
 use App\Controller\AbstractController as BaseController;
 use App\Entity\User;
-use App\Event\Events;
-use App\Event\UserCheckUrlEvent;
+use App\Manager\UserRedirectManager;
 use App\Repository\EventRepository;
 use DateTime;
 use IntlDateFormatter;
@@ -21,7 +20,6 @@ use Locale;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route(path: '/membres')]
 final class UserController extends BaseController
@@ -30,15 +28,9 @@ final class UserController extends BaseController
 
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
-    public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
+    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
-        $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_index');
-        $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
-        if (null !== $userCheck->getResponse()) {
-            return $userCheck->getResponse();
-        }
-
-        $user = $userCheck->getUser();
+        $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_index');
 
         // Create paginators for next and previous events (first page)
         $nextEventsQb = $eventRepository->findAllNextEvents($user, true);
@@ -57,15 +49,10 @@ final class UserController extends BaseController
     }
 
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}/next/{page<%patterns.page%>}', name: 'app_user_events_next', methods: ['GET'])]
-    public function nextEventsList(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, int $page, ?int $id = null, ?string $slug = null): Response
+    public function nextEventsList(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, int $page, ?int $id = null, ?string $slug = null): Response
     {
-        $userCheck = new UserCheckUrlEvent($id, $slug, null, 'app_user_events_next');
-        $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
-        if (null !== $userCheck->getResponse()) {
-            return $userCheck->getResponse();
-        }
+        $user = $userRedirectManager->getUser($id, $slug, null, 'app_user_events_next');
 
-        $user = $userCheck->getUser();
         $nextEventsQb = $eventRepository->findAllNextEvents($user, true);
         $nextEvents = $this->createQueryBuilderPaginator($nextEventsQb, $page, self::EVENTS_PER_PAGE);
 
@@ -77,15 +64,10 @@ final class UserController extends BaseController
     }
 
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}/previous/{page<%patterns.page%>}', name: 'app_user_events_previous', methods: ['GET'])]
-    public function previousEventsList(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, int $page, ?int $id = null, ?string $slug = null): Response
+    public function previousEventsList(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, int $page, ?int $id = null, ?string $slug = null): Response
     {
-        $userCheck = new UserCheckUrlEvent($id, $slug, null, 'app_user_events_previous');
-        $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
-        if (null !== $userCheck->getResponse()) {
-            return $userCheck->getResponse();
-        }
+        $user = $userRedirectManager->getUser($id, $slug, null, 'app_user_events_previous');
 
-        $user = $userCheck->getUser();
         $previousEventsQb = $eventRepository->findAllNextEvents($user, false);
         $previousEvents = $this->createQueryBuilderPaginator($previousEventsQb, $page, self::EVENTS_PER_PAGE);
 
@@ -98,21 +80,15 @@ final class UserController extends BaseController
 
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}', name: 'app_user_stats', requirements: ['type' => 'semaine|mois|annee'], methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}/stats/{type}', name: 'app_user_stats_old', requirements: ['type' => 'semaine|mois|annee'], methods: ['GET'])]
-    public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
+    public function stats(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
-        $datas = null;
-        $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_stats', ['type' => $type]);
-        $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
-        if (null !== $userCheck->getResponse()) {
-            return $userCheck->getResponse();
-        }
+        $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_stats', ['type' => $type]);
 
-        $user = $userCheck->getUser();
         $datas = match ($type) {
             'semaine' => $this->getDataOfWeek($eventRepository, $user),
             'mois' => $this->getDataOfMonth($eventRepository, $user),
             'annee' => $this->getDataOfYear($eventRepository, $user),
-            default => new JsonResponse($datas),
+            default => null,
         };
 
         return new JsonResponse($datas);
