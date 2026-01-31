@@ -15,7 +15,9 @@ use App\App\Location;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Entity\Tag;
 use App\Form\Type\SearchType;
+use App\Manager\TagRedirectManager;
 use App\Manager\WidgetsManager;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
@@ -36,8 +38,7 @@ final class AgendaController extends BaseController
     #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
-    #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
-    public function index(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
+    public function index(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, WidgetsManager $widgetsManager, int $page = 1, ?string $type = null, ?string $slug = null): Response
     {
         $location = $appContext->getLocation();
 
@@ -49,8 +50,6 @@ final class AgendaController extends BaseController
         ]);
         if (null !== $type) {
             $routeParams['type'] = $type;
-        } elseif (null !== $tag) {
-            $routeParams['tag'] = $tag;
         } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
         }
@@ -69,7 +68,7 @@ final class AgendaController extends BaseController
             }
         }
 
-        $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
+        $formAction = $this->handleSearch($search, $location, $type, $place);
         // Retrieve places, event types and cities
         $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
         // Create the form
@@ -105,7 +104,7 @@ final class AgendaController extends BaseController
             'placeName' => (null !== $place) ? $place->getName() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
             'place' => $place,
-            'tag' => $tag,
+            'tag' => null,
             'type' => $type,
             'events' => $events,
             'maxPerEvent' => self::EVENT_PER_PAGE,
@@ -121,15 +120,114 @@ final class AgendaController extends BaseController
         ]);
     }
 
-    private function handleSearch(SearchEvent $search, Location $location, ?string $type, ?string $tag, ?Place $place = null): string
+    /**
+     * Canonical tag route with ID in URL.
+     */
+    #[Route(path: '/agenda/tag/{slug}--{id}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function byTag(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, WidgetsManager $widgetsManager, TagRedirectManager $tagRedirectManager, string $slug, int $id, int $page = 1): Response
+    {
+        $location = $appContext->getLocation();
+
+        // Get tag with SEO redirect if needed
+        $tag = $tagRedirectManager->getTag($id, $slug, $location->getSlug(), 'app_agenda_by_tag', ['page' => $page]);
+
+        return $this->renderTagPage($appContext, $request, $memoryCache, $repositoryManager, $eventRepository, $widgetsManager, $tag, $page);
+    }
+
+    /**
+     * Legacy tag route (slug only, no ID) - redirects to canonical URL.
+     *
+     * @deprecated Use app_agenda_by_tag route instead
+     */
+    #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
+    public function byTagsLegacy(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, WidgetsManager $widgetsManager, TagRedirectManager $tagRedirectManager, string $tag, int $page = 1): Response
+    {
+        $location = $appContext->getLocation();
+
+        // Will throw RedirectException to canonical URL
+        $tagEntity = $tagRedirectManager->getTag(null, $tag, $location->getSlug(), 'app_agenda_by_tag', ['page' => $page]);
+
+        // If no redirect was thrown (e.g., in sub-request), render normally
+        return $this->renderTagPage($appContext, $request, $memoryCache, $repositoryManager, $eventRepository, $widgetsManager, $tagEntity, $page);
+    }
+
+    private function renderTagPage(AppContext $appContext, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, WidgetsManager $widgetsManager, Tag $tag, int $page): Response
+    {
+        $location = $appContext->getLocation();
+
+        // Page state
+        $isAjax = $request->isXmlHttpRequest();
+        $routeParams = array_merge($request->query->all(), [
+            'page' => $page + 1,
+            'location' => $location->getSlug(),
+            'slug' => $tag->getSlug(),
+            'id' => $tag->getId(),
+        ]);
+
+        // Search for events
+        $search = new SearchEvent();
+        $search->setLocation($location);
+        $search->setTagId($tag->getId());
+
+        $formAction = $this->generateUrl('app_agenda_by_tag', ['slug' => $tag->getSlug(), 'id' => $tag->getId(), 'location' => $location->getSlug()]);
+        // Retrieve places, event types and cities
+        $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
+        // Create the form
+        $form = $this->createForm(SearchType::class, $search, [
+            'action' => $formAction,
+            'method' => 'get',
+            'types_manif' => $types_manif,
+        ]);
+        // Bind du formulaire avec la requête courante
+        $form->submit($request->query->all(), false);
+        if (!$form->isSubmitted() || $form->isValid()) {
+            $isValid = true;
+
+            /** @var EventElasticaRepository $repository */
+            $repository = $repositoryManager->getRepository(Event::class);
+            $events = $repository->findWithSearch($search);
+            $this->updatePaginator($events, $page, self::EVENT_PER_PAGE);
+        } else {
+            $isValid = false;
+            $events = $this->createEmptyPaginator($page, self::EVENT_PER_PAGE);
+        }
+
+        if ($page > $events->getNbPages()) {
+            return $this->redirectToRoute('app_agenda_by_tag', array_merge($routeParams, ['page' => max(1, $events->getNbPages())]));
+        }
+
+        // Widget data (first page only)
+        $topEventsData = $widgetsManager->getTopEventsData($location);
+        $topUsersData = $widgetsManager->getTopUsersData();
+
+        return $this->render('location/agenda/index.html.twig', [
+            'location' => $location,
+            'placeName' => null,
+            'placeSlug' => null,
+            'place' => null,
+            'tag' => $tag->getName(),
+            'tagEntity' => $tag,
+            'type' => null,
+            'events' => $events,
+            'maxPerEvent' => self::EVENT_PER_PAGE,
+            'page' => $page,
+            'search' => $search,
+            'isValid' => $isValid,
+            'isAjax' => $isAjax,
+            'routeParams' => $routeParams,
+            'form' => $form,
+            // Widget data
+            'topEventsData' => $topEventsData,
+            'topUsersData' => $topUsersData,
+        ]);
+    }
+
+    private function handleSearch(SearchEvent $search, Location $location, ?string $type, ?Place $place = null): string
     {
         $term = null;
         if (null !== $place) {
             $search->setLieux([$place->getId()]);
             $formAction = $this->generateUrl('app_agenda_by_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
-        } elseif (null !== $tag) {
-            $search->setTag($tag);
-            $formAction = $this->generateUrl('app_agenda_by_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
         } elseif (null !== $type) {
             $formAction = $this->generateUrl('app_agenda_by_type', ['type' => $type, 'location' => $location->getSlug()]);
             switch ($type) {

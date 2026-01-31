@@ -15,6 +15,7 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\GeoDistance;
 use Elastica\Query\MultiMatch;
+use Elastica\Query\Nested;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
@@ -138,6 +139,8 @@ final class EventElasticaRepository extends Repository
                     'description.heavy',
                     'theme',
                     'type',
+                    'category_tag.name',
+                    'theme_tags.name',
                 ])
                 ->setFuzziness('auto')
                 ->setOperator('AND')
@@ -146,7 +149,19 @@ final class EventElasticaRepository extends Repository
             $mainQuery->addMust($query);
         }
 
-        if ($search->getTag()) {
+        // Filter by tag ID (new Tag entity)
+        if (null !== $search->getTagId()) {
+            $tagFilter = new BoolQuery();
+            // Match category_tag.id
+            $tagFilter->addShould(new Term(['category_tag.id' => $search->getTagId()]));
+            // Match theme_tags.id (nested)
+            $nestedQuery = new Nested();
+            $nestedQuery->setPath('theme_tags');
+            $nestedQuery->setQuery(new Term(['theme_tags.id' => $search->getTagId()]));
+            $tagFilter->addShould($nestedQuery);
+            $mainQuery->addFilter($tagFilter);
+        } elseif ($search->getTag()) {
+            // Legacy: filter by tag string (deprecated)
             $query = new MultiMatch();
             $query
                 ->setQuery($search->getTag())

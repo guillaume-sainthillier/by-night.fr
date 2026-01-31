@@ -124,6 +124,22 @@ fos_elastica:
                 type:
                     type: text
                     analyzer: french_natural
+                category_tag:
+                    type: object
+                    properties:
+                        id:
+                            type: integer
+                        name:
+                            type: text
+                            analyzer: french_natural
+                theme_tags:
+                    type: nested
+                    properties:
+                        id:
+                            type: integer
+                        name:
+                            type: text
+                            analyzer: french_natural
                 place:
                     type: object
                     properties:
