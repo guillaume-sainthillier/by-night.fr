@@ -1,8 +1,17 @@
 import $ from 'jquery'
-import initDates from '@/js/lazy-listeners/dates'
+import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
+import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 
 $(document).ready(function () {
-    initDates()
+    document.querySelectorAll('input.shorcuts_date').forEach((el) => {
+        createDatepicker({
+            element: el,
+            fromInput: document.getElementById(el.dataset.from),
+            toInput: document.getElementById(el.dataset.to),
+            singleDate: el.dataset.singleDate === 'true',
+            ranges: el.dataset.ranges ? JSON.parse(el.dataset.ranges) : {},
+        })
+    })
 
     $('.form-city-picker').each(function () {
         const form = $(this)
@@ -20,7 +29,7 @@ $(document).ready(function () {
             return !btn.attr('disabled')
         })
 
-        window.App.get('autocompleteService').create({
+        createAutocomplete({
             element: field,
             url: window.AppConfig.apiCityURL,
             valueInput: cityValue,
