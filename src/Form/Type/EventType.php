@@ -11,7 +11,6 @@
 namespace App\Form\Type;
 
 use App\Dto\EventDto;
-use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
 use Override;
 use Symfony\Component\Form\AbstractType;
@@ -22,8 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -32,7 +29,6 @@ final class EventType extends AbstractType
 {
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,
-        private readonly DateRangeBuilder $dateRangeBuilder,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -40,19 +36,15 @@ final class EventType extends AbstractType
     /**
      * {@inheritDoc}
      */
-    public function finishView(FormView $view, FormInterface $form, array $options): void
-    {
-        parent::finishView($view, $form, $options);
-        $this->dateRangeBuilder->finishView($view, $form);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->dateRangeBuilder->addDateFields($builder, 'startDate', 'endDate');
         $builder
+            ->add('dateRange', DateRangeType::class, [
+                'from_field' => 'startDate',
+                'to_field' => 'endDate',
+                'label' => 'Dates',
+                'ranges' => [],
+            ])
             ->add('name', TextType::class, [
                 'label' => 'Titre',
                 'attr' => [
@@ -71,6 +63,7 @@ final class EventType extends AbstractType
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
+                'help' => 'Pour un meilleur rendu, préférez une image au format 16:9 (ex: 1920x1080)',
             ])
             ->add('hours', TextType::class, [
                 'label' => 'Horaires affichés',
@@ -132,6 +125,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'add_entry_label' => 'Ajouter un site',
                 'label' => 'Sites de réservation',
+                'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,
                     'icon-prepend' => 'lucide:globe',
@@ -145,6 +139,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'add_entry_label' => 'Ajouter un numéro',
                 'label' => 'Numéros de téléphone',
+                'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,
                     'icon-prepend' => 'lucide:phone',
@@ -158,6 +153,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'add_entry_label' => 'Ajouter un email',
                 'label' => 'Emails de contact',
+                'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,
                     'icon-prepend' => 'lucide:mail',

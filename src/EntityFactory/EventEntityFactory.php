@@ -53,12 +53,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         // Sync timesheets from DTO
         $this->syncTimesheets($entity, $dto);
 
-        // Only set startDate/endDate directly if no timesheets are provided
-        // When timesheets exist, the Event::majEndDate() lifecycle callback will compute them
-        if ([] === $dto->timesheets) {
-            $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
-            $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
-        }
+        $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
+        $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {

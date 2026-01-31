@@ -1,7 +1,7 @@
 {% extends 'layouts/stretch.html.twig' %}
-{% set nameSoiree = event_seo.getEventShortTitle(event) %}
-{% set horaires = event_seo.getEventDateTime(event) %}
-{% set descriptionSoiree = event.description|parse_tags|raw %}
+{% set eventShortName = event_seo.getEventShortTitle(event) %}
+{% set schedules = event_seo.getEventDateTime(event) %}
+{% set eventDescription = event.description|parse_tags|raw %}
 {% set original = eventProfilePicture.originalPicture(event) %}
 {% set distinctTags = event.distinctTags %}
 
@@ -9,7 +9,7 @@
 
 {% block page_id 'page-event' %}
 {% block meta_title event_seo.eventFullTitle(event) %}
-{% block titre event_seo.eventFullTitle(event) %}
+{% block title event_seo.eventFullTitle(event) %}
 
 {% block breadcrumb %}
     {% if location.isCountry %}
@@ -39,7 +39,7 @@
     {% endfor %}
 {% endblock %}
 
-{% block og_title nameSoiree %}
+{% block og_title eventShortName %}
 {% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
 {% block og_image original %}
 
@@ -61,7 +61,7 @@
                     </div>
                 {% endif %}
                 <div class="col-lg-7">
-                    <a class="image-gallery" href="{{ original }}" title="{{ nameSoiree }}">
+                    <a class="image-gallery" href="{{ original }}" title="{{ eventShortName }}">
                         <twig:EventThumb event="{{ event }}" width="{{ 800 }}" placeholderPriority="{{ true }}" class="img" itemprop="image" />
                     </a>
                 </div>
@@ -220,7 +220,7 @@
             <div class="card-body">
                 <div class="row">
                     <div itemprop="description" class="col-sm-8">
-                        {{ descriptionSoiree|raw }}
+                        {{ eventDescription|raw }}
                     </div>
                     <div class="col-sm-4 my-3 my-md-0 event-details">
                         {% for phoneContact in event.phoneContacts %}

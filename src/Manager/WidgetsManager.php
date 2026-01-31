@@ -126,23 +126,23 @@ final class WidgetsManager
 
     public function getTrendsData(Event $event, ?User $user, Page $page): TrendsWidgetData
     {
-        $participer = false;
-        $interet = false;
+        $participate = false;
+        $interest = false;
 
         if (null !== $user) {
             $userEvent = $this->userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $userEvent) {
-                $participer = $userEvent->getGoing();
-                $interet = $userEvent->getWish();
+                $participate = $userEvent->getGoing();
+                $interest = $userEvent->getWish();
             }
         }
 
         return new TrendsWidgetData(
             event: $event,
-            participer: $participer,
-            interet: $interet,
-            tendances: $this->eventRepository->findAllTrends($event),
-            count: $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),
+            participate: $participate,
+            interest: $interest,
+            trends: $this->eventRepository->findAllTrends($event),
+            count: $event->getParticipations() + $event->getFbParticipations() + $event->getInterests() + $event->getFbInterests(),
             shares: [
                 'facebook' => $page->facebook, // @phpstan-ignore property.notFound
                 'twitter' => $page->twitter, // @phpstan-ignore property.notFound

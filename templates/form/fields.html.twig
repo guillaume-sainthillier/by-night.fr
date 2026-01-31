@@ -12,21 +12,43 @@
 {% endblock %}
 
 {% block vich_image_widget %}
-    {% if download_uri is defined and download_uri %}
-        <a class="image-gallery" href="{{ download_uri }}">
-            {% if download_uri %}
-                {{ image(image_thumb_params) }}
-            {% endif %}
-        </a>
-    {% endif %}
+    {% set has_existing_image = download_uri is defined and download_uri %}
+    {% set is_horizontal = layout is defined and layout == 'horizontal' %}
 
-    {{ form_widget(form.file) }}
+    <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal' : '' }}">
+        {% if has_existing_image %}
+            <div class="vich-image-existing">
+                <a class="image-gallery" href="{{ download_uri }}">
+                    {{ image(image_thumb_params) }}
+                </a>
+                {% if has_uploaded_image is defined and has_uploaded_image and form.delete is defined %}
+                    <div class="delete-image mt-2">
+                        {{ form_row(form.delete) }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
 
-    {% if form.delete is defined %}
-        <div class="delete-image mt-2">
-            {{ form_row(form.delete) }}
+        <div class="dropzone">
+            <div class="dropzone-preview d-none"></div>
+
+            <div class="dropzone-placeholder">
+                <div class="dropzone-icon">
+                    <twig:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
+                </div>
+                <div class="dropzone-text">
+                    {% if has_existing_image %}
+                        Glissez une nouvelle image pour remplacer l'actuelle
+                    {% else %}
+                        Glissez-déposez une image ou cliquez pour parcourir
+                    {% endif %}
+                </div>
+                <div class="dropzone-hint text-muted">PNG, JPG ou GIF</div>
+            </div>
+
+            {{ form_widget(form.file) }}
         </div>
-    {% endif %}
+    </div>
 {% endblock %}
 
 {# Images #}
@@ -36,31 +58,66 @@
     </div>
 {% endblock %}
 
-{%- block hidden_date_row -%}
-    {{ form_widget(form) }}
-{%- endblock hidden_date_row -%}
+{%- block date_range_row -%}
+    {{ form_widget(form.from) }}
+    {% if form.to is defined %}
+        {{ form_widget(form.to) }}
+    {% endif %}
+    {% set range_options = {
+        icon_prepend: icon_prepend|default(null),
+        icon_append: icon_append|default(null),
+    }|merge(label is defined ? {label: label} : {}) %}
+    {{ form_row(form.range, range_options) }}
+    {{ form_errors(form.from) }}
+    {% if form.to is defined %}
+        {{ form_errors(form.to) }}
+    {% endif %}
+{%- endblock -%}
 
 {% block app_collection_entry_form_row %}
-    {{ form_row(child, attr|merge({label: false})) }}
+    {{ form_row(child, attr|merge({label: false, row_class: row_class|default('form-group')})) }}
 {% endblock %}
 
 {# Special block in order to let child redefine whole block #}
 {% block app_collection_entry_widget_row %}
-    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <div class="collection-item-wrapper">
-            <div class="collection-item-header">
-                {% with child.vars %}{{ block('inline_form_label') }}{% endwith %}
-                {% if not disabled and allow_delete %}
-                    <button class="btn btn-sm rounded btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer la ligne ?">
-                        <twig:Icon name="lucide:x" />
-                    </button>
-                {% endif %}
+    {% if layout == 'simple' %}
+        {{- block('app_collection_entry_widget_row_simple') -}}
+    {% else %}
+        {{- block('app_collection_entry_widget_row_complex') -}}
+    {% endif %}
+{% endblock %}
+
+{% block app_collection_entry_widget_row_simple %}
+    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item row g-2 align-items-start')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="col">
+            {% with child.vars|merge({row_class: ''}) %}
+                {{- block('app_collection_entry_form_row') -}}
+            {% endwith %}
+        </div>
+        {% if not disabled and allow_delete %}
+            <div class="col-auto">
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                    <twig:Icon name="lucide:x" />
+                </button>
             </div>
-            <div id="collapse-{{ child.vars.id }}" class="collection-item-body collapse show">
-                {% with child.vars %}
-                    {{- block('app_collection_entry_form_row') -}}
-                {% endwith %}
-            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block app_collection_entry_widget_row_complex %}
+    <div{% with {attr: collection_item_attr|merge({class: (collection_item_attr.class|default('') ~ ' collection-item accordion-item')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="accordion-header d-flex align-items-center">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ child.vars.id }}" aria-expanded="true" aria-controls="collapse-{{ child.vars.id }}">
+                {% with child.vars %}{{ label }}{% endwith %}
+            </button>
+            {% if not disabled and allow_delete %}
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                    <twig:Icon name="lucide:x" />
+                </button>
+            {% endif %}
+        </div>
+        <div id="collapse-{{ child.vars.id }}" class="accordion-collapse collapse show">
+            {{ form_widget(child, {attr: {class: 'accordion-body'}}) }}
         </div>
     </div>
 {% endblock %}
@@ -72,12 +129,12 @@
 
 {% block app_collection_widget %}
     <div class="collection-wrapper">
+        {% set attr = attr|merge({class: (attr.class|default('') ~ (layout == 'complex' ? ' accordion' : ''))|trim}) %}
         {% if prototype is defined and not prototype.rendered %}
             {% set child = prototype %}
             {% set attr = attr|merge({
                 'data-prototype': block('app_collection_entry_widget_row'),
                 'data-prototype-name': prototype.vars.name,
-                class: attr.class|default(''),
             }) %}
         {% endif %}
         <div {{ block('widget_container_attributes') }}>

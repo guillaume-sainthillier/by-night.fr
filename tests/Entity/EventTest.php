@@ -23,7 +23,7 @@ class EventTest extends TestCase
         $event->setStartDate(new DateTime('2024-01-15'));
         $event->setEndDate(null);
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         self::assertNotNull($event->getEndDate());
         self::assertEquals('2024-01-15', $event->getEndDate()->format('Y-m-d'));
@@ -35,55 +35,9 @@ class EventTest extends TestCase
         $event->setStartDate(new DateTime('2024-01-15'));
         $event->setEndDate(new DateTime('2024-01-20'));
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         self::assertEquals('2024-01-20', $event->getEndDate()->format('Y-m-d'));
-    }
-
-    public function testMajEndDateComputesMinMaxFromTimesheets(): void
-    {
-        $event = new Event();
-        $event->setStartDate(new DateTime('2024-01-01')); // Will be overwritten
-
-        $timesheet1 = new EventTimesheet();
-        $timesheet1->setStartAt(new DateTime('2024-01-15 10:00:00'));
-        $timesheet1->setEndAt(new DateTime('2024-01-15 18:00:00'));
-        $event->addTimesheet($timesheet1);
-
-        $timesheet2 = new EventTimesheet();
-        $timesheet2->setStartAt(new DateTime('2024-01-20 14:00:00'));
-        $timesheet2->setEndAt(new DateTime('2024-01-22 22:00:00'));
-        $event->addTimesheet($timesheet2);
-
-        $timesheet3 = new EventTimesheet();
-        $timesheet3->setStartAt(new DateTime('2024-01-10 09:00:00'));
-        $timesheet3->setEndAt(new DateTime('2024-01-10 17:00:00'));
-        $event->addTimesheet($timesheet3);
-
-        $event->majEndDate();
-
-        // startDate should be min of all startAt (2024-01-10), time set to 00:00:00
-        self::assertEquals('2024-01-10', $event->getStartDate()->format('Y-m-d'));
-        self::assertEquals('00:00:00', $event->getStartDate()->format('H:i:s'));
-
-        // endDate should be max of all endAt (2024-01-22), time set to 00:00:00
-        self::assertEquals('2024-01-22', $event->getEndDate()->format('Y-m-d'));
-        self::assertEquals('00:00:00', $event->getEndDate()->format('H:i:s'));
-    }
-
-    public function testMajEndDateHandlesSingleTimesheet(): void
-    {
-        $event = new Event();
-
-        $timesheet = new EventTimesheet();
-        $timesheet->setStartAt(new DateTime('2024-01-15 10:00:00'));
-        $timesheet->setEndAt(new DateTime('2024-01-15 18:00:00'));
-        $event->addTimesheet($timesheet);
-
-        $event->majEndDate();
-
-        self::assertEquals('2024-01-15', $event->getStartDate()->format('Y-m-d'));
-        self::assertEquals('2024-01-15', $event->getEndDate()->format('Y-m-d'));
     }
 
     public function testMajEndDateHandlesTimesheetsWithNullDates(): void
@@ -98,7 +52,7 @@ class EventTest extends TestCase
         $timesheet->setEndAt(null);
         $event->addTimesheet($timesheet);
 
-        $event->majEndDate();
+        $event->updateEndDate();
 
         // When timesheets have null dates, should fallback to setting endDate = startDate
         self::assertEquals($event->getStartDate(), $event->getEndDate());

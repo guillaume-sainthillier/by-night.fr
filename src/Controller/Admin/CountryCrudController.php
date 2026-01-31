@@ -11,11 +11,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Country;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
+#[AdminRoute(path: '/country', name: 'country')]
 final class CountryCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

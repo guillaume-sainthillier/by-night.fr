@@ -35,8 +35,8 @@ final class EventSEO
             $description .= \sprintf(' %s.', implode(', ', array_keys($tags)));
         }
 
-        if ($event->getFbParticipations() + $event->getFbInterets() > 50) {
-            $description .= \sprintf(' %d personnes intéressées', $event->getFbParticipations() + $event->getFbInterets());
+        if ($event->getFbParticipations() + $event->getFbInterests() > 50) {
+            $description .= \sprintf(' %d personnes intéressées', $event->getFbParticipations() + $event->getFbInterests());
         }
 
         return $description;

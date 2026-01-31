@@ -1,0 +1,113 @@
+.dropzone {
+    border: 2px dashed var(--#{$prefix}border-color);
+    border-radius: $border-radius-lg;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+    background-color: var(--#{$prefix}tertiary-bg);
+
+    &:hover,
+    &.dropzone-dragover {
+        border-color: $primary;
+        background-color: rgba($primary, 0.05);
+    }
+
+    &.dropzone-dragover {
+        border-style: solid;
+    }
+}
+
+.dropzone-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--#{$prefix}secondary-color);
+
+    .dropzone-icon {
+        font-size: 2.5rem;
+        opacity: 0.5;
+    }
+
+    .dropzone-text {
+        font-weight: 500;
+    }
+
+    .dropzone-hint {
+        font-size: $font-size-sm;
+    }
+}
+
+.dropzone-preview {
+    img {
+        max-height: 200px;
+        object-fit: contain;
+    }
+}
+
+// Wrapper for vich image widget layouts
+.vich-image-wrapper {
+    // Vertical layout (default): stacked elements
+    &:not(.vich-image-horizontal) {
+        .vich-image-existing {
+            margin-bottom: $spacer;
+        }
+    }
+
+    // Horizontal layout: side by side on md+
+    &.vich-image-horizontal {
+        @include media-breakpoint-up(md) {
+            display: flex;
+            gap: $spacer;
+            align-items: stretch;
+
+            .vich-image-existing {
+                flex: 0 0 auto;
+                max-width: 200px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .dropzone {
+                flex: 1;
+                min-width: 0; // Allow shrinking below content size
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            .vich-image-existing {
+                margin-bottom: $spacer;
+            }
+        }
+    }
+}
+
+.vich-image-existing {
+    img {
+        max-height: 200px;
+        object-fit: contain;
+    }
+}
+
+// Hide the default file input styling within dropzone
+.dropzone .custom-file {
+    margin-top: 1rem;
+
+    input[type='file'] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+}

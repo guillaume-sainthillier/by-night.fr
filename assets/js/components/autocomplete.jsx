@@ -7,10 +7,12 @@ import groupBy from 'lodash/groupBy'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
 import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
+import CrosshairIcon from '@/js/icons/lucide/Crosshair'
+import DramaIcon from '@/js/icons/lucide/Drama'
 import SearchIcon from '@/js/icons/lucide/Search'
-import Loader2Icon from '@/js/icons/lucide/Loader2'
 import Trash2Icon from '@/js/icons/lucide/Trash2'
 import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
+import UserIcon from '@/js/icons/lucide/User'
 
 export default function init({
     autocompleteSelector = '#autocomplete',
@@ -243,14 +245,15 @@ export default function init({
     }
 }
 
-function Icon({ icon, className = '' }) {
-    if (!icon) {
-        return null
-    }
-    if (icon.startsWith('http') || icon.startsWith('data:image') || icon.startsWith('blob:') || icon.startsWith('/')) {
-        return <img src={icon} className={`icon ${className}`} alt="icon" />
-    }
-    return <i className={`icon ${icon} ${className}`} />
+const TYPE_ICONS = {
+    events: DramaIcon,
+    cities: CrosshairIcon,
+    users: UserIcon,
+}
+
+function TypeIcon({ type, className = '' }) {
+    const IconComponent = TYPE_ICONS[type] || SearchIcon
+    return <IconComponent className={`icon ${className}`} />
 }
 
 function HighlightedText({ item, attribute }) {
@@ -269,7 +272,7 @@ function ResultItem({ item, onRemove }) {
         <a href={item.url} className="aa-ItemLink">
             <div className="aa-ItemContent">
                 <div className="aa-ItemIcon">
-                    <Icon icon={item.icon} />
+                    <TypeIcon type={item.type} />
                 </div>
                 <div className="aa-ItemContentBody">
                     <div className="aa-ItemContentTitle">

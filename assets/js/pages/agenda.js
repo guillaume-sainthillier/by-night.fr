@@ -1,18 +1,42 @@
 import $ from 'jquery'
 import debounce from 'lodash/debounce'
 
-import initDates from '@/js/lazy-listeners/dates'
-import initImagePreview from '@/js/lazy-listeners/image-previews'
-import initSelects from '@/js/lazy-listeners/selects'
+import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
+import { create as createFancybox } from '@/js/services/ui/FancyboxService'
+import { create as createSelect } from '@/js/services/ui/SelectService'
 
 import Widgets from '@/js/components/Widgets'
 import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
 import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
-import {iconHtml} from "@/js/components/icons"
+import { iconHtml } from '@/js/components/icons'
+
+function initDatepickers(container = document) {
+    container.querySelectorAll('input.shorcuts_date').forEach((el) => {
+        createDatepicker({
+            element: el,
+            fromInput: document.getElementById(el.dataset.from),
+            toInput: document.getElementById(el.dataset.to),
+            singleDate: el.dataset.singleDate === 'true',
+            ranges: el.dataset.ranges ? JSON.parse(el.dataset.ranges) : {},
+        })
+    })
+}
+
+function initFancyboxes(container = document) {
+    container.querySelectorAll('.image-gallery').forEach((el) => {
+        createFancybox({ element: el })
+    })
+}
+
+function initSelects(container = document) {
+    container.querySelectorAll('select.form-select:not(.hidden):not(.tomselected)').forEach((el) => {
+        createSelect({ element: el })
+    })
+}
 
 $(document).ready(function () {
-    initDates()
-    initImagePreview()
+    initDatepickers()
+    initFancyboxes()
     initSelects()
     initCustomTab()
     initCriterions()
@@ -114,24 +138,22 @@ $(document).ready(function () {
         })
     }
 
-    /**
-     *
-     */
+    // Initialize the filters toggle behavior
     function initCriterions() {
         const options = {
             css_hidden: 'cache',
             css_initial_hidden: 'hidden',
             icon_open: iconHtml(ChevronDownIcon),
             icon_close: iconHtml(ChevronUpIcon),
-            selector_btn_criteres: '.btn_criteres',
+            selector_filter_btn: '.filter-toggle-btn',
             selector_icon: '.icon-toggle',
-            selector_block_criteres: '.criteres',
-            selector_main_block: '.block_criteres',
+            selector_filters: '.filters',
+            selector_filter_block: '.filter-block',
             duration: 0,
         }
 
-        // Bon bloc indigeste :)
-        const block = $(options.selector_btn_criteres)
+        // Toggle block logic
+        const block = $(options.selector_filter_btn)
             .click(function () {
                 if (block.hasClass(options.css_hidden)) {
                     $(this).find(options.selector_icon).html(options.icon_close)
@@ -145,10 +167,10 @@ $(document).ready(function () {
                     })
                 }
             })
-            .closest(options.selector_main_block)
-            .find(options.selector_block_criteres)
+            .closest(options.selector_filter_block)
+            .find(options.selector_filters)
 
-        // Pas de besoins d'ouvrir la recherche avancée
+        // No need to open advanced search by default
         if (block.hasClass(options.css_hidden)) {
             block.hide().removeClass(options.css_initial_hidden)
         }

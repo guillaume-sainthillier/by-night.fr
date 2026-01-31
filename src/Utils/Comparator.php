@@ -77,14 +77,14 @@ final readonly class Comparator
                 $b->getName(), $b->getCity(), $b->getZipCity()
             );
 
-            // Même rue & ~ même nom
+            // Same street & ~ same name
             if ($matchingScoreNom >= 80
                 && $this->getMatchingScoreRue($a->getStreet(), $b->getStreet()) >= 90
             ) {
                 return 100;
             }
 
-            // ~ Même nom
+            // ~ Same name
             if ($matchingScoreNom >= 80) {
                 return 90;
             }

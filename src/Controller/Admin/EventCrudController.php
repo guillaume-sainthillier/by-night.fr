@@ -13,6 +13,7 @@ namespace App\Controller\Admin;
 use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
 use App\Form\Type\EventTimesheetEntityType;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -31,6 +32,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use Override;
 
+#[AdminRoute(path: '/event', name: 'event')]
 final class EventCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -147,9 +149,9 @@ final class EventCrudController extends AbstractCrudController
         $fbPostSystemId = TextField::new('fbPostSystemId');
         $facebookOwnerId = TextField::new('facebookOwnerId');
         $fbParticipations = IntegerField::new('fbParticipations');
-        $fbInterets = IntegerField::new('fbInterets');
+        $fbInterests = IntegerField::new('fbInterests');
         $participations = IntegerField::new('participations');
-        $interets = IntegerField::new('interets');
+        $interests = IntegerField::new('interests');
         $imageOriginalName = TextField::new('image.originalName');
         $imageMimeType = TextField::new('image.mimeType');
         $imageSize = IntegerField::new('image.size');
@@ -195,9 +197,9 @@ final class EventCrudController extends AbstractCrudController
             $fbPostSystemId,
             $facebookOwnerId,
             $fbParticipations,
-            $fbInterets,
+            $fbInterests,
             $participations,
-            $interets,
+            $interests,
             $source,
             $archive,
 

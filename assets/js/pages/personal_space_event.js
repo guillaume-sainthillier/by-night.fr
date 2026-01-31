@@ -2,20 +2,63 @@ import $ from 'jquery'
 import TomSelect from 'tom-select'
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader'
 
-import initDates from '@/js/lazy-listeners/dates'
-import initImagePreview from '@/js/lazy-listeners/image-previews'
-import initSelects, {initRefreshableSelects} from '@/js/lazy-listeners/selects'
-import initTags from '@/js/lazy-listeners/tags'
-import initWYSIWYG from '@/js/lazy-listeners/wysiwyg'
+import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
+import { create as createFancybox } from '@/js/services/ui/FancyboxService'
+import { create as createSelect } from '@/js/services/ui/SelectService'
+import { create as createTags } from '@/js/services/ui/TagsService'
+import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 
+function initDatepickers(container = document) {
+    container.querySelectorAll('input.shorcuts_date').forEach((el) => {
+        createDatepicker({
+            element: el,
+            fromInput: document.getElementById(el.dataset.from),
+            toInput: document.getElementById(el.dataset.to),
+            singleDate: el.dataset.singleDate === 'true',
+            ranges: el.dataset.ranges ? JSON.parse(el.dataset.ranges) : {},
+        })
+    })
+}
+
+function initSelects(container = document) {
+    container.querySelectorAll('select.form-select:not(.hidden):not(.tomselected)').forEach((el) => {
+        createSelect({ element: el })
+    })
+}
+
+function initTagInputs(container = document) {
+    container.querySelectorAll('.js-tags-input:not(.tomselected)').forEach((el) => {
+        createTags({
+            element: el,
+            url: el.dataset.tagsUrl,
+            allowNew: el.dataset.tagsAllowNew === 'true',
+            maxItems: parseInt(el.dataset.tagsMaxItems, 10) || null,
+            separator: el.dataset.tagsSeparator || ',',
+            placeholder: el.getAttribute('placeholder') || '',
+        })
+    })
+}
+
+function initFancyboxes(container = document) {
+    container.querySelectorAll('.image-gallery').forEach((el) => {
+        createFancybox({ element: el })
+    })
+}
+
+function initWysiwygs(container = document) {
+    container.querySelectorAll('textarea.wysiwyg').forEach((el) => {
+        createWysiwyg({ element: el })
+    })
+}
+
 $(document).ready(function () {
-    initDates()
+    initDatepickers()
     initSelects()
-    initTags()
-    initImagePreview()
-    initWYSIWYG()
+    initTagInputs()
+    initFancyboxes()
+    initWysiwygs()
 
     $('.form-delete form').submit(function () {
         return window.confirm(
@@ -36,7 +79,7 @@ $(document).ready(function () {
         timesheetsCollection.addEventListener('collection.added', (e) => {
             const newItem = e.detail?.item
             if (newItem) {
-                initDates(newItem)
+                initDatepickers(newItem)
             }
         })
     }
@@ -63,11 +106,11 @@ $(document).ready(function () {
         })
 
         // Load required libraries
-        const {Map} = await importLibrary('maps')
-        const {AdvancedMarkerElement} = await importLibrary('marker')
-        const {AutocompleteSuggestion, AutocompleteSessionToken} = await importLibrary('places')
+        const { Map } = await importLibrary('maps')
+        const { AdvancedMarkerElement } = await importLibrary('marker')
+        const { AutocompleteSuggestion, AutocompleteSessionToken } = await importLibrary('places')
 
-        const defaultCenter = {lat: 43.6, lng: 1.433333}
+        const defaultCenter = { lat: 43.6, lng: 1.433333 }
 
         const map = new Map(mapEl, {
             center: defaultCenter,
@@ -117,8 +160,8 @@ $(document).ready(function () {
         }
 
         function updateMap(lat, lng) {
-            map.setCenter({lat, lng})
-            marker.position = {lat, lng}
+            map.setCenter({ lat, lng })
+            marker.position = { lat, lng }
             $(eventPlaceLatitude).val(lat)
             $(eventPlaceLongitude).val(lng)
         }
@@ -149,7 +192,7 @@ $(document).ready(function () {
         async function reverseGeocode(lat, lng) {
             const geocoder = new window.google.maps.Geocoder()
             try {
-                const {results} = await geocoder.geocode({location: {lat, lng}})
+                const { results } = await geocoder.geocode({ location: { lat, lng } })
                 if (!results?.[0]) return
                 const r = results[0]
                 addressSelect.addOption({ description: r.formatted_address })
@@ -176,7 +219,7 @@ $(document).ready(function () {
         }
 
         // Place name autocomplete (establishments)
-        new TomSelect(eventPlaceName, {
+        const placeNameSelect = new TomSelect(eventPlaceName, {
             valueField: 'main_text',
             labelField: 'main_text',
             searchField: 'main_text',
@@ -233,7 +276,10 @@ $(document).ready(function () {
                 assignAddressComponents(place.addressComponents)
             },
         })
-        initRefreshableSelects(eventPlaceName)
+        // Setup refresh event for placeNameSelect
+        $(eventPlaceName).on('refresh', function () {
+            placeNameSelect.setValue($(eventPlaceName).val(), true)
+        })
 
         // Address autocomplete
         const addressSelect = new TomSelect(eventAddress, {
@@ -279,11 +325,14 @@ $(document).ready(function () {
                 assignAddressComponents(place.addressComponents)
             },
         })
-        initRefreshableSelects(eventAddress)
+        // Setup refresh event for addressSelect
+        $(eventAddress).on('refresh', function () {
+            addressSelect.setValue($(eventAddress).val(), true)
+        })
 
         // Marker drag -> reverse geocode
         marker.addListener('dragend', () => {
-            const {lat, lng} = marker.position
+            const { lat, lng } = marker.position
             updateMap(lat, lng)
             reverseGeocode(lat, lng)
         })
@@ -292,8 +341,8 @@ $(document).ready(function () {
         const lat = parseFloat($(eventPlaceLatitude).val())
         const lng = parseFloat($(eventPlaceLongitude).val())
         if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
-            map.setCenter({lat, lng})
-            marker.position = {lat, lng}
+            map.setCenter({ lat, lng })
+            marker.position = { lat, lng }
         }
     }
 })

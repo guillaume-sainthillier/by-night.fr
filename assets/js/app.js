@@ -19,6 +19,7 @@ import autocomplete from './global-listeners/autocomplete'
 import scrollToTop from './global-listeners/scroll-to-top'
 
 // Listeners
+import dropzone from './listeners/dropzone'
 import emailVerify from './listeners/email-verify'
 import formCollection from './listeners/form-collection'
 import formErrors from './listeners/form-errors'
@@ -47,6 +48,7 @@ class App {
         this.#listeners = [autocomplete, imagePreviews, lazyload, scrollToTop]
 
         this.#pageListeners = [
+            dropzone,
             emailVerify,
             formCollection,
             formErrors,
@@ -84,7 +86,7 @@ class App {
 
         // Execute the page load listeners
         this.#listeners.forEach((listener) => {
-            listener(this.#di)
+            listener(this.#di, document)
         })
 
         this.dispatchPageLoadedEvent()

@@ -1,27 +1,7 @@
-{% extends 'espace-perso/layout.html.twig' %}
+{% extends 'personal-space/layout.html.twig' %}
 
-{% block titre 'Mes événements' %}
+{% block title 'Mes événements' %}
 {% block meta_title 'Mes événements' %}
-
-{% block layout_header %}
-    {% if not app.user.verified %}
-        <div class="alert alert-dismissible fade show alert-info">
-            <div class="{{ block('container_class') }}">
-                Votre email n'est pas vérifié. En raison de nombreaux abus, vous devez désormais <a href="{{ path('app_send_verification_email') }}" class="email-verify"><strong>vérifier votre email</strong></a> pour créer des événéments sur la plateforme.
-            </div>
-        </div>
-    {% endif %}
-    <div class="alert alert-dismissible fade show alert-info" id="feedback-banner">
-        <div class="{{ block('container_class') }}">
-            <twig:Icon name="lucide:message-circle" />
-            <strong>Nouveau !</strong> Nous avons amélioré la gestion de vos événements.
-            <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-                Donnez-nous votre avis !
-            </a>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-        </div>
-    </div>
-{% endblock %}
 
 {% block title_after %}
     {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
@@ -109,11 +89,11 @@
 {%- endblock %}
 
 {% block css -%}
-    {{ encore_entry_link_tags('espace_perso_list') }}
+    {{ encore_entry_link_tags('personal_space_list') }}
 {%- endblock %}
 
 {% block js -%}
-    {{ encore_entry_script_tags('espace_perso_list') }}
+    {{ encore_entry_script_tags('personal_space_list') }}
 {%- endblock %}
 
 {% block modals %}

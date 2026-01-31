@@ -65,14 +65,14 @@ final readonly class EventParticipateProcessor implements ProcessorInterface
 
         // Update participation counts
         $participations = $this->eventRepository->getParticipationTrendsCount($event);
-        $interets = $this->eventRepository->getInteretTrendsCount($event);
-        $event->setParticipations($participations)->setInterets($interets);
+        $interests = $this->eventRepository->getInterestTrendsCount($event);
+        $event->setParticipations($participations)->setInterests($interests);
         $this->persistProcessor->process($event, $operation, $uriVariables, $context);
 
         return new EventParticipationOutput(
             success: true,
             like: $data->like,
-            likes: $participations + $interets,
+            likes: $participations + $interests,
         );
     }
 }

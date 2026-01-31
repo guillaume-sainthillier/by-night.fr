@@ -15,14 +15,14 @@ use App\Entity\Event;
 final readonly class TrendsWidgetData
 {
     /**
-     * @param array<Event>                             $tendances
+     * @param array<Event>                             $trends
      * @param array{facebook: string, twitter: string} $shares
      */
     public function __construct(
         public Event $event,
-        public bool $participer,
-        public bool $interet,
-        public array $tendances,
+        public bool $participate,
+        public bool $interest,
+        public array $trends,
         public int $count,
         public array $shares,
     ) {

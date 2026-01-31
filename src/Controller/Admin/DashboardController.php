@@ -21,8 +21,10 @@ use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
 use App\Picture\UserProfilePicture;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -31,16 +33,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Override;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+#[AdminDashboard(routePath: '/', routeName: 'admin')]
 final class DashboardController extends AbstractDashboardController
 {
     public function __construct(private readonly UserProfilePicture $userProfilePicture, private readonly AdminUrlGenerator $adminUrlGenerator)
     {
     }
 
-    #[Route(path: '/', name: 'admin', methods: ['GET', 'POST'])]
     #[Override]
     public function index(): Response
     {
@@ -79,25 +80,33 @@ final class DashboardController extends AbstractDashboardController
     }
 
     #[Override]
+    public function configureAssets(): Assets
+    {
+        return parent::configureAssets()
+            ->useCustomIconSet()
+        ;
+    }
+
+    #[Override]
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToUrl('Back to Home', 'fas fa-home', '../')->setLinkTarget('_blank')->setLinkRel('noreferrer');
+        yield MenuItem::linkToUrl('Back to Home', 'lucide:home', '../')->setLinkTarget('_blank')->setLinkRel('noreferrer');
 
-        yield MenuItem::section('Commnunity', 'fas fa-folder-open');
-        yield MenuItem::linkToCrud('Events', 'fas fa-calendar-alt', Event::class);
-        yield MenuItem::linkToCrud('Places', 'fas fa-map-marker-alt', Place::class);
-        yield MenuItem::linkToCrud('Comments', 'fas fa-comment', Comment::class);
-        yield MenuItem::linkToCrud('User Event', 'fas fa-calendar-alt', UserEvent::class);
+        yield MenuItem::section('Commnunity', 'lucide:folder-open');
+        yield MenuItem::linkToCrud('Events', 'lucide:calendar-days', Event::class);
+        yield MenuItem::linkToCrud('Places', 'lucide:map-pin', Place::class);
+        yield MenuItem::linkToCrud('Comments', 'lucide:message-square', Comment::class);
+        yield MenuItem::linkToCrud('User Event', 'lucide:heart', UserEvent::class);
 
-        yield MenuItem::section('Users', 'fas fa-folder-open');
-        yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
-        yield MenuItem::linkToCrud('User socials', 'fas fa-bullhorn', UserOAuth::class);
+        yield MenuItem::section('Users', 'lucide:folder-open');
+        yield MenuItem::linkToCrud('Users', 'lucide:users', User::class);
+        yield MenuItem::linkToCrud('User socials', 'lucide:megaphone', UserOAuth::class);
 
-        yield MenuItem::section('Administration', 'fas fa-folder-open');
-        yield MenuItem::linkToCrud('Countries', 'fas fa-globe-europe', Country::class);
-        yield MenuItem::linkToCrud('Site socials', 'fas fa-bullhorn', AppOAuth::class);
-        yield MenuItem::linkToCrud('Explorations', 'far fa-eye', ParserData::class);
-        yield MenuItem::linkToCrud('Historique Maj', 'fas fa-history', ParserHistory::class);
+        yield MenuItem::section('Administration', 'lucide:folder-open');
+        yield MenuItem::linkToCrud('Countries', 'lucide:globe', Country::class);
+        yield MenuItem::linkToCrud('Site socials', 'lucide:megaphone', AppOAuth::class);
+        yield MenuItem::linkToCrud('Explorations', 'lucide:eye', ParserData::class);
+        yield MenuItem::linkToCrud('Historique Maj', 'lucide:history', ParserHistory::class);
     }
 
     /**

@@ -11,6 +11,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\AdminZone;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -21,6 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 use RuntimeException;
 
+#[AdminRoute(path: '/admin-zone', name: 'admin_zone')]
 class AdminZoneCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

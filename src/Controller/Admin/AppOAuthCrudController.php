@@ -11,9 +11,11 @@
 namespace App\Controller\Admin;
 
 use App\Entity\AppOAuth;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use Override;
 
+#[AdminRoute(path: '/app-oauth', name: 'app_oauth')]
 final class AppOAuthCrudController extends OAuthCrudController
 {
     public static function getEntityFqcn(): string

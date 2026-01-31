@@ -33,8 +33,8 @@ Encore
     .addEntry('agenda', './assets/js/pages/agenda.js')
     .addEntry('profile', './assets/js/pages/profile.js')
     .addEntry('user', './assets/js/pages/user.js')
-    .addEntry('espace_perso_list', './assets/js/pages/espace_perso_list.js')
-    .addEntry('espace_perso_event', './assets/js/pages/espace_perso_event.js')
+    .addEntry('personal_space_list', './assets/js/pages/personal_space_list.js')
+    .addEntry('personal_space_event', './assets/js/pages/personal_space_event.js')
     .addEntry('search', './assets/js/pages/search.js')
 
     .copyFiles([
@@ -97,6 +97,7 @@ Encore
         jQuery: 'jquery', // Summernote
         jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
         $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
+        moment$: path.resolve(__dirname, 'node_modules/moment/moment.js'), // daterangepicker
     })
 
     // enables Sass/SCSS support

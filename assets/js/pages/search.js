@@ -1,8 +1,8 @@
 import $ from 'jquery'
-import initImagePreview from '@/js/lazy-listeners/image-previews'
-import initSelects from '@/js/lazy-listeners/selects'
+import { create as createFancybox } from '@/js/services/ui/FancyboxService'
 
 $(document).ready(function () {
-    initImagePreview()
-    initSelects()
+    document.querySelectorAll('.image-gallery').forEach((el) => {
+        createFancybox({ element: el })
+    })
 })

@@ -36,7 +36,9 @@
       "mcp__repomix__read_repomix_output",
       "Bash(yarn test)",
       "WebFetch(domain:developers.google.com)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)",
+      "WebFetch(domain:tarekraafat.github.io)"
     ]
   }
 }
