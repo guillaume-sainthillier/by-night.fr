@@ -12,21 +12,33 @@
 {% endblock %}
 
 {% block vich_image_widget %}
-    {% if download_uri is defined and download_uri %}
-        <a class="image-gallery" href="{{ download_uri }}">
-            {% if download_uri %}
-                {{ image(image_thumb_params) }}
-            {% endif %}
-        </a>
-    {% endif %}
+    <div class="dropzone">
+        {% if download_uri is defined and download_uri %}
+            <div class="dropzone-existing">
+                <a class="image-gallery" href="{{ download_uri }}">
+                    {{ image(image_thumb_params) }}
+                </a>
+            </div>
+        {% endif %}
 
-    {{ form_widget(form.file) }}
+        <div class="dropzone-preview {{ download_uri is defined and download_uri ? 'd-none' : '' }}"></div>
 
-    {% if form.delete is defined %}
-        <div class="delete-image mt-2">
-            {{ form_row(form.delete) }}
+        <div class="dropzone-placeholder {{ download_uri is defined and download_uri ? 'd-none' : '' }}">
+            <div class="dropzone-icon">
+                <twig:Icon name="lucide:image-up" />
+            </div>
+            <div class="dropzone-text">Glissez-déposez une image ou cliquez pour parcourir</div>
+            <div class="dropzone-hint text-muted">PNG, JPG ou GIF</div>
         </div>
-    {% endif %}
+
+        {{ form_widget(form.file) }}
+
+        {% if form.delete is defined %}
+            <div class="delete-image">
+                {{ form_row(form.delete) }}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {# Images #}
