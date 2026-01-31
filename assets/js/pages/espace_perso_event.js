@@ -30,6 +30,17 @@ $(document).ready(function () {
     // Initialize timesheet hours sync
     initTimesheetHoursSync(document.body)
 
+    // Reinitialize date pickers when new timesheet items are added
+    const timesheetsCollection = document.getElementById('app_event_timesheets')
+    if (timesheetsCollection) {
+        timesheetsCollection.addEventListener('collection.added', (e) => {
+            const newItem = e.detail?.item
+            if (newItem) {
+                initDates(newItem)
+            }
+        })
+    }
+
     initGMap()
 
     const eventAddress = document.getElementById('app_event_address')

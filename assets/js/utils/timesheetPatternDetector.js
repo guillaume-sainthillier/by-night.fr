@@ -10,49 +10,24 @@ export function detectPattern(timesheets) {
     if (!timesheets || timesheets.length === 0) {
         return {
             mode: 'simple',
-            config: {
-                startTime: '09:00',
-                endTime: '17:00',
-            },
+            config: {},
         }
     }
 
-    // Parse timesheets
+    // Parse timesheets (handle both date and datetime formats)
     const parsed = timesheets.map((ts) => ({
-        startAt: moment(ts.startAt, 'YYYY-MM-DD HH:mm'),
-        endAt: moment(ts.endAt, 'YYYY-MM-DD HH:mm'),
+        startAt: moment(ts.startAt).startOf('day'),
+        endAt: moment(ts.endAt).startOf('day'),
     }))
 
-    // Check if all have same time
-    const firstStartTime = parsed[0].startAt.format('HH:mm')
-    const firstEndTime = parsed[0].endAt.format('HH:mm')
-
-    const allSameTime = parsed.every(
-        (ts) => ts.startAt.format('HH:mm') === firstStartTime && ts.endAt.format('HH:mm') === firstEndTime
-    )
-
-    if (!allSameTime) {
-        // Default to simple mode if no pattern detected
-        return {
-            mode: 'simple',
-            config: {
-                startTime: firstStartTime,
-                endTime: firstEndTime,
-            },
-        }
-    }
-
     // Extract dates
-    const dates = parsed.map((ts) => ts.startAt.clone().startOf('day'))
+    const dates = parsed.map((ts) => ts.startAt.clone())
 
     // Single date - simple mode
     if (dates.length === 1) {
         return {
             mode: 'simple',
-            config: {
-                startTime: firstStartTime,
-                endTime: firstEndTime,
-            },
+            config: {},
         }
     }
 
@@ -71,8 +46,6 @@ export function detectPattern(timesheets) {
             mode: 'pattern',
             config: {
                 pattern: 'daily',
-                startTime: firstStartTime,
-                endTime: firstEndTime,
             },
         }
     }
@@ -140,8 +113,6 @@ export function detectPattern(timesheets) {
                 config: {
                     pattern: 'weekdays',
                     weekdays: weekdays,
-                    startTime: firstStartTime,
-                    endTime: firstEndTime,
                 },
             }
         }
@@ -150,9 +121,6 @@ export function detectPattern(timesheets) {
     // Default to simple mode
     return {
         mode: 'simple',
-        config: {
-            startTime: firstStartTime,
-            endTime: firstEndTime,
-        },
+        config: {},
     }
 }

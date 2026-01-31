@@ -12,7 +12,7 @@ namespace App\Form\Type;
 
 use App\Entity\EventTimesheet;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,12 +26,12 @@ final class EventTimesheetEntityType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('startAt', DateTimeType::class, [
+            ->add('startAt', DateType::class, [
                 'label' => 'Début',
                 'widget' => 'single_text',
                 'required' => true,
             ])
-            ->add('endAt', DateTimeType::class, [
+            ->add('endAt', DateType::class, [
                 'label' => 'Fin',
                 'widget' => 'single_text',
                 'required' => true,
@@ -39,9 +39,6 @@ final class EventTimesheetEntityType extends AbstractType
             ->add('hours', TextType::class, [
                 'label' => 'Horaires affichés',
                 'required' => false,
-                'attr' => [
-                    'placeholder' => 'De 20h à 23h',
-                ],
             ]);
     }
 

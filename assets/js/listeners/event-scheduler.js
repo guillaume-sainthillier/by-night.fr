@@ -21,13 +21,11 @@ export default function initEventScheduler(container, di) {
     schedulerRoot.innerHTML = ''
     render(
         h(EventScheduler, {
-            dateRangeFieldIds: {
-                start: startDateField,
-                end: endDateField,
-            },
+            startDateFieldId: startDateField,
+            endDateFieldId: endDateField,
             timesheetsCollectionId: collectionId,
-            collectionManager: collectionManager,
-            detectExisting: detectExisting,
+            collectionManager,
+            detectExisting,
         }),
         schedulerRoot
     )

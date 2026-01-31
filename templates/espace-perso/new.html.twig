@@ -44,15 +44,13 @@
                         {{ form_row(form.hours, {icon_prepend: 'lucide:clock'}) }}
 
                         {# Event Scheduler Component #}
-                        <div class="form-group">
-                            <label class="form-label">Horaires</label>
-                            <div id="event-scheduler-root"
-                                 data-start-date-field="{{ form.startDate.vars.id }}"
-                                 data-end-date-field="{{ form.endDate.vars.id }}"
-                                 data-collection-id="{{ form.timesheets.vars.id }}"
-                                 data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}">
-                                <p class="text-muted">Chargement...</p>
-                            </div>
+                        <div id="event-scheduler-root"
+                             class="form-group"
+                             data-start-date-field="{{ form.startDate.vars.id }}"
+                             data-end-date-field="{{ form.endDate.vars.id }}"
+                             data-collection-id="{{ form.timesheets.vars.id }}"
+                             data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}">
+                            <p class="text-muted">Chargement...</p>
                         </div>
 
                         {{ form_row(form.timesheets) }}

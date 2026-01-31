@@ -64,7 +64,7 @@ export const constructObjectDefinition = (definitions) => {
 
 export const getVirtualForm = (container) => {
     const virtualForm = {}
-    findAll('.form-control, .custom-file-input, .custom-control-input', container).forEach((field) => {
+    findAll('.form-control, .custom-file-input, .custom-control-input, input[type="hidden"]', container).forEach((field) => {
         if (field.hasAttribute('name') && field.id) {
             const name = field
                 .getAttribute('name')

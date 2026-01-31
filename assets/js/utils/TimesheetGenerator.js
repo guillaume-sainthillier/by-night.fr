@@ -9,11 +9,9 @@ export default class TimesheetGenerator {
      *
      * @param {Date|string} startDate - Start date
      * @param {Date|string} endDate - End date
-     * @param {string} startTime - Start time (HH:mm format)
-     * @param {string} endTime - End time (HH:mm format)
      * @returns {Array<{startAt: string, endAt: string}>} Array of timesheets
      */
-    generateDaily(startDate, endDate, startTime, endTime) {
+    generateDaily(startDate, endDate) {
         const timesheets = []
         const start = moment(startDate).startOf('day')
         const end = moment(endDate).startOf('day')
@@ -23,9 +21,10 @@ export default class TimesheetGenerator {
         const maxTimesheets = 500
 
         while (current.isSameOrBefore(end) && count < maxTimesheets) {
+            const dateStr = current.format('YYYY-MM-DD')
             timesheets.push({
-                startAt: this._formatDateTime(current, startTime),
-                endAt: this._formatDateTime(current, endTime),
+                startAt: dateStr,
+                endAt: dateStr,
             })
 
             current.add(1, 'day')
@@ -41,11 +40,9 @@ export default class TimesheetGenerator {
      * @param {Date|string} startDate - Start date
      * @param {Date|string} endDate - End date
      * @param {Array<number>} weekdays - Array of weekday numbers (1=Monday, 7=Sunday)
-     * @param {string} startTime - Start time (HH:mm format)
-     * @param {string} endTime - End time (HH:mm format)
      * @returns {Array<{startAt: string, endAt: string}>} Array of timesheets
      */
-    generateWeekdays(startDate, endDate, weekdays, startTime, endTime) {
+    generateWeekdays(startDate, endDate, weekdays) {
         const timesheets = []
         const start = moment(startDate).startOf('day')
         const end = moment(endDate).startOf('day')
@@ -58,9 +55,10 @@ export default class TimesheetGenerator {
             const dayOfWeek = current.isoWeekday() // 1=Monday, 7=Sunday
 
             if (weekdays.includes(dayOfWeek)) {
+                const dateStr = current.format('YYYY-MM-DD')
                 timesheets.push({
-                    startAt: this._formatDateTime(current, startTime),
-                    endAt: this._formatDateTime(current, endTime),
+                    startAt: dateStr,
+                    endAt: dateStr,
                 })
                 count++
             }
@@ -69,34 +67,6 @@ export default class TimesheetGenerator {
         }
 
         return timesheets
-    }
-
-    /**
-     * Format date and time to datetime string
-     *
-     * @private
-     * @param {moment.Moment} date - Moment date object
-     * @param {string} time - Time string (HH:mm format)
-     * @returns {string} ISO datetime string (YYYY-MM-DD HH:mm)
-     */
-    _formatDateTime(date, time) {
-        return `${date.format('YYYY-MM-DD')} ${time}`
-    }
-
-    /**
-     * Validate time range
-     *
-     * @param {string} startTime - Start time (HH:mm format)
-     * @param {string} endTime - End time (HH:mm format)
-     * @returns {boolean} True if valid
-     */
-    validateTimeRange(startTime, endTime) {
-        if (!startTime || !endTime) return false
-
-        const start = moment(startTime, 'HH:mm')
-        const end = moment(endTime, 'HH:mm')
-
-        return start.isValid() && end.isValid() && start.isBefore(end)
     }
 
     /**

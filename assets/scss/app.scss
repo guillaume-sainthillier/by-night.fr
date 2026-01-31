@@ -47,6 +47,9 @@
 
 :root,
 :host {
+    @include media-breakpoint-up(lg) {
+        margin-left: 0;
+    }
 }
 
 :root,

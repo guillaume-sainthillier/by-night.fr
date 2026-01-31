@@ -438,7 +438,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         // Verify timesheet data
         $timesheets = $event->getTimesheets()->toArray();
         $this->assertEquals('De 10h à 18h', $timesheets[0]->getHours());
-        $this->assertEquals('2024-06-15 10:00:00', $timesheets[0]->getStartAt()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2024-06-15 00:00:00', $timesheets[0]->getStartAt()->format('Y-m-d H:i:s'));
     }
 
     public function testUpdateEventTimesheetsReplacesExisting(): void
