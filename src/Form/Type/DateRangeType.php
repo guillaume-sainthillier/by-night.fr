@@ -10,7 +10,8 @@
 
 namespace App\Form\Type;
 
-use DateTime;
+use App\Enum\DateRangePreset;
+use DateTimeImmutable;
 use DateTimeInterface;
 use IntlDateFormatter;
 use Override;
@@ -50,18 +51,21 @@ final class DateRangeType extends AbstractType
             'view_timezone' => $options['view_timezone'],
         ];
 
-        $builder
-            ->add($fromField, DateType::class, $dateOptions)
-            ->add($toField, DateType::class, $dateOptions)
-            ->add('range', TextType::class, [
-                'mapped' => false,
-                'required' => false,
-                'label' => $options['label'],
-                'attr' => array_merge(
-                    ['class' => 'shorcuts_date', 'autocomplete' => 'off'],
-                    $options['single_date_picker'] ? ['data-single-date' => 'true'] : []
-                ),
-            ]);
+        $builder->add($fromField, DateType::class, $dateOptions);
+
+        if (null !== $toField) {
+            $builder->add($toField, DateType::class, $dateOptions);
+        }
+
+        $builder->add('range', TextType::class, [
+            'mapped' => false,
+            'required' => false,
+            'label' => $options['label'],
+            'attr' => array_merge(
+                ['class' => 'shorcuts_date', 'autocomplete' => 'off'],
+                $options['single_date_picker'] ? ['data-single-date' => 'true'] : []
+            ),
+        ]);
 
         $this->addPostSetDataListener($builder, $fromField, $toField, $ranges);
         $this->addPreSubmitListener($builder, $fromField, $toField, $ranges);
@@ -76,11 +80,15 @@ final class DateRangeType extends AbstractType
 
         // Make date fields render as hidden inputs
         $view->children[$fromField]->vars['type'] = 'hidden';
-        $view->children[$toField]->vars['type'] = 'hidden';
+        if (null !== $toField) {
+            $view->children[$toField]->vars['type'] = 'hidden';
+        }
 
         // Inject JS data attributes for the date picker
         $view->children['range']->vars['attr']['data-from'] = $view->children[$fromField]->vars['id'];
-        $view->children['range']->vars['attr']['data-to'] = $view->children[$toField]->vars['id'];
+        if (null !== $toField) {
+            $view->children['range']->vars['attr']['data-to'] = $view->children[$toField]->vars['id'];
+        }
         $view->children['range']->vars['attr']['data-ranges'] = json_encode($ranges, \JSON_THROW_ON_ERROR);
 
         // Pass field names to template for rendering
@@ -105,7 +113,7 @@ final class DateRangeType extends AbstractType
         ]);
 
         $resolver->setAllowedTypes('from_field', 'string');
-        $resolver->setAllowedTypes('to_field', 'string');
+        $resolver->setAllowedTypes('to_field', ['string', 'null']);
         $resolver->setAllowedTypes('label', ['string', 'null']);
         $resolver->setAllowedTypes('ranges', 'array');
         $resolver->setAllowedTypes('single_date_picker', 'bool');
@@ -142,7 +150,7 @@ final class DateRangeType extends AbstractType
     private function addPostSetDataListener(
         FormBuilderInterface $builder,
         string $fromField,
-        string $toField,
+        ?string $toField,
         array $ranges,
     ): void {
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($ranges, $fromField, $toField): void {
@@ -153,7 +161,7 @@ final class DateRangeType extends AbstractType
             $from = $form->get($fromField)->getData();
 
             /** @var DateTimeInterface|null $to */
-            $to = $form->get($toField)->getData();
+            $to = null !== $toField ? $form->get($toField)->getData() : null;
 
             if (null === $from) {
                 return;
@@ -170,21 +178,21 @@ final class DateRangeType extends AbstractType
     private function addPreSubmitListener(
         FormBuilderInterface $builder,
         string $fromField,
-        string $toField,
+        ?string $toField,
         array $ranges,
     ): void {
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($ranges, $fromField, $toField): void {
             $data = $event->getData();
 
             $from = ($data[$fromField] ?? null) ?: null;
-            $to = ($data[$toField] ?? null) ?: null;
+            $to = null !== $toField ? (($data[$toField] ?? null) ?: null) : null;
 
             if (null === $from) {
                 return;
             }
 
-            $fromDate = new DateTime($from);
-            $toDate = null !== $to ? new DateTime($to) : null;
+            $fromDate = new DateTimeImmutable($from);
+            $toDate = null !== $to ? new DateTimeImmutable($to) : null;
 
             $data['range'] = $this->findRangeLabel($fromDate, $toDate, $ranges);
             $event->setData($data);

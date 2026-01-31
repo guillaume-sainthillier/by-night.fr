@@ -60,7 +60,9 @@
 
 {%- block date_range_row -%}
     {{ form_widget(form[date_range_from_field]) }}
-    {{ form_widget(form[date_range_to_field]) }}
+    {% if date_range_to_field is not null %}
+        {{ form_widget(form[date_range_to_field]) }}
+    {% endif %}
     {{ form_row(form.range, row_attr) }}
 {%- endblock date_range_row -%}
 

@@ -8,9 +8,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Form\Type;
+namespace App\Enum;
 
-use DateTime;
+use DateTimeImmutable;
 
 /**
  * Predefined date range presets for the DateRangeType.
@@ -42,17 +42,17 @@ enum DateRangePreset: string
     /**
      * Get the date range [from, to] for this preset.
      *
-     * @return array{0: string, 1: string|null}
+     * @return array{0: DateTimeImmutable, 1: DateTimeImmutable|null}
      */
     public function getDateRange(): array
     {
         return match ($this) {
-            self::Anytime => [(new DateTime('now'))->format('Y-m-d'), null],
-            self::Today => [(new DateTime('now'))->format('Y-m-d'), (new DateTime('now'))->format('Y-m-d')],
-            self::Tomorrow => [(new DateTime('tomorrow'))->format('Y-m-d'), (new DateTime('tomorrow'))->format('Y-m-d')],
-            self::ThisWeekend => [(new DateTime('friday this week'))->format('Y-m-d'), (new DateTime('sunday this week'))->format('Y-m-d')],
-            self::ThisWeek => [(new DateTime('monday this week'))->format('Y-m-d'), (new DateTime('sunday this week'))->format('Y-m-d')],
-            self::ThisMonth => [(new DateTime('first day of this month'))->format('Y-m-d'), (new DateTime('last day of this month'))->format('Y-m-d')],
+            self::Anytime => [new DateTimeImmutable('now'), null],
+            self::Today => [new DateTimeImmutable('now'), new DateTimeImmutable('now')],
+            self::Tomorrow => [new DateTimeImmutable('tomorrow'), new DateTimeImmutable('tomorrow')],
+            self::ThisWeekend => [new DateTimeImmutable('friday this week'), new DateTimeImmutable('sunday this week')],
+            self::ThisWeek => [new DateTimeImmutable('monday this week'), new DateTimeImmutable('sunday this week')],
+            self::ThisMonth => [new DateTimeImmutable('first day of this month'), new DateTimeImmutable('last day of this month')],
         };
     }
 
@@ -67,19 +67,10 @@ enum DateRangePreset: string
     {
         $ranges = [];
         foreach ($presets as $preset) {
-            $ranges[$preset->getLabel()] = $preset->getDateRange();
+            [$from, $to] = $preset->getDateRange();
+            $ranges[$preset->getLabel()] = [$from->format('Y-m-d'), $to?->format('Y-m-d')];
         }
 
         return $ranges;
-    }
-
-    /**
-     * Get all presets as a ranges array.
-     *
-     * @return array<string, array{0: string, 1: string|null}>
-     */
-    public static function all(): array
-    {
-        return self::buildRanges(self::cases());
     }
 }
