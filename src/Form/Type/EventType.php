@@ -71,6 +71,7 @@ final class EventType extends AbstractType
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
+                'help' => 'Pour un meilleur rendu, préférez une image au format 16:9 (ex: 1920x1080)',
             ])
             ->add('hours', TextType::class, [
                 'label' => 'Horaires affichés',
