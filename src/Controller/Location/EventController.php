@@ -15,9 +15,8 @@ use App\Controller\AbstractController as BaseController;
 use App\Controller\Comment\CommentController;
 use App\Entity\Comment;
 use App\Entity\Event;
-use App\Event\EventCheckUrlEvent;
-use App\Event\Events;
 use App\Form\Type\CommentType;
+use App\Manager\EventRedirectManager;
 use App\Manager\WidgetsManager;
 use App\Picture\EventProfilePicture;
 use App\Repository\CommentRepository;
@@ -26,23 +25,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class EventController extends BaseController
 {
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
-    public function index(AppContext $appContext, EventDispatcherInterface $eventDispatcher, EventProfilePicture $eventProfilePicture, CommentRepository $commentRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
+    public function index(AppContext $appContext, EventRedirectManager $eventRedirectManager, EventProfilePicture $eventProfilePicture, CommentRepository $commentRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
     {
         $location = $appContext->getLocation();
-
-        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
-        $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
-        if (null !== $eventCheck->getResponse()) {
-            return $eventCheck->getResponse();
-        }
-
-        $event = $eventCheck->getEvent();
+        $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_event_details');
 
         // Build Page object for social sharing
         $link = $this->generateUrl('app_event_details', [
