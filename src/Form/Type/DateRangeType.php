@@ -26,7 +26,6 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @phpstan-import-type DateRangePresetType from DateRangePreset
  * A compound form type for date range selection.
  *
  * This type creates three fields:
@@ -47,22 +46,15 @@ final class DateRangeType extends AbstractType
         $dateOptions = [
             'widget' => 'single_text',
             'html5' => false,
-            'label' => false,
             'input' => $options['input'],
             'model_timezone' => $options['model_timezone'],
             'view_timezone' => $options['view_timezone'],
         ];
 
-        $builder->add('from', DateType::class, [
-            ...$dateOptions,
-            'property_path' => $fromField,
-        ]);
+        $builder->add($fromField, DateType::class, $dateOptions);
 
         if (null !== $toField) {
-            $builder->add('to', DateType::class, [
-                ...$dateOptions,
-                'property_path' => $toField,
-            ]);
+            $builder->add($toField, DateType::class, $dateOptions);
         }
 
         $builder->add('range', TextType::class, [
@@ -75,44 +67,33 @@ final class DateRangeType extends AbstractType
             ),
         ]);
 
-        $this->addPreSubmitListener($builder, $ranges);
+        $this->addPostSetDataListener($builder, $fromField, $toField, $ranges);
+        $this->addPreSubmitListener($builder, $fromField, $toField, $ranges);
     }
 
     #[Override]
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
+        $fromField = $options['from_field'];
+        $toField = $options['to_field'];
         $ranges = $this->buildRanges($options);
 
         // Make date fields render as hidden inputs
-        $view->children['from']->vars['type'] = 'hidden';
-        if (isset($view->children['to'])) {
-            $view->children['to']->vars['type'] = 'hidden';
+        $view->children[$fromField]->vars['type'] = 'hidden';
+        if (null !== $toField) {
+            $view->children[$toField]->vars['type'] = 'hidden';
         }
 
         // Inject JS data attributes for the date picker
-        $view->children['range']->vars['attr']['data-from'] = $view->children['from']->vars['id'];
-        if (isset($view->children['to'])) {
-            $view->children['range']->vars['attr']['data-to'] = $view->children['to']->vars['id'];
+        $view->children['range']->vars['attr']['data-from'] = $view->children[$fromField]->vars['id'];
+        if (null !== $toField) {
+            $view->children['range']->vars['attr']['data-to'] = $view->children[$toField]->vars['id'];
         }
+        $view->children['range']->vars['attr']['data-ranges'] = json_encode($ranges, \JSON_THROW_ON_ERROR);
 
-        $viewRanges = [];
-        foreach ($ranges as $label => [$from, $to]) {
-            $viewRanges[$label] = [
-                $from->format('Y-m-d'),
-                $to?->format('Y-m-d'),
-            ];
-        }
-        $view->children['range']->vars['attr']['data-ranges'] = json_encode($viewRanges, \JSON_THROW_ON_ERROR);
-
-        // Set initial range label from existing dates
-        /** @var DateTimeInterface|null $from */
-        $from = $form->get('from')->getData();
-        /** @var DateTimeInterface|null $to */
-        $to = $form->has('to') ? $form->get('to')->getData() : null;
-
-        if (null !== $from) {
-            $view->children['range']->vars['value'] = $this->findRangeLabel($from, $to, $ranges);
-        }
+        // Pass field names to template for rendering
+        $view->vars['date_range_from_field'] = $fromField;
+        $view->vars['date_range_to_field'] = $toField;
     }
 
     #[Override]
@@ -133,6 +114,7 @@ final class DateRangeType extends AbstractType
 
         $resolver->setAllowedTypes('from_field', 'string');
         $resolver->setAllowedTypes('to_field', ['string', 'null']);
+        $resolver->setAllowedTypes('label', ['string', 'null']);
         $resolver->setAllowedTypes('ranges', 'array');
         $resolver->setAllowedTypes('single_date_picker', 'bool');
         $resolver->setAllowedTypes('input', 'string');
@@ -151,7 +133,7 @@ final class DateRangeType extends AbstractType
     /**
      * Build the ranges array based on options.
      *
-     * @return DateRangePresetType
+     * @return array<string, array{0: string, 1: string|null}>
      */
     private function buildRanges(array $options): array
     {
@@ -163,18 +145,47 @@ final class DateRangeType extends AbstractType
     }
 
     /**
-     * @param DateRangePresetType $ranges
-     *                                    Add listener to populate range label from submitted dates
+     * Add listener to populate range label from existing dates.
+     */
+    private function addPostSetDataListener(
+        FormBuilderInterface $builder,
+        string $fromField,
+        ?string $toField,
+        array $ranges,
+    ): void {
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($ranges, $fromField, $toField): void {
+            $form = $event->getForm();
+            $rangeField = $form->get('range');
+
+            /** @var DateTimeInterface|null $from */
+            $from = $form->get($fromField)->getData();
+
+            /** @var DateTimeInterface|null $to */
+            $to = null !== $toField ? $form->get($toField)->getData() : null;
+
+            if (null === $from) {
+                return;
+            }
+
+            $label = $this->findRangeLabel($from, $to, $ranges);
+            $rangeField->setData($label);
+        });
+    }
+
+    /**
+     * Add listener to populate range label from submitted dates.
      */
     private function addPreSubmitListener(
         FormBuilderInterface $builder,
+        string $fromField,
+        ?string $toField,
         array $ranges,
     ): void {
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($ranges): void {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($ranges, $fromField, $toField): void {
             $data = $event->getData();
 
-            $from = ($data['from'] ?? null) ?: null;
-            $to = ($data['to'] ?? null) ?: null;
+            $from = ($data[$fromField] ?? null) ?: null;
+            $to = null !== $toField ? (($data[$toField] ?? null) ?: null) : null;
 
             if (null === $from) {
                 return;
@@ -189,8 +200,7 @@ final class DateRangeType extends AbstractType
     }
 
     /**
-     * @param DateRangePresetType $ranges
-     *                                    Find the label for a date range, or generate a custom label
+     * Find the label for a date range, or generate a custom label.
      */
     private function findRangeLabel(?DateTimeInterface $from, ?DateTimeInterface $to, array $ranges): string
     {
@@ -203,11 +213,7 @@ final class DateRangeType extends AbstractType
 
         // Check predefined ranges
         foreach ($ranges as $label => $range) {
-            [$rangeFrom, $rangeTo] = $range;
-            $rangeFromStr = $rangeFrom->format('Y-m-d');
-            $rangeToStr = $rangeTo?->format('Y-m-d');
-
-            if ($rangeFromStr === $fromStr && $rangeToStr === $toStr) {
+            if ($range[0] === $fromStr && $range[1] === $toStr) {
                 return $label;
             }
         }
