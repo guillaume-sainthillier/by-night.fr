@@ -97,6 +97,7 @@ Encore
         jQuery: 'jquery', // Summernote
         jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
         $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
+        moment$: path.resolve(__dirname, 'node_modules/moment/moment.js'), // daterangepicker
     })
 
     // enables Sass/SCSS support
