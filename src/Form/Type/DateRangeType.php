@@ -35,15 +35,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class DateRangeType extends AbstractType
 {
-    private const array PRESET_RANGES = [
-        "N'importe quand" => ['modifier' => 'now', 'to_modifier' => null],
-        "Aujourd'hui" => ['modifier' => 'now', 'to_modifier' => 'now'],
-        'Demain' => ['modifier' => 'tomorrow', 'to_modifier' => 'tomorrow'],
-        'Ce week-end' => ['modifier' => 'friday this week', 'to_modifier' => 'sunday this week'],
-        'Cette semaine' => ['modifier' => 'monday this week', 'to_modifier' => 'sunday this week'],
-        'Ce mois' => ['modifier' => 'first day of this month', 'to_modifier' => 'last day of this month'],
-    ];
-
     #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -105,7 +96,7 @@ final class DateRangeType extends AbstractType
             'from_field' => 'from',
             'to_field' => 'to',
             'label' => 'Quand ?',
-            'ranges' => 'preset', // 'preset', 'none', or custom array
+            'ranges' => DateRangePreset::cases(), // DateRangePreset[], empty array for none
             'single_date_picker' => false,
             // DateType options (passed through to child fields)
             'input' => 'datetime',
@@ -116,13 +107,12 @@ final class DateRangeType extends AbstractType
         $resolver->setAllowedTypes('from_field', 'string');
         $resolver->setAllowedTypes('to_field', 'string');
         $resolver->setAllowedTypes('label', ['string', 'null']);
-        $resolver->setAllowedTypes('ranges', ['string', 'array']);
+        $resolver->setAllowedTypes('ranges', 'array');
         $resolver->setAllowedTypes('single_date_picker', 'bool');
         $resolver->setAllowedTypes('input', 'string');
         $resolver->setAllowedTypes('model_timezone', ['string', 'null']);
         $resolver->setAllowedTypes('view_timezone', ['string', 'null']);
 
-        $resolver->setAllowedValues('ranges', static fn (mixed $value): bool => \is_array($value) || \in_array($value, ['preset', 'none'], true));
         $resolver->setAllowedValues('input', ['datetime', 'datetime_immutable', 'string', 'timestamp', 'array']);
     }
 
@@ -139,22 +129,11 @@ final class DateRangeType extends AbstractType
      */
     private function buildRanges(array $options): array
     {
-        if ('none' === $options['ranges'] || $options['single_date_picker']) {
+        if ([] === $options['ranges'] || $options['single_date_picker']) {
             return [];
         }
 
-        if ('preset' === $options['ranges']) {
-            $ranges = [];
-            foreach (self::PRESET_RANGES as $label => $config) {
-                $from = new DateTime($config['modifier']);
-                $to = null !== $config['to_modifier'] ? new DateTime($config['to_modifier']) : null;
-                $ranges[$label] = [$from->format('Y-m-d'), $to?->format('Y-m-d')];
-            }
-
-            return $ranges;
-        }
-
-        return $options['ranges'];
+        return DateRangePreset::buildRanges($options['ranges']);
     }
 
     /**

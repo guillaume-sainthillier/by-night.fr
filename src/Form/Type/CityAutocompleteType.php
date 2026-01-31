@@ -28,7 +28,6 @@ final class CityAutocompleteType extends AbstractType
         $builder
             ->add('dateRange', DateRangeType::class, [
                 'label' => null,
-                'ranges' => 'preset',
             ])
             ->add('name', TextType::class, [
                 'required' => true,

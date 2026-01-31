@@ -26,7 +26,6 @@ final class SimpleEventSearchType extends AbstractType
         $builder
             ->add('dateRange', DateRangeType::class, [
                 'label' => null,
-                'ranges' => 'preset',
             ])
             ->add('term', TextType::class, [
                 'required' => false,

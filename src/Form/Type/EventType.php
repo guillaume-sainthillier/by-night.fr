@@ -43,7 +43,7 @@ final class EventType extends AbstractType
                 'from_field' => 'startDate',
                 'to_field' => 'endDate',
                 'label' => 'Dates',
-                'ranges' => 'none',
+                'ranges' => [],
             ])
             ->add('name', TextType::class, [
                 'label' => 'Titre',

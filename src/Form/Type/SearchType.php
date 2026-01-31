@@ -29,7 +29,6 @@ final class SearchType extends AbstractType
         $builder
             ->add('dateRange', DateRangeType::class, [
                 'label' => 'Quand ?',
-                'ranges' => 'preset',
             ])
             ->add('range', NumberType::class, [
                 'html5' => true,
