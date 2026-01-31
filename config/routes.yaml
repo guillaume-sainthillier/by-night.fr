@@ -35,13 +35,6 @@ app.comments:
     prefix: /commentaire
     type: attribute
 
-app.admin:
-    resource:
-        path: ../src/Controller/Admin
-        namespace: App\Controller\Admin
-    prefix: /_administration
-    type: attribute
-
 app.private:
     resource:
         path: ../src/Controller/Fragments

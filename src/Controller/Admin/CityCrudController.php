@@ -11,9 +11,11 @@
 namespace App\Controller\Admin;
 
 use App\Entity\City;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use Override;
 
+#[AdminRoute(routePath: '/city', routeName: 'city')]
 final class CityCrudController extends AdminZoneCrudController
 {
     #[Override]

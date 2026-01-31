@@ -21,6 +21,7 @@ use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
 use App\Picture\UserProfilePicture;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -31,16 +32,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Override;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+#[AdminDashboard(routePath: '/', routeName: 'admin')]
 final class DashboardController extends AbstractDashboardController
 {
     public function __construct(private readonly UserProfilePicture $userProfilePicture, private readonly AdminUrlGenerator $adminUrlGenerator)
     {
     }
 
-    #[Route(path: '/', name: 'admin', methods: ['GET', 'POST'])]
     #[Override]
     public function index(): Response
     {

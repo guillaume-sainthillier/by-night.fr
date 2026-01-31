@@ -13,6 +13,7 @@ namespace App\Controller\Admin;
 use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
 use App\Form\Type\EventTimesheetEntityType;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -31,6 +32,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use Override;
 
+#[AdminRoute(routePath: '/event', routeName: 'event')]
 final class EventCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
