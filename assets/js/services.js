@@ -6,7 +6,6 @@ import ElementManager from './services/form/ElementManager'
 import FormManager from './services/form/FormManager'
 import RequiredManager from './services/form/RequiredManager'
 import ToastManager from './services/modals/ToastManager'
-import AutocompleteService from './services/autocomplete/AutocompleteService'
 
 /**
  * @param {Container} di
@@ -41,9 +40,5 @@ export default (di) => {
 
     di.set('collectionManager', () => {
         return new CollectionManager(di.get('modalManager'))
-    })
-
-    di.set('autocompleteService', () => {
-        return new AutocompleteService()
     })
 }
