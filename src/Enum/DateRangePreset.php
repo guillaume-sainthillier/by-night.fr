@@ -13,6 +13,8 @@ namespace App\Enum;
 use DateTimeImmutable;
 
 /**
+ * @phpstan-type DateRangeType = array{0: DateTimeImmutable, 1: DateTimeImmutable|null}
+ * @phpstan-type DateRangePresetType = array<string, DateRangeType>
  * Predefined date range presets for the DateRangeType.
  */
 enum DateRangePreset: string
@@ -61,14 +63,14 @@ enum DateRangePreset: string
      *
      * @param DateRangePreset[] $presets
      *
-     * @return array<string, array{0: string, 1: string|null}>
+     * @return array<string, array{0: DateTimeImmutable, 1: DateTimeImmutable|null}>
      */
     public static function buildRanges(array $presets): array
     {
         $ranges = [];
         foreach ($presets as $preset) {
             [$from, $to] = $preset->getDateRange();
-            $ranges[$preset->getLabel()] = [$from->format('Y-m-d'), $to?->format('Y-m-d')];
+            $ranges[$preset->getLabel()] = [$from, $to];
         }
 
         return $ranges;
