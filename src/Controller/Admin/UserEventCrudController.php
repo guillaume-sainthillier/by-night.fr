@@ -20,7 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use Override;
 
-#[AdminRoute(routePath: '/user-event', routeName: 'user_event')]
+#[AdminRoute(path: '/user-event', name: 'user_event')]
 final class UserEventCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

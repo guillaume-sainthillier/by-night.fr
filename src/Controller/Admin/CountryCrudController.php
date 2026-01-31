@@ -17,7 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
-#[AdminRoute(routePath: '/country', routeName: 'country')]
+#[AdminRoute(path: '/country', name: 'country')]
 final class CountryCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

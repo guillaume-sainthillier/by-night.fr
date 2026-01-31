@@ -17,7 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use Override;
 
-#[AdminRoute(routePath: '/user-oauth', routeName: 'user_oauth')]
+#[AdminRoute(path: '/user-oauth', name: 'user_oauth')]
 final class UserOAuthCrudController extends OAuthCrudController
 {
     public static function getEntityFqcn(): string

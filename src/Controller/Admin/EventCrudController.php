@@ -32,7 +32,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use Override;
 
-#[AdminRoute(routePath: '/event', routeName: 'event')]
+#[AdminRoute(path: '/event', name: 'event')]
 final class EventCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

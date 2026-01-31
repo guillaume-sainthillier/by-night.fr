@@ -21,7 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Override;
 
-#[AdminRoute(routePath: '/comment', routeName: 'comment')]
+#[AdminRoute(path: '/comment', name: 'comment')]
 final class CommentCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

@@ -20,7 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
-#[AdminRoute(routePath: '/event-timesheet', routeName: 'event_timesheet')]
+#[AdminRoute(path: '/event-timesheet', name: 'event_timesheet')]
 final class EventTimesheetCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

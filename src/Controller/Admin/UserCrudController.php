@@ -27,7 +27,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
-#[AdminRoute(routePath: '/user', routeName: 'user')]
+#[AdminRoute(path: '/user', name: 'user')]
 final class UserCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

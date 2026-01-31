@@ -23,7 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 use RuntimeException;
 
-#[AdminRoute(routePath: '/parser-data', routeName: 'parser_data')]
+#[AdminRoute(path: '/parser-data', name: 'parser_data')]
 final class ParserDataCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

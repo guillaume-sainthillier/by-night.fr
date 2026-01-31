@@ -24,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
-#[AdminRoute(routePath: '/place', routeName: 'place')]
+#[AdminRoute(path: '/place', name: 'place')]
 final class PlaceCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

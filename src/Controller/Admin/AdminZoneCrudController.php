@@ -22,7 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 use RuntimeException;
 
-#[AdminRoute(routePath: '/admin-zone', routeName: 'admin_zone')]
+#[AdminRoute(path: '/admin-zone', name: 'admin_zone')]
 class AdminZoneCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
