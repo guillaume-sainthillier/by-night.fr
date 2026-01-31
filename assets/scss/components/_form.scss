@@ -8,6 +8,13 @@ form {
     margin-bottom: 1rem;
 }
 
+.accordion-body,
+.card-body {
+    > .form-group:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .form-control[readonly].form-control-readonly {
     background-color: $input-bg;
 }

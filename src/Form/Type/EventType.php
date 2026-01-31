@@ -133,6 +133,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'add_entry_label' => 'Ajouter un site',
                 'label' => 'Sites de réservation',
+                'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,
                     'icon-prepend' => 'lucide:globe',
@@ -146,6 +147,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'add_entry_label' => 'Ajouter un numéro',
                 'label' => 'Numéros de téléphone',
+                'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,
                     'icon-prepend' => 'lucide:phone',
@@ -159,6 +161,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'add_entry_label' => 'Ajouter un email',
                 'label' => 'Emails de contact',
+                'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,
                     'icon-prepend' => 'lucide:mail',

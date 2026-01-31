@@ -39,6 +39,7 @@ final class CollectionType extends AbstractType
         $view->vars['add_entry_label'] = $options['add_entry_label'];
         $view->vars['delete_entry_confirm_label'] = $options['delete_entry_confirm_label'];
         $view->vars['end_entry_template'] = $options['end_entry_template'];
+        $view->vars['layout'] = $options['layout'];
     }
 
     private function replaceCollectionEntryBlockPrefix(array $prefixes): array
@@ -67,7 +68,10 @@ final class CollectionType extends AbstractType
             'by_reference' => false,
             'error_bubbling' => false,
             'end_entry_template' => null,
+            'layout' => 'complex',
         ]);
+
+        $resolver->setAllowedValues('layout', ['simple', 'complex']);
     }
 
     #[Override]
