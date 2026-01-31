@@ -78,7 +78,6 @@ final readonly class SearchProvider implements ProviderInterface
                     'slug' => $event->getSlug(),
                     'location' => $event->getPlace()?->getCity()?->getSlug() ?? 'france',
                 ]),
-                icon: 'fa fa-masks-theater',
                 highlightResult: [
                     'label' => [
                         'value' => $highlights['name'][0] ?? $event->getName(),
@@ -116,7 +115,6 @@ final readonly class SearchProvider implements ProviderInterface
                 shortDescription: $city->getCountry()?->getName() ?? '',
                 description: \sprintf('%s habitants', number_format($city->getPopulation() ?? 0, 0, ',', ' ')),
                 url: $this->urlGenerator->generate('app_location_index', ['location' => $city->getSlug()]),
-                icon: 'fa fa-location-crosshairs',
                 highlightResult: [
                     'label' => [
                         'value' => $highlights['name'][0] ?? $city->getName(),
@@ -158,7 +156,6 @@ final readonly class SearchProvider implements ProviderInterface
                 shortDescription: $fullName,
                 description: \sprintf('%d événement(s)', $user->getUserEvents()->count()),
                 url: $this->urlGenerator->generate('app_user_index', ['slug' => $user->getSlug(), 'id' => $user->getId()]),
-                icon: 'fa fa-user',
                 highlightResult: [
                     'label' => [
                         'value' => $highlights['username'][0] ?? $user->getUsername(),

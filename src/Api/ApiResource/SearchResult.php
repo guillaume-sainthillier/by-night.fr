@@ -55,7 +55,6 @@ final readonly class SearchResult
         public string $shortDescription,
         public ?string $description,
         public string $url,
-        public string $icon,
         public ?array $highlightResult = null,
     ) {
     }
