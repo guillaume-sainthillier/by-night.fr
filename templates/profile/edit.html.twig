@@ -116,10 +116,21 @@
             <div class="card">
                 <h2 class="card-header">Supprimer le compte</h2>
                 <div class="card-body">
-                    <p>Supprimer les informations relatives à mon compte</p>
+                    <div class="alert alert-warning mb-4">
+                        <twig:Icon name="lucide:triangle-alert" class="me-2" />
+                        <strong>Attention :</strong> La suppression de votre compte est définitive et irréversible.
+                    </div>
+                    <p class="mb-3">En supprimant votre compte, les éléments suivants seront effacés :</p>
+                    <ul class="mb-0">
+                        <li>Vos informations personnelles (nom, email, photo de profil)</li>
+                        <li>Vos préférences et paramètres</li>
+                        <li>Vos connexions aux réseaux sociaux</li>
+                        <li>Vos événements favoris</li>
+                    </ul>
                 </div>
                 <div class="card-footer text-center mt-2 py-3">
-                    <button id="btnDelete" type="button" data-bs-toggle="modal" data-target="#deleteModal" class="btn btn-danger">
+                    <button id="btnDelete" type="button" data-bs-toggle="modal" data-bs-target="#modalDelete" class="btn btn-danger">
+                        <twig:Icon name="lucide:trash-2" class="me-1" />
                         Supprimer mon compte
                     </button>
                 </div>
