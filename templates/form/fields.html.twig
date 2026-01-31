@@ -13,41 +13,38 @@
 
 {% block vich_image_widget %}
     {% set has_existing_image = download_uri is defined and download_uri %}
-    {% set is_horizontal = layout is defined and layout == 'horizontal' %}
 
-    <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal' : '' }}">
-        {% if has_existing_image %}
-            <div class="vich-image-existing">
-                <a class="image-gallery" href="{{ download_uri }}">
-                    {{ image(image_thumb_params) }}
-                </a>
-                {% if has_uploaded_image is defined and has_uploaded_image and form.delete is defined %}
-                    <div class="delete-image mt-2">
-                        {{ form_row(form.delete) }}
-                    </div>
+    {% if has_existing_image %}
+        <div class="vich-image-existing mb-3">
+            <a class="image-gallery" href="{{ download_uri }}">
+                {{ image(image_thumb_params) }}
+            </a>
+            {% if has_uploaded_image is defined and has_uploaded_image and form.delete is defined %}
+                <div class="delete-image mt-2">
+                    {{ form_row(form.delete) }}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="dropzone">
+        <div class="dropzone-preview d-none"></div>
+
+        <div class="dropzone-placeholder">
+            <div class="dropzone-icon">
+                <twig:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
+            </div>
+            <div class="dropzone-text">
+                {% if has_existing_image %}
+                    Glissez une nouvelle image pour remplacer l'actuelle
+                {% else %}
+                    Glissez-déposez une image ou cliquez pour parcourir
                 {% endif %}
             </div>
-        {% endif %}
-
-        <div class="dropzone">
-            <div class="dropzone-preview d-none"></div>
-
-            <div class="dropzone-placeholder">
-                <div class="dropzone-icon">
-                    <twig:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
-                </div>
-                <div class="dropzone-text">
-                    {% if has_existing_image %}
-                        Glissez une nouvelle image pour remplacer l'actuelle
-                    {% else %}
-                        Glissez-déposez une image ou cliquez pour parcourir
-                    {% endif %}
-                </div>
-                <div class="dropzone-hint text-muted">PNG, JPG ou GIF</div>
-            </div>
-
-            {{ form_widget(form.file) }}
+            <div class="dropzone-hint text-muted">PNG, JPG ou GIF</div>
         </div>
+
+        {{ form_widget(form.file) }}
     </div>
 {% endblock %}
 
@@ -58,21 +55,9 @@
     </div>
 {% endblock %}
 
-{%- block date_range_row -%}
-    {{ form_widget(form.from) }}
-    {% if form.to is defined %}
-        {{ form_widget(form.to) }}
-    {% endif %}
-    {% set range_options = {
-        icon_prepend: icon_prepend|default(null),
-        icon_append: icon_append|default(null),
-    }|merge(label is defined ? {label: label} : {}) %}
-    {{ form_row(form.range, range_options) }}
-    {{ form_errors(form.from) }}
-    {% if form.to is defined %}
-        {{ form_errors(form.to) }}
-    {% endif %}
-{%- endblock -%}
+{%- block hidden_date_row -%}
+    {{ form_widget(form) }}
+{%- endblock hidden_date_row -%}based
 
 {% block app_collection_entry_form_row %}
     {{ form_row(child, attr|merge({label: false, row_class: row_class|default('form-group')})) }}
