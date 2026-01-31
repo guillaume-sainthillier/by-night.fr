@@ -86,7 +86,7 @@ class App {
 
         // Execute the page load listeners
         this.#listeners.forEach((listener) => {
-            listener(this.#di)
+            listener(this.#di, document)
         })
 
         this.dispatchPageLoadedEvent()
