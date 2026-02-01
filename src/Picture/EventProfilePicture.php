@@ -13,6 +13,8 @@ namespace App\Picture;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Helper\AssetHelper;
+use App\Parser\Common\BilletsReducAwinParser;
+use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\DataTourismeParser;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\OpenAgendaParser;
@@ -130,6 +132,20 @@ final readonly class EventProfilePicture
         if ($fromData === DigitickAwinParser::getParserName()) {
             return [
                 'path' => $this->packages->getUrl('build/images/parsers/digitick.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === BilletsReducAwinParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/billets-reduc.jpg', 'local'),
+                'source' => 'local',
+            ];
+        }
+
+        if ($fromData === CDiscountAwinParser::getParserName()) {
+            return [
+                'path' => $this->packages->getUrl('build/images/parsers/cdiscount.jpg', 'local'),
                 'source' => 'local',
             ];
         }

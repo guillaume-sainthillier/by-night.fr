@@ -25,7 +25,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class FnacSpectaclesAwinParser extends AbstractAwinParser
 {
-    private const string DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/23455/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,is_for_sale,custom_1,valid_to,product_short_description,custom_2,custom_4,custom_6,custom_3,Tickets%3Avenue_address,Tickets%3Alatitude,Tickets%3Alongitude/format/xml-tree/compression/gzip/';
+    private const string DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/23455/columns/aw_deep_link,product_name,merchant_product_id,merchant_image_url,description,search_price,is_for_sale,valid_to,product_short_description,custom_3,custom_4,custom_5,custom_7,Tickets%3Avenue_name,Tickets%3Avenue_address,Tickets%3Aevent_date,Tickets%3Alatitude,Tickets%3Alongitude/format/csv/compression/gzip/';
 
     public function __construct(
         LoggerInterface $logger,
@@ -70,41 +70,28 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
      */
     protected function arrayToDto(array $data): ?EventDto
     {
-        if ('0' === $data['is_for_sale'] || '' === trim($data['custom_2'] ?? '')) {
+        $venueName = trim($data['Tickets:venue_name'] ?? '');
+        if ('0' === $data['is_for_sale'] || '' === $venueName) {
             return null;
         }
 
-        $seenHours = [];
+        // Parse start date from Tickets:event_date (YYYY-mm-dd format)
+        $startDate = DateTimeImmutable::createFromFormat('Y-m-d', $data['Tickets:event_date']);
+        if (false === $startDate) {
+            return null;
+        }
+
+        // Parse end date from valid_to (YYYY-mm-dd format)
+        $endDate = DateTimeImmutable::createFromFormat('Y-m-d', $data['valid_to']);
+        if (false === $endDate) {
+            $endDate = $startDate;
+        }
+
+        // Parse hours from custom_7 (HH:mm format)
         $hours = null;
-        $startDate = null;
-        $startDates = array_filter(explode(';', (string) $data['custom_1']));
-
-        if ([] === $startDates) {
-            return null;
-        }
-
-        foreach ($startDates as $startDateStr) {
-            $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
-            if (false !== $startDate) {
-                $seenHours[] = \sprintf('À %s', $startDate->format('H\hi'));
-            }
-        }
-
-        if ([] === $seenHours) {
-            return null;
-        }
-
-        $seenHours = array_unique($seenHours);
-
-        if (1 === \count($seenHours)) {
-            $hours = $seenHours[0];
-        }
-
-        $endDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
-
-        if ('31/12 23:59' === $startDate->format('d/m H:i') && $startDate->format('d/m/Y') === $endDate->format('d/m/Y')) {
-            $hours = null;
-            $startDate = $startDate->setDate((int) $startDate->format('Y'), 1, 1);
+        $eventTime = trim($data['custom_7'] ?? '');
+        if ('' !== $eventTime) {
+            $hours = \sprintf('À %s', str_replace(':', 'h', $eventTime));
         }
 
         // Prevents Reject::BAD_EVENT_DATE_INTERVAL
@@ -119,30 +106,37 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->hours = $hours;
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
-        $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'], $data['product_short_description'])));
-        $event->imageUrl = $this->getImageUrl($data['merchant_image_url']);
+        $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));
+        $event->imageUrl = $this->getImageUrl($data['merchant_image_url'] ?? '');
         $event->prices = \sprintf('%s€', $data['search_price']);
-        $event->latitude = (float) $data['latitude'];
-        $event->longitude = (float) $data['longitude'];
+        $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
+        $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
 
+        // CSV mapping:
+        // - Tickets:venue_name = venue name
+        // - Tickets:venue_address = city name
+        // - custom_3 = postal code
+        // - custom_4 = street address
+        // - custom_5 = country code (FR)
         $place = new PlaceDto();
-        $place->name = $data['custom_2'];
-        $place->street = \in_array($data['custom_6'], ['.', '-', ''], true) ? null : $data['custom_6'];
+        $place->name = $venueName;
+        $street = trim($data['custom_4'] ?? '');
+        $place->street = \in_array($street, ['.', '-', ''], true) ? null : $street;
         $place->externalId = sha1(\sprintf(
             '%s %s %s %s %s',
-            $data['custom_2'],
-            $data['custom_6'],
-            $data['venue_address'],
-            $data['custom_4'],
-            $data['custom_3'],
+            $venueName,
+            $street,
+            $data['Tickets:venue_address'] ?? '',
+            $data['custom_3'] ?? '',
+            $data['custom_5'] ?? '',
         ));
 
         $city = new CityDto();
-        $city->name = $data['venue_address'];
-        $city->postalCode = $data['custom_4'];
+        $city->name = $data['Tickets:venue_address'] ?? '';
+        $city->postalCode = $data['custom_3'] ?? '';
 
         $country = new CountryDto();
-        $country->name = $data['custom_3'];
+        $country->code = $data['custom_5'] ?? '';
 
         $city->country = $country;
 
