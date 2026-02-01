@@ -16,22 +16,19 @@ use IteratorAggregate;
 use Traversable;
 
 /**
- * Paginator for transformed/mapped items that preserves the original pagination metadata.
+ * Simple paginator implementation for pre-computed arrays of items.
  *
- * Use this when you need to transform entities from a paginated query into DTOs
- * while keeping the pagination information from the original result set.
+ * Use this when results are already computed and can't be wrapped in a Pagerfanta,
+ * for example when combining results from multiple sources.
  *
  * @template T of object
  *
  * @implements PaginatorInterface<T>
  */
-final class TransformedPaginator implements IteratorAggregate, PaginatorInterface
+final class ArrayPaginator implements IteratorAggregate, PaginatorInterface
 {
     /**
-     * @param list<T> $items        The transformed items for the current page
-     * @param int     $totalItems   Total number of items across all pages
-     * @param int     $currentPage  The current page number (1-indexed)
-     * @param int     $itemsPerPage Number of items per page
+     * @param list<T> $items
      */
     public function __construct(
         private readonly array $items,
@@ -52,7 +49,7 @@ final class TransformedPaginator implements IteratorAggregate, PaginatorInterfac
             return 1.;
         }
 
-        return ceil($this->totalItems / $this->itemsPerPage) ?: 1.;
+        return max(ceil($this->totalItems / $this->itemsPerPage), 1.);
     }
 
     public function getTotalItems(): float

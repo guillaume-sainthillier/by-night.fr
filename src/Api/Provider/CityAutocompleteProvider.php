@@ -12,10 +12,9 @@ namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\Pagination;
-use ApiPlatform\State\Pagination\PaginatorInterface;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\CityAutocomplete;
-use App\Api\Pagination\TransformedPaginator;
+use App\Api\Pagination\PagerfantaPaginator;
 use App\Entity\City;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -32,22 +31,17 @@ final readonly class CityAutocompleteProvider implements ProviderInterface
     }
 
     /**
-     * @return PaginatorInterface<CityAutocomplete>
+     * @return iterable<CityAutocomplete>
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): PaginatorInterface
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable
     {
-        $limit = $this->pagination->getLimit($operation, $context);
-        $page = $this->pagination->getPage($context);
-
         $term = trim((string) ($context['filters']['q'] ?? ''));
         if ('' === $term) {
-            return new TransformedPaginator(
-                items: [],
-                totalItems: 0,
-                currentPage: $page,
-                itemsPerPage: $limit,
-            );
+            return [];
         }
+
+        $limit = $this->pagination->getLimit($operation, $context);
+        $page = $this->pagination->getPage($context);
 
         /** @var CityElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(City::class);
@@ -56,20 +50,15 @@ final readonly class CityAutocompleteProvider implements ProviderInterface
         $results->setMaxPerPage($limit);
         $results->setCurrentPage($page);
 
-        $output = [];
-        /** @var City $city */
-        foreach ($results as $city) {
-            $output[] = new CityAutocomplete(
-                slug: $city->getSlug(),
-                name: $city->getFullName(),
-            );
-        }
+        /* @var PagerfantaPaginator<City, CityAutocomplete> */
+        return new PagerfantaPaginator($results, $this->transformCity(...));
+    }
 
-        return new TransformedPaginator(
-            items: $output,
-            totalItems: $results->getNbResults(),
-            currentPage: $page,
-            itemsPerPage: $limit,
+    private function transformCity(City $city): CityAutocomplete
+    {
+        return new CityAutocomplete(
+            slug: $city->getSlug(),
+            name: $city->getFullName(),
         );
     }
 }

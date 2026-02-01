@@ -11,6 +11,7 @@
 namespace App\Api\Pagination;
 
 use ApiPlatform\State\Pagination\PaginatorInterface;
+use Closure;
 use IteratorAggregate;
 use Pagerfanta\PagerfantaInterface;
 use Traversable;
@@ -18,17 +19,22 @@ use Traversable;
 /**
  * Paginator adapter that wraps a PagerfantaInterface to implement API Platform's PaginatorInterface.
  *
- * @template T of object
+ * Supports an optional transformation callback to map items to DTOs.
  *
- * @implements PaginatorInterface<T>
+ * @template TInput
+ * @template TOutput of object
+ *
+ * @implements PaginatorInterface<TOutput>
  */
 final class PagerfantaPaginator implements IteratorAggregate, PaginatorInterface
 {
     /**
-     * @param PagerfantaInterface<T> $pagerfanta
+     * @param PagerfantaInterface<TInput>     $pagerfanta
+     * @param (Closure(TInput): TOutput)|null $transformer Optional callback to transform each item
      */
     public function __construct(
         private readonly PagerfantaInterface $pagerfanta,
+        private readonly ?Closure $transformer = null,
     ) {
     }
 
@@ -58,10 +64,17 @@ final class PagerfantaPaginator implements IteratorAggregate, PaginatorInterface
     }
 
     /**
-     * @return Traversable<T>
+     * @return Traversable<TOutput>
      */
     public function getIterator(): Traversable
     {
-        return $this->pagerfanta->getIterator();
+        if (null === $this->transformer) {
+            /* @var Traversable<TOutput> */
+            return $this->pagerfanta->getIterator();
+        }
+
+        foreach ($this->pagerfanta as $item) {
+            yield ($this->transformer)($item);
+        }
     }
 }

@@ -12,10 +12,9 @@ namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\Pagination;
-use ApiPlatform\State\Pagination\PaginatorInterface;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\SearchResult;
-use App\Api\Pagination\TransformedPaginator;
+use App\Api\Pagination\ArrayPaginator;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\User;
@@ -40,25 +39,20 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @return PaginatorInterface<SearchResult>
+     * @return iterable<SearchResult>
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): PaginatorInterface
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable
     {
+        $query = trim($context['filters']['q'] ?? '');
+        if ('' === $query) {
+            return [];
+        }
+
         $limit = $this->pagination->getLimit($operation, $context);
         $page = $this->pagination->getPage($context);
 
         // Divide limit by 3 to get items per type (events, cities, users)
         $itemsPerType = max(1, (int) ceil($limit / 3));
-
-        $query = trim($context['filters']['q'] ?? '');
-        if ('' === $query) {
-            return new TransformedPaginator(
-                items: [],
-                totalItems: 0,
-                currentPage: $page,
-                itemsPerPage: $limit,
-            );
-        }
 
         // Get paginated hybrid results from each repository
         $eventsPaginator = $this->getEventsPaginator($query, $page, $itemsPerType);
@@ -77,7 +71,8 @@ final readonly class SearchProvider implements ProviderInterface
             + $citiesPaginator->getNbResults()
             + $usersPaginator->getNbResults();
 
-        return new TransformedPaginator(
+        /* @var ArrayPaginator<SearchResult> */
+        return new ArrayPaginator(
             items: $results,
             totalItems: $totalItems,
             currentPage: $page,
@@ -86,7 +81,7 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @return PagerfantaInterface<HybridResult>
+     * @return PagerfantaInterface<HybridResult<Event>>
      */
     private function getEventsPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
     {
@@ -100,7 +95,7 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @return PagerfantaInterface<HybridResult>
+     * @return PagerfantaInterface<HybridResult<City>>
      */
     private function getCitiesPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
     {
@@ -114,7 +109,7 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @return PagerfantaInterface<HybridResult>
+     * @return PagerfantaInterface<HybridResult<User>>
      */
     private function getUsersPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
     {
@@ -128,7 +123,7 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @param PagerfantaInterface<HybridResult> $paginator
+     * @param PagerfantaInterface<HybridResult<Event>> $paginator
      *
      * @return list<SearchResult>
      */
@@ -166,7 +161,7 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @param PagerfantaInterface<HybridResult> $paginator
+     * @param PagerfantaInterface<HybridResult<City>> $paginator
      *
      * @return list<SearchResult>
      */
@@ -201,7 +196,7 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
-     * @param PagerfantaInterface<HybridResult> $paginator
+     * @param PagerfantaInterface<HybridResult<User>> $paginator
      *
      * @return list<SearchResult>
      */
