@@ -73,7 +73,6 @@ final class ZipCityRepository extends ServiceEntityRepository
             $cities[] = str_replace("'", '', $city);
             $cities[] = str_replace('’', "'", $city);
             $cities[] = str_replace("'", '’', $city);
-            $cities = array_map(mb_strtolower(...), $cities);
             $cities = array_unique($cities);
 
             $query
