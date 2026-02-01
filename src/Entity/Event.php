@@ -13,6 +13,8 @@ namespace App\Entity;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
+use App\Parser\Common\BilletsReducAwinParser;
+use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
@@ -385,6 +387,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return \in_array($this->fromData, [
             FnacSpectaclesAwinParser::getParserName(),
             DigitickAwinParser::getParserName(),
+            BilletsReducAwinParser::getParserName(),
+            CDiscountAwinParser::getParserName(),
         ], true);
     }
 

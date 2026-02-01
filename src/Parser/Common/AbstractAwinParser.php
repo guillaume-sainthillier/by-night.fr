@@ -40,6 +40,20 @@ abstract class AbstractAwinParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
+
+        foreach ($this->parseCsvFile($path) as $data) {
+            $event = $this->arrayToDto($data);
+            if (null !== $event) {
+                $this->publish($event);
+            }
+        }
+    }
+
+    /**
+     * @return \Generator<array<string, string>>
+     */
+    private function parseCsvFile(string $path): \Generator
+    {
         $handle = gzopen($path, 'r');
 
         if (false === $handle) {
@@ -57,13 +71,7 @@ abstract class AbstractAwinParser extends AbstractParser
                     continue;
                 }
 
-                $data = array_combine($headers, $row);
-                $event = $this->arrayToDto($data);
-                if (null !== $event) {
-                    $this->publish($event);
-                }
-
-                unset($data, $event);
+                yield array_combine($headers, $row);
             }
         } finally {
             gzclose($handle);
