@@ -14,12 +14,11 @@ use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
-use ForceUTF8\Encoding;
+use Generator;
 use Psr\Log\LoggerInterface;
-use SimpleXMLElement;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
@@ -42,22 +41,41 @@ abstract class AbstractAwinParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
-        $xml = new XMLReader();
-        $xml->open('compress.zlib://' . $path);
 
-        do {
-            $xml->read();
-        } while ('product' !== $xml->name);
-
-        while ('product' === $xml->name) {
-            $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
-            $event = $this->arrayToDto($event);
+        foreach ($this->parseCsvFile($path) as $data) {
+            $event = $this->arrayToDto($data);
             if (null !== $event) {
                 $this->publish($event);
             }
+        }
+    }
 
-            $xml->next('product');
-            unset($event);
+    /**
+     * @return Generator<array<string, string>>
+     */
+    private function parseCsvFile(string $path): Generator
+    {
+        $handle = gzopen($path, 'r');
+
+        if (false === $handle) {
+            throw new RuntimeException(\sprintf('Unable to open gzipped file: %s', $path));
+        }
+
+        try {
+            $headers = fgetcsv($handle);
+            if (false === $headers) {
+                throw new RuntimeException('Unable to read CSV headers');
+            }
+
+            while (false !== ($row = fgetcsv($handle))) {
+                if (\count($row) !== \count($headers)) {
+                    continue;
+                }
+
+                yield array_combine($headers, $row);
+            }
+        } finally {
+            gzclose($handle);
         }
     }
 
@@ -70,21 +88,12 @@ abstract class AbstractAwinParser extends AbstractParser
         foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());
         }
+        fclose($fileHandler);
 
         return $filePath;
     }
 
     abstract protected function getAwinUrl(): string;
-
-    private function elementToArray(SimpleXMLElement $element): array
-    {
-        $array = [];
-        foreach ($element->children() as $node) {
-            $array[$node->getName()] = $node->count() > 0 ? $this->elementToArray($node) : Encoding::toUTF8(mb_convert_encoding($node, 'ISO-8859-1'));
-        }
-
-        return $array;
-    }
 
     abstract protected function arrayToDto(array $data): ?EventDto;
 }
