@@ -94,7 +94,7 @@ final class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
                     'class' => 'js-tags-input',
-                    'data-tags-url' => $this->urlGenerator->generate('api_event_tags', ['type' => 'categories']),
+                    'data-tags-url' => $this->urlGenerator->generate('api_tags'),
                     'data-tags-allow-new' => 'true',
                     'data-tags-max-items' => '1',
                 ],
@@ -105,7 +105,7 @@ final class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
                     'class' => 'js-tags-input',
-                    'data-tags-url' => $this->urlGenerator->generate('api_event_tags', ['type' => 'themes']),
+                    'data-tags-url' => $this->urlGenerator->generate('api_tags'),
                     'data-tags-allow-new' => 'true',
                 ],
             ])

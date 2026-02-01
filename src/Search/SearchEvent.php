@@ -26,7 +26,12 @@ final class SearchEvent
     #[Assert\GreaterThan(0)]
     private ?int $range = 25;
 
+    /**
+     * @deprecated Use tagId instead for new Tag entity filtering
+     */
     private ?string $tag = null;
+
+    private ?int $tagId = null;
 
     private array $type = [];
 
@@ -95,6 +100,18 @@ final class SearchEvent
     public function setTag(?string $tag): self
     {
         $this->tag = $tag;
+
+        return $this;
+    }
+
+    public function getTagId(): ?int
+    {
+        return $this->tagId;
+    }
+
+    public function setTagId(?int $tagId): self
+    {
+        $this->tagId = $tagId;
 
         return $this;
     }

@@ -35,9 +35,9 @@
     {% do menu.addItem('Agenda', url('app_agenda_index', {location: location.slug})) %}
 
     {% if placeName is not null %}
-        {% do menu.addItem(placeName|capitalize, url('app_agenda_by_place', {slug: placeSlug, location: location.slug})) %}
-    {% elseif tag is not null %}
-        {% do menu.addItem(tag|capitalize, url('app_agenda_by_tags', {tag: tag, location: location.slug})) %}
+        {% do menu.addItem(placeName|capitalize, url('app_agenda_by_place', {placeSlug: placeSlug, location: location.slug})) %}
+    {% elseif tagEntity is defined and tagEntity is not null %}
+        {% do menu.addItem(tag|capitalize, url('app_agenda_by_tag', {tagSlug: tagEntity.slug, tagId: tagEntity.id, location: location.slug})) %}
     {% elseif type is not null %}
         {% do menu.addItem(type|capitalize, url('app_agenda_by_type', {type: type, location: location.slug})) %}
     {% endif %}

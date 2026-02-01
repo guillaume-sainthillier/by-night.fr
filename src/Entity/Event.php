@@ -17,7 +17,6 @@ use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
-use App\Utils\TagUtils;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTime;
 use DateTimeImmutable;
@@ -31,6 +30,7 @@ use Stringable;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
@@ -110,13 +110,28 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Groups(['elasticsearch:event:details'])]
     private ?string $type = null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
-    #[Groups(['elasticsearch:event:details'])]
-    private ?string $category = null;
+    /** @deprecated Use $category (Tag) instead */
+    #[ORM\Column(name: 'category', type: Types::STRING, length: 128, nullable: true)]
+    #[Ignore]
+    private ?string $categoryLegacy = null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
+    /** @deprecated Use $themes instead */
+    #[ORM\Column(name: 'theme', type: Types::STRING, length: 128, nullable: true)]
+    #[Ignore]
+    private ?string $themeLegacy = null;
+
+    #[ORM\ManyToOne(targetEntity: Tag::class)]
+    #[ORM\JoinColumn(name: 'category_id', nullable: true, onDelete: 'SET NULL')]
     #[Groups(['elasticsearch:event:details'])]
-    private ?string $theme = null;
+    private ?Tag $category = null;
+
+    /**
+     * @var Collection<int, Tag>
+     */
+    #[ORM\ManyToMany(targetEntity: Tag::class)]
+    #[ORM\JoinTable(name: 'event_tag')]
+    #[Groups(['elasticsearch:event:details'])]
+    private Collection $themes;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $phoneContacts = null;
@@ -299,6 +314,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->userEvents = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->timesheets = new ArrayCollection();
+        $this->themes = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }
@@ -444,34 +460,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->place = $place;
 
         return $this;
-    }
-
-    /**
-     * @return string[]
-     *
-     * @psalm-return array<string, array{type: string, value: string}>
-     */
-    public function getDistinctTags(): array
-    {
-        $categoryTags = TagUtils::getTagTerms($this->category ?? '');
-        $tags = TagUtils::getTagTerms($this->category . ',' . $this->type . ',' . $this->theme);
-
-        $allTags = [];
-        foreach ($categoryTags as $categoryTag) {
-            $allTags[$categoryTag] = [
-                'type' => 'category',
-                'value' => $categoryTag,
-            ];
-        }
-
-        foreach ($tags as $tag) {
-            $allTags[$tag] ??= [
-                'type' => 'tag',
-                'value' => $tag,
-            ];
-        }
-
-        return $allTags;
     }
 
     public function getPlaceCountryName(): ?string
@@ -638,26 +626,73 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getCategory(): ?string
+    /** @deprecated Use getCategory() instead */
+    public function getCategoryLegacy(): ?string
+    {
+        return $this->categoryLegacy;
+    }
+
+    /** @deprecated Use setCategory() instead */
+    public function setCategoryLegacy(?string $category): self
+    {
+        $this->categoryLegacy = $category;
+
+        return $this;
+    }
+
+    /** @deprecated Use getThemes() instead */
+    public function getThemeLegacy(): ?string
+    {
+        return $this->themeLegacy;
+    }
+
+    /** @deprecated Use setThemes() instead */
+    public function setThemeLegacy(?string $theme): self
+    {
+        $this->themeLegacy = $theme;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Tag
     {
         return $this->category;
     }
 
-    public function setCategory(?string $category): self
+    public function setCategory(?Tag $category): self
     {
         $this->category = $category;
 
         return $this;
     }
 
-    public function getTheme(): ?string
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getThemes(): Collection
     {
-        return $this->theme;
+        return $this->themes;
     }
 
-    public function setTheme(?string $theme): self
+    public function addTheme(Tag $tag): self
     {
-        $this->theme = $theme;
+        if (!$this->themes->contains($tag)) {
+            $this->themes->add($tag);
+        }
+
+        return $this;
+    }
+
+    public function removeTheme(Tag $tag): self
+    {
+        $this->themes->removeElement($tag);
+
+        return $this;
+    }
+
+    public function clearThemes(): self
+    {
+        $this->themes->clear();
 
         return $this;
     }
