@@ -66,18 +66,17 @@ final class ZipCityRepository extends ServiceEntityRepository
         if ($city) {
             $cities = [];
             $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-            $city = str_replace('’', "'", (string) $city);
+            $city = str_replace(''', "'", (string) $city);
             $cities[] = $city;
             $cities[] = str_replace(' ', '-', $city);
             $cities[] = str_replace('-', ' ', $city);
             $cities[] = str_replace("'", '', $city);
-            $cities[] = str_replace('’', "'", $city);
-            $cities[] = str_replace("'", '’', $city);
-            $cities = array_map(mb_strtolower(...), $cities);
+            $cities[] = str_replace(''', "'", $city);
+            $cities[] = str_replace("'", ''', $city);
             $cities = array_unique($cities);
 
             $query
-                ->andWhere('LOWER(zc.name) IN(:cities)')
+                ->andWhere('zc.name IN(:cities)')
                 ->setParameter('cities', $cities);
         }
 
