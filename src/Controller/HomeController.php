@@ -13,7 +13,7 @@ namespace App\Controller;
 use App\App\CityManager;
 use App\Form\Type\CityAutocompleteType;
 use App\Repository\EventRepository;
-use DateTime;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -24,7 +24,7 @@ final class HomeController extends AbstractController
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
     {
         $datas = [
-            'from' => new DateTime(),
+            'from' => new DateTimeImmutable(),
         ];
         if (null !== ($city = $cityManager->getCity())) {
             $datas += [

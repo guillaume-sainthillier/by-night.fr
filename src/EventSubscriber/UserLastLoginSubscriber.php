@@ -11,7 +11,7 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
@@ -40,7 +40,7 @@ final readonly class UserLastLoginSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $user->setLastLogin(new DateTime());
+        $user->setLastLogin(new DateTimeImmutable());
         $this->entityManager->flush();
     }
 }

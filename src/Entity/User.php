@@ -15,7 +15,6 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Repository\UserRepository;
 use App\Utils\UnitOfWorkOptimizer;
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -65,11 +64,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $enabled = true;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $lastLogin;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $lastLogin;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $passwordRequestedAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $passwordRequestedAt = null;
 
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
@@ -147,7 +146,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function __construct()
     {
-        $this->lastLogin = new DateTime();
+        $this->lastLogin = new DateTimeImmutable();
         $this->userEvents = new ArrayCollection();
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
@@ -575,24 +574,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getLastLogin(): ?DateTime
+    public function getLastLogin(): ?DateTimeImmutable
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(?DateTime $lastLogin): self
+    public function setLastLogin(?DateTimeImmutable $lastLogin): self
     {
         $this->lastLogin = UnitOfWorkOptimizer::getDateTimeValue($this->lastLogin, $lastLogin);
 
         return $this;
     }
 
-    public function getPasswordRequestedAt(): ?DateTime
+    public function getPasswordRequestedAt(): ?DateTimeImmutable
     {
         return $this->passwordRequestedAt;
     }
 
-    public function setPasswordRequestedAt(?DateTime $passwordRequestedAt): self
+    public function setPasswordRequestedAt(?DateTimeImmutable $passwordRequestedAt): self
     {
         $this->passwordRequestedAt = UnitOfWorkOptimizer::getDateTimeValue($this->passwordRequestedAt, $passwordRequestedAt);
 

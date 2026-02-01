@@ -13,7 +13,7 @@ namespace App\Entity;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Repository\PlaceMetadataRepository;
 use App\Utils\UnitOfWorkOptimizer;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
@@ -34,8 +34,8 @@ class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
     #[ORM\Column(type: Types::STRING, length: 63)]
     private ?string $externalOrigin = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $externalUpdatedAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $externalUpdatedAt = null;
 
     public function __toString(): string
     {
@@ -69,12 +69,12 @@ class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
         return $this;
     }
 
-    public function getExternalUpdatedAt(): ?DateTime
+    public function getExternalUpdatedAt(): ?DateTimeImmutable
     {
         return $this->externalUpdatedAt;
     }
 
-    public function setExternalUpdatedAt(?DateTime $externalUpdatedAt): self
+    public function setExternalUpdatedAt(?DateTimeImmutable $externalUpdatedAt): self
     {
         $this->externalUpdatedAt = UnitOfWorkOptimizer::getDateTimeValue($this->externalUpdatedAt, $externalUpdatedAt);
 

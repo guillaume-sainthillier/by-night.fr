@@ -11,7 +11,7 @@
 namespace App\Factory;
 
 use App\Entity\Event;
-use DateTime;
+use DateTimeImmutable;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -39,8 +39,8 @@ final class EventFactory extends PersistentProxyObjectFactory
             'user' => UserFactory::new(),
             'latitude' => self::faker()->latitude(),
             'longitude' => self::faker()->longitude(),
-            'category' => self::faker()->randomElement(['Concert', 'Théâtre', 'Exposition', 'Festival', 'Sport']),
-            'theme' => self::faker()->randomElement(['Rock', 'Jazz', 'Classique', 'Pop', 'Electro']),
+            'category' => TagFactory::new(),
+            'themes' => TagFactory::new()->range(1, 3),
             'type' => self::faker()->randomElement(['Concert', 'Spectacle', 'Festival']),
         ];
     }
@@ -67,7 +67,7 @@ final class EventFactory extends PersistentProxyObjectFactory
         ]);
     }
 
-    public function withDates(DateTime $startDate, ?DateTime $endDate = null): self
+    public function withDates(DateTimeImmutable $startDate, ?DateTimeImmutable $endDate = null): self
     {
         return $this->with([
             'startDate' => $startDate,

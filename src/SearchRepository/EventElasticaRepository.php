@@ -15,6 +15,7 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\GeoDistance;
 use Elastica\Query\MultiMatch;
+use Elastica\Query\Nested;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
@@ -60,7 +61,7 @@ final class EventElasticaRepository extends Repository
 
         if (null !== $search->getFrom()) {
             if (null === $search->getTo()) {
-                $mainQuery->addFilter(new Range('end_date', [
+                $mainQuery->addFilter(new Range('endDate', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));
             } else {
@@ -76,33 +77,33 @@ final class EventElasticaRepository extends Repository
                 // Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery();
                 $cas1
-                    ->addMust(new Range('start_date', [
+                    ->addMust(new Range('startDate', [
                         'lte' => $search->getFrom()->format('Y-m-d'),
                     ])
                     )
-                    ->addMust(new Range('end_date', [
+                    ->addMust(new Range('endDate', [
                         'gte' => $search->getTo()->format('Y-m-d'),
                     ]));
 
                 // Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
                 $cas2 = new BoolQuery();
                 $cas2
-                    ->addMust(new Range('start_date', [
+                    ->addMust(new Range('startDate', [
                         'gte' => $search->getFrom()->format('Y-m-d'),
                     ])
                     )
-                    ->addMust(new Range('end_date', [
+                    ->addMust(new Range('endDate', [
                         'lte' => $search->getTo()->format('Y-m-d'),
                     ]));
 
                 // Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new Range('start_date', [
+                $cas3 = new Range('startDate', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
 
                 // Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new Range('end_date', [
+                $cas4 = new Range('endDate', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
@@ -112,6 +113,7 @@ final class EventElasticaRepository extends Repository
                     ->addShould($cas2)
                     ->addShould($cas3)
                     ->addShould($cas4)
+                    ->setMinimumShouldMatch(1)
                 ;
 
                 $mainQuery->addFilter($filterDate);
@@ -126,18 +128,20 @@ final class EventElasticaRepository extends Repository
                 ->setFields([
                     'name^5',
                     'name.heavy^5',
-                    'place_name^3',
+                    'placeName^3',
                     'place.name^3',
-                    'place_city^2',
-                    'place.city_name^2',
-                    'place.city_postal_code^3',
-                    'place_postal_code',
-                    'place_street',
+                    'placeCity^2',
+                    'place.cityName^2',
+                    'place.cityPostalCode^3',
+                    'placePostalCode',
+                    'placeStreet',
                     'place.street',
                     'description',
                     'description.heavy',
                     'theme',
                     'type',
+                    'category.name',
+                    'themes.name',
                 ])
                 ->setFuzziness('auto')
                 ->setOperator('AND')
@@ -146,7 +150,20 @@ final class EventElasticaRepository extends Repository
             $mainQuery->addMust($query);
         }
 
-        if ($search->getTag()) {
+        // Filter by tag ID (new Tag entity)
+        if (null !== $search->getTagId()) {
+            $tagFilter = new BoolQuery();
+            $tagFilter->setMinimumShouldMatch(1);
+            // Match category.id
+            $tagFilter->addShould(new Term(['category.id' => $search->getTagId()]));
+            // Match themes.id (nested)
+            $nestedQuery = new Nested();
+            $nestedQuery->setPath('themes');
+            $nestedQuery->setQuery(new Term(['themes.id' => $search->getTagId()]));
+            $tagFilter->addShould($nestedQuery);
+            $mainQuery->addFilter($tagFilter);
+        } elseif ($search->getTag()) {
+            // Legacy: filter by tag string (deprecated)
             $query = new MultiMatch();
             $query
                 ->setQuery($search->getTag())
@@ -166,7 +183,7 @@ final class EventElasticaRepository extends Repository
         $finalQuery = Query::create($mainQuery);
         $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
         if (!$sortByScore) {
-            $finalQuery->addSort(['end_date' => 'asc']);
+            $finalQuery->addSort(['endDate' => 'asc']);
 
             if ($location) {
                 $finalQuery->addSort(['_geo_distance' => [
@@ -190,10 +207,10 @@ final class EventElasticaRepository extends Repository
             ->setFields([
                 'name^5',
                 'name.heavy^5',
-                'place_name^3',
+                'placeName^3',
                 'place.name^3',
-                'place_city^2',
-                'place.city_name^2',
+                'placeCity^2',
+                'place.cityName^2',
                 'description',
             ])
             ->setFuzziness('auto')

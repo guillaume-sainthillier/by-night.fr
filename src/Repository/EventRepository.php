@@ -14,9 +14,10 @@ use App\App\Location;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\EventDto;
 use App\Entity\Event;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\UserEvent;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
@@ -82,8 +83,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
     {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
+        $from = new DateTimeImmutable();
+        $from = $from->modify(Event::INDEX_FROM);
 
         $qb = $this->createElasticaQueryBuilder('e');
 
@@ -136,8 +137,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function updateNonIndexables(): void
     {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
+        $from = new DateTimeImmutable();
+        $from = $from->modify(Event::INDEX_FROM);
 
         $this
             ->getEntityManager()
@@ -151,9 +152,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findNonIndexablesBuilder(): QueryBuilder
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
-        $from->modify(Event::INDEX_FROM);
+        $from = $from->modify(Event::INDEX_FROM);
 
         return $this
             ->createElasticaQueryBuilder('e')
@@ -174,7 +175,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function getCountryEvents(): array
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
         return $this->getEntityManager()
             ->createQueryBuilder()
@@ -332,7 +333,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findAllNextQueryBuilder(Event $event): QueryBuilder
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
         return $this
             ->createQueryBuilder('e')
@@ -345,8 +346,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findTopEventsQueryBuilder(Location $location): QueryBuilder
     {
-        $du = new DateTime();
-        $au = new DateTime('sunday this week');
+        $du = new DateTimeImmutable();
+        $au = new DateTimeImmutable('sunday this week');
 
         $qb = $this
             ->createQueryBuilder('e')
@@ -371,7 +372,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findUpcomingEventsQueryBuilder(Location $location): QueryBuilder
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
         $qb = $this
             ->createQueryBuilder('e')
@@ -399,19 +400,19 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * @return string[]
+     * @return Tag[]
      */
     public function getEventTypes(Location $location): array
     {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
+        $from = new DateTimeImmutable();
+        $from = $from->modify(Event::INDEX_FROM);
 
         $qb = $this->getEntityManager()
             ->createQueryBuilder()
-            ->select('e.category')
-            ->from($this->getEntityName(), 'e')
+            ->select('c')
+            ->from(Tag::class, 'c')
+            ->join(Event::class, 'e', 'WITH', 'e.category = c.id')
             ->join('e.place', 'p')
-            ->where('e.category IS NOT NULL')
             ->andWhere('e.endDate >= :from');
 
         if ($location->isCity()) {
@@ -423,73 +424,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
                 ->setParameter('country', $location->getCountry()->getId());
         }
 
-        $results = $qb
+        return $qb
             ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy('e.category')
+            ->groupBy('c')
             ->getQuery()
-            ->getArrayResult();
-
-        return array_map(current(...), $results);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getDistinctCategories(?string $search = null, int $limit = 20, int $offset = 0): array
-    {
-        return $this->getDistinctFieldValues('category', $search, $limit, $offset);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getDistinctThemes(?string $search = null, int $limit = 20, int $offset = 0): array
-    {
-        return $this->getDistinctFieldValues('theme', $search, $limit, $offset);
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getDistinctFieldValues(string $field, ?string $search = null, int $limit = 20, int $offset = 0): array
-    {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
-
-        $qb = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select(\sprintf('e.%s', $field))
-            ->from($this->getEntityName(), 'e')
-            ->where(\sprintf('e.%s IS NOT NULL', $field))
-            ->andWhere(\sprintf("e.%s != ''", $field))
-            ->andWhere('e.endDate >= :from')
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy(\sprintf('e.%s', $field))
-            ->orderBy(\sprintf('e.%s', $field), 'ASC')
-            ->setMaxResults($limit * 5); // Fetch more since we'll split by comma
-
-        if (null !== $search && '' !== trim($search)) {
-            $qb->andWhere(\sprintf('e.%s LIKE :search', $field))
-                ->setParameter('search', '%' . $search . '%');
-        }
-
-        $results = $qb->getQuery()->getArrayResult();
-
-        // Extract individual tags from comma-separated values
-        $tags = [];
-        foreach ($results as $result) {
-            $value = $result[$field];
-            $parts = array_map('trim', preg_split('#[,/]#', $value));
-            foreach ($parts as $part) {
-                if ('' !== $part && (null === $search || '' === $search || false !== stripos($part, $search))) {
-                    $tags[$part] = true;
-                }
-            }
-        }
-
-        $tags = array_keys($tags);
-        sort($tags, \SORT_STRING | \SORT_FLAG_CASE);
-
-        return \array_slice($tags, $offset, $limit);
+            ->execute();
     }
 }

@@ -13,6 +13,7 @@ namespace App\Parser\Common;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
@@ -68,18 +69,16 @@ final class SowProgParser extends AbstractParser
         $events = $response->toArray();
 
         foreach ($events['eventDescription'] as $eventAsArray) {
-            foreach ($eventAsArray['eventSchedule']['eventScheduleDate'] as $scheduledEventAsArray) {
-                $event = $this->arrayToDto($eventAsArray, $scheduledEventAsArray);
-                if (null === $event) {
-                    continue;
-                }
-
-                $this->publish($event);
+            $event = $this->arrayToDto($eventAsArray);
+            if (null === $event) {
+                continue;
             }
+
+            $this->publish($event);
         }
     }
 
-    private function arrayToDto(array $data, array $scheduleData): ?EventDto
+    private function arrayToDto(array $data): ?EventDto
     {
         if (!isset($data['location'])) {
             return null;
@@ -93,23 +92,52 @@ final class SowProgParser extends AbstractParser
             return null;
         }
 
+        $scheduleDates = $data['eventSchedule']['eventScheduleDate'] ?? [];
+        if (empty($scheduleDates)) {
+            return null;
+        }
+
         $locationData = $data['location'];
         $eventData = $data['event'];
         $contactData = $locationData['contact'];
 
-        $hours = null;
-        if ($scheduleData['startHour'] && $scheduleData['startHour'] !== $scheduleData['endHour']) {
-            $hours = \sprintf(
-                'De %s à %s',
-                str_replace(':', 'h', (string) $scheduleData['startHour']),
-                str_replace(':', 'h', (string) $scheduleData['endHour'])
-            );
-        } elseif ($scheduleData['startHour']) {
-            $hours = \sprintf(
-                'À %s',
-                str_replace(':', 'h', (string) $scheduleData['startHour'])
-            );
+        // Build timesheets from all schedule dates
+        $timesheets = [];
+        $allHours = [];
+
+        foreach ($scheduleDates as $scheduleData) {
+            $timesheetDto = new EventTimesheetDto();
+            $timesheetDto->startAt = new DateTimeImmutable($scheduleData['date']);
+            $timesheetDto->endAt = new DateTimeImmutable($scheduleData['endDate']);
+
+            // Generate hours string for this timing
+            if ($scheduleData['startHour'] && $scheduleData['startHour'] !== $scheduleData['endHour']) {
+                $timesheetDto->hours = \sprintf(
+                    'De %s à %s',
+                    str_replace(':', 'h', (string) $scheduleData['startHour']),
+                    str_replace(':', 'h', (string) $scheduleData['endHour'])
+                );
+            } elseif ($scheduleData['startHour']) {
+                $timesheetDto->hours = \sprintf(
+                    'À %s',
+                    str_replace(':', 'h', (string) $scheduleData['startHour'])
+                );
+            }
+
+            $timesheets[] = $timesheetDto;
+            if ($timesheetDto->hours) {
+                $allHours[$timesheetDto->hours] = true;
+            }
         }
+
+        // Compute aggregate start/end dates from first and last schedules
+        $firstSchedule = reset($scheduleDates);
+        $lastSchedule = end($scheduleDates);
+        $startDate = new DateTimeImmutable($firstSchedule['date']);
+        $endDate = new DateTimeImmutable($lastSchedule['endDate']);
+
+        // Use first unique hour for aggregate display
+        $hours = \count($allHours) > 1 ? null : array_key_first($allHours);
 
         $description = null;
         foreach ($data['artist'] as $artist) {
@@ -123,6 +151,7 @@ final class SowProgParser extends AbstractParser
         $prices = null;
         if (!empty($data['eventPrice'])) {
             $prices = array_map(static fn (array $price) => \sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
+            $prices = array_unique($prices);
             $prices = implode(' - ', $prices);
         }
 
@@ -137,7 +166,7 @@ final class SowProgParser extends AbstractParser
         $event->name = $eventData['title'];
         $event->description = $eventData['description'];
         $event->source = 'https://www.sowprog.com/';
-        $event->externalId = \sprintf('%s-%s', $data['id'], $scheduleData['id']);
+        $event->externalId = (string) $data['id'];
         $event->imageUrl = $eventData['picture'] ?? $eventData['thumbnail'] ?? null;
         if ($event->imageUrl) {
             $event->imageUrl = str_replace('http://pro.sowprog.com/', 'https://pro.sowprog.com/', $event->imageUrl);
@@ -146,9 +175,10 @@ final class SowProgParser extends AbstractParser
         $event->externalUpdatedAt = new DateTimeImmutable()->setTimestamp((int) round($data['modificationDate'] / 1_000));
         $event->type = $eventData['eventType']['label'];
         $event->category = $eventData['eventStyle']['label'];
-        $event->startDate = new DateTimeImmutable($scheduleData['date']);
-        $event->endDate = new DateTimeImmutable($scheduleData['endDate']);
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
         $event->hours = $hours;
+        $event->timesheets = $timesheets;
         $event->websiteContacts = $websiteContacts;
         $event->prices = $prices;
         $event->latitude = (float) $contactData['lattitude'];
@@ -191,6 +221,6 @@ final class SowProgParser extends AbstractParser
     #[Override]
     public static function getParserVersion(): string
     {
-        return '1.2';
+        return '2.0';
     }
 }

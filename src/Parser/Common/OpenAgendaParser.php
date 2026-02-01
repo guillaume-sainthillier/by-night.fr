@@ -255,6 +255,8 @@ final class OpenAgendaParser extends AbstractParser
             $emails[] = $location['email'];
         }
 
+        $category = $data['type-de-lieu-organisateur']['label'] ?? null;
+
         $event = new EventDto();
         $event->fromData = self::getParserName();
         $event->name = $data['title'];
@@ -271,6 +273,7 @@ final class OpenAgendaParser extends AbstractParser
         $event->endDate = $endDate;
         $event->hours = $hours;
         $event->timesheets = $timesheets;
+        $event->category = $category;
         $event->prices = $data['conditions'] ?? null;
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];
