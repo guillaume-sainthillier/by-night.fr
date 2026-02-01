@@ -13,7 +13,7 @@ namespace App\Handler;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Exception\UnsupportedFileException;
-use App\Manager\TemporyFilesManager;
+use App\Manager\TemporaryFilesManager;
 use App\Utils\Cleaner;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -31,7 +31,7 @@ final readonly class EventHandler
         private Cleaner $cleaner,
         private LoggerInterface $logger,
         private HttpClientInterface $client,
-        private TemporyFilesManager $temporyFilesManager,
+        private TemporaryFilesManager $temporaryFilesManager,
         private UploadHandler $uploadHandler,
     ) {
     }
@@ -93,7 +93,7 @@ final readonly class EventHandler
                             $response->cancel();
                         } else {
                             // Create temporary file for streaming
-                            $tempFilePaths[$imageUrl] = $this->temporyFilesManager->create();
+                            $tempFilePaths[$imageUrl] = $this->temporaryFilesManager->create();
                         }
                     } elseif (isset($tempFilePaths[$imageUrl])) {
                         // Write chunk to temporary file
@@ -179,7 +179,7 @@ final readonly class EventHandler
 
     public function reset(): void
     {
-        $this->temporyFilesManager->reset();
+        $this->temporaryFilesManager->reset();
     }
 
     /**
