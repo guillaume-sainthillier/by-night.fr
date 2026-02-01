@@ -20,6 +20,9 @@ use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\City;
 
+/**
+ * @implements DtoEntityIdentifierResolvableInterface<City>
+ */
 final class CityDto implements DependencyRequirableInterface, DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?int $entityId = null;
@@ -78,7 +81,6 @@ final class CityDto implements DependencyRequirableInterface, DependencyObjectIn
 
     public function setIdentifierFromEntity(object $entity): void
     {
-        \assert($entity instanceof City);
         $this->entityId = $entity->getId();
     }
 

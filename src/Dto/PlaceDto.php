@@ -23,6 +23,9 @@ use App\Entity\Place;
 use App\Reject\Reject;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @implements DtoEntityIdentifierResolvableInterface<Place>
+ */
 final class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalIdentifiableTrait;
@@ -122,7 +125,6 @@ final class PlaceDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public function setIdentifierFromEntity(object $entity): void
     {
-        \assert($entity instanceof Place);
         $this->entityId = $entity->getId();
     }
 

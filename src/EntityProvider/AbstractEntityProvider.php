@@ -19,10 +19,16 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Utils\ChunkUtils;
 
+/**
+ * @template TDto of object
+ * @template TEntity of object
+ *
+ * @implements EntityProviderInterface<TDto, TEntity>
+ */
 abstract class AbstractEntityProvider implements EntityProviderInterface
 {
-    /** @var object[] */
-    protected $entities = [];
+    /** @var array<string, TEntity> */
+    protected array $entities = [];
 
     /**
      * {@inheritDoc}
@@ -84,7 +90,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     abstract protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface;
 
     /**
-     * @return object[]
+     * @return TEntity[]
      */
     public function getEntities(): array
     {

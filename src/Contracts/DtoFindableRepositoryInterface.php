@@ -10,14 +10,18 @@
 
 namespace App\Contracts;
 
+/**
+ * @template TDto of object
+ * @template TEntity of object
+ */
 interface DtoFindableRepositoryInterface
 {
     /**
-     * Returns entities by.
+     * Find all entities matching the given DTOs.
      *
-     * @param object[] $dtos
+     * @param TDto[] $dtos
      *
-     * @return object[]
+     * @return TEntity[]
      */
     public function findAllByDtos(array $dtos): array;
 }

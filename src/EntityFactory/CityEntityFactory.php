@@ -12,21 +12,19 @@ namespace App\EntityFactory;
 
 use App\Contracts\EntityFactoryInterface;
 use App\Dto\CityDto;
+use App\Entity\City;
 use LogicException;
 
+/**
+ * @implements EntityFactoryInterface<CityDto, City>
+ */
 final class CityEntityFactory implements EntityFactoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function supports(string $dtoClassName): bool
     {
         return CityDto::class === $dtoClassName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function create(?object $entity, object $dto): object
     {
         if (null === $entity) {

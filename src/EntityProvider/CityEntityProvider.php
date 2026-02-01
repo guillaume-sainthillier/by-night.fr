@@ -12,10 +12,14 @@ namespace App\EntityProvider;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CityDto;
+use App\Entity\City;
 use App\Handler\ComparatorHandler;
 use App\Repository\CityRepository;
 use Override;
 
+/**
+ * @extends AbstractEntityProvider<CityDto, City>
+ */
 final class CityEntityProvider extends AbstractEntityProvider
 {
     public function __construct(

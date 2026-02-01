@@ -12,10 +12,14 @@ namespace App\EntityProvider;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\PlaceDto;
+use App\Entity\Place;
 use App\Handler\ComparatorHandler;
 use App\Repository\PlaceRepository;
 use Override;
 
+/**
+ * @extends AbstractEntityProvider<PlaceDto, Place>
+ */
 final class PlaceEntityProvider extends AbstractEntityProvider
 {
     public function __construct(

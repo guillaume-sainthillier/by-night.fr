@@ -33,6 +33,9 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute\Uploadable;
 use Vich\UploaderBundle\Mapping\Attribute\UploadableField;
 
+/**
+ * @implements DtoEntityIdentifierResolvableInterface<Event>
+ */
 #[Uploadable]
 #[EventConstraint]
 final class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
@@ -193,7 +196,6 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public function setIdentifierFromEntity(object $entity): void
     {
-        \assert($entity instanceof Event);
         $this->entityId = $entity->getId();
     }
 

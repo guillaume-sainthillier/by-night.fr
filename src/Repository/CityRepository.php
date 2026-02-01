@@ -24,6 +24,8 @@ use Override;
 /**
  * @extends ServiceEntityRepository<City>
  *
+ * @implements DtoFindableRepositoryInterface<CityDto, City>
+ *
  * @method City|null find($id, $lockMode = null, $lockVersion = null)
  * @method City|null findOneBy(array $criteria, array $orderBy = null)
  * @method City[]    findAll()
@@ -65,8 +67,6 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         $postalCodesWheres = [];
 
         foreach ($dtos as $dto) {
-            \assert($dto instanceof CityDto);
-
             if (
                 (null === $dto->name && null === $dto->postalCode)
                 || null === $dto->country?->entityId) {

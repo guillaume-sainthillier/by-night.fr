@@ -22,6 +22,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Country>
  *
+ * @implements DtoFindableRepositoryInterface<CountryDto, Country>
+ *
  * @method Country|null find($id, $lockMode = null, $lockVersion = null)
  * @method Country|null findOneBy(array $criteria, array $orderBy = null)
  * @method Country[]    findAll()
@@ -87,8 +89,6 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
         $namesWheres = [];
 
         foreach ($dtos as $dto) {
-            \assert($dto instanceof CountryDto);
-
             if (null !== $dto->code) {
                 $idsWheres[$dto->code] = true;
             } elseif (null !== $dto->name) {

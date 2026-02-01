@@ -10,8 +10,14 @@
 
 namespace App\Contracts;
 
+/**
+ * @template TEntity of object
+ */
 interface MatchingInterface
 {
+    /**
+     * @return TEntity|null
+     */
     public function getEntity(): ?object;
 
     public function getConfidence(): float;

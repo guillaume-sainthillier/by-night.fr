@@ -16,6 +16,9 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\Country;
 
+/**
+ * @implements DtoEntityIdentifierResolvableInterface<Country>
+ */
 final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?string $entityId = null;
@@ -48,7 +51,6 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
 
     public function setIdentifierFromEntity(object $entity): void
     {
-        \assert($entity instanceof Country);
         $this->entityId = $entity->getId();
     }
 

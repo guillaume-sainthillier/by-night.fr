@@ -21,6 +21,9 @@ use App\Handler\EntityProviderHandler;
 use App\Repository\TagRepository;
 use DateTimeImmutable;
 
+/**
+ * @implements EntityFactoryInterface<EventDto, Event>
+ */
 final readonly class EventEntityFactory implements EntityFactoryInterface
 {
     public function __construct(
@@ -30,22 +33,14 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
     ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function supports(string $dtoClassName): bool
     {
         return EventDto::class === $dtoClassName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function create(?object $entity, object $dto): object
     {
         $entity ??= new Event();
-        \assert($entity instanceof Event);
-        \assert($dto instanceof EventDto);
 
         $entity->setExternalId($dto->externalId);
         $entity->setExternalOrigin($dto->externalOrigin);

@@ -19,33 +19,27 @@ use App\Entity\PlaceMetadata;
 use App\Exception\UncreatableEntityException;
 use App\Handler\EntityProviderHandler;
 
+/**
+ * @implements EntityFactoryInterface<PlaceDto, Place>
+ */
 final readonly class PlaceEntityFactory implements EntityFactoryInterface
 {
     public function __construct(private EntityProviderHandler $entityProviderHandler)
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function supports(string $dtoClassName): bool
     {
         return PlaceDto::class === $dtoClassName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function create(?object $entity, object $dto): object
     {
-        $entity ??= new Place();
-        \assert($entity instanceof Place);
-        \assert($dto instanceof PlaceDto);
-
         if (null === $dto->name) {
             throw new UncreatableEntityException('Place has no name');
         }
 
+        $entity ??= new Place();
         $entity->setName($dto->name);
         $entity->setLatitude($dto->latitude ?? $entity->getLatitude());
         $entity->setLongitude($dto->longitude ?? $entity->getLongitude());

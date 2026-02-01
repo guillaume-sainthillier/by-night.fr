@@ -16,6 +16,9 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\User;
 
+/**
+ * @implements DtoEntityIdentifierResolvableInterface<User>
+ */
 final class UserDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?int $entityId = null;
@@ -38,7 +41,6 @@ final class UserDto implements DependencyObjectInterface, DtoEntityIdentifierRes
 
     public function setIdentifierFromEntity(object $entity): void
     {
-        \assert($entity instanceof User);
         $this->entityId = $entity->getId();
     }
 

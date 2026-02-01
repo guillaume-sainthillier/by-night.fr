@@ -13,6 +13,10 @@ namespace App\Contracts;
 use App\Exception\UncreatableEntityException;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * @template TDto of object
+ * @template TEntity of object
+ */
 #[AutoconfigureTag]
 interface EntityFactoryInterface extends SupportsClassInterface
 {
@@ -23,6 +27,11 @@ interface EntityFactoryInterface extends SupportsClassInterface
 
     /**
      * Create or update the entity from a DTO instance.
+     *
+     * @param TEntity|null $entity
+     * @param TDto         $dto
+     *
+     * @return TEntity
      *
      * @throws UncreatableEntityException if entity cannot be created
      */
