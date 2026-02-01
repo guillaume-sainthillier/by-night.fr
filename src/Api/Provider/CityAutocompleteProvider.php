@@ -11,8 +11,11 @@
 namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\State\Pagination\Pagination;
+use ApiPlatform\State\Pagination\PaginatorInterface;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\CityAutocomplete;
+use App\Api\Pagination\TransformedPaginator;
 use App\Entity\City;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -22,28 +25,36 @@ use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
  */
 final readonly class CityAutocompleteProvider implements ProviderInterface
 {
-    private const int MAX_RESULTS = 7;
-
     public function __construct(
         private RepositoryManagerInterface $repositoryManager,
+        private Pagination $pagination,
     ) {
     }
 
     /**
-     * @return list<CityAutocomplete>
+     * @return PaginatorInterface<CityAutocomplete>
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): PaginatorInterface
     {
-        $term = trim((string) ($operation->getParameters()?->get('q')?->getValue() ?? ''));
+        $limit = $this->pagination->getLimit($operation, $context);
+        $page = $this->pagination->getPage($context);
+
+        $term = trim((string) ($context['filters']['q'] ?? ''));
         if ('' === $term) {
-            return [];
+            return new TransformedPaginator(
+                items: [],
+                totalItems: 0,
+                currentPage: $page,
+                itemsPerPage: $limit,
+            );
         }
 
         /** @var CityElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(City::class);
         $results = $repo->findWithSearch($term);
-        $results->setMaxPerPage(self::MAX_RESULTS);
-        $results->setCurrentPage(1);
+
+        $results->setMaxPerPage($limit);
+        $results->setCurrentPage($page);
 
         $output = [];
         /** @var City $city */
@@ -54,6 +65,11 @@ final readonly class CityAutocompleteProvider implements ProviderInterface
             );
         }
 
-        return $output;
+        return new TransformedPaginator(
+            items: $output,
+            totalItems: $results->getNbResults(),
+            currentPage: $page,
+            itemsPerPage: $limit,
+        );
     }
 }

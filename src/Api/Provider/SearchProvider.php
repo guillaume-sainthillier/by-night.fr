@@ -11,15 +11,20 @@
 namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\State\Pagination\Pagination;
+use ApiPlatform\State\Pagination\PaginatorInterface;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\SearchResult;
+use App\Api\Pagination\TransformedPaginator;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\User;
 use App\SearchRepository\CityElasticaRepository;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
+use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use Pagerfanta\PagerfantaInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -27,42 +32,110 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final readonly class SearchProvider implements ProviderInterface
 {
-    private const int MAX_RESULTS_PER_TYPE = 5;
-
     public function __construct(
         private RepositoryManagerInterface $repositoryManager,
         private UrlGeneratorInterface $urlGenerator,
+        private Pagination $pagination,
     ) {
     }
 
     /**
-     * @return list<SearchResult>
+     * @return PaginatorInterface<SearchResult>
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): PaginatorInterface
     {
+        $limit = $this->pagination->getLimit($operation, $context);
+        $page = $this->pagination->getPage($context);
+
+        // Divide limit by 3 to get items per type (events, cities, users)
+        $itemsPerType = max(1, (int) ceil($limit / 3));
+
         $query = trim($context['filters']['q'] ?? '');
         if ('' === $query) {
-            return [];
+            return new TransformedPaginator(
+                items: [],
+                totalItems: 0,
+                currentPage: $page,
+                itemsPerPage: $limit,
+            );
         }
 
-        return [
-            ...$this->searchEvents($query),
-            ...$this->searchCities($query),
-            ...$this->searchUsers($query),
+        // Get paginated hybrid results from each repository
+        $eventsPaginator = $this->getEventsPaginator($query, $page, $itemsPerType);
+        $citiesPaginator = $this->getCitiesPaginator($query, $page, $itemsPerType);
+        $usersPaginator = $this->getUsersPaginator($query, $page, $itemsPerType);
+
+        // Transform and combine results
+        $results = [
+            ...$this->transformEventResults($eventsPaginator),
+            ...$this->transformCityResults($citiesPaginator),
+            ...$this->transformUserResults($usersPaginator),
         ];
+
+        // Calculate total items across all types
+        $totalItems = $eventsPaginator->getNbResults()
+            + $citiesPaginator->getNbResults()
+            + $usersPaginator->getNbResults();
+
+        return new TransformedPaginator(
+            items: $results,
+            totalItems: $totalItems,
+            currentPage: $page,
+            itemsPerPage: $limit,
+        );
     }
 
     /**
-     * @return list<SearchResult>
+     * @return PagerfantaInterface<HybridResult>
      */
-    private function searchEvents(string $query): array
+    private function getEventsPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
     {
         /** @var EventElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(Event::class);
-        $eventResults = $repo->findWithHighlights($query, self::MAX_RESULTS_PER_TYPE);
+        $paginator = $repo->findWithHighlightsPaginated($query);
+        $paginator->setMaxPerPage($itemsPerType);
+        $paginator->setCurrentPage($page);
 
+        return $paginator;
+    }
+
+    /**
+     * @return PagerfantaInterface<HybridResult>
+     */
+    private function getCitiesPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
+    {
+        /** @var CityElasticaRepository $repo */
+        $repo = $this->repositoryManager->getRepository(City::class);
+        $paginator = $repo->findWithHighlightsPaginated($query);
+        $paginator->setMaxPerPage($itemsPerType);
+        $paginator->setCurrentPage($page);
+
+        return $paginator;
+    }
+
+    /**
+     * @return PagerfantaInterface<HybridResult>
+     */
+    private function getUsersPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
+    {
+        /** @var UserElasticaRepository $repo */
+        $repo = $this->repositoryManager->getRepository(User::class);
+        $paginator = $repo->findWithHighlightsPaginated($query);
+        $paginator->setMaxPerPage($itemsPerType);
+        $paginator->setCurrentPage($page);
+
+        return $paginator;
+    }
+
+    /**
+     * @param PagerfantaInterface<HybridResult> $paginator
+     *
+     * @return list<SearchResult>
+     */
+    private function transformEventResults(PagerfantaInterface $paginator): array
+    {
         $results = [];
-        foreach ($eventResults as $result) {
+        foreach ($paginator as $result) {
             /** @var Event $event */
             $event = $result->getTransformed();
             $highlights = $result->getResult()->getHighlights();
@@ -93,16 +166,14 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
+     * @param PagerfantaInterface<HybridResult> $paginator
+     *
      * @return list<SearchResult>
      */
-    private function searchCities(string $query): array
+    private function transformCityResults(PagerfantaInterface $paginator): array
     {
-        /** @var CityElasticaRepository $repo */
-        $repo = $this->repositoryManager->getRepository(City::class);
-        $cityResults = $repo->findWithHighlights($query, self::MAX_RESULTS_PER_TYPE);
-
         $results = [];
-        foreach ($cityResults as $result) {
+        foreach ($paginator as $result) {
             /** @var City $city */
             $city = $result->getTransformed();
             $highlights = $result->getResult()->getHighlights();
@@ -130,16 +201,14 @@ final readonly class SearchProvider implements ProviderInterface
     }
 
     /**
+     * @param PagerfantaInterface<HybridResult> $paginator
+     *
      * @return list<SearchResult>
      */
-    private function searchUsers(string $query): array
+    private function transformUserResults(PagerfantaInterface $paginator): array
     {
-        /** @var UserElasticaRepository $repo */
-        $repo = $this->repositoryManager->getRepository(User::class);
-        $userResults = $repo->findWithHighlights($query, self::MAX_RESULTS_PER_TYPE);
-
         $results = [];
-        foreach ($userResults as $result) {
+        foreach ($paginator as $result) {
             /** @var User $user */
             $user = $result->getTransformed();
             $highlights = $result->getResult()->getHighlights();

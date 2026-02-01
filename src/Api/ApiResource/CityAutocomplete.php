@@ -23,13 +23,16 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(
             uriTemplate: '/cities',
             name: 'api_cities',
+            paginationEnabled: true,
+            paginationItemsPerPage: 7,
+            paginationClientItemsPerPage: true,
             cacheHeaders: [
                 'max_age' => 31536000,
                 'shared_max_age' => 31536000,
             ],
             openapi: new OpenApiOperation(
                 summary: 'Search for cities by name',
-                description: 'Returns a list of cities matching the search query for autocomplete purposes.',
+                description: 'Returns a paginated list of cities matching the search query for autocomplete purposes.',
             ),
             provider: CityAutocompleteProvider::class,
             parameters: [

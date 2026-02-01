@@ -22,9 +22,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/search',
+            paginationEnabled: true,
+            paginationItemsPerPage: 15,
+            paginationClientItemsPerPage: true,
             openapi: new OpenApiOperation(
                 summary: 'Global search across events, cities and users',
-                description: 'Returns a list of events, cities and users matching the search query.',
+                description: 'Returns a paginated list of events, cities and users matching the search query (5 items per type by default).',
             ),
             name: 'api_search',
             provider: SearchProvider::class,
