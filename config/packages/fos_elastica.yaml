@@ -89,33 +89,33 @@ fos_elastica:
                         heavy:
                             type: text
                             analyzer: french_html_heavy
-                start_date:
+                startDate:
                     type: date
                     format: yyyy-MM-dd
-                end_date:
+                endDate:
                     type: date
                     format: yyyy-MM-dd
                 timesheets:
                     type: nested
                     properties:
-                        start_at:
+                        startAt:
                             type: date
                             format: yyyy-MM-dd
-                        end_at:
+                        endAt:
                             type: date
                             format: yyyy-MM-dd
                 draft:
                     type: boolean
-                place_name:
+                placeName:
                     type: text
                     analyzer: french_natural
-                place_street:
+                placeStreet:
                     type: text
                     analyzer: french_natural
-                place_city:
+                placeCity:
                     type: text
                     analyzer: french_natural
-                place_postal_code:
+                placePostalCode:
                     type: text
                     analyzer: french_natural
                 theme:
@@ -149,10 +149,10 @@ fos_elastica:
                         street:
                             type: text
                             analyzer: french_natural
-                        city_name:
+                        cityName:
                             type: text
                             analyzer: french_natural
-                        city_postal_code:
+                        cityPostalCode:
                             type: text
                             analyzer: french_natural
                         city:
@@ -182,7 +182,7 @@ fos_elastica:
                 name:
                     type: text
                     analyzer: text_analyzer
-                postal_codes:
+                postalCodes:
                     type: text
                     analyzer: text_analyzer
                 population:

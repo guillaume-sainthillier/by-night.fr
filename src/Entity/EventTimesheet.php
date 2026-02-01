@@ -15,7 +15,9 @@ use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
+use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity]
 #[ORM\Index(name: 'event_timesheet_event_idx', columns: ['event_id'])]
@@ -32,10 +34,12 @@ class EventTimesheet implements Stringable
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Groups(['elasticsearch:event:details'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTime $startAt = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Groups(['elasticsearch:event:details'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTime $endAt = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]

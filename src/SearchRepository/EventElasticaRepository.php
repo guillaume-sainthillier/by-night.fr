@@ -61,7 +61,7 @@ final class EventElasticaRepository extends Repository
 
         if (null !== $search->getFrom()) {
             if (null === $search->getTo()) {
-                $mainQuery->addFilter(new Range('end_date', [
+                $mainQuery->addFilter(new Range('endDate', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));
             } else {
@@ -77,33 +77,33 @@ final class EventElasticaRepository extends Repository
                 // Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery();
                 $cas1
-                    ->addMust(new Range('start_date', [
+                    ->addMust(new Range('startDate', [
                         'lte' => $search->getFrom()->format('Y-m-d'),
                     ])
                     )
-                    ->addMust(new Range('end_date', [
+                    ->addMust(new Range('endDate', [
                         'gte' => $search->getTo()->format('Y-m-d'),
                     ]));
 
                 // Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
                 $cas2 = new BoolQuery();
                 $cas2
-                    ->addMust(new Range('start_date', [
+                    ->addMust(new Range('startDate', [
                         'gte' => $search->getFrom()->format('Y-m-d'),
                     ])
                     )
-                    ->addMust(new Range('end_date', [
+                    ->addMust(new Range('endDate', [
                         'lte' => $search->getTo()->format('Y-m-d'),
                     ]));
 
                 // Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new Range('start_date', [
+                $cas3 = new Range('startDate', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
 
                 // Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new Range('end_date', [
+                $cas4 = new Range('endDate', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
@@ -113,6 +113,7 @@ final class EventElasticaRepository extends Repository
                     ->addShould($cas2)
                     ->addShould($cas3)
                     ->addShould($cas4)
+                    ->setMinimumShouldMatch(1)
                 ;
 
                 $mainQuery->addFilter($filterDate);
@@ -127,13 +128,13 @@ final class EventElasticaRepository extends Repository
                 ->setFields([
                     'name^5',
                     'name.heavy^5',
-                    'place_name^3',
+                    'placeName^3',
                     'place.name^3',
-                    'place_city^2',
-                    'place.city_name^2',
-                    'place.city_postal_code^3',
-                    'place_postal_code',
-                    'place_street',
+                    'placeCity^2',
+                    'place.cityName^2',
+                    'place.cityPostalCode^3',
+                    'placePostalCode',
+                    'placeStreet',
                     'place.street',
                     'description',
                     'description.heavy',
@@ -182,7 +183,7 @@ final class EventElasticaRepository extends Repository
         $finalQuery = Query::create($mainQuery);
         $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
         if (!$sortByScore) {
-            $finalQuery->addSort(['end_date' => 'asc']);
+            $finalQuery->addSort(['endDate' => 'asc']);
 
             if ($location) {
                 $finalQuery->addSort(['_geo_distance' => [
@@ -206,10 +207,10 @@ final class EventElasticaRepository extends Repository
             ->setFields([
                 'name^5',
                 'name.heavy^5',
-                'place_name^3',
+                'placeName^3',
                 'place.name^3',
-                'place_city^2',
-                'place.city_name^2',
+                'placeCity^2',
+                'place.cityName^2',
                 'description',
             ])
             ->setFuzziness('auto')

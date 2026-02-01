@@ -23,7 +23,7 @@ final class CityElasticaRepository extends Repository
         $query = new MultiMatch();
         $query
             ->setFields([
-                'postal_codes^10',
+                'postalCodes^10',
                 'country.name^5',
                 'name^3',
                 'parent.name',
@@ -49,7 +49,7 @@ final class CityElasticaRepository extends Repository
         $multiMatch = new MultiMatch();
         $multiMatch
             ->setFields([
-                'postal_codes^10',
+                'postalCodes^10',
                 'country.name^5',
                 'name^3',
                 'parent.name',
