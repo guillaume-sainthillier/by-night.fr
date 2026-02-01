@@ -20,6 +20,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
@@ -83,7 +84,9 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?string $type = null;
 
-    public ?string $status = null;
+    public ?EventStatus $status = null;
+
+    public ?string $statusMessage = null;
 
     public ?string $category = null;
 

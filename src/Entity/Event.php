@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
+use App\Enum\EventStatus;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\DigitickAwinParser;
@@ -94,8 +95,11 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: true)]
-    private ?string $status = null;
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true, enumType: EventStatus::class)]
+    private ?EventStatus $status = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $statusMessage = null;
 
     #[ORM\Column(type: Types::FLOAT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
@@ -600,14 +604,26 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?EventStatus
     {
         return $this->status;
     }
 
-    public function setStatus(?string $status): self
+    public function setStatus(?EventStatus $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatusMessage(): ?string
+    {
+        return $this->statusMessage;
+    }
+
+    public function setStatusMessage(?string $statusMessage): self
+    {
+        $this->statusMessage = $statusMessage;
 
         return $this;
     }

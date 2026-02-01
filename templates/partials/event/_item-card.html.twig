@@ -1,8 +1,7 @@
 <div class="card card-event card-layout {{ cardLayout|default('') }} row g-0 scroll-item">
-    {% if event.status %}
-        <div class="col-12 alert alert-warning mb-0">
-            <twig:Icon name="lucide:triangle-alert" />
-            <span>{{ event.status }}</span>
+    {% if event.status or event.statusMessage %}
+        <div class="col-12">
+            <twig:EventStatusAlert event="{{ event }}" />
         </div>
     {% endif %}
     <div class="col-sm-3 col-lg-4 card-img-container">

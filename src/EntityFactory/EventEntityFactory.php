@@ -103,6 +103,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setHours($dto->hours);
         $entity->setPrices($dto->prices);
         $entity->setStatus($dto->status);
+        $entity->setStatusMessage($dto->statusMessage);
         $entity->setMailContacts($dto->emailContacts);
         $entity->setPhoneContacts($dto->phoneContacts);
         $entity->setWebsiteContacts($dto->websiteContacts);
