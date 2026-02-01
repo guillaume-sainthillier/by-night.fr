@@ -227,6 +227,8 @@ final class EventsMergeDuplicatesCommand extends Command
 
     private function mergeTimesheets(Event $canonical, Event $duplicate): void
     {
+        $canonical->batchUpdate = true;
+        $duplicate->batchUpdate = true;
         // Get existing timesheet start/end pairs for deduplication
         $existingPairs = [];
         foreach ($canonical->getTimesheets() as $existing) {
