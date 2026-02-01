@@ -13,6 +13,7 @@ namespace App\Parser\Common;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
@@ -73,7 +74,7 @@ final class DataTourismeParser extends AbstractParser
     #[Override]
     public static function getParserVersion(): string
     {
-        return '1.2';
+        return '2.0';
     }
 
     /**
@@ -149,8 +150,6 @@ final class DataTourismeParser extends AbstractParser
         $datas['hasBookingContact'] ??= [];
         $datas['hasContact'] ??= [];
 
-        $events = [];
-
         $typesManifestation = [];
         foreach ($datas['@type'] as $type) {
             $typesManifestation[] = $this->getFrenchType($type);
@@ -218,8 +217,53 @@ final class DataTourismeParser extends AbstractParser
 
         $url = $this->getDataValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][0][ebucore:locator][0]');
 
+        // Build timesheets from all schedule dates
+        $timesheets = [];
+        $allHours = [];
+
+        foreach ($datas['takesPlaceAt'] as $date) {
+            if (empty($date['endDate'])) {
+                continue;
+            }
+
+            $timesheetDto = new EventTimesheetDto();
+            $timesheetDto->startAt = new DateTimeImmutable($date['startDate']);
+            $timesheetDto->endAt = new DateTimeImmutable($date['endDate']);
+
+            $startTime = $date['startTime'] ?? null;
+            $endTime = $date['endTime'] ?? null;
+
+            if ($startTime && $endTime) {
+                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
+                $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $endTime);
+                $timesheetDto->hours = \sprintf('De %s à %s', $startTime, $endTime);
+            } elseif ($startTime) {
+                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
+                $timesheetDto->hours = \sprintf('À %s', $startTime);
+            }
+
+            $timesheets[] = $timesheetDto;
+            if ($timesheetDto->hours) {
+                $allHours[$timesheetDto->hours] = true;
+            }
+        }
+
+        if ([] === $timesheets) {
+            return [];
+        }
+
+        // Compute aggregate start/end dates from first and last timesheets
+        $firstTimesheet = reset($timesheets);
+        $lastTimesheet = end($timesheets);
+        $startDate = $firstTimesheet->startAt;
+        $endDate = $lastTimesheet->endAt;
+
+        // Use first unique hour for aggregate display
+        $hours = \count($allHours) > 1 ? null : array_key_first($allHours);
+
         $event = new EventDto();
         $event->fromData = self::getParserName();
+        $event->externalId = $datas['dc:identifier'];
         $event->externalUpdatedAt = $updatedAt;
         $event->name = $this->getDataValue($datas, '[rdfs:label][fr][0]');
         $event->description = $description;
@@ -232,6 +276,10 @@ final class DataTourismeParser extends AbstractParser
         $event->websiteContacts = $websites;
         $event->emailContacts = $emails;
         $event->phoneContacts = $phones;
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
+        $event->hours = $hours;
+        $event->timesheets = $timesheets;
 
         $place = new PlaceDto();
         $place->name = $this->getDataValue($datas, [
@@ -258,38 +306,7 @@ final class DataTourismeParser extends AbstractParser
         $city->country = $country;
         $place->country = $country;
 
-        // Multiple date handling
-        foreach ($datas['takesPlaceAt'] as $date) {
-            if (empty($date['endDate'])) {
-                continue;
-            }
-
-            $startDate = new DateTimeImmutable($date['startDate']);
-            $endDate = new DateTimeImmutable($date['endDate']);
-            $hours = null;
-
-            $startTime = $date['startTime'] ?? null;
-            $endTime = $date['endTime'] ?? null;
-
-            if ($startTime && $endTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $endTime);
-                $hours = \sprintf('De %s à %s', $startTime, $endTime);
-            } elseif ($startTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $hours = \sprintf('À %s', $startTime);
-            }
-
-            $currentEvent = clone $event;
-            $currentEvent->externalId = \sprintf('%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
-            $currentEvent->startDate = $startDate;
-            $currentEvent->endDate = $endDate;
-            $currentEvent->hours = $hours;
-
-            $events[] = $currentEvent;
-        }
-
-        return $events;
+        return [$event];
     }
 
     private function getFrenchType(string $type): ?string
