@@ -40,15 +40,18 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta property="og:url" content="{% block og_url url('app_index') %}">
     <meta property="og:locale" content="fr" />
     <meta property="og:image" content="{% block og_image asset('build/images/by-night.png') %}">
+    <meta property="og:image:width" content="{% block og_image_width '1200' %}">
+    <meta property="og:image:height" content="{% block og_image_height '630' %}">
+    <meta property="og:image:alt" content="{{ block('og_title') }}">
     <!-- ./OpenGraph -->
 
     <!-- Twitter -->
     {% if social_manager.twitterIdPage %}
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}" />
         <meta name="twitter:title" content="{{ block('og_title') }}" />
         <meta name="twitter:description" content="{{ block('og_description') }}" />
-        <meta name="twitter:image:src" content="{{ block('og_image') }}" />
+        <meta name="twitter:image" content="{{ block('og_image') }}" />
     {% endif %}
     {% block twitter '' %}
     <!-- ./Twitter -->
@@ -99,23 +102,12 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- End Google Tag Manager -->
     <script data-ad-client="ca-pub-2072406985754187" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
-    <script type="application/ld+json">
-        {
-            "@context": "http://schema.org",
-            "@type": "WebSite",
-            "url": "{{ url('app_index') }}",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "{{ url('app_search_index', {q: '{search_term_string}'})|url_decode }}",
-                "query-input": "required name=search_term_string"
-            }
-        }
-
-    </script>
+    {{ site_json_ld() }}
+    {% block json_ld '' %}
     {% block head_js_layout '' %}
     {% block head_js '' %}
 </head>
-<body itemscope itemtype="http://schema.org/WebPage" id="{% block page_id 'page' %}">
+<body id="{% block page_id 'page' %}">
 <div class="page">
     <!-- Menu -->
     {{ include('fragments/header.html.twig') }}
@@ -128,6 +120,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
                 {% block breadcrumb '' %}
                 {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
+                {{ breadcrumb_json_ld(menu) }}
             </div>
         </div>
     {% endblock %}

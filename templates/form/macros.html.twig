@@ -4,12 +4,12 @@
 
     {% if to == null or (to != null and startDate == endDate) %}
         Le
-        <time itemprop="startDate" datetime="{{ from|date('Y-m-d\TH:i:sO') }}">{{ from|format_date('full') }}</time>
+        <time datetime="{{ from|date('Y-m-d\TH:i:sO') }}">{{ from|format_date('full') }}</time>
     {% else %}
         Du
-        <time itemprop="startDate" datetime="{{ from|date('Y-m-d\TH:i:sO') }}">{{ from|format_date('full') }}</time>
+        <time datetime="{{ from|date('Y-m-d\TH:i:sO') }}">{{ from|format_date('full') }}</time>
         au
-        <time itemprop="endDate" datetime="{{ to|date('Y-m-d\TH:i:sO') }}">{{ to|format_date('full') }}</time>
+        <time datetime="{{ to|date('Y-m-d\TH:i:sO') }}">{{ to|format_date('full') }}</time>
     {% endif %}
 {% endmacro %}
 
