@@ -13,10 +13,10 @@ namespace App\Handler;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Exception\UnsupportedFileException;
-use App\File\DeletableFile;
 use App\Manager\TemporyFilesManager;
 use App\Utils\Cleaner;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -214,12 +214,8 @@ final readonly class EventHandler
         $pathUrl = parse_url((string) $event->getUrl(), \PHP_URL_PATH);
         $originalName = pathinfo($pathUrl, \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
 
-        // Copy to a new temp file since multiple events may use the same source file
-        $eventTempFilePath = $this->temporyFilesManager->create();
-        copy($tempFilePath, $eventTempFilePath);
+        $file = new UploadedFile($tempFilePath, $originalName, $contentType, test: true);
 
-        // Use DeletableFile to ensure cleanup after upload
-        $file = new DeletableFile($eventTempFilePath, $originalName, $contentType, null, true);
         $event->setImageHash($hash);
         $event->setImageSystemFile($file);
 
