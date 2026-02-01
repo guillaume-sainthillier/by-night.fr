@@ -17,6 +17,7 @@ use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Entity\ParserHistory;
 use App\Entity\Place;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
@@ -97,6 +98,7 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Places', 'lucide:map-pin', Place::class);
         yield MenuItem::linkToCrud('Comments', 'lucide:message-square', Comment::class);
         yield MenuItem::linkToCrud('User Event', 'lucide:heart', UserEvent::class);
+        yield MenuItem::linkToCrud('Tags', 'lucide:tags', Tag::class);
 
         yield MenuItem::section('Users', 'lucide:folder-open');
         yield MenuItem::linkToCrud('Users', 'lucide:users', User::class);
