@@ -42,9 +42,10 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function findAllByDtos(array $dtos): array
     {
+        // Query 1: Fetch places without metadatas to avoid cartesian product
+        // metadatas is still joined for WHERE clause matching (external IDs)
         $qb = $this
             ->createQueryBuilder('p')
-            ->addSelect('metadatas')
             ->addSelect('city')
             ->addSelect('country')
             ->addSelect('cityCountry')
@@ -84,9 +85,27 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             return [];
         }
 
-        return $qb
+        /** @var Place[] $places */
+        $places = $qb
             ->getQuery()
             ->execute();
+
+        // Query 2: Batch load metadatas for all found places
+        // This avoids the cartesian product issue while still loading metadatas
+        if ([] !== $places) {
+            $placeIds = array_map(static fn (Place $place) => $place->getId(), $places);
+            $this
+                ->createQueryBuilder('p')
+                ->select('PARTIAL p.{id}')
+                ->addSelect('metadatas')
+                ->leftJoin('p.metadatas', 'metadatas')
+                ->where('p.id IN(:placeIds)')
+                ->setParameter('placeIds', $placeIds)
+                ->getQuery()
+                ->execute();
+        }
+
+        return $places;
     }
 
     /**
