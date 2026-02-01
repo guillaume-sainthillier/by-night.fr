@@ -26,8 +26,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             paginationItemsPerPage: 15,
             paginationClientItemsPerPage: true,
             openapi: new OpenApiOperation(
-                summary: 'Global search across events, cities and users',
-                description: 'Returns a paginated list of events, cities and users matching the search query (5 items per type by default).',
+                summary: 'Global search across events, cities, users and tags',
+                description: 'Returns a paginated list of events, cities, users and tags matching the search query.',
             ),
             name: 'api_search',
             provider: SearchProvider::class,
@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'q' => new QueryParameter(
                     schema: ['type' => 'string', 'minLength' => 1, 'maxLength' => 200],
                     property: 'hydra:freetextQuery',
-                    description: 'Search query for events, cities and users',
+                    description: 'Search query for events, cities, users and tags',
                     required: true,
                     constraints: [
                         new Assert\Length(min: 1, max: 200),

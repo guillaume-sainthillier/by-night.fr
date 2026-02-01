@@ -17,9 +17,11 @@ use App\Api\ApiResource\SearchResult;
 use App\Api\Pagination\ArrayPaginator;
 use App\Entity\City;
 use App\Entity\Event;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\SearchRepository\CityElasticaRepository;
 use App\SearchRepository\EventElasticaRepository;
+use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -51,25 +53,28 @@ final readonly class SearchProvider implements ProviderInterface
         $limit = $this->pagination->getLimit($operation, $context);
         $page = $this->pagination->getPage($context);
 
-        // Divide limit by 3 to get items per type (events, cities, users)
-        $itemsPerType = max(1, (int) ceil($limit / 3));
+        // Divide limit by 4 to get items per type (events, cities, users, tags)
+        $itemsPerType = max(1, (int) ceil($limit / 4));
 
         // Get paginated hybrid results from each repository
         $eventsPaginator = $this->getEventsPaginator($query, $page, $itemsPerType);
         $citiesPaginator = $this->getCitiesPaginator($query, $page, $itemsPerType);
         $usersPaginator = $this->getUsersPaginator($query, $page, $itemsPerType);
+        $tagsPaginator = $this->getTagsPaginator($query, $page, $itemsPerType);
 
         // Transform and combine results
         $results = [
             ...$this->transformEventResults($eventsPaginator),
             ...$this->transformCityResults($citiesPaginator),
             ...$this->transformUserResults($usersPaginator),
+            ...$this->transformTagResults($tagsPaginator),
         ];
 
         // Calculate total items across all types
         $totalItems = $eventsPaginator->getNbResults()
             + $citiesPaginator->getNbResults()
-            + $usersPaginator->getNbResults();
+            + $usersPaginator->getNbResults()
+            + $tagsPaginator->getNbResults();
 
         /* @var ArrayPaginator<SearchResult> */
         return new ArrayPaginator(
@@ -115,6 +120,20 @@ final readonly class SearchProvider implements ProviderInterface
     {
         /** @var UserElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(User::class);
+        $paginator = $repo->findWithHighlightsPaginated($query);
+        $paginator->setMaxPerPage($itemsPerType);
+        $paginator->setCurrentPage($page);
+
+        return $paginator;
+    }
+
+    /**
+     * @return PagerfantaInterface<HybridResult<Tag>>
+     */
+    private function getTagsPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
+    {
+        /** @var TagElasticaRepository $repo */
+        $repo = $this->repositoryManager->getRepository(Tag::class);
         $paginator = $repo->findWithHighlightsPaginated($query);
         $paginator->setMaxPerPage($itemsPerType);
         $paginator->setCurrentPage($page);
@@ -226,6 +245,42 @@ final readonly class SearchProvider implements ProviderInterface
                     ],
                     'shortDescription' => [
                         'value' => $highlights['firstname'][0] ?? $highlights['lastname'][0] ?? $fullName,
+                    ],
+                ],
+            );
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param PagerfantaInterface<HybridResult<Tag>> $paginator
+     *
+     * @return list<SearchResult>
+     */
+    private function transformTagResults(PagerfantaInterface $paginator): array
+    {
+        $results = [];
+        foreach ($paginator as $result) {
+            /** @var Tag $tag */
+            $tag = $result->getTransformed();
+            $highlights = $result->getResult()->getHighlights();
+
+            $results[] = new SearchResult(
+                id: 'tag-' . $tag->getId(),
+                type: 'tags',
+                category: 'Catégories',
+                label: $tag->getName(),
+                shortDescription: '',
+                description: null,
+                url: $this->urlGenerator->generate('app_agenda_by_tag', [
+                    'location' => 'france',
+                    'tagSlug' => $tag->getSlug(),
+                    'tagId' => $tag->getId(),
+                ]),
+                highlightResult: [
+                    'label' => [
+                        'value' => $highlights['name'][0] ?? $tag->getName(),
                     ],
                 ],
             );

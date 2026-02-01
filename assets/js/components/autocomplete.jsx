@@ -10,6 +10,7 @@ import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
 import CrosshairIcon from '@/js/icons/lucide/Crosshair'
 import DramaIcon from '@/js/icons/lucide/Drama'
 import SearchIcon from '@/js/icons/lucide/Search'
+import TagsIcon from '@/js/icons/lucide/Tags'
 import Trash2Icon from '@/js/icons/lucide/Trash2'
 import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 import UserIcon from '@/js/icons/lucide/User'
@@ -249,6 +250,7 @@ const TYPE_ICONS = {
     events: DramaIcon,
     cities: CrosshairIcon,
     users: UserIcon,
+    tags: TagsIcon,
 }
 
 function TypeIcon({ type, className = '' }) {
