@@ -15,6 +15,7 @@ use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -42,13 +43,13 @@ abstract class AbstractAwinParser extends AbstractParser
         $handle = gzopen($path, 'r');
 
         if (false === $handle) {
-            throw new \RuntimeException(\sprintf('Unable to open gzipped file: %s', $path));
+            throw new RuntimeException(\sprintf('Unable to open gzipped file: %s', $path));
         }
 
         try {
             $headers = fgetcsv($handle);
             if (false === $headers) {
-                throw new \RuntimeException('Unable to read CSV headers');
+                throw new RuntimeException('Unable to read CSV headers');
             }
 
             while (false !== ($row = fgetcsv($handle))) {
