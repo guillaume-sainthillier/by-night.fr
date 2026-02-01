@@ -38,7 +38,8 @@
       "WebFetch(domain:developers.google.com)",
       "Bash(npx eslint:*)",
       "Bash(npx prettier:*)",
-      "WebFetch(domain:tarekraafat.github.io)"
+      "WebFetch(domain:tarekraafat.github.io)",
+      "Bash(curl:*)"
     ]
   }
 }

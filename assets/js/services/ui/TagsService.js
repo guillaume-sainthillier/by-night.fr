@@ -22,6 +22,7 @@ export function create({
     valueField = 'id',
     labelField = 'text',
     fetchOptions = { headers: { Accept: 'application/ld+json' } },
+    transformResponse = (data) => data['hydra:member'] || data.member || data,
 } = {}) {
     const el = resolveElement(element)
 
@@ -40,10 +41,12 @@ export function create({
     if (url) {
         options.valueField = valueField
         options.labelField = labelField
+        options.searchField = []
+        options.sortField = [{field:'$order'},{field:'$score'}]
         options.load = (query, callback) => {
             fetch(`${url}?q=${encodeURIComponent(query)}`, fetchOptions)
                 .then((res) => res.json())
-                .then((data) => callback(data.member))
+                .then((data) => callback(transformResponse(data)))
                 .catch(() => callback())
         }
     }

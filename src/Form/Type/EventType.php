@@ -93,10 +93,8 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
-                    'class' => 'js-tags-input',
-                    'data-tags-url' => $this->urlGenerator->generate('api_tags'),
-                    'data-tags-allow-new' => 'true',
-                    'data-tags-max-items' => '1',
+                    'class' => 'js-category-input',
+                    'data-autocomplete-url' => $this->urlGenerator->generate('api_tags') . '?q=%QUERY',
                 ],
             ])
             ->add('theme', TextType::class, [

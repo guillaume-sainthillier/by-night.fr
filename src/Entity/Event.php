@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Stringable;
 use Symfony\Component\HttpFoundation\File\File;
@@ -48,7 +49,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: '`event`')]
 #[ORM\HasLifecycleCallbacks]
-class Event implements Stringable, ExternalIdentifiableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
+class Event implements Stringable, ExternalIdentifiableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;
 
@@ -308,6 +309,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\JoinColumn]
     private ?Country $placeCountry = null;
 
+    public bool $batchUpdate = false;
+
     public function __construct()
     {
         $this->startDate = new DateTime();
@@ -317,6 +320,11 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->themes = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function shouldBeUpdated(): bool
+    {
+        return !$this->batchUpdate;
     }
 
     public function getKeyPrefix(): string

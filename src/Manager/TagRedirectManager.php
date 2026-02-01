@@ -64,7 +64,7 @@ final readonly class TagRedirectManager
             null === $tagId
             || $tag->getSlug() !== $tagSlug
         )) {
-            throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $tag->getId(), 'slug' => $tag->getSlug(), 'location' => $locationSlug], $routeParams)));
+            throw new RedirectException($this->router->generate($routeName, array_merge(['tagId' => $tag->getId(), 'tagSlug' => $tag->getSlug(), 'location' => $locationSlug], $routeParams)));
         }
 
         return $tag;
