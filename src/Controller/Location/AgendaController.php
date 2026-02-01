@@ -37,7 +37,7 @@ final class AgendaController extends BaseController
     #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{placeSlug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
-    #[Route(path: '/agenda/tag/{tagSlug}--{tagId}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['tagId' => '\d+'], methods: ['GET'])]
+    #[Route(path: '/agenda/tag/{tagSlug<%patterns.slug%>}--{tagId<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['tagId' => '\d+'], methods: ['GET'])]
     #[Route(path: '/agenda/tag/{legacyTag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
     public function index(
         AppContext $appContext,
