@@ -15,6 +15,7 @@ use Elastica\Query;
 use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\HybridResult;
+use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
 use FOS\ElasticaBundle\Repository;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
@@ -35,38 +36,6 @@ final class TagElasticaRepository extends Repository
         $finalQuery->addSort(['_score' => 'DESC']);
 
         return $this->findPaginated($finalQuery);
-    }
-
-    /**
-     * @return list<HybridResult>
-     */
-    public function findWithHighlights(string $query, int $limit = 5): array
-    {
-        $multiMatch = new MultiMatch();
-        $multiMatch
-            ->setFields([
-                'name^5',
-            ])
-            ->setFuzziness('auto')
-            ->setOperator('AND')
-            ->setQuery($query);
-
-        $finalQuery = Query::create($multiMatch);
-        $finalQuery->setSize($limit);
-        $finalQuery->addSort(['_score' => 'DESC']);
-
-        // Add highlighting
-        $finalQuery->setHighlight([
-            'fields' => [
-                'name' => [
-                    'pre_tags' => ['__aa-highlight__'],
-                    'post_tags' => ['__/aa-highlight__'],
-                    'number_of_fragments' => 0,
-                ],
-            ],
-        ]);
-
-        return $this->findHybrid($finalQuery, $limit);
     }
 
     /**
@@ -101,6 +70,6 @@ final class TagElasticaRepository extends Repository
 
         $adapter = $this->createHybridPaginatorAdapter($finalQuery);
 
-        return new Pagerfanta($adapter);
+        return new Pagerfanta(new FantaPaginatorAdapter($adapter));
     }
 }
