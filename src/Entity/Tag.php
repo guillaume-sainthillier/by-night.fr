@@ -14,7 +14,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
-use App\Api\Filter\TagSearchFilter;
+use App\Api\Provider\TagAutocompleteProvider;
 use App\Repository\TagRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,16 +29,20 @@ use Symfony\Component\Serializer\Attribute\Groups;
             uriTemplate: '/tags',
             name: 'api_tags',
             normalizationContext: ['groups' => ['tag:list']],
+            paginationEnabled: true,
+            paginationItemsPerPage: 20,
+            paginationClientItemsPerPage: true,
             cacheHeaders: [
                 'max_age' => 3600,
                 'shared_max_age' => 3600,
             ],
             openapi: new OpenApiOperation(
                 summary: 'Search for tags',
-                description: 'Returns a list of tags (for categories and themes) matching the search query.',
+                description: 'Returns a paginated list of tags (for categories and themes) matching the search query using Elasticsearch.',
             ),
+            provider: TagAutocompleteProvider::class,
             parameters: [
-                'q' => new QueryParameter(property: 'hydra:freetextQuery', required: true, filter: TagSearchFilter::class),
+                'q' => new QueryParameter(property: 'hydra:freetextQuery', required: true),
             ],
         ),
     ],
@@ -53,16 +57,16 @@ class Tag implements Stringable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
-    #[Groups(['elasticsearch:event:details', 'tag:list'])]
+    #[Groups(['elasticsearch:event:details', 'elasticsearch:tag:details', 'tag:list'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
-    #[Groups(['elasticsearch:event:details', 'tag:list'])]
+    #[Groups(['elasticsearch:event:details', 'elasticsearch:tag:details', 'tag:list'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
     #[Gedmo\Slug(fields: ['name'], unique: false)]
-    #[Groups(['tag:list'])]
+    #[Groups(['elasticsearch:tag:details', 'tag:list'])]
     private ?string $slug = null;
 
     public function __toString(): string
