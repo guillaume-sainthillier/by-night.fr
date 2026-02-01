@@ -10,14 +10,18 @@
 
 namespace App\Tests\Handler;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Entity\Event;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\TagFactory;
 use App\Factory\UserFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Repository\EventRepository;
@@ -507,5 +511,210 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         // Verify dates were recomputed
         $this->assertEquals('2024-07-10', $event->getStartDate()->format('Y-m-d'));
         $this->assertEquals('2024-07-12', $event->getEndDate()->format('Y-m-d'));
+    }
+
+    /**
+     * Benchmark test for batch import of 50 events.
+     *
+     * This test simulates a realistic import scenario with:
+     * - Pre-populated database (countries, cities, places, tags)
+     * - Events with categories and themes (TagDto)
+     * - Place matching that triggers the comparator
+     *
+     * Use this as a baseline for performance optimization.
+     */
+    public function testBatchImport50EventsBenchmark(): void
+    {
+        // ========================================
+        // SETUP: Pre-populate database with realistic data
+        // ========================================
+
+        // Create country
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+
+        // Create 5 cities
+        $cities = [];
+        $cityNames = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Bordeaux'];
+        foreach ($cityNames as $cityName) {
+            $cities[$cityName] = CityFactory::createOne([
+                'name' => $cityName,
+                'country' => $country,
+            ]);
+        }
+
+        // Create 200 existing places (40 per city) - these will trigger comparator matching
+        // More places = more work for the PlaceComparator's fuzzy matching algorithm
+        $existingPlaces = [];
+        $placeTypes = ['Théâtre', 'Salle de Concert', 'Centre Culturel', 'Stade', 'Opéra',
+            'Cinéma', 'Musée', 'Bibliothèque', 'Gymnase', 'Arena'];
+        $placeVariations = ['Le %s', 'Grand %s', '%s Municipal', 'Nouveau %s'];
+        foreach ($cities as $cityName => $city) {
+            // Create base places
+            foreach ($placeTypes as $placeType) {
+                $existingPlaces[] = PlaceFactory::createOne([
+                    'name' => $placeType . ' de ' . $cityName,
+                    'city' => $city,
+                    'country' => $country,
+                ]);
+                // Create variations to increase comparator workload
+                foreach ($placeVariations as $variation) {
+                    $existingPlaces[] = PlaceFactory::createOne([
+                        'name' => \sprintf($variation, $placeType) . ' ' . $cityName,
+                        'city' => $city,
+                        'country' => $country,
+                    ]);
+                }
+            }
+        }
+
+        // Create 10 tags for categories and themes
+        $tagNames = ['Concert', 'Festival', 'Théâtre', 'Exposition', 'Conférence',
+            'Sport', 'Famille', 'Gratuit', 'Plein air', 'Nocturne'];
+        $tags = [];
+        foreach ($tagNames as $tagName) {
+            $tags[$tagName] = TagFactory::createOne(['name' => $tagName]);
+        }
+
+        // ========================================
+        // ARRANGE: Create 50 EventDtos
+        // ========================================
+
+        $dtos = [];
+        $venueVariations = [
+            'Le %s',
+            'Grand %s',
+            '%s Municipal',
+            'Nouveau %s',
+            '%s International',
+        ];
+
+        for ($i = 1; $i <= 50; ++$i) {
+            $dto = new EventDto();
+
+            // Basic event data
+            $dto->name = \sprintf('Événement Test #%d - Festival de Musique', $i);
+            $dto->description = \sprintf(
+                'Description détaillée de l\'événement numéro %d. ' .
+                'Cet événement propose une programmation riche et variée ' .
+                'pour tous les publics. Venez nombreux découvrir les artistes.',
+                $i
+            );
+            $dto->startDate = new DateTime(\sprintf('+%d days', ($i % 30) + 1));
+            $dto->endDate = new DateTime(\sprintf('+%d days +3 hours', ($i % 30) + 1));
+            $dto->externalId = \sprintf('bench-50-event-%03d', $i);
+            $dto->externalOrigin = 'benchmark-parser';
+            $dto->parserVersion = '1.0';
+
+            // Category (TagDto)
+            $categoryName = $tagNames[$i % \count($tagNames)];
+            $dto->category = TagDto::fromString($categoryName);
+
+            // Themes (TagDto[]) - 2-3 themes per event
+            $dto->themes = [
+                TagDto::fromString($tagNames[($i + 1) % \count($tagNames)]),
+                TagDto::fromString($tagNames[($i + 2) % \count($tagNames)]),
+            ];
+            if (0 === $i % 3) {
+                $dto->themes[] = TagDto::fromString($tagNames[($i + 3) % \count($tagNames)]);
+            }
+
+            // Place with city reference - some will match existing places
+            $placeDto = new PlaceDto();
+            $cityIndex = $i % \count($cityNames);
+            $cityName = $cityNames[$cityIndex];
+
+            // Vary place names to test different matching scenarios:
+            // - Some exact matches (same as existing)
+            // - Some similar names (trigger fuzzy matching)
+            // - Some completely new places
+            if (0 === $i % 5) {
+                // Exact match with existing place
+                $placeDto->name = $placeTypes[$i % \count($placeTypes)] . ' de ' . $cityName;
+            } elseif (0 === $i % 3) {
+                // Similar name (fuzzy match candidate)
+                $variation = $venueVariations[$i % \count($venueVariations)];
+                $placeDto->name = \sprintf($variation, $placeTypes[$i % \count($placeTypes)]) . ' ' . $cityName;
+            } else {
+                // New unique place
+                $placeDto->name = \sprintf('Lieu Unique %d - %s', $i, $cityName);
+            }
+
+            $placeDto->street = \sprintf('%d rue de la Paix', $i);
+
+            // Add city reference
+            $cityDto = new CityDto();
+            $cityDto->name = $cityName;
+            $countryDto = new CountryDto();
+            $countryDto->code = 'FR';
+            $cityDto->country = $countryDto;
+            $placeDto->city = $cityDto;
+
+            $dto->place = $placeDto;
+
+            $dtos[] = $dto;
+        }
+
+        // ========================================
+        // ACT: Run the batch import with measurements
+        // ========================================
+
+        // Force garbage collection before measurement
+        gc_collect_cycles();
+        $memoryBefore = memory_get_usage(true);
+        $startTime = microtime(true);
+
+        $this->handler->handleMany($dtos);
+
+        $duration = microtime(true) - $startTime;
+        $memoryAfter = memory_get_usage(true);
+        $peakMemory = memory_get_peak_usage(true);
+        $memoryUsed = $memoryAfter - $memoryBefore;
+
+        // ========================================
+        // ASSERT: Verify results and output metrics
+        // ========================================
+
+        // Verify all events were inserted
+        $insertedEvents = $this->eventRepository->createQueryBuilder('e')
+            ->where('e.externalOrigin = :origin')
+            ->setParameter('origin', 'benchmark-parser')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertCount(50, $insertedEvents, 'All 50 events should be inserted');
+
+        // Verify some events have categories and themes
+        $eventWithTags = $insertedEvents[0];
+        $this->assertNotNull($eventWithTags->getCategory(), 'Events should have categories');
+        $this->assertGreaterThan(0, $eventWithTags->getThemes()->count(), 'Events should have themes');
+
+        // Output performance metrics for baseline measurement
+        $metrics = [
+            'events_count' => \count($insertedEvents),
+            'duration_seconds' => round($duration, 3),
+            'duration_per_event_ms' => round(($duration / 50) * 1000, 2),
+            'memory_used_mb' => round($memoryUsed / 1024 / 1024, 2),
+            'peak_memory_mb' => round($peakMemory / 1024 / 1024, 2),
+        ];
+
+        // Print metrics to console (visible with -v flag)
+        fwrite(\STDERR, "\n");
+        fwrite(\STDERR, "╔══════════════════════════════════════════════════════════╗\n");
+        fwrite(\STDERR, "║           BATCH IMPORT BENCHMARK RESULTS                 ║\n");
+        fwrite(\STDERR, "╠══════════════════════════════════════════════════════════╣\n");
+        fwrite(\STDERR, \sprintf("║  Events imported:        %4d                            ║\n", $metrics['events_count']));
+        fwrite(\STDERR, \sprintf("║  Total duration:         %7.3f seconds                 ║\n", $metrics['duration_seconds']));
+        fwrite(\STDERR, \sprintf("║  Per event:              %7.2f ms                      ║\n", $metrics['duration_per_event_ms']));
+        fwrite(\STDERR, \sprintf("║  Memory used:            %7.2f MB                      ║\n", $metrics['memory_used_mb']));
+        fwrite(\STDERR, \sprintf("║  Peak memory:            %7.2f MB                      ║\n", $metrics['peak_memory_mb']));
+        fwrite(\STDERR, "╚══════════════════════════════════════════════════════════╝\n");
+        fwrite(\STDERR, "\n");
+
+        // Performance assertions (baseline thresholds - adjust after optimization)
+        $this->assertLessThan(
+            30.0,
+            $duration,
+            \sprintf('Batch import took %.2f seconds, expected < 30 seconds', $duration)
+        );
     }
 }
