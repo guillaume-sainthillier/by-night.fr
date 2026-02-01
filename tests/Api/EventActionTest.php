@@ -12,6 +12,7 @@ namespace App\Tests\Api;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
+use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -66,13 +67,13 @@ final class EventActionTest extends ApiTestCase
         self::assertJsonContains(['success' => true]);
 
         $updatedEvent = $event->_refresh();
-        self::assertSame('ANNULÉ', $updatedEvent->getStatus());
+        self::assertSame(EventStatus::Cancelled, $updatedEvent->getStatus());
     }
 
     public function testUncancelEvent(): void
     {
         $user = UserFactory::createOne();
-        $event = EventFactory::createOne(['user' => $user, 'status' => 'ANNULÉ']);
+        $event = EventFactory::createOne(['user' => $user, 'status' => EventStatus::Cancelled]);
         $eventId = $event->getId();
 
         $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/cancel', $eventId), [

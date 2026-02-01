@@ -15,6 +15,7 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Api\Model\EventActionOutput;
 use App\Api\Model\EventCancelInput;
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -34,7 +35,7 @@ final readonly class EventCancelProcessor implements ProcessorInterface
             throw new NotFoundHttpException('Not Found');
         }
 
-        $event->setStatus($data->cancel ? 'ANNULÉ' : null);
+        $event->setStatus($data->cancel ? EventStatus::Cancelled : null);
         $this->persistProcessor->process($event, $operation, $uriVariables, $context);
 
         return new EventActionOutput(success: true);

@@ -11,9 +11,11 @@
 namespace App\Form\Type;
 
 use App\Dto\EventDto;
+use App\Enum\EventStatus;
 use App\Handler\DoctrineEventHandler;
 use Override;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -87,6 +89,20 @@ final class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => '17€ avec préventes, 20€ sur place',
                 ],
+            ])
+            ->add('status', ChoiceType::class, [
+                'label' => 'Statut',
+                'required' => false,
+                'choices' => EventStatus::getChoices(),
+                'placeholder' => 'Programmé (par défaut)',
+            ])
+            ->add('statusMessage', TextType::class, [
+                'label' => 'Message de statut',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Précisez le statut (ex: Reporté au 15 mars)',
+                ],
+                'help' => 'Message personnalisé affiché aux visiteurs',
             ])
             ->add('category', TextType::class, [
                 'label' => 'Catégorie',

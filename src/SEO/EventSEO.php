@@ -87,11 +87,23 @@ final class EventSEO
     public function getEventShortTitle(Event $event): ?string
     {
         $shortTitle = $event->getName();
-        if ($event->getStatus()) {
-            $shortTitle = \sprintf('[%s] %s', $event->getStatus(), $shortTitle);
+        $statusLabel = $this->getStatusLabel($event);
+        if (null !== $statusLabel) {
+            $shortTitle = \sprintf('[%s] %s', $statusLabel, $shortTitle);
         }
 
         return $shortTitle;
+    }
+
+    private function getStatusLabel(Event $event): ?string
+    {
+        // Prefer custom status message if set
+        if (null !== $event->getStatusMessage() && '' !== $event->getStatusMessage()) {
+            return $event->getStatusMessage();
+        }
+
+        // Fall back to enum label
+        return $event->getStatus()?->getLabel();
     }
 
     /**

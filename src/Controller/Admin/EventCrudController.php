@@ -12,6 +12,7 @@ namespace App\Controller\Admin;
 
 use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use App\Form\Type\EventTimesheetEntityType;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -20,6 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -106,7 +108,15 @@ final class EventCrudController extends AbstractCrudController
             ->setLabel('Dates et horaires');
         $descriptif = TextareaField::new('description');
         $externalUpdatedAt = DateTimeField::new('externalUpdatedAt');
-        $status = TextField::new('status');
+        $status = ChoiceField::new('status')
+            ->setChoices(EventStatus::cases())
+            ->renderAsBadges([
+                EventStatus::Scheduled->value => 'success',
+                EventStatus::Postponed->value => 'warning',
+                EventStatus::Cancelled->value => 'danger',
+                EventStatus::SoldOut->value => 'info',
+            ]);
+        $statusMessage = TextField::new('statusMessage');
         $type = TextField::new('type');
         $category = AssociationField::new('category')
             ->setCrudController(TagCrudController::class)
@@ -185,6 +195,7 @@ final class EventCrudController extends AbstractCrudController
             $timesheets,
             $tarif,
             $status,
+            $statusMessage,
             $latitude,
             $longitude,
             $type,

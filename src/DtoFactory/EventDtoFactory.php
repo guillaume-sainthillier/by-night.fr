@@ -45,6 +45,7 @@ final class EventDtoFactory
         $event->hours = $entity->getHours();
         $event->prices = $entity->getPrices();
         $event->status = $entity->getStatus();
+        $event->statusMessage = $entity->getStatusMessage();
         $event->emailContacts = $entity->getMailContacts();
         $event->phoneContacts = $entity->getPhoneContacts();
         $event->websiteContacts = $entity->getWebsiteContacts();

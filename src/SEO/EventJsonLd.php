@@ -11,6 +11,7 @@
 namespace App\SEO;
 
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -141,23 +142,9 @@ final readonly class EventJsonLd
         ];
     }
 
-    private function mapEventStatus(?string $status): string
+    private function mapEventStatus(?EventStatus $status): string
     {
-        if (!$status) {
-            return 'https://schema.org/EventScheduled';
-        }
-
-        $statusLower = mb_strtolower($status);
-
-        if (str_contains($statusLower, 'annul')) {
-            return 'https://schema.org/EventCancelled';
-        }
-
-        if (str_contains($statusLower, 'report')) {
-            return 'https://schema.org/EventPostponed';
-        }
-
-        return 'https://schema.org/EventScheduled';
+        return $status?->getSchemaOrgStatus() ?? 'https://schema.org/EventScheduled';
     }
 
     private function generateEventUrl(Event $event): string
