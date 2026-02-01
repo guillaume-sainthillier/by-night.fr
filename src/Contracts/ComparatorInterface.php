@@ -12,10 +12,26 @@ namespace App\Contracts;
 
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * @template TDto of object
+ * @template TEntity of object
+ */
 #[AutoconfigureTag]
 interface ComparatorInterface extends SupportsObjectInterface
 {
+    /**
+     * @param iterable<TEntity> $entities
+     * @param TDto              $dto
+     *
+     * @return MatchingInterface<TEntity>|null
+     */
     public function getMostMatching(iterable $entities, object $dto): ?MatchingInterface;
 
+    /**
+     * @param TEntity $entity
+     * @param TDto    $dto
+     *
+     * @return MatchingInterface<TEntity>|null
+     */
     public function getMatching(object $entity, object $dto): ?MatchingInterface;
 }

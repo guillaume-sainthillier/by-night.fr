@@ -12,6 +12,10 @@ namespace App\Contracts;
 
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * @template TDto of object
+ * @template TEntity of object
+ */
 #[AutoconfigureTag]
 interface EntityProviderInterface extends SupportsClassInterface
 {
@@ -24,21 +28,30 @@ interface EntityProviderInterface extends SupportsClassInterface
 
     /**
      * Prefetch all entities for given objects.
+     *
+     * @param TDto[] $dtos
      */
     public function prefetchEntities(array $dtos): void;
 
     /**
-     * Get the entities for given object.
+     * Get the entity for given DTO.
+     *
+     * @param TDto $dto
+     *
+     * @return TEntity|null
      */
     public function getEntity(object $dto): ?object;
 
     /**
-     * Add a new entity into prefeteched entities collection.
+     * Add a new entity into prefetched entities collection.
+     *
+     * @param TEntity   $entity
+     * @param TDto|null $fromDto
      */
     public function addEntity(object $entity, ?object $fromDto = null): void;
 
     /**
-     * Clear previously prefeteched entities collection.
+     * Clear previously prefetched entities collection.
      */
     public function clear(): void;
 }

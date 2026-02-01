@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Cleaner;
 use DateTime;
@@ -74,17 +75,17 @@ final class CleanerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->startDate = new DateTime('2024-01-15');
         $dto->address = str_repeat('a', 300);
-        $dto->category = str_repeat('b', 150);
-        $dto->theme = str_repeat('c', 150);
+        $dto->category = TagDto::fromString(str_repeat('b', 150));
+        $dto->themes = [TagDto::fromString(str_repeat('c', 150))];
 
         $this->cleaner->cleanEvent($dto);
 
         self::assertNotNull($dto->address);
         self::assertNotNull($dto->category);
-        self::assertNotNull($dto->theme);
+        self::assertCount(1, $dto->themes);
         self::assertEquals(255, \strlen($dto->address));
-        self::assertEquals(128, \strlen($dto->category));
-        self::assertEquals(128, \strlen($dto->theme));
+        self::assertEquals(128, \strlen($dto->category->name));
+        self::assertEquals(128, \strlen($dto->themes[0]->name));
     }
 
     #[DataProvider('coordinatesProvider')]

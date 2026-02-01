@@ -12,25 +12,23 @@ namespace App\EntityFactory;
 
 use App\Contracts\EntityFactoryInterface;
 use App\Dto\UserDto;
+use App\Entity\User;
 use LogicException;
 
+/**
+ * @implements EntityFactoryInterface<UserDto, User>
+ */
 final class UserEntityFactory implements EntityFactoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function supports(string $dtoClassName): bool
     {
         return UserDto::class === $dtoClassName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function create(?object $entity, object $dto): object
     {
         if (null === $entity) {
-            throw new LogicException('Unable to create a new city from scratch!');
+            throw new LogicException('Unable to create a new user from scratch!');
         }
 
         return $entity;

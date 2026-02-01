@@ -233,6 +233,29 @@ fos_elastica:
                 repository: App\SearchRepository\UserElasticaRepository
                 provider:
                     batch_size: 1000
+        tag:
+            settings:
+                analysis:
+                    analyzer:
+                        text_analyzer:
+                            tokenizer: icu_tokenizer
+                            filter:
+                                - icu_folding
+                                - lowercase
+            serializer:
+                groups:
+                    - 'elasticsearch:tag:details'
+            properties:
+                name:
+                    type: text
+                    analyzer: text_analyzer
+                slug:
+                    type: keyword
+            persistence:
+                model: App\Entity\Tag
+                repository: App\SearchRepository\TagElasticaRepository
+                provider:
+                    batch_size: 1000
 
 when@test:
     fos_elastica:
@@ -250,6 +273,12 @@ when@test:
                         update: false
                         delete: false
             user:
+                persistence:
+                    listener:
+                        insert: false
+                        update: false
+                        delete: false
+            tag:
                 persistence:
                     listener:
                         insert: false

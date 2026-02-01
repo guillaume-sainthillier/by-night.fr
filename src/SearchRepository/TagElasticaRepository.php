@@ -10,7 +10,9 @@
 
 namespace App\SearchRepository;
 
+use App\Entity\Tag;
 use Elastica\Query;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
@@ -18,27 +20,20 @@ use FOS\ElasticaBundle\Repository;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
-final class CityElasticaRepository extends Repository
+final class TagElasticaRepository extends Repository
 {
-    public function findWithSearch(?string $q): PagerfantaInterface
+    /**
+     * @return PagerfantaInterface<Tag>
+     */
+    public function findWithSearch(string $q): PagerfantaInterface
     {
-        $query = new MultiMatch();
-        $query
-            ->setFields([
-                'postalCodes^10',
-                'country.name^5',
-                'name^3',
-                'parent.name',
-            ])
-            ->setFuzziness('auto')
-            ->setOperator('AND')
-            ->setQuery($q ?? '')
-        ;
+        $query = new MatchQuery();
+        $query->setFieldQuery('name', $q);
+        $query->setFieldFuzziness('name', 'auto');
 
         $finalQuery = Query::create($query);
-        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
+        $finalQuery->setSource(['id']);
         $finalQuery->addSort(['_score' => 'DESC']);
-        $finalQuery->addSort(['population' => 'DESC']);
 
         return $this->findPaginated($finalQuery);
     }
@@ -53,10 +48,7 @@ final class CityElasticaRepository extends Repository
         $multiMatch = new MultiMatch();
         $multiMatch
             ->setFields([
-                'postalCodes^10',
-                'country.name^5',
-                'name^3',
-                'parent.name',
+                'name^5',
             ])
             ->setFuzziness('auto')
             ->setOperator('AND')
@@ -64,17 +56,11 @@ final class CityElasticaRepository extends Repository
 
         $finalQuery = Query::create($multiMatch);
         $finalQuery->addSort(['_score' => 'DESC']);
-        $finalQuery->addSort(['population' => 'DESC']);
 
         // Add highlighting
         $finalQuery->setHighlight([
             'fields' => [
                 'name' => [
-                    'pre_tags' => ['__aa-highlight__'],
-                    'post_tags' => ['__/aa-highlight__'],
-                    'number_of_fragments' => 0,
-                ],
-                'country.name' => [
                     'pre_tags' => ['__aa-highlight__'],
                     'post_tags' => ['__/aa-highlight__'],
                     'number_of_fragments' => 0,

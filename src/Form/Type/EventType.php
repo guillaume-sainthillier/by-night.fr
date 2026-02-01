@@ -12,11 +12,13 @@ namespace App\Form\Type;
 
 use App\Dto\EventDto;
 use App\Enum\EventStatus;
+use App\Form\DataTransformer\TagDtoArrayTransformer;
+use App\Form\DataTransformer\TagDtoTransformer;
 use App\Handler\DoctrineEventHandler;
 use Override;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -90,11 +92,12 @@ final class EventType extends AbstractType
                     'placeholder' => '17€ avec préventes, 20€ sur place',
                 ],
             ])
-            ->add('status', ChoiceType::class, [
+            ->add('status', EnumType::class, [
                 'label' => 'Statut',
+                'class' => EventStatus::class,
+                'choice_label' => static fn (EventStatus $status) => $status->getLabel(),
                 'required' => false,
-                'choices' => EventStatus::getChoices(),
-                'placeholder' => 'Programmé (par défaut)',
+                'placeholder' => 'Programmé',
             ])
             ->add('statusMessage', TextType::class, [
                 'label' => 'Message de statut',
@@ -113,7 +116,7 @@ final class EventType extends AbstractType
                     'data-autocomplete-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                 ],
             ])
-            ->add('theme', TextType::class, [
+            ->add('themes', TextType::class, [
                 'label' => 'Thèmes',
                 'required' => false,
                 'attr' => [
@@ -177,6 +180,9 @@ final class EventType extends AbstractType
                 ],
             ])
             ->addEventListener(FormEvents::SUBMIT, $this->onSubmit(...));
+
+        $builder->get('category')->addModelTransformer(new TagDtoTransformer());
+        $builder->get('themes')->addModelTransformer(new TagDtoArrayTransformer());
 
         if (null !== $options['data'] && null === $options['data']->entityId) {
             $builder

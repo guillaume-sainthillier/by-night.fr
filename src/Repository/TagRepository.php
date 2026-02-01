@@ -11,6 +11,8 @@
 namespace App\Repository;
 
 use App\Contracts\BatchResetInterface;
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\TagDto;
 use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,12 +20,14 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Tag>
  *
+ * @implements DtoFindableRepositoryInterface<TagDto, Tag>
+ *
  * @method Tag|null find($id, $lockMode = null, $lockVersion = null)
  * @method Tag|null findOneBy(array $criteria, array $orderBy = null)
  * @method Tag[]    findAll()
  * @method Tag[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TagRepository extends ServiceEntityRepository implements BatchResetInterface
+class TagRepository extends ServiceEntityRepository implements BatchResetInterface, DtoFindableRepositoryInterface
 {
     /** @var array<string, Tag> In-memory cache of created tags by lowercase name */
     private array $createdTags = [];
@@ -124,5 +128,30 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
         return (int) $qb
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Find all tags matching the given DTOs by name.
+     *
+     * @param TagDto[] $dtos
+     *
+     * @return Tag[]
+     */
+    public function findAllByDtos(array $dtos): array
+    {
+        $names = array_filter(array_map(
+            static fn (TagDto $dto) => null !== $dto->name ? mb_strtolower(trim($dto->name)) : null,
+            $dtos
+        ));
+
+        if ([] === $names) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('t')
+            ->where('LOWER(t.name) IN (:names)')
+            ->setParameter('names', array_unique($names))
+            ->getQuery()
+            ->getResult();
     }
 }

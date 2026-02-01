@@ -142,6 +142,10 @@ final class EventsStatusMigrateCommand extends Command
 
         $status = $this->mapStatusMessageToEnum($statusMessage);
         $event->setStatus($status);
+        if (null !== $status) {
+            // Clear status message only if we could map it
+            $event->setStatusMessage(null);
+        }
 
         if ($io->isVeryVerbose()) {
             $statusLabel = $status?->getLabel() ?? 'null';
@@ -180,7 +184,6 @@ final class EventsStatusMigrateCommand extends Command
             return EventStatus::SoldOut;
         }
 
-        // Default to scheduled for unknown values
-        return EventStatus::Scheduled;
+        return null;
     }
 }

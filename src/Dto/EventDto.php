@@ -33,6 +33,9 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute\Uploadable;
 use Vich\UploaderBundle\Mapping\Attribute\UploadableField;
 
+/**
+ * @implements DtoEntityIdentifierResolvableInterface<Event>
+ */
 #[Uploadable]
 #[EventConstraint]
 final class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
@@ -88,9 +91,13 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?string $statusMessage = null;
 
-    public ?string $category = null;
+    #[Assert\Valid]
+    public ?TagDto $category = null;
 
-    public ?string $theme = null;
+    /** @var TagDto[] */
+    #[Assert\Valid]
+    #[Assert\All([new Assert\Type(TagDto::class)])]
+    public array $themes = [];
 
     public ?float $latitude = null;
 
@@ -165,6 +172,14 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
             $catalogue->add(new Dependency($this->user));
         }
 
+        if (null !== $this->category) {
+            $catalogue->add(new Dependency($this->category, false));
+        }
+
+        foreach ($this->themes as $theme) {
+            $catalogue->add(new Dependency($theme, false));
+        }
+
         return $catalogue;
     }
 
@@ -193,7 +208,6 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public function setIdentifierFromEntity(object $entity): void
     {
-        \assert($entity instanceof Event);
         $this->entityId = $entity->getId();
     }
 

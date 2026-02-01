@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 
 final readonly class Cleaner
 {
@@ -33,9 +34,26 @@ final readonly class Cleaner
         $dto->websiteContacts = $dto->websiteContacts ?: null;
         $dto->emailContacts = $dto->emailContacts ?: null;
         $dto->address = mb_substr($dto->address ?? '', 0, 255) ?: null;
-        $dto->category = mb_substr($dto->category ?? '', 0, 128) ?: null;
-        $dto->theme = mb_substr($dto->theme ?? '', 0, 128) ?: null;
         $dto->type = mb_substr($dto->type ?? '', 0, 128) ?: null;
+
+        // Clean category TagDto
+        if (null !== $dto->category) {
+            $dto->category->name = mb_substr(trim($dto->category->name ?? ''), 0, 128) ?: null;
+            if (null === $dto->category->name) {
+                $dto->category = null;
+            }
+        }
+
+        // Clean themes TagDto array
+        $dto->themes = array_values(array_filter($dto->themes, static function (TagDto $tagDto): bool {
+            if (null === $tagDto->name) {
+                return false;
+            }
+
+            $tagDto->name = mb_substr(trim($tagDto->name), 0, 128) ?: null;
+
+            return null !== $tagDto->name;
+        }));
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
         $dto->prices = mb_substr($dto->prices ?? '', 0, 255) ?: null;
         $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;

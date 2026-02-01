@@ -12,8 +12,12 @@ namespace App\EntityProvider;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\EventDto;
+use App\Entity\Event;
 use App\Repository\EventRepository;
 
+/**
+ * @extends AbstractEntityProvider<EventDto, Event>
+ */
 final class EventEntityProvider extends AbstractEntityProvider
 {
     public function __construct(private readonly EventRepository $eventRepository)

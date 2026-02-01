@@ -14,9 +14,11 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Enum\EventStatus;
 use App\Parser\AbstractParser;
 use DateTime;
+use Override;
 
 final class BikiniParser extends AbstractParser
 {
@@ -69,7 +71,10 @@ final class BikiniParser extends AbstractParser
         $event->hours = $hours;
         $event->description = $data['htmlDescription'];
         $event->type = 'Concert, Musique';
-        $event->category = $data['style'];
+        $categoryLabel = $data['style'] ?? null;
+        if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
+            $event->category = TagDto::fromString($categoryLabel);
+        }
         $event->source = $data['url'];
         $event->websiteContacts = [$data['ticketUrl']];
         $event->imageUrl = $data['image'];
@@ -110,5 +115,14 @@ final class BikiniParser extends AbstractParser
     public function getCommandName(): string
     {
         return 'toulouse.bikini';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    public static function getParserVersion(): string
+    {
+        return '2.0';
     }
 }

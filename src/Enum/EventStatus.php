@@ -12,7 +12,6 @@ namespace App\Enum;
 
 enum EventStatus: string
 {
-    case Scheduled = 'scheduled';
     case Postponed = 'postponed';
     case Cancelled = 'cancelled';
     case SoldOut = 'sold_out';
@@ -20,7 +19,6 @@ enum EventStatus: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::Scheduled => 'Programmé',
             self::Postponed => 'Reporté',
             self::Cancelled => 'Annulé',
             self::SoldOut => 'Complet',
@@ -30,23 +28,9 @@ enum EventStatus: string
     public function getSchemaOrgStatus(): string
     {
         return match ($this) {
-            self::Scheduled => 'https://schema.org/EventScheduled',
             self::Postponed => 'https://schema.org/EventPostponed',
             self::Cancelled => 'https://schema.org/EventCancelled',
             self::SoldOut => 'https://schema.org/EventScheduled',
         };
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public static function getChoices(): array
-    {
-        $choices = [];
-        foreach (self::cases() as $case) {
-            $choices[$case->getLabel()] = $case->value;
-        }
-
-        return $choices;
     }
 }

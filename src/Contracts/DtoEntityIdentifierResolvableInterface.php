@@ -10,7 +10,13 @@
 
 namespace App\Contracts;
 
+/**
+ * @template TEntity of object
+ */
 interface DtoEntityIdentifierResolvableInterface
 {
+    /**
+     * @param TEntity $entity
+     */
     public function setIdentifierFromEntity(object $entity): void;
 }

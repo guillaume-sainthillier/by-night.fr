@@ -27,6 +27,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @extends ServiceEntityRepository<User>
  *
+ * @implements DtoFindableRepositoryInterface<UserDto, User>
+ *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findAll()
@@ -123,8 +125,6 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     {
         $idsWheres = [];
         foreach ($dtos as $dto) {
-            \assert($dto instanceof UserDto);
-
             if (null !== $dto->entityId) {
                 $idsWheres[$dto->entityId] = true;
             }

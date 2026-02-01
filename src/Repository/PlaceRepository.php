@@ -19,6 +19,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Place>
  *
+ * @implements DtoFindableRepositoryInterface<PlaceDto, Place>
+ *
  * @method Place|null find($id, $lockMode = null, $lockVersion = null)
  * @method Place|null findOneBy(array $criteria, array $orderBy = null)
  * @method Place[]    findAll()
@@ -54,8 +56,6 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
         $cityWheres = [];
         $countryWheres = [];
         foreach ($dtos as $dto) {
-            \assert($dto instanceof PlaceDto);
-
             if (null !== $dto->city && null !== $dto->city->entityId) {
                 $cityWheres[$dto->city->entityId] = true;
             } elseif (null !== $dto->country && null !== $dto->country->entityId) {

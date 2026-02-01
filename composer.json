@@ -34,6 +34,7 @@
         "ext-simplexml": "*",
         "ext-xmlreader": "*",
         "ext-zip": "*",
+        "ext-zlib": "*",
         "api-platform/core": "^4.2",
         "aws/aws-sdk-php": "^3.369.19",
         "babdev/pagerfanta-bundle": "^4.6",

@@ -11,22 +11,26 @@
 namespace App\EntityProvider;
 
 use App\Contracts\DtoFindableRepositoryInterface;
-use App\Dto\UserDto;
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Dto\TagDto;
+use App\Entity\Tag;
+use App\Repository\TagRepository;
 
 /**
- * @extends AbstractEntityProvider<UserDto, User>
+ * @extends AbstractEntityProvider<TagDto, Tag>
  */
-final class UserEntityProvider extends AbstractEntityProvider
+final class TagEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(private readonly UserRepository $userRepository)
-    {
+    public function __construct(
+        private readonly TagRepository $tagRepository,
+    ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(string $dtoClassName): bool
     {
-        return UserDto::class === $dtoClassName;
+        return TagDto::class === $dtoClassName;
     }
 
     /**
@@ -34,6 +38,6 @@ final class UserEntityProvider extends AbstractEntityProvider
      */
     protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface
     {
-        return $this->userRepository;
+        return $this->tagRepository;
     }
 }

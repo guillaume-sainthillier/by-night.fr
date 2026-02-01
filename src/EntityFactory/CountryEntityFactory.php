@@ -12,21 +12,19 @@ namespace App\EntityFactory;
 
 use App\Contracts\EntityFactoryInterface;
 use App\Dto\CountryDto;
+use App\Entity\Country;
 use LogicException;
 
+/**
+ * @implements EntityFactoryInterface<CountryDto, Country>
+ */
 final class CountryEntityFactory implements EntityFactoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function supports(string $dtoClassName): bool
     {
         return CountryDto::class === $dtoClassName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function create(?object $entity, object $dto): object
     {
         if (null === $entity) {

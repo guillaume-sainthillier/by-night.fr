@@ -12,10 +12,14 @@ namespace App\EntityProvider;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CountryDto;
+use App\Entity\Country;
 use App\Handler\ComparatorHandler;
 use App\Repository\CountryRepository;
 use Override;
 
+/**
+ * @extends AbstractEntityProvider<CountryDto, Country>
+ */
 final class CountryEntityProvider extends AbstractEntityProvider
 {
     public function __construct(

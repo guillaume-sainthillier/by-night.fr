@@ -14,27 +14,45 @@ use App\Contracts\DependencyObjectInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
-use App\Entity\Country;
+use App\Entity\Tag;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @implements DtoEntityIdentifierResolvableInterface<Country>
+ * @implements DtoEntityIdentifierResolvableInterface<Tag>
  */
-final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
+final class TagDto implements DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
-    public ?string $entityId = null;
+    public ?int $entityId = null;
 
-    public ?string $code = null;
-
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 128)]
     public ?string $name = null;
+
+    public static function fromEntity(Tag $tag): self
+    {
+        $dto = new self();
+        $dto->entityId = $tag->getId();
+        $dto->name = $tag->getName();
+
+        return $dto;
+    }
+
+    public static function fromString(string $name): self
+    {
+        $dto = new self();
+        $dto->name = trim($name);
+
+        return $dto;
+    }
 
     public function getKeyPrefix(): string
     {
-        return 'country';
+        return 'tag';
     }
 
     public function getUniqueKey(): string
     {
-        if (null === $this->code && null === $this->name) {
+        if (null === $this->name || '' === trim($this->name)) {
             return \sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
@@ -45,13 +63,8 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
         return \sprintf(
             '%s-data-%s',
             $this->getKeyPrefix(),
-            mb_strtolower((string) ($this->code ?? $this->name))
+            mb_strtolower(trim($this->name))
         );
-    }
-
-    public function setIdentifierFromEntity(object $entity): void
-    {
-        $this->entityId = $entity->getId();
     }
 
     public function getInternalId(): ?string
@@ -61,9 +74,14 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
         }
 
         return \sprintf(
-            '%s-id-%s',
+            '%s-id-%d',
             $this->getKeyPrefix(),
             $this->entityId
         );
+    }
+
+    public function setIdentifierFromEntity(object $entity): void
+    {
+        $this->entityId = $entity->getId();
     }
 }
