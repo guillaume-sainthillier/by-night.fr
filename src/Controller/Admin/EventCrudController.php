@@ -111,10 +111,10 @@ final class EventCrudController extends AbstractCrudController
         $status = ChoiceField::new('status')
             ->setChoices(EventStatus::cases())
             ->renderAsBadges([
-                EventStatus::Scheduled => 'success',
-                EventStatus::Postponed => 'warning',
-                EventStatus::Cancelled => 'danger',
-                EventStatus::SoldOut => 'info',
+                EventStatus::Scheduled->value => 'success',
+                EventStatus::Postponed->value => 'warning',
+                EventStatus::Cancelled->value => 'danger',
+                EventStatus::SoldOut->value => 'info',
             ]);
         $statusMessage = TextField::new('statusMessage');
         $type = TextField::new('type');

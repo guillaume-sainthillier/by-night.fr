@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Enum\EventStatus;
 use App\Parser\AbstractParser;
 use DateTime;
 
@@ -72,7 +73,7 @@ final class BikiniParser extends AbstractParser
         $event->source = $data['url'];
         $event->websiteContacts = [$data['ticketUrl']];
         $event->imageUrl = $data['image'];
-        $event->status = 'postponed' === $data['status'] ? 'REPORTE' : null;
+        $event->status = 'postponed' === $data['status'] ? EventStatus::Postponed : null;
         $event->prices = implode(' // ', $data['prices']);
 
         $place = new PlaceDto();
