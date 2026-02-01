@@ -14,6 +14,7 @@ use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use Generator;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -50,9 +51,9 @@ abstract class AbstractAwinParser extends AbstractParser
     }
 
     /**
-     * @return \Generator<array<string, string>>
+     * @return Generator<array<string, string>>
      */
-    private function parseCsvFile(string $path): \Generator
+    private function parseCsvFile(string $path): Generator
     {
         $handle = gzopen($path, 'r');
 
