@@ -12,7 +12,7 @@ namespace App\Tests\Entity;
 
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
-use DateTime;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class EventTest extends TestCase
@@ -20,7 +20,7 @@ class EventTest extends TestCase
     public function testMajEndDateSetsEndDateFromStartDateWhenNoTimesheets(): void
     {
         $event = new Event();
-        $event->setStartDate(new DateTime('2024-01-15'));
+        $event->setStartDate(new DateTimeImmutable('2024-01-15'));
         $event->setEndDate(null);
 
         $event->updateEndDate();
@@ -32,8 +32,8 @@ class EventTest extends TestCase
     public function testMajEndDateDoesNotOverrideExistingEndDateWhenNoTimesheets(): void
     {
         $event = new Event();
-        $event->setStartDate(new DateTime('2024-01-15'));
-        $event->setEndDate(new DateTime('2024-01-20'));
+        $event->setStartDate(new DateTimeImmutable('2024-01-15'));
+        $event->setEndDate(new DateTimeImmutable('2024-01-20'));
 
         $event->updateEndDate();
 
@@ -43,7 +43,7 @@ class EventTest extends TestCase
     public function testMajEndDateHandlesTimesheetsWithNullDates(): void
     {
         $event = new Event();
-        $event->setStartDate(new DateTime('2024-01-01'));
+        $event->setStartDate(new DateTimeImmutable('2024-01-01'));
         $event->setEndDate(null);
 
         // Add a timesheet with null dates (edge case)

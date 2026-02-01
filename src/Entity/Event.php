@@ -20,7 +20,6 @@ use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -78,19 +77,19 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Groups(['elasticsearch:event:details'])]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $externalUpdatedAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $externalUpdatedAt = null;
 
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    private ?DateTime $startDate;
+    private ?DateTimeImmutable $startDate;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    private ?DateTime $endDate = null;
+    private ?DateTimeImmutable $endDate = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
@@ -315,7 +314,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function __construct()
     {
-        $this->startDate = new DateTime();
+        $this->startDate = new DateTimeImmutable();
         $this->userEvents = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->timesheets = new ArrayCollection();
@@ -554,36 +553,36 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getExternalUpdatedAt(): ?DateTime
+    public function getExternalUpdatedAt(): ?DateTimeImmutable
     {
         return $this->externalUpdatedAt;
     }
 
-    public function setExternalUpdatedAt(?DateTime $externalUpdatedAt): self
+    public function setExternalUpdatedAt(?DateTimeImmutable $externalUpdatedAt): self
     {
         $this->externalUpdatedAt = UnitOfWorkOptimizer::getDateTimeValue($this->externalUpdatedAt, $externalUpdatedAt);
 
         return $this;
     }
 
-    public function getStartDate(): ?DateTime
+    public function getStartDate(): ?DateTimeImmutable
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?DateTime $startDate): self
+    public function setStartDate(?DateTimeImmutable $startDate): self
     {
         $this->startDate = UnitOfWorkOptimizer::getDateValue($this->startDate, $startDate);
 
         return $this;
     }
 
-    public function getEndDate(): ?DateTime
+    public function getEndDate(): ?DateTimeImmutable
     {
         return $this->endDate;
     }
 
-    public function setEndDate(?DateTime $endDate): self
+    public function setEndDate(?DateTimeImmutable $endDate): self
     {
         $this->endDate = UnitOfWorkOptimizer::getDateValue($this->endDate, $endDate);
 

@@ -12,7 +12,7 @@ namespace App\Entity;
 
 use App\Repository\ParserHistoryRepository;
 use App\Utils\UnitOfWorkOptimizer;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,11 +22,11 @@ class ParserHistory
 {
     use EntityIdentityTrait;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private DateTime $startDate;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private DateTimeImmutable $startDate;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private DateTime $endDate;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private DateTimeImmutable $endDate;
 
     #[ORM\Column(type: Types::STRING, length: 127)]
     private ?string $fromData = null;
@@ -42,14 +42,14 @@ class ParserHistory
 
     public function __construct()
     {
-        $this->startDate = new DateTime();
-        $this->endDate = new DateTime();
+        $this->startDate = new DateTimeImmutable();
+        $this->endDate = new DateTimeImmutable();
     }
 
     #[ORM\PrePersist]
     public function updateEndDate(): void
     {
-        $this->setEndDate(new DateTime());
+        $this->setEndDate(new DateTimeImmutable());
     }
 
     /**
@@ -60,12 +60,12 @@ class ParserHistory
         return $this->endDate->getTimestamp() - $this->startDate->getTimestamp();
     }
 
-    public function getStartDate(): ?DateTime
+    public function getStartDate(): ?DateTimeImmutable
     {
         return $this->startDate;
     }
 
-    public function setStartDate(DateTime $startDate): self
+    public function setStartDate(DateTimeImmutable $startDate): self
     {
         $this->startDate = UnitOfWorkOptimizer::getDateTimeValue($this->startDate, $startDate);
 
@@ -84,12 +84,12 @@ class ParserHistory
         return $this;
     }
 
-    public function getEndDate(): ?DateTime
+    public function getEndDate(): ?DateTimeImmutable
     {
         return $this->endDate;
     }
 
-    public function setEndDate(DateTime $endDate): self
+    public function setEndDate(DateTimeImmutable $endDate): self
     {
         $this->endDate = UnitOfWorkOptimizer::getDateTimeValue($this->endDate, $endDate);
 
