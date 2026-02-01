@@ -22,7 +22,7 @@ use App\Form\Type\EventType;
 use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -105,7 +105,7 @@ final class EventController extends BaseController
     public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
         if ($event->getExternalId()) {
-            $event->setExternalUpdatedAt(new DateTime());
+            $event->setExternalUpdatedAt(new DateTimeImmutable());
         }
 
         $dto = $eventDtoFactory->create($event);

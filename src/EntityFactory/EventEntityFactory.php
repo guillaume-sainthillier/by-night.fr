@@ -19,7 +19,7 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EntityProviderHandler;
 use App\Repository\TagRepository;
-use DateTime;
+use DateTimeImmutable;
 
 final readonly class EventEntityFactory implements EntityFactoryInterface
 {
@@ -50,13 +50,13 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setExternalId($dto->externalId);
         $entity->setExternalOrigin($dto->externalOrigin);
 
-        $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTime::createFromInterface($dto->externalUpdatedAt));
+        $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTimeImmutable::createFromInterface($dto->externalUpdatedAt));
 
         // Sync timesheets from DTO
         $this->syncTimesheets($entity, $dto);
 
-        $entity->setStartDate(null === $dto->startDate ? null : DateTime::createFromInterface($dto->startDate));
-        $entity->setEndDate(null === $dto->endDate ? null : DateTime::createFromInterface($dto->endDate));
+        $entity->setStartDate(null === $dto->startDate ? null : DateTimeImmutable::createFromInterface($dto->startDate));
+        $entity->setEndDate(null === $dto->endDate ? null : DateTimeImmutable::createFromInterface($dto->endDate));
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
@@ -157,8 +157,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         // Process DTOs: update existing or add new
         foreach ($dto->timesheets as $timesheetDto) {
-            $startAt = null === $timesheetDto->startAt ? null : DateTime::createFromInterface($timesheetDto->startAt);
-            $endAt = null === $timesheetDto->endAt ? null : DateTime::createFromInterface($timesheetDto->endAt);
+            $startAt = null === $timesheetDto->startAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->startAt);
+            $endAt = null === $timesheetDto->endAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->endAt);
             $key = $this->getTimesheetKey($startAt, $endAt);
 
             if (isset($existingMap[$key])) {
@@ -188,7 +188,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
     /**
      * Generate a unique key for a timesheet based on start and end dates.
      */
-    private function getTimesheetKey(?DateTime $startAt, ?DateTime $endAt): string
+    private function getTimesheetKey(?DateTimeImmutable $startAt, ?DateTimeImmutable $endAt): string
     {
         $start = $startAt?->format('Y-m-d H:i:s') ?? 'null';
         $end = $endAt?->format('Y-m-d H:i:s') ?? 'null';

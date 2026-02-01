@@ -12,7 +12,7 @@ namespace App\Command;
 
 use App\Updater\UserUpdater;
 use App\Utils\Monitor;
-use DateTime;
+use DateTimeImmutable;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +40,7 @@ final class ImagesUpdateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $from = new DateTime($input->getOption('from'));
+        $from = new DateTimeImmutable($input->getOption('from'));
 
         Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
         $this->userUpdater->update($from);

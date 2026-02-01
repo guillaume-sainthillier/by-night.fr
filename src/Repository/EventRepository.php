@@ -17,7 +17,7 @@ use App\Entity\Event;
 use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\UserEvent;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
@@ -83,8 +83,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
     {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
+        $from = new DateTimeImmutable();
+        $from = $from->modify(Event::INDEX_FROM);
 
         $qb = $this->createElasticaQueryBuilder('e');
 
@@ -137,8 +137,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function updateNonIndexables(): void
     {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
+        $from = new DateTimeImmutable();
+        $from = $from->modify(Event::INDEX_FROM);
 
         $this
             ->getEntityManager()
@@ -152,9 +152,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findNonIndexablesBuilder(): QueryBuilder
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
-        $from->modify(Event::INDEX_FROM);
+        $from = $from->modify(Event::INDEX_FROM);
 
         return $this
             ->createElasticaQueryBuilder('e')
@@ -175,7 +175,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function getCountryEvents(): array
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
         return $this->getEntityManager()
             ->createQueryBuilder()
@@ -333,7 +333,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findAllNextQueryBuilder(Event $event): QueryBuilder
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
         return $this
             ->createQueryBuilder('e')
@@ -346,8 +346,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findTopEventsQueryBuilder(Location $location): QueryBuilder
     {
-        $du = new DateTime();
-        $au = new DateTime('sunday this week');
+        $du = new DateTimeImmutable();
+        $au = new DateTimeImmutable('sunday this week');
 
         $qb = $this
             ->createQueryBuilder('e')
@@ -372,7 +372,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findUpcomingEventsQueryBuilder(Location $location): QueryBuilder
     {
-        $from = new DateTime();
+        $from = new DateTimeImmutable();
 
         $qb = $this
             ->createQueryBuilder('e')
@@ -404,8 +404,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function getEventTypes(Location $location): array
     {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
+        $from = new DateTimeImmutable();
+        $from = $from->modify(Event::INDEX_FROM);
 
         $qb = $this->getEntityManager()
             ->createQueryBuilder()

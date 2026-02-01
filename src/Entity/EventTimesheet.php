@@ -11,7 +11,7 @@
 namespace App\Entity;
 
 use App\Utils\UnitOfWorkOptimizer;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
@@ -32,15 +32,15 @@ class EventTimesheet implements Stringable
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Event $event = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Groups(['elasticsearch:event:details'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    private ?DateTime $startAt = null;
+    private ?DateTimeImmutable $startAt = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Groups(['elasticsearch:event:details'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    private ?DateTime $endAt = null;
+    private ?DateTimeImmutable $endAt = null;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
@@ -65,24 +65,24 @@ class EventTimesheet implements Stringable
         return $this;
     }
 
-    public function getStartAt(): ?DateTime
+    public function getStartAt(): ?DateTimeImmutable
     {
         return $this->startAt;
     }
 
-    public function setStartAt(?DateTime $startAt): self
+    public function setStartAt(?DateTimeImmutable $startAt): self
     {
         $this->startAt = UnitOfWorkOptimizer::getDateTimeValue($this->startAt, $startAt);
 
         return $this;
     }
 
-    public function getEndAt(): ?DateTime
+    public function getEndAt(): ?DateTimeImmutable
     {
         return $this->endAt;
     }
 
-    public function setEndAt(?DateTime $endAt): self
+    public function setEndAt(?DateTimeImmutable $endAt): self
     {
         $this->endAt = UnitOfWorkOptimizer::getDateTimeValue($this->endAt, $endAt);
 

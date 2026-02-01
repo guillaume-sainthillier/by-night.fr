@@ -14,7 +14,7 @@ use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 
 final class Firewall
@@ -124,7 +124,7 @@ final class Firewall
                 $parserData = new ParserData()
                     ->setExternalId($dto->getExternalId())
                     ->setExternalOrigin($dto->getExternalOrigin())
-                    ->setLastUpdated(null === $dto->getExternalUpdatedAt() ? null : DateTime::createFromInterface($dto->getExternalUpdatedAt()))
+                    ->setLastUpdated(null === $dto->getExternalUpdatedAt() ? null : DateTimeImmutable::createFromInterface($dto->getExternalUpdatedAt()))
                     ->setReject($dto->reject)
                     ->setReason($dto->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
@@ -134,7 +134,7 @@ final class Firewall
             } else {
                 // No need to panic the EM if dates are equivalent
                 if ($parserData->getLastUpdated()?->format('Y-m-d H:i:s') !== $dto->getExternalUpdatedAt()?->format('Y-m-d H:i:s')) {
-                    $parserData->setLastUpdated(null === $dto->getExternalUpdatedAt() ? null : DateTime::createFromInterface($dto->getExternalUpdatedAt()));
+                    $parserData->setLastUpdated(null === $dto->getExternalUpdatedAt() ? null : DateTimeImmutable::createFromInterface($dto->getExternalUpdatedAt()));
                 }
 
                 $parserData
