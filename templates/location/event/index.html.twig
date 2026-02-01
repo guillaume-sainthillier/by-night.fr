@@ -3,9 +3,16 @@
 {% set schedules = event_seo.getEventDateTime(event) %}
 {% set eventDescription = event.description|parse_tags|raw %}
 {% set original = eventProfilePicture.originalPicture(event) %}
-{% set distinctTags = event.distinctTags %}
 
 {% set place = event.place %}
+{# Collect all tags (category + themes) for meta tags #}
+{% set allTags = [] %}
+{% if event.category %}
+    {% set allTags = allTags|merge([event.category]) %}
+{% endif %}
+{% for tag in event.themes %}
+    {% set allTags = allTags|merge([tag]) %}
+{% endfor %}
 
 {% block page_id 'page-event' %}
 {% block meta_title event_seo.eventFullTitle(event) %}
@@ -19,11 +26,11 @@
         {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_index', {location: location.city.slug})) %}
     {% endif %}
 
-    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, slug: place.slug})) %}
+    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, placeSlug: place.slug})) %}
     {% do menu.addItem(event.name, url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})) %}
 {% endblock %}
 
-{% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|keys|join(',') }},{% endif %}{{ parent() }}{% endblock %}
+{% block meta_keywords %}{% if allTags|length > 0 %}{{ allTags|map(t => t.name)|join(',') }},{% endif %}{{ parent() }}{% endblock %}
 {% block meta_description event_seo.eventDescription(event) %}
 
 {% block metas %}
@@ -34,8 +41,8 @@
         <meta property="article:author" content="{{ url('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" />
     {% endif %}
 
-    {% for tag in distinctTags|keys %}
-        <meta property="article:tag" content="{{ tag }}" />
+    {% for tag in allTags %}
+        <meta property="article:tag" content="{{ tag.name }}" />
     {% endfor %}
 {% endblock %}
 
@@ -126,7 +133,7 @@
                         {% endif %}
 
                         <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
-                            <meta name="url" content="{{ path('app_agenda_by_place', {slug: place.slug, location: place.locationSlug}) }}">
+                            <meta name="url" content="{{ path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) }}">
 
                             {% if event.placeName %}
                                 <twig:Icon name="lucide:map-pin" />
@@ -278,16 +285,16 @@
                                 {% if event.placeName %}
                                     <a class="badge text-bg-info"
                                        title="Sortir à {{ event.placeName }}"
-                                       href="{{ path('app_agenda_by_place', {slug: event.place.slug, location: event.place.locationSlug}) }}">
+                                       href="{{ path('app_agenda_by_place', {placeSlug: event.place.slug, location: event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements à {{ event.placeName }}</strong>
                                     </a>
                                 {% endif %}
 
-                                {% for tag in distinctTags %}
+                                {% for tag in allTags %}
                                     <a class="badge text-bg-info"
-                                       title="{{ tag.value }} {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_by_tags', {tag: tag.value, location: event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">{{ tag.value }} {{ event.place.location.atName }}</strong>
+                                       title="{{ tag.name }} {{ event.place.location.atName }}"
+                                       href="{{ path('app_agenda_by_tag', {tagSlug: tag.slug, tagId: tag.id, location: event.place.locationSlug}) }}">
+                                        <strong class="font-weight-normal">{{ tag.name }} {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endfor %}
                             </p>

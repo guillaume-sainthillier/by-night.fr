@@ -37,6 +37,8 @@ function initTagInputs(container = document) {
             maxItems: parseInt(el.dataset.tagsMaxItems, 10) || null,
             separator: el.dataset.tagsSeparator || ',',
             placeholder: el.getAttribute('placeholder') || '',
+            valueField: 'name',
+            labelField: 'name',
         })
     })
 }

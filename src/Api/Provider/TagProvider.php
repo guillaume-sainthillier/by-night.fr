@@ -12,23 +12,14 @@ namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Api\ApiResource\EventTag;
 use App\Entity\Tag;
 use App\Repository\TagRepository;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Legacy provider for /event-tags/{type} endpoint.
- * Now uses Tag entities instead of parsing strings from Event table.
- *
- * @deprecated Use TagProvider with /tags endpoint instead
- *
- * @implements ProviderInterface<EventTag>
+ * @implements ProviderInterface<Tag>
  */
-final readonly class EventTagProvider implements ProviderInterface
+final readonly class TagProvider implements ProviderInterface
 {
-    private const array ALLOWED_TYPES = ['categories', 'themes'];
-
     public function __construct(
         private TagRepository $tagRepository,
     ) {
@@ -36,11 +27,6 @@ final readonly class EventTagProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        $type = $uriVariables['type'] ?? null;
-        if (!\in_array($type, self::ALLOWED_TYPES, true)) {
-            throw new NotFoundHttpException(\sprintf('Invalid tag type "%s". Allowed types: %s', $type, implode(', ', self::ALLOWED_TYPES)));
-        }
-
         $search = trim((string) ($operation->getParameters()?->get('q')?->getValue() ?? ''));
         $search = '' === $search ? null : $search;
 
@@ -51,20 +37,14 @@ final readonly class EventTagProvider implements ProviderInterface
         // Fetch one extra to check if there are more results
         $limit = $itemsPerPage + 1;
 
-        // Now query from Tag table (all tags are the same, no type distinction)
         $tags = $this->tagRepository->findBySearch($search, $limit, $offset);
 
         // Check if there are more results
         $hasMore = \count($tags) > $itemsPerPage;
         $paginatedTags = \array_slice($tags, 0, $itemsPerPage);
 
-        $eventTags = array_map(
-            static fn (Tag $tag): EventTag => new EventTag(id: (string) $tag->getId(), text: $tag->getName()),
-            $paginatedTags
-        );
-
         return [
-            'member' => $eventTags,
+            'member' => $paginatedTags,
             'pagination' => [
                 'more' => $hasMore,
             ],
