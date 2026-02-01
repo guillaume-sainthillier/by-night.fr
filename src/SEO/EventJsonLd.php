@@ -81,7 +81,7 @@ final readonly class EventJsonLd
 
         if ($event->getPlace()) {
             $location['url'] = $this->urlGenerator->generate('app_agenda_by_place', [
-                'slug' => $event->getPlace()->getSlug(),
+                'placeSlug' => $event->getPlace()->getSlug(),
                 'location' => $event->getLocationSlug(),
             ], UrlGeneratorInterface::ABSOLUTE_URL);
         }

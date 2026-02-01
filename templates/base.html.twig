@@ -102,45 +102,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- End Google Tag Manager -->
     <script data-ad-client="ca-pub-2072406985754187" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@graph": [
-                {
-                    "@type": "WebSite",
-                    "@id": "{{ url('app_index') }}#website",
-                    "url": "{{ url('app_index') }}",
-                    "name": "By Night",
-                    "publisher": {
-                        "@id": "{{ url('app_index') }}#organization"
-                    },
-                    "potentialAction": {
-                        "@type": "SearchAction",
-                        "target": "{{ url('app_search_index', {q: '{search_term_string}'})|url_decode }}",
-                        "query-input": "required name=search_term_string"
-                    }
-                },
-                {
-                    "@type": "Organization",
-                    "@id": "{{ url('app_index') }}#organization",
-                    "name": "By Night",
-                    "url": "{{ url('app_index') }}",
-                    "logo": "{{ absolute_url(asset('build/images/by-night.png')) }}"
-                    {%- if social_manager.facebookIdPage or social_manager.twitterIdPage -%}
-                    ,"sameAs": [
-                        {%- if social_manager.facebookIdPage -%}
-                        "https://www.facebook.com/{{ social_manager.facebookIdPage }}"
-                        {%- endif -%}
-                        {%- if social_manager.facebookIdPage and social_manager.twitterIdPage -%},{%- endif -%}
-                        {%- if social_manager.twitterIdPage -%}
-                        "https://twitter.com/{{ social_manager.twitterIdPage }}"
-                        {%- endif -%}
-                    ]
-                    {%- endif -%}
-                }
-            ]
-        }
-    </script>
+    {{ site_json_ld() }}
     {% block json_ld '' %}
     {% block head_js_layout '' %}
     {% block head_js '' %}

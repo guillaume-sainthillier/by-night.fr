@@ -11,7 +11,9 @@
 namespace App\Twig;
 
 use App\Entity\Event;
+use App\SEO\BreadcrumbJsonLd;
 use App\SEO\EventJsonLd;
+use App\SEO\SiteJsonLd;
 use Twig\Attribute\AsTwigFunction;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -19,6 +21,8 @@ final readonly class JsonLdExtension
 {
     public function __construct(
         private EventJsonLd $eventJsonLd,
+        private SiteJsonLd $siteJsonLd,
+        private BreadcrumbJsonLd $breadcrumbJsonLd,
     ) {
     }
 
@@ -30,38 +34,22 @@ final readonly class JsonLdExtension
         return \sprintf('<script type="application/ld+json">%s</script>', $json);
     }
 
+    #[AsTwigFunction(name: 'site_json_ld', isSafe: ['html'])]
+    public function siteJsonLd(): string
+    {
+        $json = $this->siteJsonLd->generateSiteJsonLd();
+
+        return \sprintf('<script type="application/ld+json">%s</script>', $json);
+    }
+
     #[AsTwigFunction(name: 'breadcrumb_json_ld', isSafe: ['html'])]
     public function breadcrumbJsonLd(Breadcrumbs $breadcrumbs): string
     {
-        $items = [];
-        $position = 1;
+        $json = $this->breadcrumbJsonLd->generateBreadcrumbJsonLd($breadcrumbs);
 
-        foreach ($breadcrumbs as $breadcrumb) {
-            $item = [
-                '@type' => 'ListItem',
-                'position' => $position,
-                'name' => $breadcrumb['text'],
-            ];
-
-            if (!empty($breadcrumb['url'])) {
-                $item['item'] = $breadcrumb['url'];
-            }
-
-            $items[] = $item;
-            ++$position;
-        }
-
-        if ([] === $items) {
+        if ('' === $json) {
             return '';
         }
-
-        $schema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => $items,
-        ];
-
-        $json = json_encode($schema, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
 
         return \sprintf('<script type="application/ld+json">%s</script>', $json);
     }
