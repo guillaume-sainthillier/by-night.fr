@@ -18,7 +18,13 @@ final class StringManipulator
 {
     private UnicodeString $text;
 
-    private static array $stopWords = [
+    /**
+     * Pre-compiled regex pattern for stop words removal.
+     * Built once on first use to avoid rebuilding on every call.
+     */
+    private static ?string $stopWordsRegex = null;
+
+    private const array STOP_WORDS = [
         'alors', 'au', 'aucuns', 'aussi', 'autre', 'avant', 'avec', 'avoir', 'bon', 'car', 'ce', 'cela', 'ces',
         'ceux', 'chaque', 'ci', 'comme', 'comment', 'dans', 'des', 'du', 'dedans', 'dehors', 'depuis', 'devrait', 'doit',
         'donc', 'dos', 'début', 'elle', 'elles', 'en', 'encore', 'essai', 'est', 'et', 'eu', 'fait', 'faites', 'fois',
@@ -63,12 +69,23 @@ final class StringManipulator
 
     public function deleteStopWords(): self
     {
-        $parts = array_map(static fn ($stopWord) => preg_quote((string) $stopWord, '/'), self::$stopWords);
-        $stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
-
-        $this->text = $this->text->replaceMatches($stopWordsRegex, '');
+        $this->text = $this->text->replaceMatches(self::getStopWordsRegex(), '');
 
         return $this;
+    }
+
+    /**
+     * Get the pre-compiled stop words regex pattern.
+     * Built once on first call and cached for subsequent calls.
+     */
+    private static function getStopWordsRegex(): string
+    {
+        if (null === self::$stopWordsRegex) {
+            $parts = array_map(static fn ($stopWord) => preg_quote((string) $stopWord, '/'), self::STOP_WORDS);
+            self::$stopWordsRegex = '/\b(' . implode('|', $parts) . ')\b/imu';
+        }
+
+        return self::$stopWordsRegex;
     }
 
     /**
