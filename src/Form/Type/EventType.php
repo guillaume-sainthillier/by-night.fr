@@ -12,6 +12,8 @@ namespace App\Form\Type;
 
 use App\Dto\EventDto;
 use App\Enum\EventStatus;
+use App\Form\DataTransformer\TagDtoArrayTransformer;
+use App\Form\DataTransformer\TagDtoTransformer;
 use App\Handler\DoctrineEventHandler;
 use Override;
 use Symfony\Component\Form\AbstractType;
@@ -114,7 +116,7 @@ final class EventType extends AbstractType
                     'data-autocomplete-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                 ],
             ])
-            ->add('theme', TextType::class, [
+            ->add('themes', TextType::class, [
                 'label' => 'Thèmes',
                 'required' => false,
                 'attr' => [
@@ -178,6 +180,9 @@ final class EventType extends AbstractType
                 ],
             ])
             ->addEventListener(FormEvents::SUBMIT, $this->onSubmit(...));
+
+        $builder->get('category')->addModelTransformer(new TagDtoTransformer());
+        $builder->get('themes')->addModelTransformer(new TagDtoArrayTransformer());
 
         if (null !== $options['data'] && null === $options['data']->entityId) {
             $builder

@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -74,7 +75,7 @@ final class DataTourismeParser extends AbstractParser
     #[Override]
     public static function getParserVersion(): string
     {
-        return '2.0';
+        return '3.0';
     }
 
     /**
@@ -268,7 +269,14 @@ final class DataTourismeParser extends AbstractParser
         $event->name = $this->getDataValue($datas, '[rdfs:label][fr][0]');
         $event->description = $description;
         $event->type = implode(', ', $typesManifestation);
-        $event->category = implode(', ', $categoriesManifestation);
+
+        // First category becomes the main category, rest become themes
+        if ([] !== $categoriesManifestation) {
+            $event->category = TagDto::fromString(array_shift($categoriesManifestation));
+            foreach ($categoriesManifestation as $themeLabel) {
+                $event->themes[] = TagDto::fromString($themeLabel);
+            }
+        }
         $event->source = $datas['@id'];
         $event->latitude = $latitude;
         $event->longitude = $longitude;

@@ -13,12 +13,14 @@ namespace App\EntityFactory;
 use App\Contracts\EntityFactoryInterface;
 use App\Doctrine\EventSubscriber\EventImageUploadSubscriber;
 use App\Dto\EventDto;
+use App\Dto\TagDto;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Entity\Place;
+use App\Entity\Tag;
 use App\Entity\User;
+use App\EntityProvider\TagEntityProvider;
 use App\Handler\EntityProviderHandler;
-use App\Repository\TagRepository;
 use DateTimeImmutable;
 
 /**
@@ -29,7 +31,6 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
     public function __construct(
         private EntityProviderHandler $entityProviderHandler,
         private EventImageUploadSubscriber $eventImageUploadSubscriber,
-        private TagRepository $tagRepository,
     ) {
     }
 
@@ -77,21 +78,17 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setFromData($dto->fromData);
         $entity->setSource($dto->source);
 
-        // Convert category string to Tag entity
-        if (null !== $dto->category && '' !== trim($dto->category)) {
-            $entity->setCategory($this->tagRepository->findOrCreateByName($dto->category));
-        } else {
-            $entity->setCategory(null);
+        // Convert category TagDto to Tag entity
+        $categoryEntity = null;
+        if (null !== $dto->category) {
+            /** @var TagEntityProvider $tagEntityProvider */
+            $tagEntityProvider = $this->entityProviderHandler->getEntityProvider(TagDto::class);
+            $categoryEntity = $tagEntityProvider->getEntity($dto->category);
         }
+        $entity->setCategory($categoryEntity);
 
-        // Convert theme string to Tag entities
-        $entity->clearThemes();
-        if (null !== $dto->theme && '' !== trim($dto->theme)) {
-            $themeNames = array_filter(array_map('trim', explode(',', $dto->theme)));
-            foreach ($themeNames as $themeName) {
-                $entity->addTheme($this->tagRepository->findOrCreateByName($themeName));
-            }
-        }
+        // Smart sync for themes
+        $this->syncThemes($entity, $dto);
 
         $entity->setName($dto->name);
         $entity->setDescription($dto->description);
@@ -129,6 +126,46 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         return $entity;
+    }
+
+    /**
+     * Sync themes from DTO to entity.
+     * - Adds themes not already present
+     * - Removes themes not in DTO
+     */
+    private function syncThemes(Event $entity, EventDto $dto): void
+    {
+        /** @var TagEntityProvider $tagEntityProvider */
+        $tagEntityProvider = $this->entityProviderHandler->getEntityProvider(TagDto::class);
+
+        // Build map of desired theme names (lowercase for comparison)
+        $desiredThemes = [];
+        foreach ($dto->themes as $tagDto) {
+            $tagEntity = $tagEntityProvider->getEntity($tagDto);
+            if (null !== $tagEntity) {
+                $desiredThemes[mb_strtolower($tagEntity->getName())] = $tagEntity;
+            }
+        }
+
+        // Build map of existing theme names
+        $existingThemes = [];
+        foreach ($entity->getThemes() as $theme) {
+            $existingThemes[mb_strtolower($theme->getName())] = $theme;
+        }
+
+        // Remove themes not in DTO
+        foreach ($existingThemes as $key => $theme) {
+            if (!isset($desiredThemes[$key])) {
+                $entity->removeTheme($theme);
+            }
+        }
+
+        // Add themes not already present
+        foreach ($desiredThemes as $key => $theme) {
+            if (!isset($existingThemes[$key])) {
+                $entity->addTheme($theme);
+            }
+        }
     }
 
     /**

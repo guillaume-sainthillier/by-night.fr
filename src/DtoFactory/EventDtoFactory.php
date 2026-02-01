@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Dto\UserDto;
 use App\Entity\Event;
 
@@ -38,8 +39,14 @@ final class EventDtoFactory
         $event->imageUrl = $entity->getUrl();
         $event->fromData = $entity->getFromData();
         $event->address = $entity->getAddress();
-        $event->category = $entity->getCategoryLegacy();
-        $event->theme = $entity->getThemeLegacy();
+        if (null !== $entity->getCategory()) {
+            $event->category = TagDto::fromEntity($entity->getCategory());
+        }
+
+        foreach ($entity->getThemes() as $theme) {
+            $event->themes[] = TagDto::fromEntity($theme);
+        }
+
         $event->name = $entity->getName();
         $event->description = $entity->getDescription();
         $event->hours = $entity->getHours();

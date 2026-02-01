@@ -14,9 +14,11 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Parser\AbstractParser;
 use DateTimeImmutable;
 use ForceUTF8\Encoding;
+use Override;
 use Symfony\Component\Filesystem\Filesystem;
 
 final class ToulouseParser extends AbstractParser
@@ -86,8 +88,18 @@ final class ToulouseParser extends AbstractParser
             $event->latitude = (float) $tab[20];
             $event->longitude = (float) $tab[21];
             $event->type = $tab[16];
-            $event->category = $tab[17];
-            $event->theme = $tab[18];
+            $categoryLabel = $tab[17] ?? null;
+            if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
+                $event->category = TagDto::fromString($categoryLabel);
+            }
+
+            $themeStr = $tab[18] ?? null;
+            if (null !== $themeStr && '' !== trim($themeStr)) {
+                $themeNames = array_filter(array_map('trim', explode(',', $themeStr)));
+                foreach ($themeNames as $themeName) {
+                    $event->themes[] = TagDto::fromString($themeName);
+                }
+            }
             $event->phoneContacts = [$tab[22]];
             $event->emailContacts = [$tab[23]];
             $event->websiteContacts = [$tab[24]];
@@ -131,5 +143,14 @@ final class ToulouseParser extends AbstractParser
     public function getCommandName(): string
     {
         return 'toulouse.opendata';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    public static function getParserVersion(): string
+    {
+        return '2.0';
     }
 }

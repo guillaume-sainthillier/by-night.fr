@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -255,7 +256,7 @@ final class OpenAgendaParser extends AbstractParser
             $emails[] = $location['email'];
         }
 
-        $category = $data['type-de-lieu-organisateur']['label'] ?? null;
+        $categoryLabel = $data['type-de-lieu-organisateur']['label'] ?? null;
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
@@ -273,7 +274,9 @@ final class OpenAgendaParser extends AbstractParser
         $event->endDate = $endDate;
         $event->hours = $hours;
         $event->timesheets = $timesheets;
-        $event->category = $category;
+        if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
+            $event->category = TagDto::fromString($categoryLabel);
+        }
         $event->prices = $data['conditions'] ?? null;
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];

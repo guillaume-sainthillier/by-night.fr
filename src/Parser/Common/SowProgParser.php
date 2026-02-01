@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -174,7 +175,10 @@ final class SowProgParser extends AbstractParser
 
         $event->externalUpdatedAt = new DateTimeImmutable()->setTimestamp((int) round($data['modificationDate'] / 1_000));
         $event->type = $eventData['eventType']['label'];
-        $event->category = $eventData['eventStyle']['label'];
+        $categoryLabel = $eventData['eventStyle']['label'] ?? null;
+        if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
+            $event->category = TagDto::fromString($categoryLabel);
+        }
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
@@ -221,6 +225,6 @@ final class SowProgParser extends AbstractParser
     #[Override]
     public static function getParserVersion(): string
     {
-        return '2.0';
+        return '3.0';
     }
 }

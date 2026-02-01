@@ -91,9 +91,13 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?string $statusMessage = null;
 
-    public ?string $category = null;
+    #[Assert\Valid]
+    public ?TagDto $category = null;
 
-    public ?string $theme = null;
+    /** @var TagDto[] */
+    #[Assert\Valid]
+    #[Assert\All([new Assert\Type(TagDto::class)])]
+    public array $themes = [];
 
     public ?float $latitude = null;
 
@@ -166,6 +170,14 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
         if (null !== $this->user) {
             $catalogue->add(new Dependency($this->user));
+        }
+
+        if (null !== $this->category) {
+            $catalogue->add(new Dependency($this->category, false));
+        }
+
+        foreach ($this->themes as $theme) {
+            $catalogue->add(new Dependency($theme, false));
         }
 
         return $catalogue;

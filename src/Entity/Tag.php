@@ -15,6 +15,9 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
 use App\Api\Provider\TagAutocompleteProvider;
+use App\Contracts\DependencyObjectInterface;
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\TagRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -50,7 +53,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 #[ORM\Table(name: 'tag')]
 #[ORM\Index(name: 'tag_name_idx', columns: ['name'])]
-class Tag implements Stringable
+class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DependencyObjectInterface
 {
     use EntityTimestampableTrait;
 
@@ -101,5 +104,40 @@ class Tag implements Stringable
         $this->slug = $slug;
 
         return $this;
+    }
+
+    public function getKeyPrefix(): string
+    {
+        return 'tag';
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->id) {
+            return null;
+        }
+
+        return \sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->id
+        );
+    }
+
+    public function getUniqueKey(): string
+    {
+        if (null === $this->name || '' === trim($this->name)) {
+            return \sprintf(
+                '%s-spl-%s',
+                $this->getKeyPrefix(),
+                spl_object_id($this)
+            );
+        }
+
+        return \sprintf(
+            '%s-data-%s',
+            $this->getKeyPrefix(),
+            mb_strtolower(trim($this->name))
+        );
     }
 }
