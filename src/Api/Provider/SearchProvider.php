@@ -163,7 +163,8 @@ final readonly class SearchProvider implements ProviderInterface
                 description: $event->getStartDate()?->format('d/m/Y'),
                 url: $this->urlGenerator->generate('app_event_details', [
                     'slug' => $event->getSlug(),
-                    'location' => $event->getPlace()?->getCity()?->getSlug() ?? 'france',
+                    'id' => $event->getId(),
+                    'location' => $event->getLocationSlug(),
                 ]),
                 highlightResult: [
                     'label' => [
