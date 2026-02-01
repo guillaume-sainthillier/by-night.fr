@@ -139,8 +139,8 @@ final class EventElasticaRepository extends Repository
                     'description.heavy',
                     'theme',
                     'type',
-                    'category_tag.name',
-                    'theme_tags.name',
+                    'category.name',
+                    'themes.name',
                 ])
                 ->setFuzziness('auto')
                 ->setOperator('AND')
@@ -153,12 +153,12 @@ final class EventElasticaRepository extends Repository
         if (null !== $search->getTagId()) {
             $tagFilter = new BoolQuery();
             $tagFilter->setMinimumShouldMatch(1);
-            // Match category_tag.id
-            $tagFilter->addShould(new Term(['category_tag.id' => $search->getTagId()]));
-            // Match theme_tags.id (nested)
+            // Match category.id
+            $tagFilter->addShould(new Term(['category.id' => $search->getTagId()]));
+            // Match themes.id (nested)
             $nestedQuery = new Nested();
-            $nestedQuery->setPath('theme_tags');
-            $nestedQuery->setQuery(new Term(['theme_tags.id' => $search->getTagId()]));
+            $nestedQuery->setPath('themes');
+            $nestedQuery->setQuery(new Term(['themes.id' => $search->getTagId()]));
             $tagFilter->addShould($nestedQuery);
             $mainQuery->addFilter($tagFilter);
         } elseif ($search->getTag()) {

@@ -105,13 +105,13 @@ final class EventsTagMigrateCommand extends Command
     private function createEventsQueryBuilder(bool $force): QueryBuilder
     {
         $qb = $this->eventRepository->createQueryBuilder('e')
-            ->where('(e.category IS NOT NULL AND e.category != :empty) OR (e.theme IS NOT NULL AND e.theme != :empty)')
+            ->where('(e.categoryLegacy IS NOT NULL AND e.categoryLegacy != :empty) OR (e.themeLegacy IS NOT NULL AND e.themeLegacy != :empty)')
             ->setParameter('empty', '');
 
         if (!$force) {
             // Only process events that haven't been migrated yet
-            $qb->andWhere('e.categoryTag IS NULL')
-                ->andWhere('SIZE(e.themeTags) = 0');
+            $qb->andWhere('e.category IS NULL')
+                ->andWhere('SIZE(e.themes) = 0');
         }
 
         return $qb;
@@ -131,21 +131,21 @@ final class EventsTagMigrateCommand extends Command
 
     private function migrateEvent(Event $event, bool $dryRun, SymfonyStyle $io): bool
     {
-        $category = $event->getCategory();
-        $theme = $event->getTheme();
+        $categoryLegacy = $event->getCategoryLegacy();
+        $themeLegacy = $event->getThemeLegacy();
 
         // Convert strings to Tag entities
-        $result = $this->tagConverter->convert($category, $theme);
+        $result = $this->tagConverter->convert($categoryLegacy, $themeLegacy);
 
         // Set the category tag
         if (null !== $result['category']) {
-            $event->setCategoryTag($result['category']);
+            $event->setCategory($result['category']);
         }
 
         // Set the theme tags
-        $event->clearThemeTags();
+        $event->clearThemes();
         foreach ($result['themes'] as $themeTag) {
-            $event->addThemeTag($themeTag);
+            $event->addTheme($themeTag);
         }
 
         if ($io->isVeryVerbose()) {
@@ -155,9 +155,9 @@ final class EventsTagMigrateCommand extends Command
                 '  [%s] Event #%d: category="%s" -> Tag[%s], theme="%s" -> Tags[%s]',
                 $dryRun ? 'DRY-RUN' : 'MIGRATE',
                 $event->getId(),
-                $category ?? '',
+                $categoryLegacy ?? '',
                 $categoryName,
-                $theme ?? '',
+                $themeLegacy ?? '',
                 implode(', ', $themeNames)
             ));
         }

@@ -7,10 +7,10 @@
 {% set place = event.place %}
 {# Collect all tags (category + themes) for meta tags #}
 {% set allTags = [] %}
-{% if event.categoryTag %}
-    {% set allTags = allTags|merge([event.categoryTag]) %}
+{% if event.category %}
+    {% set allTags = allTags|merge([event.category]) %}
 {% endif %}
-{% for tag in event.themeTags %}
+{% for tag in event.themes %}
     {% set allTags = allTags|merge([tag]) %}
 {% endfor %}
 

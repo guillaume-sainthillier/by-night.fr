@@ -101,11 +101,11 @@ final class EventSEO
     {
         $tagNames = [];
 
-        if (null !== $event->getCategoryTag()) {
-            $tagNames[] = $event->getCategoryTag()->getName();
+        if (null !== $event->getCategory()) {
+            $tagNames[] = $event->getCategory()->getName();
         }
 
-        foreach ($event->getThemeTags() as $tag) {
+        foreach ($event->getThemes() as $tag) {
             $tagNames[] = $tag->getName();
         }
 

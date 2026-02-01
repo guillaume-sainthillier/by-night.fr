@@ -110,20 +110,20 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Groups(['elasticsearch:event:details'])]
     private ?string $type = null;
 
-    /** @deprecated Use $categoryTag instead */
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
+    /** @deprecated Use $category (Tag) instead */
+    #[ORM\Column(name: 'category', type: Types::STRING, length: 128, nullable: true)]
     #[Ignore]
-    private ?string $category = null;
+    private ?string $categoryLegacy = null;
 
-    /** @deprecated Use $themeTags instead */
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
+    /** @deprecated Use $themes instead */
+    #[ORM\Column(name: 'theme', type: Types::STRING, length: 128, nullable: true)]
     #[Ignore]
-    private ?string $theme = null;
+    private ?string $themeLegacy = null;
 
     #[ORM\ManyToOne(targetEntity: Tag::class)]
     #[ORM\JoinColumn(name: 'category_id', nullable: true, onDelete: 'SET NULL')]
     #[Groups(['elasticsearch:event:details'])]
-    private ?Tag $categoryTag = null;
+    private ?Tag $category = null;
 
     /**
      * @var Collection<int, Tag>
@@ -131,7 +131,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\ManyToMany(targetEntity: Tag::class)]
     #[ORM\JoinTable(name: 'event_tag')]
     #[Groups(['elasticsearch:event:details'])]
-    private Collection $themeTags;
+    private Collection $themes;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $phoneContacts = null;
@@ -314,7 +314,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->userEvents = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->timesheets = new ArrayCollection();
-        $this->themeTags = new ArrayCollection();
+        $this->themes = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }
@@ -626,38 +626,42 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    public function getCategory(): ?string
+    /** @deprecated Use getCategory() instead */
+    public function getCategoryLegacy(): ?string
+    {
+        return $this->categoryLegacy;
+    }
+
+    /** @deprecated Use setCategory() instead */
+    public function setCategoryLegacy(?string $category): self
+    {
+        $this->categoryLegacy = $category;
+
+        return $this;
+    }
+
+    /** @deprecated Use getThemes() instead */
+    public function getThemeLegacy(): ?string
+    {
+        return $this->themeLegacy;
+    }
+
+    /** @deprecated Use setThemes() instead */
+    public function setThemeLegacy(?string $theme): self
+    {
+        $this->themeLegacy = $theme;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Tag
     {
         return $this->category;
     }
 
-    public function setCategory(?string $category): self
+    public function setCategory(?Tag $category): self
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    public function getTheme(): ?string
-    {
-        return $this->theme;
-    }
-
-    public function setTheme(?string $theme): self
-    {
-        $this->theme = $theme;
-
-        return $this;
-    }
-
-    public function getCategoryTag(): ?Tag
-    {
-        return $this->categoryTag;
-    }
-
-    public function setCategoryTag(?Tag $categoryTag): self
-    {
-        $this->categoryTag = $categoryTag;
 
         return $this;
     }
@@ -665,30 +669,30 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     /**
      * @return Collection<int, Tag>
      */
-    public function getThemeTags(): Collection
+    public function getThemes(): Collection
     {
-        return $this->themeTags;
+        return $this->themes;
     }
 
-    public function addThemeTag(Tag $tag): self
+    public function addTheme(Tag $tag): self
     {
-        if (!$this->themeTags->contains($tag)) {
-            $this->themeTags->add($tag);
+        if (!$this->themes->contains($tag)) {
+            $this->themes->add($tag);
         }
 
         return $this;
     }
 
-    public function removeThemeTag(Tag $tag): self
+    public function removeTheme(Tag $tag): self
     {
-        $this->themeTags->removeElement($tag);
+        $this->themes->removeElement($tag);
 
         return $this;
     }
 
-    public function clearThemeTags(): self
+    public function clearThemes(): self
     {
-        $this->themeTags->clear();
+        $this->themes->clear();
 
         return $this;
     }

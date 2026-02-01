@@ -79,8 +79,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setFromData($dto->fromData);
         $entity->setSource($dto->source);
-        $entity->setCategory($dto->category);
-        $entity->setTheme($dto->theme);
+        $entity->setCategoryLegacy($dto->category);
+        $entity->setThemeLegacy($dto->theme);
         $entity->setName($dto->name);
         $entity->setDescription($dto->description);
         $entity->setHours($dto->hours);

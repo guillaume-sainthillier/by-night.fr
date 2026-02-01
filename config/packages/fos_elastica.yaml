@@ -124,7 +124,7 @@ fos_elastica:
                 type:
                     type: text
                     analyzer: french_natural
-                category_tag:
+                category:
                     type: object
                     properties:
                         id:
@@ -132,7 +132,7 @@ fos_elastica:
                         name:
                             type: text
                             analyzer: french_natural
-                theme_tags:
+                themes:
                     type: nested
                     properties:
                         id:

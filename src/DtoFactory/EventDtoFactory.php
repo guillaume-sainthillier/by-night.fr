@@ -38,8 +38,8 @@ final class EventDtoFactory
         $event->imageUrl = $entity->getUrl();
         $event->fromData = $entity->getFromData();
         $event->address = $entity->getAddress();
-        $event->category = $entity->getCategory();
-        $event->theme = $entity->getTheme();
+        $event->category = $entity->getCategoryLegacy();
+        $event->theme = $entity->getThemeLegacy();
         $event->name = $entity->getName();
         $event->description = $entity->getDescription();
         $event->hours = $entity->getHours();

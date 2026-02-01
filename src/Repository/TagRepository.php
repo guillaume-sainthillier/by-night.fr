@@ -61,16 +61,11 @@ class TagRepository extends ServiceEntityRepository
     }
 
     /**
-     * Find a tag by its exact name (case-insensitive).
+     * Find a tag by its exact name (case-insensitive in MySQL).
      */
     public function findOneByName(string $name): ?Tag
     {
-        return $this
-            ->createQueryBuilder('t')
-            ->andWhere('LOWER(t.name) = LOWER(:name)')
-            ->setParameter('name', trim($name))
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findOneBy(['name' => trim($name)]);
     }
 
     /**
@@ -96,7 +91,7 @@ class TagRepository extends ServiceEntityRepository
 
         if (null !== $search && '' !== $search) {
             $qb
-                ->andWhere('LOWER(t.name) LIKE LOWER(:search)')
+                ->andWhere('t.name LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
 
@@ -116,7 +111,7 @@ class TagRepository extends ServiceEntityRepository
 
         if (null !== $search && '' !== $search) {
             $qb
-                ->andWhere('LOWER(t.name) LIKE LOWER(:search)')
+                ->andWhere('t.name LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
 
