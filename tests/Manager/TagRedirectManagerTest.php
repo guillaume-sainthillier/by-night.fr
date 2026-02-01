@@ -95,8 +95,8 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->expects(self::once())
             ->method('generate')
             ->with('app_agenda_by_tag', [
-                'id' => 123,
-                'slug' => 'concert',
+                'tagId' => 123,
+                'tagSlug' => 'concert',
                 'location' => 'toulouse',
             ])
             ->willReturn('/toulouse/agenda/tag/concert--123');
@@ -247,8 +247,8 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->expects(self::once())
             ->method('generate')
             ->with('app_agenda_by_tag', [
-                'id' => 123,
-                'slug' => 'concert',
+                'tagId' => 123,
+                'tagSlug' => 'concert',
                 'location' => 'toulouse',
                 'page' => 2,
             ])
