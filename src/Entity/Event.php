@@ -157,7 +157,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $reservationInternet = null;
 
-    /** @deprecated  */
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $prices = null;
 
