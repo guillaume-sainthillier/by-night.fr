@@ -39,8 +39,8 @@ final class EventFactory extends PersistentProxyObjectFactory
             'user' => UserFactory::new(),
             'latitude' => self::faker()->latitude(),
             'longitude' => self::faker()->longitude(),
-            'categoryLegacy' => self::faker()->randomElement(['Concert', 'Théâtre', 'Exposition', 'Festival', 'Sport']),
-            'themeLegacy' => self::faker()->randomElement(['Rock', 'Jazz', 'Classique', 'Pop', 'Electro']),
+            'category' => TagFactory::new(),
+            'themes' => TagFactory::new()->range(1, 3),
             'type' => self::faker()->randomElement(['Concert', 'Spectacle', 'Festival']),
         ];
     }

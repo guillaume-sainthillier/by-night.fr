@@ -18,6 +18,7 @@ use App\Entity\EventTimesheet;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EntityProviderHandler;
+use App\Repository\TagRepository;
 use DateTime;
 
 final readonly class EventEntityFactory implements EntityFactoryInterface
@@ -25,6 +26,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
     public function __construct(
         private EntityProviderHandler $entityProviderHandler,
         private EventImageUploadSubscriber $eventImageUploadSubscriber,
+        private TagRepository $tagRepository,
     ) {
     }
 
@@ -79,8 +81,23 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setFromData($dto->fromData);
         $entity->setSource($dto->source);
-        $entity->setCategoryLegacy($dto->category);
-        $entity->setThemeLegacy($dto->theme);
+
+        // Convert category string to Tag entity
+        if (null !== $dto->category && '' !== trim($dto->category)) {
+            $entity->setCategory($this->tagRepository->findOrCreateByName($dto->category));
+        } else {
+            $entity->setCategory(null);
+        }
+
+        // Convert theme string to Tag entities
+        $entity->clearThemes();
+        if (null !== $dto->theme && '' !== trim($dto->theme)) {
+            $themeNames = array_filter(array_map('trim', explode(',', $dto->theme)));
+            foreach ($themeNames as $themeName) {
+                $entity->addTheme($this->tagRepository->findOrCreateByName($themeName));
+            }
+        }
+
         $entity->setName($dto->name);
         $entity->setDescription($dto->description);
         $entity->setHours($dto->hours);

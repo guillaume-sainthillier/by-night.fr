@@ -12,12 +12,11 @@ namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Api\ApiResource\Tag as ApiTag;
 use App\Entity\Tag;
 use App\Repository\TagRepository;
 
 /**
- * @implements ProviderInterface<ApiTag>
+ * @implements ProviderInterface<Tag>
  */
 final readonly class TagProvider implements ProviderInterface
 {
@@ -44,17 +43,8 @@ final readonly class TagProvider implements ProviderInterface
         $hasMore = \count($tags) > $itemsPerPage;
         $paginatedTags = \array_slice($tags, 0, $itemsPerPage);
 
-        $apiTags = array_map(
-            static fn (Tag $tag): ApiTag => new ApiTag(
-                id: $tag->getId(),
-                name: $tag->getName(),
-                slug: $tag->getSlug(),
-            ),
-            $paginatedTags
-        );
-
         return [
-            'member' => $apiTags,
+            'member' => $paginatedTags,
             'pagination' => [
                 'more' => $hasMore,
             ],
