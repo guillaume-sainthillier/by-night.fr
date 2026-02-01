@@ -25,8 +25,7 @@ final readonly class JsonLdExtension
     #[AsTwigFunction(name: 'event_json_ld', isSafe: ['html'])]
     public function eventJsonLd(Event $event): string
     {
-        $schema = $this->eventJsonLd->generateEventSchema($event);
-        $json = $this->eventJsonLd->toJson($schema);
+        $json = $this->eventJsonLd->generateEventJsonLd($event);
 
         return \sprintf('<script type="application/ld+json">%s</script>', $json);
     }
@@ -62,7 +61,7 @@ final readonly class JsonLdExtension
             'itemListElement' => $items,
         ];
 
-        $json = json_encode($schema, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
+        $json = json_encode($schema, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
 
         return \sprintf('<script type="application/ld+json">%s</script>', $json);
     }

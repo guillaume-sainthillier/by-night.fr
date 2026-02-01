@@ -22,17 +22,30 @@ final readonly class EventJsonLd
     ) {
     }
 
-    public function generateEventSchema(Event $event): array
+    public function generateEventJsonLd(Event $event): string
+    {
+        $schema = $this->generateEventSchema($event);
+
+        return $this->toJson($schema);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function generateEventSchema(Event $event): array
     {
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'Event',
             'name' => $event->getName(),
             'url' => $this->generateEventUrl($event),
-            'startDate' => $event->getStartDate()?->format('c'),
             'eventStatus' => $this->mapEventStatus($event->getStatus()),
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
         ];
+
+        if ($event->getStartDate()) {
+            $schema['startDate'] = $event->getStartDate()->format('c');
+        }
 
         if ($event->getDescription()) {
             $schema['description'] = strip_tags($event->getDescription());
@@ -156,8 +169,11 @@ final readonly class EventJsonLd
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    public function toJson(array $schema): string
+    /**
+     * @param array<string, mixed> $schema
+     */
+    private function toJson(array $schema): string
     {
-        return json_encode($schema, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
+        return json_encode($schema, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
     }
 }
