@@ -49,7 +49,7 @@
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input cancel" data-href="{{ path('api_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status.value == 'cancelled' ? 'checked' }} id="cancel-event-{{ event.id }}">
+                                    <input class="form-check-input cancel" data-href="{{ path('api_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status and event.status.value == 'cancelled' ? 'checked' }} id="cancel-event-{{ event.id }}">
                                     <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
                                 </div>
                             </td>

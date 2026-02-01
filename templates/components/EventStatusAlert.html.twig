@@ -12,9 +12,6 @@
         {% elseif event.status.value == 'sold_out' %}
             {% set statusIcon = 'lucide:ticket-x' %}
             {% set alertClass = 'alert-info' %}
-        {% elseif event.status.value == 'scheduled' %}
-            {% set statusIcon = 'lucide:calendar-check' %}
-            {% set alertClass = 'alert-success' %}
         {% endif %}
     {% endif %}
     <div {{ attributes.defaults({class: 'alert ' ~ alertClass ~ ' mb-0'}) }}>

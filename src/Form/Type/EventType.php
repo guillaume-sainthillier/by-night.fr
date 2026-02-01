@@ -15,8 +15,8 @@ use App\Enum\EventStatus;
 use App\Handler\DoctrineEventHandler;
 use Override;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -90,11 +90,12 @@ final class EventType extends AbstractType
                     'placeholder' => '17€ avec préventes, 20€ sur place',
                 ],
             ])
-            ->add('status', ChoiceType::class, [
+            ->add('status', EnumType::class, [
                 'label' => 'Statut',
+                'class' => EventStatus::class,
+                'choice_label' => static fn (EventStatus $status) => $status->getLabel(),
                 'required' => false,
-                'choices' => EventStatus::getChoices(),
-                'placeholder' => 'Programmé (par défaut)',
+                'placeholder' => 'Programmé',
             ])
             ->add('statusMessage', TextType::class, [
                 'label' => 'Message de statut',
