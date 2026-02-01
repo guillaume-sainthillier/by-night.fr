@@ -12,12 +12,23 @@ namespace App\Elasticsearch;
 
 use App\Entity\Event;
 
-final readonly class EventIndexableChecker
+final class EventIndexableChecker
 {
+    private bool $enabled = true;
+
     public function isIndexable(Event $event): bool
     {
+        if (!$this->enabled) {
+            return true;
+        }
+
         // Don't index duplicate events (they redirect anyway)
         // Also check if the event was already indexable (not a draft)
         return $event->isIndexable() && !$event->isDuplicate();
+    }
+
+    public function setEnabled(bool $enabled): void
+    {
+        $this->enabled = $enabled;
     }
 }

@@ -10,6 +10,7 @@
 
 namespace App\Command;
 
+use App\Elasticsearch\EventIndexableChecker;
 use App\Entity\Event;
 use App\Repository\EventRepository;
 use App\Service\TagConverter;
@@ -29,12 +30,13 @@ use Throwable;
 #[AsCommand('app:events:migrate-tags', 'Migrate category/theme strings to Tag entities')]
 final class EventsTagMigrateCommand extends Command
 {
-    private const int BATCH_SIZE = 500;
+    private const int BATCH_SIZE = 10000;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EventRepository $eventRepository,
         private readonly TagConverter $tagConverter,
+        private readonly EventIndexableChecker $eventIndexableChecker,
     ) {
         parent::__construct();
     }
@@ -49,6 +51,7 @@ final class EventsTagMigrateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->eventIndexableChecker->setEnabled(false);
         $io = new SymfonyStyle($input, $output);
         $dryRun = $input->getOption('dry-run');
         $batchSize = (int) $input->getOption('batch-size');
@@ -104,7 +107,8 @@ final class EventsTagMigrateCommand extends Command
 
     private function createEventsQueryBuilder(bool $force): QueryBuilder
     {
-        $qb = $this->eventRepository->createQueryBuilder('e')
+        $qb = $this->eventRepository
+            ->createQueryBuilder('e')
             ->where('(e.categoryLegacy IS NOT NULL AND e.categoryLegacy != :empty) OR (e.themeLegacy IS NOT NULL AND e.themeLegacy != :empty)')
             ->setParameter('empty', '');
 
@@ -131,6 +135,7 @@ final class EventsTagMigrateCommand extends Command
 
     private function migrateEvent(Event $event, bool $dryRun, SymfonyStyle $io): bool
     {
+        $event->batchUpdate = true;
         $categoryLegacy = $event->getCategoryLegacy();
         $themeLegacy = $event->getThemeLegacy();
 

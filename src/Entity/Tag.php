@@ -14,14 +14,13 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
-use App\Api\Provider\TagProvider;
+use App\Api\Filter\TagSearchFilter;
 use App\Repository\TagRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Stringable;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     shortName: 'Tag',
@@ -29,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(
             uriTemplate: '/tags',
             name: 'api_tags',
-            normalizationContext: ['groups' => ['tag:read']],
+            normalizationContext: ['groups' => ['tag:list']],
             cacheHeaders: [
                 'max_age' => 3600,
                 'shared_max_age' => 3600,
@@ -38,36 +37,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 summary: 'Search for tags',
                 description: 'Returns a list of tags (for categories and themes) matching the search query.',
             ),
-            provider: TagProvider::class,
             parameters: [
-                'q' => new QueryParameter(
-                    key: 'q',
-                    schema: ['type' => 'string', 'maxLength' => 100],
-                    description: 'Search query for tag autocomplete',
-                    required: false,
-                    constraints: [
-                        new Assert\Length(max: 100),
-                    ],
-                ),
-                'page' => new QueryParameter(
-                    key: 'page',
-                    schema: ['type' => 'integer', 'minimum' => 1, 'default' => 1],
-                    description: 'Page number for pagination',
-                    required: false,
-                    constraints: [
-                        new Assert\Positive(),
-                    ],
-                ),
-                'itemsPerPage' => new QueryParameter(
-                    key: 'itemsPerPage',
-                    schema: ['type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'default' => 20],
-                    description: 'Number of items per page',
-                    required: false,
-                    constraints: [
-                        new Assert\Positive(),
-                        new Assert\LessThanOrEqual(100),
-                    ],
-                ),
+                'q' => new QueryParameter(property: 'hydra:freetextQuery', required: true, filter: TagSearchFilter::class),
             ],
         ),
     ],
@@ -82,17 +53,17 @@ class Tag implements Stringable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
-    #[Groups(['elasticsearch:event:details', 'tag:read'])]
+    #[Groups(['elasticsearch:event:details', 'tag:list'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
-    #[Groups(['elasticsearch:event:details', 'tag:read'])]
-    private string $name = '';
+    #[Groups(['elasticsearch:event:details', 'tag:list'])]
+    private ?string $name = null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, unique: true)]
-    #[Gedmo\Slug(fields: ['name'])]
-    #[Groups(['tag:read'])]
-    private string $slug = '';
+    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Gedmo\Slug(fields: ['name'], unique: false)]
+    #[Groups(['tag:list'])]
+    private ?string $slug = null;
 
     public function __toString(): string
     {
@@ -104,24 +75,24 @@ class Tag implements Stringable
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
 

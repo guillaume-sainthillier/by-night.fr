@@ -19,8 +19,8 @@ use App\Entity\Tag;
 use App\Form\Type\SearchType;
 use App\Manager\TagRedirectManager;
 use App\Manager\WidgetsManager;
+use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
-use App\Repository\TagRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -44,7 +44,7 @@ final class AgendaController extends BaseController
         Request $request,
         CacheInterface $memoryCache,
         RepositoryManagerInterface $repositoryManager,
-        TagRepository $tagRepository,
+        EventRepository $eventRepository,
         PlaceRepository $placeRepository,
         WidgetsManager $widgetsManager,
         TagRedirectManager $tagRedirectManager,
@@ -89,7 +89,7 @@ final class AgendaController extends BaseController
         $formAction = $this->handleSearch($search, $location, $type, $place, $tag);
 
         // Retrieve tag types for filter
-        $types_manif = $this->getTypesEvenements($memoryCache, $tagRepository);
+        $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
 
         // Create and submit the form
         $form = $this->createForm(SearchType::class, $search, [
@@ -202,15 +202,15 @@ final class AgendaController extends BaseController
      *
      * @psalm-return array<string, string>
      */
-    private function getTypesEvenements(CacheInterface $cache, TagRepository $tagRepository): array
+    private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location): array
     {
-        $key = 'event.tags.v3';
+        $key = 'event.categories.v3.' . $location->getSlug();
 
-        return $cache->get($key, static function (ItemInterface $item) use ($tagRepository) {
-            $tags = $tagRepository->findAll();
+        return $cache->get($key, static function (ItemInterface $item) use ($repo, $location) {
+            $eventCategories = $repo->getEventTypes($location);
             $types = [];
-            foreach ($tags as $tag) {
-                $types[$tag->getName()] = $tag->getName();
+            foreach ($eventCategories as $eventCategory) {
+                $types[$eventCategory->getName()] = $eventCategory->getName();
             }
 
             ksort($types, \SORT_NATURAL | \SORT_FLAG_CASE);

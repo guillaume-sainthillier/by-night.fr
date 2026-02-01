@@ -2,9 +2,9 @@ import $ from 'jquery'
 import TomSelect from 'tom-select'
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader'
 
+import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createFancybox } from '@/js/services/ui/FancyboxService'
-import { create as createSelect } from '@/js/services/ui/SelectService'
 import { create as createTags } from '@/js/services/ui/TagsService'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 import initEventScheduler from '@/js/listeners/event-scheduler'
@@ -19,12 +19,6 @@ function initDatepickers(container = document) {
             singleDate: el.dataset.singleDate === 'true',
             ranges: el.dataset.ranges ? JSON.parse(el.dataset.ranges) : {},
         })
-    })
-}
-
-function initSelects(container = document) {
-    container.querySelectorAll('select.form-select:not(.hidden):not(.tomselected)').forEach((el) => {
-        createSelect({ element: el })
     })
 }
 
@@ -43,6 +37,18 @@ function initTagInputs(container = document) {
     })
 }
 
+function initCategoryInputs(container = document) {
+    container.querySelectorAll('.js-category-input').forEach((el) => {
+        createAutocomplete({
+            element: el,
+            url: el.dataset.autocompleteUrl,
+            valueField: 'name',
+            labelField: 'name',
+            placeholder: el.getAttribute('placeholder') || '',
+        })
+    })
+}
+
 function initFancyboxes(container = document) {
     container.querySelectorAll('.image-gallery').forEach((el) => {
         createFancybox({ element: el })
@@ -57,8 +63,8 @@ function initWysiwygs(container = document) {
 
 $(document).ready(function () {
     initDatepickers()
-    initSelects()
     initTagInputs()
+    initCategoryInputs()
     initFancyboxes()
     initWysiwygs()
 
