@@ -47,15 +47,15 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
         if ($region) {
             $qb
                 ->leftJoin(AdminZone1::class, 'admin_zone1', 'WITH', 'admin_zone1.country = c')
-                ->orWhere('LOWER(admin_zone1.name) LIKE :region')
-                ->setParameter('region', '%' . mb_strtolower($region) . '%');
+                ->orWhere('admin_zone1.name LIKE :region')
+                ->setParameter('region', '%' . $region . '%');
         }
 
         if ($department) {
             $qb
                 ->leftJoin(AdminZone2::class, 'admin_zone2', 'WITH', 'admin_zone2.country = c')
-                ->orWhere('LOWER(admin_zone2.name) LIKE :department')
-                ->setParameter('department', '%' . mb_strtolower($department) . '%');
+                ->orWhere('admin_zone2.name LIKE :department')
+                ->setParameter('department', '%' . $department . '%');
         }
 
         return $qb
@@ -71,8 +71,8 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
     {
         return $this
             ->createQueryBuilder('c')
-            ->andWhere('LOWER(c.name) = :country OR LOWER(c.displayName) = :country OR c.id = :country')
-            ->setParameter('country', mb_strtolower((string) $country))
+            ->andWhere('c.name = :country OR c.displayName = :country OR c.id = :country')
+            ->setParameter('country', $country)
             ->getQuery()
             ->enableResultCache()
             ->useQueryCache(true)
@@ -92,7 +92,7 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
             if (null !== $dto->code) {
                 $idsWheres[$dto->code] = true;
             } elseif (null !== $dto->name) {
-                $namesWheres[strtolower($dto->name)] = true;
+                $namesWheres[$dto->name] = true;
             }
         }
 
@@ -108,7 +108,7 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
         }
 
         if ([] !== $namesWheres) {
-            $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR c.id IN(:names)';
+            $wheres[] = 'c.name IN(:names) OR c.displayName IN(:names) OR c.id IN(:names)';
             $qb->setParameter('names', array_keys($namesWheres));
         }
 
