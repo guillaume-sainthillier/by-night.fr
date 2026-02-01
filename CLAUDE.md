@@ -17,6 +17,35 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Frontend**: Webpack Encore, Bootstrap 5, jQuery, Sass, Preact (for reactive components)
 - **Error Tracking**: Sentry
 
+## Backend Development Workflow
+
+**Before modifying PHP files**, always check the current state of the codebase:
+
+```bash
+# Run all quality checks on the files you plan to modify
+vendor/bin/phpstan analyse src/Path/To/File.php   # Check specific file(s)
+vendor/bin/phpunit tests/Path/To/FileTest.php     # Run related tests
+vendor/bin/php-cs-fixer fix --dry-run --diff src/Path/To/File.php  # Check formatting
+```
+
+**After modifying PHP files**, verify your changes don't introduce issues:
+
+```bash
+# 1. Fix code style (required - pre-commit hook will run this anyway)
+vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php src/Path/To/File.php
+
+# 2. Run static analysis on modified files
+vendor/bin/phpstan analyse src/Path/To/File.php
+
+# 3. Run related tests
+vendor/bin/phpunit tests/Path/To/FileTest.php
+
+# 4. For broad changes, run the full suite
+vendor/bin/phpstan analyse && vendor/bin/phpunit
+```
+
+This workflow catches type errors, regressions, and style issues before they reach the pre-commit hook or CI.
+
 ## Common Commands
 
 ### Development
