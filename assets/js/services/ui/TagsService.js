@@ -44,7 +44,8 @@ export function create({
         options.searchField = []
         options.sortField = [{field:'$order'},{field:'$score'}]
         options.load = (query, callback) => {
-            fetch(`${url}?q=${encodeURIComponent(query)}`, fetchOptions)
+            const fetchUrl = url.replace('__QUERY__', encodeURIComponent(query))
+            fetch(fetchUrl, fetchOptions)
                 .then((res) => res.json())
                 .then((data) => callback(transformResponse(data)))
                 .catch(() => callback())

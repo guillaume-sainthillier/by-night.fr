@@ -44,7 +44,7 @@ export function create({
         data: {
             src: async (query) => {
                 fetchError = null
-                const fetchUrl = url.replace('%QUERY', encodeURIComponent(query))
+                const fetchUrl = url.replace('__QUERY__', encodeURIComponent(query))
                 try {
                     const res = await fetch(fetchUrl, fetchOptions)
                     if (!res.ok) {

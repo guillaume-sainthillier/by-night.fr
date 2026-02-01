@@ -64,7 +64,7 @@
 {% block head_js %}
     <script>
         var AppConfig = {
-            "apiCityURL": "{{ url('api_cities') }}?q=%QUERY"
+            "apiCityURL": "{{ url('api_cities', {q: '__QUERY__'}) }}"
         };
     </script>
 {% endblock %}

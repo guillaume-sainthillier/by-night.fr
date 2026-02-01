@@ -26,6 +26,11 @@ final class BikiniParser extends AbstractParser
         return 'Bikini';
     }
 
+    public function isEnabled(): bool
+    {
+        return false;
+    }
+
     /**
      * {@inheritDoc}
      */

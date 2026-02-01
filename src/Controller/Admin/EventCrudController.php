@@ -54,8 +54,8 @@ final class EventCrudController extends AbstractCrudController
                 'description',
                 'address',
                 'type',
-                'category',
-                'theme',
+                'category.name',
+                'themes.name',
                 'phoneContacts',
                 'mailContacts',
                 'websiteContacts',
@@ -108,8 +108,12 @@ final class EventCrudController extends AbstractCrudController
         $externalUpdatedAt = DateTimeField::new('externalUpdatedAt');
         $status = TextField::new('status');
         $type = TextField::new('type');
-        $category = TextField::new('category');
-        $theme = TextField::new('theme');
+        $category = AssociationField::new('category')
+            ->setCrudController(TagCrudController::class)
+            ->autocomplete();
+        $themes = AssociationField::new('themes')
+            ->setCrudController(TagCrudController::class)
+            ->autocomplete();
         $phoneContacts = CollectionField::new('phoneContacts');
         $mailContacts = CollectionField::new('mailContacts');
         $websiteContacts = CollectionField::new('websiteContacts');
@@ -185,7 +189,7 @@ final class EventCrudController extends AbstractCrudController
             $longitude,
             $type,
             $category,
-            $theme,
+            $themes,
             $phoneContacts,
             $mailContacts,
             $websiteContacts,

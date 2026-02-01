@@ -11,6 +11,7 @@
 namespace App\SEO;
 
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
+use WhiteOctober\BreadcrumbsBundle\Model\SingleBreadcrumb;
 
 final readonly class BreadcrumbJsonLd
 {
@@ -19,15 +20,16 @@ final readonly class BreadcrumbJsonLd
         $items = [];
         $position = 1;
 
+        /** @var SingleBreadcrumb $breadcrumb */
         foreach ($breadcrumbs as $breadcrumb) {
             $item = [
                 '@type' => 'ListItem',
                 'position' => $position,
-                'name' => $breadcrumb['text'],
+                'name' => $breadcrumb->text,
             ];
 
-            if (!empty($breadcrumb['url'])) {
-                $item['item'] = $breadcrumb['url'];
+            if (!empty($breadcrumb->url)) {
+                $item['item'] = $breadcrumb->url;
             }
 
             $items[] = $item;
