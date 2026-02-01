@@ -21,10 +21,6 @@
 
     // Comment form styles
     .card-body-form {
-        padding: 1.75rem;
-        background: #fff;
-        border-bottom: 1px solid rgba($primary, 0.08);
-
         .comment-form-user {
             display: flex;
             align-items: center;
@@ -38,56 +34,6 @@
             strong {
                 font-size: 0.9375rem;
                 color: $dark;
-            }
-        }
-
-        .comment-form-input {
-            .form-group {
-                margin-bottom: 1rem;
-            }
-
-            textarea {
-                border-radius: 1.5rem;
-                border: 2px solid rgba($primary, 0.2);
-                padding: 0.875rem 1.25rem;
-                font-size: 0.9375rem;
-                resize: none;
-                transition: all 0.2s ease;
-
-                &:focus {
-                    border-color: $primary;
-                    box-shadow: 0 0 0 3px rgba($primary, 0.1);
-                }
-            }
-
-            .btn-submit {
-                border-radius: 1.5rem;
-                padding: 0.625rem 2rem;
-                font-weight: 500;
-                background: linear-gradient(135deg, $primary 0%, darken($primary, 10%) 100%);
-                border: none;
-                transition: all 0.2s ease;
-
-                &:hover {
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba($primary, 0.3);
-                }
-
-                &:active {
-                    transform: translateY(0);
-                }
-            }
-        }
-
-        .btn-outline-secondary {
-            border-radius: 1.5rem;
-            padding: 0.75rem 2rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-
-            &:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             }
         }
     }
