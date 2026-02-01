@@ -16,7 +16,7 @@ use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Firewall;
-use DateTime;
+use DateTimeImmutable;
 use Override;
 
 final class FirewallTest extends AppKernelTestCase
@@ -37,8 +37,8 @@ final class FirewallTest extends AppKernelTestCase
         $badReject = new Reject()->addReason(Reject::BAD_PLACE_LOCATION);
         $deletedReject = new Reject()->addReason(Reject::EVENT_DELETED);
 
-        $now = new DateTime();
-        $tomorrow = new DateTime('tomorrow');
+        $now = new DateTimeImmutable();
+        $tomorrow = new DateTimeImmutable('tomorrow');
 
         // L'événement ne doit pas être valide car il n'a pas changé
         $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
@@ -102,12 +102,12 @@ final class FirewallTest extends AppKernelTestCase
         $dto = $this->createValidEventDto();
 
         $timesheet1 = new EventTimesheetDto();
-        $timesheet1->startAt = new DateTime('2024-01-15 10:00:00');
-        $timesheet1->endAt = new DateTime('2024-01-15 18:00:00');
+        $timesheet1->startAt = new DateTimeImmutable('2024-01-15 10:00:00');
+        $timesheet1->endAt = new DateTimeImmutable('2024-01-15 18:00:00');
 
         $timesheet2 = new EventTimesheetDto();
-        $timesheet2->startAt = new DateTime('2024-01-20 14:00:00');
-        $timesheet2->endAt = new DateTime('2024-01-20 22:00:00');
+        $timesheet2->startAt = new DateTimeImmutable('2024-01-20 14:00:00');
+        $timesheet2->endAt = new DateTimeImmutable('2024-01-20 22:00:00');
 
         $dto->timesheets = [$timesheet1, $timesheet2];
         $dto->startDate = null;
@@ -125,7 +125,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $timesheet = new EventTimesheetDto();
         $timesheet->startAt = null;
-        $timesheet->endAt = new DateTime('2024-01-15 18:00:00');
+        $timesheet->endAt = new DateTimeImmutable('2024-01-15 18:00:00');
 
         $dto->timesheets = [$timesheet];
 
@@ -139,7 +139,7 @@ final class FirewallTest extends AppKernelTestCase
         $dto = $this->createValidEventDto();
 
         $timesheet = new EventTimesheetDto();
-        $timesheet->startAt = new DateTime('2024-01-15 10:00:00');
+        $timesheet->startAt = new DateTimeImmutable('2024-01-15 10:00:00');
         $timesheet->endAt = null;
 
         $dto->timesheets = [$timesheet];
@@ -154,8 +154,8 @@ final class FirewallTest extends AppKernelTestCase
         $dto = $this->createValidEventDto();
 
         $timesheet = new EventTimesheetDto();
-        $timesheet->startAt = new DateTime('2024-01-15 18:00:00');
-        $timesheet->endAt = new DateTime('2024-01-15 10:00:00'); // End before start
+        $timesheet->startAt = new DateTimeImmutable('2024-01-15 18:00:00');
+        $timesheet->endAt = new DateTimeImmutable('2024-01-15 10:00:00'); // End before start
 
         $dto->timesheets = [$timesheet];
 
@@ -169,12 +169,12 @@ final class FirewallTest extends AppKernelTestCase
         $dto = $this->createValidEventDto();
 
         $validTimesheet = new EventTimesheetDto();
-        $validTimesheet->startAt = new DateTime('2024-01-15 10:00:00');
-        $validTimesheet->endAt = new DateTime('2024-01-15 18:00:00');
+        $validTimesheet->startAt = new DateTimeImmutable('2024-01-15 10:00:00');
+        $validTimesheet->endAt = new DateTimeImmutable('2024-01-15 18:00:00');
 
         $invalidTimesheet = new EventTimesheetDto();
-        $invalidTimesheet->startAt = new DateTime('2024-01-20 18:00:00');
-        $invalidTimesheet->endAt = new DateTime('2024-01-20 10:00:00'); // Invalid
+        $invalidTimesheet->startAt = new DateTimeImmutable('2024-01-20 18:00:00');
+        $invalidTimesheet->endAt = new DateTimeImmutable('2024-01-20 10:00:00'); // Invalid
 
         $dto->timesheets = [$validTimesheet, $invalidTimesheet];
 
@@ -187,8 +187,8 @@ final class FirewallTest extends AppKernelTestCase
     {
         $dto = $this->createValidEventDto();
         $dto->timesheets = [];
-        $dto->startDate = new DateTime('2024-01-15');
-        $dto->endDate = new DateTime('2024-01-20');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
+        $dto->endDate = new DateTimeImmutable('2024-01-20');
 
         $this->firewall->filterEvent($dto);
 
@@ -200,8 +200,8 @@ final class FirewallTest extends AppKernelTestCase
     {
         $dto = $this->createValidEventDto();
         $dto->timesheets = [];
-        $dto->startDate = new DateTime('2024-01-20');
-        $dto->endDate = new DateTime('2024-01-15'); // End before start
+        $dto->startDate = new DateTimeImmutable('2024-01-20');
+        $dto->endDate = new DateTimeImmutable('2024-01-15'); // End before start
 
         $this->firewall->filterEvent($dto);
 
@@ -214,8 +214,8 @@ final class FirewallTest extends AppKernelTestCase
         $dto->reject = new Reject();
         $dto->name = 'Test Event Name';
         $dto->description = 'This is a valid event description with enough characters.';
-        $dto->startDate = new DateTime('2024-01-15');
-        $dto->endDate = new DateTime('2024-01-20');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
+        $dto->endDate = new DateTimeImmutable('2024-01-20');
 
         return $dto;
     }

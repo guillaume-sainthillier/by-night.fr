@@ -10,16 +10,16 @@
 
 namespace App\Twig;
 
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Twig\Attribute\AsTwigFilter;
 
 final class DateExtension
 {
     #[AsTwigFilter(name: 'datetime')]
-    public function getDateTime(string $string): DateTime
+    public function getDateTime(string $string): DateTimeImmutable
     {
-        return new DateTime($string);
+        return new DateTimeImmutable($string);
     }
 
     #[AsTwigFilter(name: 'diff_date')]
@@ -36,7 +36,7 @@ final class DateExtension
     #[AsTwigFilter(name: 'stats_diff_date')]
     public function statsDiffDate(DateTimeInterface $date): array
     {
-        $diff = $date->diff(new DateTime());
+        $diff = $date->diff(new DateTimeImmutable());
 
         if ($diff->y > 0) { // Années
             return [

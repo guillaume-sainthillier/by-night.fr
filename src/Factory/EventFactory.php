@@ -11,7 +11,7 @@
 namespace App\Factory;
 
 use App\Entity\Event;
-use DateTime;
+use DateTimeImmutable;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -67,7 +67,7 @@ final class EventFactory extends PersistentProxyObjectFactory
         ]);
     }
 
-    public function withDates(DateTime $startDate, ?DateTime $endDate = null): self
+    public function withDates(DateTimeImmutable $startDate, ?DateTimeImmutable $endDate = null): self
     {
         return $this->with([
             'startDate' => $startDate,

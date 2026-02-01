@@ -11,7 +11,7 @@
 namespace App\Search;
 
 use App\App\Location;
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -43,7 +43,7 @@ final class SearchEvent
 
     public function __construct()
     {
-        $this->from = new DateTime();
+        $this->from = new DateTimeImmutable();
     }
 
     /**

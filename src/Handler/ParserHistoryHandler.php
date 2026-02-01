@@ -11,7 +11,7 @@
 namespace App\Handler;
 
 use App\Entity\ParserHistory;
-use DateTime;
+use DateTimeImmutable;
 
 final class ParserHistoryHandler
 {
@@ -62,7 +62,7 @@ final class ParserHistoryHandler
     {
         $this
             ->parserHistory
-            ->setEndDate(new DateTime())
+            ->setEndDate(new DateTimeImmutable())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNewEvents($this->getNbInserts())
             ->setUpdatedEvents($this->getNbUpdates())
@@ -93,7 +93,7 @@ final class ParserHistoryHandler
 
     public function start(): void
     {
-        $this->parserHistory = new ParserHistory()->setStartDate(new DateTime());
+        $this->parserHistory = new ParserHistory()->setStartDate(new DateTimeImmutable());
     }
 
     public function reset(): void

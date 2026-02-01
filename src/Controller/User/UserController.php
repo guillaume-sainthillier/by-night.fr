@@ -14,7 +14,7 @@ use App\Controller\AbstractController as BaseController;
 use App\Entity\User;
 use App\Manager\UserRedirectManager;
 use App\Repository\EventRepository;
-use DateTime;
+use DateTimeImmutable;
 use IntlDateFormatter;
 use Locale;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -110,7 +110,7 @@ final class UserController extends BaseController
         ];
 
         foreach (range(1, 7) as $day) {
-            $date = new DateTime('0' . $day . '-01-' . date('Y'));
+            $date = new DateTimeImmutable('0' . $day . '-01-' . date('Y'));
             $dayNumber = $date->format('w');
             $dateFormatter = IntlDateFormatter::create(
                 Locale::getDefault(),
@@ -158,7 +158,7 @@ final class UserController extends BaseController
         ];
 
         foreach (range(1, 12) as $month) {
-            $date = new DateTime('01-' . $month . '-' . date('Y'));
+            $date = new DateTimeImmutable('01-' . $month . '-' . date('Y'));
             $dateFormatter = IntlDateFormatter::create(
                 Locale::getDefault(),
                 IntlDateFormatter::NONE,
