@@ -65,8 +65,14 @@ final readonly class EventHandler
             $eventsPerUrl[$event->getUrl()][] = $event;
         }
 
-        foreach (array_chunk(array_keys($eventsPerUrl), self::MAX_CONCURRENT_REQUESTS) as $imageUrls) {
+        // Resolve redirects to group events by their final URL
+        $eventsPerFinalUrl = $this->resolveRedirectsAndGroupByFinalUrl($eventsPerUrl);
+
+        foreach (array_chunk(array_keys($eventsPerFinalUrl), self::MAX_CONCURRENT_REQUESTS) as $imageUrls) {
             $responses = [];
+            /** @var array<string, string> $tempFilePaths */
+            $tempFilePaths = [];
+
             foreach ($imageUrls as $imageUrl) {
                 $response = $this->client->request('GET', $imageUrl, [
                     'user_data' => $imageUrl,
@@ -76,19 +82,33 @@ final readonly class EventHandler
 
             foreach ($this->client->stream($responses) as $response => $chunk) {
                 $imageUrl = $response->getInfo('user_data');
-                $currentEvents = $eventsPerUrl[$imageUrl] ?? [];
+                $currentEvents = $eventsPerFinalUrl[$imageUrl] ?? [];
 
                 try {
                     if ($chunk->isTimeout()) {
                         $response->cancel();
-                    } elseif ($chunk->isFirst() && 200 !== $response->getStatusCode()) {
-                        $response->cancel();
-                    } elseif ($chunk->isLast()) {
-                        foreach ($currentEvents as $event) {
-                            $this->uploadFile($event, $response->getContent());
+                        unset($tempFilePaths[$imageUrl]);
+                    } elseif ($chunk->isFirst()) {
+                        if (200 !== $response->getStatusCode()) {
+                            $response->cancel();
+                        } else {
+                            // Create temporary file for streaming
+                            $tempFilePaths[$imageUrl] = $this->temporyFilesManager->create();
+                        }
+                    } elseif (isset($tempFilePaths[$imageUrl])) {
+                        // Write chunk to temporary file
+                        file_put_contents($tempFilePaths[$imageUrl], $chunk->getContent(), \FILE_APPEND);
+
+                        if ($chunk->isLast()) {
+                            foreach ($currentEvents as $event) {
+                                $this->uploadFile($event, $tempFilePaths[$imageUrl]);
+                            }
+                            unset($tempFilePaths[$imageUrl]);
                         }
                     }
                 } catch (TransportExceptionInterface|HttpExceptionInterface|UnsupportedFileException $e) {
+                    unset($tempFilePaths[$imageUrl]);
+
                     if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
                         $this->logger->info(\sprintf('Url %s is not allowed', $imageUrl));
                         continue;
@@ -108,6 +128,55 @@ final readonly class EventHandler
         }
     }
 
+    /**
+     * Resolve redirects using HEAD requests and group events by their final URL.
+     * This avoids downloading the same content multiple times when different URLs redirect to the same destination.
+     *
+     * @param array<string, list<Event>> $eventsPerUrl
+     *
+     * @return array<string, list<Event>>
+     */
+    private function resolveRedirectsAndGroupByFinalUrl(array $eventsPerUrl): array
+    {
+        $eventsPerFinalUrl = [];
+        $urlsToResolve = array_keys($eventsPerUrl);
+
+        foreach (array_chunk($urlsToResolve, self::MAX_CONCURRENT_REQUESTS) as $urls) {
+            $responses = [];
+            foreach ($urls as $url) {
+                $response = $this->client->request('HEAD', $url, [
+                    'user_data' => $url,
+                    'max_redirects' => 10,
+                ]);
+                $responses[] = $response;
+            }
+
+            foreach ($responses as $response) {
+                $originalUrl = $response->getInfo('user_data');
+                $events = $eventsPerUrl[$originalUrl];
+
+                try {
+                    // getStatusCode() waits for headers and follows redirects
+                    $statusCode = $response->getStatusCode();
+                    if (200 !== $statusCode) {
+                        // Keep original URL for GET request, which will handle the error
+                        $eventsPerFinalUrl[$originalUrl] = array_merge($eventsPerFinalUrl[$originalUrl] ?? [], $events);
+                        continue;
+                    }
+
+                    // Get the final URL after all redirects
+                    $finalUrl = $response->getInfo('url');
+                    $eventsPerFinalUrl[$finalUrl] = array_merge($eventsPerFinalUrl[$finalUrl] ?? [], $events);
+                } catch (TransportExceptionInterface|HttpExceptionInterface) {
+                    // On error, keep original URL for GET request which will handle/log the error
+                    $eventsPerFinalUrl[$originalUrl] = array_merge($eventsPerFinalUrl[$originalUrl] ?? [], $events);
+                }
+            }
+        }
+
+        return $eventsPerFinalUrl;
+    }
+
     public function reset(): void
     {
         $this->temporyFilesManager->reset();
@@ -116,21 +185,18 @@ final readonly class EventHandler
     /**
      * @throws UnsupportedFileException
      */
-    private function uploadFile(Event $event, string $content): void
+    private function uploadFile(Event $event, string $tempFilePath): void
     {
-        $hash = null;
-        if ($content && $event->getImageSystemHash() && ($hash = md5($content)) === $event->getImageSystemHash()) {
-            return;
-        }
-
-        $tempFileBasename = ($event->getId() ?? uniqid());
-        $tempFilePath = $this->temporyFilesManager->create();
-        $octets = file_put_contents($tempFilePath, $content);
-
-        if (0 === $octets) {
+        $fileSize = filesize($tempFilePath);
+        if (false === $fileSize || 0 === $fileSize) {
             $event->setImageSystemHash(null);
             $event->setImageSystemFile();
 
+            return;
+        }
+
+        $hash = md5_file($tempFilePath);
+        if ($event->getImageSystemHash() && $hash === $event->getImageSystemHash()) {
             return;
         }
 
@@ -144,9 +210,16 @@ final readonly class EventHandler
             default => throw new UnsupportedFileException(\sprintf('Unable to find extension for mime type %s', $contentType)),
         };
 
+        $tempFileBasename = ($event->getId() ?? uniqid());
         $pathUrl = parse_url((string) $event->getUrl(), \PHP_URL_PATH);
         $originalName = pathinfo($pathUrl, \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
-        $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
+
+        // Copy to a new temp file since multiple events may use the same source file
+        $eventTempFilePath = $this->temporyFilesManager->create();
+        copy($tempFilePath, $eventTempFilePath);
+
+        // Use DeletableFile to ensure cleanup after upload
+        $file = new DeletableFile($eventTempFilePath, $originalName, $contentType, null, true);
         $event->setImageHash($hash);
         $event->setImageSystemFile($file);
 
