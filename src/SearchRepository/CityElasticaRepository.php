@@ -14,6 +14,7 @@ use Elastica\Query;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
 final class CityElasticaRepository extends Repository
@@ -80,5 +81,49 @@ final class CityElasticaRepository extends Repository
         ]);
 
         return $this->findHybrid($finalQuery, $limit);
+    }
+
+    /**
+     * Returns a paginated list of hybrid results with highlights.
+     *
+     * @return PagerfantaInterface<HybridResult>
+     */
+    public function findWithHighlightsPaginated(string $query): PagerfantaInterface
+    {
+        $multiMatch = new MultiMatch();
+        $multiMatch
+            ->setFields([
+                'postalCodes^10',
+                'country.name^5',
+                'name^3',
+                'parent.name',
+            ])
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($query);
+
+        $finalQuery = Query::create($multiMatch);
+        $finalQuery->addSort(['_score' => 'DESC']);
+        $finalQuery->addSort(['population' => 'DESC']);
+
+        // Add highlighting
+        $finalQuery->setHighlight([
+            'fields' => [
+                'name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+                'country.name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+            ],
+        ]);
+
+        $adapter = $this->createHybridPaginatorAdapter($finalQuery);
+
+        return new Pagerfanta($adapter);
     }
 }

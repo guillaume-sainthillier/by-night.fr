@@ -21,6 +21,7 @@ use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
 final class EventElasticaRepository extends Repository
@@ -237,5 +238,50 @@ final class EventElasticaRepository extends Repository
         ]);
 
         return $this->findHybrid($finalQuery, $limit);
+    }
+
+    /**
+     * Returns a paginated list of hybrid results with highlights.
+     *
+     * @return PagerfantaInterface<HybridResult>
+     */
+    public function findWithHighlightsPaginated(string $query): PagerfantaInterface
+    {
+        $multiMatch = new MultiMatch();
+        $multiMatch
+            ->setFields([
+                'name^5',
+                'name.heavy^5',
+                'placeName^3',
+                'place.name^3',
+                'placeCity^2',
+                'place.cityName^2',
+                'description',
+            ])
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($query);
+
+        $finalQuery = Query::create($multiMatch);
+
+        // Add highlighting
+        $finalQuery->setHighlight([
+            'fields' => [
+                'name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+                'place.name' => [
+                    'pre_tags' => ['__aa-highlight__'],
+                    'post_tags' => ['__/aa-highlight__'],
+                    'number_of_fragments' => 0,
+                ],
+            ],
+        ]);
+
+        $adapter = $this->createHybridPaginatorAdapter($finalQuery);
+
+        return new Pagerfanta($adapter);
     }
 }
