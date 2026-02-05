@@ -40,7 +40,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
      *
      * @return Place[]
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         // Query 1: Fetch places without metadatas to avoid cartesian product
         // metadatas is still joined for WHERE clause matching (external IDs)
@@ -54,32 +54,36 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->leftJoin('p.country', 'country')
             ->leftJoin('city.country', 'cityCountry');
 
-        $cityWheres = [];
-        $countryWheres = [];
-        foreach ($dtos as $dto) {
-            if (null !== $dto->city && null !== $dto->city->entityId) {
-                $cityWheres[$dto->city->entityId] = true;
-            } elseif (null !== $dto->country && null !== $dto->country->entityId) {
-                $countryWheres[$dto->country->entityId] = true;
+        // Eager mode: also match by city/country location (broader, loads more entities)
+        if ($eager) {
+            $cityWheres = [];
+            $countryWheres = [];
+            foreach ($dtos as $dto) {
+                if (null !== $dto->city && null !== $dto->city->entityId) {
+                    $cityWheres[$dto->city->entityId] = true;
+                } elseif (null !== $dto->country && null !== $dto->country->entityId) {
+                    $countryWheres[$dto->country->entityId] = true;
+                }
             }
-        }
 
-        $wheres = [];
-        if ([] !== $cityWheres) {
-            $wheres[] = 'p.city IN(:cities)';
-            $qb->setParameter('cities', array_keys($cityWheres));
-        }
+            $wheres = [];
+            if ([] !== $cityWheres) {
+                $wheres[] = 'p.city IN(:cities)';
+                $qb->setParameter('cities', array_keys($cityWheres));
+            }
 
-        if ([] !== $countryWheres) {
-            $wheres[] = 'p.country IN(:countries) AND p.city IS NULL';
-            $qb->setParameter('countries', array_keys($countryWheres));
-        }
+            if ([] !== $countryWheres) {
+                $wheres[] = 'p.country IN(:countries) AND p.city IS NULL';
+                $qb->setParameter('countries', array_keys($countryWheres));
+            }
 
-        if ([] !== $wheres) {
-            $qb->andWhere(implode(' OR ', $wheres));
+            if ([] !== $wheres) {
+                $qb->andWhere(implode(' OR ', $wheres));
+            }
+        } else {
+            // Always match by external IDs (fast, indexed)
+            $this->addDtosToQueryBuilder($qb, 'metadatas', $dtos);
         }
-
-        $this->addDtosToQueryBuilder($qb, 'metadatas', $dtos);
 
         if (0 === \count($qb->getParameters())) {
             return [];

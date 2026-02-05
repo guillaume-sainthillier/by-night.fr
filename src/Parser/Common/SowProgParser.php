@@ -18,11 +18,11 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
-use App\Producer\EventProducer;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class SowProgParser extends AbstractParser
@@ -33,7 +33,7 @@ final class SowProgParser extends AbstractParser
 
     public function __construct(
         LoggerInterface $logger,
-        EventProducer $eventProducer,
+        MessageBusInterface $messageBus,
         EventHandler $eventHandler,
         HttpClientInterface $client,
         #[Autowire(env: 'SOWPROG_USER')]
@@ -41,7 +41,7 @@ final class SowProgParser extends AbstractParser
         #[Autowire(env: 'SOWPROG_PASSWORD')]
         string $sowprogPassword,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler);
+        parent::__construct($logger, $messageBus, $eventHandler);
 
         $this->client = $client->withOptions([
             'base_uri' => self::BASE_URI,

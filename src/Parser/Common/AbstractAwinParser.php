@@ -13,18 +13,18 @@ namespace App\Parser\Common;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
-use App\Producer\EventProducer;
 use Generator;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
     public function __construct(
         LoggerInterface $logger,
-        EventProducer $eventProducer,
+        MessageBusInterface $messageBus,
         EventHandler $eventHandler,
         protected HttpClientInterface $httpClient,
         #[Autowire('%kernel.project_dir%/var/storage/temp')]
@@ -32,7 +32,7 @@ abstract class AbstractAwinParser extends AbstractParser
         #[Autowire(env: 'AWIN_API_KEY')]
         private readonly string $awinApiKey,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler);
+        parent::__construct($logger, $messageBus, $eventHandler);
     }
 
     /**

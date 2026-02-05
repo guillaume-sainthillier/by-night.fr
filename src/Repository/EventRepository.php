@@ -48,7 +48,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      *
      * @return Event[]
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $qb = parent::createQueryBuilder('e');
 

@@ -11,12 +11,13 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use App\Producer\PurgeCdnCacheUrlProducer;
-use App\Producer\RemoveImageThumbnailsProducer;
+use App\Message\PurgeCdnCacheUrl;
+use App\Message\RemoveImageThumbnails;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
@@ -26,8 +27,7 @@ final class ImageSubscriber implements EventSubscriberInterface
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer,
-        private readonly RemoveImageThumbnailsProducer $removeImageThumbnailsProducer,
+        private readonly MessageBusInterface $messageBus,
     ) {
     }
 
@@ -83,12 +83,12 @@ final class ImageSubscriber implements EventSubscriberInterface
     {
         // Schedule thumbnails delete
         foreach ($this->paths as $path) {
-            $this->removeImageThumbnailsProducer->scheduleRemove($path);
+            $this->messageBus->dispatch(new RemoveImageThumbnails($path));
         }
 
         // Schedule CDN purging of old image path
         foreach ($this->paths as $path) {
-            $this->purgeCdnCacheUrlProducer->schedulePurge($path);
+            $this->messageBus->dispatch(new PurgeCdnCacheUrl($path));
         }
 
         unset($this->paths);

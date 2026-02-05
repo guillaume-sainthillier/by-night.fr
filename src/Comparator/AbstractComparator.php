@@ -81,15 +81,10 @@ abstract class AbstractComparator implements ComparatorInterface
                 return $confidence;
             }
 
-            return $this->getLevenshteinDistance($leftText, $rightText);
+            return (float) ((1 - levenshtein($leftText, $rightText) / max(mb_strlen($leftText), mb_strlen($rightText))) * 100);
         }
 
         return 0.0;
-    }
-
-    private function getLevenshteinDistance(string $a, string $b): float
-    {
-        return (float) ((1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100);
     }
 
     protected function sanitize(string $content): string

@@ -39,7 +39,10 @@
       "Bash(npx eslint:*)",
       "Bash(npx prettier:*)",
       "WebFetch(domain:tarekraafat.github.io)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(xargs:*)",
+      "Bash(ls:*)",
+      "Bash(git -C /Users/guillaume/Sites/by-night.fr diff --name-only HEAD -- src/Utils/Monitor.php)"
     ]
   }
 }

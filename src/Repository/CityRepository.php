@@ -60,7 +60,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     /**
      * {@inheritDoc}
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $wheres = [];
         $cityNameWheres = [];

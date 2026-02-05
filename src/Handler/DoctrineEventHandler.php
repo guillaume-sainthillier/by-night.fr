@@ -11,7 +11,6 @@
 namespace App\Handler;
 
 use App\Contracts\DependencyCatalogueInterface;
-use App\Contracts\DependencyProvidableInterface;
 use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\EntityProviderInterface;
@@ -151,6 +150,7 @@ final readonly class DoctrineEventHandler
 
                     // This already led to the rejection of the event
                     if (false === $reject->isValid()) {
+                        $this->parserHistoryHandler->addBlackList();
                         $dto->reject->setReason($reject->getReason());
 
                         continue;
@@ -334,8 +334,14 @@ final readonly class DoctrineEventHandler
                 $allCatalogues[] = $requiredCatalogue;
                 $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
-                // Then perform a global SQL request to fetch entities by external ids
-                $entityProvider->prefetchEntities($chunk);
+                // Pass 1: Fast prefetch by external IDs only
+                $entityProvider->prefetchEntities($chunk, eager: false);
+
+                // Pass 2: Eager prefetch for DTOs not resolved by external ID
+                $unmatchedDtos = array_filter($chunk, static fn (object $dto): bool => null === $entityProvider->getEntity($dto));
+                if ([] !== $unmatchedDtos) {
+                    $entityProvider->prefetchEntities($unmatchedDtos, eager: true);
+                }
 
                 $rootEntities = [];
                 foreach ($chunk as $i => $dto) {
@@ -349,6 +355,9 @@ final readonly class DoctrineEventHandler
 
                     // Resolve id
                     if (!$isNewEntity) {
+                        if ($isRootTransaction) {
+                            $this->parserHistoryHandler->addUpdate();
+                        }
                         $dtosToResolve = [$dto];
                         if ($previousCatalogue && $previousCatalogue->hasAliases($dto)) {
                             $dtosToResolve = array_merge(
@@ -364,6 +373,8 @@ final readonly class DoctrineEventHandler
 
                             $dtoToResolve->setIdentifierFromEntity($entity);
                         }
+                    } elseif ($isRootTransaction) {
+                        $this->parserHistoryHandler->addInsert();
                     }
 
                     // We don't create an empty entity into database if existing reference is not found
@@ -385,7 +396,7 @@ final readonly class DoctrineEventHandler
                         $rootEntities[$i] = $entity;
                     }
 
-                    // Add all new entities to current samples in order to prevent duplicate creates
+                    // Add all new entities to current samples to prevent duplicate creates
                     if ($isNewEntity) {
                         $entityProvider->addEntity(
                             $entity,
@@ -393,11 +404,6 @@ final readonly class DoctrineEventHandler
                         );
                     }
                 }
-
-                // Resolve current dependencies after persisting parent objects
-                $providedCatalogue = $this->computeProvidedCatalogue($chunk);
-                $allCatalogues[] = $providedCatalogue;
-                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
                 if ($isRootTransaction) {
                     $this->logger->info(\sprintf(
@@ -454,20 +460,6 @@ final readonly class DoctrineEventHandler
             }
 
             $catalogue->addCatalogue($dto->getRequiredCatalogue());
-        }
-
-        return $catalogue;
-    }
-
-    private function computeProvidedCatalogue(array $dtos): DependencyCatalogueInterface
-    {
-        $catalogue = new DependencyCatalogue();
-        foreach ($dtos as $dto) {
-            if (!$dto instanceof DependencyProvidableInterface) {
-                continue;
-            }
-
-            $catalogue->addCatalogue($dto->getProvidedCatalogue());
         }
 
         return $catalogue;

@@ -82,7 +82,7 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
     /**
      * {@inheritDoc}
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $wheres = [];
         $idsWheres = [];

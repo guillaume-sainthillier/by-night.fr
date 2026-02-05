@@ -20,8 +20,10 @@ interface DtoFindableRepositoryInterface
      * Find all entities matching the given DTOs.
      *
      * @param TDto[] $dtos
+     * @param bool   $eager when false, only match by fast indexed lookups (external IDs);
+     *                      when true, also match by broader criteria (location, name, etc.)
      *
      * @return TEntity[]
      */
-    public function findAllByDtos(array $dtos): array;
+    public function findAllByDtos(array $dtos, bool $eager): array;
 }

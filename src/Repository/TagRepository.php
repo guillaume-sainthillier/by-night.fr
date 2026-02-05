@@ -137,7 +137,7 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
      *
      * @return Tag[]
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $names = array_filter(array_map(
             static fn (TagDto $dto) => null !== $dto->name ? mb_strtolower(trim($dto->name)) : null,

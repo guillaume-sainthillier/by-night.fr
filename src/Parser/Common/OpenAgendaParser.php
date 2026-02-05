@@ -18,7 +18,6 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
-use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -26,6 +25,7 @@ use DateTimeZone;
 use Parsedown;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -36,14 +36,14 @@ final class OpenAgendaParser extends AbstractParser
 
     public function __construct(
         LoggerInterface $logger,
-        EventProducer $eventProducer,
+        MessageBusInterface $messageBus,
         EventHandler $eventHandler,
         private readonly HttpClientInterface $client,
         private readonly CountryRepository $countryRepository,
         #[Autowire(env: 'OPEN_AGENDA_KEY')]
         private readonly string $openAgendaKey,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler);
+        parent::__construct($logger, $messageBus, $eventHandler);
     }
 
     /**

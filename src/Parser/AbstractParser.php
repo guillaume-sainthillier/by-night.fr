@@ -13,8 +13,8 @@ namespace App\Parser;
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
-use App\Producer\EventProducer;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 abstract class AbstractParser implements ParserInterface
@@ -23,7 +23,7 @@ abstract class AbstractParser implements ParserInterface
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly EventProducer $eventProducer,
+        private readonly MessageBusInterface $messageBus,
         private readonly EventHandler $eventHandler,
     ) {
     }
@@ -64,7 +64,7 @@ abstract class AbstractParser implements ParserInterface
 
         $this->sanitize($eventDto);
         $this->eventHandler->cleanEvent($eventDto);
-        $this->eventProducer->scheduleEvent($eventDto);
+        $this->messageBus->dispatch($eventDto);
         ++$this->parsedEvents;
     }
 

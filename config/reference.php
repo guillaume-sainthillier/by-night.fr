@@ -1,6 +1,12 @@
 <?php
 
-// This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
+/*
+ * This file is part of By Night.
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
@@ -1907,312 +1913,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     translation_domain?: scalar|null|Param, // Default: null
  *     viewTemplate?: scalar|null|Param, // Default: "@WhiteOctoberBreadcrumbs/microdata.html.twig"
  * }
- * @psalm-type OldSoundRabbitMqConfig = array{
- *     debug?: bool|Param, // Default: "%kernel.debug%"
- *     enable_collector?: bool|Param, // Default: false
- *     sandbox?: bool|Param, // Default: false
- *     connections?: array<string, array{ // Default: []
- *         url?: scalar|null|Param, // Default: ""
- *         host?: scalar|null|Param, // Default: "localhost"
- *         port?: scalar|null|Param, // Default: 5672
- *         user?: scalar|null|Param, // Default: "guest"
- *         password?: scalar|null|Param, // Default: "guest"
- *         vhost?: scalar|null|Param, // Default: "/"
- *         login_method?: "AMQPLAIN"|"PLAIN"|"EXTERNAL"|Param, // Default: "AMQPLAIN"
- *         hosts?: list<array{ // Default: []
- *             url?: scalar|null|Param, // Default: ""
- *             host?: scalar|null|Param, // Default: "localhost"
- *             port?: scalar|null|Param, // Default: 5672
- *             user?: scalar|null|Param, // Default: "guest"
- *             password?: scalar|null|Param, // Default: "guest"
- *             vhost?: scalar|null|Param, // Default: "/"
- *         }>,
- *         lazy?: bool|Param, // Default: false
- *         connection_timeout?: scalar|null|Param, // Default: 3
- *         read_write_timeout?: scalar|null|Param, // Default: 3
- *         channel_rpc_timeout?: scalar|null|Param, // Default: 0.0
- *         use_socket?: bool|Param, // Default: false
- *         ssl_context?: array<string, mixed>,
- *         keepalive?: bool|Param, // requires php-amqplib v2.4.1+ and PHP5.4+ // Default: false
- *         heartbeat?: scalar|null|Param, // requires php-amqplib v2.4.1+ // Default: 0
- *         connection_parameters_provider?: scalar|null|Param,
- *     }>,
- *     bindings?: list<array{ // Default: []
- *         connection?: scalar|null|Param, // Default: "default"
- *         exchange?: scalar|null|Param, // Default: null
- *         destination?: scalar|null|Param, // Default: null
- *         routing_key?: scalar|null|Param, // Default: null
- *         nowait?: bool|Param, // Default: false
- *         destination_is_exchange?: bool|Param, // Default: false
- *         arguments?: mixed, // Default: null
- *         class?: scalar|null|Param, // Default: "%old_sound_rabbit_mq.binding.class%"
- *     }>,
- *     producers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         queue_options?: array{
- *             name?: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             exclusive?: bool|Param, // Default: false
- *             auto_delete?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *             routing_keys?: list<scalar|null|Param>,
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         auto_setup_fabric?: scalar|null|Param, // Default: true
- *         class?: scalar|null|Param, // Default: "%old_sound_rabbit_mq.producer.class%"
- *         enable_logger?: scalar|null|Param, // Default: false
- *         service_alias?: scalar|null|Param, // Default: null
- *         default_routing_key?: scalar|null|Param, // Default: ""
- *         default_content_type?: scalar|null|Param, // Default: "text/plain"
- *         default_delivery_mode?: int|Param, // Default: 2
- *     }>,
- *     consumers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         queue_options?: array{
- *             name?: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             exclusive?: bool|Param, // Default: false
- *             auto_delete?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *             routing_keys?: list<scalar|null|Param>,
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         callback: scalar|null|Param,
- *         idle_timeout?: scalar|null|Param,
- *         idle_timeout_exit_code?: scalar|null|Param,
- *         timeout_wait?: scalar|null|Param,
- *         graceful_max_execution?: array{
- *             timeout?: int|Param,
- *             exit_code?: int|Param, // Default: 0
- *         },
- *         auto_setup_fabric?: scalar|null|Param, // Default: true
- *         options?: array{
- *             no_ack?: bool|Param, // Default: false
- *         },
- *         qos_options?: array{
- *             prefetch_size?: scalar|null|Param, // Default: 0
- *             prefetch_count?: scalar|null|Param, // Default: 0
- *             global?: bool|Param, // Default: false
- *         },
- *         enable_logger?: scalar|null|Param, // Default: false
- *     }>,
- *     multiple_consumers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         idle_timeout?: scalar|null|Param,
- *         idle_timeout_exit_code?: scalar|null|Param,
- *         timeout_wait?: scalar|null|Param,
- *         auto_setup_fabric?: scalar|null|Param, // Default: true
- *         options?: array{
- *             no_ack?: bool|Param, // Default: false
- *         },
- *         graceful_max_execution?: array{
- *             timeout?: int|Param,
- *             exit_code?: int|Param, // Default: 0
- *         },
- *         queues?: list<array{ // Default: []
- *             name?: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             exclusive?: bool|Param, // Default: false
- *             auto_delete?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *             routing_keys?: list<scalar|null|Param>,
- *             callback: scalar|null|Param,
- *         }>,
- *         qos_options?: array{
- *             prefetch_size?: scalar|null|Param, // Default: 0
- *             prefetch_count?: scalar|null|Param, // Default: 0
- *             global?: bool|Param, // Default: false
- *         },
- *         queues_provider?: scalar|null|Param, // Default: null
- *         enable_logger?: scalar|null|Param, // Default: false
- *     }>,
- *     dynamic_consumers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         callback: scalar|null|Param,
- *         idle_timeout?: scalar|null|Param,
- *         idle_timeout_exit_code?: scalar|null|Param,
- *         timeout_wait?: scalar|null|Param,
- *         graceful_max_execution?: array{
- *             timeout?: int|Param,
- *             exit_code?: int|Param, // Default: 0
- *         },
- *         auto_setup_fabric?: scalar|null|Param, // Default: true
- *         options?: array{
- *             no_ack?: bool|Param, // Default: false
- *         },
- *         qos_options?: array{
- *             prefetch_size?: scalar|null|Param, // Default: 0
- *             prefetch_count?: scalar|null|Param, // Default: 0
- *             global?: bool|Param, // Default: false
- *         },
- *         queue_options_provider: scalar|null|Param,
- *         enable_logger?: scalar|null|Param, // Default: false
- *     }>,
- *     batch_consumers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         queue_options?: array{
- *             name?: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             exclusive?: bool|Param, // Default: false
- *             auto_delete?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *             routing_keys?: list<scalar|null|Param>,
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         callback: scalar|null|Param,
- *         idle_timeout?: scalar|null|Param,
- *         timeout_wait?: scalar|null|Param, // Default: 3
- *         idle_timeout_exit_code?: scalar|null|Param,
- *         keep_alive?: scalar|null|Param, // Default: false
- *         graceful_max_execution?: array{
- *             timeout?: int|Param,
- *         },
- *         auto_setup_fabric?: scalar|null|Param, // Default: true
- *         options?: array{
- *             no_ack?: bool|Param, // Default: false
- *         },
- *         qos_options?: array{
- *             prefetch_size?: scalar|null|Param, // Default: 0
- *             prefetch_count?: scalar|null|Param, // Default: 2
- *             global?: bool|Param, // Default: false
- *         },
- *         enable_logger?: scalar|null|Param, // Default: false
- *     }>,
- *     anon_consumers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         callback: scalar|null|Param,
- *         options?: array{
- *             no_ack?: bool|Param, // Default: false
- *         },
- *     }>,
- *     rpc_clients?: array<string, array{ // Default: []
- *         connection?: scalar|null|Param, // Default: "default"
- *         expect_serialized_response?: bool|Param, // Default: true
- *         unserializer?: scalar|null|Param, // Default: "unserialize"
- *         lazy?: bool|Param, // Default: false
- *         direct_reply_to?: bool|Param, // Default: false
- *     }>,
- *     rpc_servers?: array<string, array{ // Default: []
- *         exchange_options?: array{
- *             name: scalar|null|Param,
- *             type: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             auto_delete?: bool|Param, // Default: false
- *             internal?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *         },
- *         queue_options?: array{
- *             name?: scalar|null|Param,
- *             passive?: bool|Param, // Default: false
- *             durable?: bool|Param, // Default: true
- *             exclusive?: bool|Param, // Default: false
- *             auto_delete?: bool|Param, // Default: false
- *             nowait?: bool|Param, // Default: false
- *             declare?: bool|Param, // Default: true
- *             arguments?: mixed, // Default: null
- *             ticket?: scalar|null|Param, // Default: null
- *             routing_keys?: list<scalar|null|Param>,
- *         },
- *         connection?: scalar|null|Param, // Default: "default"
- *         callback: scalar|null|Param,
- *         qos_options?: array{
- *             prefetch_size?: scalar|null|Param, // Default: 0
- *             prefetch_count?: scalar|null|Param, // Default: 0
- *             global?: bool|Param, // Default: false
- *         },
- *         serializer?: scalar|null|Param, // Default: "serialize"
- *         enable_logger?: scalar|null|Param, // Default: false
- *     }>,
- * }
  * @psalm-type BabdevPagerfantaConfig = array{
  *     default_view?: scalar|null|Param, // Default: "default"
  *     default_twig_template?: scalar|null|Param, // Default: "@BabDevPagerfanta/default.html.twig"
@@ -2579,7 +2279,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *     white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
- *     old_sound_rabbit_mq?: OldSoundRabbitMqConfig,
  *     babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     twig_component?: TwigComponentConfig,
  *     api_platform?: ApiPlatformConfig,
@@ -2610,7 +2309,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
- *         old_sound_rabbit_mq?: OldSoundRabbitMqConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
@@ -2640,7 +2338,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
- *         old_sound_rabbit_mq?: OldSoundRabbitMqConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *         twig_component?: TwigComponentConfig,
  *         api_platform?: ApiPlatformConfig,
@@ -2671,7 +2368,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
- *         old_sound_rabbit_mq?: OldSoundRabbitMqConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,

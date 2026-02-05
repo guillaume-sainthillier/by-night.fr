@@ -121,7 +121,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     /**
      * {@inheritDoc}
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $idsWheres = [];
         foreach ($dtos as $dto) {

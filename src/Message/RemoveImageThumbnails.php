@@ -8,15 +8,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Producer;
+namespace App\Message;
 
-use App\Dto\EventDto;
-use OldSound\RabbitMqBundle\RabbitMq\Producer;
-
-final class EventProducer extends Producer
+final readonly class RemoveImageThumbnails
 {
-    public function scheduleEvent(EventDto $event): void
+    public function __construct(public string $path)
     {
-        $this->publish(serialize($event));
     }
 }

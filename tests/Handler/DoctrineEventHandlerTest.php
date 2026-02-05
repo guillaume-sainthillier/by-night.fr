@@ -544,21 +544,20 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         // Create 200 existing places (40 per city) - these will trigger comparator matching
         // More places = more work for the PlaceComparator's fuzzy matching algorithm
-        $existingPlaces = [];
         $placeTypes = ['Théâtre', 'Salle de Concert', 'Centre Culturel', 'Stade', 'Opéra',
             'Cinéma', 'Musée', 'Bibliothèque', 'Gymnase', 'Arena'];
         $placeVariations = ['Le %s', 'Grand %s', '%s Municipal', 'Nouveau %s'];
         foreach ($cities as $cityName => $city) {
             // Create base places
             foreach ($placeTypes as $placeType) {
-                $existingPlaces[] = PlaceFactory::createOne([
+                PlaceFactory::createOne([
                     'name' => $placeType . ' de ' . $cityName,
                     'city' => $city,
                     'country' => $country,
                 ]);
                 // Create variations to increase comparator workload
                 foreach ($placeVariations as $variation) {
-                    $existingPlaces[] = PlaceFactory::createOne([
+                    PlaceFactory::createOne([
                         'name' => \sprintf($variation, $placeType) . ' ' . $cityName,
                         'city' => $city,
                         'country' => $country,
@@ -570,9 +569,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         // Create 10 tags for categories and themes
         $tagNames = ['Concert', 'Festival', 'Théâtre', 'Exposition', 'Conférence',
             'Sport', 'Famille', 'Gratuit', 'Plein air', 'Nocturne'];
-        $tags = [];
         foreach ($tagNames as $tagName) {
-            $tags[$tagName] = TagFactory::createOne(['name' => $tagName]);
+            TagFactory::createOne(['name' => $tagName]);
         }
 
         // ========================================
