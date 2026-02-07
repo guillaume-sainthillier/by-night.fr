@@ -107,14 +107,14 @@
                 <div class="col-sm-8 mb-4">
                     <h3>Activité</h3>
                     <ul class="nav nav-pills mb-1" id="chartsActivite">
-                        <li class="nav-item"><a class="nav-link active" href="#year" id="chartYear" data-bs-toggle="tab">Année</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#month" id="chartMonth" data-bs-toggle="tab">Mois</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#week" id="chartWeek" data-bs-toggle="tab">Semaine</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="#year-panel" id="year-tab" data-bs-toggle="tab">Année</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#month-panel" id="month-tab" data-bs-toggle="tab">Mois</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#week-panel" id="week-tab" data-bs-toggle="tab">Semaine</a></li>
                     </ul>
                     <div class="card">
                         <div class="card-body p-1">
                             <div class="tab-content">
-                                <div class="tab-pane fade show active" id="year">
+                                <div class="tab-pane fade show active" id="year-panel">
                                     <div id="chart-year"
                                          class="chart"
                                          data-url="{{ path('app_user_stats', {type: 'annee', id: user.id, slug: user.slug}) }}">
@@ -125,7 +125,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="month">
+                                <div class="tab-pane fade" id="month-panel">
                                     <div id="chart-month"
                                          class="chart"
                                          data-url="{{ path('app_user_stats', {type: 'mois', id: user.id, slug: user.slug}) }}">
@@ -136,7 +136,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="week">
+                                <div class="tab-pane fade" id="week-panel">
                                     <div id="chart-week"
                                          class="chart"
                                          data-url="{{ path('app_user_stats', {type: 'semaine', id: user.id, slug: user.slug}) }}">
