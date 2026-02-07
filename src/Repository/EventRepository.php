@@ -12,35 +12,89 @@ namespace App\Repository;
 
 use App\App\Location;
 use App\Contracts\DtoFindableRepositoryInterface;
+use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\EventDto;
+use App\Entity\City;
 use App\Entity\Event;
+use App\Entity\Place;
 use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Override;
 
 /**
  * @extends ServiceEntityRepository<Event>
  *
  * @implements DtoFindableRepositoryInterface<EventDto, Event>
+ * @implements MultipleEagerLoaderInterface<Event>
  *
  * @method Event|null find($id, $lockMode = null, $lockVersion = null)
  * @method Event|null findOneBy(array $criteria, array $orderBy = null)
  * @method Event[]    findAll()
  * @method Event[]    findBy(array $criteria, array $orderBy = null, int $limit = null, $offset = null)
  */
-final class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface, MultipleEagerLoaderInterface
 {
     use DtoFindableTrait;
 
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PreloadManager $preloadManager,
+    ) {
         parent::__construct($registry, Event::class);
+    }
+
+    public function loadAllEager(array $entities, array $context = []): void
+    {
+        $entityIds = array_map(static fn (Event $entity) => $entity->getId(), $entities);
+        if ([] === $entityIds) {
+            return;
+        }
+
+        $view = $context['view'] ?? null;
+
+        $loadTimesheets = fn () => $this
+            ->createQueryBuilder('e')
+            ->select('PARTIAL e.{id}')
+            ->addSelect('t')
+            ->leftJoin('e.timesheets', 't')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $entityIds)
+            ->getQuery()
+            ->execute();
+
+        $loadPlaces = fn () => $this
+            ->preloadManager
+            ->preloadEntities(Place::class, array_map(static fn (Event $entity) => $entity->getPlace()?->getId(), $entities));
+
+        $loadCities = fn () => $this
+            ->preloadManager
+            ->preloadEntities(City::class, array_map(static fn (Event $entity) => $entity->getPlace()?->getCity()?->getId(), $entities));
+
+        $loadUsers = fn () => $this
+            ->preloadManager
+            ->preloadEntities(User::class, array_map(static fn (Event $entity) => $entity->getUser()?->getId(), $entities));
+
+        if (\in_array($view, [
+            'events:agenda:list',
+            'events:widget:next-events',
+            'events:widget:similar-events',
+            'events:widget:top-events',
+            'events:location:index',
+            'events:user:list',
+            'events:personal-space:list',
+            'events:search:list',
+        ], true)) {
+            $loadTimesheets();
+            $loadUsers();
+            $loadPlaces();
+            $loadCities();
+        }
     }
 
     /**
@@ -102,25 +156,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('p.country', 'c3');
     }
 
-    #[Override]
-    public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
-    {
-        $qb = parent::createQueryBuilder($alias, $indexBy);
-
-        return $qb
-            ->select($alias, 'p')
-            ->addSelect('c')
-            ->addSelect('c2')
-            ->join($alias . '.place', 'p')
-            ->leftJoin('p.city', 'c')
-            ->leftJoin('c.parent', 'c2');
-    }
-
-    public function createSimpleQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
-    {
-        return parent::createQueryBuilder($alias, $indexBy);
-    }
-
     /**
      * @return iterable<array>
      */
@@ -177,10 +212,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         $from = new DateTimeImmutable();
 
-        return $this->getEntityManager()
-            ->createQueryBuilder()
+        return $this
+            ->createQueryBuilder('e')
             ->select('c.displayName, c.atDisplayName, c.slug, COUNT(e.id) AS events')
-            ->from($this->getEntityName(), 'e')
             ->join('e.place', 'p')
             ->join('p.country', 'c')
             ->where('e.endDate >= :from')
@@ -221,12 +255,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     public function findAllUserPlaces(User $user, int $limit = 5): array
     {
-        return $this->getEntityManager()
+        return $this
+            ->getEntityManager()
             ->createQueryBuilder()
             ->select('COUNT(e) as eventsCount, p.name')
             ->from(UserEvent::class, 'ue')
-            ->leftJoin('ue.user', 'u')
-            ->leftJoin('ue.event', 'e')
+            ->join('ue.event', 'e')
             ->join('e.place', 'p')
             ->where('ue.user = :user')
             ->groupBy('p.name')
@@ -257,7 +291,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder()
             ->select('COUNT(u)')
             ->from(UserEvent::class, 'ue')
-            ->leftJoin('ue.user', 'u')
+            ->join('ue.user', 'u')
             ->where('ue.user = :user')
             ->setParameter('user', $user->getId())
             ->getQuery()
@@ -280,7 +314,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder()
             ->select('COUNT(u)')
             ->from(UserEvent::class, 'ue')
-            ->leftJoin('ue.user', 'u')
+            ->join('ue.user', 'u')
             ->where('ue.event = :event')
             ->andWhere(($isParticipation ? 'ue.going' : 'ue.wish') . ' = true')
             ->setParameter('event', $event->getId())
@@ -320,10 +354,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         if (null !== $event->getPlace()->getCity()) {
             $qb
+                ->join('e.place', 'p')
                 ->andWhere('p.city = :city')
                 ->setParameter('city', $event->getPlace()->getCity()->getId());
         } elseif (null !== $event->getPlace()->getCountry()) {
             $qb
+                ->join('e.place', 'p')
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $event->getPlace()->getCountry()->getId());
         }
@@ -357,10 +393,13 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         if ($location->isCity()) {
             $qb
+                ->join('e.place', 'p')
+                ->join('p.city', 'c')
                 ->andWhere('c.id = :city')
                 ->setParameter('city', $location->getCity()->getId());
         } elseif ($location->isCountry()) {
             $qb
+                ->join('e.place', 'p')
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $location->getCountry()->getId());
         }
@@ -370,7 +409,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->setParameter('to', $au->format('Y-m-d'));
     }
 
-    public function findUpcomingEventsQueryBuilder(Location $location): QueryBuilder
+    public function findUpcomingEvents(Location $location): QueryBuilder
     {
         $from = new DateTimeImmutable();
 
@@ -390,10 +429,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         if ($location->isCountry()) {
             $queryBuilder
+                ->join('e.place', 'p')
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $location->getCountry()->getId());
         } elseif ($location->isCity()) {
             $queryBuilder
+                ->join('e.place', 'p')
                 ->andWhere('p.city = :city')
                 ->setParameter('city', $location->getCity()->getId());
         }
@@ -407,7 +448,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $from = new DateTimeImmutable();
         $from = $from->modify(Event::INDEX_FROM);
 
-        $qb = $this->getEntityManager()
+        $qb = $this
+            ->getEntityManager()
             ->createQueryBuilder()
             ->select('c')
             ->from(Tag::class, 'c')
@@ -416,10 +458,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.endDate >= :from');
 
         if ($location->isCity()) {
-            $qb->andWhere('p.city = :city')
+            $qb
+                ->andWhere('p.city = :city')
                 ->setParameter('city', $location->getCity()->getId());
         } elseif ($location->isCountry()) {
-            $qb->andWhere('p.city IS NULL')
+            $qb
+                ->andWhere('p.city IS NULL')
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $location->getCountry()->getId());
         }

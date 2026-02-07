@@ -44,10 +44,12 @@ final class WidgetsManager
             return null;
         }
 
-        $paginator = $this->createQueryBuilderPaginator(
+        $paginator = $this->createMultipleEagerLoadingPaginator(
             $this->eventRepository->findAllNextQueryBuilder($event),
+            $this->eventRepository,
             $page,
-            self::WIDGET_ITEM_LIMIT
+            self::WIDGET_ITEM_LIMIT,
+            ['view' => 'events:widget:next-events'],
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_next_events', [
@@ -66,10 +68,12 @@ final class WidgetsManager
 
     public function getSimilarEventsData(Event $event, Location $location, int $page = 1): EventsWidgetData
     {
-        $paginator = $this->createQueryBuilderPaginator(
+        $paginator = $this->createMultipleEagerLoadingPaginator(
             $this->eventRepository->findAllSimilarsQueryBuilder($event),
+            $this->eventRepository,
             $page,
-            self::WIDGET_ITEM_LIMIT
+            self::WIDGET_ITEM_LIMIT,
+            ['view' => 'events:widget:similar-events'],
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_similar_events', [
@@ -88,10 +92,12 @@ final class WidgetsManager
 
     public function getTopEventsData(Location $location, int $page = 1): TopEventsWidgetData
     {
-        $paginator = $this->createQueryBuilderPaginator(
+        $paginator = $this->createMultipleEagerLoadingPaginator(
             $this->eventRepository->findTopEventsQueryBuilder($location),
+            $this->eventRepository,
             $page,
-            self::WIDGET_ITEM_LIMIT
+            self::WIDGET_ITEM_LIMIT,
+            ['view' => 'events:widget:top-events'],
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_top_events', [
@@ -108,10 +114,12 @@ final class WidgetsManager
 
     public function getTopUsersData(int $page = 1): TopUsersWidgetData
     {
-        $paginator = $this->createQueryBuilderPaginator(
+        $paginator = $this->createMultipleEagerLoadingPaginator(
             $this->userRepository->findAllTopUsersQueryBuilder(),
+            $this->userRepository,
             $page,
-            self::WIDGET_ITEM_LIMIT
+            self::WIDGET_ITEM_LIMIT,
+            ['view' => 'users:widget:top-users'],
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_agenda_top_users', [

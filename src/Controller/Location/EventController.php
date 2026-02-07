@@ -57,10 +57,11 @@ final class EventController extends BaseController
         $similarEventsData = $widgetsManager->getSimilarEventsData($event, $location);
 
         // Comments widget data (first page)
-        $comments = $this->createQueryBuilderPaginator(
+        $comments = $this->createMultipleEagerLoadingPaginator(
             $commentRepository->findAllByEventQueryBuilder($event),
+            $commentRepository,
             1,
-            CommentController::COMMENTS_PER_PAGE
+            CommentController::COMMENTS_PER_PAGE,
         );
 
         $commentForm = null;

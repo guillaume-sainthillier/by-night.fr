@@ -22,6 +22,7 @@ use Elastica\Query\Terms;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
@@ -37,7 +38,7 @@ final class EventElasticaRepository extends Repository
 
     public const string STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
-    public function findWithSearch(SearchEvent $search): PagerfantaInterface
+    public function findWithSearch(SearchEvent $search): AdapterInterface
     {
         $sortByScore = false;
         $mainQuery = new BoolQuery();
@@ -196,7 +197,7 @@ final class EventElasticaRepository extends Repository
             }
         }
 
-        return $this->findPaginated($finalQuery);
+        return new FantaPaginatorAdapter($this->createPaginatorAdapter($finalQuery));
     }
 
     /**

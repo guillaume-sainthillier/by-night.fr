@@ -36,10 +36,11 @@ final class CommentController extends BaseController
             ]);
         }
 
-        $comments = $this->createQueryBuilderPaginator(
+        $comments = $this->createMultipleEagerLoadingPaginator(
             $commentRepository->findAllByEventQueryBuilder($event),
+            $commentRepository,
             $page,
-            self::COMMENTS_PER_PAGE
+            self::COMMENTS_PER_PAGE,
         );
 
         return $this->render('comment/list-and-form.html.twig', [
@@ -52,10 +53,11 @@ final class CommentController extends BaseController
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
-        $comments = $this->createQueryBuilderPaginator(
+        $comments = $this->createMultipleEagerLoadingPaginator(
             $commentRepository->findAllByEventQueryBuilder($event),
+            $commentRepository,
             $page,
-            self::COMMENTS_PER_PAGE
+            self::COMMENTS_PER_PAGE,
         );
 
         return $this->render('comment/list.html.twig', [
@@ -84,10 +86,11 @@ final class CommentController extends BaseController
             $em->persist($comment);
             $em->flush();
 
-            $comments = $this->createQueryBuilderPaginator(
+            $comments = $this->createMultipleEagerLoadingPaginator(
                 $commentRepository->findAllByEventQueryBuilder($event),
+                $commentRepository,
                 1,
-                self::COMMENTS_PER_PAGE
+                self::COMMENTS_PER_PAGE,
             );
 
             return new JsonResponse([

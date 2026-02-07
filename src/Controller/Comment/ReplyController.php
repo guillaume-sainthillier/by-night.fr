@@ -27,10 +27,11 @@ final class ReplyController extends BaseController
     #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', methods: ['GET'])]
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
-        $comments = $this->createQueryBuilderPaginator(
+        $comments = $this->createMultipleEagerLoadingPaginator(
             $commentRepository->findAllAnswersQueryBuilder($comment),
+            $commentRepository,
             $page,
-            self::REPLIES_PER_PAGE
+            self::REPLIES_PER_PAGE,
         );
 
         return $this->render('comment/reply/list.html.twig', [

@@ -211,7 +211,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
 
     public function findOneBySlug(string $slug): ?City
     {
-        return parent::createQueryBuilder('c')
+        return $this->createQueryBuilder('c')
             ->where('c.slug = :slug')
             ->setParameter('slug', $slug)
             ->getQuery()

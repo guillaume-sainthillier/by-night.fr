@@ -33,11 +33,21 @@ final class UserController extends BaseController
         $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_index');
 
         // Create paginators for next and previous events (first page)
-        $nextEventsQb = $eventRepository->findAllNextEvents($user, true);
-        $nextEvents = $this->createQueryBuilderPaginator($nextEventsQb, 1, self::EVENTS_PER_PAGE);
+        $nextEvents = $this->createMultipleEagerLoadingPaginator(
+            $eventRepository->findAllNextEvents($user, true),
+            $eventRepository,
+            1,
+            self::EVENTS_PER_PAGE,
+            ['view' => 'events:user:list'],
+        );
 
-        $previousEventsQb = $eventRepository->findAllNextEvents($user, false);
-        $previousEvents = $this->createQueryBuilderPaginator($previousEventsQb, 1, self::EVENTS_PER_PAGE);
+        $previousEvents = $this->createMultipleEagerLoadingPaginator(
+            $eventRepository->findAllNextEvents($user, false),
+            $eventRepository,
+            1,
+            self::EVENTS_PER_PAGE,
+            ['view' => 'events:user:list'],
+        );
 
         return $this->render('user/index.html.twig', [
             'user' => $user,
@@ -53,8 +63,13 @@ final class UserController extends BaseController
     {
         $user = $userRedirectManager->getUser($id, $slug, null, 'app_user_events_next');
 
-        $nextEventsQb = $eventRepository->findAllNextEvents($user, true);
-        $nextEvents = $this->createQueryBuilderPaginator($nextEventsQb, $page, self::EVENTS_PER_PAGE);
+        $nextEvents = $this->createMultipleEagerLoadingPaginator(
+            $eventRepository->findAllNextEvents($user, true),
+            $eventRepository,
+            $page,
+            self::EVENTS_PER_PAGE,
+            ['view' => 'events:user:list'],
+        );
 
         return $this->render('user/events_list.html.twig', [
             'events' => $nextEvents,
@@ -68,8 +83,13 @@ final class UserController extends BaseController
     {
         $user = $userRedirectManager->getUser($id, $slug, null, 'app_user_events_previous');
 
-        $previousEventsQb = $eventRepository->findAllNextEvents($user, false);
-        $previousEvents = $this->createQueryBuilderPaginator($previousEventsQb, $page, self::EVENTS_PER_PAGE);
+        $previousEvents = $this->createMultipleEagerLoadingPaginator(
+            $eventRepository->findAllNextEvents($user, false),
+            $eventRepository,
+            $page,
+            self::EVENTS_PER_PAGE,
+            ['view' => 'events:user:list'],
+        );
 
         return $this->render('user/events_list.html.twig', [
             'events' => $previousEvents,

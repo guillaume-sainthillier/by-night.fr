@@ -47,7 +47,7 @@ final class EventsDownloadImagesCommand extends Command
 
         $qb = $this
             ->eventRepository
-            ->createSimpleQueryBuilder('e')
+            ->createQueryBuilder('e')
             ->where('e.url IS NOT NULL')
             ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
             ->orderBy('e.id', Criteria::DESC)
