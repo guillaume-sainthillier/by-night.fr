@@ -68,6 +68,20 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getQuery()
             ->execute();
 
+        $loadCategories = fn () => $this
+            ->preloadManager
+            ->preloadEntities(Tag::class, array_map(static fn (Event $entity) => $entity->getCategory()?->getId(), $entities));
+
+        $loadThemes = fn () => $this
+            ->createQueryBuilder('e')
+            ->select('PARTIAL e.{id}')
+            ->addSelect('t')
+            ->leftJoin('e.themes', 't')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $entityIds)
+            ->getQuery()
+            ->execute();
+
         $loadPlaces = fn () => $this
             ->preloadManager
             ->preloadEntities(Place::class, array_map(static fn (Event $entity) => $entity->getPlace()?->getId(), $entities));
@@ -92,8 +106,29 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         ], true)) {
             $loadTimesheets();
             $loadUsers();
+        }
+
+        if (\in_array($view, [
+            'events:agenda:list',
+            'events:widget:next-events',
+            'events:widget:similar-events',
+            'events:widget:top-events',
+            'events:location:index',
+            'events:user:list',
+            'events:personal-space:list',
+            'events:search:list',
+            'elasticsearch:document',
+        ], true)) {
             $loadPlaces();
             $loadCities();
+        }
+
+        if (\in_array($view, [
+            'elasticsearch:document',
+        ], true)) {
+            // Load themes before categories to avoid multiple queries for categories when themes are loaded
+            $loadThemes();
+            $loadCategories();
         }
     }
 
@@ -104,7 +139,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function findAllByDtos(array $dtos, bool $eager): array
     {
-        $qb = parent::createQueryBuilder('e');
+        $qb = $this->createQueryBuilder('e');
 
         $this->addDtosToQueryBuilder($qb, 'e', $dtos);
 
@@ -137,20 +172,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
     {
-        $qb = $this->createElasticaQueryBuilder('e');
-
-        return $qb
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->addOrderBy('e.createdAt', 'DESC')
         ;
-    }
-
-    public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
-    {
-        return $this
-            ->createQueryBuilder($alias, $indexBy)
-            ->addSelect('c3')
-            ->join('p.country', 'c3');
     }
 
     /**
@@ -160,9 +187,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         return $this
             ->createQueryBuilder('e')
-            ->addSelect('c3')
-            ->join('p.country', 'c3')
             ->select('e.slug, e.id, e.updatedAt, e.endDate, c.slug AS city_slug, c3.slug AS country_slug')
+            ->join('e.place', 'p')
+            ->leftJoin('p.city', 'c')
+            ->join('p.country', 'c3')
+            ->orderBy('e.endDate', 'DESC')
             ->getQuery()
             ->toIterable();
     }
@@ -419,21 +448,22 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('c')
             ->from(Tag::class, 'c')
             ->join(Event::class, 'e', 'WITH', 'e.category = c.id')
-            ->join('e.place', 'p');
+        ;
 
         if ($location->isCity()) {
             $qb
+                ->join('e.place', 'p')
                 ->andWhere('p.city = :city')
                 ->setParameter('city', $location->getCity()->getId());
         } elseif ($location->isCountry()) {
             $qb
+                ->join('e.place', 'p')
                 ->andWhere('p.city IS NULL')
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $location->getCountry()->getId());
         }
 
         return $qb
-            ->setParameter('from', $from->format('Y-m-d'))
             ->groupBy('c')
             ->getQuery()
             ->execute();

@@ -10,22 +10,15 @@
 
 namespace App\Elasticsearch\Message;
 
-use Elastica\Document;
-
-final class DeleteManyDocuments extends DocumentsAction
+final readonly class RefreshElasticaIndex
 {
-    /**
-     * @param Document[] $documents
-     */
     public function __construct(
-        string $indexName,
-        private readonly array $documents,
+        private string $indexName,
     ) {
-        parent::__construct($indexName);
     }
 
-    public function getDocuments(): array
+    public function getIndexName(): string
     {
-        return $this->documents;
+        return $this->indexName;
     }
 }

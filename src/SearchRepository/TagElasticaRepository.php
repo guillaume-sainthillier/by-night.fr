@@ -12,7 +12,6 @@ namespace App\SearchRepository;
 
 use App\Entity\Tag;
 use Elastica\Query;
-use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
@@ -27,9 +26,15 @@ final class TagElasticaRepository extends Repository
      */
     public function findWithSearch(string $q): PagerfantaInterface
     {
-        $query = new MatchQuery();
-        $query->setFieldQuery('name', $q);
-        $query->setFieldFuzziness('name', 'auto');
+        $query = new MultiMatch();
+        $query
+            ->setFields([
+                'name^5',
+                'name.autocomplete^3',
+            ])
+            ->setFuzziness('auto')
+            ->setOperator('AND')
+            ->setQuery($q);
 
         $finalQuery = Query::create($query);
         $finalQuery->setSource(['id']);
@@ -49,6 +54,7 @@ final class TagElasticaRepository extends Repository
         $multiMatch
             ->setFields([
                 'name^5',
+                'name.autocomplete^3',
             ])
             ->setFuzziness('auto')
             ->setOperator('AND')

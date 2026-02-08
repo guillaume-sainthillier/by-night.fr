@@ -138,8 +138,5 @@ services:
               cache: '@thumbs.storage'
               driver: 'imagick'
 
-    FOS\ElasticaBundle\Message\Handler\AsyncPersistPageHandler:
-        tags: [messenger.message_handler]
-
     FOS\ElasticaBundle\Persister\AsyncPagerPersister: '@fos_elastica.async_pager_persister'
     FOS\ElasticaBundle\Persister\PersisterRegistry: '@fos_elastica.persister_registry'

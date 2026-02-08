@@ -10,13 +10,13 @@
 
 namespace App\Elasticsearch\Handler;
 
-use App\Elasticsearch\Message\DeleteManyByIdentifierDocuments;
+use App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class DeleteManyByIdentifierDocumentsHandler extends AbstractActionHandler
+final class DeleteManyDocumentsByIdentifiersHandler extends AbstractActionHandler
 {
-    public function __invoke(DeleteManyByIdentifierDocuments $action): void
+    public function __invoke(DeleteManyDocumentsByIdentifiers $action): void
     {
         $persister = $this->getPersister($action);
         $persister->doDeleteManyByIdentifiers($action->getDocumentIds(), $action->getRouting());

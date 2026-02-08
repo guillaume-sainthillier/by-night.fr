@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\Contracts\DtoFindableRepositoryInterface;
+use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\CityDto;
 use App\Entity\City;
 use App\Entity\Country;
@@ -25,26 +26,18 @@ use Override;
  * @extends ServiceEntityRepository<City>
  *
  * @implements DtoFindableRepositoryInterface<CityDto, City>
+ * @implements MultipleEagerLoaderInterface<City>
  *
  * @method City|null find($id, $lockMode = null, $lockVersion = null)
  * @method City|null findOneBy(array $criteria, array $orderBy = null)
  * @method City[]    findAll()
  * @method City[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-final class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface, MultipleEagerLoaderInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly CityManipulator $cityManipulator)
     {
         parent::__construct($registry, City::class);
-    }
-
-    public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
-    {
-        return $this
-            ->createQueryBuilder($alias, $indexBy)
-            ->addSelect('zipCities')
-            ->leftJoin($alias . '.zipCities', 'zipCities')
-        ;
     }
 
     #[Override]
@@ -55,6 +48,32 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->addSelect('country')
             ->leftJoin($alias . '.parent', 'p')
             ->join($alias . '.country', 'country');
+    }
+
+    public function loadAllEager(array $entities, array $context = []): void
+    {
+        $entityIds = array_map(static fn (City $entity): ?int => $entity->getId(), $entities);
+        if ([] === $entityIds) {
+            return;
+        }
+
+        $view = $context['view'] ?? null;
+
+        $loadZipCities = fn () => $this
+            ->createQueryBuilder('c')
+            ->select('PARTIAL c.{id}')
+            ->addSelect('z')
+            ->leftJoin('c.zipCities', 'z')
+            ->where('c.id IN (:ids)')
+            ->setParameter('ids', $entityIds)
+            ->getQuery()
+            ->getResult();
+
+        if (\in_array($view, [
+            'elasticsearch:document',
+        ], true)) {
+            $loadZipCities();
+        }
     }
 
     /**

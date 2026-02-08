@@ -18,7 +18,12 @@ final class ReplaceManyDocumentsHandler extends AbstractActionHandler
 {
     public function __invoke(ReplaceManyDocuments $action): void
     {
-        $persister = $this->getPersister($action);
-        $persister->doReplaceMany($action->getDocuments());
+        $entities = $this->fetchEntities($action->getEntityClass(), $action->getEntityIds());
+
+        if ([] === $entities) {
+            return;
+        }
+
+        $this->getPersister($action)->doReplaceMany($entities);
     }
 }

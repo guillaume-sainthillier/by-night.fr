@@ -26,8 +26,10 @@ final class CityElasticaRepository extends Repository
         $query
             ->setFields([
                 'postalCodes^10',
+                'postalCodes.autocomplete^8',
                 'country.name^5',
-                'name^3',
+                'name^5',
+                'name.autocomplete^3',
                 'parent.name',
             ])
             ->setFuzziness('auto')
@@ -54,8 +56,10 @@ final class CityElasticaRepository extends Repository
         $multiMatch
             ->setFields([
                 'postalCodes^10',
+                'postalCodes.autocomplete^8',
                 'country.name^5',
-                'name^3',
+                'name^5',
+                'name.autocomplete^3',
                 'parent.name',
             ])
             ->setFuzziness('auto')

@@ -141,7 +141,6 @@ final class EventElasticaRepository extends Repository
                     'place.street',
                     'description',
                     'description.heavy',
-                    'theme',
                     'type',
                     'category.name',
                     'themes.name',
@@ -170,7 +169,7 @@ final class EventElasticaRepository extends Repository
             $query = new MultiMatch();
             $query
                 ->setQuery($search->getTag())
-                ->setFields(['type', 'theme', 'category']);
+                ->setFields(['type', 'category.name', 'themes.name']);
             $mainQuery->addFilter($query);
         }
 
@@ -178,7 +177,7 @@ final class EventElasticaRepository extends Repository
             $query = new MultiMatch();
             $query
                 ->setQuery(implode(' ', $search->getType()))
-                ->setFields(['type', 'theme', 'category']);
+                ->setFields(['type', 'category.name', 'themes.name']);
             $mainQuery->addFilter($query);
         }
 

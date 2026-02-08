@@ -13,7 +13,7 @@ when@dev:
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ['!event', '!console', '!elastica']
+                channels: ['!event', '!doctrine', '!console', '!elastica']
 
 when@test:
     monolog:

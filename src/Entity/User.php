@@ -20,6 +20,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Serializable;
 use Stringable;
@@ -39,7 +40,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: '`user`')]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;
 
@@ -144,6 +145,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $verified = false;
 
+    private bool $sendToElasticsearch = false;
+
     public function __construct()
     {
         $this->lastLogin = new DateTimeImmutable();
@@ -151,6 +154,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    /**
+     * Only send to Elasticsearch when indexed fields change.
+     *
+     * @see fos_elastica.yaml user index mapping (username, firstname, lastname)
+     */
+    public function shouldBeUpdated(): bool
+    {
+        return $this->sendToElasticsearch;
     }
 
     public function getInternalId(): ?string
@@ -375,6 +388,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setFirstname(?string $firstname): self
     {
+        if ($this->firstname !== $firstname) {
+            $this->sendToElasticsearch = true;
+        }
+
         $this->firstname = $firstname;
 
         return $this;
@@ -387,6 +404,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setLastname(?string $lastname): self
     {
+        if ($this->lastname !== $lastname) {
+            $this->sendToElasticsearch = true;
+        }
+
         $this->lastname = $lastname;
 
         return $this;
@@ -557,6 +578,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setUsername(?string $username): self
     {
+        if ($this->username !== $username) {
+            $this->sendToElasticsearch = true;
+        }
+
         $this->username = $username;
 
         return $this;
