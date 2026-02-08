@@ -1,9 +1,7 @@
 const path = require('path')
-const glob = require('glob-all')
 const ESLintWebpackPlugin = require("eslint-webpack-plugin")
 const Encore = require('@symfony/webpack-encore')
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
-const { PurgeCSSPlugin } = require('purgecss-webpack-plugin')
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -166,45 +164,6 @@ if(Encore.isDev()) {
             'vendor',
         ]
     }))
-}
-
-if (Encore.isProduction()) {
-    Encore.addPlugin(
-        new PurgeCSSPlugin({
-            paths: glob.sync(
-                [
-                    path.join(__dirname, 'templates/**/*.html.twig'),
-                    path.join(__dirname, 'assets/**/*'),
-                    path.join(__dirname, 'src/**/*.php'),
-                    path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
-                    path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
-                    path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
-                    path.join(__dirname, 'node_modules/fancybox/dist/js/jquery.fancybox.js'),
-                    path.join(__dirname, 'node_modules/lazysizes/lazysizes.js'),
-                    path.join(__dirname, 'node_modules/morris.js/morris.js'),
-                    path.join(__dirname, 'node_modules/raphael/raphael.js'),
-                    path.join(__dirname, 'node_modules/tom-select/dist/**/*.js'),
-                    path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
-                    path.join(__dirname, 'node_modules/summernote/src/styles/bs5/*.js'),
-                ],
-                {nodir: true}
-            ),
-            safelist: {
-                greedy: [
-                    /^dropdown-menu/,
-                    /^form-label/,
-                    /^visible$/,
-                    /^show$/,
-                    /^hidden$/,
-                    /^custom-/,
-                    /^note-/,
-                    /^ts-/,
-                    /^tom-/,
-                    /^aa-/,
-                ]
-            },
-        })
-    )
 }
 
 module.exports = Encore.getWebpackConfig()
