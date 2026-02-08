@@ -33,6 +33,11 @@ final readonly class TopEventsWidgetData
         return iterator_to_array($this->paginator->getCurrentPageResults());
     }
 
+    public function hasNextPage(): bool
+    {
+        return $this->paginator->hasNextPage();
+    }
+
     public function getCount(): int
     {
         return $this->paginator->getNbResults();
