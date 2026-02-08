@@ -105,7 +105,6 @@ RUN mkdir -p /run/php var/cache var/sessions var/storage/temp var/datas public/b
     APP_ENV=prod bin/console ux:icons:warm-cache && \
     APP_ENV=prod bin/console assets:install && \
     echo "<?php return [];" > .env.local.php && \
-    chown -R www-data:www-data var public/build public/bundles && \
     rm -rf /root/.cache
 
 
