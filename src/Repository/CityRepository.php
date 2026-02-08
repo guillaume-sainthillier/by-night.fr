@@ -15,6 +15,8 @@ use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\CityDto;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Entity\Event;
+use App\Entity\Place;
 use App\Utils\CityManipulator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -160,27 +162,41 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug')
-            ->join('App:Place', 'p', 'WITH', 'p.city = c')
-            ->join('App:Event', 'a', 'WITH', 'a.place = p')
+            ->join(Place::class, 'p', 'WITH', 'p.city = c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
             ->groupBy('c.slug')
             ->getQuery()
             ->toIterable();
     }
 
     /**
-     * @return iterable<array>
+     * @return iterable<array{citySlug: string, tagId: int, tagSlug: string}>
      */
     public function findAllTagsSitemap(): iterable
     {
-        return parent::createQueryBuilder('c')
-            ->select('c.slug, e.type, e.category, e.theme')
-            ->join('App:Place', 'p', 'WITH', 'p.city = c')
-            ->join('App:Event', 'e', 'WITH', 'e.place = p')
+        // Tags from category relation
+        yield from parent::createQueryBuilder('c')
+            ->select('c.slug AS citySlug, cat.id AS tagId, cat.slug AS tagSlug')
+            ->join(Place::class, 'p', 'WITH', 'p.city = c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join('e.category', 'cat')
             ->where('e.endDate >= :from')
             ->setParameter('from', date('Y-m-d'))
-            ->groupBy('c.slug, e.type, e.category, e.theme')
+            ->groupBy('c.slug, cat.id, cat.slug')
             ->getQuery()
             ->toIterable();
+
+        // Tags from themes relation (getResult() because toIterable() forbids ManyToMany joins)
+        yield from parent::createQueryBuilder('c')
+            ->select('c.slug AS citySlug, t.id AS tagId, t.slug AS tagSlug')
+            ->join(Place::class, 'p', 'WITH', 'p.city = c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join('e.themes', 't')
+            ->where('e.endDate >= :from')
+            ->setParameter('from', date('Y-m-d'))
+            ->groupBy('c.slug, t.id, t.slug')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
