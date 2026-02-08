@@ -8,15 +8,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Producer;
+namespace App\Elasticsearch\Message;
 
-use App\Dto\EventDto;
-use OldSound\RabbitMqBundle\RabbitMq\Producer;
-
-final class EventInErrorProducer extends Producer
+final readonly class RefreshElasticaIndex
 {
-    public function scheduleEvent(EventDto $event): void
+    public function __construct(
+        private string $indexName,
+    ) {
+    }
+
+    public function getIndexName(): string
     {
-        $this->publish(serialize($event));
+        return $this->indexName;
     }
 }

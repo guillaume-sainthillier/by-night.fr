@@ -10,6 +10,8 @@
 
 namespace App\Utils;
 
+use App\Contracts\MultipleEagerLoaderInterface;
+use App\Pagination\MultipleEagerLoadingAdapter;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
@@ -22,6 +24,44 @@ trait PaginateTrait
     protected function createQueryBuilderPaginator(QueryBuilder $queryBuilder, int $page, int $limit): PagerfantaInterface
     {
         $adapter = new QueryAdapter($queryBuilder);
+
+        return $this->createPaginatorFromAdapter($adapter, $page, $limit);
+    }
+
+    /**
+     * @template TPaginateObject of object
+     *
+     * @param MultipleEagerLoaderInterface<TPaginateObject> $multipleEagerLoader
+     *
+     * @return PagerfantaInterface<TPaginateObject>
+     */
+    protected function createMultipleEagerLoadingPaginator(
+        QueryBuilder $query,
+        MultipleEagerLoaderInterface $multipleEagerLoader,
+        int $page,
+        int $limit,
+        array $options = [],
+    ): PagerfantaInterface {
+        $adapter = new QueryAdapter($query);
+
+        return $this->createMultipleEagerLoadingPaginatorFromAdapter($adapter, $multipleEagerLoader, $page, $limit, $options);
+    }
+
+    /**
+     * @template TPaginateObject of object
+     *
+     * @param MultipleEagerLoaderInterface<TPaginateObject> $multipleEagerLoader
+     *
+     * @return PagerfantaInterface<TPaginateObject>
+     */
+    protected function createMultipleEagerLoadingPaginatorFromAdapter(
+        AdapterInterface $adapter,
+        MultipleEagerLoaderInterface $multipleEagerLoader,
+        int $page,
+        int $limit,
+        array $options = [],
+    ): PagerfantaInterface {
+        $adapter = new MultipleEagerLoadingAdapter($adapter, $multipleEagerLoader, $options);
 
         return $this->createPaginatorFromAdapter($adapter, $page, $limit);
     }

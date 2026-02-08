@@ -8,14 +8,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Producer;
+namespace App\Message;
 
-use OldSound\RabbitMqBundle\RabbitMq\Producer;
-
-final class RemoveImageThumbnailsProducer extends Producer
+final readonly class PurgeCdnCacheUrl
 {
-    public function scheduleRemove(string $path): void
+    public function __construct(public string $path)
     {
-        $this->publish($path);
     }
 }

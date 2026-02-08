@@ -30,8 +30,10 @@ interface EntityProviderInterface extends SupportsClassInterface
      * Prefetch all entities for given objects.
      *
      * @param TDto[] $dtos
+     * @param bool   $eager when false, only match by fast indexed lookups (external IDs);
+     *                      when true, also match by broader criteria (location, name, etc.)
      */
-    public function prefetchEntities(array $dtos): void;
+    public function prefetchEntities(array $dtos, bool $eager): void;
 
     /**
      * Get the entity for given DTO.

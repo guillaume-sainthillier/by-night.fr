@@ -10,10 +10,16 @@
 
 namespace App\Contracts;
 
-interface DependencyProvidableInterface
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+/**
+ * @template T of object
+ */
+#[AutoconfigureTag]
+interface MultipleEagerLoaderInterface
 {
     /**
-     * Give what will be persisted AFTER current dto.
+     * @param array<int, T> $entities
      */
-    public function getProvidedCatalogue(): DependencyCatalogueInterface;
+    public function loadAllEager(array $entities, array $context = []): void;
 }

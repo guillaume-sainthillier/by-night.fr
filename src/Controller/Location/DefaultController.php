@@ -29,10 +29,12 @@ final class DefaultController extends BaseController
             'from' => new DateTimeImmutable('now'),
         ];
         $form = $this->createForm(SimpleEventSearchType::class, $data);
-        $events = $this->createQueryBuilderPaginator(
-            $eventRepository->findUpcomingEventsQueryBuilder($location),
+        $events = $this->createMultipleEagerLoadingPaginator(
+            $eventRepository->findUpcomingEvents($location),
+            $eventRepository,
             1,
-            7
+            8,
+            ['view' => 'events:location:index']
         );
 
         return $this->render('location/index.html.twig', [

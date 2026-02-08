@@ -18,7 +18,12 @@ final class InsertManyDocumentsHandler extends AbstractActionHandler
 {
     public function __invoke(InsertManyDocuments $action): void
     {
-        $persister = $this->getPersister($action);
-        $persister->doInsertMany($action->getDocuments());
+        $entities = $this->fetchEntities($action->getEntityClass(), $action->getEntityIds());
+
+        if ([] === $entities) {
+            return;
+        }
+
+        $this->getPersister($action)->doInsertMany($entities);
     }
 }

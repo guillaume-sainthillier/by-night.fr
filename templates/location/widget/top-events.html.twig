@@ -1,4 +1,4 @@
-<twig:Widget:Scrollable header="À la une cette semaine" icon="lucide:star" bodyClass="p-0" id="featured">
+<twig:Widget:Scrollable header="À la une cette semaine" icon="lucide:star" bodyClass="p-0" id="featured" showFooter="{{ topEventsData.hasNextPage }}">
     <div class="list-group scroll-area-content">
         {{ include('location/hinclude/events.html.twig', {
             topEventsData: topEventsData,

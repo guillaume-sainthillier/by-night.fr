@@ -10,22 +10,33 @@
 
 namespace App\Elasticsearch\Message;
 
-use Elastica\Document;
-
 final class ReplaceManyDocuments extends DocumentsAction
 {
     /**
-     * @param Document[] $documents
+     * @param class-string      $entityClass
+     * @param array<string|int> $entityIds
      */
     public function __construct(
         string $indexName,
-        private readonly array $documents,
+        private readonly string $entityClass,
+        private readonly array $entityIds,
     ) {
         parent::__construct($indexName);
     }
 
-    public function getDocuments(): array
+    /**
+     * @return class-string
+     */
+    public function getEntityClass(): string
     {
-        return $this->documents;
+        return $this->entityClass;
+    }
+
+    /**
+     * @return array<string|int>
+     */
+    public function getEntityIds(): array
+    {
+        return $this->entityIds;
     }
 }

@@ -11,14 +11,13 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use App\File\DeletableFile;
-use App\Producer\PurgeCdnCacheUrlProducer;
-use App\Producer\RemoveImageThumbnailsProducer;
+use App\Message\PurgeCdnCacheUrl;
+use App\Message\RemoveImageThumbnails;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
@@ -26,13 +25,9 @@ final class ImageSubscriber implements EventSubscriberInterface
 {
     private array $paths = [];
 
-    /** @var DeletableFile[] */
-    private array $filesToDelete = [];
-
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer,
-        private readonly RemoveImageThumbnailsProducer $removeImageThumbnailsProducer,
+        private readonly MessageBusInterface $messageBus,
     ) {
     }
 
@@ -45,7 +40,6 @@ final class ImageSubscriber implements EventSubscriberInterface
             Events::PRE_REMOVE => 'onImageDelete',
             Events::POST_REMOVE => 'onImageDeleted',
             Events::PRE_UPLOAD => 'onImageUpload',
-            Events::POST_UPLOAD => 'onImageUploaded',
         ];
     }
 
@@ -54,9 +48,6 @@ final class ImageSubscriber implements EventSubscriberInterface
     {
         // file become an instance of File just after upload, we have to track it before the change
         $file = $event->getMapping()->getFile($event->getObject());
-        if ($file instanceof DeletableFile) {
-            $this->filesToDelete[] = $file;
-        }
 
         // Extract metadatas
         $object = $event->getObject();
@@ -79,21 +70,6 @@ final class ImageSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onImageUploaded(): void
-    {
-        if ([] === $this->filesToDelete) {
-            return;
-        }
-
-        $fs = new Filesystem();
-        foreach ($this->filesToDelete as $file) {
-            $fs->remove($file->getPathname());
-        }
-
-        unset($this->filesToDelete);
-        $this->filesToDelete = [];
-    }
-
     public function onImageDelete(Event $event): void
     {
         $object = $event->getObject();
@@ -107,12 +83,12 @@ final class ImageSubscriber implements EventSubscriberInterface
     {
         // Schedule thumbnails delete
         foreach ($this->paths as $path) {
-            $this->removeImageThumbnailsProducer->scheduleRemove($path);
+            $this->messageBus->dispatch(new RemoveImageThumbnails($path));
         }
 
         // Schedule CDN purging of old image path
         foreach ($this->paths as $path) {
-            $this->purgeCdnCacheUrlProducer->schedulePurge($path);
+            $this->messageBus->dispatch(new PurgeCdnCacheUrl($path));
         }
 
         unset($this->paths);

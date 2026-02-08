@@ -82,6 +82,8 @@ final class UserUpdater extends Updater
     private function doUpdate(array $users, array $downloadUrls): void
     {
         $responses = [];
+        /** @var array<int, string> $tempFilePaths */
+        $tempFilePaths = [];
 
         foreach ($users as $user) {
             if (empty($downloadUrls[$user->getOAuth()->getFacebookId()])) {
@@ -96,15 +98,27 @@ final class UserUpdater extends Updater
 
         foreach ($this->client->stream($responses) as $response => $chunk) {
             try {
-                if ($chunk->isFirst() && 200 !== $response->getStatusCode()) {
-                    continue;
-                } elseif ($chunk->isLast()) {
-                    $content = $response->getContent();
-                    $user = $response->getInfo('user_data');
+                /** @var User $user */
+                $user = $response->getInfo('user_data');
+                $userId = $user->getId();
 
-                    if ($this->userHandler->hasToUploadNewImage($content, $user)) {
-                        $contentType = $response->getHeaders()['content-type'][0];
-                        $this->userHandler->uploadFile($user, $content, $contentType);
+                if ($chunk->isTimeout()) {
+                    $response->cancel();
+                    unset($tempFilePaths[$userId]);
+                } elseif ($chunk->isFirst()) {
+                    if (200 !== $response->getStatusCode()) {
+                        $response->cancel();
+                    } else {
+                        $tempFilePaths[$userId] = $this->userHandler->createTempFile();
+                    }
+                } elseif (isset($tempFilePaths[$userId])) {
+                    file_put_contents($tempFilePaths[$userId], $chunk->getContent(), \FILE_APPEND);
+
+                    if ($chunk->isLast()) {
+                        if ($this->userHandler->hasToUploadNewImage($tempFilePaths[$userId], $user)) {
+                            $this->userHandler->uploadFile($user, $tempFilePaths[$userId]);
+                        }
+                        unset($tempFilePaths[$userId]);
                     }
                 }
             } catch (HttpExceptionInterface $httpException) {

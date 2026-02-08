@@ -12,25 +12,17 @@ fos_elastica:
         event:
             indexable_callback: ['@App\Elasticsearch\EventIndexableChecker', 'isIndexable']
             settings:
+                index: &index_settings
+                    number_of_shards: 1
+                    number_of_replicas: 0
+                    refresh_interval: 5s
+                    codec: best_compression
                 analysis:
                     filter:
-                        french_elision:
+                        french_elision: &french_elision_filter
                             type: elision
                             articles_case: true
-                            articles:
-                                - l
-                                - m
-                                - t
-                                - qu
-                                - n
-                                - s
-                                - j
-                                - d
-                                - c
-                                - jusqu
-                                - quoiqu
-                                - lorsqu
-                                - puisqu
+                            articles: [l, m, t, qu, n, s, j, d, c, jusqu, quoiqu, lorsqu, puisqu]
                         french_stemmer:
                             type: stemmer
                             language: light_french
@@ -59,6 +51,7 @@ fos_elastica:
                         french_natural:
                             tokenizer: icu_tokenizer
                             filter:
+                                - french_elision
                                 - icu_folding
                                 - lowercase
             persistence:
@@ -95,15 +88,6 @@ fos_elastica:
                 endDate:
                     type: date
                     format: yyyy-MM-dd
-                timesheets:
-                    type: nested
-                    properties:
-                        startAt:
-                            type: date
-                            format: yyyy-MM-dd
-                        endAt:
-                            type: date
-                            format: yyyy-MM-dd
                 draft:
                     type: boolean
                 placeName:
@@ -116,9 +100,6 @@ fos_elastica:
                     type: text
                     analyzer: french_natural
                 placePostalCode:
-                    type: text
-                    analyzer: french_natural
-                theme:
                     type: text
                     analyzer: french_natural
                 type:
@@ -143,6 +124,8 @@ fos_elastica:
                 place:
                     type: object
                     properties:
+                        id:
+                            type: integer
                         name:
                             type: text
                             analyzer: french_natural
@@ -158,23 +141,39 @@ fos_elastica:
                         city:
                             type: object
                             properties:
+                                id:
+                                    type: integer
                                 location:
                                     type: geo_point
                 country:
                     type: object
                     properties:
                         id:
-                            type: text
-                            analyzer: french_natural
+                            type: keyword
         city:
             settings:
+                index: *index_settings
                 analysis:
+                    filter:
+                        french_elision: *french_elision_filter
+                        autocomplete_ngram: &autocomplete_ngram_filter
+                            type: edge_ngram
+                            min_gram: 2
+                            max_gram: 15
                     analyzer:
-                        text_analyzer:
+                        text_analyzer: &text_analyzer
                             tokenizer: icu_tokenizer
                             filter:
+                                - french_elision
                                 - icu_folding
                                 - lowercase
+                        autocomplete_index: &autocomplete_index_analyzer
+                            tokenizer: icu_tokenizer
+                            filter:
+                                - french_elision
+                                - icu_folding
+                                - lowercase
+                                - autocomplete_ngram
             serializer:
                 groups:
                     - 'elasticsearch:city:details'
@@ -182,11 +181,21 @@ fos_elastica:
                 name:
                     type: text
                     analyzer: text_analyzer
+                    fields:
+                        autocomplete:
+                            type: text
+                            analyzer: autocomplete_index
+                            search_analyzer: text_analyzer
                 postalCodes:
                     type: text
                     analyzer: text_analyzer
+                    fields:
+                        autocomplete:
+                            type: text
+                            analyzer: autocomplete_index
+                            search_analyzer: text_analyzer
                 population:
-                    type: double
+                    type: integer
                 country:
                     type: object
                     properties:
@@ -204,17 +213,16 @@ fos_elastica:
                 model: App\Entity\City
                 repository: App\SearchRepository\CityElasticaRepository
                 provider:
-                    query_builder_method: createElasticaQueryBuilder
                     batch_size: 5000
+        # When changing properties below, update User::shouldBeUpdated() accordingly
         user:
             settings:
+                index: *index_settings
                 analysis:
+                    filter:
+                        french_elision: *french_elision_filter
                     analyzer:
-                        text_analyzer:
-                            tokenizer: icu_tokenizer
-                            filter:
-                                - icu_folding
-                                - lowercase
+                        text_analyzer: *text_analyzer
             serializer:
                 groups:
                     - 'elasticsearch:user:details'
@@ -235,13 +243,14 @@ fos_elastica:
                     batch_size: 1000
         tag:
             settings:
+                index: *index_settings
                 analysis:
+                    filter:
+                        french_elision: *french_elision_filter
+                        autocomplete_ngram: *autocomplete_ngram_filter
                     analyzer:
-                        text_analyzer:
-                            tokenizer: icu_tokenizer
-                            filter:
-                                - icu_folding
-                                - lowercase
+                        text_analyzer: *text_analyzer
+                        autocomplete_index: *autocomplete_index_analyzer
             serializer:
                 groups:
                     - 'elasticsearch:tag:details'
@@ -249,6 +258,11 @@ fos_elastica:
                 name:
                     type: text
                     analyzer: text_analyzer
+                    fields:
+                        autocomplete:
+                            type: text
+                            analyzer: autocomplete_index
+                            search_analyzer: text_analyzer
                 slug:
                     type: keyword
             persistence:

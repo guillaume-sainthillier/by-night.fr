@@ -11,8 +11,11 @@
 namespace App\Repository;
 
 use App\Contracts\DtoFindableRepositoryInterface;
+use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\UserDto;
 use App\Entity\User;
+use App\Entity\UserOAuth;
+use App\Manager\PreloadManager;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -28,17 +31,34 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @extends ServiceEntityRepository<User>
  *
  * @implements DtoFindableRepositoryInterface<UserDto, User>
+ * @implements MultipleEagerLoaderInterface<User>
  *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-final class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface, DtoFindableRepositoryInterface
+final class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface, DtoFindableRepositoryInterface, MultipleEagerLoaderInterface
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PreloadManager $preloadManager,
+    ) {
         parent::__construct($registry, User::class);
+    }
+
+    public function loadAllEager(array $entities, array $context = []): void
+    {
+        $view = $context['view'] ?? null;
+
+        $loadOauth = fn () => $this->preloadManager->preloadEntities(
+            UserOAuth::class,
+            array_map(static fn (User $entity) => $entity->getOAuth()?->getId(), $entities)
+        );
+
+        if ('users:search:list' === $view) {
+            $loadOauth();
+        }
     }
 
     public function loadUserByIdentifier(string $identifier): ?UserInterface
@@ -93,11 +113,8 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     {
         return $this
             ->createQueryBuilder('u')
-            ->select('u')
-            ->addSelect('i')
             ->addSelect('COUNT(u.id) AS nb_events')
-            ->leftJoin('u.oAuth', 'i')
-            ->leftJoin('u.userEvents', 'c')
+            ->join('u.userEvents', 'c')
             ->orderBy('nb_events', Criteria::DESC)
             ->groupBy('u.id');
     }
@@ -121,7 +138,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     /**
      * {@inheritDoc}
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $idsWheres = [];
         foreach ($dtos as $dto) {

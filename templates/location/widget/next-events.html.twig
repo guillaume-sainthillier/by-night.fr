@@ -1,5 +1,5 @@
 <twig:Widget:ScrollableHorizontal>
-    <twig:block name="titre">{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small></twig:block>
+    <twig:block name="header">{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small></twig:block>
     {{ include('location/hinclude/details-events.html.twig', {
         eventsData: nextEventsData,
     }) }}

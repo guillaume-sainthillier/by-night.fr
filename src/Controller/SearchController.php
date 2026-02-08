@@ -12,6 +12,8 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\User;
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
@@ -27,7 +29,7 @@ final class SearchController extends AbstractController
     private const int ITEMS_PER_PAGE = 20;
 
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
-    public function index(Request $request, RepositoryManagerInterface $rm): Response
+    public function index(Request $request, RepositoryManagerInterface $rm, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         $q = trim($request->query->get('q') ?? '');
         $type = $request->query->get('type');
@@ -41,8 +43,7 @@ final class SearchController extends AbstractController
         $users = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
         if ('' !== $q) {
             if (!$type || 'evenements' === $type) { // Search for events
-                $events = $this->searchEvents($rm, $q);
-                $this->updatePaginator($events, $page, self::ITEMS_PER_PAGE);
+                $events = $this->searchEvents($rm, $eventRepository, $q, $page, self::ITEMS_PER_PAGE);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-events.html.twig', [
@@ -55,8 +56,7 @@ final class SearchController extends AbstractController
             }
 
             if (!$type || 'membres' === $type) { // Search for members
-                $users = $this->searchUsers($rm, $q);
-                $this->updatePaginator($users, $page, self::ITEMS_PER_PAGE);
+                $users = $this->searchUsers($rm, $userRepository, $q, $page, self::ITEMS_PER_PAGE);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-users.html.twig', [
@@ -81,23 +81,39 @@ final class SearchController extends AbstractController
     /**
      * @return PagerfantaInterface<Event>
      */
-    private function searchEvents(RepositoryManagerInterface $rm, ?string $query): PagerfantaInterface
+    private function searchEvents(RepositoryManagerInterface $rm, EventRepository $eventRepository, ?string $query, int $page, int $limit): PagerfantaInterface
     {
         /** @var EventElasticaRepository $repoSearch */
         $repoSearch = $rm->getRepository(Event::class);
         $search = new SearchEvent()->setTerm($query);
 
-        return $repoSearch->findWithSearch($search);
+        $adapter = $repoSearch->findWithSearch($search);
+
+        return $this->createMultipleEagerLoadingPaginatorFromAdapter(
+            $adapter,
+            $eventRepository,
+            $page,
+            $limit,
+            ['view' => 'events:search:list'],
+        );
     }
 
     /**
      * @return PagerfantaInterface<User>
      */
-    private function searchUsers(RepositoryManagerInterface $rm, ?string $query): PagerfantaInterface
+    private function searchUsers(RepositoryManagerInterface $rm, UserRepository $userRepository, ?string $query, int $page, int $limit): PagerfantaInterface
     {
         /** @var UserElasticaRepository $repo */
         $repo = $rm->getRepository(User::class);
 
-        return $repo->findWithSearch($query);
+        $adapter = $repo->findWithSearch($query);
+
+        return $this->createMultipleEagerLoadingPaginatorFromAdapter(
+            $adapter,
+            $userRepository,
+            $page,
+            $limit,
+            ['view' => 'users:search:list'],
+        );
     }
 }

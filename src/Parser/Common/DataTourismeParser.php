@@ -18,7 +18,6 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
-use App\Producer\EventProducer;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
@@ -26,6 +25,7 @@ use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -45,7 +45,7 @@ final class DataTourismeParser extends AbstractParser
 
     public function __construct(
         LoggerInterface $logger,
-        EventProducer $eventProducer,
+        MessageBusInterface $messageBus,
         EventHandler $eventHandler,
         private readonly HttpClientInterface $client,
         #[Autowire('%kernel.project_dir%/var/storage/temp')]
@@ -53,7 +53,7 @@ final class DataTourismeParser extends AbstractParser
         #[Autowire(env: 'DATATOURISME_APP_KEY')]
         private readonly string $dataTourismeAppKey,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler);
+        parent::__construct($logger, $messageBus, $eventHandler);
 
         $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
             ->enableExceptionOnInvalidIndex()

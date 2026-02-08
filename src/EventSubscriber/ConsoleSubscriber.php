@@ -24,8 +24,9 @@ final class ConsoleSubscriber implements EventSubscriberInterface
     private array $stopwatches = [];
 
     public function __construct(
-        #[Autowire(env: 'APP_MONITOR')]
-        private readonly int $monitor,
+        #[Autowire(env: 'bool:APP_MONITOR')]
+        private readonly bool $monitor,
+        private readonly Stopwatch $stopwatch,
     ) {
     }
 
@@ -43,8 +44,11 @@ final class ConsoleSubscriber implements EventSubscriberInterface
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
         Monitor::$output = $event->getOutput();
-        Monitor::enableMonitoring((bool) $this->monitor);
-        $this->stopwatches[$event->getCommand()->getName()] = Monitor::start($event->getCommand()->getName());
+        Monitor::enableMonitoring($this->monitor);
+        // We need to create a new stopwatch for each command, otherwise the previous one will be reset and we won't be able to get the stats of the previous command.
+        Monitor::$stopwatch = new Stopwatch();
+        $this->stopwatches[$event->getCommand()->getName()] = Monitor::start($event->getCommand()->getName(), 'console');
+        Monitor::$stopwatch = $this->stopwatch;
     }
 
     public function onConsoleTerminate(ConsoleTerminateEvent $event): void

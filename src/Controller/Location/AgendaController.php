@@ -104,8 +104,14 @@ final class AgendaController extends BaseController
             $isValid = true;
             /** @var EventElasticaRepository $repository */
             $repository = $repositoryManager->getRepository(Event::class);
-            $events = $repository->findWithSearch($search);
-            $this->updatePaginator($events, $page, self::EVENT_PER_PAGE);
+            $eventsAdapter = $repository->findWithSearch($search);
+            $events = $this->createMultipleEagerLoadingPaginatorFromAdapter(
+                $eventsAdapter,
+                $eventRepository,
+                $page,
+                self::EVENT_PER_PAGE,
+                ['view' => 'events:agenda:list'],
+            );
         } else {
             $isValid = false;
             $events = $this->createEmptyPaginator($page, self::EVENT_PER_PAGE);

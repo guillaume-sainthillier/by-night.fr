@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use Closure;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -25,6 +26,8 @@ final class Monitor
     private static bool $enableMonitoring = false;
 
     private static array $stats = [];
+
+    public static ?Stopwatch $stopwatch = null;
 
     public static function createProgressBar(int $nbSteps): void
     {
@@ -148,19 +151,19 @@ final class Monitor
         return round($bytes / 1_000 / 1_000, 2) . ' MB';
     }
 
-    public static function bench(string $message, callable $function): mixed
+    public static function bench(string $message, Closure $function, ?string $section = null): mixed
     {
-        $stopwatch = self::start($message);
+        $stopwatch = self::start($message, $section);
         $retour = \call_user_func($function);
         self::stop($message, $stopwatch);
 
         return $retour;
     }
 
-    public static function start(?string $message): ?Stopwatch
+    public static function start(?string $message, ?string $section): ?Stopwatch
     {
-        $stopwatch = null;
         if (self::$enableMonitoring) {
+            self::$stopwatch ??= new Stopwatch();
             if (!isset(self::$stats[$message])) {
                 self::$stats[$message] = [
                     'time' => [],
@@ -168,20 +171,24 @@ final class Monitor
                 ];
             }
 
-            $stopwatch = new Stopwatch();
-            $stopwatch->start($message);
+            self::$stopwatch->start($message, $section);
         }
 
-        return $stopwatch;
+        return self::$stopwatch;
     }
 
     public static function stop(?string $message, ?Stopwatch $stopwatch): void
     {
-        if (self::$enableMonitoring) {
-            $event = $stopwatch->stop($message);
+        if (self::$enableMonitoring && $stopwatch) {
+            if ($stopwatch->isStarted($message)) {
+                $stopwatch->stop($message);
+            }
+            $event = $stopwatch->getEvent($message);
+            $periods = $event->getPeriods();
+            $lastPeriod = end($periods);
 
-            self::$stats[$message]['time'][] = $event->getDuration();
-            self::$stats[$message]['memory'][] = $event->getMemory();
+            self::$stats[$message]['time'][] = $lastPeriod->getDuration();
+            self::$stats[$message]['memory'][] = $lastPeriod->getMemory();
         }
     }
 }

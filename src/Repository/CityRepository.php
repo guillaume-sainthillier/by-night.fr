@@ -11,9 +11,12 @@
 namespace App\Repository;
 
 use App\Contracts\DtoFindableRepositoryInterface;
+use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\CityDto;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Entity\Event;
+use App\Entity\Place;
 use App\Utils\CityManipulator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -25,26 +28,18 @@ use Override;
  * @extends ServiceEntityRepository<City>
  *
  * @implements DtoFindableRepositoryInterface<CityDto, City>
+ * @implements MultipleEagerLoaderInterface<City>
  *
  * @method City|null find($id, $lockMode = null, $lockVersion = null)
  * @method City|null findOneBy(array $criteria, array $orderBy = null)
  * @method City[]    findAll()
  * @method City[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-final class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface, MultipleEagerLoaderInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly CityManipulator $cityManipulator)
     {
         parent::__construct($registry, City::class);
-    }
-
-    public function createElasticaQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
-    {
-        return $this
-            ->createQueryBuilder($alias, $indexBy)
-            ->addSelect('zipCities')
-            ->leftJoin($alias . '.zipCities', 'zipCities')
-        ;
     }
 
     #[Override]
@@ -57,10 +52,36 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->join($alias . '.country', 'country');
     }
 
+    public function loadAllEager(array $entities, array $context = []): void
+    {
+        $entityIds = array_map(static fn (City $entity): ?int => $entity->getId(), $entities);
+        if ([] === $entityIds) {
+            return;
+        }
+
+        $view = $context['view'] ?? null;
+
+        $loadZipCities = fn () => $this
+            ->createQueryBuilder('c')
+            ->select('PARTIAL c.{id}')
+            ->addSelect('z')
+            ->leftJoin('c.zipCities', 'z')
+            ->where('c.id IN (:ids)')
+            ->setParameter('ids', $entityIds)
+            ->getQuery()
+            ->getResult();
+
+        if (\in_array($view, [
+            'elasticsearch:document',
+        ], true)) {
+            $loadZipCities();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
-    public function findAllByDtos(array $dtos): array
+    public function findAllByDtos(array $dtos, bool $eager): array
     {
         $wheres = [];
         $cityNameWheres = [];
@@ -141,27 +162,41 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug')
-            ->join('App:Place', 'p', 'WITH', 'p.city = c')
-            ->join('App:Event', 'a', 'WITH', 'a.place = p')
+            ->join(Place::class, 'p', 'WITH', 'p.city = c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
             ->groupBy('c.slug')
             ->getQuery()
             ->toIterable();
     }
 
     /**
-     * @return iterable<array>
+     * @return iterable<array{citySlug: string, tagId: int, tagSlug: string}>
      */
     public function findAllTagsSitemap(): iterable
     {
-        return parent::createQueryBuilder('c')
-            ->select('c.slug, e.type, e.category, e.theme')
-            ->join('App:Place', 'p', 'WITH', 'p.city = c')
-            ->join('App:Event', 'e', 'WITH', 'e.place = p')
+        // Tags from category relation
+        yield from parent::createQueryBuilder('c')
+            ->select('c.slug AS citySlug, cat.id AS tagId, cat.slug AS tagSlug')
+            ->join(Place::class, 'p', 'WITH', 'p.city = c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join('e.category', 'cat')
             ->where('e.endDate >= :from')
             ->setParameter('from', date('Y-m-d'))
-            ->groupBy('c.slug, e.type, e.category, e.theme')
+            ->groupBy('c.slug, cat.id, cat.slug')
             ->getQuery()
             ->toIterable();
+
+        // Tags from themes relation (getResult() because toIterable() forbids ManyToMany joins)
+        yield from parent::createQueryBuilder('c')
+            ->select('c.slug AS citySlug, t.id AS tagId, t.slug AS tagSlug')
+            ->join(Place::class, 'p', 'WITH', 'p.city = c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join('e.themes', 't')
+            ->where('e.endDate >= :from')
+            ->setParameter('from', date('Y-m-d'))
+            ->groupBy('c.slug, t.id, t.slug')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -211,7 +246,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
 
     public function findOneBySlug(string $slug): ?City
     {
-        return parent::createQueryBuilder('c')
+        return $this->createQueryBuilder('c')
             ->where('c.slug = :slug')
             ->setParameter('slug', $slug)
             ->getQuery()

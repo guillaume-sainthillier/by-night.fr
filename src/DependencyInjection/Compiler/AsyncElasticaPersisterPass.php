@@ -30,8 +30,8 @@ final class AsyncElasticaPersisterPass implements CompilerPassInterface
                 ->setArgument(0, new Reference(\sprintf('%s.inner', $newServiceId)))
                 // index
                 ->setArgument(1, $service->getArgument(0))
-                // options
-                ->setArgument(2, $service->getArgument(4))
+                // entity class
+                ->setArgument(2, $service->getArgument(2))
                 ->setAutowired(true)
             ;
 

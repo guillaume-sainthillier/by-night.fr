@@ -61,18 +61,18 @@ $(document).ready(function () {
     }
 
     function initActivite() {
-        chartActivite('annee', ['#67C2EF'])
-        $('#chartMois').on('shown.bs.tab', function () {
+        chartActivite('year', ['#67C2EF'])
+        $('#month-tab').on('shown.bs.tab', function () {
             if (!$(this).hasClass('loaded')) {
                 $(this).addClass('loaded')
-                chartActivite('mois', ['#BDEA74'])
+                chartActivite('month', ['#BDEA74'])
             }
         })
 
-        $('#chartSemaine').on('shown.bs.tab', function () {
+        $('#week-tab').on('shown.bs.tab', function () {
             if (!$(this).hasClass('loaded')) {
                 $(this).addClass('loaded')
-                chartActivite('semaine', ['#fabb3d'])
+                chartActivite('week', ['#fabb3d'])
             }
         })
     }

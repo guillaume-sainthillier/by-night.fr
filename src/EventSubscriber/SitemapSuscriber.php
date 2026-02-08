@@ -71,40 +71,28 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerTagRoutes(?string $section): void
     {
-        $events = $this->cityRepository->findAllTagsSitemap();
+        $tags = $this->cityRepository->findAllTagsSitemap();
 
-        $cache = [];
-        $lastSlug = null;
-        foreach ($events as $event) {
-            $slug = $event['slug'];
-            if ($slug !== $lastSlug) {
-                unset($cache); // call GC
-                $cache = [];
+        $seen = [];
+        foreach ($tags as $tag) {
+            $key = $tag['citySlug'] . '-' . $tag['tagId'];
+            if (isset($seen[$key])) {
+                continue;
             }
 
-            $tags = $event['category'] . ',' . $event['type'] . ',' . $event['theme'];
-            $tags = array_unique(array_map(trim(...), array_map(ucfirst(...), array_filter(preg_split('#[,/]#', $tags)))));
-
-            foreach ($tags as $tag) {
-                if (isset($cache[$tag])) {
-                    continue;
-                }
-
-                $cache[$tag] = true;
-                $this->addUrl(
-                    $section,
-                    'app_agenda_by_tags',
-                    [
-                        'location' => $event['slug'],
-                        'tag' => $tag,
-                    ],
-                    null,
-                    UrlConcrete::CHANGEFREQ_DAILY,
-                    0.8
-                );
-            }
-
-            $lastSlug = $slug;
+            $seen[$key] = true;
+            $this->addUrl(
+                $section,
+                'app_agenda_by_tag',
+                [
+                    'location' => $tag['citySlug'],
+                    'tagSlug' => $tag['tagSlug'],
+                    'tagId' => $tag['tagId'],
+                ],
+                null,
+                UrlConcrete::CHANGEFREQ_DAILY,
+                0.8
+            );
         }
     }
 
@@ -154,7 +142,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
                 [
                     'id' => $event['id'],
                     'slug' => $event['slug'],
-                    'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
+                    'location' => $event['city_slug'] ?? $event['country_slug'] ?? 'unknown',
                 ],
                 $event['updatedAt'],
                 $isEventPast ? UrlConcrete::CHANGEFREQ_NEVER : UrlConcrete::CHANGEFREQ_DAILY,

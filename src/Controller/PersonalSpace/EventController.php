@@ -38,10 +38,12 @@ final class EventController extends BaseController
     {
         $user = $this->getAppUser();
         $page = $request->query->getInt('page', 1);
-        $events = $this->createQueryBuilderPaginator(
+        $events = $this->createMultipleEagerLoadingPaginator(
             $eventRepository->findAllByUserQueryBuilder($user),
+            $eventRepository,
             $page,
-            self::EVENT_PER_PAGE
+            self::EVENT_PER_PAGE,
+            ['view' => 'events:personal-space:list'],
         );
 
         return $this->render('personal-space/index.html.twig', [

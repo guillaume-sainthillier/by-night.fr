@@ -15,10 +15,10 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
-use App\Producer\EventProducer;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -29,7 +29,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
     public function __construct(
         LoggerInterface $logger,
-        EventProducer $eventProducer,
+        MessageBusInterface $messageBus,
         EventHandler $eventHandler,
         HttpClientInterface $httpClient,
         #[Autowire('%kernel.project_dir%/var/storage/temp')]
@@ -38,7 +38,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         string $awinApiKey,
         private readonly CacheInterface $cache,
     ) {
-        parent::__construct($logger, $eventProducer, $eventHandler, $httpClient, $tempPath, $awinApiKey);
+        parent::__construct($logger, $messageBus, $eventHandler, $httpClient, $tempPath, $awinApiKey);
     }
 
     /**

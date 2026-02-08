@@ -10,28 +10,29 @@
 
 namespace App\Elasticsearch;
 
-use App\Elasticsearch\Message\DeleteManyByIdentifierDocuments;
-use App\Elasticsearch\Message\DeleteManyDocuments;
+use App\Contracts\MultipleEagerLoaderInterface;
+use App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers;
 use App\Elasticsearch\Message\InsertManyDocuments;
 use App\Elasticsearch\Message\ReplaceManyDocuments;
-use Elastica\Document;
-use Elastica\Exception\BulkException;
+use Doctrine\ORM\EntityManagerInterface;
 use Elastica\Index;
-use FOS\ElasticaBundle\Persister\ObjectPersister;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 {
+    private string $indexName;
+
     public function __construct(
-        /** @var ObjectPersister */
         private ObjectPersisterInterface $decorated,
-        private Index $index,
-        private array $options,
+        Index $index,
+        /** @var class-string */
+        private string $entityClass,
+        private ElasticaMode $elasticaMode,
         private MessageBusInterface $messageBus,
-        private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
     ) {
+        $this->indexName = $index->getName();
     }
 
     public function handlesObject($object): bool
@@ -61,98 +62,89 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 
     public function insertMany(array $objects): void
     {
-        $documents = [];
-        foreach ($objects as $object) {
-            $documents[] = $this->decorated->transformToElasticaDocument($object);
+        if ($this->elasticaMode->isSynchronous()) {
+            $this->doInsertMany($objects);
+
+            return;
         }
 
-        $message = new InsertManyDocuments($this->index->getName(), $documents);
-        $this->messageBus->dispatch($message);
+        $entityIds = array_map(static fn (object $object): mixed => $object->getId(), $objects);
+        $this->messageBus->dispatch(new InsertManyDocuments($this->indexName, $this->entityClass, $entityIds));
     }
 
     public function replaceMany(array $objects): void
     {
-        $documents = [];
-        foreach ($objects as $object) {
-            $document = $this->decorated->transformToElasticaDocument($object);
-            $document->setDocAsUpsert(true);
-            $documents[] = $document;
+        if ($this->elasticaMode->isSynchronous()) {
+            $this->doReplaceMany($objects);
+
+            return;
         }
 
-        $message = new ReplaceManyDocuments($this->index->getName(), $documents);
-        $this->messageBus->dispatch($message);
+        $entityIds = array_map(static fn (object $object): mixed => $object->getId(), $objects);
+        $this->messageBus->dispatch(new ReplaceManyDocuments($this->indexName, $this->entityClass, $entityIds));
     }
 
     public function deleteMany(array $objects): void
     {
-        $documents = [];
-        foreach ($objects as $object) {
-            $documents[] = $this->decorated->transformToElasticaDocument($object);
+        if ($this->elasticaMode->isSynchronous()) {
+            $this->decorated->deleteMany($objects);
+
+            return;
         }
 
-        $message = new DeleteManyDocuments($this->index->getName(), $documents);
-        $this->messageBus->dispatch($message);
+        $identifiers = array_map(static fn (object $object): mixed => $object->getId(), $objects);
+        $this->deleteManyByIdentifiers($identifiers);
     }
 
     public function deleteManyByIdentifiers(array $identifiers, $routing = false): void
     {
-        $message = new DeleteManyByIdentifierDocuments($this->index->getName(), $identifiers, $routing);
-        $this->messageBus->dispatch($message);
+        if ($this->elasticaMode->isSynchronous()) {
+            $this->decorated->deleteManyByIdentifiers($identifiers, $routing);
+
+            return;
+        }
+
+        $this->messageBus->dispatch(new DeleteManyDocumentsByIdentifiers($this->indexName, $identifiers, $routing));
+    }
+
+    /**
+     * @param object[] $entities
+     */
+    public function doInsertMany(array $entities): void
+    {
+        $this->eagerLoad($entities);
+        $this->decorated->insertMany($entities);
+    }
+
+    /**
+     * @param object[] $entities
+     */
+    public function doReplaceMany(array $entities): void
+    {
+        $this->eagerLoad($entities);
+        $this->decorated->replaceMany($entities);
+    }
+
+    /**
+     * @param array<string|int> $identifiers
+     */
+    public function doDeleteManyByIdentifiers(array $identifiers, string|bool $routing): void
+    {
         $this->decorated->deleteManyByIdentifiers($identifiers, $routing);
     }
 
     /**
-     * @param Document[] $documents
+     * @param object[] $entities
      */
-    public function doInsertMany(array $documents): void
+    private function eagerLoad(array $entities): void
     {
-        try {
-            $this->index->addDocuments($documents, $this->options);
-        } catch (BulkException $e) {
-            $this->log($e);
+        if ([] === $entities) {
+            return;
         }
-    }
 
-    /**
-     * @param Document[] $documents
-     */
-    public function doReplaceMany(array $documents): void
-    {
-        try {
-            $this->index->updateDocuments($documents, $this->options);
-        } catch (BulkException $e) {
-            $this->log($e);
+        $repository = $this->entityManager->getRepository($this->entityClass);
+        if ($repository instanceof MultipleEagerLoaderInterface) {
+            $repository->loadAllEager($entities, ['view' => 'elasticsearch:document']);
         }
-    }
-
-    /**
-     * @param Document[] $documents
-     */
-    public function doDeleteMany(array $documents): void
-    {
-        try {
-            $this->index->deleteDocuments($documents);
-        } catch (BulkException $e) {
-            $this->log($e);
-        }
-    }
-
-    /**
-     * @param string[]|int[] $identifiers
-     */
-    public function doDeleteManyByIdentifiers(array $identifiers, string|bool $routing): void
-    {
-        try {
-            // Elastica 8 requires string IDs
-            $stringIdentifiers = array_map(strval(...), $identifiers);
-            $this->index->getClient()->deleteIds($stringIdentifiers, $this->index->getName(), $routing);
-        } catch (BulkException $e) {
-            $this->log($e);
-        }
-    }
-
-    private function log(BulkException $e): void
-    {
-        $this->logger->error($e);
     }
 }

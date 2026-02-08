@@ -12,6 +12,7 @@ namespace App\Elasticsearch\Handler;
 
 use App\Elasticsearch\AsyncObjectPersister;
 use App\Elasticsearch\Message\DocumentsAction;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\ElasticaBundle\Persister\PersisterRegistry;
 use InvalidArgumentException;
 
@@ -19,6 +20,7 @@ abstract class AbstractActionHandler
 {
     public function __construct(
         protected PersisterRegistry $registry,
+        protected EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -31,5 +33,23 @@ abstract class AbstractActionHandler
         }
 
         return $persister;
+    }
+
+    /**
+     * @param class-string      $entityClass
+     * @param array<string|int> $entityIds
+     *
+     * @return object[]
+     */
+    protected function fetchEntities(string $entityClass, array $entityIds): array
+    {
+        return $this
+            ->entityManager
+            ->getRepository($entityClass)
+            ->createQueryBuilder('entity')
+            ->where('entity.id IN (:ids)')
+            ->setParameter('ids', $entityIds)
+            ->getQuery()
+            ->getResult();
     }
 }

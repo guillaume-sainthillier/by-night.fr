@@ -41,7 +41,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function prefetchEntities(array $dtos): void
+    public function prefetchEntities(array $dtos, bool $eager = true): void
     {
         $chunks = ChunkUtils::getChunksByClass($dtos);
 
@@ -49,10 +49,10 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         foreach ($chunks as $dtoClass => $dtoChunks) {
             $repository = $this->getRepository($dtoClass);
 
-            $entities = $repository->findAllByDtos($dtoChunks);
-
-            foreach ($entities as $entity) {
+            $entities = $repository->findAllByDtos($dtoChunks, $eager);
+            foreach ($entities as $i => $entity) {
                 $this->addEntity($entity);
+                unset($entities[$i]);
             }
         }
     }
@@ -79,7 +79,10 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     {
         $keys = $this->getObjectKeys($entity);
         if (null !== $fromDto) {
-            $keys = array_unique(array_merge($keys, $this->getObjectKeys($fromDto)));
+            $keys = array_unique([
+                ...$keys,
+                ...$this->getObjectKeys($fromDto),
+            ]);
         }
 
         foreach ($keys as $key) {
@@ -96,14 +99,15 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     {
         $uniqueEntities = [];
         foreach ($this->entities as $entity) {
-            if (!\in_array($entity, $uniqueEntities, true)) {
-                $uniqueEntities[] = $entity;
-            }
+            $uniqueEntities[spl_object_id($entity)] = $entity;
         }
 
-        return $uniqueEntities;
+        return array_values($uniqueEntities);
     }
 
+    /**
+     * @return string[]
+     */
     public function getObjectKeys(object $object): array
     {
         $keys = [];

@@ -1,37 +1,39 @@
 framework:
     messenger:
-        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         failure_transport: failed
 
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
-            # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
-
             failed: '%env(MESSENGER_FAILED_TRANSPORT_DSN)%'
+            failed-event:
+                dsn: '%env(MESSENGER_FAILED_EVENT_TRANSPORT_DSN)%'
+            parser:
+                dsn: '%env(MESSENGER_PARSER_TRANSPORT_DSN)%'
+                failure_transport: failed-event
+                retry_strategy:
+                    max_retries: 0
             async:
                 dsn: '%env(MESSENGER_ASYNC_TRANSPORT_DSN)%'
                 retry_strategy:
                     max_retries: 10
-                    # milliseconds delay
                     delay: 10000
             elastica: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
 
         routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            App\Dto\EventDto: parser
+            App\Message\PurgeCdnCacheUrl: async
+            App\Message\RemoveImageThumbnails: async
             FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
+            App\Elasticsearch\Message\RefreshElasticaIndex: elastica
             App\Elasticsearch\Message\InsertManyDocuments: async
             App\Elasticsearch\Message\ReplaceManyDocuments: async
-            App\Elasticsearch\Message\DeleteManyDocuments: async
-            App\Elasticsearch\Message\DeleteManyByIdentifierDocuments: async
+            App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers: async
 
 when@test:
     framework:
         messenger:
             transports:
-                # Use in-memory transport for tests (no RabbitMQ/AMQP needed)
                 async: 'in-memory://'
                 elastica: 'in-memory://'
                 failed: 'in-memory://'
+                failed-event: 'in-memory://'
+                parser: 'in-memory://'

@@ -11,71 +11,68 @@
 namespace App\Handler;
 
 use App\Entity\User;
-use App\File\DeletableFile;
+use App\Manager\TemporaryFilesManager;
 use RuntimeException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Mime\MimeTypes;
 
 final readonly class UserHandler
 {
     public function __construct(
-        private UploaderHelper $helper,
-        #[Autowire('%kernel.project_dir%/public')]
-        private string $webDir,
-        #[Autowire('%kernel.project_dir%/var/storage/temp')]
-        private string $tempPath,
+        private TemporaryFilesManager $temporaryFilesManager,
     ) {
     }
 
-    public function hasToUploadNewImage(?string $newContent, User $user): bool
+    public function hasToUploadNewImage(string $tempFilePath, User $user): bool
     {
         if ($user->getImage()->getName() || !$user->getOAuth()) {
             return false;
         }
 
-        if (!$user->getImageSystem()->getName()) {
+        $currentHash = $user->getImageSystemHash();
+        if (null === $currentHash) {
             return true;
         }
 
-        $image = $this->helper->asset($user, 'imageSystemFile');
-        if (null === $image) {
-            return true;
-        }
+        $newHash = md5_file($tempFilePath);
 
-        $imagePath = $this->webDir . \DIRECTORY_SEPARATOR . ltrim($image, \DIRECTORY_SEPARATOR);
-        if (!file_exists($imagePath)) {
-            return true;
-        }
-
-        return md5_file($imagePath) !== md5((string) $newContent);
+        return $newHash !== $currentHash;
     }
 
-    public function uploadFile(User $user, string $content, string $contentType): void
+    public function uploadFile(User $user, string $tempFilePath): void
     {
         if (null === $user->getOAuth()) {
             return;
         }
 
-        if ('' === $content) {
+        $fileSize = filesize($tempFilePath);
+        if (false === $fileSize || 0 === $fileSize) {
             $user->getOAuth()->setFacebookProfilePicture(null);
-        } else {
-            $ext = match ($contentType) {
-                'image/gif' => 'gif',
-                'image/png' => 'png',
-                'image/jpg', 'image/jpeg' => 'jpeg',
-                default => throw new RuntimeException(\sprintf('Unable to find extension for mime type %s', $contentType)),
-            };
+            $user->setImageSystemFile(null);
 
-            $filename = $user->getId() . '.' . $ext;
-            $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $filename;
-            $octets = file_put_contents($tempPath, $content);
-
-            if ($octets > 0) {
-                $file = new DeletableFile($tempPath, $filename, null, null, true);
-                $user->setImageSystemFile($file);
-            } else {
-                $user->setImageSystemFile();
-            }
+            return;
         }
+
+        $hash = md5_file($tempFilePath);
+
+        $mimeTypes = new MimeTypes();
+        $contentType = $mimeTypes->guessMimeType($tempFilePath);
+        $ext = match ($contentType) {
+            'image/gif' => 'gif',
+            'image/png' => 'png',
+            'image/jpg', 'image/jpeg' => 'jpeg',
+            default => throw new RuntimeException(\sprintf('Unable to find extension for mime type %s', $contentType)),
+        };
+
+        $filename = $user->getId() . '.' . $ext;
+
+        $file = new UploadedFile($tempFilePath, $filename, $contentType, test: true);
+        $user->setImageSystemHash($hash);
+        $user->setImageSystemFile($file);
+    }
+
+    public function createTempFile(): string
+    {
+        return $this->temporaryFilesManager->create();
     }
 }

@@ -16,12 +16,13 @@ use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
 use FOS\ElasticaBundle\Repository;
+use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
 final class UserElasticaRepository extends Repository
 {
-    public function findWithSearch(?string $q): PagerfantaInterface
+    public function findWithSearch(?string $q): AdapterInterface
     {
         $query = new BoolQuery();
 
@@ -42,7 +43,7 @@ final class UserElasticaRepository extends Repository
         $finalQuery = Query::create($query);
         $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
 
-        return $this->findPaginated($finalQuery);
+        return new FantaPaginatorAdapter($this->createPaginatorAdapter($finalQuery));
     }
 
     /**

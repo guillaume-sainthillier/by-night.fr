@@ -242,7 +242,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      */
     #[ORM\OneToMany(targetEntity: EventTimesheet::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     #[ORM\OrderBy(['startAt' => Criteria::ASC])]
-    #[Groups(['elasticsearch:event:details'])]
     private Collection $timesheets;
 
     #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]
@@ -381,7 +380,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function isIndexable(): bool
     {
-        return false === $this->draft;
+        return false === $this->draft
+            && null === $this->duplicateOf;
     }
 
     public function isAffiliate(): bool
