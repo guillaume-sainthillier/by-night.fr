@@ -13,8 +13,9 @@ namespace App\App;
 use App\Entity\City;
 use App\Repository\CityRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class CityManager
+final class CityManager implements ResetInterface
 {
     private ?City $currentCity = null;
 
@@ -26,9 +27,16 @@ final class CityManager
     {
     }
 
+    public function reset(): void
+    {
+        $this->currentCity = null;
+        $this->cookieCity = null;
+        $this->initCooky = false;
+    }
+
     public function getCity(): ?City
     {
-        return $this->getCurrentCity() ?: $this->getCookieCity();
+        return $this->getCurrentCity() ?? $this->getCookieCity();
     }
 
     public function getCurrentCity(): ?City
