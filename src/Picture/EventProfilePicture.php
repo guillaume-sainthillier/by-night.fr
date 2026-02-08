@@ -138,7 +138,7 @@ final readonly class EventProfilePicture
 
         if ($fromData === BilletsReducAwinParser::getParserName()) {
             return [
-                'path' => $this->packages->getUrl('build/images/parsers/billets-reduc.jpg', 'local'),
+                'path' => $this->packages->getUrl('build/images/parsers/billet-reduc.jpg', 'local'),
                 'source' => 'local',
             ];
         }
