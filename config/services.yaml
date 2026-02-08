@@ -75,10 +75,6 @@ services:
         arguments:
             $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
 
-    App\Archive\EventArchivator:
-        arguments:
-            $objectPersister: '@fos_elastica.object_persister.event'
-
     App\Form\Type\ReCaptchaType:
         arguments:
             $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'

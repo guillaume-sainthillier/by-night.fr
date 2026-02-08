@@ -137,9 +137,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
     {
-        $from = new DateTimeImmutable();
-        $from = $from->modify(Event::INDEX_FROM);
-
         $qb = $this->createElasticaQueryBuilder('e');
 
         return $qb
@@ -168,35 +165,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('e.slug, e.id, e.updatedAt, e.endDate, c.slug AS city_slug, c3.slug AS country_slug')
             ->getQuery()
             ->toIterable();
-    }
-
-    public function updateNonIndexables(): void
-    {
-        $from = new DateTimeImmutable();
-        $from = $from->modify(Event::INDEX_FROM);
-
-        $this
-            ->getEntityManager()
-            ->createQuery('UPDATE App:Event e
-            SET e.archive = true
-            WHERE e.endDate < :from
-            AND e.archive = false')
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->execute();
-    }
-
-    public function findNonIndexablesBuilder(): QueryBuilder
-    {
-        $from = new DateTimeImmutable();
-
-        $from = $from->modify(Event::INDEX_FROM);
-
-        return $this
-            ->createElasticaQueryBuilder('e')
-            ->where('e.archive = false')
-            ->andWhere('e.endDate < :from')
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->addOrderBy('e.id');
     }
 
     public function findAllByUserQueryBuilder(User $user): QueryBuilder
@@ -445,17 +413,13 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function getEventTypes(Location $location): array
     {
-        $from = new DateTimeImmutable();
-        $from = $from->modify(Event::INDEX_FROM);
-
         $qb = $this
             ->getEntityManager()
             ->createQueryBuilder()
             ->select('c')
             ->from(Tag::class, 'c')
             ->join(Event::class, 'e', 'WITH', 'e.category = c.id')
-            ->join('e.place', 'p')
-            ->andWhere('e.endDate >= :from');
+            ->join('e.place', 'p');
 
         if ($location->isCity()) {
             $qb
