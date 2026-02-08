@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
+use App\Enum\EventStatus;
 use App\Parser\AbstractParser;
 use DateTimeImmutable;
 use ForceUTF8\Encoding;
@@ -84,7 +85,7 @@ final class ToulouseParser extends AbstractParser
             $event->startDate = $startDate;
             $event->endDate = $endDate;
             $event->hours = implode('.', array_unique(explode('.', (string) $tab[7])));
-            $event->status = $tab[9];
+            $event->status = EventStatus::fromStatusMessage($tab[9]);
             $event->latitude = (float) $tab[20];
             $event->longitude = (float) $tab[21];
             $event->type = $tab[16];

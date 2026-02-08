@@ -16,6 +16,29 @@ enum EventStatus: string
     case Cancelled = 'cancelled';
     case SoldOut = 'sold_out';
 
+    public static function fromStatusMessage(?string $statusMessage): ?self
+    {
+        if (null === $statusMessage || '' === $statusMessage) {
+            return null;
+        }
+
+        $statusLower = mb_strtolower($statusMessage);
+
+        if (str_contains($statusLower, 'annul')) {
+            return self::Cancelled;
+        }
+
+        if (str_contains($statusLower, 'report')) {
+            return self::Postponed;
+        }
+
+        if (str_contains($statusLower, 'complet')) {
+            return self::SoldOut;
+        }
+
+        return null;
+    }
+
     public function getLabel(): string
     {
         return match ($this) {

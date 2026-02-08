@@ -163,27 +163,6 @@ final class EventsStatusMigrateCommand extends Command
 
     public function mapStatusMessageToEnum(?string $statusMessage): ?EventStatus
     {
-        if (null === $statusMessage || '' === $statusMessage) {
-            return null;
-        }
-
-        $statusLower = mb_strtolower($statusMessage);
-
-        // Check for cancelled status
-        if (str_contains($statusLower, 'annul')) {
-            return EventStatus::Cancelled;
-        }
-
-        // Check for postponed status
-        if (str_contains($statusLower, 'report')) {
-            return EventStatus::Postponed;
-        }
-
-        // Check for sold out status
-        if (str_contains($statusLower, 'complet')) {
-            return EventStatus::SoldOut;
-        }
-
-        return null;
+        return EventStatus::fromStatusMessage($statusMessage);
     }
 }
