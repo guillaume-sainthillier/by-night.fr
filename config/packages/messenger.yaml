@@ -1,7 +1,9 @@
 framework:
     messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         failure_transport: failed
 
+        # https://symfony.com/doc/current/messenger.html#transport-configuration
         transports:
             failed: '%env(MESSENGER_FAILED_TRANSPORT_DSN)%'
             failed-event:
@@ -17,20 +19,17 @@ framework:
                     max_retries: 10
                     delay: 10000
             elastica: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
+            sync: 'sync://'
 
         routing:
-            App\Dto\EventDto: parser
-            App\Message\PurgeCdnCacheUrl: async
-            App\Message\RemoveImageThumbnails: async
-            FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
-            App\Elasticsearch\Message\RefreshElasticaIndex: elastica
-            App\Elasticsearch\Message\InsertManyDocuments: async
-            App\Elasticsearch\Message\ReplaceManyDocuments: async
-            App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers: async
+            # Route your messages to the transports
+            # 'App\Message\YourMessage': async
 
 when@test:
     framework:
         messenger:
+            #            # replace with your transport name here (e.g., my_transport: 'in-memory://')
+            #            # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
             transports:
                 async: 'in-memory://'
                 elastica: 'in-memory://'
