@@ -13,6 +13,8 @@ namespace App\Parser;
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
+use BackedEnum;
+use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
@@ -94,6 +96,10 @@ abstract class AbstractParser implements ParserInterface
     private function getSanitizedValue(mixed $value): mixed
     {
         if (\is_object($value)) {
+            if ($value instanceof DateTimeInterface || $value instanceof BackedEnum) {
+                return $value;
+            }
+
             $this->sanitize($value);
         } elseif (\is_array($value)) {
             foreach ($value as $key => $itemValue) {
