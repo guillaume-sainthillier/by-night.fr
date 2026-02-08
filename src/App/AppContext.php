@@ -12,17 +12,23 @@ namespace App\App;
 
 use App\Entity\City;
 use App\Entity\Country;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Application context service that holds the current location.
  * Acts as a centralized holder for location state that can be accessed globally.
  */
-final class AppContext
+final class AppContext implements ResetInterface
 {
     private ?Location $location = null;
 
     public function __construct(private readonly CityManager $cityManager)
     {
+    }
+
+    public function reset(): void
+    {
+        $this->location = null;
     }
 
     /**
