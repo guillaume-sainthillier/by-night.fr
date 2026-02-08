@@ -46,7 +46,7 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
      * Find a tag by name or create a new one if it doesn't exist.
      * Uses in-memory cache to return the same Tag instance within a request.
      */
-    public function findOrCreateByName(string $name): Tag
+    public function findOrCreateByName(string $name, bool $fromBatch): Tag
     {
         $name = trim($name);
         $cacheKey = mb_strtolower($name);
@@ -60,6 +60,7 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
 
         if (null === $tag) {
             $tag = new Tag();
+            $tag->batchUpdate = $fromBatch;
             $tag->setName($name);
             $this->getEntityManager()->persist($tag);
         }

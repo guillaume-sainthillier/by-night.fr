@@ -51,7 +51,7 @@ final readonly class TagConverter
         $category = null;
         if (\count($categoryTerms) > 0) {
             // First term becomes the category
-            $category = $this->tagRepository->findOrCreateByName($categoryTerms[0]);
+            $category = $this->tagRepository->findOrCreateByName($categoryTerms[0], true);
 
             // Remaining category terms become themes
             $overflowTerms = \array_slice($categoryTerms, 1);
@@ -73,7 +73,7 @@ final readonly class TagConverter
 
         $themes = [];
         foreach ($themeTermsUnique as $term) {
-            $themes[] = $this->tagRepository->findOrCreateByName($term);
+            $themes[] = $this->tagRepository->findOrCreateByName($term, true);
         }
 
         return ['category' => $category, 'themes' => $themes];

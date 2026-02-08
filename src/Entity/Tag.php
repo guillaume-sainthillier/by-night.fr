@@ -21,6 +21,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\TagRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Stringable;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -53,7 +54,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 #[ORM\Table(name: 'tag')]
 #[ORM\Index(name: 'tag_name_idx', columns: ['name'])]
-class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DependencyObjectInterface
+class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DependencyObjectInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;
 
@@ -72,9 +73,16 @@ class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObject
     #[Groups(['elasticsearch:tag:details', 'tag:list'])]
     private ?string $slug = null;
 
+    public bool $batchUpdate = false;
+
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    public function shouldBeUpdated(): bool
+    {
+        return !$this->batchUpdate;
     }
 
     public function getId(): ?int
