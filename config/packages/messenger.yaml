@@ -23,7 +23,14 @@ framework:
 
         routing:
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            App\Dto\EventDto: parser
+            App\Message\PurgeCdnCacheUrl: async
+            App\Message\RemoveImageThumbnails: async
+            FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
+            App\Elasticsearch\Message\RefreshElasticaIndex: elastica
+            App\Elasticsearch\Message\InsertManyDocuments: async
+            App\Elasticsearch\Message\ReplaceManyDocuments: async
+            App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers: async
 
 when@test:
     framework:
