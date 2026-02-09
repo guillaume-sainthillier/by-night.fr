@@ -1,5 +1,6 @@
 import initAutocomplete from '@/js/components/autocomplete'
 import $ from 'jquery'
+import {isTouchDevice} from "@/js/utils/utils"
 
 export default () => {
     const $autocomplete = $('#autocomplete')
@@ -25,6 +26,6 @@ export default () => {
         inputPlaceholder: 'Rechercher des événements, villes, membres...',
         globalSearchUrl,
         searchPageUrl,
-        enableHotkeys: true,
+        enableHotkeys: !isTouchDevice(),
     })
 }

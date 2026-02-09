@@ -44,7 +44,7 @@
                     {%- endif %}
                 </ul>
 
-                <div id="autocomplete" class="mx-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0" data-search-url="{{ path('api_search') }}" data-search-page-url="{{ path('app_search_index') }}"></div>
+                <div id="autocomplete" class="mx-lg-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0" data-search-url="{{ path('api_search') }}" data-search-page-url="{{ path('app_search_index') }}"></div>
 
                 {% if is_granted('ROLE_ADMIN') %}
                 <ul class="ms-auto navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
