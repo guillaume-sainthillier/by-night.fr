@@ -11,12 +11,10 @@
 namespace App\EventSubscriber;
 
 use App\App\AppContext;
-use App\App\CityManager;
+use App\App\LazyLocationFactory;
 use App\App\Location;
-use App\Entity\City;
 use App\Entity\Country;
-use App\Repository\CityRepository;
-use App\Repository\CountryRepository;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -26,14 +24,15 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Populates AppContext with location from URL parameter or cookie fallback.
  * Runs early in the request lifecycle to ensure location context is always available.
+ *
+ * Uses PHP 8.4 LazyObject to defer database loading of City/Country entities
+ * until their properties are actually accessed.
  */
 final readonly class AppContextSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private AppContext $appContext,
-        private CityManager $cityManager,
-        private CityRepository $cityRepository,
-        private CountryRepository $countryRepository,
+        private LazyLocationFactory $lazyLocationFactory,
     ) {
     }
 
@@ -57,18 +56,19 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
             $this->resolveLocationFromUrl($request);
         } else {
             // Non-location route: try cookie fallback
-            $this->resolveLocationFromCookie();
+            $this->resolveLocationFromCookie($request);
         }
     }
 
     /**
-     * Resolve location from URL slug.
+     * Resolve location from URL slug using lazy loading.
+     * The actual database query is deferred until entity properties are accessed.
      */
     private function resolveLocationFromUrl(Request $request): void
     {
         $locationSlug = $request->attributes->get('location');
 
-        // Handle special "unknown" location
+        // Handle special "unknown" location (no lazy loading needed)
         if ('unknown' === $locationSlug) {
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
@@ -82,40 +82,40 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // Resolve slug to City or Country entity
-        if (!str_starts_with((string) $locationSlug, 'c--')) {
-            $entity = $this->cityRepository->findOneBySlug($locationSlug);
-        } else {
-            $entity = $this->countryRepository->findOneBy(['slug' => $locationSlug]);
+        try {
+            // Create lazy-loaded location - database query deferred until access
+            if (!str_starts_with((string) $locationSlug, 'c--')) {
+                $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
+            } else {
+                $location = $this->lazyLocationFactory->createWithLazyCountry($locationSlug);
+            }
+
+            $this->appContext->setLocation($location);
+        } catch (RuntimeException $e) {
+            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug), $e);
         }
-
-        if (!$entity instanceof City && !$entity instanceof Country) {
-            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug));
-        }
-
-        $location = new Location();
-
-        if ($entity instanceof City) {
-            $location->setCity($entity);
-        } else {
-            $location->setCountry($entity);
-        }
-
-        $this->appContext->setLocation($location);
     }
 
     /**
      * Fallback to cookie city when no location in URL.
+     * Uses lazy loading to defer database query.
      */
-    private function resolveLocationFromCookie(): void
+    private function resolveLocationFromCookie(Request $request): void
     {
-        $cookieCity = $this->cityManager->getCookieCity();
-
-        if ($cookieCity) {
-            $location = new Location();
-            $location->setCity($cookieCity);
-            $this->appContext->setLocation($location);
+        if (!$request->cookies->has('app_city')) {
+            return;
         }
-        // Otherwise, AppContext remains empty (getLocation() returns null)
+
+        $citySlug = $request->cookies->get('app_city');
+        if (empty($citySlug)) {
+            return;
+        }
+
+        try {
+            $location = $this->lazyLocationFactory->createWithLazyCity($citySlug);
+            $this->appContext->setLocation($location);
+        } catch (RuntimeException) {
+            // Invalid cookie city, ignore silently
+        }
     }
 }
