@@ -300,7 +300,9 @@
                             <twig:Icon name="lucide:flag" />
                             <p>
                                 <button type="button"
-                                        class="btn btn-link p-0 btn-content-removal-request"
+                                        class="btn btn-link p-0"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalContentRemovalRequest"
                                         data-event-id="{{ event.id }}"
                                         data-event-url="{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
                                     Signaler un contenu
@@ -358,4 +360,8 @@
 
 {% block js %}
     {{ encore_entry_script_tags('event_details') }}
+{% endblock %}
+
+{% block modals %}
+    {{ include('location/event/_modal-content-removal-request.html.twig') }}
 {% endblock %}

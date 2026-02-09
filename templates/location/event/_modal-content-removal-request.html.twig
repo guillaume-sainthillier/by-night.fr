@@ -1,0 +1,46 @@
+<div class="modal fade" id="modalContentRemovalRequest" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Signaler un contenu</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="content-removal-alert" class="alert d-none" role="alert"></div>
+                <form id="content-removal-form">
+                    <div class="mb-3">
+                        <label for="removal-email" class="form-label">Votre email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="removal-email" required placeholder="votre@email.com">
+                        <div class="invalid-feedback">Veuillez entrer une adresse email valide</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="removal-type" class="form-label">Type de contenu à supprimer <span class="text-danger">*</span></label>
+                        <select class="form-select" id="removal-type" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="image">Image de couverture</option>
+                            <option value="event">Événement complet</option>
+                        </select>
+                        <div class="invalid-feedback">Veuillez sélectionner le type de contenu</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="removal-message" class="form-label">Motif de la demande <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="removal-message" rows="4" required placeholder="Expliquez la raison de votre demande (min. 10 caractères)"></textarea>
+                        <div class="invalid-feedback">Votre message doit faire au moins 10 caractères</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="removal-urls" class="form-label">URLs de l'événement (optionnel)</label>
+                        <textarea class="form-control" id="removal-urls" rows="2" placeholder="Une URL par ligne (optionnel)"></textarea>
+                        <div class="form-text">Si cet événement apparaît sur d'autres sites, indiquez les URLs ici.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="content-removal-submit">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Envoyer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
