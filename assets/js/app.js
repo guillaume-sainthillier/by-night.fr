@@ -19,6 +19,7 @@ import autocomplete from './global-listeners/autocomplete'
 import scrollToTop from './global-listeners/scroll-to-top'
 
 // Listeners
+import contentRemovalRequest from './listeners/content-removal-request'
 import dropzone from './listeners/dropzone'
 import emailVerify from './listeners/email-verify'
 import formCollection from './listeners/form-collection'
@@ -48,6 +49,7 @@ class App {
         this.#listeners = [autocomplete, imagePreviews, lazyload, scrollToTop]
 
         this.#pageListeners = [
+            contentRemovalRequest,
             dropzone,
             emailVerify,
             formCollection,
