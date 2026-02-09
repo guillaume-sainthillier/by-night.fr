@@ -17,14 +17,13 @@ use Symfony\Contracts\Service\ResetInterface;
 /**
  * Application context service that holds the current location.
  * Acts as a centralized holder for location state that can be accessed globally.
+ *
+ * The Location object may contain lazy-loaded City/Country entities (PHP 8.4 LazyObject)
+ * that are only loaded from the database when their properties are accessed.
  */
 final class AppContext implements ResetInterface
 {
     private ?Location $location = null;
-
-    public function __construct(private readonly CityManager $cityManager)
-    {
-    }
 
     public function reset(): void
     {
@@ -40,20 +39,16 @@ final class AppContext implements ResetInterface
     }
 
     /**
-     * Set the current location and sync with CityManager.
+     * Set the current location.
      */
     public function setLocation(Location $location): void
     {
         $this->location = $location;
-
-        // Sync with CityManager to maintain cookie behavior
-        if ($city = $location->getCity()) {
-            $this->cityManager->setCurrentCity($city);
-        }
     }
 
     /**
      * Get the city from the current location.
+     * Note: This may trigger lazy loading if the city is a ghost object.
      */
     public function getCity(): ?City
     {
@@ -62,6 +57,7 @@ final class AppContext implements ResetInterface
 
     /**
      * Get the country from the current location.
+     * Note: This may trigger lazy loading if the country is a ghost object.
      */
     public function getCountry(): ?Country
     {
@@ -70,6 +66,7 @@ final class AppContext implements ResetInterface
 
     /**
      * Get the slug from the current location.
+     * Note: This may trigger lazy loading.
      */
     public function getSlug(): ?string
     {
@@ -78,6 +75,7 @@ final class AppContext implements ResetInterface
 
     /**
      * Check if the current location is a city.
+     * This does NOT trigger lazy loading as it only checks if the city property is set.
      */
     public function isCity(): bool
     {
@@ -86,6 +84,7 @@ final class AppContext implements ResetInterface
 
     /**
      * Check if the current location is a country.
+     * This does NOT trigger lazy loading as it only checks if the country property is set.
      */
     public function isCountry(): bool
     {
