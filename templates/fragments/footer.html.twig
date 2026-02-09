@@ -39,7 +39,7 @@
             <div class="col-sm-6 col-lg-3 sites">
                 <h3 class="h4 text-info">Recherche par ville</h3>
                 <ul class="fa-ul">
-                    {% set country = app_context.country ?? city_manager.city.country ?? null %}
+                    {% set country = app_context.country %}
                     {% for city in random_cities(country) %}
                         <li>
                             <twig:Icon name="lucide:chevron-right" class="fa-li" />

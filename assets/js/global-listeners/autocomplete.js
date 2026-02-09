@@ -1,8 +1,10 @@
 import initAutocomplete from '@/js/components/autocomplete'
 import $ from 'jquery'
+import {isTouchDevice} from "@/js/utils/utils"
 
 export default () => {
     const $autocomplete = $('#autocomplete')
+    const $autocompleteMobileToggler = $('#autocomplete-mobile-toggler')
     if ($autocomplete.length === 0) {
         return
     }
@@ -19,12 +21,18 @@ export default () => {
         return
     }
 
-    return initAutocomplete({
+    const result = initAutocomplete({
         autocompleteSelector: '#autocomplete',
         searchPlaceholder: 'Recherche',
         inputPlaceholder: 'Rechercher des événements, villes, membres...',
         globalSearchUrl,
         searchPageUrl,
-        enableHotkeys: true,
+        enableHotkeys: !isTouchDevice(),
     })
+
+    $autocompleteMobileToggler.click(() => {
+        result.show()
+    })
+
+    return result
 }

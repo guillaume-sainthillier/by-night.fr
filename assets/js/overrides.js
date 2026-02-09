@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import Modal from 'bootstrap/js/dist/modal'
+import {Modal} from 'bootstrap'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
 import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 import { iconHtml } from '@/js/components/icons'

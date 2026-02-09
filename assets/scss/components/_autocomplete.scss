@@ -1,4 +1,8 @@
 // Autocomplete custom styles
+:root {
+    --aa-base-z-index: calc(#{$zindex-offcanvas} + 50);
+}
+
 #autocomplete {
     position: relative;
     max-width: 400px;
