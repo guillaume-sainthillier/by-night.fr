@@ -4,6 +4,7 @@ import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import groupBy from 'lodash/groupBy'
+import { Offcanvas } from 'bootstrap'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
 import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
@@ -221,6 +222,18 @@ export default function init({
 
     $autocompleteBtn.find('.aa-DetachedSearchButtonPlaceholder').text(searchPlaceholder)
 
+    // Close any open offcanvas before the detached overlay opens,
+    // otherwise the offcanvas focus trap steals focus from the search input
+    $autocompleteBtn.on('click', () => {
+        const offcanvasEl = $autocomplete.closest('.offcanvas-lg, .offcanvas')[0]
+        if (offcanvasEl) {
+            const instance = Offcanvas.getInstance(offcanvasEl)
+            if (instance) {
+                instance.hide()
+            }
+        }
+    })
+
     if (enableHotkeys) {
         const kbd = $('<kbd>')
         if (isMacOS) {
@@ -237,6 +250,9 @@ export default function init({
     }
 
     return {
+        show() {
+            $autocompleteBtn.click()
+        },
         unload() {
             if (enableHotkeys) {
                 hotkeys.unbind('ctrl+k,cmd+k')

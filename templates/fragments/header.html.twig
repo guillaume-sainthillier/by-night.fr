@@ -9,7 +9,12 @@
             <twig:Thumb path="build/images/by-night.png" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" />
         </a>
         <div class="d-flex d-lg-none">
-            <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
+            <ul class="navbar-nav flex-row gap-3 align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="autocomplete-mobile-toggler">
+                        <twig:Icon name="lucide:search" />
+                    </a>
+                </li>
                 {{ include('fragments/_header-user-dropdown.html.twig', {show_username: false}) }}
             </ul>
         </div>
