@@ -11,6 +11,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ContentRemovalRequest;
+use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
@@ -23,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -36,7 +38,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Override;
 use Symfony\Component\HttpFoundation\Response;
-use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 #[AdminRoute(path: '/content-removal-request', name: 'content_removal_request')]
 final class ContentRemovalRequestCrudController extends AbstractCrudController
@@ -94,6 +95,22 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus())
             ->addCssClass('btn btn-secondary');
 
+        $batchMarkAsProcessed = Action::new('batchMarkAsProcessed', 'Marquer traité', 'lucide:check')
+            ->linkToCrudAction('batchMarkAsProcessed')
+            ->addCssClass('btn btn-success');
+
+        $batchReject = Action::new('batchReject', 'Rejeter', 'lucide:x')
+            ->linkToCrudAction('batchReject')
+            ->addCssClass('btn btn-secondary');
+
+        $batchRemoveImages = Action::new('batchRemoveImages', 'Supprimer les images', 'lucide:image-minus')
+            ->linkToCrudAction('batchRemoveImages')
+            ->addCssClass('btn btn-warning');
+
+        $batchRemoveEvents = Action::new('batchRemoveEvents', 'Supprimer les événements', 'lucide:trash-2')
+            ->linkToCrudAction('batchRemoveEvents')
+            ->addCssClass('btn btn-danger');
+
         return parent::configureActions($actions)
             ->disable(Action::NEW)
             ->add(Crud::PAGE_DETAIL, $removeImage)
@@ -103,7 +120,11 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, $removeImage)
             ->add(Crud::PAGE_INDEX, $removeEvent)
             ->add(Crud::PAGE_INDEX, $markAsProcessed)
-            ->add(Crud::PAGE_INDEX, $reject);
+            ->add(Crud::PAGE_INDEX, $reject)
+            ->addBatchAction($batchMarkAsProcessed)
+            ->addBatchAction($batchReject)
+            ->addBatchAction($batchRemoveImages)
+            ->addBatchAction($batchRemoveEvents);
     }
 
     #[Override]
@@ -163,15 +184,8 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
     {
         /** @var ContentRemovalRequest $request */
         $request = $context->getEntity()->getInstance();
-        $event = $request->getEvent();
 
-        if (null !== $event) {
-            $event->setImage(new EmbeddedFile());
-            $event->setImageHash(null);
-            $event->setImageSystem(new EmbeddedFile());
-            $event->setImageSystemHash(null);
-        }
-
+        $this->removeEventImage($request->getEvent());
         $this->markRequestAsProcessed($request);
 
         $this->addFlash('success', 'L\'image de l\'événement a été supprimée.');
@@ -216,21 +230,109 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         /** @var ContentRemovalRequest $request */
         $request = $context->getEntity()->getInstance();
 
-        /** @var User|null $user */
-        $user = $this->getUser();
-
-        $request->setStatus(ContentRemovalRequestStatus::Rejected);
-        $request->setProcessedAt(new DateTimeImmutable());
-        $request->setProcessedBy($user);
-
-        $this->entityManager->flush();
+        $this->markRequestAsRejected($request);
 
         $this->addFlash('success', 'La demande a été rejetée.');
 
         return $this->redirectToDetailPage($request);
     }
 
-    private function markRequestAsProcessed(ContentRemovalRequest $request): void
+    public function batchMarkAsProcessed(BatchActionDto $batchActionDto): Response
+    {
+        $count = 0;
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            /** @var ContentRemovalRequest|null $request */
+            $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
+            if (null !== $request && ContentRemovalRequestStatus::Pending === $request->getStatus()) {
+                $this->markRequestAsProcessed($request, false);
+                ++$count;
+            }
+        }
+
+        $this->entityManager->flush();
+        $this->addFlash('success', \sprintf('%d demande(s) marquée(s) comme traitée(s).', $count));
+
+        return $this->redirect($batchActionDto->getReferrerUrl());
+    }
+
+    public function batchReject(BatchActionDto $batchActionDto): Response
+    {
+        $count = 0;
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            /** @var ContentRemovalRequest|null $request */
+            $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
+            if (null !== $request && ContentRemovalRequestStatus::Pending === $request->getStatus()) {
+                $this->markRequestAsRejected($request, false);
+                ++$count;
+            }
+        }
+
+        $this->entityManager->flush();
+        $this->addFlash('success', \sprintf('%d demande(s) rejetée(s).', $count));
+
+        return $this->redirect($batchActionDto->getReferrerUrl());
+    }
+
+    public function batchRemoveImages(BatchActionDto $batchActionDto): Response
+    {
+        $count = 0;
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            /** @var ContentRemovalRequest|null $request */
+            $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
+            if (null !== $request
+                && ContentRemovalRequestStatus::Pending === $request->getStatus()
+                && ContentRemovalType::Image === $request->getType()
+            ) {
+                $this->removeEventImage($request->getEvent());
+                $this->markRequestAsProcessed($request, false);
+                ++$count;
+            }
+        }
+
+        $this->entityManager->flush();
+        $this->addFlash('success', \sprintf('%d image(s) supprimée(s).', $count));
+
+        return $this->redirect($batchActionDto->getReferrerUrl());
+    }
+
+    public function batchRemoveEvents(BatchActionDto $batchActionDto): Response
+    {
+        $count = 0;
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            /** @var ContentRemovalRequest|null $request */
+            $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
+            if (null !== $request
+                && ContentRemovalRequestStatus::Pending === $request->getStatus()
+                && ContentRemovalType::Event === $request->getType()
+            ) {
+                $event = $request->getEvent();
+                if (null !== $event) {
+                    $this->entityManager->remove($event);
+                }
+                $this->markRequestAsProcessed($request, false);
+                ++$count;
+            }
+        }
+
+        $this->entityManager->flush();
+        $this->addFlash('success', \sprintf('%d événement(s) supprimé(s).', $count));
+
+        return $this->redirect($batchActionDto->getReferrerUrl());
+    }
+
+    private function removeEventImage(?Event $event): void
+    {
+        if (null === $event) {
+            return;
+        }
+
+        $event->setImageFile(null);
+        $event->setImageHash(null);
+        $event->setImageSystemFile(null);
+        $event->setImageSystemHash(null);
+    }
+
+    private function markRequestAsProcessed(ContentRemovalRequest $request, bool $flush = true): void
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -239,7 +341,23 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $request->setProcessedAt(new DateTimeImmutable());
         $request->setProcessedBy($user);
 
-        $this->entityManager->flush();
+        if ($flush) {
+            $this->entityManager->flush();
+        }
+    }
+
+    private function markRequestAsRejected(ContentRemovalRequest $request, bool $flush = true): void
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        $request->setStatus(ContentRemovalRequestStatus::Rejected);
+        $request->setProcessedAt(new DateTimeImmutable());
+        $request->setProcessedBy($user);
+
+        if ($flush) {
+            $this->entityManager->flush();
+        }
     }
 
     private function redirectToDetailPage(ContentRemovalRequest $request): Response
