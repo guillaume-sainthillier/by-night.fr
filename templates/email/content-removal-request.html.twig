@@ -1,0 +1,36 @@
+<h1>Demande de suppression de contenu</h1>
+
+<p>
+    <strong>De :</strong> {{ requesterEmail }}<br>
+    <strong>Date :</strong> {{ 'now'|date('d/m/Y H:i') }}
+</p>
+
+<h2>Type de contenu :</h2>
+<p>{{ removalType.label }}</p>
+
+<h2>Événement concerné :</h2>
+<p>
+    <strong>Nom :</strong> {{ event.name }}<br>
+    <strong>ID :</strong> {{ event.id }}<br>
+    {% if event.place %}
+        <strong>Lieu :</strong> {{ event.place.name }}<br>
+    {% endif %}
+    {% if event.startDate %}
+        <strong>Date :</strong> {{ event.startDate|date('d/m/Y') }}{% if event.endDate and event.endDate != event.startDate %} - {{ event.endDate|date('d/m/Y') }}{% endif %}<br>
+    {% endif %}
+    {% if event.externalOrigin %}
+        <strong>Source :</strong> {{ event.externalOrigin }}<br>
+    {% endif %}
+</p>
+
+{% if eventUrls|length > 0 %}
+    <h2>URLs de l'événement :</h2>
+    <ul>
+        {% for url in eventUrls %}
+            <li><a href="{{ url }}">{{ url }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h2>Message :</h2>
+<p>{{ message|nl2br }}</p>

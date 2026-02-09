@@ -10,7 +10,9 @@
 
 namespace App\Manager;
 
+use App\Entity\Event;
 use App\Entity\User;
+use App\Enum\ContentRemovalType;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -57,6 +59,33 @@ final readonly class MailerManager
             ->context([
                 'user' => $user,
                 'message' => $message,
+            ]);
+
+        $this->sendMail($email);
+    }
+
+    /**
+     * @param string[] $eventUrls
+     */
+    public function sendContentRemovalRequestEmail(
+        Event $event,
+        string $requesterEmail,
+        ContentRemovalType $type,
+        string $message,
+        array $eventUrls,
+        string $recipientEmail,
+    ): void {
+        $email = new TemplatedEmail()
+            ->to($recipientEmail)
+            ->replyTo($requesterEmail)
+            ->subject('Demande de suppression de contenu - By Night')
+            ->htmlTemplate('email/content-removal-request.html.twig')
+            ->context([
+                'event' => $event,
+                'requesterEmail' => $requesterEmail,
+                'removalType' => $type,
+                'message' => $message,
+                'eventUrls' => $eventUrls,
             ]);
 
         $this->sendMail($email);

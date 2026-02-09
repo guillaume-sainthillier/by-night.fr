@@ -12,12 +12,16 @@ namespace App\Api\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Api\Model\ContentRemovalRequestInput;
+use App\Api\Model\ContentRemovalRequestOutput;
 use App\Api\Model\EventActionOutput;
 use App\Api\Model\EventCancelInput;
 use App\Api\Model\EventDraftInput;
 use App\Api\Model\EventParticipateInput;
 use App\Api\Model\EventParticipationOutput;
+use App\Api\Processor\ContentRemovalRequestProcessor;
 use App\Api\Processor\EventCancelProcessor;
 use App\Api\Processor\EventDraftProcessor;
 use App\Api\Processor\EventParticipateProcessor;
@@ -51,6 +55,13 @@ use App\Security\Voter\EventVoter;
         output: EventParticipationOutput::class,
         name: 'api_event_participer',
         processor: EventParticipateProcessor::class,
+    ),
+    new Post(
+        uriTemplate: '/events/{id}/removal-request',
+        input: ContentRemovalRequestInput::class,
+        output: ContentRemovalRequestOutput::class,
+        name: 'api_event_removal_request',
+        processor: ContentRemovalRequestProcessor::class,
     ),
 ], stateOptions: new Options(entityClass: Event::class))]
 final class EventAction
