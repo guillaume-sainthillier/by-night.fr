@@ -12,6 +12,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\AppOAuth;
 use App\Entity\Comment;
+use App\Entity\ContentRemovalRequest;
 use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\ParserData;
@@ -105,6 +106,7 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('User socials', 'lucide:megaphone', UserOAuth::class);
 
         yield MenuItem::section('Administration', 'lucide:folder-open');
+        yield MenuItem::linkToCrud('Demandes suppression', 'lucide:trash-2', ContentRemovalRequest::class);
         yield MenuItem::linkToCrud('Countries', 'lucide:globe', Country::class);
         yield MenuItem::linkToCrud('Site socials', 'lucide:megaphone', AppOAuth::class);
         yield MenuItem::linkToCrud('Explorations', 'lucide:eye', ParserData::class);
