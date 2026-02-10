@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77811c36ab90af4a4e889a0d785a35ec",
+    "content-hash": "6dc15eeb12ee09a5ea5cd306ac2dcc6a",
     "packages": [
         {
             "name": "api-platform/core",
@@ -16441,16 +16441,16 @@
         },
         {
             "name": "vincentlanglet/twig-cs-fixer",
-            "version": "3.12.0",
+            "version": "3.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/VincentLanglet/Twig-CS-Fixer.git",
-                "reference": "4efdb0ec7f2d30a34f85fb1f887f4584a742d3ba"
+                "reference": "511e002e1e18203d26b173763ade29cbfd297750"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VincentLanglet/Twig-CS-Fixer/zipball/4efdb0ec7f2d30a34f85fb1f887f4584a742d3ba",
-                "reference": "4efdb0ec7f2d30a34f85fb1f887f4584a742d3ba",
+                "url": "https://api.github.com/repos/VincentLanglet/Twig-CS-Fixer/zipball/511e002e1e18203d26b173763ade29cbfd297750",
+                "reference": "511e002e1e18203d26b173763ade29cbfd297750",
                 "shasum": ""
             },
             "require": {
@@ -16505,7 +16505,7 @@
             "homepage": "https://github.com/VincentLanglet/Twig-CS-Fixer",
             "support": {
                 "issues": "https://github.com/VincentLanglet/Twig-CS-Fixer/issues",
-                "source": "https://github.com/VincentLanglet/Twig-CS-Fixer/tree/3.12.0"
+                "source": "https://github.com/VincentLanglet/Twig-CS-Fixer/tree/3.13.0"
             },
             "funding": [
                 {
@@ -16513,7 +16513,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-25T20:29:37+00:00"
+            "time": "2026-01-24T00:18:59+00:00"
         },
         {
             "name": "webmozart/assert",
