@@ -129,7 +129,7 @@
             "*": "dist"
         },
         "platform": {
-            "php": "8.4.0"
+            "php": "8.4.1"
         },
         "bump-after-update": true,
         "sort-packages": true,
