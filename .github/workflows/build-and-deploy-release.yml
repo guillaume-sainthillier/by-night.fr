@@ -44,7 +44,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Deploy to production
-              uses: appleboy/ssh-action@master
+              uses: appleboy/ssh-action@v1
               env:
                   BY_NIGHT_PATH: ${{ secrets.BY_NIGHT_PATH }}
               with:
