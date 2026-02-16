@@ -219,7 +219,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('events', Criteria::DESC)
             ->groupBy('c.id')
             ->getQuery()
-            ->getScalarResult();
+            ->enableResultCache(3600) // 1 hour
+            ->getScalarResult()
+        ;
     }
 
     /**
