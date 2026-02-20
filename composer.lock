@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a9b380f80be8644f17b12d226375c0e",
+    "content-hash": "d3b982faeb248f4734cea7d68a084f6b",
     "packages": [
         {
             "name": "api-platform/core",
@@ -281,16 +281,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.369.34",
+            "version": "3.369.35",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5db21cd0e5c8a5b5344596649033acf861a5e117"
+                "reference": "0f3e296342fe965271b5dd0bded4a18bdab8aba5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5db21cd0e5c8a5b5344596649033acf861a5e117",
-                "reference": "5db21cd0e5c8a5b5344596649033acf861a5e117",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0f3e296342fe965271b5dd0bded4a18bdab8aba5",
+                "reference": "0f3e296342fe965271b5dd0bded4a18bdab8aba5",
                 "shasum": ""
             },
             "require": {
@@ -372,9 +372,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.34"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.35"
             },
-            "time": "2026-02-13T19:09:12+00:00"
+            "time": "2026-02-16T19:15:41+00:00"
         },
         {
             "name": "babdev/pagerfanta-bundle",
