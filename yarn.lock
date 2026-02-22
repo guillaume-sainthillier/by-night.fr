@@ -5690,15 +5690,10 @@ preact-render-to-string@^6.6.5:
   resolved "https://registry.yarnpkg.com/preact-render-to-string/-/preact-render-to-string-6.6.5.tgz#1be84cc8565e3bcfcf2a33cb9c61185e6498ab31"
   integrity sha512-O6MHzYNIKYaiSX3bOw0gGZfEbOmlIDtDfWwN1JJdc/T3ihzRT6tGGSEWE088dWrEDGa1u7101q+6fzQnO9XCPA==
 
-preact@^10.13.2:
+preact@^10.13.2, preact@^10.28.3:
   version "10.28.4"
   resolved "https://registry.yarnpkg.com/preact/-/preact-10.28.4.tgz#8ffab01c5c0590535bdaecdd548801f44c6e483a"
   integrity sha512-uKFfOHWuSNpRFVTnljsCluEFq57OKT+0QdOiQo8XWnQ/pSvg7OpX5eNOejELXJMWy+BwM2nobz0FkvzmnpCNsQ==
-
-preact@^10.28.3:
-  version "10.28.3"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.28.3.tgz#3c2171526b3e29628ad1a6c56a9e3ca867bbdee8"
-  integrity sha512-tCmoRkPQLpBeWzpmbhryairGnhW9tKV6c6gr/w+RhoRoKEJwsjzipwp//1oCpGPOchvSLaAPlpcJi9MwMmoPyA==
 
 prelude-ls@^1.2.1:
   version "1.2.1"
