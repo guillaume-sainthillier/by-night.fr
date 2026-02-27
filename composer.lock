@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a45aa600dfcbdf16d3bfd4bd9e266bf",
+    "content-hash": "f053e0eb2527856c461e926cf2ccf85c",
     "packages": [
         {
             "name": "api-platform/core",
@@ -16456,22 +16456,22 @@
         },
         {
             "name": "vincentlanglet/twig-cs-fixer",
-            "version": "3.13.0",
+            "version": "3.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/VincentLanglet/Twig-CS-Fixer.git",
-                "reference": "511e002e1e18203d26b173763ade29cbfd297750"
+                "reference": "599f110f192c31af5deb5736d6c1a970afdf51f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VincentLanglet/Twig-CS-Fixer/zipball/511e002e1e18203d26b173763ade29cbfd297750",
-                "reference": "511e002e1e18203d26b173763ade29cbfd297750",
+                "url": "https://api.github.com/repos/VincentLanglet/Twig-CS-Fixer/zipball/599f110f192c31af5deb5736d6c1a970afdf51f3",
+                "reference": "599f110f192c31af5deb5736d6c1a970afdf51f3",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.0.0",
                 "ext-ctype": "*",
-                "php": ">=8.0",
+                "php": ">=8.1",
                 "symfony/console": "^5.4.9 || ^6.4 || ^7.0 || ^8.0",
                 "symfony/filesystem": "^5.4 || ^6.4 || ^7.0 || ^8.0",
                 "symfony/finder": "^5.4 || ^6.4 || ^7.0 || ^8.0",
@@ -16486,6 +16486,7 @@
                 "friendsofphp/php-cs-fixer": "^3.13.0",
                 "infection/infection": "^0.26.16 || ^0.32.0",
                 "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpstan/phpstan-strict-rules": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",
@@ -16520,7 +16521,7 @@
             "homepage": "https://github.com/VincentLanglet/Twig-CS-Fixer",
             "support": {
                 "issues": "https://github.com/VincentLanglet/Twig-CS-Fixer/issues",
-                "source": "https://github.com/VincentLanglet/Twig-CS-Fixer/tree/3.13.0"
+                "source": "https://github.com/VincentLanglet/Twig-CS-Fixer/tree/3.14.0"
             },
             "funding": [
                 {
@@ -16528,7 +16529,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-01-24T00:18:59+00:00"
+            "time": "2026-02-23T13:21:35+00:00"
         },
         {
             "name": "webmozart/assert",
