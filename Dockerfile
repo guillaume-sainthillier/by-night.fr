@@ -1,7 +1,7 @@
 #syntax=docker/dockerfile:1.22-labs
 
 # Versions
-FROM dunglas/frankenphp:1.11-php8.4-alpine AS php_upstream
+FROM dunglas/frankenphp:1.12-php8.4-alpine AS php_upstream
 FROM node:24-alpine as node_upstream
 
 # Base image
