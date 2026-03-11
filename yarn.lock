@@ -6357,9 +6357,9 @@ svgo@^3.0.2, svgo@^3.3.2:
     picocolors "^1.0.0"
 
 sweetalert2@^11.26.18:
-  version "11.26.21"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.26.21.tgz#e8825cd74ddd78a86e1489b29b5778178baad5dc"
-  integrity sha512-apfAIHg5DOOnPqUIJc+aAsDplpfHliAnVl7zqLfhQiWaYDew46pg4ZZMLJhbVbjdOdMV+PKG5ulkKzNqvcSViQ==
+  version "11.26.22"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.26.22.tgz#898838958d02d26067da1eb37f552a717cef1b2b"
+  integrity sha512-UtfV5j7gXBRLm0+6Vm+MqIpsMA7CF7lOGeBj1sc8YSb2Q2xKT6mkSV63b4kFUGNs4vYa+Nd7ufZ97ZX9hNfqsA==
 
 synckit@^0.11.8:
   version "0.11.12"
