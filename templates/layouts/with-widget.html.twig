@@ -1,5 +1,7 @@
 {% extends 'layouts/default.html.twig' %}
 
+{% block container_class 'container-xl' %}
+
 {% block head_js_layout %}
     <script type="text/javascript">
         var fbAppId = "{{ facebook_app_id }}";
@@ -7,7 +9,7 @@
 {% endblock %}
 
 {% block layout %}
-    <div class="container-lg">
+    <div class="{{ block('container_class') }}">
         <div class="row">
             <div id="content" class="col-lg-8">
                 {% block body '' %}

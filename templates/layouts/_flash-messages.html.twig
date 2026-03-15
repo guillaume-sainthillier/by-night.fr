@@ -1,7 +1,7 @@
 {% for key, messages in app.flashes %}
     {% for message in messages %}
         <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
-            <div class="container-lg">
+            <div class="{{ container_class }}">
                 {% if key == 'info' %}
                     <twig:Icon name="lucide:info" />
                 {% elseif key == 'error' %}

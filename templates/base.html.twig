@@ -108,6 +108,7 @@ _______     __  _   _ _____ _____ _    _ _______
     {% block head_js '' %}
 </head>
 <body id="{% block page_id 'page' %}">
+{% set container_class %}{% block container_class 'container-lg' %}{% endset %}
 <div class="page">
     <!-- Menu -->
     {{ include('fragments/header.html.twig') }}
@@ -115,7 +116,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
     {% block breadcrumb_widget %}
         <div id="bread">
-            <div class="container-lg">
+            <div class="{{ container_class }}">
                 {% do menu.addItem('By Night', url('app_index')) %}
 
                 {% block breadcrumb '' %}
