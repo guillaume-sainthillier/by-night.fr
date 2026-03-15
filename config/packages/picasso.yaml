@@ -21,5 +21,6 @@ picasso:
         glide:
             sign_key: '%kernel.secret%'
             cache: '%kernel.project_dir%/public/image'
+            driver: imagick
             public_cache:
                 enabled: true
