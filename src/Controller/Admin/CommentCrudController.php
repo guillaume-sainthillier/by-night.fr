@@ -52,7 +52,7 @@ final class CommentCrudController extends AbstractCrudController
         $reponses = AssociationField::new('children')->autocomplete();
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $createdAt, $event, $user, $approved];
+            return [$id, $createdAt, $comment, $event, $user, $approved];
         }
 
         return [
