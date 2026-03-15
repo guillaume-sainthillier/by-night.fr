@@ -97,10 +97,6 @@
         flex: 0 0 auto;
     }
 
-    .list-group-item-image {
-        width: 40px;
-    }
-
     .list-group-item-date {
         width: 50px;
 
@@ -110,6 +106,7 @@
     }
 
     .list-group-item-content {
+        flex: 1;
         overflow: hidden;
 
         small {

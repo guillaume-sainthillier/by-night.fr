@@ -1,11 +1,22 @@
 #page-event {
     #event {
+        overflow: hidden;
+
         a.image-gallery {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-bottom: 1px solid $card-border-color;
 
             @include media-breakpoint-up(lg) {
                 border-bottom: none;
                 border-right: 1px solid $card-border-color;
+                min-height: 200px;
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
             }
         }
 

@@ -1,5 +1,6 @@
 /dev.sh
 .eslintcache
+/public/image
 
 ###> symfony/framework-bundle ###
 /.env.local

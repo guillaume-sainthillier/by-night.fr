@@ -1,20 +1,18 @@
-<div class="card card-event card-layout {{ cardLayout|default('') }} row g-0 scroll-item">
+<div class="card card-event card-layout {{ cardLayout|default('') }} scroll-item">
     {% if event.status or event.statusMessage %}
-        <div class="col-12">
-            <twig:EventStatusAlert event="{{ event }}" />
-        </div>
+        <twig:EventStatusAlert event="{{ event }}" />
     {% endif %}
-    <div class="col-sm-3 col-lg-4 card-img-container">
+    <div class="card-img-container">
         {% set original = eventProfilePicture.originalPicture(event) %}
         <div class="image-container">
             <a class="image-gallery" href="{{ original }}" title="{{ event.name }}">
-                <twig:EventThumb event="{{ event }}" width="{{ 360 }}" lazy="{{ true }}" />
+                <twig:EventThumb event="{{ event }}" width="{{ 360 }}" />
             </a>
         </div>
     </div>
-    <div class="col-sm-9 col-lg-8 card-content">
+    <div class="card-content">
         <div class="card-body">
-            <h3 class="h5">
+            <h3 class="h5 line-clamp-2">
                 <a title="Tous les détails de {{ event.name }}"
                    href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
                     <span>{{ event.name }}</span>
@@ -50,7 +48,6 @@
                     </small>
                 </div>
             </div>
-            {% set place = event.place %}
             {% if event.placeName %}
                 <div class="detail-item">
                     <twig:Icon name="lucide:map-pin" />

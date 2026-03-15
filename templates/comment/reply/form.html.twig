@@ -4,7 +4,9 @@
     <div class="chat-item reply-item">
         <div class="row align-items-end">
             <div class="col-auto">
-                <twig:UserThumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" lazy="{{ true }}" wrapperAttr="{{ {class: 'avatar avatar-sm'} }}" />
+                <div class="avatar avatar-sm">
+                    <twig:UserThumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" />
+                </div>
             </div>
             <div class="col-lg-8">
                 <div class="chat-bubble chat-bubble-me chat-bubble-reply chat-bubble-form">

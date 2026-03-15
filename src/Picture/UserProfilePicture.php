@@ -78,6 +78,9 @@ final readonly class UserProfilePicture
             return [
                 'path' => $this->helper->asset($user, 'imageFile'),
                 'source' => 'upload',
+                'entity' => $user,
+                'field' => 'imageFile',
+                'loader' => 'vich',
             ];
         }
 
@@ -85,6 +88,9 @@ final readonly class UserProfilePicture
             return [
                 'path' => $this->helper->asset($user, 'imageSystemFile'),
                 'source' => 'upload',
+                'entity' => $user,
+                'field' => 'imageSystemFile',
+                'loader' => 'vich',
             ];
         }
 
@@ -94,6 +100,9 @@ final readonly class UserProfilePicture
                 return [
                     'path' => \sprintf('https://graph.facebook.com/%s/picture?type=large', $info->getFacebookId()),
                     'source' => 'dist',
+                    'entity' => null,
+                    'field' => null,
+                    'loader' => null,
                 ];
             }
 
@@ -101,6 +110,9 @@ final readonly class UserProfilePicture
                 return [
                     'path' => $info->getTwitterProfilePicture(),
                     'source' => 'dist',
+                    'entity' => null,
+                    'field' => null,
+                    'loader' => null,
                 ];
             }
 
@@ -108,6 +120,9 @@ final readonly class UserProfilePicture
                 return [
                     'path' => $info->getGoogleProfilePicture(),
                     'source' => 'dist',
+                    'entity' => null,
+                    'field' => null,
+                    'loader' => null,
                 ];
             }
         }
@@ -115,6 +130,9 @@ final readonly class UserProfilePicture
         return [
             'path' => $this->packages->getUrl('build/images/empty_user.png', 'local'),
             'source' => 'local',
+            'entity' => null,
+            'field' => null,
+            'loader' => 'filesystem',
         ];
     }
 }

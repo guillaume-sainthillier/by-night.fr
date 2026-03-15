@@ -2299,6 +2299,53 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     ignore_not_found?: bool|Param, // Ignore error when an icon is not found. Set to 'true' to fail silently. // Default: false
  * }
+ * @psalm-type PicassoConfig = array{
+ *     default_loader?: scalar|Param|null, // Default loader name. // Default: null
+ *     default_transformer?: scalar|Param|null, // Default transformer name. Auto-detected when only one is configured. // Default: null
+ *     device_sizes?: list<int|Param>,
+ *     image_sizes?: list<int|Param>,
+ *     formats?: list<scalar|Param|null>,
+ *     default_quality?: scalar|Param|null, // Default: 75
+ *     default_fit?: scalar|Param|null, // Default fit mode (contain, cover, crop, fill). // Default: "contain"
+ *     cache?: scalar|Param|null, // PSR-6 cache pool for metadata guessing and BlurHash generation. true (default) uses cache.app, false disables caching, or pass a service ID string. // Default: true
+ *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
+ *     placeholders?: array<string, array{ // Default: []
+ *         enabled?: bool|Param, // Default: true
+ *         type?: "transformer"|"blurhash"|"service"|Param, // Placeholder type. Inferred from name when it matches a known type. // Default: null
+ *         size?: int|Param, // Tiny image size for transformer placeholders. // Default: 10
+ *         blur?: scalar|Param|null, // Blur amount for transformer placeholders. Null disables blur. // Default: 5
+ *         quality?: scalar|Param|null, // Quality for transformer placeholders. Null uses transformer default. // Default: 30
+ *         fit?: scalar|Param|null, // Fit mode for transformer placeholders. Null uses transformer default. // Default: "crop"
+ *         format?: scalar|Param|null, // Image format for transformer placeholders. Null uses transformer default. // Default: "jpg"
+ *         components_x?: int|Param, // Horizontal BlurHash components (1–9). // Default: 4
+ *         components_y?: int|Param, // Vertical BlurHash components (1–9). // Default: 3
+ *         driver?: scalar|Param|null, // Image processing driver for BlurHash (gd or imagick). // Default: "gd"
+ *         service?: scalar|Param|null, // Service ID for custom placeholders (type: service). // Default: null
+ *     }>,
+ *     loaders?: array<string, array{ // Default: []
+ *         enabled?: bool|Param, // Default: true
+ *         type?: "filesystem"|"flysystem"|"vich"|"url"|Param, // Loader type. Inferred from name when it matches a known type. // Default: null
+ *         paths?: list<scalar|Param|null>,
+ *         storage?: scalar|Param|null, // Flysystem storage service ID. // Default: null
+ *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for url loaders. // Default: null
+ *         request_factory?: scalar|Param|null, // PSR-17 request factory service ID for url loaders. // Default: null
+ *         default_placeholder?: scalar|Param|null, // Default placeholder name for this loader. Overrides the global default_placeholder. // Default: null
+ *         default_transformer?: scalar|Param|null, // Default transformer name for this loader. Overrides the global default_transformer. // Default: null
+ *     }>,
+ *     transformers?: array<string, array{ // Default: []
+ *         enabled?: bool|Param, // Default: true
+ *         type?: "glide"|"imgix"|"service"|Param, // Transformer type. Inferred from name when it matches a known type. // Default: null
+ *         sign_key?: scalar|Param|null, // Default: null
+ *         cache?: scalar|Param|null, // Cache directory for glide. // Default: null
+ *         driver?: scalar|Param|null, // Default: "gd"
+ *         max_image_size?: int|Param, // Max image size for glide. // Default: null
+ *         base_url?: scalar|Param|null, // Base URL for imgix (e.g. https://my-source.imgix.net). // Default: null
+ *         service?: scalar|Param|null, // Service ID for custom transformers (type: service). // Default: null
+ *         public_cache?: bool|array{
+ *             enabled?: bool|Param, // Default: false
+ *         },
+ *     }>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2326,6 +2373,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     api_platform?: ApiPlatformConfig,
  *     stimulus?: StimulusConfig,
  *     ux_icons?: UxIconsConfig,
+ *     picasso?: PicassoConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2357,6 +2405,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         api_platform?: ApiPlatformConfig,
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
+ *         picasso?: PicassoConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2385,6 +2434,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         api_platform?: ApiPlatformConfig,
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
+ *         picasso?: PicassoConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2417,6 +2467,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         api_platform?: ApiPlatformConfig,
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
+ *         picasso?: PicassoConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

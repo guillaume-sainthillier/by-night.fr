@@ -1,20 +1,15 @@
-{% props user, width, height = null, lazy = false, placeholder = true, priority = false, wrapperAttr = {}, fit = 'crop', objectFit = null, aspectRatio = null %}
-{{ image({
-    user: user,
-    loader: 'user',
-    width: width,
-    height: height,
-    fit: fit,
-    objectFit: objectFit,
-    aspectRatio: aspectRatio,
-    placeholderPriority: lazy,
-    placeholder: placeholder,
-    priority: priority,
-    wrapperAttr: {
-        class: 'rounded-circle',
-    }|merge(wrapperAttr),
-    attr: {
-        alt: user.username,
-        title: user.username,
-    },
-}) }}
+{% props user, width, height = null, lazy = false, fit = 'crop', priority = false %}
+{% set picture = user_picture(user) %}
+<twig:Picasso:Image
+    loader="{{ picture.loader }}"
+    src="{{ picture.src }}"
+    fit="{{ fit }}"
+    context="{{ picture.context }}"
+    unoptimized="{{ picture.unoptimized }}"
+    width="{{ width }}"
+    height="{{ height }}"
+    priority="{{ priority }}"
+    alt="{{ user.username }}"
+    title="{{ user.username }}"
+    {{ ...attributes }}
+/>
