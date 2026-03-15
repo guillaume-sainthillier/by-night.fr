@@ -26,7 +26,9 @@
         <div class="col-md-3">
             <div class="card fiche_profil">
                 <div class="card-body text-center">
-                    <twig:UserThumb user="{{ user }}" width="{{ 200 }}" height="{{ 200 }}" lazy="{{ true }}" class="mx-auto mb-2" wrapperAttr="{{ {class: 'avatar avatar-4xl mw-100'} }}" />
+                    <div class="avatar avatar-4xl mw-100">
+                        <twig:User:Thumb user="{{ user }}" width="{{ 200 }}" height="{{ 200 }}" class="mx-auto" />
+                    </div>
                     <h2 class="mt-2">{{ username }}</h2>
                 </div>
                 {% if user.description %}

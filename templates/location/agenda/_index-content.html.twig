@@ -2,9 +2,7 @@
     <div class="row row-cards row-deck">
         {% for i, event in events %}
             <div class="col-sm-6 col-lg-4">
-                {{ include('partials/event/_item-card.html.twig', {
-                    cardLayout: 'card-layout-vertical',
-                }) }}
+                <twig:Event:ItemCard event="{{ event }}" cardLayout="card-layout-vertical" />
             </div>
         {% endfor %}
     </div>

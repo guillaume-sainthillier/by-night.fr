@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1649174c7fc2550bef17468d882f33c4",
+    "content-hash": "934a28c86439923d54f7107921b98b5a",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5499,6 +5499,71 @@
                 "source": "https://github.com/silarhi/cursor-pagination/tree/2.1.0"
             },
             "time": "2026-01-29T11:43:00+00:00"
+        },
+        {
+            "name": "silarhi/picasso-bundle",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silarhi/picasso-bundle.git",
+                "reference": "542b7598986d7fd19eaa12cf43ee053683bbe024"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/542b7598986d7fd19eaa12cf43ee053683bbe024",
+                "reference": "542b7598986d7fd19eaa12cf43ee053683bbe024",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/ux-twig-component": "^2.13"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.94.2",
+                "imagine/imagine": "^1.5.2",
+                "kornrunner/blurhash": "^1.2.2",
+                "league/flysystem-bundle": "^3.6.2",
+                "league/glide": "^2.3.2",
+                "league/glide-symfony": "^2.0.1",
+                "phpstan/phpstan": "^2.1.40",
+                "phpunit/phpunit": "^11.5.55",
+                "psr/http-client": "^1.0.3",
+                "psr/http-factory": "^1.1",
+                "rector/rector": "^2.3.8",
+                "symfony/http-client": "^6.4 || ^7.4.4 || ^8.0.7",
+                "symfony/twig-bundle": "^6.4 || ^7.4.4 || ^8.0.4",
+                "vich/uploader-bundle": "^2.9.1",
+                "vincentlanglet/twig-cs-fixer": "^3.14"
+            },
+            "suggest": {
+                "imagine/imagine": "Required for the BlurHash placeholder (supports GD and Imagick)",
+                "kornrunner/blurhash": "Required for the BlurHash placeholder",
+                "league/flysystem": "Required for the Flysystem loader",
+                "league/glide": "Required for the Glide transformer (local image transformation)",
+                "league/glide-symfony": "Required for the Glide transformer",
+                "psr/http-client": "Required for the URL loader (PSR-18 HTTP client interface)",
+                "psr/http-factory": "Required for the URL loader (PSR-17 HTTP factory interface)",
+                "symfony/http-client": "Provides a PSR-18 HTTP client implementation for the URL loader",
+                "vich/uploader-bundle": "Required for the VichUploader loader"
+            },
+            "default-branch": true,
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Silarhi\\PicassoBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Responsive image component for Symfony, inspired by next/image",
+            "support": {
+                "issues": "https://github.com/silarhi/picasso-bundle/issues",
+                "source": "https://github.com/silarhi/picasso-bundle/tree/main"
+            },
+            "time": "2026-03-11T21:10:23+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",
@@ -16793,7 +16858,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "silarhi/picasso-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

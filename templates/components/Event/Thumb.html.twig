@@ -1,0 +1,13 @@
+{# @var App\Entity\Event event #}
+{# @var int width #}
+{% props event, width %}
+{% set picture = event_picture(event) %}
+<twig:Picasso:Image
+    loader="{{ picture.loader }}"
+    src="{{ picture.src }}"
+    context="{{ picture.context }}"
+    width="{{ width }}"
+    alt="{{ event_seo.eventShortTitle(event) }}"
+    title="{{ event_seo.eventShortTitle(event) }}"
+    {{ ...attributes }}
+/>

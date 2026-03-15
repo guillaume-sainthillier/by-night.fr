@@ -1,9 +1,14 @@
 .image-gallery {
     display: block;
     height: 100%;
+    overflow: hidden;
+    cursor: zoom-in;
 
-    &:hover {
-        cursor: -webkit-zoom-in;
-        cursor: -moz-zoom-in;
+    img {
+        transition: transform 0.5s ease;
+    }
+
+    &:hover img {
+        transform: scale(1.05);
     }
 }

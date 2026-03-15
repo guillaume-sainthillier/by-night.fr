@@ -16,10 +16,17 @@
     {% set is_horizontal = layout is defined and layout == 'horizontal' %}
 
     <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal' : '' }}">
-        {% if has_existing_image %}
+        {% if has_existing_image and image_thumb is not null %}
             <div class="vich-image-existing">
                 <a class="image-gallery" href="{{ download_uri }}">
-                    {{ image(image_thumb_params) }}
+                    <twig:Picasso:Image
+                        loader="{{ image_thumb.loader }}"
+                        src="{{ image_thumb.src }}"
+                        context="{{ image_thumb.context }}"
+                        unoptimized="{{ image_thumb.unoptimized|default(false) }}"
+                        width="{{ image_thumb.width|default(null) }}"
+                        height="{{ image_thumb.height|default(null) }}"
+                    />
                 </a>
                 {% if has_uploaded_image is defined and has_uploaded_image and form.delete is defined %}
                     <div class="delete-image mt-2">
@@ -96,7 +103,7 @@
         </div>
         {% if not disabled and allow_delete %}
             <div class="col-auto">
-                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
                     <twig:Icon name="lucide:x" />
                 </button>
             </div>
@@ -111,7 +118,7 @@
                 {% with child.vars %}{{ label }}{% endwith %}
             </button>
             {% if not disabled and allow_delete %}
-                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
                     <twig:Icon name="lucide:x" />
                 </button>
             {% endif %}
@@ -149,7 +156,7 @@
             {{- form_rest(form) -}}
         </div>
         {% if not disabled and allow_add %}
-            <button type="button" class="add-collection btn btn-with-icon btn-unstyled mt-2">
+            <button type="button" class="add-collection btn btn-with-icon mt-2">
                 <span><twig:Icon name="lucide:plus" /></span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>

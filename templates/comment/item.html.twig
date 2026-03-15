@@ -2,7 +2,9 @@
 <div class="chat-item reply-thread" data-comment-id="{{ comment.id }}">
     <div class="row align-items-end">
         <div class="col-auto">
-            <twig:UserThumb user="{{ comment.user }}" width="{{ 40 }}" height="{{ 40 }}" wrapperAttr="{{ {class: 'avatar'} }}" />
+            <div class="avatar">
+                <twig:User:Thumb user="{{ comment.user }}" width="{{ 40 }}" height="{{ 40 }}" />
+            </div>
         </div>
         <div class="col col-lg-8">
             <div class="chat-bubble{{ isCurrentUser ? ' chat-bubble-me' : '' }}">

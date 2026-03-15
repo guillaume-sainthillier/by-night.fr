@@ -27,7 +27,8 @@
             gap: 0.75rem;
             margin-bottom: 1rem;
 
-            .image-wrapper {
+            img,
+            picture {
                 max-width: 40px;
             }
 
@@ -126,7 +127,8 @@
         .card-body-form {
             padding: 1.5rem;
 
-            .comment-form-user .image-wrapper {
+            .comment-form-user img,
+            .comment-form-user picture {
                 max-width: 36px;
             }
         }

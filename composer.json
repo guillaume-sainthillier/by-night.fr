@@ -60,6 +60,7 @@
         "presta/sitemap-bundle": "^4.3",
         "sentry/sentry-symfony": "^5.9.0",
         "silarhi/cursor-pagination": "^2.1",
+        "silarhi/picasso-bundle": "dev-main",
         "smolblog/oauth2-twitter": "^1.2",
         "social-links/social-links": "^1.17",
         "stof/doctrine-extensions-bundle": "^1.15.3",

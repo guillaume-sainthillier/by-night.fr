@@ -1,0 +1,25 @@
+{# @var App\Entity\User user #}
+{# @var string cardLayout #}
+{% props user, cardLayout = '' %}
+
+<div class="card card-user card-layout {{ cardLayout }}">
+    <div class="card-img-container">
+        <div class="image-container">
+            <twig:User:Thumb user="{{ user }}" width="{{ 360 }}" />
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="card-body">
+            <h3 class="h5">
+                <a href="{{ path('app_user_index', {id: user.id, slug: user.slug}) }}">
+                    {{ user.username }}
+                </a>
+            </h3>
+            <p class="card-text">
+                Membre depuis le
+                <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
+            </p>
+        </div>
+        <twig:User:Socials user="{{ user }}" />
+    </div>
+</div>

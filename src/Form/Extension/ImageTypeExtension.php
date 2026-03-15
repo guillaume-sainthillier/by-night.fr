@@ -37,7 +37,7 @@ final class ImageTypeExtension extends AbstractTypeExtension
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $object = $form->getParent()->getData();
-        $view->vars['image_thumb_params'] = [];
+        $view->vars['image_thumb'] = null;
         $view->vars['has_uploaded_image'] = false;
         $view->vars['layout'] = $options['layout'];
 
@@ -46,18 +46,29 @@ final class ImageTypeExtension extends AbstractTypeExtension
                 $pictureData = $this->eventProfilePicture->getPicturePathAndSource($object);
                 $view->vars['download_uri'] = $this->eventProfilePicture->getOriginalPicture($object);
                 $view->vars['has_uploaded_image'] = 'upload' === $pictureData['source'];
-                $view->vars['image_thumb_params'] = array_merge([
-                    'event' => $object,
-                    'loader' => 'event',
-                ], $options['thumb_params']);
+                $view->vars['image_thumb'] = [
+                    'loader' => $pictureData['loader'],
+                    'src' => 'filesystem' === $pictureData['loader'] ? $pictureData['path'] : null,
+                    'context' => [
+                        'entity' => $pictureData['entity'],
+                        'field' => $pictureData['field'],
+                    ],
+                    ...$options['thumb_params'],
+                ];
             } elseif ($object instanceof User || $object instanceof UserDto) {
                 $pictureData = $this->userProfilePicture->getPicturePathAndSource($object);
                 $view->vars['download_uri'] = $this->userProfilePicture->getOriginalProfilePicture($object);
                 $view->vars['has_uploaded_image'] = 'upload' === $pictureData['source'];
-                $view->vars['image_thumb_params'] = array_merge([
-                    'user' => $object,
-                    'loader' => 'user',
-                ], $options['thumb_params']);
+                $view->vars['image_thumb'] = [
+                    'loader' => $pictureData['loader'],
+                    'src' => 'vich' !== $pictureData['loader'] ? $pictureData['path'] : null,
+                    'unoptimized' => null === $pictureData['loader'],
+                    'context' => [
+                        'entity' => $pictureData['entity'],
+                        'field' => $pictureData['field'],
+                    ],
+                    ...$options['thumb_params'],
+                ];
             }
         }
     }

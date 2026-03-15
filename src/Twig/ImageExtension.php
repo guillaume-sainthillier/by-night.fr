@@ -10,20 +10,55 @@
 
 namespace App\Twig;
 
-use App\Image\Helper\ImageHelper;
+use App\Dto\EventDto;
+use App\Entity\Event;
+use App\Entity\User;
+use App\Picture\EventProfilePicture;
+use App\Picture\UserProfilePicture;
 use Twig\Attribute\AsTwigFunction;
-use Twig\Environment;
 
 final class ImageExtension
 {
     public function __construct(
-        private readonly ImageHelper $imageHelper,
+        private readonly EventProfilePicture $eventProfilePicture,
+        private readonly UserProfilePicture $userProfilePicture,
     ) {
     }
 
-    #[AsTwigFunction(name: 'image', isSafe: ['html'], needsEnvironment: true)]
-    public function image(Environment $twig, array $params): string
+    /**
+     * @return array{loader: string, src: string|null, context: array{entity: Event|EventDto|null, field: string|null}}
+     */
+    #[AsTwigFunction(name: 'event_picture')]
+    public function eventPicture(Event|EventDto $event): array
     {
-        return $this->imageHelper->image($params, $twig);
+        $data = $this->eventProfilePicture->getPicturePathAndSource($event);
+
+        return [
+            'loader' => $data['loader'],
+            'src' => 'filesystem' === $data['loader'] ? $data['path'] : null,
+            'context' => [
+                'entity' => $data['entity'],
+                'field' => $data['field'],
+            ],
+        ];
+    }
+
+    /**
+     * @return array{loader: string|null, src: string|null, unoptimized: bool, context: array{entity: User|null, field: string|null}}
+     */
+    #[AsTwigFunction(name: 'user_picture')]
+    public function userPicture(User $user): array
+    {
+        $data = $this->userProfilePicture->getPicturePathAndSource($user);
+
+        return [
+            'loader' => $data['loader'],
+            'src' => 'vich' !== $data['loader'] ? $data['path'] : null,
+            'unoptimized' => null === $data['loader'],
+            'context' => [
+                'entity' => $data['entity'],
+                'field' => $data['field'],
+            ],
+        ];
     }
 }

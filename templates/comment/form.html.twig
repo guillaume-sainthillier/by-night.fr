@@ -2,7 +2,9 @@
     {{ form_start(form) }}
 
     <div class="comment-form-user">
-        <twig:UserThumb user="{{ app.user }}" width="{{ 75 }}" height="{{ 75 }}" lazy="{{ true }}" />
+        <span class="avatar">
+            <twig:User:Thumb user="{{ app.user }}" width="{{ 75 }}" height="{{ 75 }}"/>
+        </span>
         <strong>{{ app.user.username }}</strong>
     </div>
     <div class="comment-form-input">

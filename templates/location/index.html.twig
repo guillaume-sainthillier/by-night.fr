@@ -48,7 +48,7 @@
         </div>
     </section>
     <section class="bg-white py-4 py-xl-6">
-        <div class="container-lg">
+        <div class="{{ block('container_class') }}">
             <h2>Envie de sortir aujourd'hui ou ce soir {{ location.atName }} ?</h2>
             <p>Si vous cherchez <strong>que faire {{ location.atName }}</strong>, trouvez facilement un
                 <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>,
@@ -82,7 +82,7 @@
         </div>
     </section>
     <section class="py-4 py-xl-6">
-        <div class="container-lg">
+        <div class="{{ block('container_class') }}">
             {% set contents = [{
                 title: 'Concert',
                 icon: 'flaticon-microphone47',
@@ -166,9 +166,9 @@
         </div>
     </section>
     <section class="bg-white py-4 py-xl-6">
-        <div class="container-lg">
+        <div class="{{ block('container_class') }}">
             <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
-            {{ include('partials/event/_list-grid-vertical.html.twig', {events: events, page: 1}) }}
+            <twig:Event:ListGridVertical events="{{ events }}" />
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">

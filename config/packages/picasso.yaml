@@ -1,0 +1,25 @@
+picasso:
+    default_loader: filesystem
+    default_transformer: glide
+    default_placeholder: blur
+    default_quality: ~
+
+    placeholders:
+        blur:
+            type: transformer
+            size: 20 # tiny image width/height in px
+            blur: ~ # blur radius
+            quality: 20 # JPEG quality (1–100)
+
+    loaders:
+        vich:
+        filesystem:
+            paths:
+                - '%kernel.project_dir%/public'
+
+    transformers:
+        glide:
+            sign_key: '%kernel.secret%'
+            cache: '%kernel.project_dir%/public/image'
+            public_cache:
+                enabled: true

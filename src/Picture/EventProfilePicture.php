@@ -77,6 +77,9 @@ final readonly class EventProfilePicture
             return [
                 'path' => $this->helper->asset($event, 'imageFile'),
                 'source' => 'upload',
+                'entity' => $event,
+                'field' => 'imageFile',
+                'loader' => 'vich',
             ];
         }
 
@@ -87,6 +90,9 @@ final readonly class EventProfilePicture
             return [
                 'path' => $this->helper->asset($event, 'imageSystemFile'),
                 'source' => 'upload',
+                'entity' => $event,
+                'field' => 'imageSystemFile',
+                'loader' => 'vich',
             ];
         }
 
@@ -94,65 +100,24 @@ final readonly class EventProfilePicture
             ? $event->fromData
             : $event->getFromData();
 
-        if ($fromData === BikiniParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/bikini.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === ToulouseParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/toulouse-tourisme.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === SowProgParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/sowprog.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === OpenAgendaParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/openagenda.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === DataTourismeParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/data-tourisme.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === SeeTicketsKwankoParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/digitick.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === BilletsReducAwinParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/billet-reduc.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
-
-        if ($fromData === CDiscountAwinParser::getParserName()) {
-            return [
-                'path' => $this->packages->getUrl('build/images/parsers/cdiscount.jpg', 'local'),
-                'source' => 'local',
-            ];
-        }
+        $localPath = match ($fromData) {
+            BikiniParser::getParserName() => 'build/images/parsers/bikini.jpg',
+            ToulouseParser::getParserName() => 'build/images/parsers/toulouse-tourisme.jpg',
+            SowProgParser::getParserName() => 'build/images/parsers/sowprog.jpg',
+            OpenAgendaParser::getParserName() => 'build/images/parsers/openagenda.jpg',
+            DataTourismeParser::getParserName() => 'build/images/parsers/data-tourisme.jpg',
+            SeeTicketsKwankoParser::getParserName() => 'build/images/parsers/digitick.jpg',
+            BilletsReducAwinParser::getParserName() => 'build/images/parsers/billet-reduc.jpg',
+            CDiscountAwinParser::getParserName() => 'build/images/parsers/cdiscount.jpg',
+            default => 'build/images/empty_event.png',
+        };
 
         return [
-            'path' => $this->packages->getUrl('build/images/empty_event.png', 'local'),
+            'path' => $this->packages->getUrl($localPath, 'local'),
             'source' => 'local',
+            'entity' => null,
+            'field' => null,
+            'loader' => 'filesystem',
         ];
     }
 }

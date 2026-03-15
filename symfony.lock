@@ -410,6 +410,9 @@
             "config/packages/sentry.yaml"
         ]
     },
+    "silarhi/picasso-bundle": {
+        "version": "dev-main"
+    },
     "social-links/social-links": {
         "version": "v1.15.1"
     },

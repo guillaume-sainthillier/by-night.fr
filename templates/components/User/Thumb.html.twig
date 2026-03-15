@@ -1,0 +1,21 @@
+{# @var App\Entity\User user #}
+{# @var int width #}
+{# @var int|null height #}
+{# @var bool lazy #}
+{# @var string fit #}
+{# @var bool priority #}
+{% props user, width, height = null, lazy = false, fit = 'crop', priority = false %}
+{% set picture = user_picture(user) %}
+<twig:Picasso:Image
+    loader="{{ picture.loader }}"
+    src="{{ picture.src }}"
+    fit="{{ fit }}"
+    context="{{ picture.context }}"
+    unoptimized="{{ picture.unoptimized }}"
+    width="{{ width }}"
+    height="{{ height }}"
+    priority="{{ priority }}"
+    alt="{{ user.username }}"
+    title="{{ user.username }}"
+    {{ ...attributes }}
+/>
