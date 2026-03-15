@@ -10,18 +10,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\AppOAuth;
-use App\Entity\Comment;
-use App\Entity\ContentRemovalRequest;
-use App\Entity\Country;
-use App\Entity\Event;
-use App\Entity\ParserData;
-use App\Entity\ParserHistory;
-use App\Entity\Place;
-use App\Entity\Tag;
 use App\Entity\User;
-use App\Entity\UserEvent;
-use App\Entity\UserOAuth;
 use App\Picture\UserProfilePicture;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -95,22 +84,22 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToUrl('Back to Home', 'lucide:home', '../')->setLinkTarget('_blank')->setLinkRel('noreferrer');
 
         yield MenuItem::section('Commnunity', 'lucide:folder-open');
-        yield MenuItem::linkToCrud('Events', 'lucide:calendar-days', Event::class);
-        yield MenuItem::linkToCrud('Places', 'lucide:map-pin', Place::class);
-        yield MenuItem::linkToCrud('Comments', 'lucide:message-square', Comment::class);
-        yield MenuItem::linkToCrud('User Event', 'lucide:heart', UserEvent::class);
-        yield MenuItem::linkToCrud('Tags', 'lucide:tags', Tag::class);
+        yield MenuItem::linkTo(EventCrudController::class, 'Events', 'lucide:calendar-days');
+        yield MenuItem::linkTo(PlaceCrudController::class, 'Places', 'lucide:map-pin');
+        yield MenuItem::linkTo(CommentCrudController::class, 'Comments', 'lucide:message-square');
+        yield MenuItem::linkTo(UserEventCrudController::class, 'User Event', 'lucide:heart');
+        yield MenuItem::linkTo(TagCrudController::class, 'Tags', 'lucide:tags');
 
         yield MenuItem::section('Users', 'lucide:folder-open');
-        yield MenuItem::linkToCrud('Users', 'lucide:users', User::class);
-        yield MenuItem::linkToCrud('User socials', 'lucide:megaphone', UserOAuth::class);
+        yield MenuItem::linkTo(UserCrudController::class, 'Users', 'lucide:users');
+        yield MenuItem::linkTo(UserOAuthCrudController::class, 'User socials', 'lucide:megaphone');
 
         yield MenuItem::section('Administration', 'lucide:folder-open');
-        yield MenuItem::linkToCrud('Demandes suppression', 'lucide:trash-2', ContentRemovalRequest::class);
-        yield MenuItem::linkToCrud('Countries', 'lucide:globe', Country::class);
-        yield MenuItem::linkToCrud('Site socials', 'lucide:megaphone', AppOAuth::class);
-        yield MenuItem::linkToCrud('Explorations', 'lucide:eye', ParserData::class);
-        yield MenuItem::linkToCrud('Historique Maj', 'lucide:history', ParserHistory::class);
+        yield MenuItem::linkTo(ContentRemovalRequestCrudController::class, 'Demandes suppression', 'lucide:trash-2');
+        yield MenuItem::linkTo(CountryCrudController::class, 'Countries', 'lucide:globe');
+        yield MenuItem::linkTo(AppOAuthCrudController::class, 'Site socials', 'lucide:megaphone');
+        yield MenuItem::linkTo(ParserDataCrudController::class, 'Explorations', 'lucide:eye');
+        yield MenuItem::linkTo(ParserHistoryCrudController::class, 'Historique Maj', 'lucide:history');
     }
 
     /**

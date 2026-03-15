@@ -76,7 +76,7 @@ final class UserCrudController extends AbstractCrudController
     #[Override]
     public function configureFields(string $pageName): iterable
     {
-        $panel1 = FormField::addPanel('Informations');
+        $panel1 = FormField::addFieldset('Informations');
         $lastLogin = DateTimeField::new('lastLogin');
         $id = IdField::new('id', 'ID');
         $slug = TextField::new('slug');
@@ -90,7 +90,7 @@ final class UserCrudController extends AbstractCrudController
         $website = TextField::new('website');
         $enabled = BooleanField::new('enabled');
         $isVerified = BooleanField::new('isVerified');
-        $panel2 = FormField::addPanel('Médias');
+        $panel2 = FormField::addFieldset('Médias');
         $imageName = TextField::new('image.name');
         $imageSystemName = TextField::new('imageSystem.name');
         $passwordRequestedAt = DateTimeField::new('passwordRequestedAt');

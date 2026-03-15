@@ -89,7 +89,7 @@ final class EventCrudController extends AbstractCrudController
     #[Override]
     public function configureFields(string $pageName): iterable
     {
-        $panel1 = FormField::addPanel('Informations');
+        $panel1 = FormField::addFieldset('Informations');
         $id = IdField::new('id', 'ID');
         $user = AssociationField::new('user')->autocomplete();
         $createdAt = DateTimeField::new('createdAt');
@@ -129,7 +129,7 @@ final class EventCrudController extends AbstractCrudController
         $tarif = TextField::new('prices');
         $draft = BooleanField::new('draft');
         $archive = BooleanField::new('archive');
-        $panel2 = FormField::addPanel('Lieu');
+        $panel2 = FormField::addFieldset('Lieu');
         $place = AssociationField::new('place')->autocomplete();
         $placeName = TextField::new('placeName');
         $placeStreet = TextField::new('placeStreet');
@@ -141,11 +141,11 @@ final class EventCrudController extends AbstractCrudController
         $latitude = NumberField::new('latitude');
         $longitude = NumberField::new('longitude');
         $adresse = TextField::new('address');
-        $panel3 = FormField::addPanel('Images');
+        $panel3 = FormField::addFieldset('Images');
         $url = TextField::new('url');
         $imageName = TextField::new('image.name');
         $imageSystemName = TextField::new('imageSystem.name');
-        $panel4 = FormField::addPanel('Parser');
+        $panel4 = FormField::addFieldset('Parser');
         $duplicateOf = AssociationField::new('duplicateOf')
             ->setLabel('Duplicate de (redirige vers)')
             ->autocomplete()
