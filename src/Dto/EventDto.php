@@ -21,8 +21,8 @@ use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Event;
 use App\Enum\EventStatus;
-use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
+use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTimeImmutable;
@@ -154,7 +154,7 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
     {
         return \in_array($this->parserName, [
             FnacSpectaclesAwinParser::getParserName(),
-            DigitickAwinParser::getParserName(),
+            SeeTicketsKwankoParser::getParserName(),
         ], true);
     }
 

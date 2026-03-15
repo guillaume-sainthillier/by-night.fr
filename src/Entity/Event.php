@@ -16,8 +16,8 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Enum\EventStatus;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
-use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
+use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
@@ -388,7 +388,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     {
         return \in_array($this->fromData, [
             FnacSpectaclesAwinParser::getParserName(),
-            DigitickAwinParser::getParserName(),
+            SeeTicketsKwankoParser::getParserName(),
             BilletsReducAwinParser::getParserName(),
             CDiscountAwinParser::getParserName(),
         ], true);
