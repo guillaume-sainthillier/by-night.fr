@@ -1,0 +1,10 @@
+{# @var iterable<App\Entity\Event> events #}
+{# @var bool microdata #}
+{# @var string cardLayout #}
+{% props events, microdata = true, cardLayout = '' %}
+
+{% for i, event in events %}
+    {% if event.slug %}
+        <twig:Event:ItemCard event="{{ event }}" cardLayout="{{ cardLayout }}" />
+    {% endif %}
+{% endfor %}

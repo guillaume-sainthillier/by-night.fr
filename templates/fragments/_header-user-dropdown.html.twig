@@ -2,7 +2,7 @@
     <li class="nav-item dropdown nav-avatar">
         <a href="#" class="nav-link d-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
             <div class="avatar avatar-sm">
-                <twig:UserThumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" priority="{{ true }}" />
+                <twig:User:Thumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" priority="{{ true }}" />
             </div>
             {% if show_username %}
                 <span class="d-lg-none ms-2">{{ app.user.username }}</span>

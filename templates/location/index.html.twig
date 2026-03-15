@@ -168,7 +168,7 @@
     <section class="bg-white py-4 py-xl-6">
         <div class="{{ block('container_class') }}">
             <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
-            {{ include('partials/event/_list-grid-vertical.html.twig', {events: events, page: 1}) }}
+            <twig:Event:ListGridVertical events="{{ events }}" />
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">

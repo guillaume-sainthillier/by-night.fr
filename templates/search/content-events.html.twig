@@ -1,4 +1,4 @@
-{{ include('partials/event/_list-grid-vertical.html.twig', {events: events}) }}
+<twig:Event:ListGridVertical events="{{ events }}" />
 
 {% if events.hasNextPage() %}
     <div class="text-center my-4">

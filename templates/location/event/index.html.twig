@@ -65,12 +65,12 @@
             <div class="row g-0">
                 {% if event.status or event.statusMessage %}
                     <div class="col-12">
-                        <twig:EventStatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
+                        <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
                     </div>
                 {% endif %}
                 <div class="col-lg-7">
                     <a class="image-gallery" href="{{ original }}" title="{{ eventShortName }}">
-                        <twig:EventThumb event="{{ event }}" width="{{ 800 }}" placeholderPriority="{{ true }}" class="img" />
+                        <twig:Event:Thumb event="{{ event }}" width="{{ 800 }}" placeholderPriority="{{ true }}" class="img" />
                     </a>
                 </div>
                 <div class="col-lg-5 event-details">

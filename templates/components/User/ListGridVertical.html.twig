@@ -1,9 +1,10 @@
+{# @var iterable<App\Entity\User> users #}
+{% props users %}
+
 <div class="row row-cards row-deck">
     {% for i, user in users %}
         <div class="col-sm-6 col-lg-4 col-xl-3">
-            {{ include('partials/user/_item-card.html.twig', {
-                cardLayout: 'card-layout-vertical',
-            }) }}
+            <twig:User:ItemCard user="{{ user }}" cardLayout="card-layout-vertical" />
         </div>
     {% endfor %}
 </div>

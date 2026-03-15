@@ -1,7 +1,10 @@
+{# @var iterable<App\Entity\Event> events #}
+{% props events %}
+
 <div class="row row-cards row-deck">
     {% for i, event in events %}
         <div class="col-lg-6">
-            {{ include('partials/event/_item-card.html.twig') }}
+            <twig:Event:ItemCard event="{{ event }}" />
         </div>
     {% endfor %}
 </div>

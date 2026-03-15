@@ -1,9 +1,0 @@
-{% if microdata is not defined %}
-    {% set microdata = true %}
-{% endif %}
-
-{% for i, event in events %}
-    {% if event.slug %}
-        {{ include('partials/event/_item-card.html.twig') }}
-    {% endif %}
-{% endfor %}

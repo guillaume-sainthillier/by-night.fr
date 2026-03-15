@@ -1,3 +1,7 @@
+{# @var App\Entity\Event event #}
+{# @var int width #}
+{# @var bool lazy #}
+{# @var bool placeholderPriority #}
 {% props event, width, lazy = false, placeholderPriority = false %}
 {% set picture = event_picture(event) %}
 <twig:Picasso:Image

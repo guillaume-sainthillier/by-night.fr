@@ -1,12 +1,16 @@
-<div class="card card-event card-layout {{ cardLayout|default('') }} scroll-item">
+{# @var App\Entity\Event event #}
+{# @var string cardLayout #}
+{% props event, cardLayout = '' %}
+
+<div class="card card-event card-layout {{ cardLayout }} scroll-item">
     {% if event.status or event.statusMessage %}
-        <twig:EventStatusAlert event="{{ event }}" />
+        <twig:Event:StatusAlert event="{{ event }}" />
     {% endif %}
     <div class="card-img-container">
         {% set original = eventProfilePicture.originalPicture(event) %}
         <div class="image-container">
             <a class="image-gallery" href="{{ original }}" title="{{ event.name }}">
-                <twig:EventThumb event="{{ event }}" width="{{ 360 }}" />
+                <twig:Event:Thumb event="{{ event }}" width="{{ 360 }}" />
             </a>
         </div>
     </div>

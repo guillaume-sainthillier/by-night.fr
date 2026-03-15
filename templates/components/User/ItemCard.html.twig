@@ -1,7 +1,11 @@
-<div class="card card-user card-layout {{ cardLayout|default('') }}">
+{# @var App\Entity\User user #}
+{# @var string cardLayout #}
+{% props user, cardLayout = '' %}
+
+<div class="card card-user card-layout {{ cardLayout }}">
     <div class="card-img-container">
         <div class="image-container">
-            <twig:UserThumb user="{{ user }}" width="{{ 360 }}" />
+            <twig:User:Thumb user="{{ user }}" width="{{ 360 }}" />
         </div>
     </div>
     <div class="card-content">
@@ -16,6 +20,6 @@
                 <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
             </p>
         </div>
-        {{ include('partials/user/_socials.html.twig') }}
+        <twig:User:Socials user="{{ user }}" />
     </div>
 </div>

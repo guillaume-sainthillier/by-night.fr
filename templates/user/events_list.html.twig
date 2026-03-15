@@ -1,6 +1,6 @@
 {% for event in events %}
     {% if event.slug %}
-        {{ include('partials/event/_item-card.html.twig') }}
+        <twig:Event:ItemCard event="{{ event }}" />
     {% endif %}
 {% endfor %}
 
