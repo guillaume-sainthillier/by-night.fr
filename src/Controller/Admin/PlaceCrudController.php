@@ -58,14 +58,14 @@ final class PlaceCrudController extends AbstractCrudController
     #[Override]
     public function configureFields(string $pageName): iterable
     {
-        $panel1 = FormField::addPanel('Informations');
+        $panel1 = FormField::addFieldset('Informations');
         $id = IdField::new('id', 'ID');
         $externalId = CollectionField::new('metadatas');
         $slug = TextField::new('slug');
         $nom = TextField::new('name');
         $facebookId = TextField::new('facebookId');
         $junk = BooleanField::new('junk');
-        $panel2 = FormField::addPanel('Lieu');
+        $panel2 = FormField::addFieldset('Lieu');
         $rue = TextField::new('street');
         $codePostal = TextField::new('cityPostalCode');
         $ville = TextField::new('cityName');

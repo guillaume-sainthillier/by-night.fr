@@ -16,8 +16,8 @@ use App\Helper\AssetHelper;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\DataTourismeParser;
-use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\OpenAgendaParser;
+use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Parser\Common\SowProgParser;
 use App\Parser\Toulouse\BikiniParser;
 use App\Parser\Toulouse\ToulouseParser;
@@ -129,7 +129,7 @@ final readonly class EventProfilePicture
             ];
         }
 
-        if ($fromData === DigitickAwinParser::getParserName()) {
+        if ($fromData === SeeTicketsKwankoParser::getParserName()) {
             return [
                 'path' => $this->packages->getUrl('build/images/parsers/digitick.jpg', 'local'),
                 'source' => 'local',

@@ -130,7 +130,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
     #[Override]
     public function configureFields(string $pageName): iterable
     {
-        $panel1 = FormField::addPanel('Demande');
+        $panel1 = FormField::addFieldset('Demande');
         $id = IdField::new('id', 'ID');
         $email = EmailField::new('email');
         $type = ChoiceField::new('type')
@@ -146,7 +146,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->autocomplete();
         $createdAt = DateTimeField::new('createdAt');
 
-        $panel2 = FormField::addPanel('Traitement');
+        $panel2 = FormField::addFieldset('Traitement');
         $status = ChoiceField::new('status')
             ->setChoices(ContentRemovalRequestStatus::cases())
             ->renderAsBadges([
@@ -190,7 +190,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
 
         $this->addFlash('success', 'L\'image de l\'événement a été supprimée.');
 
-        return $this->redirectToDetailPage($request);
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     public function removeEvent(AdminContext $context): Response
@@ -222,7 +222,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
 
         $this->addFlash('success', 'La demande a été marquée comme traitée.');
 
-        return $this->redirectToDetailPage($request);
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     public function reject(AdminContext $context): Response
@@ -234,7 +234,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
 
         $this->addFlash('success', 'La demande a été rejetée.');
 
-        return $this->redirectToDetailPage($request);
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     public function batchMarkAsProcessed(BatchActionDto $batchActionDto): Response
@@ -252,7 +252,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $this->entityManager->flush();
         $this->addFlash('success', \sprintf('%d demande(s) marquée(s) comme traitée(s).', $count));
 
-        return $this->redirect($batchActionDto->getReferrerUrl());
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     public function batchReject(BatchActionDto $batchActionDto): Response
@@ -270,7 +270,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $this->entityManager->flush();
         $this->addFlash('success', \sprintf('%d demande(s) rejetée(s).', $count));
 
-        return $this->redirect($batchActionDto->getReferrerUrl());
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     public function batchRemoveImages(BatchActionDto $batchActionDto): Response
@@ -292,7 +292,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $this->entityManager->flush();
         $this->addFlash('success', \sprintf('%d image(s) supprimée(s).', $count));
 
-        return $this->redirect($batchActionDto->getReferrerUrl());
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     public function batchRemoveEvents(BatchActionDto $batchActionDto): Response
@@ -317,7 +317,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $this->entityManager->flush();
         $this->addFlash('success', \sprintf('%d événement(s) supprimé(s).', $count));
 
-        return $this->redirect($batchActionDto->getReferrerUrl());
+        return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     private function removeEventImage(?Event $event): void
@@ -358,14 +358,5 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         if ($flush) {
             $this->entityManager->flush();
         }
-    }
-
-    private function redirectToDetailPage(ContentRemovalRequest $request): Response
-    {
-        return $this->redirect($this->adminUrlGenerator
-            ->setController(self::class)
-            ->setAction(Action::DETAIL)
-            ->setEntityId($request->getId())
-            ->generateUrl());
     }
 }
