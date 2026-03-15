@@ -103,7 +103,7 @@
         </div>
         {% if not disabled and allow_delete %}
             <div class="col-auto">
-                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
                     <twig:Icon name="lucide:x" />
                 </button>
             </div>
@@ -118,7 +118,7 @@
                 {% with child.vars %}{{ label }}{% endwith %}
             </button>
             {% if not disabled and allow_delete %}
-                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}">
+                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
                     <twig:Icon name="lucide:x" />
                 </button>
             {% endif %}
