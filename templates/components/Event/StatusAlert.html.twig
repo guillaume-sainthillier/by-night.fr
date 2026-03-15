@@ -5,13 +5,13 @@
     {% set statusIcon = 'lucide:triangle-alert' %}
     {% set alertClass = 'alert-warning' %}
     {% if event.status %}
-        {% if event.status.value == 'cancelled' %}
+        {% if event.status == enum('App\\Enum\\EventStatus').Cancelled %}
             {% set statusIcon = 'lucide:ban' %}
             {% set alertClass = 'alert-danger' %}
-        {% elseif event.status.value == 'postponed' %}
+        {% elseif event.status == enum('App\\Enum\\EventStatus').Postponed %}
             {% set statusIcon = 'lucide:calendar-clock' %}
             {% set alertClass = 'alert-warning' %}
-        {% elseif event.status.value == 'sold_out' %}
+        {% elseif event.status == enum('App\\Enum\\EventStatus').SoldOut %}
             {% set statusIcon = 'lucide:ticket-x' %}
             {% set alertClass = 'alert-info' %}
         {% endif %}
