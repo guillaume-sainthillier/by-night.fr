@@ -103,6 +103,21 @@
         .card-content {
             flex: 1;
         }
+
+        // Switch to vertical on mobile
+        @include media-breakpoint-down(sm) {
+            flex-direction: column;
+
+            .card-img-container {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid $card-border-color;
+
+                .image-container {
+                    height: auto;
+                }
+            }
+        }
     }
 
     // Vertical layout: image on top, content below
