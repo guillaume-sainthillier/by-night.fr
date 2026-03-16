@@ -52,7 +52,7 @@
         "@svgr/cli": "^8.1.0",
         "@svgr/webpack": "^8.1.0",
         "@symfony/stimulus-bridge": "^3.2.0 || ^4.0.0",
-        "@symfony/webpack-encore": "^5.3.1",
+        "@symfony/webpack-encore": "^6.0.0",
         "babel-jest": "^30.2.0",
         "core-js": "^3.48.0",
         "es6-promise": "^4.2.6",
