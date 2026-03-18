@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03450476a1054a3382c5b5fac5e0cbea",
+    "content-hash": "86626a653a73c9a6bbb7a5a46fc23274",
     "packages": [
         {
             "name": "api-platform/core",
@@ -10810,16 +10810,16 @@
         },
         {
             "name": "symfony/stimulus-bundle",
-            "version": "v2.32.0",
+            "version": "v2.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stimulus-bundle.git",
-                "reference": "dfbf6b443bb381cb611e06f64dc23603b614b575"
+                "reference": "581fe67a2a85c10ce315aeba15425d5a7002526d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/dfbf6b443bb381cb611e06f64dc23603b614b575",
-                "reference": "dfbf6b443bb381cb611e06f64dc23603b614b575",
+                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/581fe67a2a85c10ce315aeba15425d5a7002526d",
+                "reference": "581fe67a2a85c10ce315aeba15425d5a7002526d",
                 "shasum": ""
             },
             "require": {
@@ -10859,7 +10859,7 @@
                 "symfony-ux"
             ],
             "support": {
-                "source": "https://github.com/symfony/stimulus-bundle/tree/v2.32.0"
+                "source": "https://github.com/symfony/stimulus-bundle/tree/v2.33.0"
             },
             "funding": [
                 {
@@ -10879,7 +10879,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-02T07:12:06+00:00"
+            "time": "2026-03-15T07:57:29+00:00"
         },
         {
             "name": "symfony/stopwatch",
