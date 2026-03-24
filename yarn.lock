@@ -6186,9 +6186,9 @@ svgo@^4.0.1:
     sax "^1.5.0"
 
 sweetalert2@^11.26.18:
-  version "11.26.23"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.26.23.tgz#4627048ba6bb7e3b714a7647f3ebc0f593e3775c"
-  integrity sha512-6Y6Auvk/gLUcVtPHWhDkJs+JCDraxAWNdITdIbOqeo3mZthVZT3XfDjrxcSHtElUz7DmF21oEqUCW2eWR15eDA==
+  version "11.26.24"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.26.24.tgz#25e5ba2b3e6725cec71acddd31832cefe61c8263"
+  integrity sha512-SLgukW4wicewpW5VOukSXY5Z6DL/z7HCOK2ODSjmQPiSphCN8gJAmh9npoceXOtBRNoDN0xIz+zHYthtfiHmjg==
 
 synckit@^0.11.8:
   version "0.11.12"
