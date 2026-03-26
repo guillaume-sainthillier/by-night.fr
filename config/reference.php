@@ -2100,7 +2100,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             max_header_length?: int|Param, // Max header length supported by the cache server. // Default: 7500
  *             request_options?: mixed, // To pass options to the client charged with the request. // Default: []
  *             purger?: scalar|Param|null, // Specify a purger to use (available values: "api_platform.http_cache.purger.varnish.ban", "api_platform.http_cache.purger.varnish.xkey", "api_platform.http_cache.purger.souin"). // Default: "api_platform.http_cache.purger.varnish"
- *             xkey?: array{ // Deprecated: The "xkey" configuration is deprecated, use your own purger to customize surrogate keys or the appropriate paramters.
+ *             xkey?: array{ // Deprecated: The "xkey" configuration is deprecated, use your own purger to customize surrogate keys or the appropriate parameters.
  *                 glue?: scalar|Param|null, // xkey glue between keys // Default: " "
  *             },
  *         },
@@ -2290,6 +2290,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         path?: scalar|Param|null, // The local icon set directory path. (cannot be used with 'alias')
  *         alias?: scalar|Param|null, // The remote icon set identifier. (cannot be used with 'path')
  *         icon_attributes?: array<string, scalar|Param|null>,
+ *         suffixes?: array<string, array{ // The suffix name (e.g. "solid", "20-solid") // Default: []
+ *             icon_attributes?: array<string, scalar|Param|null>,
+ *         }>,
  *     }>,
  *     aliases?: array<string, string|Param>,
  *     iconify?: bool|array{ // Configuration for the remote icon service.
