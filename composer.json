@@ -52,7 +52,7 @@
         "league/flysystem-memory": "^3.31",
         "league/glide-symfony": "^2.0.1",
         "league/oauth2-facebook": "^2.2",
-        "league/oauth2-google": "^4.2",
+        "league/oauth2-google": "^5.0",
         "mhujer/breadcrumbs-bundle": "^1.5.10",
         "neitanod/forceutf8": "^2.0.4",
         "pagerfanta/doctrine-orm-adapter": "^4",
