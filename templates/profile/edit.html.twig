@@ -3,13 +3,13 @@
 {% set user = app.user %}
 
 {% block title user.username %}
-{% block meta_title user.username %}
+{% block page_title user.username %}
 
 {% block breadcrumb -%}
     {% do menu.addItem('Mon compte', url('app_user_edit')) %}
 {%- endblock %}
 
-{% block body -%}
+{% block layout_body -%}
     <ul class="nav nav-pills nav-fill mb-1 justify-content-center">
         <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#profile" aria-controls="profile">

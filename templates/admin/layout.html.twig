@@ -5,13 +5,9 @@
     {% block breadcrumb_admin %}{% endblock %}
 {%- endblock %}
 
-{% block body %}
+{% block layout_body %}
     {% block body_admin %}{% endblock %}
 {% endblock %}
-
-{% block meta_title -%}
-    Administration - {% block meta_title_admin '' %}
-{%- endblock %}
 
 {% block title -%}
     Administration - {% block title_admin '' %}

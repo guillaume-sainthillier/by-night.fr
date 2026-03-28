@@ -1,13 +1,13 @@
 {% extends 'personal-space/layout.html.twig' %}
 
 {% block title 'Créer un nouvel événement' %}
-{% block meta_title 'Nouvel événement' %}
+{% block page_title 'Nouvel événement' %}
 
 {% block breadcrumb_personal_space -%}
     {% do menu.addItem('Nouveau', url('app_event_new')) %}
 {%- endblock %}
 
-{% block body -%}
+{% block layout_body -%}
     <div class="mb-4 my-event">
         {% block body_form %}
             {{ form_start(form) }}

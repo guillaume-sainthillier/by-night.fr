@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { Modal } from 'bootstrap'
+import { Modal } from '@tabler/core/dist/js/tabler.esm'
 
 export default (_di, _container) => {
     const modalEl = document.getElementById('modalContentRemovalRequest')

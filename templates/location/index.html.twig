@@ -1,7 +1,7 @@
 {% extends 'layouts/full.html.twig' %}
 
-{% block page_id 'page-location-index' %}
-{% block meta_title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
+{% block body_id 'page-location-index' %}
+{% block title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
 
 {% block meta_description -%}
     Que faire {{ location.atName }} ? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
@@ -16,7 +16,7 @@
     {% endif %}
 {% endblock %}
 
-{% block body %}
+{% block layout_body %}
     {% if location.slug in ['basse-terre', 'bordeaux', 'brest', 'caen', 'cayenne', 'dijon', 'fort-de-france', 'grenoble', 'lille', 'lyon', 'mamoudzou', 'marseille', 'montpellier', 'nantes', 'narbonne', 'nice', 'paris', 'perpignan', 'poitiers', 'reims', 'rennes', 'rouen', 'saint-denis', 'strasbourg', 'toulouse'] %}
         {% set locationUrl = asset('build/images/sites/' ~ location.slug ~ '.jpg') %}
     {% else %}

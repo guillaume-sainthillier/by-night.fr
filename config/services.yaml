@@ -76,10 +76,6 @@ services:
         arguments:
             $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
 
-    App\Form\Type\ReCaptchaType:
-        arguments:
-            $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
-
     App\Validator\Constraints\EventConstraintValidator:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }

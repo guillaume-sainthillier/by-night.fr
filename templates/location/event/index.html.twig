@@ -14,9 +14,9 @@
     {% set allTags = allTags|merge([tag]) %}
 {% endfor %}
 
-{% block page_id 'page-event' %}
-{% block meta_title event_seo.eventFullTitle(event) %}
+{% block body_id 'page-event' %}
 {% block title event_seo.eventFullTitle(event) %}
+{% block page_title event_seo.eventFullTitle(event) %}
 
 {% block breadcrumb %}
     {% if location.isCountry %}
@@ -54,7 +54,7 @@
     {{ event_json_ld(event) }}
 {% endblock %}
 
-{% block body -%}
+{% block layout_body -%}
     {% if event.draft %}
         <div class="alert alert-warning">
             <twig:Icon name="lucide:triangle-alert" />

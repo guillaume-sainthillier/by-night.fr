@@ -1,7 +1,7 @@
 {% extends 'personal-space/layout.html.twig' %}
 
 {% block title 'Mes événements' %}
-{% block meta_title 'Mes événements' %}
+{% block page_title 'Mes événements' %}
 
 {% block title_after %}
     {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
@@ -14,7 +14,7 @@
     {% endif %}
 {% endblock %}
 
-{% block body -%}
+{% block layout_body -%}
     {% if events|length > 0 %}
         <div class="card">
             <div class="table-responsive">

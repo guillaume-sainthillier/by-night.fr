@@ -11,6 +11,8 @@
 namespace App\Form\Type;
 
 use App\Entity\User;
+use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
+use Karser\Recaptcha3Bundle\Validator\Constraints\Recaptcha3;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -50,8 +52,9 @@ final class RegistrationFormType extends AbstractType
                 'second_options' => ['label' => 'Répéter le mot de passe'],
                 'invalid_message' => 'Les mots de passe doivent correspondre',
             ])
-            ->add('recaptcha', ReCaptchaType::class, [
-                'label' => 'Sécurité',
+            ->add('captcha', Recaptcha3Type::class, [
+                'constraints' => new Recaptcha3(),
+                'action_name' => 'register',
             ]);
     }
 

@@ -8,11 +8,11 @@
     </script>
 {% endblock %}
 
-{% block layout %}
+{% block layout_body %}
     <div class="{{ block('container_class') }}">
         <div class="row">
             <div id="content" class="col-lg-8">
-                {% block body '' %}
+                {% block layout_content '' %}
             </div>
             <div id="widgets" class="col-lg-4">
                 {% block widgets '' %}

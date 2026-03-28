@@ -13,12 +13,6 @@ export default () => {
                 if (!toggler.hasClass('collapsed')) {
                     $(elem).collapse('hide')
                 }
-
-                if ($(window).scrollTop() > 0) {
-                    $(navbar).addClass('navbar-shadow')
-                } else {
-                    $(navbar).removeClass('navbar-shadow')
-                }
             },
             200,
             { leading: true }

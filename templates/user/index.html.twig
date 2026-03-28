@@ -2,9 +2,9 @@
 
 {% set username = user.username|capitalize %}
 
-{% block page_id 'page-user' %}
-{% block meta_title username %}
+{% block body_id 'page-user' %}
 {% block title username %}
+{% block page_title username %}
 
 {% block head_js %}
     <script type="text/javascript">
@@ -21,7 +21,7 @@
     Découvrez le profil de {{ username }} sur By Night : {{ favoriteEventsCount }} événement{{ favoriteEventsCount > 1 ? 's' }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
 {%- endblock %}
 
-{% block body -%}
+{% block layout_body -%}
     <div class="row">
         <div class="col-md-3">
             <div class="card fiche_profil">

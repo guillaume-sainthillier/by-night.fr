@@ -4,13 +4,13 @@
     {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
     {% block layout_header '' %}
     <div class="page-header">
-        <h1>{% block title 'Hello' %}</h1>
+        <h1>{% block page_title block('title') %}</h1>
         {% block title_after '' %}
     </div>
 {% endblock %}
 
-{% block layout %}
+{% block body %}
     <div class="{% block container_class 'container' %}" id="container">
-        {% block body '' %}
+        {% block layout_body '' %}
     </div>
 {% endblock %}

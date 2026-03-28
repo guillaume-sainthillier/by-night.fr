@@ -1,7 +1,7 @@
 {% extends 'layouts/default-stretch.html.twig' %}
 
-{% block meta_title 'Connexion' %}
-{% block title -%}
+{% block title 'Connexion' %}
+{% block page_title -%}
     Connectez-vous à votre espace <strong>By Night</strong>
 {%- endblock %}
 
@@ -11,7 +11,7 @@
 
 {% block meta_description 'Connectez-vous à votre compte By Night pour retrouver vos événements favoris, gérer vos sorties et partager vos découvertes.' %}
 
-{% block body %}
+{% block stretch_body %}
     <form method="post" action="{{ path('app_login') }}">
         <div class="card">
             <div class="card-body">

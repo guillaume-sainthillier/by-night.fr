@@ -59,7 +59,8 @@
       "mcp__chrome-devtools__fill",
       "Bash(yarn info:*)",
       "Bash(node:*)",
-      "Bash(composer why:*)"
+      "Bash(composer why:*)",
+      "WebFetch(domain:eslint.org)"
     ]
   }
 }

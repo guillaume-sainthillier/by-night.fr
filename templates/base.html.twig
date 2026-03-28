@@ -8,7 +8,7 @@ _______     __  _   _ _____ _____ _    _ _______
 |____/  |_|    |_| \_|_____\_____|_|  |_|  |_|
 
 -->
-<html prefix="og: http://ogp.me/ns#" lang="{{ app.request.locale }}" xmlns:fb="http://ogp.me/ns/fb#">
+<html prefix="og: http://ogp.me/ns#" lang="{{ app.request.locale }}" xmlns:fb="http://ogp.me/ns/fb#" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -16,8 +16,8 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% apply spaceless %}{%- block meta_title -%}{%- endblock -%}{% endapply %} - By Night</title>
-    <meta name="title" content="{{- block('meta_title') -}}">
+    <title>{% apply spaceless %}{%- block title -%}{%- endblock -%}{% endapply %} - By Night</title>
+    <meta name="title" content="{{- block('title') -}}">
     <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords '' %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
     <meta name="description" content="{% block meta_description 'Découvrez des milliers de concerts, spectacles, expos et sorties partout en France avec By Night.' %}">
 
@@ -35,7 +35,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- OpenGraph -->
     <meta property="og:site_name" content="By Night">
     <meta property="og:description" content="{% block og_description block('meta_description') %}">
-    <meta property="og:title" content="{% block og_title block('meta_title') %}">
+    <meta property="og:title" content="{% block og_title block('title') %}">
     <meta property="og:type" content="{% block og_type 'website' %}">
     <meta property="og:url" content="{% block og_url url('app_index') %}">
     <meta property="og:locale" content="fr" />
@@ -107,7 +107,7 @@ _______     __  _   _ _____ _____ _    _ _______
     {% block head_js_layout '' %}
     {% block head_js '' %}
 </head>
-<body id="{% block page_id 'page' %}">
+<body class="{% block body_class '' %}" id="{% block body_id 'page' %}">
 {% set container_class %}{% block container_class 'container-lg' %}{% endset %}
 <div class="page">
     <!-- Menu -->
@@ -130,7 +130,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <div class="page-wrapper">
         {% block layout_top '' %}
         <div class="page-body">
-            {% block layout '' %}
+            {% block body '' %}
         </div>
         <!-- Footer -->
         {{ include('fragments/footer.html.twig') }}
@@ -164,18 +164,8 @@ _______     __  _   _ _____ _____ _    _ _______
   });
 </script>
 {%- block js -%}{%- endblock -%}
-<script type="text/javascript">
-  $(document).ready(function () {
-    $.cookieBar({
-      message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
-      acceptText: 'J\'ai compris',
-      bottom: true,
-      fixed: true,
-      policyButton: true,
-      policyText: 'En savoir plus',
-      policyURL: '{{ path('app_main_cookie') }}'
-    });
-  });
+<script>
+    var privacyUrl = '{{ path('app_main_cookie')|e('js')|raw }}';
 </script>
 <!-- ./JS -->
 </body>

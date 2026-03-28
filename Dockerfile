@@ -1,11 +1,11 @@
 #syntax=docker/dockerfile:1.22-labs
 
 # Versions
-FROM dunglas/frankenphp:1.12-php8.5-alpine as php_upstream
-FROM node:24-alpine as node_upstream
+FROM dunglas/frankenphp:1.12-php8.5-alpine AS php_upstream
+FROM node:24-alpine AS node_upstream
 
 # Base image
-FROM php_upstream as php_base
+FROM php_upstream AS php_base
 WORKDIR /app
 
 RUN IPE_GD_WITHOUTAVIF=1 \
@@ -25,7 +25,7 @@ RUN IPE_GD_WITHOUTAVIF=1 \
         zip
 
 # Composer install stage
-FROM php_base as php_builder
+FROM php_base AS php_builder
 WORKDIR /app
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -36,7 +36,7 @@ RUN --mount=type=cache,target=.cache/composer \
     APP_ENV=prod COMPOSER_CACHE_DIR=.cache/composer composer install --no-interaction --no-dev --no-scripts --prefer-dist
 
 # Install node dependencies
-FROM node_upstream as node_builder
+FROM node_upstream AS node_builder
 WORKDIR /app
 
 # Copy vendor directory from php_builder for Symfony UX packages

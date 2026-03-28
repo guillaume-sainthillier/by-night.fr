@@ -1,8 +1,8 @@
 {% extends 'layouts/default-stretch.html.twig' %}
 
-{% block meta_title 'Inscription' %}
+{% block title 'Inscription' %}
 
-{% block title -%}
+{% block page_title -%}
     Créez votre compte gratuitement
 {%- endblock %}
 
@@ -12,7 +12,7 @@
 
 {% block meta_description 'Rejoignez By Night gratuitement pour découvrir des milliers d\'événements, créer les vôtres et les partager avec votre communauté.' %}
 
-{% block body %}
+{% block stretch_body %}
     {{ form_start(form, {action: path('app_register')}) }}
     <div class="card">
         <div class="card-body">
