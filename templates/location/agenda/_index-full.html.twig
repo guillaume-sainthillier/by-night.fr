@@ -50,8 +50,8 @@
 
 {% block meta_description -%}
     {{ block('title')|striptags }}.
-    {% if location.isCountry %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.country.atDisplayName }}.{% endif %}
-    {% if location.isCity %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir à {{ location.city.name }}.{% endif %}
+    {% if location.isCountry %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.country.atDisplayName }}. Découvrez les événements à ne pas manquer.{% endif %}
+    {% if location.isCity %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties à {{ location.city.name }}. Découvrez les événements à ne pas manquer.{% endif %}
 {%- endblock %}
 
 {% block metas %}
@@ -81,7 +81,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="#members">
                     <twig:Icon name="lucide:users" />
-                    <span>Membres</span>
+                    <span>Communauté</span>
                 </a>
             </li>
         </ul>
@@ -93,7 +93,7 @@
         {% if events.nbResults == 0 %}
             <div class="alert alert-info">
                 <twig:Icon name="lucide:info" />
-                Mince, on a trouvé aucun événement pour vos critères. Avez-vous essayé avec la recherche avancée ?
+                Aucun événement ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
             </div>
         {% else %}
             <h3 class="info">

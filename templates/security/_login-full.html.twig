@@ -2,14 +2,14 @@
 
 {% block meta_title 'Connexion' %}
 {% block title -%}
-    Connectez-vous sur <strong>By Night</strong>
+    Connectez-vous à votre espace <strong>By Night</strong>
 {%- endblock %}
 
 {% block breadcrumb -%}
     {% do menu.addItem('Connexion', url('app_login')) %}
 {%- endblock %}
 
-{% block meta_description 'Connectez-vous sur By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
+{% block meta_description 'Connectez-vous à votre compte By Night pour retrouver vos événements favoris, gérer vos sorties et partager vos découvertes.' %}
 
 {% block body %}
     <form method="post" action="{{ path('app_login') }}">
@@ -19,15 +19,15 @@
             </div>
             <div class="card-footer text-center py-2">
                 <button class="btn btn-primary" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
-                    Connexion
+                    Se connecter
                 </button>
             </div>
         </div>
         <p>
-            Pas encore inscrit ?
+            Pas encore membre ?
             <a class="register" href="{{ path('app_register') }}"
-               title="Rejoignez By Night en vous inscrivant">
-                Rejoignez-nous dès maintenant !
+               title="Créez votre compte gratuitement">
+                Créez votre compte gratuitement !
             </a>
         </p>
     </form>

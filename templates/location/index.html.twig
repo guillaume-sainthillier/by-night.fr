@@ -1,10 +1,10 @@
 {% extends 'layouts/full.html.twig' %}
 
 {% block page_id 'page-location-index' %}
-{% block meta_title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
+{% block meta_title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
 
 {% block meta_description -%}
-    Sortir {{ location.atName }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.atName }}.
+    Que faire {{ location.atName }} ? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
 {%- endblock %}
 
 {% block breadcrumb %}
@@ -25,16 +25,16 @@
     <section class="full_wrapper" style="background-image: url({{ locationUrl }})">
         <div class="icon fade-black-transp"></div>
         <div class="wrapper">
-            <h1>Votre sortie {{ location.atName }}</h1>
+            <h1>Sortir {{ location.atName }} : l'agenda de vos sorties</h1>
             <div class="no-margin-form card search_container">
                 <div class="card-body">
                     {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
                     {{ form_row(form.dateRange, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'lucide:calendar-days'}) }}
-                    {{ form_row(form.term, {label: 'Et je cherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'lucide:search'}) }}
+                    {{ form_row(form.term, {label: 'Je recherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'lucide:search'}) }}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary search">
-                            C'est parti
+                            Rechercher
                         </button>
                     </div>
                     {{ form_rest(form) }}
@@ -49,34 +49,34 @@
     </section>
     <section class="bg-white py-4 py-xl-6">
         <div class="{{ block('container_class') }}">
-            <h2>Envie de sortir aujourd'hui ou ce soir {{ location.atName }} ?</h2>
-            <p>Si vous cherchez <strong>que faire {{ location.atName }}</strong>, trouvez facilement un
-                <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>,
-                <strong>café</strong> ou
-                <strong>sortie</strong> dans votre ville préférée.
-                Il y en a pour tous les goûts, pour toutes les couleurs et pour tous les âges ! De la
-                <strong>visite de parcs en famille</strong> aux <strong>soirées étudiantes</strong>
+            <h2>Que faire {{ location.atName }} aujourd'hui ou ce soir ?</h2>
+            <p>Vous cherchez <strong>que faire {{ location.atName }}</strong> ? Parcourez notre agenda pour trouver un
+                <strong>concert</strong>, une <strong>expo</strong>, un <strong>spectacle</strong>,
+                un <strong>café</strong> ou une
+                <strong>sortie</strong> dans votre ville.
+                Il y en a pour tous les goûts et pour tous les âges ! Des
+                <strong>visites de parcs en famille</strong> aux <strong>soirées étudiantes</strong>
                 les plus branchées dans les
-                <strong>discothèques</strong> de {{ location.name }}, trouvez l'événement qui vous correspond !
+                <strong>discothèques</strong> de {{ location.name }}, trouvez l'événement qui vous correspond.
             </p>
             {% if location.isCity %}
-                <p>{{ location.appName }} est une solution alternative pour chercher et trouver facilement des
-                    <strong>événements & bons plans culturels</strong> sur la ville de {{ location.name }} et ses environs.
-                    Notre but est avant tout de centraliser les
+                <p>{{ location.appName }} centralise pour vous les
+                    <strong>événements et bons plans culturels</strong> sur la ville de {{ location.name }} et ses environs.
+                    Notre objectif : rassembler toutes les
                     <strong>choses à faire à {{ location.name }}</strong> et vous
-                    offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
+                    offrir une plateforme unique pour trouver les meilleures <strong>idées de sorties</strong>.
                 </p>
             {% else %}
-                <p>{{ location.appName }} est une solution alternative pour chercher et trouver facilement des
-                    <strong>événements & bons plans culturels</strong> dans toutes les villes de {{ location.name }}.
-                    Notre but est avant tout de centraliser les
+                <p>{{ location.appName }} centralise pour vous les
+                    <strong>événements et bons plans culturels</strong> dans toutes les villes de {{ location.name }}.
+                    Notre objectif : rassembler toutes les
                     <strong>choses à faire {{ location.atName }}</strong> et vous
-                    offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
+                    offrir une plateforme unique pour trouver les meilleures <strong>idées de sorties</strong>.
                 </p>
             {% endif %}
             <div class="text-center">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
-                    Agenda des événements<span class="d-none d-md-block">, concerts, spectacles {{ location.atName }}</span>
+                    Voir tout l'agenda<span class="d-none d-md-inline"> des événements {{ location.atName }}</span>
                 </a>
             </div>
         </div>
@@ -98,7 +98,7 @@
                 color: 'orange',
                 link: path('app_agenda_by_type', {type: 'etudiant', location: location.slug}),
                 title_link: 'Soirées étudiantes ' ~ location.atName,
-                text: "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
+                text: "Envie de <strong>soirée étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en
                             <strong>discothèque</strong> ce soir ? " ~ location.appName ~ " regroupe
                             <strong>l'agenda des soirées</strong> rien que pour vous !",
@@ -117,7 +117,7 @@
                 color: 'blue',
                 link: path('app_agenda_by_type', {type: 'spectacle', location: location.slug}),
                 title_link: 'Spectacles ' ~ location.atName,
-                text: location.atName ~ ', il y a pleins de <strong>spectacles en ' ~ 'now'|date('Y') ~ "</strong> ! Divertissement & culture,
+                text: location.atName ~ ', il y a plein de <strong>spectacles en ' ~ 'now'|date('Y') ~ "</strong> ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorite grâce à
                             <strong>l'agenda des spectacles " ~ location.atName ~ '</strong>.',
             }, {
@@ -167,12 +167,12 @@
     </section>
     <section class="bg-white py-4 py-xl-6">
         <div class="{{ block('container_class') }}">
-            <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
+            <h2>Prochains événements {{ location.atName }}</h2>
             <twig:Event:ListGridVertical events="{{ events }}" />
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
-                    Toutes les sorties <span class="d-none d-md-block">&nbsp;{{ location.atName }}</span>
+                    Voir tout l'agenda<span class="d-none d-md-inline"> {{ location.atName }}</span>
                 </a>
             </div>
         </div>

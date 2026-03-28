@@ -21,7 +21,7 @@ final class EventSEO
         $description = \sprintf('Découvrez %s.', $event->getName());
 
         if ($event->getPlaceName() && $event->getPlaceCity()) {
-            $description .= \sprintf(' %s à %s.',
+            $description .= \sprintf(' %s, %s.',
                 $event->getPlaceName(),
                 $event->getPlaceCity()
             );
@@ -35,7 +35,7 @@ final class EventSEO
         }
 
         if ($event->getFbParticipations() + $event->getFbInterests() > 50) {
-            $description .= \sprintf(' %d personnes intéressées', $event->getFbParticipations() + $event->getFbInterests());
+            $description .= \sprintf(' %d personnes intéressées.', $event->getFbParticipations() + $event->getFbInterests());
         }
 
         return $description;

@@ -6,14 +6,14 @@
                 <ul class="fa-ul">
                     <li>
                         <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="A propos de By Night" href="{{ path('app_about') }}">
-                            A propos
+                        <a title="À propos de By Night" href="{{ path('app_about') }}">
+                            À propos
                         </a>
                     </li>
                     <li>
                         <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="En savoir plus sur la création d'événements" href="{{ path('app_plus') }}">
-                            En savoir plus
+                        <a title="Comment publier un événement" href="{{ path('app_plus') }}">
+                            Comment ça marche
                         </a>
                     </li>
                     <li>
@@ -37,7 +37,7 @@
                 </ul>
             </div>
             <div class="col-sm-6 col-lg-3 sites">
-                <h3 class="h4 text-info">Recherche par ville</h3>
+                <h3 class="h4 text-info">Sortir par ville</h3>
                 <ul class="fa-ul">
                     {% set country = app_context.country %}
                     {% for city in random_cities(country) %}

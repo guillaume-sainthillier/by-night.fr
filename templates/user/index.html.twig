@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block meta_description -%}
-    {{ username }} a {{ favoriteEventsCount }} événement{{ favoriteEventsCount > 1 ? 's' }} en favoris depuis le {{ user.createdAt.format('d/m/Y') }}.
+    Découvrez le profil de {{ username }} sur By Night : {{ favoriteEventsCount }} événement{{ favoriteEventsCount > 1 ? 's' }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
 {%- endblock %}
 
 {% block body -%}
@@ -78,7 +78,7 @@
                     {% if not nextEvents|length > 0 %}
                         <div class="alert alert-info">
                             <twig:Icon name="lucide:info" />
-                            Aucun événement de prévu pour {{ username }} !
+                            {{ username }} n'a pas encore d'événement à venir.
                         </div>
                     {% else %}
                         <div class="user-events-container" data-type="next">
@@ -90,7 +90,7 @@
                     {% if not previousEvents|length > 0 %}
                         <div class="alert alert-info">
                             <twig:Icon name="lucide:info" />
-                            Aucun événement passé pour {{ username }} !
+                            {{ username }} n'a pas encore d'événement passé.
                         </div>
                     {% else %}
                         <div class="user-events-container" data-type="previous">

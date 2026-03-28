@@ -58,7 +58,7 @@
     {% if event.draft %}
         <div class="alert alert-warning">
             <twig:Icon name="lucide:triangle-alert" />
-            Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
+            Cet événement n'est pas encore publié. Il sera bientôt disponible, merci de votre patience.
         </div>
     {% else %}
         <div class="card" id="event">
@@ -187,7 +187,7 @@
                             <div class="detail-item">
                                 <div>
                                     <p>
-                                        <a href="{{ event.source }}" class="btn btn-block btn-primary" rel="sponsored">Je prends vite mes billets</a>
+                                        <a href="{{ event.source }}" class="btn btn-block btn-primary" rel="sponsored">Réserver mes billets</a>
                                     </p>
                                     <small class="text-muted mt-2">Avec {{ event.fromData }}</small>
                                 </div>
@@ -305,7 +305,7 @@
                                         data-bs-target="#modalContentRemovalRequest"
                                         data-event-id="{{ event.id }}"
                                         data-event-url="{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
-                                    Signaler un contenu
+                                    Signaler ce contenu
                                 </button>
                             </p>
                         </div>
@@ -332,7 +332,7 @@
                                 class="btn btn-outline-primary"
                                 id="loadMap"
                                 data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16">
-                            Afficher sur une carte
+                            Voir sur la carte
                         </button>
                     </div>
                     <div id="googleMap"></div>

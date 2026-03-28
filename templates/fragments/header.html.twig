@@ -5,7 +5,7 @@
                 <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
             </svg>
         </button>
-        <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand flex-shrink-0">
+        <a href="{{ path('app_index') }}" title="By Night : agenda des sorties, concerts et spectacles en France" class="navbar-brand flex-shrink-0">
             <twig:Picasso:Image src="{{ asset('build/images/by-night.png', 'local') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
         </a>
         <div class="d-flex d-lg-none">
@@ -36,7 +36,7 @@
                             <a class="nav-link" href="{{ path('app_location_index', {location: city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>
+                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties à {{ city.name }}">Agenda</a>
                         </li>
                     {% endif %}
                     <li class="nav-item">
@@ -44,7 +44,7 @@
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') -%}
                         <li class="nav-item">
-                            <a class="nav-link" title="Voir mes soirées" href="{{ path('app_event_list') }}">Mes événements</a>
+                            <a class="nav-link" title="Gérer mes événements" href="{{ path('app_event_list') }}">Mes événements</a>
                         </li>
                     {%- endif %}
                 </ul>
@@ -68,8 +68,8 @@
                         {{ include('fragments/_header-user-dropdown.html.twig', {show_username: true}) }}
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link register" title="Inscrivez-vous sur By Night" href="{{ path('app_register') }}">
-                                Rejoignez-nous
+                            <a class="nav-link register" title="Créez votre compte gratuitement" href="{{ path('app_register') }}">
+                                Inscription
                             </a>
                         </li>
                         <li class="nav-item">

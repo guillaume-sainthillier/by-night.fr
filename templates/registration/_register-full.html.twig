@@ -3,14 +3,14 @@
 {% block meta_title 'Inscription' %}
 
 {% block title -%}
-    Rejoindre la communauté
+    Créez votre compte gratuitement
 {%- endblock %}
 
 {% block breadcrumb -%}
     {% do menu.addItem('Inscription', url('app_register')) %}
 {%- endblock %}
 
-{% block meta_description 'Devenez membre de By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
+{% block meta_description 'Rejoignez By Night gratuitement pour découvrir des milliers d\'événements, créer les vôtres et les partager avec votre communauté.' %}
 
 {% block body %}
     {{ form_start(form, {action: path('app_register')}) }}
@@ -20,14 +20,14 @@
         </div>
         <div class="card-footer text-center py-2">
             <button class="btn btn-primary" type="submit">
-                Créer mon profil
+                Créer mon compte
             </button>
         </div>
     </div>
     <p>
-        Vous avez déjà un compte ?
-        <a class="login" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
-            Connectez-vous !
+        Déjà membre ?
+        <a class="login" href="{{ path('app_login') }}" title="Connectez-vous à votre compte">
+            Connectez-vous ici.
         </a>
     </p>
     {{ form_end(form) }}

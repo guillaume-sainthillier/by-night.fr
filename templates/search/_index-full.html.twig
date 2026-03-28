@@ -1,22 +1,22 @@
 {% extends 'layouts/default.html.twig' %}
 
 {% if not type %}
-    {% set pageTitle = 'Recherche d\'événements, lieux et membres' %}
+    {% set pageTitle = 'Rechercher des événements, lieux et membres' %}
     {% set title = 'Recherche' %}
-    {% set description = 'Recherche d\'événements, concerts, spectacles et membres' %}
+    {% set description = 'Trouvez des événements, concerts, spectacles et sorties parmi des milliers de références.' %}
     {% set result = {count: (events.nbResults + users.nbResults), label: 'résultat'} %}
     {% set name = 'Tout' %}
 {% elseif type == 'evenements' %}
-    {% set pageTitle = 'Recherche d\'événements' %}
-    {% set title = 'Recherche d\'événements' %}
-    {% set description = 'Recherche d\'événements, concerts, spectacles, sorties' %}
+    {% set pageTitle = 'Rechercher des événements' %}
+    {% set title = 'Rechercher des événements' %}
+    {% set description = 'Trouvez des concerts, spectacles, expos et sorties près de chez vous.' %}
     {% set result = {count: events.nbResults, label: 'événement'} %}
     {% set name = 'Événements' %}
 {% elseif type == 'membres' %}
-    {% set pageTitle = 'Recherche de membres' %}
-    {% set title = 'Recherche de membres' %}
+    {% set pageTitle = 'Rechercher des membres' %}
+    {% set title = 'Rechercher des membres' %}
     {% set result = {count: users.nbResults, label: 'membre'} %}
-    {% set description = pageTitle %}
+    {% set description = 'Retrouvez les membres de la communauté By Night et découvrez leurs sorties favorites.' %}
     {% set name = 'Membres' %}
 {% endif %}
 
