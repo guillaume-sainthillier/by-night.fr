@@ -58,7 +58,8 @@
       "mcp__chrome-devtools__click",
       "mcp__chrome-devtools__fill",
       "Bash(yarn info:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(composer why:*)"
     ]
   }
 }
