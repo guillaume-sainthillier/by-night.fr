@@ -46,7 +46,7 @@
         "erusev/parsedown": "^1.8.0",
         "friendsofsymfony/elastica-bundle": "^7.0",
         "google/recaptcha": "^1.4.2",
-        "huluti/breadcrumbs-bundle": "*",
+        "huluti/breadcrumbs-bundle": ">=1.7",
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
         "league/flysystem-aws-s3-v3": "^3.32.0",
         "league/flysystem-bundle": "^3.6.2",
