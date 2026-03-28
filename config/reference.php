@@ -1910,6 +1910,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         not_valid_current_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
  *     },
  * }
+ * @psalm-type HulutiBreadcrumbsConfig = array{
+ *     separator?: scalar|Param|null, // Default: "/"
+ *     separatorClass?: scalar|Param|null, // Default: "separator"
+ *     listId?: scalar|Param|null, // Default: "wo-breadcrumbs"
+ *     listClass?: scalar|Param|null, // Default: "breadcrumb"
+ *     itemClass?: scalar|Param|null, // Default: ""
+ *     linkRel?: scalar|Param|null, // Default: ""
+ *     locale?: scalar|Param|null, // Default: null
+ *     translation_domain?: scalar|Param|null, // Default: null
+ *     viewTemplate?: scalar|Param|null, // Default: "@HulutiBreadcrumbs/microdata.html.twig"
+ * }
  * @psalm-type TwigComponentConfig = array{
  *     defaults?: array<string, string|array{ // Default: ["__deprecated__use_old_naming_behavior"]
  *         template_directory?: scalar|Param|null, // Default: "components"
@@ -2334,17 +2345,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
  *         base_url?: scalar|Param|null, // Base URL for imgix (e.g. https://my-source.imgix.net). // Default: null
- * @psalm-type HulutiBreadcrumbsConfig = array{
- *     separator?: scalar|Param|null, // Default: "/"
- *     separatorClass?: scalar|Param|null, // Default: "separator"
- *     listId?: scalar|Param|null, // Default: "wo-breadcrumbs"
- *     listClass?: scalar|Param|null, // Default: "breadcrumb"
- *     itemClass?: scalar|Param|null, // Default: ""
- *     linkRel?: scalar|Param|null, // Default: ""
- *     locale?: scalar|Param|null, // Default: null
- *     translation_domain?: scalar|Param|null, // Default: null
- *     viewTemplate?: scalar|Param|null, // Default: "@HulutiBreadcrumbs/microdata.html.twig"
- * }
  *         service?: scalar|Param|null, // Service ID for custom transformers (type: service). // Default: null
  *         public_cache?: bool|array{
  *             enabled?: bool|Param, // Default: false
@@ -2372,8 +2372,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     twig_extra?: TwigExtraConfig,
  *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *     huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *     babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *     huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *     twig_component?: TwigComponentConfig,
  *     api_platform?: ApiPlatformConfig,
  *     stimulus?: StimulusConfig,
@@ -2433,8 +2433,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         twig_component?: TwigComponentConfig,
  *         api_platform?: ApiPlatformConfig,
  *         stimulus?: StimulusConfig,
@@ -2465,8 +2465,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
- *         twig_component?: TwigComponentConfig,
  *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
+ *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         dama_doctrine_test?: DamaDoctrineTestConfig,
  *         api_platform?: ApiPlatformConfig,

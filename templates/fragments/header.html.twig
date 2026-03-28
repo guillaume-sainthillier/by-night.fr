@@ -6,7 +6,7 @@
             </svg>
         </button>
         <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand flex-shrink-0">
-            <twig:Thumb path="build/images/by-night.png" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" />
+            <twig:Picasso:Image src="{{ asset('build/images/by-night.png') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
         </a>
         <div class="d-flex d-lg-none">
             <ul class="navbar-nav flex-row gap-3 align-items-center">
@@ -21,7 +21,7 @@
         <div class="offcanvas-lg offcanvas-end text-bg-primary flex-grow-1" id="navbar-main">
             <div class="offcanvas-header">
                 <div class="d-flex align-items-center">
-                    <twig:Thumb path="build/images/by-night.png" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" />
+                    <twig:Picasso:Image src="{{ asset('build/images/by-night.png') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
                     <h5 class="offcanvas-title ms-2" id="staticBackdropLabel">
                         By Night
                     </h5>
