@@ -13,10 +13,7 @@
   ],
   "exclude": [
     {
-      "name": "README Linting [8.4, locked]"
-    },
-    {
-      "name": "PHPUnit [8.4, lowest]"
+      "name": "README Linting"
     }
   ],
   "additional_composer_arguments": [
