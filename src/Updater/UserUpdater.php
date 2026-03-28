@@ -118,6 +118,7 @@ final class UserUpdater extends Updater
                         if ($this->userHandler->hasToUploadNewImage($tempFilePaths[$userId], $user)) {
                             $this->userHandler->uploadFile($user, $tempFilePaths[$userId]);
                         }
+
                         unset($tempFilePaths[$userId]);
                     }
                 }

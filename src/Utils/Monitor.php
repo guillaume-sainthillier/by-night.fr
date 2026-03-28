@@ -183,6 +183,7 @@ final class Monitor
             if ($stopwatch->isStarted($message)) {
                 $stopwatch->stop($message);
             }
+
             $event = $stopwatch->getEvent($message);
             $periods = $event->getPeriods();
             $lastPeriod = end($periods);

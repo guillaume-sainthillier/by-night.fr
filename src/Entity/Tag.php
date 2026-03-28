@@ -31,11 +31,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             uriTemplate: '/tags',
-            name: 'api_tags',
-            normalizationContext: ['groups' => ['tag:list']],
-            paginationEnabled: true,
-            paginationItemsPerPage: 20,
-            paginationClientItemsPerPage: true,
             cacheHeaders: [
                 'max_age' => 3600,
                 'shared_max_age' => 3600,
@@ -44,6 +39,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
                 summary: 'Search for tags',
                 description: 'Returns a paginated list of tags (for categories and themes) matching the search query using Elasticsearch.',
             ),
+            paginationEnabled: true,
+            paginationItemsPerPage: 20,
+            paginationClientItemsPerPage: true,
+            normalizationContext: ['groups' => ['tag:list']],
+            name: 'api_tags',
             provider: TagAutocompleteProvider::class,
             parameters: [
                 'q' => new QueryParameter(property: 'hydra:freetextQuery', required: true),
@@ -77,7 +77,7 @@ class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObject
 
     public function __toString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     public function shouldBeUpdated(): bool

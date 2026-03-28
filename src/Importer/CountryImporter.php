@@ -77,7 +77,7 @@ final readonly class CountryImporter
 
         $i = 0;
         while (false !== ($data = fgetcsv($fd, 3_000, "\t", escape: '\\'))) {
-            if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
+            if (!\in_array($data[7], ['ADM1', 'ADM2'], true) && 'P' !== $data[6]) {
                 continue;
             }
 

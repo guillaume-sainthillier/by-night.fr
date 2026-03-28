@@ -87,6 +87,7 @@ final class EventsStatusMigrateCommand extends Command
             if (!$dryRun) {
                 $this->entityManager->flush();
             }
+
             $this->entityManager->clear();
             gc_collect_cycles();
 

@@ -13,10 +13,10 @@ namespace App\Twig;
 use App\Helper\AssetHelper;
 use Twig\Attribute\AsTwigFunction;
 
-final class AssetExtension
+final readonly class AssetExtension
 {
     public function __construct(
-        private readonly AssetHelper $assetHelper,
+        private AssetHelper $assetHelper,
     ) {
     }
 

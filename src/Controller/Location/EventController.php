@@ -15,6 +15,7 @@ use App\Controller\AbstractController as BaseController;
 use App\Controller\Comment\CommentController;
 use App\Entity\Comment;
 use App\Entity\Event;
+use App\Entity\User;
 use App\Form\Type\CommentType;
 use App\Manager\EventRedirectManager;
 use App\Manager\WidgetsManager;
@@ -51,7 +52,7 @@ final class EventController extends BaseController
 
         // Widget data (first page only)
         $user = $this->getUser();
-        \assert($user instanceof \App\Entity\User || null === $user);
+        \assert($user instanceof User || null === $user);
         $trendsData = $widgetsManager->getTrendsData($event, $user, $page);
         $nextEventsData = $widgetsManager->getNextEventsData($event, $location);
         $similarEventsData = $widgetsManager->getSimilarEventsData($event, $location);

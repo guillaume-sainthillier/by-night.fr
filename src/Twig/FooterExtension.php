@@ -14,10 +14,10 @@ use App\Entity\Country;
 use App\Repository\CityRepository;
 use Twig\Attribute\AsTwigFunction;
 
-final class FooterExtension
+final readonly class FooterExtension
 {
     public function __construct(
-        private readonly CityRepository $cityRepository,
+        private CityRepository $cityRepository,
     ) {
     }
 

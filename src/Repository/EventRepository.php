@@ -123,9 +123,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadCities();
         }
 
-        if (\in_array($view, [
-            'elasticsearch:document',
-        ], true)) {
+        if ('elasticsearch:document' === $view) {
             // Load themes before categories to avoid multiple queries for categories when themes are loaded
             $loadThemes();
             $loadCategories();

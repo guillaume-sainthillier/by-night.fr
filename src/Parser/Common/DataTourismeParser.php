@@ -277,6 +277,7 @@ final class DataTourismeParser extends AbstractParser
                 $event->themes[] = TagDto::fromString($themeLabel);
             }
         }
+
         $event->source = $datas['@id'];
         $event->latitude = $latitude;
         $event->longitude = $longitude;

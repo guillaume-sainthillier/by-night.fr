@@ -424,6 +424,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Festival Grounds';
         $placeDto->street = '1 Festival Way';
+
         $dto->place = $placeDto;
 
         // Act: Insert the event
@@ -467,6 +468,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto = new PlaceDto();
         $placeDto->name = 'Update Test Venue';
         $placeDto->street = '100 Update St';
+
         $dto1->place = $placeDto;
 
         $this->handler->handleOne($dto1);

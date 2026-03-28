@@ -68,7 +68,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
         try {
             $this->parseCsv($path);
         } finally {
-            (new Filesystem())->remove($path);
+            new Filesystem()->remove($path);
         }
     }
 
@@ -85,6 +85,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
         foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($handle, $chunk->getContent());
         }
+
         fclose($handle);
 
         return $path;

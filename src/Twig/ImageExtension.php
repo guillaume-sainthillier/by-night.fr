@@ -17,11 +17,11 @@ use App\Picture\EventProfilePicture;
 use App\Picture\UserProfilePicture;
 use Twig\Attribute\AsTwigFunction;
 
-final class ImageExtension
+final readonly class ImageExtension
 {
     public function __construct(
-        private readonly EventProfilePicture $eventProfilePicture,
-        private readonly UserProfilePicture $userProfilePicture,
+        private EventProfilePicture $eventProfilePicture,
+        private UserProfilePicture $userProfilePicture,
     ) {
     }
 

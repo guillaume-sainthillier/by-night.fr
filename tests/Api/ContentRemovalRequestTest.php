@@ -16,6 +16,7 @@ use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
 use App\Factory\EventFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Override;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -24,6 +25,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
     use Factories;
     use ResetDatabase;
 
+    #[Override]
     protected static ?bool $alwaysBootKernel = true;
 
     public function testRemovalRequestWithValidData(): void

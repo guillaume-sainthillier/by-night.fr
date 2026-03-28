@@ -22,6 +22,7 @@ use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
+use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -652,13 +653,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    /** @deprecated Use getCategory() instead */
+    #[Deprecated(message: 'Use getCategory() instead')]
     public function getCategoryLegacy(): ?string
     {
         return $this->categoryLegacy;
     }
 
-    /** @deprecated Use setCategory() instead */
+    #[Deprecated(message: 'Use setCategory() instead')]
     public function setCategoryLegacy(?string $category): self
     {
         $this->categoryLegacy = $category;
@@ -666,13 +667,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
-    /** @deprecated Use getThemes() instead */
+    #[Deprecated(message: 'Use getThemes() instead')]
     public function getThemeLegacy(): ?string
     {
         return $this->themeLegacy;
     }
 
-    /** @deprecated Use setThemes() instead */
+    #[Deprecated(message: 'Use setThemes() instead')]
     public function setThemeLegacy(?string $theme): self
     {
         $this->themeLegacy = $theme;

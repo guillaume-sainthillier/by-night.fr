@@ -50,6 +50,7 @@ class EventTest extends TestCase
         $timesheet = new EventTimesheet();
         $timesheet->setStartAt(null);
         $timesheet->setEndAt(null);
+
         $event->addTimesheet($timesheet);
 
         $event->updateEndDate();

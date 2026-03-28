@@ -79,6 +79,7 @@ final class CDiscountAwinParser extends AbstractAwinParser
 
         // Prevents Reject::BAD_EVENT_DATE_INTERVAL
         $endDate = $endDate->setTime(0, 0);
+
         $startDate = $startDate->setTime(0, 0);
 
         $event = new EventDto();
@@ -100,6 +101,7 @@ final class CDiscountAwinParser extends AbstractAwinParser
         // - custom_3 = postal code
         $place = new PlaceDto();
         $place->name = $venueName;
+
         $street = trim($data['custom_4'] ?? '');
         $place->street = \in_array($street, ['.', '-', ''], true) ? null : $street;
 

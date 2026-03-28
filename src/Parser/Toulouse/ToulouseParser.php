@@ -96,11 +96,12 @@ final class ToulouseParser extends AbstractParser
 
             $themeStr = $tab[18] ?? null;
             if (null !== $themeStr && '' !== trim($themeStr)) {
-                $themeNames = array_filter(array_map('trim', explode(',', $themeStr)));
+                $themeNames = array_filter(array_map(trim(...), explode(',', $themeStr)));
                 foreach ($themeNames as $themeName) {
                     $event->themes[] = TagDto::fromString($themeName);
                 }
             }
+
             $event->phoneContacts = [$tab[22]];
             $event->emailContacts = [$tab[23]];
             $event->websiteContacts = [$tab[24]];

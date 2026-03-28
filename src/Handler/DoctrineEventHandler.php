@@ -358,6 +358,7 @@ final readonly class DoctrineEventHandler
                         if ($isRootTransaction) {
                             $this->parserHistoryHandler->addUpdate();
                         }
+
                         $dtosToResolve = [$dto];
                         if ($previousCatalogue && $previousCatalogue->hasAliases($dto)) {
                             $dtosToResolve = array_merge(

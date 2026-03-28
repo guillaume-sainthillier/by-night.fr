@@ -17,7 +17,6 @@ use App\Dto\TagDto;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Entity\Place;
-use App\Entity\Tag;
 use App\Entity\User;
 use App\EntityProvider\TagEntityProvider;
 use App\Handler\EntityProviderHandler;
@@ -85,6 +84,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $tagEntityProvider = $this->entityProviderHandler->getEntityProvider(TagDto::class);
             $categoryEntity = $tagEntityProvider->getEntity($dto->category);
         }
+
         $entity->setCategory($categoryEntity);
 
         // Smart sync for themes
@@ -143,14 +143,14 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         foreach ($dto->themes as $tagDto) {
             $tagEntity = $tagEntityProvider->getEntity($tagDto);
             if (null !== $tagEntity) {
-                $desiredThemes[mb_strtolower($tagEntity->getName())] = $tagEntity;
+                $desiredThemes[mb_strtolower((string) $tagEntity->getName())] = $tagEntity;
             }
         }
 
         // Build map of existing theme names
         $existingThemes = [];
         foreach ($entity->getThemes() as $theme) {
-            $existingThemes[mb_strtolower($theme->getName())] = $theme;
+            $existingThemes[mb_strtolower((string) $theme->getName())] = $theme;
         }
 
         // Remove themes not in DTO

@@ -175,10 +175,12 @@ final class SowProgParser extends AbstractParser
 
         $event->externalUpdatedAt = new DateTimeImmutable()->setTimestamp((int) round($data['modificationDate'] / 1_000));
         $event->type = $eventData['eventType']['label'];
+
         $categoryLabel = $eventData['eventStyle']['label'] ?? null;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);
         }
+
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;

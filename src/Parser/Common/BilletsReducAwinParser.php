@@ -129,6 +129,7 @@ final class BilletsReducAwinParser extends AbstractAwinParser
         // - Tickets:event_location_region = region (e.g., "Ile-de-France")
         $place = new PlaceDto();
         $place->name = $venueName;
+
         $street = trim($data['Tickets:event_location_address'] ?? '');
         $place->street = \in_array($street, ['.', '-', ''], true) ? null : $street;
 

@@ -10,9 +10,13 @@
 
 namespace App\SEO;
 
+use App\Entity\Country;
 use App\Entity\Event;
+use App\Entity\Place;
+use App\Entity\User;
 use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
+use DateTimeImmutable;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class EventJsonLd
@@ -44,7 +48,7 @@ final readonly class EventJsonLd
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
         ];
 
-        if ($event->getStartDate()) {
+        if ($event->getStartDate() instanceof DateTimeImmutable) {
             $schema['startDate'] = $event->getStartDate()->format('c');
         }
 
@@ -53,7 +57,7 @@ final readonly class EventJsonLd
         }
 
         $endDate = $event->getEndDate() ?? $event->getStartDate();
-        if ($endDate) {
+        if ($endDate instanceof DateTimeImmutable) {
             $schema['endDate'] = $endDate->format('c');
         }
 
@@ -63,7 +67,7 @@ final readonly class EventJsonLd
 
         $schema['location'] = $this->buildLocationSchema($event);
 
-        if ($event->getUser()) {
+        if ($event->getUser() instanceof User) {
             $schema['organizer'] = $this->buildOrganizerSchema($event);
         }
 
@@ -80,7 +84,7 @@ final readonly class EventJsonLd
             'name' => $event->getPlaceName() ?? 'Lieu non communiqué',
         ];
 
-        if ($event->getPlace()) {
+        if ($event->getPlace() instanceof Place) {
             $location['url'] = $this->urlGenerator->generate('app_agenda_by_place', [
                 'placeSlug' => $event->getPlace()->getSlug(),
                 'location' => $event->getLocationSlug(),
@@ -105,7 +109,7 @@ final readonly class EventJsonLd
             $hasAddress = true;
         }
 
-        if ($event->getPlaceCountry()) {
+        if ($event->getPlaceCountry() instanceof Country) {
             $address['addressCountry'] = $event->getPlaceCountry()->getId();
             $hasAddress = true;
         }

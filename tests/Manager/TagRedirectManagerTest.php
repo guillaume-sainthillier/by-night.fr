@@ -26,8 +26,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class TagRedirectManagerTest extends KernelTestCase
 {
     private TagRepository&MockObject $tagRepository;
+
     private RequestStack&MockObject $requestStack;
+
     private UrlGeneratorInterface&MockObject $urlGenerator;
+
     private TagRedirectManager $manager;
 
     #[Override]

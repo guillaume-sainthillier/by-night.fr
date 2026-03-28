@@ -41,10 +41,8 @@ final readonly class LazyLocationFactory
         $reflector = new ReflectionClass(City::class);
 
         /** @var City $lazyCity */
-        $lazyCity = $reflector->newLazyProxy(function () use ($slug): City {
-            return $this->cityRepository->findOneBySlug($slug)
-                ?? throw new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug));
-        });
+        $lazyCity = $reflector->newLazyProxy(fn (): City => $this->cityRepository->findOneBySlug($slug)
+            ?? throw new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug)));
 
         $location = new Location();
         $location->setCity($lazyCity);
@@ -61,10 +59,8 @@ final readonly class LazyLocationFactory
         $reflector = new ReflectionClass(Country::class);
 
         /** @var Country $lazyCountry */
-        $lazyCountry = $reflector->newLazyProxy(function () use ($slug): Country {
-            return $this->countryRepository->findOneBy(['slug' => $slug])
-                ?? throw new NotFoundHttpException(\sprintf('Country with slug "%s" not found', $slug));
-        });
+        $lazyCountry = $reflector->newLazyProxy(fn (): Country => $this->countryRepository->findOneBy(['slug' => $slug])
+            ?? throw new NotFoundHttpException(\sprintf('Country with slug "%s" not found', $slug)));
 
         $location = new Location();
         $location->setCountry($lazyCountry);

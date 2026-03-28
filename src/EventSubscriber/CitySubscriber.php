@@ -11,6 +11,7 @@
 namespace App\EventSubscriber;
 
 use App\App\AppContext;
+use App\Entity\City;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -41,7 +42,7 @@ final readonly class CitySubscriber implements EventSubscriberInterface
 
         // Get the current city from AppContext (set by AppContextSubscriber)
         $city = $this->appContext->getCity();
-        if (!$city) {
+        if (!$city instanceof City) {
             return;
         }
 
