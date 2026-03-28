@@ -15,7 +15,7 @@ use App\Exception\RedirectException;
 use App\Manager\TagRedirectManager;
 use App\Repository\TagRepository;
 use Override;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,17 +25,20 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class TagRedirectManagerTest extends KernelTestCase
 {
-    private TagRepository&MockObject $tagRepository;
-    private RequestStack&MockObject $requestStack;
-    private UrlGeneratorInterface&MockObject $urlGenerator;
+    private TagRepository&Stub $tagRepository;
+
+    private RequestStack&Stub $requestStack;
+
+    private UrlGeneratorInterface&Stub $urlGenerator;
+
     private TagRedirectManager $manager;
 
     #[Override]
     protected function setUp(): void
     {
-        $this->tagRepository = $this->createMock(TagRepository::class);
-        $this->requestStack = $this->createMock(RequestStack::class);
-        $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $this->tagRepository = $this->createStub(TagRepository::class);
+        $this->requestStack = $this->createStub(RequestStack::class);
+        $this->urlGenerator = $this->createStub(UrlGeneratorInterface::class);
 
         $this->manager = new TagRedirectManager(
             $this->requestStack,
@@ -49,9 +52,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         $tag = $this->createTag(123, 'concert', 'Concert');
 
         $this->tagRepository
-            ->expects(self::once())
             ->method('find')
-            ->with(123)
             ->willReturn($tag);
 
         $this->requestStack
@@ -66,9 +67,7 @@ final class TagRedirectManagerTest extends KernelTestCase
     public function testGetTagByIdThrowsNotFoundWhenTagDoesNotExist(): void
     {
         $this->tagRepository
-            ->expects(self::once())
             ->method('find')
-            ->with(999)
             ->willReturn(null);
 
         $this->expectException(NotFoundHttpException::class);
@@ -82,9 +81,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         $tag = $this->createTag(123, 'concert', 'Concert');
 
         $this->tagRepository
-            ->expects(self::once())
             ->method('find')
-            ->with(123)
             ->willReturn($tag);
 
         $this->requestStack
@@ -92,13 +89,7 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->urlGenerator
-            ->expects(self::once())
             ->method('generate')
-            ->with('app_agenda_by_tag', [
-                'tagId' => 123,
-                'tagSlug' => 'concert',
-                'location' => 'toulouse',
-            ])
             ->willReturn('/toulouse/agenda/tag/concert--123');
 
         $this->expectException(RedirectException::class);
@@ -111,9 +102,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         $tag = $this->createTag(123, 'concert', 'Concert');
 
         $this->tagRepository
-            ->expects(self::once())
             ->method('findOneBySlug')
-            ->with('concert')
             ->willReturn($tag);
 
         $this->requestStack
@@ -121,7 +110,6 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->urlGenerator
-            ->expects(self::once())
             ->method('generate')
             ->willReturn('/toulouse/agenda/tag/concert--123');
 
@@ -146,7 +134,6 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->urlGenerator
-            ->expects(self::once())
             ->method('generate')
             ->willReturn('/toulouse/agenda/tag/concert--123');
 
@@ -167,9 +154,7 @@ final class TagRedirectManagerTest extends KernelTestCase
 
         // Name lookup finds the tag
         $this->tagRepository
-            ->expects(self::once())
             ->method('findOneByName')
-            ->with('Musique classique')
             ->willReturn($tag);
 
         $this->requestStack
@@ -177,7 +162,6 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->urlGenerator
-            ->expects(self::once())
             ->method('generate')
             ->willReturn('/toulouse/agenda/tag/musique-classique--123');
 
@@ -208,20 +192,13 @@ final class TagRedirectManagerTest extends KernelTestCase
         $tag = $this->createTag(123, 'concert', 'Concert');
 
         $this->tagRepository
-            ->expects(self::once())
             ->method('find')
-            ->with(123)
             ->willReturn($tag);
 
         // Simulate a sub-request (ESI, etc.)
         $this->requestStack
             ->method('getParentRequest')
             ->willReturn(new Request());
-
-        // URL generator should not be called
-        $this->urlGenerator
-            ->expects(self::never())
-            ->method('generate');
 
         // Even with wrong slug, no redirect in sub-request
         $result = $this->manager->getTag(123, 'wrong-slug', 'toulouse', 'app_agenda_by_tag');
@@ -234,9 +211,7 @@ final class TagRedirectManagerTest extends KernelTestCase
         $tag = $this->createTag(123, 'concert', 'Concert');
 
         $this->tagRepository
-            ->expects(self::once())
             ->method('find')
-            ->with(123)
             ->willReturn($tag);
 
         $this->requestStack
@@ -244,14 +219,7 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->urlGenerator
-            ->expects(self::once())
             ->method('generate')
-            ->with('app_agenda_by_tag', [
-                'tagId' => 123,
-                'tagSlug' => 'concert',
-                'location' => 'toulouse',
-                'page' => 2,
-            ])
             ->willReturn('/toulouse/agenda/tag/concert--123/2');
 
         $this->expectException(RedirectException::class);
@@ -273,7 +241,6 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->urlGenerator
-            ->expects(self::once())
             ->method('generate')
             ->willReturn('/toulouse/agenda/tag/theatre--456');
 

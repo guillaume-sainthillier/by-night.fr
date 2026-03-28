@@ -69,7 +69,7 @@ final class StringManipulator
 
     public function deleteStopWords(): self
     {
-        $this->text = $this->text->replaceMatches(self::getStopWordsRegex(), '');
+        $this->text = $this->text->replaceMatches($this->getStopWordsRegex(), '');
 
         return $this;
     }
@@ -78,10 +78,10 @@ final class StringManipulator
      * Get the pre-compiled stop words regex pattern.
      * Built once on first call and cached for subsequent calls.
      */
-    private static function getStopWordsRegex(): string
+    private function getStopWordsRegex(): string
     {
         if (null === self::$stopWordsRegex) {
-            $parts = array_map(static fn ($stopWord) => preg_quote((string) $stopWord, '/'), self::STOP_WORDS);
+            $parts = array_map(static fn ($stopWord) => preg_quote($stopWord, '/'), self::STOP_WORDS);
             self::$stopWordsRegex = '/\b(' . implode('|', $parts) . ')\b/imu';
         }
 

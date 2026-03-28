@@ -15,6 +15,7 @@ use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
+use Override;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
@@ -25,6 +26,7 @@ final class EventActionTest extends ApiTestCase
     use Factories;
     use ResetDatabase;
 
+    #[Override]
     protected static ?bool $alwaysBootKernel = true;
 
     public function testCancelEventRequiresAuthentication(): void

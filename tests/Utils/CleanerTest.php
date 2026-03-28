@@ -84,8 +84,8 @@ final class CleanerTest extends AppKernelTestCase
         self::assertNotNull($dto->category);
         self::assertCount(1, $dto->themes);
         self::assertEquals(255, \strlen($dto->address));
-        self::assertEquals(128, \strlen($dto->category->name));
-        self::assertEquals(128, \strlen($dto->themes[0]->name));
+        self::assertEquals(128, \strlen((string) $dto->category->name));
+        self::assertEquals(128, \strlen((string) $dto->themes[0]->name));
     }
 
     #[DataProvider('coordinatesProvider')]
@@ -206,7 +206,7 @@ final class CleanerTest extends AppKernelTestCase
 
         $this->cleaner->cleanEvent($dto);
 
-        self::assertEquals(255, \strlen($dto->timesheets[0]->hours));
+        self::assertEquals(255, \strlen((string) $dto->timesheets[0]->hours));
         self::assertNull($dto->timesheets[1]->hours);
     }
 }

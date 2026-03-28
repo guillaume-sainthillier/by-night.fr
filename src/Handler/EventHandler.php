@@ -103,6 +103,7 @@ final readonly class EventHandler
                             foreach ($currentEvents as $event) {
                                 $this->uploadFile($event, $tempFilePaths[$imageUrl]);
                             }
+
                             unset($tempFilePaths[$imageUrl]);
                         }
                     }

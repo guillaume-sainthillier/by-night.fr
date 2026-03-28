@@ -52,10 +52,10 @@ final class TagDtoArrayTransformer implements DataTransformerInterface
             return [];
         }
 
-        $names = array_filter(array_map('trim', explode(',', (string) $value)));
+        $names = array_filter(array_map(trim(...), explode(',', (string) $value)));
 
         return array_map(
-            static fn (string $name) => TagDto::fromString($name),
+            TagDto::fromString(...),
             $names
         );
     }

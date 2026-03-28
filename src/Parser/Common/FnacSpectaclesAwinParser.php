@@ -120,6 +120,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         // - custom_5 = country code (FR)
         $place = new PlaceDto();
         $place->name = $venueName;
+
         $street = trim($data['custom_4'] ?? '');
         $place->street = \in_array($street, ['.', '-', ''], true) ? null : $street;
         $place->externalId = sha1(\sprintf(

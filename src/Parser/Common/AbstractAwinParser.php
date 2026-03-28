@@ -62,12 +62,12 @@ abstract class AbstractAwinParser extends AbstractParser
         }
 
         try {
-            $headers = fgetcsv($handle);
+            $headers = fgetcsv($handle, escape: '\\');
             if (false === $headers) {
                 throw new RuntimeException('Unable to read CSV headers');
             }
 
-            while (false !== ($row = fgetcsv($handle))) {
+            while (false !== ($row = fgetcsv($handle, escape: '\\'))) {
                 if (\count($row) !== \count($headers)) {
                     continue;
                 }
@@ -88,6 +88,7 @@ abstract class AbstractAwinParser extends AbstractParser
         foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());
         }
+
         fclose($fileHandler);
 
         return $filePath;

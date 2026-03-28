@@ -102,6 +102,7 @@ final class DateRangeType extends AbstractType
                 $to?->format('Y-m-d'),
             ];
         }
+
         $view->children['range']->vars['attr']['data-ranges'] = json_encode($viewRanges, \JSON_THROW_ON_ERROR);
 
         // Set initial range label from existing dates

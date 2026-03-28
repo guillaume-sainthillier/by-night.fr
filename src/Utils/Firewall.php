@@ -103,6 +103,7 @@ final class Firewall
                     $dto->reject->addReason(Reject::BAD_EVENT_DATE);
                     break;
                 }
+
                 if ($timesheet->endAt < $timesheet->startAt) {
                     $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
                     break;

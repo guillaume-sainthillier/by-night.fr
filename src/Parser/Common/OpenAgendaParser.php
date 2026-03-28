@@ -277,6 +277,7 @@ final class OpenAgendaParser extends AbstractParser
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);
         }
+
         $event->prices = $data['conditions'] ?? null;
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];

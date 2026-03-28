@@ -71,9 +71,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->getQuery()
             ->getResult();
 
-        if (\in_array($view, [
-            'elasticsearch:document',
-        ], true)) {
+        if ('elasticsearch:document' === $view) {
             $loadZipCities();
         }
     }

@@ -214,6 +214,9 @@
     "guzzlehttp/psr7": {
         "version": "1.6.1"
     },
+    "huluti/breadcrumbs-bundle": {
+        "version": "1.7.0"
+    },
     "intervention/image": {
         "version": "2.5.1"
     },
@@ -274,9 +277,6 @@
     },
     "league/oauth2-google": {
         "version": "3.0.3"
-    },
-    "mhujer/breadcrumbs-bundle": {
-        "version": "1.5.10"
     },
     "monolog/monolog": {
         "version": "2.1.1"
@@ -651,9 +651,6 @@
         "version": "v1.18.1"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.18.1"
-    },
-    "symfony/polyfill-php80": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-uuid": {

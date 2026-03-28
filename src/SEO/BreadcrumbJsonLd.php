@@ -10,8 +10,8 @@
 
 namespace App\SEO;
 
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
-use WhiteOctober\BreadcrumbsBundle\Model\SingleBreadcrumb;
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use Huluti\BreadcrumbsBundle\Model\SingleBreadcrumb;
 
 final readonly class BreadcrumbJsonLd
 {

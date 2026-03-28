@@ -24,9 +24,13 @@ final class MemoryUtils
 
     private static function formatMemory(int $size): string
     {
+        if ($size <= 0) {
+            return '0 b';
+        }
+
         $units = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
         $unit = (int) floor(log($size, 1024));
 
-        return @round($size / 1024 ** $unit, 2) . ' ' . $units[$unit];
+        return round($size / 1024 ** $unit, 2) . ' ' . $units[$unit];
     }
 }

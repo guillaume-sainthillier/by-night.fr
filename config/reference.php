@@ -1902,7 +1902,15 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type SymfonycastsVerifyEmailConfig = array{
  *     lifetime?: int|Param, // The length of time in seconds that a signed URI is valid for after it is created. // Default: 3600
  * }
- * @psalm-type WhiteOctoberBreadcrumbsConfig = array{
+ * @psalm-type BabdevPagerfantaConfig = array{
+ *     default_view?: scalar|Param|null, // Default: "default"
+ *     default_twig_template?: scalar|Param|null, // Default: "@BabDevPagerfanta/default.html.twig"
+ *     exceptions_strategy?: array{
+ *         out_of_range_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
+ *         not_valid_current_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
+ *     },
+ * }
+ * @psalm-type HulutiBreadcrumbsConfig = array{
  *     separator?: scalar|Param|null, // Default: "/"
  *     separatorClass?: scalar|Param|null, // Default: "separator"
  *     listId?: scalar|Param|null, // Default: "wo-breadcrumbs"
@@ -1911,15 +1919,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     linkRel?: scalar|Param|null, // Default: ""
  *     locale?: scalar|Param|null, // Default: null
  *     translation_domain?: scalar|Param|null, // Default: null
- *     viewTemplate?: scalar|Param|null, // Default: "@WhiteOctoberBreadcrumbs/microdata.html.twig"
- * }
- * @psalm-type BabdevPagerfantaConfig = array{
- *     default_view?: scalar|Param|null, // Default: "default"
- *     default_twig_template?: scalar|Param|null, // Default: "@BabDevPagerfanta/default.html.twig"
- *     exceptions_strategy?: array{
- *         out_of_range_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
- *         not_valid_current_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
- *     },
+ *     viewTemplate?: scalar|Param|null, // Default: "@HulutiBreadcrumbs/microdata.html.twig"
  * }
  * @psalm-type TwigComponentConfig = array{
  *     defaults?: array<string, string|array{ // Default: ["__deprecated__use_old_naming_behavior"]
@@ -2311,6 +2311,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_quality?: scalar|Param|null, // Default: 75
  *     default_fit?: scalar|Param|null, // Default fit mode (contain, cover, crop, fill). // Default: "contain"
  *     cache?: scalar|Param|null, // PSR-6 cache pool for metadata guessing and BlurHash generation. true (default) uses cache.app, false disables caching, or pass a service ID string. // Default: true
+ *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2334,6 +2335,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         request_factory?: scalar|Param|null, // PSR-17 request factory service ID for url loaders. // Default: null
  *         default_placeholder?: scalar|Param|null, // Default placeholder name for this loader. Overrides the global default_placeholder. // Default: null
  *         default_transformer?: scalar|Param|null, // Default transformer name for this loader. Overrides the global default_transformer. // Default: null
+ *         resolve_metadata?: scalar|Param|null, // Whether to resolve image metadata for this loader. Null inherits from global. Filesystem loaders default to true. // Default: null
  *     }>,
  *     transformers?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2370,8 +2372,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     twig_extra?: TwigExtraConfig,
  *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *     white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
  *     babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *     huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *     twig_component?: TwigComponentConfig,
  *     api_platform?: ApiPlatformConfig,
  *     stimulus?: StimulusConfig,
@@ -2401,8 +2403,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         api_platform?: ApiPlatformConfig,
@@ -2431,8 +2433,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         twig_component?: TwigComponentConfig,
  *         api_platform?: ApiPlatformConfig,
  *         stimulus?: StimulusConfig,
@@ -2462,8 +2464,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         dama_doctrine_test?: DamaDoctrineTestConfig,

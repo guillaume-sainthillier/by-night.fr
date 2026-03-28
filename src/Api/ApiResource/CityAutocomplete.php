@@ -22,10 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/cities',
-            name: 'api_cities',
-            paginationEnabled: true,
-            paginationItemsPerPage: 7,
-            paginationClientItemsPerPage: true,
             cacheHeaders: [
                 'max_age' => 31536000,
                 'shared_max_age' => 31536000,
@@ -34,6 +30,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 summary: 'Search for cities by name',
                 description: 'Returns a paginated list of cities matching the search query for autocomplete purposes.',
             ),
+            paginationEnabled: true,
+            paginationItemsPerPage: 7,
+            paginationClientItemsPerPage: true,
+            name: 'api_cities',
             provider: CityAutocompleteProvider::class,
             parameters: [
                 'q' => new QueryParameter(

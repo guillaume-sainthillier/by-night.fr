@@ -81,7 +81,7 @@ final class EventsMergeDuplicatesCommand extends Command
 
                 // Determine canonical event for this group
                 if (null === $canonical) {
-                    $canonical = $this->findOrSetCanonical($event, $origin, $groupKey);
+                    $canonical = $this->findOrSetCanonical($event, $groupKey);
                 }
             }
 
@@ -89,6 +89,7 @@ final class EventsMergeDuplicatesCommand extends Command
             if (!$dryRun) {
                 $this->entityManager->flush();
             }
+
             $this->entityManager->clear();
             gc_collect_cycles();
 
@@ -153,7 +154,7 @@ final class EventsMergeDuplicatesCommand extends Command
         return \sprintf('%s|%s', $event->getExternalOrigin(), $baseId);
     }
 
-    private function findOrSetCanonical(Event $event, ?string $origin, string $groupKey): Event
+    private function findOrSetCanonical(Event $event, string $groupKey): Event
     {
         [$externalOrigin, $baseId] = explode('|', $groupKey);
 

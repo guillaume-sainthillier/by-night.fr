@@ -5,8 +5,8 @@
                 <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
             </svg>
         </button>
-        <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
-            <twig:Thumb path="build/images/by-night.png" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" />
+        <a href="{{ path('app_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand flex-shrink-0">
+            <twig:Picasso:Image src="{{ asset('build/images/by-night.png') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
         </a>
         <div class="d-flex d-lg-none">
             <ul class="navbar-nav flex-row gap-3 align-items-center">
@@ -21,7 +21,7 @@
         <div class="offcanvas-lg offcanvas-end text-bg-primary flex-grow-1" id="navbar-main">
             <div class="offcanvas-header">
                 <div class="d-flex align-items-center">
-                    <twig:Thumb path="build/images/by-night.png" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" />
+                    <twig:Picasso:Image src="{{ asset('build/images/by-night.png') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
                     <h5 class="offcanvas-title ms-2" id="staticBackdropLabel">
                         By Night
                     </h5>

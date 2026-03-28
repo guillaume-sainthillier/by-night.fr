@@ -11,12 +11,13 @@
 namespace App\Dto\WidgetData;
 
 use App\App\Location;
+use App\Entity\Event;
 use Pagerfanta\PagerfantaInterface;
 
 final readonly class TopEventsWidgetData
 {
     /**
-     * @param PagerfantaInterface<\App\Entity\Event> $paginator
+     * @param PagerfantaInterface<Event> $paginator
      */
     public function __construct(
         public PagerfantaInterface $paginator,
@@ -26,7 +27,7 @@ final readonly class TopEventsWidgetData
     }
 
     /**
-     * @return array<\App\Entity\Event>
+     * @return array<Event>
      */
     public function getEvents(): array
     {

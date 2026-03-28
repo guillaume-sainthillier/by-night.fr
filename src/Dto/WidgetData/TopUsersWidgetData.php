@@ -10,12 +10,13 @@
 
 namespace App\Dto\WidgetData;
 
+use App\Entity\User;
 use Pagerfanta\PagerfantaInterface;
 
 final readonly class TopUsersWidgetData
 {
     /**
-     * @param PagerfantaInterface<\App\Entity\User> $paginator
+     * @param PagerfantaInterface<User> $paginator
      */
     public function __construct(
         public PagerfantaInterface $paginator,
@@ -24,7 +25,7 @@ final readonly class TopUsersWidgetData
     }
 
     /**
-     * @return array<\App\Entity\User>
+     * @return array<User>
      */
     public function getUsers(): array
     {

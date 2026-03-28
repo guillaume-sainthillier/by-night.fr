@@ -3,7 +3,7 @@ twig:
     form_themes:
         - 'form/fields.html.twig'
     globals:
-        menu: '@white_october_breadcrumbs'
+        menu: '@huluti_breadcrumbs'
         social_manager: '@App\App\SocialManager'
         userProfilePicture: '@App\Picture\UserProfilePicture'
         eventProfilePicture: '@App\Picture\EventProfilePicture'

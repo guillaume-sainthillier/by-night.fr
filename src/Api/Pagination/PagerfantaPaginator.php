@@ -26,15 +26,15 @@ use Traversable;
  *
  * @implements PaginatorInterface<TOutput>
  */
-final class PagerfantaPaginator implements IteratorAggregate, PaginatorInterface
+final readonly class PagerfantaPaginator implements IteratorAggregate, PaginatorInterface
 {
     /**
      * @param PagerfantaInterface<TInput>     $pagerfanta
      * @param (Closure(TInput): TOutput)|null $transformer Optional callback to transform each item
      */
     public function __construct(
-        private readonly PagerfantaInterface $pagerfanta,
-        private readonly ?Closure $transformer = null,
+        private PagerfantaInterface $pagerfanta,
+        private ?Closure $transformer = null,
     ) {
     }
 

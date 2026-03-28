@@ -49,7 +49,7 @@ final readonly class TagConverter
         $themeTerms = $this->parseTagString($themeString);
 
         $category = null;
-        if (\count($categoryTerms) > 0) {
+        if ([] !== $categoryTerms) {
             // First term becomes the category
             $category = $this->tagRepository->findOrCreateByName($categoryTerms[0], true);
 
@@ -60,7 +60,7 @@ final readonly class TagConverter
 
         // Deduplicate theme terms and exclude the category name
         $themeTermsUnique = [];
-        $categoryName = null !== $category ? mb_strtolower($category->getName()) : null;
+        $categoryName = null !== $category ? mb_strtolower((string) $category->getName()) : null;
 
         foreach ($themeTerms as $term) {
             $termLower = mb_strtolower($term);
@@ -68,6 +68,7 @@ final readonly class TagConverter
             if ($termLower === $categoryName || isset($themeTermsUnique[$termLower])) {
                 continue;
             }
+
             $themeTermsUnique[$termLower] = $term;
         }
 

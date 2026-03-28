@@ -13,6 +13,7 @@ namespace App\Tests\Api;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Factory\UserFactory;
+use Override;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
@@ -23,6 +24,7 @@ final class FeedbackTest extends ApiTestCase
     use Factories;
     use ResetDatabase;
 
+    #[Override]
     protected static ?bool $alwaysBootKernel = true;
 
     public function testFeedbackRequiresAuthentication(): void

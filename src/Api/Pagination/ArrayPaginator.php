@@ -25,16 +25,16 @@ use Traversable;
  *
  * @implements PaginatorInterface<T>
  */
-final class ArrayPaginator implements IteratorAggregate, PaginatorInterface
+final readonly class ArrayPaginator implements IteratorAggregate, PaginatorInterface
 {
     /**
      * @param list<T> $items
      */
     public function __construct(
-        private readonly array $items,
-        private readonly int $totalItems,
-        private readonly int $currentPage,
-        private readonly int $itemsPerPage,
+        private array $items,
+        private int $totalItems,
+        private int $currentPage,
+        private int $itemsPerPage,
     ) {
     }
 

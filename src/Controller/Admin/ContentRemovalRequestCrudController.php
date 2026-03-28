@@ -75,7 +75,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
     #[Override]
     public function configureActions(Actions $actions): Actions
     {
-        $removeImage = Action::new('removeImage', 'Supprimer l\'image', 'lucide:image-minus')
+        $removeImage = Action::new('removeImage', "Supprimer l'image", 'lucide:image-minus')
             ->linkToCrudAction('removeImage')
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Image === $entity->getType())
             ->addCssClass('btn btn-warning');
@@ -309,6 +309,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
                 if (null !== $event) {
                     $this->entityManager->remove($event);
                 }
+
                 $this->markRequestAsProcessed($request, false);
                 ++$count;
             }
@@ -326,9 +327,9 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             return;
         }
 
-        $event->setImageFile(null);
+        $event->setImageFile();
         $event->setImageHash(null);
-        $event->setImageSystemFile(null);
+        $event->setImageSystemFile();
         $event->setImageSystemHash(null);
     }
 

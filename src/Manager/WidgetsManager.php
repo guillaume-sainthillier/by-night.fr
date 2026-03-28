@@ -16,6 +16,7 @@ use App\Dto\WidgetData\TopEventsWidgetData;
 use App\Dto\WidgetData\TopUsersWidgetData;
 use App\Dto\WidgetData\TrendsWidgetData;
 use App\Entity\Event;
+use App\Entity\Place;
 use App\Entity\User;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
@@ -24,23 +25,23 @@ use App\Utils\PaginateTrait;
 use SocialLinks\Page;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final class WidgetsManager
+final readonly class WidgetsManager
 {
     use PaginateTrait;
 
     public const int WIDGET_ITEM_LIMIT = 7;
 
     public function __construct(
-        private readonly EventRepository $eventRepository,
-        private readonly UserRepository $userRepository,
-        private readonly UserEventRepository $userEventRepository,
-        private readonly UrlGeneratorInterface $urlGenerator,
+        private EventRepository $eventRepository,
+        private UserRepository $userRepository,
+        private UserEventRepository $userEventRepository,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
     public function getNextEventsData(Event $event, Location $location, int $page = 1): ?EventsWidgetData
     {
-        if (!$event->getPlace()) {
+        if (!$event->getPlace() instanceof Place) {
             return null;
         }
 

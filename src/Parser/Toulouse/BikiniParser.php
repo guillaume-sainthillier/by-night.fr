@@ -29,6 +29,7 @@ final class BikiniParser extends AbstractParser
         return 'Bikini';
     }
 
+    #[Override]
     public function isEnabled(): bool
     {
         return false;
@@ -71,10 +72,12 @@ final class BikiniParser extends AbstractParser
         $event->hours = $hours;
         $event->description = $data['htmlDescription'];
         $event->type = 'Concert, Musique';
+
         $categoryLabel = $data['style'] ?? null;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);
         }
+
         $event->source = $data['url'];
         $event->websiteContacts = [$data['ticketUrl']];
         $event->imageUrl = $data['image'];
