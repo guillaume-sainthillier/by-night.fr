@@ -1902,17 +1902,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type SymfonycastsVerifyEmailConfig = array{
  *     lifetime?: int|Param, // The length of time in seconds that a signed URI is valid for after it is created. // Default: 3600
  * }
- * @psalm-type WhiteOctoberBreadcrumbsConfig = array{
- *     separator?: scalar|Param|null, // Default: "/"
- *     separatorClass?: scalar|Param|null, // Default: "separator"
- *     listId?: scalar|Param|null, // Default: "wo-breadcrumbs"
- *     listClass?: scalar|Param|null, // Default: "breadcrumb"
- *     itemClass?: scalar|Param|null, // Default: ""
- *     linkRel?: scalar|Param|null, // Default: ""
- *     locale?: scalar|Param|null, // Default: null
- *     translation_domain?: scalar|Param|null, // Default: null
- *     viewTemplate?: scalar|Param|null, // Default: "@WhiteOctoberBreadcrumbs/microdata.html.twig"
- * }
  * @psalm-type BabdevPagerfantaConfig = array{
  *     default_view?: scalar|Param|null, // Default: "default"
  *     default_twig_template?: scalar|Param|null, // Default: "@BabDevPagerfanta/default.html.twig"
@@ -2345,6 +2334,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
  *         base_url?: scalar|Param|null, // Base URL for imgix (e.g. https://my-source.imgix.net). // Default: null
+ * @psalm-type HulutiBreadcrumbsConfig = array{
+ *     separator?: scalar|Param|null, // Default: "/"
+ *     separatorClass?: scalar|Param|null, // Default: "separator"
+ *     listId?: scalar|Param|null, // Default: "wo-breadcrumbs"
+ *     listClass?: scalar|Param|null, // Default: "breadcrumb"
+ *     itemClass?: scalar|Param|null, // Default: ""
+ *     linkRel?: scalar|Param|null, // Default: ""
+ *     locale?: scalar|Param|null, // Default: null
+ *     translation_domain?: scalar|Param|null, // Default: null
+ *     viewTemplate?: scalar|Param|null, // Default: "@HulutiBreadcrumbs/microdata.html.twig"
+ * }
  *         service?: scalar|Param|null, // Service ID for custom transformers (type: service). // Default: null
  *         public_cache?: bool|array{
  *             enabled?: bool|Param, // Default: false
@@ -2372,7 +2372,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     twig_extra?: TwigExtraConfig,
  *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *     white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
+ *     huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *     babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     twig_component?: TwigComponentConfig,
  *     api_platform?: ApiPlatformConfig,
@@ -2403,8 +2403,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         twig_component?: TwigComponentConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         api_platform?: ApiPlatformConfig,
@@ -2433,7 +2433,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *         twig_component?: TwigComponentConfig,
  *         api_platform?: ApiPlatformConfig,
@@ -2464,9 +2464,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         white_october_breadcrumbs?: WhiteOctoberBreadcrumbsConfig,
  *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *         twig_component?: TwigComponentConfig,
+ *         huluti_breadcrumbs?: HulutiBreadcrumbsConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
  *         dama_doctrine_test?: DamaDoctrineTestConfig,
  *         api_platform?: ApiPlatformConfig,

@@ -14,8 +14,8 @@ use App\Entity\Event;
 use App\SEO\BreadcrumbJsonLd;
 use App\SEO\EventJsonLd;
 use App\SEO\SiteJsonLd;
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Twig\Attribute\AsTwigFunction;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 final readonly class JsonLdExtension
 {
