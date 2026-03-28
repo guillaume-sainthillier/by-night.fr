@@ -56,7 +56,9 @@
       "mcp__chrome-devtools__press_key",
       "mcp__chrome-devtools__hover",
       "mcp__chrome-devtools__click",
-      "mcp__chrome-devtools__fill"
+      "mcp__chrome-devtools__fill",
+      "Bash(yarn info:*)",
+      "Bash(node:*)"
     ]
   }
 }
