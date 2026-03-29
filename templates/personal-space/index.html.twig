@@ -15,8 +15,15 @@
 {% endblock %}
 
 {% block layout_body -%}
-    {% if events|length > 0 %}
-        <div class="card">
+    <div class="card">
+        <div class="card-header">
+            <form method="GET" action="{{ path('app_event_list') }}" class="w-100">
+                <twig:InputIcon iconPrepend="lucide:search">
+                    <input name="q" type="search" class="form-control" placeholder="{{ 'Rechercher un événement...'|trans }}" value="{{ q }}">
+                </twig:InputIcon>
+            </form>
+        </div>
+        {% if events|length > 0 %}
             <div class="table-responsive">
                 <table class="table card-table align-middle mb-0">
                     <thead>
@@ -79,13 +86,18 @@
                     {{ pagerfanta(events) }}
                 </div>
             {% endif %}
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            <twig:Icon name="lucide:info" />
-            Vous n'avez pas encore créé d'événement. Publiez le vôtre dès maintenant !
-        </div>
-    {% endif %}
+        {% else %}
+            <div class="card-body">
+                <p class="text-secondary mb-0">
+                    {% if q %}
+                        {{ 'Aucun événement trouvé pour votre recherche.'|trans }}
+                    {% else %}
+                        {{ "Vous n'avez pas encore créé d'événement. Publiez le vôtre dès maintenant !"|trans }}
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
 {%- endblock %}
 
 {% block css -%}
