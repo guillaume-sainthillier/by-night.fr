@@ -9,7 +9,13 @@ const weekdayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 // Hoisted outside component - never changes
 const generator = new TimesheetGenerator()
 
-export default function EventScheduler({ startDateFieldId, endDateFieldId, timesheetsCollectionId, collectionManager, detectExisting }) {
+export default function EventScheduler({
+    startDateFieldId,
+    endDateFieldId,
+    timesheetsCollectionId,
+    collectionManager,
+    detectExisting,
+}) {
     const [pattern, setPattern] = useState('daily')
     const [selectedWeekdays, setSelectedWeekdays] = useState(() => new Set([1, 2, 3, 4, 5]))
     const [errors, setErrors] = useState({})
@@ -45,9 +51,9 @@ export default function EventScheduler({ startDateFieldId, endDateFieldId, times
         if (!collection) return
 
         const existingTimesheets = []
-        for (const item of findAll('.form-group', collection)) {
-            const startAtInput = item.querySelector('input[id*="startAt"]')
-            const endAtInput = item.querySelector('input[id*="endAt"]')
+        for (const item of findAll('.collection-item', collection)) {
+            const startAtInput = item.querySelector('input[id*="from"]')
+            const endAtInput = item.querySelector('input[id*="to"]')
 
             if (startAtInput?.value && endAtInput?.value) {
                 existingTimesheets.push({
@@ -138,8 +144,8 @@ export default function EventScheduler({ startDateFieldId, endDateFieldId, times
 
             for (const timesheet of timesheets) {
                 collectionManager.addElement(collection, {
-                    startAt: timesheet.startAt,
-                    endAt: timesheet.endAt,
+                    from: timesheet.startAt,
+                    to: timesheet.endAt,
                 })
             }
 

@@ -2,6 +2,7 @@
 
 //Vendors
 @import 'ui/tabler';
+@import 'cookieconsent/build/cookieconsent.min.css';
 
 //Components
 @import 'components/avatar';
@@ -117,4 +118,22 @@ h1 {
         width: 3rem;
         height: 3rem;
     }
+}
+
+// Remove page-body top margin when first child is a section (section has its own padding)
+.page-body:has(> section:first-child) {
+    margin-top: 0;
+}
+
+// Fix Tabler .lead color (uses secondary instead of inherit)
+.lead {
+    font-size: 1.25rem;
+    color: inherit;
+}
+
+// Fix Tabler body-color (uses CSS custom property)
+:root,
+:host,
+[data-bs-theme='light'] {
+    --tbl-body-color: #{$body-color};
 }

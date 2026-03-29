@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h } from 'preact'
 const SvgChevronDown = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
         <path
@@ -10,5 +10,5 @@ const SvgChevronDown = (props) => (
             d="m6 9 6 6 6-6"
         />
     </svg>
-);
-export default SvgChevronDown;
+)
+export default SvgChevronDown

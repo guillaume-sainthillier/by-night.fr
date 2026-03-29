@@ -1,0 +1,19 @@
+{% if is_granted('IS_IMPERSONATOR') %}
+    <div class="bg-warning text-dark py-2">
+        <div class="{{ container_class }}">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <twig:Icon name="lucide:eye" />
+                    <span>
+                        {{ 'Vous naviguez en tant que'|trans }}
+                        <strong>{{ app.user.username }}</strong>
+                    </span>
+                </div>
+                <a href="{{ impersonation_exit_path(path('app_index')) }}" class="btn btn-sm btn-dark">
+                    <twig:Icon name="lucide:log-out" />
+                    {{ "Quitter l'impersonation"|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}

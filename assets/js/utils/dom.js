@@ -21,7 +21,7 @@ export const trigger = (element, eventName, params) => {
 }
 
 export const sort = (parent, callback) => {
-    [...parent.children].sort((a, b) => callback(a, b)).map((node) => parent.appendChild(node))
+    ;[...parent.children].sort((a, b) => callback(a, b)).map((node) => parent.appendChild(node))
 }
 
 export const submit = (form) => {

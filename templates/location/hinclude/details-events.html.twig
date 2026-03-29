@@ -2,7 +2,7 @@
     <p>Aucun événement prévu à {{ eventsData.place.name }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
             un événement à {{ eventsData.place.name }}</a> ?</p>
 {% else %}
-    <twig:Event:ListCard events="{{ eventsData.events }}" :microdata="false" cardLayout="card-layout-vertical" />
+    <twig:Event:ListCard events="{{ eventsData.events }}" microdata="{{ false }}" cardLayout="card-layout-vertical" />
     {% if eventsData.hasNextLink %}
         <a class="more-content btn btn-outline-primary btn-block" href="{{ eventsData.hasNextLink }}">Plus ({{ eventsData.current }}
             / {{ eventsData.count }})</a>

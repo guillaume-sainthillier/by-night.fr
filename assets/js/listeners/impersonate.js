@@ -1,21 +1,38 @@
 import Swal from 'sweetalert2'
+import { create } from '@/js/services/ui/AutocompleteService'
 
 export default (di, container) => {
     container.querySelectorAll('.js-impersonate').forEach((el) => {
         el.addEventListener('click', async (e) => {
             e.preventDefault()
+
+            const apiUrl = el.dataset.url
+            let autocomplete = null
+
             const result = await Swal.fire({
                 title: 'Impersonation',
                 input: 'text',
-                inputLabel: 'Username',
-                inputPlaceholder: 'Enter the username',
+                inputLabel: 'Rechercher un utilisateur',
+                inputPlaceholder: 'Username ou email...',
                 showCancelButton: true,
                 cancelButtonText: 'Annuler',
+                confirmButtonText: 'Impersonifier',
                 heightAuto: false,
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'Please enter a username'
-                    }
+                didOpen() {
+                    autocomplete = create({
+                        element: '#swal2-input',
+                        url: apiUrl,
+                        valueField: 'username',
+                        labelField: 'username',
+                        minLength: 2,
+                        inModal: true,
+                        wrapper: false,
+                        maxResults: 10,
+                        noResultsText: 'Aucun utilisateur trouvé',
+                    })
+                },
+                didClose() {
+                    autocomplete?.destroy()
                 },
             })
 

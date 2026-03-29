@@ -38,8 +38,9 @@ final class EventController extends BaseController
     {
         $user = $this->getAppUser();
         $page = $request->query->getInt('page', 1);
+        $q = $request->query->getString('q');
         $events = $this->createMultipleEagerLoadingPaginator(
-            $eventRepository->findAllByUserQueryBuilder($user),
+            $eventRepository->findAllByUserQueryBuilder($user, $q ?: null),
             $eventRepository,
             $page,
             self::EVENT_PER_PAGE,
@@ -48,6 +49,7 @@ final class EventController extends BaseController
 
         return $this->render('personal-space/index.html.twig', [
             'events' => $events,
+            'q' => $q,
         ]);
     }
 

@@ -5,4 +5,4 @@ framework:
         packages:
             local:
             aws:
-                base_urls: "%env(AWS_S3_URL)%"
+                base_urls: '%env(AWS_S3_URL)%'

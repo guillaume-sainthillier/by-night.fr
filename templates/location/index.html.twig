@@ -1,7 +1,7 @@
 {% extends 'layouts/full.html.twig' %}
 
-{% block page_id 'page-location-index' %}
-{% block meta_title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
+{% block body_id 'page-location-index' %}
+{% block title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
 
 {% block meta_description -%}
     Que faire {{ location.atName }} ? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
@@ -76,7 +76,8 @@
             {% endif %}
             <div class="text-center">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
-                    Voir tout l'agenda<span class="d-none d-md-inline"> des événements {{ location.atName }}</span>
+                    Voir tout l'agenda
+                    <span class="ms-1 d-none d-md-inline"> des événements {{ location.atName }}</span>
                 </a>
             </div>
         </div>
@@ -172,7 +173,7 @@
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
-                    Voir tout l'agenda<span class="d-none d-md-inline"> {{ location.atName }}</span>
+                    Voir tout l'agenda<span class="ms-1 d-none d-md-inline"> {{ location.atName }}</span>
                 </a>
             </div>
         </div>

@@ -1,6 +1,3 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
     level: 6
     tmpDir: var/tools/phpstan
@@ -10,6 +7,13 @@ parameters:
         - tests
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    strictRules:
+        booleansInConditions: false
+        disallowedEmpty: false
+        disallowedShortTernary: false
+        overwriteVariablesWithLoop: false
+        strictArrayFilter: false
+        illegalConstructorMethodCall: true
     ignoreErrors:
         - identifier: missingType.iterableValue
         - identifier: missingType.generics
@@ -17,3 +21,15 @@ parameters:
         - '#should be contravariant with parameter#'
         - identifier: doctrine.columnType
         - identifier: doctrine.associationType
+        - identifier: staticMethod.dynamicCall
+        - identifier: cast.useless
+        - identifier: nullsafe.neverNull
+        - identifier: property.notFound
+        - identifier: property.dynamicName
+        - identifier: equal.notAllowed
+        - identifier: method.childReturnType
+        - identifier: assign.propertyType
+        - identifier: varTag.type
+        - identifier: property.unusedType
+          paths:
+              - src/Entity

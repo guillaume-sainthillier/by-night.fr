@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h } from 'preact'
 const SvgCake = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
         <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
@@ -6,5 +6,5 @@ const SvgCake = (props) => (
             <path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1M2 21h20M7 8v3m5-3v3m5-3v3M7 4h.01M12 4h.01M17 4h.01" />
         </g>
     </svg>
-);
-export default SvgCake;
+)
+export default SvgCake

@@ -10,12 +10,7 @@ function resolveElement(element) {
     return element
 }
 
-export function create({
-    element,
-    titlePosition = 'top',
-    overlayLocked = false,
-    preventClick = true,
-} = {}) {
+export function create({ element, titlePosition = 'top', overlayLocked = false, preventClick = true } = {}) {
     const $el = $(resolveElement(element))
 
     $el.fancybox({

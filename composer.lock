@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ef9b8ca443a258585693757cbe7f4fa",
+    "content-hash": "c29cbd4467e00d4a219e6267d58a7dab",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2301,58 +2301,6 @@
             "time": "2025-12-13T19:37:35+00:00"
         },
         {
-            "name": "google/recaptcha",
-            "version": "1.4.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/google/recaptcha.git",
-                "reference": "8c021a6df19c49f1ddfae3ee0c28ccffe381db25"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/google/recaptcha/zipball/8c021a6df19c49f1ddfae3ee0c28ccffe381db25",
-                "reference": "8c021a6df19c49f1ddfae3ee0c28ccffe381db25",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.4"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.94",
-                "php-coveralls/php-coveralls": "^2.9",
-                "phpunit/phpunit": "^13"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.4.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ReCaptcha\\": "src/ReCaptcha"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Client library for reCAPTCHA, a free service that protects websites from spam and abuse.",
-            "homepage": "https://www.google.com/recaptcha/",
-            "keywords": [
-                "Abuse",
-                "captcha",
-                "recaptcha",
-                "spam"
-            ],
-            "support": {
-                "forum": "https://groups.google.com/forum/#!forum/recaptcha",
-                "issues": "https://github.com/google/recaptcha/issues",
-                "source": "https://github.com/google/recaptcha"
-            },
-            "time": "2026-03-20T13:27:02+00:00"
-        },
-        {
             "name": "guzzlehttp/guzzle",
             "version": "7.10.0",
             "source": {
@@ -3004,6 +2952,88 @@
                 "source": "https://github.com/schmittjoh/metadata/tree/2.9.0"
             },
             "time": "2025-11-30T20:12:26+00:00"
+        },
+        {
+            "name": "karser/karser-recaptcha3-bundle",
+            "version": "v0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/karser/KarserRecaptcha3Bundle.git",
+                "reference": "3d194dab4c31115bebc073c866ff55afaaa9e276"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/karser/KarserRecaptcha3Bundle/zipball/3d194dab4c31115bebc073c866ff55afaaa9e276",
+                "reference": "3d194dab4c31115bebc073c866ff55afaaa9e276",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.1",
+                "symfony/expression-language": "^6.4|^7.0|^8.0",
+                "symfony/form": "^6.4|^7.0|^8.0",
+                "symfony/framework-bundle": "^6.4|^7.0|^8.0",
+                "symfony/twig-bundle": "^6.4|^7.0|^8.0",
+                "symfony/validator": "^6.4|^7.0|^8.0",
+                "symfony/yaml": "^6.4|^7.0|^8.0",
+                "twig/twig": "^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9|^10|^11",
+                "symfony/http-client": "^6.4|^7.0|^8.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Karser\\Recaptcha3Bundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitrii Poddubnyi",
+                    "homepage": "https://github.com/karser"
+                }
+            ],
+            "description": "Google ReCAPTCHA v3 for Symfony",
+            "homepage": "http://github.com/karser/KarserRecaptcha3Bundle",
+            "keywords": [
+                "Forms",
+                "Google ReCaptcha",
+                "GoogleReCaptcha",
+                "Symfony Google ReCaptcha",
+                "anti-bot",
+                "anti-bots",
+                "anti-spam",
+                "captcha",
+                "contact",
+                "google",
+                "google recaptcha v3",
+                "no-captcha",
+                "recaptcha",
+                "recaptcha v3",
+                "recaptcha v3 symfony",
+                "security",
+                "spam",
+                "symfony",
+                "symfony google recaptcha v3",
+                "symfony recaptcha",
+                "symfony recaptcha v3",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/karser/KarserRecaptcha3Bundle/issues",
+                "source": "https://github.com/karser/KarserRecaptcha3Bundle/tree/v0.3.0"
+            },
+            "time": "2025-12-08T11:25:16+00:00"
         },
         {
             "name": "knpuniversity/oauth2-client-bundle",
@@ -5519,12 +5549,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/picasso-bundle.git",
-                "reference": "767d245015c6c01d50438727a80911c1fb1581b4"
+                "reference": "8ebef90d1927f3df116ec662f0ac113b1c1a2064"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/767d245015c6c01d50438727a80911c1fb1581b4",
-                "reference": "767d245015c6c01d50438727a80911c1fb1581b4",
+                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/8ebef90d1927f3df116ec662f0ac113b1c1a2064",
+                "reference": "8ebef90d1927f3df116ec662f0ac113b1c1a2064",
                 "shasum": ""
             },
             "require": {
@@ -5540,7 +5570,7 @@
                 "league/glide": "^2.3.2",
                 "league/glide-symfony": "^2.0.1",
                 "phpstan/phpstan": "^2.1.44",
-                "phpunit/phpunit": "^11.5.55",
+                "phpunit/phpunit": "^11.5.55|^13.0.5",
                 "psr/http-client": "^1.0.3",
                 "psr/http-factory": "^1.1",
                 "rector/rector": "^2.3.9",
@@ -5576,7 +5606,7 @@
                 "issues": "https://github.com/silarhi/picasso-bundle/issues",
                 "source": "https://github.com/silarhi/picasso-bundle/tree/main"
             },
-            "time": "2026-03-26T11:11:24+00:00"
+            "time": "2026-03-28T15:41:16+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",
@@ -13565,6 +13595,57 @@
                 "source": "https://github.com/phpstan/phpstan-doctrine/tree/2.0.20"
             },
             "time": "2026-03-13T13:44:51+00:00"
+        },
+        {
+            "name": "phpstan/phpstan-strict-rules",
+            "version": "2.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-strict-rules.git",
+                "reference": "1aba28b697c1e3b6bbec8a1725f8b11b6d3e5a5f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/1aba28b697c1e3b6bbec8a1725f8b11b6d3e5a5f",
+                "reference": "1aba28b697c1e3b6bbec8a1725f8b11b6d3e5a5f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^2.1.39"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Extra strict and opinionated rules for PHPStan",
+            "keywords": [
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.10"
+            },
+            "time": "2026-02-11T14:17:32+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",

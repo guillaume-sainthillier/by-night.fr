@@ -194,13 +194,20 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->toIterable();
     }
 
-    public function findAllByUserQueryBuilder(User $user): QueryBuilder
+    public function findAllByUserQueryBuilder(User $user, ?string $q = null): QueryBuilder
     {
-        return $this
+        $qb = $this
             ->createQueryBuilder('e')
             ->where('e.user = :user')
             ->setParameter('user', $user->getId())
             ->orderBy('e.id', Criteria::DESC);
+
+        if ($q) {
+            $qb->andWhere('e.name LIKE :q OR e.placeName LIKE :q OR e.placeCity LIKE :q OR e.description LIKE :q')
+                ->setParameter('q', '%' . $q . '%');
+        }
+
+        return $qb;
     }
 
     public function getCountryEvents(): array

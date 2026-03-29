@@ -5,10 +5,12 @@ This document describes the testing setup for the By Night application.
 ## Requirements
 
 ### For Utility Tests (No Database Required)
+
 - No special requirements needed for utility tests
 - All utility tests run without database dependencies
 
 ### For Integration Tests (Database Required)
+
 - Database connection (SQLite, MySQL, or PostgreSQL)
 - Appropriate PHP PDO extension installed
 - Database schema created
@@ -25,18 +27,22 @@ The test environment is configured to use SQLite database (for future integratio
 If you want to add integration tests in the future:
 
 #### Ubuntu/Debian
+
 ```bash
 sudo apt-get install php-sqlite3
 ```
 
 #### macOS (Homebrew)
+
 ```bash
 brew install php
 # SQLite extension is usually included
 ```
 
 #### Windows
+
 Uncomment the following line in your `php.ini`:
+
 ```ini
 extension=pdo_sqlite
 ```
@@ -82,16 +88,19 @@ php bin/console doctrine:fixtures:load --env=test
 ## Running Tests
 
 Run all tests:
+
 ```bash
 vendor/bin/phpunit
 ```
 
 Run specific test file:
+
 ```bash
 vendor/bin/phpunit tests/Utils/ComparatorTest.php
 ```
 
 Run with test documentation output:
+
 ```bash
 vendor/bin/phpunit --testdox
 ```
@@ -100,26 +109,26 @@ vendor/bin/phpunit --testdox
 
 - `tests/AppKernelTestCase.php` - Base test case with Foundry support
 - `tests/Utils/` - Utility function tests (no database required):
-  - `ChunkUtilsTest` - Object chunking and grouping by class (10 tests)
-  - `CityManipulatorTest` - City name alternatives and sanitization (17 tests)
-  - `CleanerTest` - DTO cleaning for events, places, cities (11 tests)
-  - `ComparatorTest` - Place comparison and matching (47 tests)
-  - `FirewallTest` - Firewall utilities (1 test)
-  - `MemoryUtilsTest` - Memory formatting and usage tracking (13 tests)
-  - `SluggerUtilsTest` - URL-safe slug generation (23 tests)
-  - `StringManipulatorTest` - String manipulation utilities (32 tests)
-  - `UtilTest` - General utility functions (32 tests)
+    - `ChunkUtilsTest` - Object chunking and grouping by class (10 tests)
+    - `CityManipulatorTest` - City name alternatives and sanitization (17 tests)
+    - `CleanerTest` - DTO cleaning for events, places, cities (11 tests)
+    - `ComparatorTest` - Place comparison and matching (47 tests)
+    - `FirewallTest` - Firewall utilities (1 test)
+    - `MemoryUtilsTest` - Memory formatting and usage tracking (13 tests)
+    - `SluggerUtilsTest` - URL-safe slug generation (23 tests)
+    - `StringManipulatorTest` - String manipulation utilities (32 tests)
+    - `UtilTest` - General utility functions (32 tests)
 - `tests/Handler/` - Integration tests (database required):
-  - `DoctrineEventHandlerTest` - Event insertion and merging (9 tests)
-    - Tests event insertion into database
-    - Tests merging with existing events by external ID
-    - Tests duplicate prevention
-    - Tests validation/filtering
-    - Tests place association
-    - Tests batch insertion
-    - Tests contact information persistence
-    - Tests timestamp management
-  - See `tests/Handler/README.md` for detailed documentation
+    - `DoctrineEventHandlerTest` - Event insertion and merging (9 tests)
+        - Tests event insertion into database
+        - Tests merging with existing events by external ID
+        - Tests duplicate prevention
+        - Tests validation/filtering
+        - Tests place association
+        - Tests batch insertion
+        - Tests contact information persistence
+        - Tests timestamp management
+    - See `tests/Handler/README.md` for detailed documentation
 - `src/Factory/` - Foundry factories for entities
 - `src/DataFixtures/` - Doctrine fixtures using Foundry
 
@@ -128,12 +137,14 @@ vendor/bin/phpunit --testdox
 The test suite currently includes:
 
 ### Phase 1: Utility Tests (No Database Required)
+
 - **186 passing unit tests** for utility classes
 - Tests for string manipulation, cleaning, comparison, validation, chunking, memory, and slugs
 - Comprehensive edge case coverage (empty strings, Unicode, special characters)
 - Fast execution (<1 second)
 
 ### Phase 2: Integration Tests (Database Required)
+
 - **9 comprehensive integration tests** for event handling
 - Tests for event insertion into database
 - Tests for event merging and duplicate detection
@@ -151,28 +162,32 @@ Integration tests require a database connection and are **excluded by default** 
 Before running database tests:
 
 1. **Set up test database schema**:
-   ```bash
-   # For SQLite (default in .env.test), database file is created automatically
-   php bin/console doctrine:schema:create --env=test
 
-   # For MySQL/PostgreSQL, you may need to create the database first:
-   # php bin/console doctrine:database:create --env=test
-   # php bin/console doctrine:schema:create --env=test
-   ```
+    ```bash
+    # For SQLite (default in .env.test), database file is created automatically
+    php bin/console doctrine:schema:create --env=test
+
+    # For MySQL/PostgreSQL, you may need to create the database first:
+    # php bin/console doctrine:database:create --env=test
+    # php bin/console doctrine:schema:create --env=test
+    ```
 
 2. **Run all tests** (integration tests included):
-   ```bash
-   vendor/bin/phpunit
-   ```
 
-   Or run specific test file:
-   ```bash
-   vendor/bin/phpunit tests/Handler/DoctrineEventHandlerTest.php
-   ```
+    ```bash
+    vendor/bin/phpunit
+    ```
+
+    Or run specific test file:
+
+    ```bash
+    vendor/bin/phpunit tests/Handler/DoctrineEventHandlerTest.php
+    ```
 
 ### How It Works in CI
 
 CI automatically:
+
 - Installs the `pdo_sqlite` extension (via `.laminas-ci.json`)
 - Creates the database schema (via `.laminas-ci/pre-run.sh`)
 - Runs all tests including integration tests with full database isolation (via DAMA bundle)

@@ -1,19 +1,9 @@
-.table {
-    tbody tr td {
-        vertical-align: middle;
-
-        .btn {
-            margin-top: 0;
-            margin-bottom: 0;
-
-            &.btn-xs {
-                padding: 5px 10px;
-            }
-        }
-    }
-
-    td.actions {
-        overflow: hidden;
-        white-space: nowrap;
-    }
+// Fix Tabler subheader mixin (uses $h5-font-size which is too large with Bootstrap heading sizes)
+// Tabler original: 0.625-0.75rem, our $h5-font-size: 1.25rem
+.subheader,
+.table thead th,
+.datagrid-title,
+.dropdown-header {
+    font-size: 0.625rem;
+    line-height: 1rem;
 }

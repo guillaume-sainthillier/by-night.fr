@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h } from 'preact'
 const SvgPlus = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
         <path
@@ -10,5 +10,5 @@ const SvgPlus = (props) => (
             d="M5 12h14m-7-7v14"
         />
     </svg>
-);
-export default SvgPlus;
+)
+export default SvgPlus

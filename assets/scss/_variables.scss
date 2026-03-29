@@ -84,3 +84,24 @@ $form-label-font-size: 1rem;
 //Tabler
 $prefix: 'bs-' !default;
 $grid-gutter-width: 1rem;
+
+$enable-rfs: true;
+$lead-font-size: 1.25rem;
+
+// Restore Bootstrap 5 sizes (Tabler uses fixed rem line-heights instead of ratios)
+$line-height-base: 1.5;
+$input-btn-line-height: $line-height-base;
+$input-btn-line-height-lg: $line-height-base;
+$input-btn-padding-y-lg: 0.5rem;
+$input-btn-font-size-lg: 1.25rem;
+
+// Restore Bootstrap heading line-heights (Tabler uses fixed rem, breaks badge vertical centering)
+$headings-line-height: 1.2;
+$h1-line-height: $headings-line-height;
+$h2-line-height: $headings-line-height;
+$h3-line-height: $headings-line-height;
+$h4-line-height: $headings-line-height;
+$h5-line-height: $headings-line-height;
+$h6-line-height: $headings-line-height;
+$body-color: #222;
+$navbar-brand-font-size: 1.25rem;

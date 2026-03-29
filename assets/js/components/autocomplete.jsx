@@ -4,7 +4,7 @@ import { autocomplete } from '@algolia/autocomplete-js'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import groupBy from 'lodash/groupBy'
-import { Offcanvas } from 'bootstrap'
+import { Offcanvas } from '@tabler/core/dist/js/tabler.esm'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
 import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
@@ -83,7 +83,10 @@ export default function init({
                     {children}
                     {state.query && state.status === 'idle' && state.collections.length > 0 && searchPageUrl && (
                         <div className="aa-PanelFooter">
-                            <a href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`} className="aa-ViewAllLink">
+                            <a
+                                href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`}
+                                className="aa-ViewAllLink"
+                            >
                                 Voir tous les résultats pour "<strong>{state.query}</strong>"
                             </a>
                         </div>
@@ -116,8 +119,7 @@ export default function init({
                             <TriangleAlertIcon className="icon-3x text-danger" />
                             <h2 className="mt-4 h5 text-danger">Erreur de recherche</h2>
                             <p className="text-muted">
-                                Une erreur est survenue lors de la recherche. Veuillez réessayer dans quelques
-                                instants.
+                                Une erreur est survenue lors de la recherche. Veuillez réessayer dans quelques instants.
                             </p>
                         </div>
                     </div>,
@@ -137,7 +139,10 @@ export default function init({
                             Aucun résultat pour <strong>"{state.query}"</strong>.
                         </h2>
                         {searchPageUrl && (
-                            <a href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`} className="btn btn-primary mt-3">
+                            <a
+                                href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`}
+                                className="btn btn-primary mt-3"
+                            >
                                 Essayer la recherche avancée
                             </a>
                         )}

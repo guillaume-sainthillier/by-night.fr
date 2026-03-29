@@ -3,7 +3,7 @@
 {% set user = app.user %}
 
 {% block title user.username %}
-{% block meta_title user.username %}
+{% block page_title user.username %}
 
 {% block breadcrumb -%}
     {% do menu.addItem('Mon compte', url('app_user_edit')) %}

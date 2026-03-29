@@ -1,12 +1,6 @@
 <?php
 
-/*
- * This file is part of By Night.
- * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+// This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
@@ -2351,6 +2345,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *     }>,
  * }
+ * @psalm-type KarserRecaptcha3Config = array{
+ *     site_key?: scalar|Param|null,
+ *     secret_key?: scalar|Param|null,
+ *     score_threshold?: float|Param, // Default: 0.5
+ *     host?: scalar|Param|null, // Default host is "www.google.com", if it is not reachable then use "www.recaptcha.net" instead. // Default: "www.google.com"
+ *     enabled?: bool|Param, // Default: true
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2379,6 +2380,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     stimulus?: StimulusConfig,
  *     ux_icons?: UxIconsConfig,
  *     picasso?: PicassoConfig,
+ *     karser_recaptcha3?: KarserRecaptcha3Config,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2411,6 +2413,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
+ *         karser_recaptcha3?: KarserRecaptcha3Config,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2440,6 +2443,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
+ *         karser_recaptcha3?: KarserRecaptcha3Config,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2473,6 +2477,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
+ *         karser_recaptcha3?: KarserRecaptcha3Config,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h } from 'preact'
 const SvgKey = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
         <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
@@ -6,5 +6,5 @@ const SvgKey = (props) => (
             <circle cx={7.5} cy={15.5} r={5.5} />
         </g>
     </svg>
-);
-export default SvgKey;
+)
+export default SvgKey

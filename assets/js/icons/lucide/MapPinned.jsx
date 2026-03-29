@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h } from 'preact'
 const SvgMapPinned = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
         <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
@@ -7,5 +7,5 @@ const SvgMapPinned = (props) => (
             <path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712" />
         </g>
     </svg>
-);
-export default SvgMapPinned;
+)
+export default SvgMapPinned

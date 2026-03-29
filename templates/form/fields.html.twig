@@ -7,15 +7,11 @@
     <input type="hidden" {{ block('widget_attributes') }} data-controller="csrf-protection" value="{{ value }}" />
 {%- endblock csrf_token_widget -%}
 
-{% block recaptcha_widget %}
-    <div {{ block('widget_attributes') }}></div>
-{% endblock %}
-
 {% block vich_image_widget %}
     {% set has_existing_image = download_uri is defined and download_uri %}
     {% set is_horizontal = layout is defined and layout == 'horizontal' %}
 
-    <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal' : '' }}">
+    <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal' }}">
         {% if has_existing_image and image_thumb is not null %}
             <div class="vich-image-existing">
                 <a class="image-gallery" href="{{ download_uri }}">

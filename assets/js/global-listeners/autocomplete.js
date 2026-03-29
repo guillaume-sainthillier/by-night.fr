@@ -1,6 +1,6 @@
 import initAutocomplete from '@/js/components/autocomplete'
 import $ from 'jquery'
-import {isTouchDevice} from "@/js/utils/utils"
+import { isTouchDevice } from '@/js/utils/utils'
 
 export default () => {
     const $autocomplete = $('#autocomplete')

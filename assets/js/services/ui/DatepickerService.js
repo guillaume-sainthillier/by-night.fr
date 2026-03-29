@@ -40,7 +40,7 @@ function findMatchingRangeLabel(start, end, ranges) {
     return null
 }
 
-function formatRangeLabel(start, end, ranges, label ) {
+function formatRangeLabel(start, end, ranges, label) {
     // Use provided label if it's a valid preset (not custom)
     if (label && ranges[label]) {
         return label

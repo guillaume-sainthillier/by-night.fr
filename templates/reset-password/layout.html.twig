@@ -4,10 +4,6 @@
     Mot de passe oublié ? {% block title_reset %}{% endblock %}
 {%- endblock %}
 
-{% block meta_title -%}
-    Mot de passe oublié ? {% block meta_title_reset %}{% endblock %}
-{%- endblock %}
-
 {% block breadcrumb -%}
     {% do menu.addItem('Mot de passe perdu', url('app_forgot_password_request')) %}
     {% block breadcrumb_reset %}{% endblock %}

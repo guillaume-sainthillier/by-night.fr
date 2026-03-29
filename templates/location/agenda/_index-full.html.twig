@@ -1,6 +1,6 @@
 {% extends 'layouts/with-widget.html.twig' %}
 
-{%- block meta_title -%}
+{%- block title -%}
 {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.cityName -}}{% endif %}
 {% elseif tag is not null %}{{- tag|capitalize -}}
 {% elseif type == 'exposition' %}Expositions
@@ -13,7 +13,7 @@
 {% if page > 1 %} (Page {{ page }}){% endif %}
 {%- endblock -%}
 
-{%- block title -%}
+{%- block page_title -%}
 {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.cityName -}}
 {% elseif tag is not null %}{{- tag|capitalize -}}
 {% elseif type == 'exposition' %}Expositions
