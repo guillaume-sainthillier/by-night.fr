@@ -72,7 +72,6 @@ jobs:
                   username: ${{ secrets.USERNAME }}
                   key: ${{ secrets.KEY }}
                   envs: BY_NIGHT_PATH
-                  script_stop: true
                   script: |
                       cd $BY_NIGHT_PATH
                       sudo /bin/bash ./deploy.sh
