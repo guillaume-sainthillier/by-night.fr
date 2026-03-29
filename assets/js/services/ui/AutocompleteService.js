@@ -24,6 +24,8 @@ export function create({
     onSelection = null,
     onInput = null,
     onError = null,
+                           wrapper = null,
+                           inModal = false,
     transformResponse = (data) => data['hydra:member'] || data.member || data,
     fetchOptions = { headers: { Accept: 'application/ld+json' } },
 } = {}) {
@@ -41,6 +43,7 @@ export function create({
 
     const ac = new autoComplete({
         selector: () => inputElement,
+        wrapper,
         data: {
             src: async (query) => {
                 fetchError = null
@@ -103,6 +106,10 @@ export function create({
             },
         },
     })
+
+    if (inModal && wrapper) {
+        element[0].parentNode.before(element[0])
+    }
 
     // Clear value input when user edits the text
     if (valueInputElement) {
