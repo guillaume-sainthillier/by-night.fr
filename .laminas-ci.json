@@ -1,22 +1,18 @@
 {
-  "extensions": [
-    "pdo_sqlite"
-  ],
-  "additional_checks": [
-    {
-      "name": "Symfony Lint",
-      "job": {
-        "command": "export APP_ENV=prod; bin/console lint:container && bin/console lint:yaml config --parse-tags && bin/console lint:twig templates && bin/console doctrine:schema:validate --skip-sync",
-        "php": "@lowest"
-      }
-    }
-  ],
-  "exclude": [
-    {
-      "name": "README Linting"
-    }
-  ],
-  "additional_composer_arguments": [
-    "--ignore-platform-req=ext-*"
-  ]
+    "extensions": ["pdo_sqlite"],
+    "additional_checks": [
+        {
+            "name": "Symfony Lint",
+            "job": {
+                "command": "export APP_ENV=prod; bin/console lint:container && bin/console lint:yaml config --parse-tags && bin/console lint:twig templates && bin/console doctrine:schema:validate --skip-sync",
+                "php": "@lowest"
+            }
+        }
+    ],
+    "exclude": [
+        {
+            "name": "README Linting"
+        }
+    ],
+    "additional_composer_arguments": ["--ignore-platform-req=ext-*"]
 }

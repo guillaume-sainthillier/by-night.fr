@@ -92,9 +92,8 @@ $lead-font-size: 1.25rem;
 $line-height-base: 1.5;
 $input-btn-line-height: $line-height-base;
 $input-btn-line-height-lg: $line-height-base;
-$input-btn-padding-y-lg: .5rem;
+$input-btn-padding-y-lg: 0.5rem;
 $input-btn-font-size-lg: 1.25rem;
-
 
 // Restore Bootstrap heading line-heights (Tabler uses fixed rem, breaks badge vertical centering)
 $headings-line-height: 1.2;

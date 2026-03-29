@@ -6,16 +6,16 @@ export default [
     {
         languageOptions: {
             globals: {
-                ... globals.browser,
-                ... globals.node,
-                ... globals.jest,
+                ...globals.browser,
+                ...globals.node,
+                ...globals.jest,
             },
         },
     },
     pluginJs.configs.recommended,
     eslintConfigPrettier,
     {
-        ignores: ["vendor/", "public/"],
+        ignores: ['vendor/', 'public/'],
     },
     {
         rules: {

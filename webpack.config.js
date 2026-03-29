@@ -1,5 +1,5 @@
 const path = require('path')
-const ESLintWebpackPlugin = require("eslint-webpack-plugin")
+const ESLintWebpackPlugin = require('eslint-webpack-plugin')
 const Encore = require('@symfony/webpack-encore')
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 
@@ -153,17 +153,15 @@ Encore
         'window.$': 'jquery',
     })
 
-if(Encore.isDev()) {
-    Encore.addPlugin(new ESLintWebpackPlugin({
-        fix: true,
-        failOnError: false,
-        configType: 'flat',
-        exclude: [
-            'node_modules',
-            'var',
-            'vendor',
-        ]
-    }))
+if (Encore.isDev()) {
+    Encore.addPlugin(
+        new ESLintWebpackPlugin({
+            fix: true,
+            failOnError: false,
+            configType: 'flat',
+            exclude: ['node_modules', 'var', 'vendor'],
+        })
+    )
 }
 
 module.exports = Encore.getWebpackConfig()

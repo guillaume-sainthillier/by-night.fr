@@ -11,16 +11,16 @@ https://by-night.fr
 
 ## Stack technique
 
--   PHP 8.4
--   Symfony 7.4
--   MySQL 8.0
--   Elastic Search 7
--   Varnish 6
--   Redis 5
--   Sass
--   Webpack
--   Docker
--   Amazon S3 / Cloudfront
+- PHP 8.4
+- Symfony 7.4
+- MySQL 8.0
+- Elastic Search 7
+- Varnish 6
+- Redis 5
+- Sass
+- Webpack
+- Docker
+- Amazon S3 / Cloudfront
 
 ## Setup
 

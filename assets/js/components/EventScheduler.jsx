@@ -9,7 +9,13 @@ const weekdayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 // Hoisted outside component - never changes
 const generator = new TimesheetGenerator()
 
-export default function EventScheduler({ startDateFieldId, endDateFieldId, timesheetsCollectionId, collectionManager, detectExisting }) {
+export default function EventScheduler({
+    startDateFieldId,
+    endDateFieldId,
+    timesheetsCollectionId,
+    collectionManager,
+    detectExisting,
+}) {
     const [pattern, setPattern] = useState('daily')
     const [selectedWeekdays, setSelectedWeekdays] = useState(() => new Set([1, 2, 3, 4, 5]))
     const [errors, setErrors] = useState({})

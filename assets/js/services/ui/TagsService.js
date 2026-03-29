@@ -42,7 +42,7 @@ export function create({
         options.valueField = valueField
         options.labelField = labelField
         options.searchField = []
-        options.sortField = [{field:'$order'},{field:'$score'}]
+        options.sortField = [{ field: '$order' }, { field: '$score' }]
         options.load = (query, callback) => {
             const fetchUrl = url.replace('__QUERY__', encodeURIComponent(query))
             fetch(fetchUrl, fetchOptions)

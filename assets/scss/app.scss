@@ -132,6 +132,8 @@ h1 {
 }
 
 // Fix Tabler body-color (uses CSS custom property)
-:root, :host, [data-bs-theme="light"] {
+:root,
+:host,
+[data-bs-theme='light'] {
     --tbl-body-color: #{$body-color};
 }

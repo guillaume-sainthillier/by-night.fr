@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h } from 'preact'
 const SvgDrama = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
         <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
@@ -7,5 +7,5 @@ const SvgDrama = (props) => (
             <path d="M9.1 16.5c.3-1.1 1.4-1.7 2.4-1.4" />
         </g>
     </svg>
-);
-export default SvgDrama;
+)
+export default SvgDrama

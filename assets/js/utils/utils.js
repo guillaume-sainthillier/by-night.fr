@@ -1,4 +1,4 @@
-import {data, dom, findAll} from "./dom"
+import { data, dom, findAll } from './dom'
 
 export const isTouchDevice = () => {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0
@@ -17,7 +17,7 @@ export const popup = (href, parent) => {
 }
 
 export const removeSelectOptions = (select, removeEmptyOption = false) => {
-    [...findAll('option', select)]
+    ;[...findAll('option', select)]
         .filter((option) => removeEmptyOption === false && !!option.value)
         .forEach((option) => select.removeChild(option))
 }
@@ -64,17 +64,19 @@ export const constructObjectDefinition = (definitions) => {
 
 export const getVirtualForm = (container) => {
     const virtualForm = {}
-    findAll('.form-control, .custom-file-input, .custom-control-input, input[type="hidden"]', container).forEach((field) => {
-        if (field.hasAttribute('name') && field.id) {
-            const name = field
-                .getAttribute('name')
-                .split(/\]|\[/g)
-                .filter((el) => el !== '')
-                .slice(-1)
-                .pop()
-            virtualForm[name] = field.id
+    findAll('.form-control, .custom-file-input, .custom-control-input, input[type="hidden"]', container).forEach(
+        (field) => {
+            if (field.hasAttribute('name') && field.id) {
+                const name = field
+                    .getAttribute('name')
+                    .split(/\]|\[/g)
+                    .filter((el) => el !== '')
+                    .slice(-1)
+                    .pop()
+                virtualForm[name] = field.id
+            }
         }
-    })
+    )
 
     findAll('.form-collection', container).forEach((field) => {
         if (field.id) {

@@ -11,25 +11,24 @@ export default (di, container) => {
                 const datas = $(this).serialize()
                 const submitButton = $('#_register')
                 submitButton.button('loading')
-                $
-                    .post(href, datas)
+                $.post(href, datas)
                     .done(function (data) {
-                    submitButton.button('reset')
+                        submitButton.button('reset')
 
-                    if (typeof data.success === 'boolean' && data.success) {
-                        $dialog.modal('hide')
-                        window.location.reload()
-                    } else {
-                        $dialog.html(data)
-                        handleRegister($dialog) // ne rien mettre après
-                    }
-                })
-                .fail(function (jqXHR) {
-                    if(jqXHR.status === 422) {
-                        $dialog.html(jqXHR.responseText)
-                        handleRegister($dialog) // ne rien mettre après
-                    }
-                })
+                        if (typeof data.success === 'boolean' && data.success) {
+                            $dialog.modal('hide')
+                            window.location.reload()
+                        } else {
+                            $dialog.html(data)
+                            handleRegister($dialog) // ne rien mettre après
+                        }
+                    })
+                    .fail(function (jqXHR) {
+                        if (jqXHR.status === 422) {
+                            $dialog.html(jqXHR.responseText)
+                            handleRegister($dialog) // ne rien mettre après
+                        }
+                    })
                 return false
             })
     }

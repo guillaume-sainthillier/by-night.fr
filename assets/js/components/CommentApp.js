@@ -3,7 +3,7 @@ import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
 import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
 import CheckIcon from '@/js/icons/lucide/Check'
-import {iconHtml} from "@/js/components/icons"
+import { iconHtml } from '@/js/components/icons'
 
 export default class CommentApp {
     constructor() {
@@ -45,17 +45,15 @@ export default class CommentApp {
 
     init() {
         const self = this
-        $(self.options.css_main_block_comments).each(
-            function () // Iterate through comments divs (normally 1 per page)
-            {
-                const commentsContainer = $(this)
-                window.App.dispatchPageLoadedEvent(commentsContainer[0]) // Bind login/register links
-                self.init_new_comment(commentsContainer) // Bind new comment form submission
-                self.init_load_reply_form(commentsContainer) // Bind reply links for comments
-                self.init_update_reply_count(commentsContainer) // Update reply counter
-                self.init_load_more_comments(commentsContainer)
-            }
-        )
+        $(self.options.css_main_block_comments).each(function () {
+            // Iterate through comments divs (normally 1 per page)
+            const commentsContainer = $(this)
+            window.App.dispatchPageLoadedEvent(commentsContainer[0]) // Bind login/register links
+            self.init_new_comment(commentsContainer) // Bind new comment form submission
+            self.init_load_reply_form(commentsContainer) // Bind reply links for comments
+            self.init_update_reply_count(commentsContainer) // Update reply counter
+            self.init_load_more_comments(commentsContainer)
+        })
     }
 
     init_load_more_comments(comments) {
@@ -76,7 +74,7 @@ export default class CommentApp {
                 $.get(loadMore.data('url'), function (html) {
                     const $temp = $(html)
 
-                    $temp.each(function() {
+                    $temp.each(function () {
                         const item = $(this)
                         self.init_load_reply_form(item)
                         self.init_load_more_comments(item)
@@ -103,8 +101,8 @@ export default class CommentApp {
         comments
             .find(self.options.css_reply_link)
             .off('click')
-            .click(function () // For all reply links
-            {
+            .click(function () {
+                // For all reply links
                 const link = $(this)
 
                 link.data('original-html', link.html()).html(iconHtml(self.options.icon_spinner, 'icon-spin'))
@@ -116,11 +114,14 @@ export default class CommentApp {
                     self.init_reply_form(postAnswerContainer) // Bind new reply form submission
 
                     // Add cancel button handler
-                    postAnswerContainer.find('.cancel-reply').off('click').click(function() {
-                        postAnswerContainer.removeClass('is-visible')
-                        link.html(link.data('original-html'))
-                        return false
-                    })
+                    postAnswerContainer
+                        .find('.cancel-reply')
+                        .off('click')
+                        .click(function () {
+                            postAnswerContainer.removeClass('is-visible')
+                            link.html(link.data('original-html'))
+                            return false
+                        })
 
                     // Use CSS transition for smooth animation
                     link.html(link.data('original-html'))
@@ -180,9 +181,7 @@ export default class CommentApp {
                             }, 100)
 
                             // Hide reply form
-                            mainAnswerContainer
-                                .find(self.options.css_reply_form_container)
-                                .removeClass('is-visible')
+                            mainAnswerContainer.find(self.options.css_reply_form_container).removeClass('is-visible')
 
                             // Update reply count
                             self.update_reply_count(mainAnswerContainer, response.reply_count)
@@ -192,7 +191,7 @@ export default class CommentApp {
                             link.html(link.data('original-html'))
                         } else {
                             // Error - show toast notification
-                            self.showToast('error', 'Erreur lors de l\'envoi de la réponse')
+                            self.showToast('error', "Erreur lors de l'envoi de la réponse")
 
                             // Replace form content with error form
                             answerPostContainer.html(response.post)
@@ -202,12 +201,15 @@ export default class CommentApp {
                             self.init_reply_form(answerPostContainer)
 
                             // Re-bind cancel button
-                            answerPostContainer.find('.cancel-reply').off('click').click(function() {
-                                answerPostContainer.removeClass('is-visible')
-                                const link = mainAnswerContainer.find(self.options.css_reply_link)
-                                link.html(link.data('original-html'))
-                                return false
-                            })
+                            answerPostContainer
+                                .find('.cancel-reply')
+                                .off('click')
+                                .click(function () {
+                                    answerPostContainer.removeClass('is-visible')
+                                    const link = mainAnswerContainer.find(self.options.css_reply_link)
+                                    link.html(link.data('original-html'))
+                                    return false
+                                })
                         }
                     })
                     .fail(function () {
@@ -265,7 +267,9 @@ export default class CommentApp {
 
                                     // If no comments container exists yet (first comment), create one
                                     if (!commentsBodyContainer.length) {
-                                        commentsBodyContainer = $('<div class="card-body scrollable" style="max-height: 600px"></div>')
+                                        commentsBodyContainer = $(
+                                            '<div class="card-body scrollable" style="max-height: 600px"></div>'
+                                        )
                                         const chatDiv = $('<div class="chat"></div>')
                                         const chatBubblesDiv = $('<div class="chat-bubbles"></div>')
                                         chatDiv.append(chatBubblesDiv)
@@ -294,7 +298,7 @@ export default class CommentApp {
                                     }, 100)
                                 } else {
                                     // Error - show toast notification
-                                    self.showToast('error', 'Erreur lors de l\'envoi du commentaire')
+                                    self.showToast('error', "Erreur lors de l'envoi du commentaire")
 
                                     // Replace form content with error form
                                     postCommentContainer.html(response.post)

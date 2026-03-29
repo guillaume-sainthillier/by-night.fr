@@ -11,20 +11,19 @@ export default (di, container) => {
                 const datas = $(this).serialize()
                 const submitButton = $('#_submit')
                 submitButton.button('loading')
-                $
-                    .post(href, datas)
+                $.post(href, datas)
                     .done(function (data) {
-                    submitButton.button('reset')
+                        submitButton.button('reset')
 
-                    if (!data.success) {
-                        $dialog.modal('setSmallError', data.message)
-                    } else {
-                        $dialog.modal('hide')
-                        window.location.reload()
-                    }
-                })
+                        if (!data.success) {
+                            $dialog.modal('setSmallError', data.message)
+                        } else {
+                            $dialog.modal('hide')
+                            window.location.reload()
+                        }
+                    })
                     .fail(function (jqXHR) {
-                        if(jqXHR.status === 422) {
+                        if (jqXHR.status === 422) {
                             $dialog.html(jqXHR.responseText)
                             handleLogin($dialog) // don't add anything after this
                         }
