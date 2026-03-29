@@ -51,9 +51,9 @@ export default function EventScheduler({
         if (!collection) return
 
         const existingTimesheets = []
-        for (const item of findAll('.form-group', collection)) {
-            const startAtInput = item.querySelector('input[id*="startAt"]')
-            const endAtInput = item.querySelector('input[id*="endAt"]')
+        for (const item of findAll('.collection-item', collection)) {
+            const startAtInput = item.querySelector('input[id*="from"]')
+            const endAtInput = item.querySelector('input[id*="to"]')
 
             if (startAtInput?.value && endAtInput?.value) {
                 existingTimesheets.push({
@@ -144,8 +144,8 @@ export default function EventScheduler({
 
             for (const timesheet of timesheets) {
                 collectionManager.addElement(collection, {
-                    startAt: timesheet.startAt,
-                    endAt: timesheet.endAt,
+                    from: timesheet.startAt,
+                    to: timesheet.endAt,
                 })
             }
 
