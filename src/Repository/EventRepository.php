@@ -203,7 +203,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('e.id', Criteria::DESC);
 
         if ($q) {
-            $qb->andWhere('e.name LIKE :q')
+            $qb->andWhere('e.name LIKE :q OR e.placeName LIKE :q OR e.placeCity LIKE :q OR e.description LIKE :q')
                 ->setParameter('q', '%' . $q . '%');
         }
 
