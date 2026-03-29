@@ -38,7 +38,7 @@
         "typeahead-addresspicker": "^1.0.1"
     },
     "resolutions": {
-        "bootstrap": "5.3.7"
+        "bootstrap": "5.3.8"
     },
     "devDependencies": {
         "@babel/core": "^7.29.0",
