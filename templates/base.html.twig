@@ -129,9 +129,11 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- Main -->
     <div class="page-wrapper">
         {% block layout_top '' %}
-        <div class="page-body">
-            {% block body '' %}
-        </div>
+        {% block page_body %}
+            <div class="page-body">
+                {% block layout_body %}{% block body '' %}{% endblock %}
+            </div>
+        {% endblock %}
         <!-- Footer -->
         {{ include('fragments/footer.html.twig') }}
         <!-- ./Footer -->

@@ -16,7 +16,7 @@
     {% endif %}
 {% endblock %}
 
-{% block layout_body %}
+{% block body %}
     {% if location.slug in ['basse-terre', 'bordeaux', 'brest', 'caen', 'cayenne', 'dijon', 'fort-de-france', 'grenoble', 'lille', 'lyon', 'mamoudzou', 'marseille', 'montpellier', 'nantes', 'narbonne', 'nice', 'paris', 'perpignan', 'poitiers', 'reims', 'rennes', 'rouen', 'saint-denis', 'strasbourg', 'toulouse'] %}
         {% set locationUrl = asset('build/images/sites/' ~ location.slug ~ '.jpg') %}
     {% else %}

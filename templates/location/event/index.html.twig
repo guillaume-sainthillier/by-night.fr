@@ -54,7 +54,7 @@
     {{ event_json_ld(event) }}
 {% endblock %}
 
-{% block layout_body -%}
+{% block body -%}
     {% if event.draft %}
         <div class="alert alert-warning">
             <twig:Icon name="lucide:triangle-alert" />

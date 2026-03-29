@@ -5,12 +5,11 @@
     {% block layout_header '' %}
     <div class="page-header">
         <h1>{% block page_title block('title') %}</h1>
-        {% block title_after '' %}
     </div>
 {% endblock %}
 
-{% block body %}
+{% block layout_body %}
     <div class="{% block container_class 'container' %}" id="container">
-        {% block layout_body '' %}
+        {% block body '' %}
     </div>
 {% endblock %}

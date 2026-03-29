@@ -7,7 +7,7 @@
     {% do menu.addItem('Nouveau', url('app_event_new')) %}
 {%- endblock %}
 
-{% block layout_body -%}
+{% block body -%}
     <div class="mb-4 my-event">
         {% block body_form %}
             {{ form_start(form) }}
