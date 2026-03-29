@@ -4,7 +4,7 @@ import 'cookieconsent'
 
 global.$ = global.jQuery = window.$ = window.jQuery = $
 
-cookieconsent.initialise({
+window.cookieconsent.initialise({
     palette: {
         popup: {
             background: '#000',
