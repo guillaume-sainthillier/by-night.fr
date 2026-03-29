@@ -76,7 +76,8 @@
             {% endif %}
             <div class="text-center">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
-                    Voir tout l'agenda<span class="d-none d-md-inline"> des événements {{ location.atName }}</span>
+                    Voir tout l'agenda
+                    <span class="ms-1 d-none d-md-inline"> des événements {{ location.atName }}</span>
                 </a>
             </div>
         </div>
@@ -172,7 +173,7 @@
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_index', {location: location.slug}) }}" class="btn btn-outline-primary">
-                    Voir tout l'agenda<span class="d-none d-md-inline"> {{ location.atName }}</span>
+                    Voir tout l'agenda<span class="ms-1 d-none d-md-inline"> {{ location.atName }}</span>
                 </a>
             </div>
         </div>
