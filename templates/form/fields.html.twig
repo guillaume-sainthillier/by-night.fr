@@ -11,7 +11,7 @@
     {% set has_existing_image = download_uri is defined and download_uri %}
     {% set is_horizontal = layout is defined and layout == 'horizontal' %}
 
-    <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal'  }}">
+    <div class="vich-image-wrapper {{ is_horizontal and has_existing_image ? 'vich-image-horizontal' }}">
         {% if has_existing_image and image_thumb is not null %}
             <div class="vich-image-existing">
                 <a class="image-gallery" href="{{ download_uri }}">
