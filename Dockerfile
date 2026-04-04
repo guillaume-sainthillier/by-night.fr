@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.22-labs
+#syntax=docker/dockerfile:1.23-labs
 
 # Versions
 FROM dunglas/frankenphp:1.12-php8.5-alpine AS php_upstream
