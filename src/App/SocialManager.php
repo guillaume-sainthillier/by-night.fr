@@ -10,11 +10,12 @@
 
 namespace App\App;
 
+use App\Contracts\BatchResetInterface;
 use App\Entity\AppOAuth;
 use App\Repository\AppOAuthRepository;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-final class SocialManager
+final class SocialManager implements BatchResetInterface
 {
     private bool $_siteInfoInitialized = false;
 
@@ -57,5 +58,11 @@ final class SocialManager
     public function getTwitterIdPage(): string
     {
         return $this->twitterIdPage;
+    }
+
+    public function batchReset(): void
+    {
+        $this->_siteInfoInitialized = false;
+        $this->appOAuth = null;
     }
 }

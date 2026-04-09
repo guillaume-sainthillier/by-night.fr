@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use App\Contracts\BatchResetInterface;
 use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
@@ -17,7 +18,7 @@ use App\Repository\ParserDataRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-final class Firewall
+final class Firewall implements BatchResetInterface
 {
     public const string VERSION = '1.1';
 
@@ -294,5 +295,10 @@ final class Firewall
     {
         unset($this->parserDatas);
         $this->parserDatas = [];
+    }
+
+    public function batchReset(): void
+    {
+        $this->flushParserDatas();
     }
 }

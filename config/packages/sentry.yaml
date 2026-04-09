@@ -13,6 +13,8 @@ when@prod:
         # https://docs.sentry.io/platforms/php/guides/symfony/integrations/monolog/
         register_error_listener: false
         register_error_handler: false
+        messenger:
+            isolate_context_by_message: true
 
     monolog:
         handlers:

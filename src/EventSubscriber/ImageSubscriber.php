@@ -10,6 +10,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Contracts\BatchResetInterface;
 use App\Entity\User;
 use App\Message\PurgeCdnCacheUrl;
 use App\Message\RemoveImageThumbnails;
@@ -21,7 +22,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
-final class ImageSubscriber implements EventSubscriberInterface
+final class ImageSubscriber implements EventSubscriberInterface, BatchResetInterface
 {
     private array $paths = [];
 
@@ -92,6 +93,11 @@ final class ImageSubscriber implements EventSubscriberInterface
         }
 
         unset($this->paths);
+        $this->paths = [];
+    }
+
+    public function batchReset(): void
+    {
         $this->paths = [];
     }
 

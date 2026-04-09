@@ -10,13 +10,14 @@
 
 namespace App\Doctrine\EventSubscriber;
 
+use App\Contracts\BatchResetInterface;
 use App\Entity\Event;
 use App\Handler\EventHandler;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Events;
 
 #[AsDoctrineListener(event: Events::preFlush)]
-final class EventImageUploadSubscriber
+final class EventImageUploadSubscriber implements BatchResetInterface
 {
     /** @var Event[] */
     private array $eventsToHandle = [];
@@ -49,6 +50,11 @@ final class EventImageUploadSubscriber
         $this->eventHandler->handleDownloads($this->eventsToHandle);
 
         unset($this->eventsToHandle); // Calls GC
+        $this->eventsToHandle = [];
+    }
+
+    public function batchReset(): void
+    {
         $this->eventsToHandle = [];
     }
 }

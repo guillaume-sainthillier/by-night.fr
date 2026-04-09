@@ -12,8 +12,9 @@ namespace App\Manager;
 
 use App\Contracts\BatchResetInterface;
 use Symfony\Component\VarExporter\LazyObjectInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-final readonly class BatchResetManager
+final readonly class BatchResetManager implements ResetInterface
 {
     /**
      * @param iterable<string, BatchResetInterface> $batchResets
@@ -21,6 +22,11 @@ final readonly class BatchResetManager
     public function __construct(
         private iterable $batchResets,
     ) {
+    }
+
+    public function reset(): void
+    {
+        $this->resetServices();
     }
 
     public function resetServices(): void

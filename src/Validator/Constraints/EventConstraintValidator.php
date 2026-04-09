@@ -10,13 +10,14 @@
 
 namespace App\Validator\Constraints;
 
+use App\Contracts\BatchResetInterface;
 use App\Dto\EventDto;
 use App\Reject\Reject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-final class EventConstraintValidator extends ConstraintValidator
+final class EventConstraintValidator extends ConstraintValidator implements BatchResetInterface
 {
     private bool $checkIfUpdate = false;
 
@@ -113,5 +114,10 @@ final class EventConstraintValidator extends ConstraintValidator
         if (0 === \count($this->context->getViolations())) {
             $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé. Code d'erreur : " . $reject->getReason())->addViolation();
         }
+    }
+
+    public function batchReset(): void
+    {
+        $this->checkIfUpdate = false;
     }
 }
