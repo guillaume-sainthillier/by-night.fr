@@ -15,6 +15,7 @@ RUN IPE_GD_WITHOUTAVIF=1 \
         apcu \
         bcmath \
         exif \
+        gd \
         intl \
         imagick \
         opcache \
