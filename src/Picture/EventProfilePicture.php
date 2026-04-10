@@ -12,7 +12,6 @@ namespace App\Picture;
 
 use App\Dto\EventDto;
 use App\Entity\Event;
-use App\Helper\AssetHelper;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\DataTourismeParser;
@@ -29,7 +28,6 @@ final readonly class EventProfilePicture
     public function __construct(
         private UploaderHelper $helper,
         private Packages $packages,
-        private AssetHelper $assetHelper,
     ) {
     }
 
@@ -48,23 +46,6 @@ final readonly class EventProfilePicture
         }
 
         return $this->packages->getUrl($path);
-    }
-
-    public function getPicture(Event|EventDto $event, array $params = []): string
-    {
-        [
-            'path' => $path,
-            'source' => $source,
-        ] = $this->getPicturePathAndSource($event);
-
-        if ('upload' === $source) {
-            return $this->assetHelper->getThumbS3Url($path, $params);
-        }
-
-        return $this->assetHelper->getThumbAssetUrl(
-            $path,
-            $params
-        );
     }
 
     public function getPicturePathAndSource(Event|EventDto $event): array

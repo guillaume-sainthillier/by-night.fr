@@ -11,7 +11,7 @@
 namespace App\Picture;
 
 use App\Entity\User;
-use App\Helper\AssetHelper;
+use Silarhi\PicassoBundle\Service\ImageHelperInterface;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -20,7 +20,7 @@ final readonly class UserProfilePicture
     public function __construct(
         private UploaderHelper $helper,
         private Packages $packages,
-        private AssetHelper $assetHelper,
+        private ImageHelperInterface $imageHelper,
     ) {
     }
 
@@ -45,30 +45,26 @@ final readonly class UserProfilePicture
         return $path;
     }
 
-    public function getProfilePicture(User $user, array $params = []): ?string
+    public function getProfilePicture(User $user, ?int $width = null, ?int $height = null, ?string $fit = null, ?int $dpr = null): ?string
     {
-        [
-            'path' => $path,
-            'source' => $source,
-        ] = $this->getPicturePathAndSource($user);
+        $data = $this->getPicturePathAndSource($user);
 
-        if ('upload' === $source) {
-            return $this->assetHelper->getThumbS3Url($path, $params);
+        if (null === $data['loader']) {
+            // External URL (OAuth provider)
+            return $data['path'];
         }
 
-        if ('local' === $source) {
-            return $this->assetHelper->getThumbAssetUrl($path, $params);
-        }
-
-        // dist
-        return $path;
-    }
-
-    public function getDefaultProfilePicture(array $params = []): string
-    {
-        return $this->assetHelper->getThumbAssetUrl(
-            $this->packages->getUrl('build/images/empty_user.png', 'local'),
-            $params
+        return $this->imageHelper->imageUrl(
+            $data['path'],
+            width: $width,
+            height: $height,
+            fit: $fit,
+            dpr: $dpr,
+            loader: $data['loader'],
+            context: [
+                'entity' => $data['entity'],
+                'field' => $data['field'],
+            ],
         );
     }
 

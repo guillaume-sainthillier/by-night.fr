@@ -45,7 +45,6 @@ services:
             - '../src/File'
             - '../src/Kernel.php'
             - '../src/Migrations'
-            - '../src/Glide'
             - '../src/Reject'
             - '../src/Search'
 
@@ -116,24 +115,6 @@ services:
 
     Monolog\Processor\PsrLogMessageProcessor:
         tags: { name: monolog.processor, handler: sentry }
-
-    app.s3_thumb_server:
-        class: League\Glide\Server
-        # call the static method
-        factory: ['App\Glide\ServerFactory', create]
-        arguments:
-            - source: '@s3.storage.reader'
-              cache: '@thumbs.storage'
-              driver: 'imagick'
-
-    app.asset_thumb_server:
-        class: League\Glide\Server
-        # call the static method
-        factory: ['App\Glide\ServerFactory', create]
-        arguments:
-            - source: '@assets.storage.reader'
-              cache: '@thumbs.storage'
-              driver: 'imagick'
 
     FOS\ElasticaBundle\Persister\AsyncPagerPersister: '@fos_elastica.async_pager_persister'
     FOS\ElasticaBundle\Persister\PersisterRegistry: '@fos_elastica.persister_registry'

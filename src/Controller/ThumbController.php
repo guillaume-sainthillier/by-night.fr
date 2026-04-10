@@ -10,84 +10,33 @@
 
 namespace App\Controller;
 
-use InvalidArgumentException;
-use League\Glide\Filesystem\FileNotFoundException;
-use League\Glide\Responses\SymfonyResponseFactory;
-use League\Glide\Server;
-use League\Glide\Signatures\SignatureException;
-use League\Glide\Signatures\SignatureFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Legacy thumb controller – redirects old /thumb/ and /thumb-asset/ URLs
+ * to original images. Image transformation is now handled by picasso-bundle.
+ */
 final class ThumbController extends Controller
 {
-    public function __construct(
-        #[Autowire(param: 'kernel.secret')]
-        private readonly string $secret,
-        private readonly Packages $packages,
-    ) {
-    }
-
     #[Route(path: '/thumb/{path<%patterns.path%>}', name: 'thumb_s3_url', methods: ['GET'])]
-    #[Cache(maxage: 31_536_000, smaxage: 31_536_000)]
-    public function thumbS3(
-        Request $request,
-        #[Autowire(service: 'app.s3_thumb_server')]
-        Server $s3ThumbServer,
-        string $path,
-    ): Response {
-        return $this->serveFile(
-            $s3ThumbServer,
-            $request,
-            $path,
-            'aws'
+    public function thumbS3(Packages $packages, string $path): Response
+    {
+        return new RedirectResponse(
+            $packages->getUrl($path, 'aws'),
+            Response::HTTP_MOVED_PERMANENTLY,
         );
     }
 
     #[Route(path: '/thumb-asset/{path<%patterns.path%>}', name: 'thumb_asset_url', methods: ['GET'])]
-    #[Cache(maxage: 31_536_000, smaxage: 31_536_000)]
-    public function thumbAsset(
-        Request $request,
-        #[Autowire(service: 'app.asset_thumb_server')]
-        Server $assetThumbServer,
-        string $path,
-    ): Response {
-        return $this->serveFile(
-            $assetThumbServer,
-            $request,
-            $path,
-            'local'
-        );
-    }
-
-    private function serveFile(Server $server, Request $request, string $path, string $packageName): Response
+    public function thumbAsset(Packages $packages, string $path): Response
     {
-        $parameters = $request->query->all();
-        if (empty($parameters['h']) && empty($parameters['w']) && empty($parameters['p'])) {
-            return new RedirectResponse($this->packages->getUrl($path, $packageName), Response::HTTP_MOVED_PERMANENTLY);
-        }
-
-        try {
-            // No signature validation if no parameters
-            // added to generate URL without parameters that not produce 404, useful especially for sitemap
-            SignatureFactory::create($this->secret)->validateRequest($path, $parameters);
-        } catch (SignatureException $signatureException) {
-            throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
-        }
-
-        $server->setResponseFactory(new SymfonyResponseFactory($request));
-        try {
-            $response = $server->getImageResponse($path, $parameters);
-        } catch (InvalidArgumentException|FileNotFoundException $signatureException) {
-            throw $this->createNotFoundException($signatureException->getMessage(), $signatureException);
-        }
-
-        return $response;
+        return new RedirectResponse(
+            $packages->getUrl($path, 'local'),
+            Response::HTTP_MOVED_PERMANENTLY,
+        );
     }
 }

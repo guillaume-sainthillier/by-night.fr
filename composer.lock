@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "658009e1e90473a55a28d3bd1c6dbf56",
+    "content-hash": "06047445d1e5da5287185406a4f0a268",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5607,7 +5607,7 @@
         },
         {
             "name": "silarhi/picasso-bundle",
-            "version": "dev-main",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/picasso-bundle.git",
@@ -5655,7 +5655,6 @@
                 "symfony/http-client": "Provides a PSR-18 HTTP client implementation for the URL loader",
                 "vich/uploader-bundle": "Required for the VichUploader loader"
             },
-            "default-branch": true,
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
@@ -5669,7 +5668,7 @@
             "description": "Responsive image component for Symfony, inspired by next/image",
             "support": {
                 "issues": "https://github.com/silarhi/picasso-bundle/issues",
-                "source": "https://github.com/silarhi/picasso-bundle/tree/main"
+                "source": "https://github.com/silarhi/picasso-bundle/tree/v1.1.0"
             },
             "time": "2026-04-18T05:14:31+00:00"
         },
@@ -16775,9 +16774,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "silarhi/picasso-bundle": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
