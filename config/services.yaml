@@ -88,10 +88,12 @@ services:
         class: Aws\S3\S3Client
         arguments:
             - version: '2006-03-01'
-              region: '%env(AWS_S3_REGION)%'
+              endpoint: '%env(S3_ENDPOINT)%'
+              region: '%env(S3_REGION)%'
+              use_path_style_endpoint: true
               credentials:
-                  key: '%env(AWS_S3_KEY)%'
-                  secret: '%env(AWS_S3_SECRET)%'
+                  key: '%env(S3_KEY)%'
+                  secret: '%env(S3_SECRET)%'
 
     s3_thumb_client:
         class: Aws\S3\S3Client
@@ -99,17 +101,10 @@ services:
             - version: '2006-03-01'
               endpoint: '%env(APP_THUMB_S3_ENDPOINT)%'
               region: '%env(APP_THUMB_S3_REGION)%'
+              use_path_style_endpoint: true
               credentials:
                   key: '%env(APP_THUMB_S3_KEY)%'
                   secret: '%env(APP_THUMB_S3_SECRET)%'
-
-    Aws\CloudFront\CloudFrontClient:
-        arguments:
-            - version: '2018-06-18'
-              region: '%env(AWS_S3_REGION)%'
-              credentials:
-                  key: '%env(AWS_S3_KEY)%'
-                  secret: '%env(AWS_S3_SECRET)%'
 
     # Store session in redis
     Redis:
