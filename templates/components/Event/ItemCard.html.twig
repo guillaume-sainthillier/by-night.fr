@@ -1,8 +1,7 @@
 {# @var event \App\Entity\Event #}
-{# @var cardLayout string #}
-{% props event, cardLayout = '' %}
+{% props event %}
 
-<div class="card card-event card-layout {{ cardLayout }} scroll-item">
+<div class="card card-event card-layout scroll-item">
     {% if event.status or event.statusMessage %}
         <twig:Event:StatusAlert event="{{ event }}" />
     {% endif %}

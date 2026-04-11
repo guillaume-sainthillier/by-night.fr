@@ -1,11 +1,5 @@
 {% if events.nbResults > 0 %}
-    <div class="row row-cards row-deck">
-        {% for i, event in events %}
-            <div class="col-sm-6 col-lg-4">
-                <twig:Event:ItemCard event="{{ event }}" cardLayout="card-layout-vertical" />
-            </div>
-        {% endfor %}
-    </div>
+    <twig:Event:ListGridVertical events="{{ events }}" stretched="{{ true }}" />
 
     {% if events.hasNextPage() %}
         <div class="text-center my-4">

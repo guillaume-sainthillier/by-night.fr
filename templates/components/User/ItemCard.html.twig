@@ -1,8 +1,7 @@
 {# @var user \App\Entity\User #}
-{# @var cardLayout string #}
-{% props user, cardLayout = '' %}
+{% props user %}
 
-<div class="card card-user card-layout {{ cardLayout }}">
+<div class="card card-user card-layout">
     <div class="card-img-container">
         <div class="image-container">
             <twig:User:Thumb user="{{ user }}" width="{{ 360 }}" />

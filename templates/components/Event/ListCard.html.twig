@@ -1,9 +1,0 @@
-{# @var events iterable<\App\Entity\Event> #}
-{# @var cardLayout string #}
-{% props events, cardLayout = '' %}
-
-{% for i, event in events %}
-    {% if event.slug %}
-        <twig:Event:ItemCard event="{{ event }}" cardLayout="{{ cardLayout }}" />
-    {% endif %}
-{% endfor %}

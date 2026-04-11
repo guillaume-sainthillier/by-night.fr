@@ -1,10 +1,10 @@
 {# @var events iterable<\App\Entity\Event> #}
-{% props events %}
+{% props events, stretched = false %}
 
 <div class="row row-cards row-deck">
     {% for i, event in events %}
-        <div class="col-sm-6 col-lg-4 col-xl-3">
-            <twig:Event:ItemCard event="{{ event }}" cardLayout="card-layout-vertical" />
+        <div class="col-sm-6 col-lg-4{{ stretched ? '' : ' col-xl-3' }}">
+            <twig:Event:ItemCard event="{{ event }}" />
         </div>
     {% endfor %}
 </div>
