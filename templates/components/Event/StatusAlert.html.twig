@@ -1,5 +1,5 @@
-{# @var App\Entity\Event event #}
-{# @var string|null prefix #}
+{# @var event \App\Entity\Event #}
+{# @var prefix string|null #}
 {% props event, prefix = null %}
 {% if event.status or event.statusMessage %}
     {% set statusIcon = 'lucide:triangle-alert' %}
