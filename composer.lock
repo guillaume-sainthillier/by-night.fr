@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f3c5b059739d485351fdce1dfbddfac",
+    "content-hash": "825d1edc3cd573c063cba6fdc65f5a53",
     "packages": [
         {
             "name": "api-platform/core",
@@ -3234,16 +3234,16 @@
         },
         {
             "name": "league/flysystem-bundle",
-            "version": "3.6.2",
+            "version": "3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-bundle.git",
-                "reference": "123ab96910177751faf3b6cc85eecc360ec12a1f"
+                "reference": "5eb41be38fc3759f74c9e458a6a5f0ef5f49284a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-bundle/zipball/123ab96910177751faf3b6cc85eecc360ec12a1f",
-                "reference": "123ab96910177751faf3b6cc85eecc360ec12a1f",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-bundle/zipball/5eb41be38fc3759f74c9e458a6a5f0ef5f49284a",
+                "reference": "5eb41be38fc3759f74c9e458a6a5f0ef5f49284a",
                 "shasum": ""
             },
             "require": {
@@ -3298,9 +3298,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem-bundle/issues",
-                "source": "https://github.com/thephpleague/flysystem-bundle/tree/3.6.2"
+                "source": "https://github.com/thephpleague/flysystem-bundle/tree/3.7.0"
             },
-            "time": "2026-02-05T15:26:57+00:00"
+            "time": "2026-03-28T22:14:56+00:00"
         },
         {
             "name": "league/flysystem-local",
