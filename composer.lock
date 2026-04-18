@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "825d1edc3cd573c063cba6fdc65f5a53",
+    "content-hash": "dc1180ad824a94c25b1e825c86cf5f3b",
     "packages": [
         {
             "name": "api-platform/core",
@@ -8726,7 +8726,7 @@
         },
         {
             "name": "symfony/polyfill-apcu",
-            "version": "v1.34.0",
+            "version": "v1.36.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-apcu.git",
@@ -8780,7 +8780,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-apcu/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-apcu/tree/v1.36.0"
             },
             "funding": [
                 {
