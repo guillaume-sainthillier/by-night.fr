@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of By Night.
  * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>

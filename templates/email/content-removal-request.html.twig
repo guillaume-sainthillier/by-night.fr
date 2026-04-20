@@ -1,36 +1,71 @@
 <h1>Demande de suppression de contenu</h1>
 
 <p>
-    <strong>De :</strong> {{ requesterEmail }}<br>
-    <strong>Date :</strong> {{ 'now'|date('d/m/Y H:i') }}
+    <strong>De :</strong> {{ contentRemovalRequest.email }}<br>
+    <strong>Date :</strong> {{ contentRemovalRequest.createdAt|date('d/m/Y H:i') }}
 </p>
 
 <h2>Type de contenu :</h2>
-<p>{{ removalType.label }}</p>
+<p>{{ contentRemovalRequest.type.label }}</p>
 
-<h2>Événement concerné :</h2>
-<p>
-    <strong>Nom :</strong> {{ event.name }}<br>
-    <strong>ID :</strong> {{ event.id }}<br>
-    {% if event.place %}
-        <strong>Lieu :</strong> {{ event.place.name }}<br>
-    {% endif %}
-    {% if event.startDate %}
-        <strong>Date :</strong> {{ event.startDate|date('d/m/Y') }}{% if event.endDate and event.endDate != event.startDate %} - {{ event.endDate|date('d/m/Y') }}{% endif %}<br>
-    {% endif %}
-    {% if event.externalOrigin %}
-        <strong>Source :</strong> {{ event.externalOrigin }}<br>
-    {% endif %}
-</p>
+<h2>{{ contentRemovalRequest.events|length > 1 ? 'Événements concernés' : 'Événement concerné' }} :</h2>
+{% for event in contentRemovalRequest.events %}
+    <p>
+        <strong>Nom :</strong> {{ event.name }}<br>
+        <strong>ID :</strong> {{ event.id }}<br>
+        {% if event.place %}
+            <strong>Lieu :</strong> {{ event.place.name }}<br>
+        {% endif %}
+        {% if event.startDate %}
+            <strong>Date :</strong> {{ event.startDate|date('d/m/Y') }}{% if event.endDate and event.endDate != event.startDate %} - {{ event.endDate|date('d/m/Y') }}{% endif %}<br>
+        {% endif %}
+        {% if event.externalOrigin %}
+            <strong>Source :</strong> {{ event.externalOrigin }}<br>
+        {% endif %}
+    </p>
+{% endfor %}
 
-{% if eventUrls|length > 0 %}
+{% if contentRemovalRequest.eventUrls|default([])|length > 0 %}
     <h2>URLs de l'événement :</h2>
     <ul>
-        {% for url in eventUrls %}
+        {% for url in contentRemovalRequest.eventUrls %}
             <li><a href="{{ url }}">{{ url }}</a></li>
         {% endfor %}
     </ul>
 {% endif %}
 
 <h2>Message :</h2>
-<p>{{ message|nl2br }}</p>
+<p>{{ contentRemovalRequest.message|nl2br }}</p>
+
+<hr>
+
+<h2>Actions rapides :</h2>
+<table cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        {% if removeEventsUrl is defined %}
+            <td style="padding: 4px;">
+                <a href="{{ removeEventsUrl }}" style="display: inline-block; padding: 10px 20px; background-color: #d63939; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                    Supprimer {{ contentRemovalRequest.events|length > 1 ? 'les événements' : "l'événement" }}
+                </a>
+            </td>
+        {% endif %}
+        {% if removeImagesUrl is defined %}
+            <td style="padding: 4px;">
+                <a href="{{ removeImagesUrl }}" style="display: inline-block; padding: 10px 20px; background-color: #f76707; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                    Supprimer {{ contentRemovalRequest.events|length > 1 ? 'les images' : "l'image" }}
+                </a>
+            </td>
+        {% endif %}
+        <td style="padding: 4px;">
+            <a href="{{ markProcessedUrl }}" style="display: inline-block; padding: 10px 20px; background-color: #2fb344; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                Marquer traité
+            </a>
+        </td>
+        <td style="padding: 4px;">
+            <a href="{{ rejectUrl }}" style="display: inline-block; padding: 10px 20px; background-color: #667382; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                Rejeter
+            </a>
+        </td>
+    </tr>
+</table>
+<p><small>Ces liens expirent dans 7 jours et nécessitent une connexion administrateur.</small></p>

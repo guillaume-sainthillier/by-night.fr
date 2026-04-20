@@ -298,7 +298,8 @@ final class ContentRemovalRequestTest extends ApiTestCase
         self::assertSame(ContentRemovalType::Event, $request->getType());
         self::assertSame('This is a test message for persistence.', $request->getMessage());
         self::assertSame(['https://example.com/event'], $request->getEventUrls());
-        self::assertSame($event->getId(), $request->getEvent()->getId());
+        self::assertCount(1, $request->getEvents());
+        self::assertSame($event->getId(), $request->getEvents()->first()->getId());
         self::assertSame(ContentRemovalRequestStatus::Pending, $request->getStatus());
         self::assertNull($request->getProcessedAt());
         self::assertNull($request->getProcessedBy());

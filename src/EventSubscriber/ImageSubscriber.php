@@ -24,7 +24,11 @@ use Vich\UploaderBundle\Event\Events;
 
 final class ImageSubscriber implements EventSubscriberInterface, BatchResetInterface
 {
+    /** @var string[] */
     private array $paths = [];
+
+    /** @var string[] */
+    private array $imageCachePaths = [];
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -78,12 +82,15 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
 
         $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
         $this->paths[] = $path;
+
+        $imageCachePath = $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
+        $this->imageCachePaths[] = $imageCachePath;
     }
 
     public function onImageDeleted(): void
     {
         // Schedule thumbnails delete
-        foreach ($this->paths as $path) {
+        foreach ($this->imageCachePaths as $path) {
             $this->messageBus->dispatch(new RemoveImageThumbnails($path));
         }
 
@@ -92,13 +99,14 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
             $this->messageBus->dispatch(new PurgeCdnCacheUrl($path));
         }
 
-        unset($this->paths);
         $this->paths = [];
+        $this->imageCachePaths = [];
     }
 
     public function batchReset(): void
     {
         $this->paths = [];
+        $this->imageCachePaths = [];
     }
 
     private function getImageMetadata(File $file): array

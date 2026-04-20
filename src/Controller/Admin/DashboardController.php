@@ -112,11 +112,6 @@ final class DashboardController extends AbstractDashboardController
         // user menu with some menu items already created ("sign out", "exit impersonation", etc.)
         // if you prefer to create the user menu from scratch, use: return UserMenu::new()->...
         return parent::configureUserMenu($user)
-            ->setAvatarUrl($this->userProfilePicture->getProfilePicture($user, [
-                'w' => 21,
-                'h' => 21,
-                'fit' => 'crop',
-                'dpr' => 2,
-            ]));
+            ->setAvatarUrl($this->userProfilePicture->getProfilePicture($user, width: 21, height: 21, fit: 'crop', dpr: 2));
     }
 }

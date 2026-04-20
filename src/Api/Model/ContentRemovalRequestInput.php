@@ -34,6 +34,15 @@ final readonly class ContentRemovalRequestInput
             new Assert\Url(message: 'Veuillez entrer une URL valide', requireTld: true),
         ])]
         public array $eventUrls = [],
+
+        /**
+         * @var int[] $additionalEventIds
+         */
+        #[Assert\All([
+            new Assert\Type('integer'),
+            new Assert\Positive(),
+        ])]
+        public array $additionalEventIds = [],
     ) {
     }
 }

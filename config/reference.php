@@ -1,6 +1,12 @@
 <?php
 
-// This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
+/*
+ * This file is part of By Night.
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
@@ -1741,6 +1747,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         traces_sampler?: scalar|Param|null,
  *         profiles_sample_rate?: float|Param, // The sampling factor to apply to profiles. A value of 0 will deny sending any profiles, and a value of 1 will send all profiles. Profiles are sampled in relation to traces_sample_rate
  *         enable_logs?: bool|Param,
+ *         log_flush_threshold?: mixed, // Default: null
  *         enable_metrics?: bool|Param, // Default: true
  *         attach_stacktrace?: bool|Param,
  *         attach_metric_code_locations?: bool|Param,
@@ -1750,6 +1757,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         spotlight?: bool|Param,
  *         spotlight_url?: scalar|Param|null,
  *         release?: scalar|Param|null, // Default: "%env(default::SENTRY_RELEASE)%"
+ *         org_id?: int|Param,
  *         server_name?: scalar|Param|null,
  *         ignore_exceptions?: list<scalar|Param|null>,
  *         ignore_transactions?: list<scalar|Param|null>,
@@ -1760,6 +1768,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         before_send_log?: scalar|Param|null,
  *         before_send_metric?: scalar|Param|null,
  *         trace_propagation_targets?: mixed,
+ *         strict_trace_continuation?: bool|Param,
  *         tags?: array<string, scalar|Param|null>,
  *         error_types?: scalar|Param|null,
  *         max_breadcrumbs?: int|Param,
@@ -1784,11 +1793,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         enabled?: bool|Param, // Default: true
  *         capture_soft_fails?: bool|Param, // Default: true
  *         isolate_breadcrumbs_by_message?: bool|Param, // Default: false
+ *         isolate_context_by_message?: bool|Param, // Default: false
  *     },
  *     tracing?: bool|array{
  *         enabled?: bool|Param, // Default: true
  *         dbal?: bool|array{
  *             enabled?: bool|Param, // Default: true
+ *             ignore_prepare_spans?: bool|Param, // Default: false
  *             connections?: list<scalar|Param|null>,
  *         },
  *         twig?: bool|array{
@@ -1807,18 +1818,134 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type FlysystemConfig = array{
  *     storages?: array<string, array{ // Default: []
- *         adapter: scalar|Param|null,
+ *         adapter?: scalar|Param|null, // DEPRECATED: Use the new config format instead (e.g. "local:" instead of "adapter: local")
  *         options?: list<mixed>,
- *         visibility?: scalar|Param|null, // Default: null
- *         directory_visibility?: scalar|Param|null, // Default: null
- *         retain_visibility?: bool|Param|null, // Default: null
- *         case_sensitive?: bool|Param, // Default: true
- *         disable_asserts?: bool|Param, // Default: false
+ *         asyncaws?: array{
+ *             client?: scalar|Param|null, // The AsyncAws S3 client service name
+ *             bucket?: scalar|Param|null, // The name of the AWS S3 bucket
+ *             prefix?: scalar|Param|null, // Optional path prefix to prepend to all object keys // Default: ""
+ *         },
+ *         aws?: array{
+ *             client?: scalar|Param|null, // The AWS S3 client service name
+ *             bucket?: scalar|Param|null, // The name of the AWS S3 bucket
+ *             prefix?: scalar|Param|null, // Optional path prefix to prepend to all object keys // Default: ""
+ *             options?: list<mixed>,
+ *             streamReads?: bool|Param, // Whether to use streaming for file reads // Default: true
+ *         },
+ *         azure?: array{
+ *             client?: scalar|Param|null, // The Azure Blob Storage client service name
+ *             container?: scalar|Param|null, // The name of the Azure Blob Storage container
+ *             prefix?: scalar|Param|null, // Optional path prefix to prepend to all blob names // Default: ""
+ *         },
+ *         ftp?: array{
+ *             host?: scalar|Param|null, // FTP host
+ *             username?: scalar|Param|null, // FTP username
+ *             password?: scalar|Param|null, // FTP password
+ *             port?: int|Param, // FTP port number // Default: 21
+ *             root?: scalar|Param|null, // FTP root directory // Default: ""
+ *             passive?: bool|Param, // Use passive mode // Default: true
+ *             ssl?: bool|Param, // Use SSL/TLS encryption // Default: false
+ *             timeout?: int|Param, // Connection timeout in seconds // Default: 90
+ *             ignore_passive_address?: scalar|Param|null, // Ignore passive address // Default: null
+ *             utf8?: bool|Param, // Enable UTF8 mode // Default: false
+ *             transfer_mode?: scalar|Param|null, // Transfer mode (FTP_ASCII or FTP_BINARY constante on ftp extension) // Default: null
+ *             system_type?: null|"windows"|"unix"|Param, // FTP system type // Default: null
+ *             timestamps_on_unix_listings_enabled?: bool|Param, // Enable timestamps on Unix listings // Default: false
+ *             recurse_manually?: bool|Param, // Recurse directories manually // Default: true
+ *             use_raw_list_options?: bool|Param|null, // Use raw list options // Default: null
+ *             connectivityChecker?: scalar|Param|null, // Connectivity checker service name // Default: null
+ *             permissions?: array{ // Unix permissions configuration for files and directories
+ *                 file?: array{ // File permissions
+ *                     public?: int|Param, // Public file permissions // Default: 420
+ *                     private?: int|Param, // Private file permissions // Default: 384
+ *                 },
+ *                 dir?: array{ // Directory permissions
+ *                     public?: int|Param, // Public directory permissions // Default: 493
+ *                     private?: int|Param, // Private directory permissions // Default: 448
+ *                 },
+ *             },
+ *         },
+ *         gcloud?: array{
+ *             client?: scalar|Param|null, // The Google Cloud Storage client service name
+ *             bucket?: scalar|Param|null, // The name of the Google Cloud Storage bucket
+ *             prefix?: scalar|Param|null, // Optional path prefix to prepend to all object keys // Default: ""
+ *             visibility_handler?: scalar|Param|null, // Optional visibility handler service name // Default: null
+ *             streamReads?: bool|Param, // Whether to use streaming for file reads // Default: false
+ *         },
+ *         gridfs?: array{
+ *             bucket?: scalar|Param|null, // GridFS bucket service name (if using an existing bucket service) // Default: null
+ *             prefix?: scalar|Param|null, // Optional path prefix to prepend to all file names // Default: ""
+ *             database?: scalar|Param|null, // MongoDB database name // Default: null
+ *             doctrine_connection?: scalar|Param|null, // Doctrine MongoDB connection name (mutually exclusive with mongodb_uri)
+ *             mongodb_uri?: scalar|Param|null, // MongoDB connection URI (mutually exclusive with doctrine_connection)
+ *             mongodb_uri_options?: list<mixed>,
+ *             mongodb_driver_options?: list<mixed>,
+ *         },
+ *         lazy?: array{ // Lazy adapter for runtime storage selection
+ *             source?: scalar|Param|null, // The service name of the storage to use at runtime
+ *         },
+ *         local?: array{
+ *             directory?: scalar|Param|null, // Directory path for local storage
+ *             lock?: int|Param, // Lock flags for file operations // Default: 0
+ *             skip_links?: bool|Param, // Whether to skip symbolic links // Default: false
+ *             lazy_root_creation?: bool|Param, // Whether to create the root directory lazily // Default: false
+ *             permissions?: array{ // Unix permissions configuration for files and directories
+ *                 file?: array{ // File permissions
+ *                     public?: int|Param, // Public file permissions // Default: 420
+ *                     private?: int|Param, // Private file permissions // Default: 384
+ *                 },
+ *                 dir?: array{ // Directory permissions
+ *                     public?: int|Param, // Public directory permissions // Default: 493
+ *                     private?: int|Param, // Private directory permissions // Default: 448
+ *                 },
+ *             },
+ *         },
+ *         memory?: array<mixed>,
+ *         sftp?: array{
+ *             host?: scalar|Param|null, // SFTP host
+ *             username?: scalar|Param|null, // SFTP username
+ *             password?: scalar|Param|null, // SFTP password (optional if using private key) // Default: null
+ *             privateKey?: scalar|Param|null, // Path to private key file or private key content // Default: null
+ *             passphrase?: scalar|Param|null, // Private key passphrase // Default: null
+ *             port?: int|Param, // SFTP port number // Default: 22
+ *             timeout?: int|Param, // Connection timeout in seconds // Default: 90
+ *             hostFingerprint?: scalar|Param|null, // Host fingerprint for verification // Default: null
+ *             connectivityChecker?: scalar|Param|null, // Connectivity checker service name // Default: null
+ *             preferredAlgorithms?: list<mixed>,
+ *             root?: scalar|Param|null, // SFTP root directory // Default: ""
+ *             permissions?: array{ // Unix permissions configuration for files and directories
+ *                 file?: array{ // File permissions
+ *                     public?: int|Param, // Public file permissions // Default: 420
+ *                     private?: int|Param, // Private file permissions // Default: 384
+ *                 },
+ *                 dir?: array{ // Directory permissions
+ *                     public?: int|Param, // Public directory permissions // Default: 493
+ *                     private?: int|Param, // Private directory permissions // Default: 448
+ *                 },
+ *             },
+ *         },
+ *         webdav?: array{
+ *             client?: scalar|Param|null, // The WebDAV client service name
+ *             prefix?: scalar|Param|null, // Optional path prefix to prepend to all paths // Default: ""
+ *             visibility_handling?: "throw"|"ignore"|Param, // How to handle visibility operations // Default: "throw"
+ *             manual_copy?: bool|Param, // Whether to handle copy operations manually // Default: false
+ *             manual_move?: bool|Param, // Whether to handle move operations manually // Default: false
+ *         },
+ *         bunnycdn?: array{
+ *             client?: scalar|Param|null, // The BunnyCDN client service name
+ *             pull_zone?: scalar|Param|null, // The BunnyCDN pull zone name // Default: ""
+ *         },
+ *         service?: scalar|Param|null, // Reference to a custom adapter service (alternative to registered adapter types)
+ *         visibility?: scalar|Param|null, // Default visibility for files // Default: null
+ *         directory_visibility?: scalar|Param|null, // Default visibility for directories // Default: null
+ *         retain_visibility?: scalar|Param|null, // Keeps the original file visibility (public/private) when copying or moving. // Default: null
+ *         case_sensitive?: bool|Param, // Deprecated: The "case_sensitive" option is deprecated and will be removed in 4.0. // Default: true
+ *         disable_asserts?: bool|Param, // Deprecated: The "disable_asserts" option is deprecated and will be removed in 4.0. // Default: false
  *         public_url?: list<scalar|Param|null>,
- *         path_normalizer?: scalar|Param|null, // Default: null
- *         public_url_generator?: scalar|Param|null, // Default: null
- *         temporary_url_generator?: scalar|Param|null, // Default: null
- *         read_only?: bool|Param, // Default: false
+ *         path_normalizer?: scalar|Param|null, // Path normalizer service name (should implement League\Flysystem\PathNormalizer) // Default: null
+ *         public_url_generator?: scalar|Param|null, // For adapter that do not provide public URLs or override adapter capabilities and public_url option, a public URL generator service name can be configured in the main Filesystem configuration (should implement League\Flysystem\PublicUrlGenerator) // Default: null
+ *         temporary_url_generator?: scalar|Param|null, // For adapter that do not provide public URLs or override adapter capabilities, a temporary URL generator service name can be configured in the main Filesystem configuration (should implement League\Flysystem\TemporaryUrlGenerator) // Default: null
+ *         read_only?: bool|Param, // Converts a file system to read-only // Default: false
  *     }>,
  * }
  * @psalm-type WebpackEncoreConfig = array{
@@ -1884,7 +2011,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             use_underscore?: bool|Param, // Default: true
  *             unordered_list_markers?: list<scalar|Param|null>,
  *         },
- *         ...<mixed>
+ *         ...<string, mixed>
  *     },
  * }
  * @psalm-type SymfonycastsResetPasswordConfig = array{
@@ -2250,7 +2377,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             cast_fn?: mixed,
  *             default?: mixed,
  *             filter_class?: mixed,
- *             ...<mixed>
+ *             ...<string, mixed>
  *         }>,
  *         strict_query_parameter_validation?: mixed,
  *         hide_hydra_operation?: mixed,
@@ -2270,7 +2397,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         name?: mixed,
  *         allow_create?: mixed,
  *         item_uri_template?: mixed,
- *         ...<mixed>
+ *         ...<string, mixed>
  *     },
  * }
  * @psalm-type StimulusConfig = array{
@@ -2339,6 +2466,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
  *         base_url?: scalar|Param|null, // Base URL for imgix (e.g. https://my-source.imgix.net). // Default: null
+ *         api_key?: scalar|Param|null, // Imgix API key for cache purge operations. // Default: null
+ *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for imgix purge. // Default: null
+ *         request_factory?: scalar|Param|null, // PSR-17 request factory service ID for imgix purge. // Default: null
+ *         stream_factory?: scalar|Param|null, // PSR-17 stream factory service ID for imgix purge. // Default: null
  *         service?: scalar|Param|null, // Service ID for custom transformers (type: service). // Default: null
  *         public_cache?: bool|array{
  *             enabled?: bool|Param, // Default: false

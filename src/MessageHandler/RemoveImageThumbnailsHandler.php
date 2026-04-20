@@ -11,21 +11,19 @@
 namespace App\MessageHandler;
 
 use App\Message\RemoveImageThumbnails;
-use League\Glide\Server;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Silarhi\PicassoBundle\Service\ImagePipeline;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 final readonly class RemoveImageThumbnailsHandler
 {
     public function __construct(
-        #[Autowire(service: 'app.s3_thumb_server')]
-        private Server $s3ThumbServer,
+        private ImagePipeline $imagePipeline,
     ) {
     }
 
     public function __invoke(RemoveImageThumbnails $message): void
     {
-        $this->s3ThumbServer->deleteCache($message->path);
+        $this->imagePipeline->purge($message->path, 'vich', 'glide');
     }
 }

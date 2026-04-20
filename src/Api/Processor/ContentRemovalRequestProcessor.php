@@ -46,18 +46,21 @@ final readonly class ContentRemovalRequestProcessor implements ProcessorInterfac
         $contentRemovalRequest->setType($data->type);
         $contentRemovalRequest->setMessage($data->message);
         $contentRemovalRequest->setEventUrls($data->eventUrls ?: null);
-        $contentRemovalRequest->setEvent($event);
+        $contentRemovalRequest->addEvent($event);
+
+        foreach ($data->additionalEventIds as $additionalEventId) {
+            $additionalEvent = $this->entityManager->find(Event::class, $additionalEventId);
+            if (null !== $additionalEvent) {
+                $contentRemovalRequest->addEvent($additionalEvent);
+            }
+        }
 
         $this->entityManager->persist($contentRemovalRequest);
         $this->entityManager->flush();
 
         $this->mailerManager->sendContentRemovalRequestEmail(
-            $event,
-            $data->email,
-            $data->type,
-            $data->message,
-            $data->eventUrls,
-            $this->contentRemovalRecipientEmail
+            $contentRemovalRequest,
+            $this->contentRemovalRecipientEmail,
         );
 
         return new ContentRemovalRequestOutput(

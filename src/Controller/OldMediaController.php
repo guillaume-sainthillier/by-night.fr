@@ -12,9 +12,9 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\User;
-use App\Helper\AssetHelper;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Vich\UploaderBundle\Storage\StorageInterface;
@@ -23,7 +23,7 @@ final class OldMediaController extends AbstractController
 {
     #[Route(path: '/media/cache/{filter}/{path<%patterns.path%>}', methods: ['GET'])]
     #[Route(path: '/uploads/{path<%patterns.path%>}', methods: ['GET'])]
-    public function index(string $path, StorageInterface $storage, AssetHelper $assetHelper, EventRepository $eventRepository, UserRepository $userRepository): Response
+    public function index(string $path, StorageInterface $storage, Packages $packages, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         $infos = pathinfo($path);
         /** @var Event|null $event */
@@ -36,11 +36,8 @@ final class OldMediaController extends AbstractController
             ->getOneOrNullResult();
 
         if ($event) {
-            if ($event->getImage()->getName() === $infos['basename']) {
-                $url = $assetHelper->getThumbS3Url($storage->resolvePath($event, 'imageFile'));
-            } else {
-                $url = $assetHelper->getThumbS3Url($storage->resolvePath($event, 'imageSystemFile'));
-            }
+            $field = $event->getImage()->getName() === $infos['basename'] ? 'imageFile' : 'imageSystemFile';
+            $url = $packages->getUrl($storage->resolvePath($event, $field), 'aws');
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
@@ -54,11 +51,8 @@ final class OldMediaController extends AbstractController
             ->getQuery()
             ->getOneOrNullResult();
         if ($user) {
-            if ($user->getImage()->getName() === $infos['basename']) {
-                $url = $assetHelper->getThumbS3Url($storage->resolvePath($user, 'imageFile'));
-            } else {
-                $url = $assetHelper->getThumbS3Url($storage->resolvePath($user, 'imageSystemFile'));
-            }
+            $field = $user->getImage()->getName() === $infos['basename'] ? 'imageFile' : 'imageSystemFile';
+            $url = $packages->getUrl($storage->resolvePath($user, $field), 'aws');
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
