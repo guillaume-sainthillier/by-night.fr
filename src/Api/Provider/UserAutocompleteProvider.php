@@ -39,8 +39,8 @@ final readonly class UserAutocompleteProvider implements ProviderInterface
             return [];
         }
 
-        $limit = (int) $this->pagination->getLimit($operation, $context);
-        $page = (int) $this->pagination->getPage($context);
+        $limit = $this->pagination->getLimit($operation, $context);
+        $page = $this->pagination->getPage($context);
         $offset = ($page - 1) * $limit;
 
         $qb = $this->userRepository->createQueryBuilder('u')

@@ -22,14 +22,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/users/autocomplete',
-            security: "is_granted('ROLE_ADMIN')",
-            securityMessage: 'Only admins can search users.',
             openapi: new OpenApiOperation(
                 summary: 'Search for users by username or email',
                 description: 'Returns a list of users matching the search query for admin impersonation.',
             ),
             paginationEnabled: true,
             paginationItemsPerPage: 10,
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Only admins can search users.',
             name: 'api_users_autocomplete',
             provider: UserAutocompleteProvider::class,
             parameters: [
