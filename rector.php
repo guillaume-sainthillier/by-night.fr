@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of By Night.
  * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
@@ -43,6 +41,7 @@ return RectorConfig::configure()
         symfony: true,
     )
     ->withSkip([
+        Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector::class,
         ControllerMethodInjectionToConstructorRector::class,
         InlineClassRoutePrefixRector::class,
         FlipTypeControlToUseExclusiveTypeRector::class,
