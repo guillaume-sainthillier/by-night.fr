@@ -14,6 +14,8 @@ use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
 use App\Repository\ContentRemovalRequestRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
@@ -36,9 +38,12 @@ class ContentRemovalRequest implements Stringable
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $eventUrls = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Event $event = null;
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\ManyToMany(targetEntity: Event::class)]
+    #[ORM\JoinTable(name: 'content_removal_request_event')]
+    private Collection $events;
 
     #[ORM\Column(type: Types::STRING, length: 32, enumType: ContentRemovalRequestStatus::class)]
     private ContentRemovalRequestStatus $status = ContentRemovalRequestStatus::Pending;
@@ -49,6 +54,11 @@ class ContentRemovalRequest implements Stringable
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $processedBy = null;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
 
     public function __toString(): string
     {
@@ -103,14 +113,26 @@ class ContentRemovalRequest implements Stringable
         return $this;
     }
 
-    public function getEvent(): ?Event
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
     {
-        return $this->event;
+        return $this->events;
     }
 
-    public function setEvent(?Event $event): self
+    public function addEvent(Event $event): self
     {
-        $this->event = $event;
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        $this->events->removeElement($event);
 
         return $this;
     }

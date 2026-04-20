@@ -69,7 +69,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $filters
             ->add(ChoiceFilter::new('status')->setChoices(ContentRemovalRequestStatus::cases()))
             ->add(ChoiceFilter::new('type')->setChoices(ContentRemovalType::cases()))
-            ->add(EntityFilter::new('event'));
+            ->add(EntityFilter::new('events'));
     }
 
     #[Override]
@@ -77,12 +77,12 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
     {
         $removeImage = Action::new('removeImage', "Supprimer l'image", 'lucide:image-minus')
             ->linkToCrudAction('removeImage')
-            ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Image === $entity->getType())
+            ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Image === $entity->getType() && $entity->getEvents()->count() > 0)
             ->addCssClass('btn btn-warning');
 
-        $removeEvent = Action::new('removeEvent', 'Supprimer l\'événement', 'lucide:trash-2')
-            ->linkToCrudAction('removeEvent')
-            ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Event === $entity->getType())
+        $removeEvents = Action::new('removeEvents', 'Supprimer les événements', 'lucide:trash-2')
+            ->linkToCrudAction('removeEvents')
+            ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Event === $entity->getType() && $entity->getEvents()->count() > 0)
             ->addCssClass('btn btn-danger');
 
         $markAsProcessed = Action::new('markAsProcessed', 'Marquer traité', 'lucide:check')
@@ -114,11 +114,11 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return parent::configureActions($actions)
             ->disable(Action::NEW)
             ->add(Crud::PAGE_DETAIL, $removeImage)
-            ->add(Crud::PAGE_DETAIL, $removeEvent)
+            ->add(Crud::PAGE_DETAIL, $removeEvents)
             ->add(Crud::PAGE_DETAIL, $markAsProcessed)
             ->add(Crud::PAGE_DETAIL, $reject)
             ->add(Crud::PAGE_INDEX, $removeImage)
-            ->add(Crud::PAGE_INDEX, $removeEvent)
+            ->add(Crud::PAGE_INDEX, $removeEvents)
             ->add(Crud::PAGE_INDEX, $markAsProcessed)
             ->add(Crud::PAGE_INDEX, $reject)
             ->addBatchAction($batchMarkAsProcessed)
@@ -141,7 +141,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ]);
         $message = TextareaField::new('message');
         $eventUrls = ArrayField::new('eventUrls', 'URLs');
-        $event = AssociationField::new('event')
+        $events = AssociationField::new('events')
             ->setCrudController(EventCrudController::class)
             ->autocomplete();
         $createdAt = DateTimeField::new('createdAt');
@@ -160,7 +160,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->autocomplete();
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $createdAt, $email, $type, $status, $event];
+            return [$id, $createdAt, $email, $type, $status, $events];
         }
 
         return [
@@ -171,7 +171,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             $type,
             $message,
             $eventUrls,
-            $event,
+            $events,
 
             $panel2,
             $status,
@@ -185,27 +185,29 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         /** @var ContentRemovalRequest $request */
         $request = $context->getEntity()->getInstance();
 
-        $this->removeEventImage($request->getEvent());
+        foreach ($request->getEvents() as $event) {
+            $this->removeEventImage($event);
+        }
+
         $this->markRequestAsProcessed($request);
 
-        $this->addFlash('success', 'L\'image de l\'événement a été supprimée.');
+        $this->addFlash('success', 'Les images des événements ont été supprimées.');
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
-    public function removeEvent(AdminContext $context): Response
+    public function removeEvents(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
         $request = $context->getEntity()->getInstance();
-        $event = $request->getEvent();
 
-        if (null !== $event) {
+        foreach ($request->getEvents() as $event) {
             $this->entityManager->remove($event);
         }
 
         $this->markRequestAsProcessed($request);
 
-        $this->addFlash('success', 'L\'événement a été supprimé.');
+        $this->addFlash('success', 'Les événements ont été supprimés.');
 
         return $this->redirect($this->adminUrlGenerator
             ->setController(self::class)
@@ -283,7 +285,10 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
                 && ContentRemovalRequestStatus::Pending === $request->getStatus()
                 && ContentRemovalType::Image === $request->getType()
             ) {
-                $this->removeEventImage($request->getEvent());
+                foreach ($request->getEvents() as $event) {
+                    $this->removeEventImage($event);
+                }
+
                 $this->markRequestAsProcessed($request, false);
                 ++$count;
             }
@@ -305,8 +310,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
                 && ContentRemovalRequestStatus::Pending === $request->getStatus()
                 && ContentRemovalType::Event === $request->getType()
             ) {
-                $event = $request->getEvent();
-                if (null !== $event) {
+                foreach ($request->getEvents() as $event) {
                     $this->entityManager->remove($event);
                 }
 
@@ -321,12 +325,8 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
-    private function removeEventImage(?Event $event): void
+    private function removeEventImage(Event $event): void
     {
-        if (null === $event) {
-            return;
-        }
-
         $event->setImageFile();
         $event->setImageHash(null);
         $event->setImageSystemFile();

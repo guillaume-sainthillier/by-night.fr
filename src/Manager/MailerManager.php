@@ -10,19 +10,25 @@
 
 namespace App\Manager;
 
-use App\Entity\Event;
+use App\Entity\ContentRemovalRequest;
 use App\Entity\User;
 use App\Enum\ContentRemovalType;
+use DateInterval;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 final readonly class MailerManager
 {
-    public function __construct(private MailerInterface $mailer)
-    {
+    public function __construct(
+        private MailerInterface $mailer,
+        private UriSigner $uriSigner,
+        private UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
     public function sendConfirmEmailEmail(User $user, array $context): void
@@ -64,31 +70,42 @@ final readonly class MailerManager
         $this->sendMail($email);
     }
 
-    /**
-     * @param string[] $eventUrls
-     */
     public function sendContentRemovalRequestEmail(
-        Event $event,
-        string $requesterEmail,
-        ContentRemovalType $type,
-        string $message,
-        array $eventUrls,
+        ContentRemovalRequest $contentRemovalRequest,
         string $recipientEmail,
     ): void {
+        $expiration = new DateInterval('P7D');
+        $id = $contentRemovalRequest->getId();
+
+        $context = [
+            'contentRemovalRequest' => $contentRemovalRequest,
+            'markProcessedUrl' => $this->generateSignedUrl('admin_content_removal_action_mark_processed', ['id' => $id], $expiration),
+            'rejectUrl' => $this->generateSignedUrl('admin_content_removal_action_reject', ['id' => $id], $expiration),
+        ];
+
+        if (ContentRemovalType::Event === $contentRemovalRequest->getType()) {
+            $context['removeEventsUrl'] = $this->generateSignedUrl('admin_content_removal_action_remove_events', ['id' => $id], $expiration);
+        }
+
+        if (ContentRemovalType::Image === $contentRemovalRequest->getType()) {
+            $context['removeImagesUrl'] = $this->generateSignedUrl('admin_content_removal_action_remove_images', ['id' => $id], $expiration);
+        }
+
         $email = new TemplatedEmail()
             ->to($recipientEmail)
-            ->replyTo($requesterEmail)
+            ->replyTo($contentRemovalRequest->getEmail())
             ->subject('Demande de suppression de contenu - By Night')
             ->htmlTemplate('email/content-removal-request.html.twig')
-            ->context([
-                'event' => $event,
-                'requesterEmail' => $requesterEmail,
-                'removalType' => $type,
-                'message' => $message,
-                'eventUrls' => $eventUrls,
-            ]);
+            ->context($context);
 
         $this->sendMail($email);
+    }
+
+    private function generateSignedUrl(string $route, array $params, DateInterval $expiration): string
+    {
+        $url = $this->urlGenerator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return $this->uriSigner->sign($url, $expiration);
     }
 
     private function sendMail(Email $email): void
