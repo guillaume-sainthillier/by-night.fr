@@ -25,13 +25,15 @@ final class PlaceFactory extends PersistentProxyObjectFactory
 
     protected function defaults(): array
     {
+        $country = CountryFactory::new();
+
         return [
             'name' => self::faker()->company(),
             'street' => self::faker()->streetAddress(),
             'latitude' => self::faker()->latitude(),
             'longitude' => self::faker()->longitude(),
-            'city' => CityFactory::new(),
-            'country' => CountryFactory::new(),
+            'city' => CityFactory::new(['country' => $country]),
+            'country' => $country,
         ];
     }
 }
