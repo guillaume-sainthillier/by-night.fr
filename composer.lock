@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "605e9b57c4ff296010118fb61b0db1b2",
+    "content-hash": "f6282c82abe066a6d24442b274b056b8",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2066,16 +2066,16 @@
         },
         {
             "name": "friendsofsymfony/elastica-bundle",
-            "version": "v7.0.0",
+            "version": "v7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSElasticaBundle.git",
-                "reference": "32f7f9887ac997e348e32b7aaac896961f40979d"
+                "reference": "58b607f4c74f0d05adce2af4369b17a6b0efad8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/32f7f9887ac997e348e32b7aaac896961f40979d",
-                "reference": "32f7f9887ac997e348e32b7aaac896961f40979d",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/58b607f4c74f0d05adce2af4369b17a6b0efad8d",
+                "reference": "58b607f4c74f0d05adce2af4369b17a6b0efad8d",
                 "shasum": ""
             },
             "require": {
@@ -2083,12 +2083,12 @@
                 "php": "^8.1",
                 "psr/log": "^3.0",
                 "ruflin/elastica": "^8.0",
-                "symfony/console": "^6.4 || ^7.1",
-                "symfony/dependency-injection": "^6.4 || ^7.1",
-                "symfony/event-dispatcher": "^6.4 || ^7.1",
-                "symfony/framework-bundle": "^6.4 || ^7.1",
-                "symfony/property-access": "^6.4 || ^7.1",
-                "symfony/stopwatch": "^6.4 || ^7.1"
+                "symfony/console": "^6.4 || ^7.4 || ^8.0",
+                "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.0",
+                "symfony/event-dispatcher": "^6.4 || ^7.4 || ^8.0",
+                "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.0",
+                "symfony/property-access": "^6.4 || ^7.4 || ^8.0",
+                "symfony/stopwatch": "^6.4 || ^7.4 || ^8.0"
             },
             "conflict": {
                 "phpstan/phpstan": "<1.12.0"
@@ -2109,12 +2109,12 @@
                 "phpstan/phpstan-phpunit": "^1.4",
                 "phpstan/phpstan-symfony": "^1.4",
                 "phpunit/phpunit": "^9.5",
-                "symfony/expression-language": "^6.4 || ^7.1",
-                "symfony/messenger": "^6.4 || ^7.1",
-                "symfony/serializer": "^6.4 || ^7.1",
-                "symfony/twig-bundle": "^6.4 || ^7.1",
-                "symfony/web-profiler-bundle": "^6.4 || ^7.1",
-                "symfony/yaml": "^6.4 || ^7.1"
+                "symfony/expression-language": "^6.4 || ^7.4 || ^8.0",
+                "symfony/messenger": "^6.4 || ^7.4 || ^8.0",
+                "symfony/serializer": "^6.4 || ^7.4 || ^8.0",
+                "symfony/twig-bundle": "^6.4 || ^7.4 || ^8.0",
+                "symfony/web-profiler-bundle": "^6.4 || ^7.4 || ^8.0",
+                "symfony/yaml": "^6.4 || ^7.4 || ^8.0"
             },
             "suggest": {
                 "enqueue/elastica-bundle": "For populating Elasticsearch indexes asynchronously and using significanly less resources. Uses Enqueue.",
@@ -2123,7 +2123,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.0.x-dev"
+                    "dev-master": "7.1.x-dev"
                 }
             },
             "autoload": {
@@ -2164,9 +2164,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FriendsOfSymfony/FOSElasticaBundle/issues",
-                "source": "https://github.com/FriendsOfSymfony/FOSElasticaBundle/tree/v7.0.0"
+                "source": "https://github.com/FriendsOfSymfony/FOSElasticaBundle/tree/v7.1.0"
             },
-            "time": "2025-10-20T20:30:15+00:00"
+            "time": "2026-04-24T11:02:42+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",
