@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "74438c1661da49866c6e06e769406575",
+    "content-hash": "737c751c2b63af05df32d3850a0ba8f6",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v4.3.3",
+            "version": "v4.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "7cc01a69ab0974990a7a7d4ad2bc7914b710addb"
+                "reference": "fffcb25bb6362e6bc8e42bd6e9bd3fab10e05209"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/7cc01a69ab0974990a7a7d4ad2bc7914b710addb",
-                "reference": "7cc01a69ab0974990a7a7d4ad2bc7914b710addb",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/fffcb25bb6362e6bc8e42bd6e9bd3fab10e05209",
+                "reference": "fffcb25bb6362e6bc8e42bd6e9bd3fab10e05209",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +106,7 @@
                 "phpstan/phpstan-doctrine": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",
-                "phpunit/phpunit": "^12.2",
+                "phpunit/phpunit": "^11.5 || ^12.2",
                 "psr/log": "^1.0 || ^2.0 || ^3.0",
                 "ramsey/uuid": "^4.7",
                 "ramsey/uuid-doctrine": "^2.0",
@@ -226,9 +226,9 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v4.3.3"
+                "source": "https://github.com/api-platform/core/tree/v4.3.4"
             },
-            "time": "2026-03-29T10:10:54+00:00"
+            "time": "2026-04-30T12:58:19+00:00"
         },
         {
             "name": "aws/aws-crt-php",
