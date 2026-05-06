@@ -11,6 +11,7 @@
 namespace App\Form\Type;
 
 use App\Enum\DateRangePreset;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
 use IntlDateFormatter;
@@ -181,8 +182,17 @@ final class DateRangeType extends AbstractType
                 return;
             }
 
-            $fromDate = new DateTimeImmutable($from);
-            $toDate = null !== $to ? new DateTimeImmutable($to) : null;
+            try {
+                $fromDate = new DateTimeImmutable($from);
+            } catch (DateMalformedStringException) {
+                $fromDate = null;
+            }
+
+            try {
+                $toDate = null !== $to ? new DateTimeImmutable($to) : null;
+            } catch (DateMalformedStringException) {
+                $toDate = null;
+            }
 
             $data['range'] = $this->findRangeLabel($fromDate, $toDate, $ranges);
             $event->setData($data);
