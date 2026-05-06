@@ -18,24 +18,22 @@ when@prod:
 
     monolog:
         handlers:
-            # Use this only if you don't want to use structured logging and instead receive
-            # certain log levels as errors.
-            # sentry:
-            #     type: service
-            #     id: Sentry\Monolog\Handler
+            # Forward ERROR-level Monolog records (incl. uncaught exceptions logged by Symfony) to Sentry as Issues.
+            sentry:
+                type: service
+                id: Sentry\Monolog\Handler
 
-            # Use this for structured log integration
+            # Forward INFO-level+ Monolog records to Sentry as structured Logs.
             sentry_logs:
                 type: service
                 id: Sentry\SentryBundle\Monolog\LogsHandler
 
-    # Enable one of the two services below, depending on your choice above
     services:
-        # Sentry\Monolog\Handler:
-        #     arguments:
-        #         $hub: '@Sentry\State\HubInterface'
-        #         $level: !php/const Monolog\Logger::ERROR
-        #         $fillExtraContext: true # Enables sending monolog context to Sentry
+        Sentry\Monolog\Handler:
+            arguments:
+                $hub: '@Sentry\State\HubInterface'
+                $level: !php/const Monolog\Logger::ERROR
+                $fillExtraContext: true # Enables sending monolog context to Sentry
         Sentry\SentryBundle\Monolog\LogsHandler:
             arguments:
-                - !php/const Monolog\Logger::INFO
+                - !php/const Monolog\Logger::WARNING
