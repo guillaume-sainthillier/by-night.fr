@@ -30,8 +30,7 @@ final class Version20260411134811 extends AbstractMigration
         $this->addSql('INSERT INTO content_removal_request_event (content_removal_request_id, event_id) SELECT id, event_id FROM content_removal_request WHERE event_id IS NOT NULL');
 
         // Drop old foreign key and column
-        $this->addSql('ALTER TABLE content_removal_request DROP FOREIGN KEY FK_5BA209357B02BF4E');
-        $this->addSql('DROP INDEX IDX_5BA209357B02BF4E ON content_removal_request');
+        $this->addSql('ALTER TABLE content_removal_request DROP FOREIGN KEY FK_5BA2093571F7E88B');
         $this->addSql('ALTER TABLE content_removal_request DROP event_id');
     }
 
