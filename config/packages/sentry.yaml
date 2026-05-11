@@ -6,7 +6,6 @@ when@prod:
             # see https://docs.sentry.io/platforms/php/data-management/data-collected/ for more info
             send_default_pii: true
             traces_sample_rate: 0.5
-            enable_logs: true
             ignore_exceptions:
                 - 'Symfony\Component\ErrorHandler\Error\FatalError'
                 - 'Symfony\Component\Debug\Exception\FatalErrorException'
@@ -23,17 +22,9 @@ when@prod:
                 type: service
                 id: Sentry\Monolog\Handler
 
-            # Forward INFO-level+ Monolog records to Sentry as structured Logs.
-            sentry_logs:
-                type: service
-                id: Sentry\SentryBundle\Monolog\LogsHandler
-
     services:
         Sentry\Monolog\Handler:
             arguments:
                 $hub: '@Sentry\State\HubInterface'
                 $level: !php/const Monolog\Logger::ERROR
                 $fillExtraContext: true # Enables sending monolog context to Sentry
-        Sentry\SentryBundle\Monolog\LogsHandler:
-            arguments:
-                - !php/const Monolog\Logger::WARNING
