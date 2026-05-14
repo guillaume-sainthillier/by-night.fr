@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "057b786cc6a7d0294cc6baf2c9fac7bb",
+    "content-hash": "a2d7b600e2aba8d23315e28fc44d5761",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v4.3.4",
+            "version": "v4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "fffcb25bb6362e6bc8e42bd6e9bd3fab10e05209"
+                "reference": "ad027fbbe1b64294174b962c9d9f02d0a3bca7a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/fffcb25bb6362e6bc8e42bd6e9bd3fab10e05209",
-                "reference": "fffcb25bb6362e6bc8e42bd6e9bd3fab10e05209",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/ad027fbbe1b64294174b962c9d9f02d0a3bca7a7",
+                "reference": "ad027fbbe1b64294174b962c9d9f02d0a3bca7a7",
                 "shasum": ""
             },
             "require": {
@@ -28,7 +28,7 @@
                 "psr/container": "^1.0 || ^2.0",
                 "symfony/deprecation-contracts": "^3.1",
                 "symfony/http-foundation": "^6.4.14 || ^7.0 || ^8.0",
-                "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
+                "symfony/http-kernel": "^6.4.13 || ^7.0 || ^8.0",
                 "symfony/property-access": "^6.4 || ^7.0 || ^8.0",
                 "symfony/property-info": "^6.4 || ^7.1 || ^8.0",
                 "symfony/serializer": "^6.4 || ^7.0 || ^8.0",
@@ -97,7 +97,7 @@
                 "jangregor/phpstan-prophecy": "^2.1.11",
                 "justinrainbow/json-schema": "^6.5.2",
                 "laravel/framework": "^11.0 || ^12.0 || ^13.0",
-                "mcp/sdk": "^0.4.0",
+                "mcp/sdk": ">=0.4 <1.0",
                 "orchestra/testbench": "^10.9 || ^11.0",
                 "phpspec/prophecy-phpunit": "^2.2",
                 "phpstan/extension-installer": "^1.1",
@@ -226,9 +226,9 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v4.3.4"
+                "source": "https://github.com/api-platform/core/tree/v4.3.5"
             },
-            "time": "2026-04-30T12:58:19+00:00"
+            "time": "2026-05-11T12:20:22+00:00"
         },
         {
             "name": "aws/aws-crt-php",
