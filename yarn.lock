@@ -5253,9 +5253,9 @@ postcss@^8.2.14, postcss@^8.4.40, postcss@^8.4.47:
     source-map-js "^1.2.1"
 
 preact-render-to-string@^6.6.5:
-  version "6.6.7"
-  resolved "https://registry.yarnpkg.com/preact-render-to-string/-/preact-render-to-string-6.6.7.tgz#b0f04fa4c00f7527faabbad52ca071ff236f2168"
-  integrity sha512-3XdbsX3+vn9dQW+jJI/FsI9rlkgl6dbeUpqLsChak6jp3j3auFqBCkno7VChbMFs5Q8ylBj6DrUkKRwtVN3nvw==
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/preact-render-to-string/-/preact-render-to-string-6.7.0.tgz#fe10abba7461a439b1846d4ce3c51b87ecf48fe2"
+  integrity sha512-Z4WR8fmLMRpdYqJ9i7vrlXSsSrxVJydwrkEXHapexfARbWfGb7vGcnvNQnIzN0cXciMVOlz/XLoiMCi9gUsy9Q==
 
 preact@^10.13.2, preact@^10.28.3:
   version "10.29.2"
