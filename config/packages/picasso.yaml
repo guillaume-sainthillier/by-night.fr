@@ -20,6 +20,6 @@ picasso:
     transformers:
         glide:
             sign_key: '%kernel.secret%'
-            cache: '%kernel.project_dir%/public/image'
+            cache: 'thumbs.storage'
             public_cache:
-                enabled: true
+                enabled: false

@@ -2462,7 +2462,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         enabled?: bool|Param, // Default: true
  *         type?: "glide"|"imgix"|"service"|Param, // Transformer type. Inferred from name when it matches a known type. // Default: null
  *         sign_key?: scalar|Param|null, // Default: null
- *         cache?: scalar|Param|null, // Cache directory for glide. // Default: null
+ *         cache?: scalar|Param|null, // Glide cache target. Either a local path or a Flysystem storage name (resolved via FlysystemRegistry). // Default: null
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
  *         base_url?: scalar|Param|null, // Base URL for imgix (e.g. https://my-source.imgix.net). // Default: null

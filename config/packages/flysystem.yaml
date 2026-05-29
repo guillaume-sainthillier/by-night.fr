@@ -2,16 +2,36 @@
 
 flysystem:
     storages:
+        # LOCAL
+        thumbs.local_storage:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/var/storage/thumbs'
+
+        # S3
         users.storage:
             adapter: 'aws'
             options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(AWS_S3_BUCKET_NAME)%'
                 prefix: 'uploads/users'
 
         events.storage:
             adapter: 'aws'
             options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(AWS_S3_BUCKET_NAME)%'
                 prefix: 'uploads/documents'
+
+        thumbs.s3_storage:
+            adapter: 'aws'
+            options:
+                client: 's3_thumb_client' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(APP_THUMB_S3_BUCKET_NAME)%'
+                prefix: 'thumbs'
+
+        # LAZY ADAPTERS
+        thumbs.storage:
+            adapter: 'lazy'
+            options:
+                source: 'thumbs.%env(APP_THUMB_STORAGE_SOURCE)%_storage'

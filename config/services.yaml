@@ -84,13 +84,24 @@ services:
         tags:
             - { name: doctrine.orm.entity_listener, lazy: true }
 
-    Aws\S3\S3Client:
+    s3_client:
+        class: Aws\S3\S3Client
         arguments:
             - version: '2006-03-01'
               region: '%env(AWS_S3_REGION)%'
               credentials:
                   key: '%env(AWS_S3_KEY)%'
                   secret: '%env(AWS_S3_SECRET)%'
+
+    s3_thumb_client:
+        class: Aws\S3\S3Client
+        arguments:
+            - version: '2006-03-01'
+              endpoint: '%env(APP_THUMB_S3_ENDPOINT)%'
+              region: '%env(APP_THUMB_S3_REGION)%'
+              credentials:
+                  key: '%env(APP_THUMB_S3_KEY)%'
+                  secret: '%env(APP_THUMB_S3_SECRET)%'
 
     Aws\CloudFront\CloudFrontClient:
         arguments:
