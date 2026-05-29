@@ -19,6 +19,12 @@ final readonly class PreloadManager
     ) {
     }
 
+    /**
+     * @template T of object
+     *
+     * @param class-string<T>   $entityClass
+     * @param array<int, mixed> $entityIds
+     */
     public function preloadEntities(string $entityClass, array $entityIds): void
     {
         $entityIds = array_unique(array_filter($entityIds));
