@@ -99,9 +99,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    .enableSassLoader((options) => {
-        options.api = 'legacy'
-    })
+    .enableSassLoader()
 
     // Configure SVGR for SVG imports from assets/icons as Preact components
     .addRule({
