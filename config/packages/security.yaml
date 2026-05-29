@@ -24,7 +24,7 @@ security:
 
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|bundles|thumb|thumb-asset|media|uploads|image)/
+            pattern: ^/(_(profiler|wdt)|bundles|thumb|thumb-asset|media|uploads|p/image)/
             security: false
         main:
             lazy: true

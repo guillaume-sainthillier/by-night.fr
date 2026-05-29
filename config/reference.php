@@ -2433,6 +2433,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_fit?: scalar|Param|null, // Default fit mode (contain, cover, crop, fill). // Default: "contain"
  *     cache?: scalar|Param|null, // PSR-6 cache pool for metadata guessing and BlurHash generation. true (default) uses cache.app, false disables caching, or pass a service ID string. // Default: true
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
+ *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true

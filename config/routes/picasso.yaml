@@ -1,2 +1,3 @@
 picasso:
     resource: '@PicassoBundle/config/routes.php'
+    prefix: /p
