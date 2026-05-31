@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7166bf134a857c4cdbd55def377e380b",
+    "content-hash": "966efbe28fad9e7c40b56caf3e55cad0",
     "packages": [
         {
             "name": "api-platform/core",
@@ -14896,16 +14896,16 @@
         },
         {
             "name": "rector/swiss-knife",
-            "version": "2.3.5",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/swiss-knife.git",
-                "reference": "1e7c2cbe0738beabaf603e7b2bd7582bbdf0212e"
+                "reference": "f319b6d7d917f2950c6fa2a6deaf16112470ad33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/swiss-knife/zipball/1e7c2cbe0738beabaf603e7b2bd7582bbdf0212e",
-                "reference": "1e7c2cbe0738beabaf603e7b2bd7582bbdf0212e",
+                "url": "https://api.github.com/repos/rectorphp/swiss-knife/zipball/f319b6d7d917f2950c6fa2a6deaf16112470ad33",
+                "reference": "f319b6d7d917f2950c6fa2a6deaf16112470ad33",
                 "shasum": ""
             },
             "require": {
@@ -14927,7 +14927,7 @@
             "description": "Swiss knife in pocket of every upgrade architect",
             "support": {
                 "issues": "https://github.com/rectorphp/swiss-knife/issues",
-                "source": "https://github.com/rectorphp/swiss-knife/tree/2.3.5"
+                "source": "https://github.com/rectorphp/swiss-knife/tree/2.4.1"
             },
             "funding": [
                 {
@@ -14939,7 +14939,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-01-09T10:59:22+00:00"
+            "time": "2026-05-26T21:44:47+00:00"
         },
         {
             "name": "sebastian/cli-parser",
