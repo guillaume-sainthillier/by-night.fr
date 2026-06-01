@@ -100,12 +100,17 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         $canonical->addTimesheet($this->timesheet('2026-08-01', 'À 20h00'));
 
         $duplicate = $this->event(2, '999', 'awin.fnac', 'Show', 'p');
-        $duplicate->addTimesheet($this->timesheet('2026-08-01', 'À 20h00')); // same date -> deduped
-        $duplicate->addTimesheet($this->timesheet('2026-08-02', 'À 20h00')); // new date -> added
+        $duplicate->addTimesheet($this->timesheet('2026-08-01', 'À 23h00')); // same date -> deduped
+        $duplicate->addTimesheet($this->timesheet('2026-08-02', 'À 18h00')); // new date -> added
 
         $this->mergeTimesheets($canonical, $duplicate);
 
         self::assertSame(['2026-08-01', '2026-08-02'], $this->timesheetDates($canonical));
+        // The deduped date keeps the canonical's showtime; the new date carries its own.
+        self::assertSame(
+            ['2026-08-01' => 'À 20h00', '2026-08-02' => 'À 18h00'],
+            $this->timesheetHoursByDate($canonical),
+        );
         self::assertTrue($canonical->batchUpdate);
         self::assertTrue($duplicate->batchUpdate);
     }
@@ -125,6 +130,11 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         $this->mergeTimesheets($canonical, $duplicate);
 
         self::assertSame(['2026-08-01', '2026-08-05'], $this->timesheetDates($canonical));
+        // The synthesized timesheet inherits the legacy event's hours.
+        self::assertSame(
+            ['2026-08-01' => 'À 20h00', '2026-08-05' => 'À 18h00'],
+            $this->timesheetHoursByDate($canonical),
+        );
     }
 
     public function testMergeTimesheetsSeedsCanonicalOwnDateWhenItHasNone(): void
@@ -138,10 +148,16 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         $duplicate = $this->event(2, '222', 'awin.fnac', 'Show', 'p');
         $duplicate->setStartDate(new DateTimeImmutable('2026-08-02'));
         $duplicate->setEndDate(new DateTimeImmutable('2026-08-02'));
+        $duplicate->setHours('À 21h00');
 
         $this->mergeTimesheets($canonical, $duplicate);
 
         self::assertSame(['2026-08-01', '2026-08-02'], $this->timesheetDates($canonical));
+        // Both synthesized timesheets carry their source event's hours.
+        self::assertSame(
+            ['2026-08-01' => 'À 13h00', '2026-08-02' => 'À 21h00'],
+            $this->timesheetHoursByDate($canonical),
+        );
     }
 
     public function testRealignDateRangeSpansEveryTimesheet(): void
@@ -187,6 +203,21 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         sort($dates);
 
         return $dates;
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function timesheetHoursByDate(Event $event): array
+    {
+        $hoursByDate = [];
+        foreach ($event->getTimesheets() as $timesheet) {
+            $date = $timesheet->getStartAt()?->format('Y-m-d') ?? '';
+            $hoursByDate[$date] = $timesheet->getHours();
+        }
+        ksort($hoursByDate);
+
+        return $hoursByDate;
     }
 
     private function event(int $id, string $externalId, string $origin, string $name = 'Show', string $placeExternalId = 'place'): Event

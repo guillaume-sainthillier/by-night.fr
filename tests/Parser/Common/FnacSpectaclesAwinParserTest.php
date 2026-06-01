@@ -42,6 +42,7 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         self::assertSame('2026-07-25', $event->endDate?->format('Y-m-d'));
         self::assertCount(1, $event->timesheets);
         self::assertSame('2026-07-25', $event->timesheets[0]->startAt?->format('Y-m-d'));
+        self::assertSame('À 13h00', $event->timesheets[0]->hours, 'The timesheet carries the showtime.');
         // External id is the stable content hash, not a raw merchant product id.
         self::assertMatchesRegularExpression('/^[0-9a-f]{40}$/', (string) $event->externalId);
     }
@@ -65,10 +66,31 @@ final class FnacSpectaclesAwinParserTest extends TestCase
             static fn ($timesheet): ?string => $timesheet->startAt?->format('Y-m-d'),
             $event->timesheets,
         ));
+        // Each date keeps its own showtime, even though the event-level label is dropped.
+        self::assertSame(['À 20h30', 'À 20h30', 'À 18h00'], array_map(
+            static fn ($timesheet): ?string => $timesheet->hours,
+            $event->timesheets,
+        ));
         self::assertSame('De 15€ à 25€', $event->prices, 'Price range spans every ticket tier.');
         self::assertSame('2026-08-01', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-08-03', $event->endDate?->format('Y-m-d'));
         self::assertNull($event->hours, 'No single event-level hours when showtimes differ.');
+    }
+
+    public function testSameDateWithDifferentShowtimesCollapsesToOneTimesheet(): void
+    {
+        // Timesheets are stored per date, so two showtimes on the same day collapse
+        // into a single timesheet that keeps the first-seen showtime label.
+        $rows = [
+            $this->row('50000001', 'Matinée', '12', '2026-09-01', '15:00'),
+            $this->row('50000002', 'Matinée', '12', '2026-09-01', '20:00'),
+        ];
+
+        $events = $this->groupEvents($rows);
+
+        self::assertCount(1, $events);
+        self::assertCount(1, $events[0]->timesheets, 'One timesheet per date, regardless of showtimes.');
+        self::assertSame('À 15h00', $events[0]->timesheets[0]->hours);
     }
 
     public function testRowsAtDifferentVenuesStaySeparate(): void
