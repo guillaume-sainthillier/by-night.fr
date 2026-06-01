@@ -11,6 +11,7 @@
 namespace App\Factory;
 
 use App\Entity\Country;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -26,7 +27,14 @@ final class CountryFactory extends PersistentProxyObjectFactory
     protected function defaults(): array
     {
         return [
-            'id' => self::faker()->countryCode(),
+            // Country's PK is an app-assigned 2-letter code. faker()->countryCode() is not
+            // unique, so building several countries in one test occasionally minted two with the
+            // same code, tripping Doctrine's EntityIdentityCollisionException — a seed-dependent
+            // (therefore flaky) CI failure. unique() guarantees distinct codes; the closure keeps
+            // it lazy (Foundry replaces overridden LazyValues without resolving them) so callers
+            // pinning an explicit id (e.g. ['id' => 'FR']) bypass it entirely and the bounded
+            // ISO-code pool is only drawn from for "don't care" countries.
+            'id' => LazyValue::new(static fn (): string => self::faker()->unique()->countryCode()),
             'name' => self::faker()->country(),
             'displayName' => self::faker()->country(),
             'atDisplayName' => 'à ' . self::faker()->country(),
