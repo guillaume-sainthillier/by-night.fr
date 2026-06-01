@@ -62,6 +62,12 @@ final class EventsDownloadImagesCommand extends Command
             $events = $pagination->getCurrentPageResults();
             $events = \is_array($events) ? $events : iterator_to_array($events);
 
+            // Images are not part of the indexed document: flag the events so the
+            // FOS Elastica listener skips re-indexing them (ConditionalUpdate).
+            foreach ($events as $event) {
+                $event->batchUpdate = true;
+            }
+
             try {
                 $this->eventHandler->handleDownloads($events);
 

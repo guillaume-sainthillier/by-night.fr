@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e8984b6c555a2d5acd7a7fb3626ac73",
+    "content-hash": "084c997c7d6a2ed74fb68a6599c86462",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v4.3.6",
+            "version": "v4.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "1c2f829457861ecb6931d5145b96e2d1a2eca7cc"
+                "reference": "25f80814e1f9c849bae2bc17ed2e07f2461c72d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/1c2f829457861ecb6931d5145b96e2d1a2eca7cc",
-                "reference": "1c2f829457861ecb6931d5145b96e2d1a2eca7cc",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/25f80814e1f9c849bae2bc17ed2e07f2461c72d8",
+                "reference": "25f80814e1f9c849bae2bc17ed2e07f2461c72d8",
                 "shasum": ""
             },
             "require": {
@@ -226,9 +226,9 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v4.3.6"
+                "source": "https://github.com/api-platform/core/tree/v4.3.7"
             },
-            "time": "2026-05-22T12:11:10+00:00"
+            "time": "2026-05-29T07:17:00+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -286,16 +286,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.381.1",
+            "version": "3.383.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "405affc23ea14950c378d5ae79420302fcb467dc"
+                "reference": "50be4b674a9969c0e0aba765dee534cb5e61d309"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/405affc23ea14950c378d5ae79420302fcb467dc",
-                "reference": "405affc23ea14950c378d5ae79420302fcb467dc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/50be4b674a9969c0e0aba765dee534cb5e61d309",
+                "reference": "50be4b674a9969c0e0aba765dee534cb5e61d309",
                 "shasum": ""
             },
             "require": {
@@ -377,9 +377,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.381.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.383.0"
             },
-            "time": "2026-05-14T18:08:28+00:00"
+            "time": "2026-05-28T18:17:51+00:00"
         },
         {
             "name": "babdev/pagerfanta-bundle",
@@ -10484,16 +10484,16 @@
         },
         {
             "name": "symfony/stimulus-bundle",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stimulus-bundle.git",
-                "reference": "2236755f4f99c876da4935911b9edcd75c5bfab2"
+                "reference": "9dc58d7cbb77356642c63434033e64d00b6c6946"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/2236755f4f99c876da4935911b9edcd75c5bfab2",
-                "reference": "2236755f4f99c876da4935911b9edcd75c5bfab2",
+                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/9dc58d7cbb77356642c63434033e64d00b6c6946",
+                "reference": "9dc58d7cbb77356642c63434033e64d00b6c6946",
                 "shasum": ""
             },
             "require": {
@@ -10536,7 +10536,7 @@
                 "symfony-ux"
             ],
             "support": {
-                "source": "https://github.com/symfony/stimulus-bundle/tree/v3.0.0"
+                "source": "https://github.com/symfony/stimulus-bundle/tree/v3.1.0"
             },
             "funding": [
                 {
@@ -10556,7 +10556,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-09T22:56:44+00:00"
+            "time": "2026-05-22T05:04:55+00:00"
         },
         {
             "name": "symfony/stopwatch",
@@ -11265,16 +11265,16 @@
         },
         {
             "name": "symfony/ux-icons",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-icons.git",
-                "reference": "319eeb8a1ee31ffe83e526bc827a50e8f0adecfa"
+                "reference": "8a50a3d439a1612f5952c587af72933041b7308e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/319eeb8a1ee31ffe83e526bc827a50e8f0adecfa",
-                "reference": "319eeb8a1ee31ffe83e526bc827a50e8f0adecfa",
+                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/8a50a3d439a1612f5952c587af72933041b7308e",
+                "reference": "8a50a3d439a1612f5952c587af72933041b7308e",
                 "shasum": ""
             },
             "require": {
@@ -11334,7 +11334,7 @@
                 "twig"
             ],
             "support": {
-                "source": "https://github.com/symfony/ux-icons/tree/v3.0.0"
+                "source": "https://github.com/symfony/ux-icons/tree/v3.1.0"
             },
             "funding": [
                 {
@@ -11354,7 +11354,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-09T22:56:44+00:00"
+            "time": "2026-05-22T05:04:55+00:00"
         },
         {
             "name": "symfony/ux-twig-component",
@@ -12193,16 +12193,16 @@
         },
         {
             "name": "twig/intl-extra",
-            "version": "v3.24.0",
+            "version": "v3.26.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/intl-extra.git",
-                "reference": "32f15a38d45a8d0ec11bc8a3d97d3ac2a261499f"
+                "reference": "98f5ad5bff13230fcd2d834d9e79b50adf3ccda9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/intl-extra/zipball/32f15a38d45a8d0ec11bc8a3d97d3ac2a261499f",
-                "reference": "32f15a38d45a8d0ec11bc8a3d97d3ac2a261499f",
+                "url": "https://api.github.com/repos/twigphp/intl-extra/zipball/98f5ad5bff13230fcd2d834d9e79b50adf3ccda9",
+                "reference": "98f5ad5bff13230fcd2d834d9e79b50adf3ccda9",
                 "shasum": ""
             },
             "require": {
@@ -12241,7 +12241,7 @@
                 "twig"
             ],
             "support": {
-                "source": "https://github.com/twigphp/intl-extra/tree/v3.24.0"
+                "source": "https://github.com/twigphp/intl-extra/tree/v3.26.0"
             },
             "funding": [
                 {
@@ -12253,7 +12253,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-01-17T13:57:47+00:00"
+            "time": "2026-05-19T20:44:48+00:00"
         },
         {
             "name": "twig/twig",

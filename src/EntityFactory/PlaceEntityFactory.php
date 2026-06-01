@@ -16,16 +16,20 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
 use App\Entity\PlaceMetadata;
+use App\Entity\PlaceNameSlug;
 use App\Exception\UncreatableEntityException;
 use App\Handler\EntityProviderHandler;
+use App\Utils\PlaceNameNormalizer;
 
 /**
  * @implements EntityFactoryInterface<PlaceDto, Place>
  */
 final readonly class PlaceEntityFactory implements EntityFactoryInterface
 {
-    public function __construct(private EntityProviderHandler $entityProviderHandler)
-    {
+    public function __construct(
+        private EntityProviderHandler $entityProviderHandler,
+        private PlaceNameNormalizer $placeNameNormalizer,
+    ) {
     }
 
     public function supports(string $dtoClassName): bool
@@ -68,6 +72,17 @@ final readonly class PlaceEntityFactory implements EntityFactoryInterface
             $metadata->setExternalId($dto->externalId);
             $metadata->setExternalOrigin($dto->externalOrigin);
             $entity->addMetadata($metadata);
+        }
+
+        // Name slug: record the normalized name so future imports resolve via the
+        // indexed fast path instead of a city-wide fuzzy scan (self-populating index).
+        $slug = $this->placeNameNormalizer->normalize($dto->name, $dto->city?->name);
+        if (null !== $slug && !$entity->hasNameSlug($slug)) {
+            $nameSlug = new PlaceNameSlug();
+            $nameSlug->setSlug($slug);
+            $nameSlug->setCity($entity->getCity());
+            $nameSlug->setCountry($entity->getCountry());
+            $entity->addNameSlug($nameSlug);
         }
 
         return $entity;

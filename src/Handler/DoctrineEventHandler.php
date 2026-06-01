@@ -48,6 +48,7 @@ final readonly class DoctrineEventHandler
         private CityRepository $repoCity,
         private ZipCityRepository $repoZipCity,
         private CountryRepository $countryRepository,
+        private EventImageDownloadScheduler $imageDownloadScheduler,
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }
@@ -65,6 +66,9 @@ final readonly class DoctrineEventHandler
         if ([] === $dtos) {
             return;
         }
+
+        // Drop any leftover from a previously failed batch
+        $this->imageDownloadScheduler->batchReset();
 
         // Retrieve all existing explorations for these events
         $this->loadExternalIdsData($dtos);
@@ -425,6 +429,10 @@ final readonly class DoctrineEventHandler
 
                         $dto->setIdentifierFromEntity($rootEntities[$i]);
                     }
+
+                    // Dispatch image downloads now that events have ids, but
+                    // before the EntityManager clear() resets the scheduler.
+                    $this->imageDownloadScheduler->dispatchPending();
 
                     // Clear entity providers
                     foreach ($allEntityProviders as $entityProviderToClear) {

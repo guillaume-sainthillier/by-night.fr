@@ -65,10 +65,10 @@ final readonly class EventHandler
             $eventsPerUrl[$event->getUrl()][] = $event;
         }
 
-        // Resolve redirects to group events by their final URL
-        $eventsPerFinalUrl = $this->resolveRedirectsAndGroupByFinalUrl($eventsPerUrl);
-
-        foreach (array_chunk(array_keys($eventsPerFinalUrl), self::MAX_CONCURRENT_REQUESTS) as $imageUrls) {
+        // GET directly: the HTTP client follows redirects itself, so we skip a
+        // preflight HEAD per URL. Distinct URLs that redirect to the same file are
+        // downloaded once each (rare, and off the import critical path).
+        foreach (array_chunk(array_keys($eventsPerUrl), self::MAX_CONCURRENT_REQUESTS) as $imageUrls) {
             $responses = [];
             /** @var array<string, string> $tempFilePaths */
             $tempFilePaths = [];
@@ -76,13 +76,14 @@ final readonly class EventHandler
             foreach ($imageUrls as $imageUrl) {
                 $response = $this->client->request('GET', $imageUrl, [
                     'user_data' => $imageUrl,
+                    'max_redirects' => 10,
                 ]);
                 $responses[] = $response;
             }
 
             foreach ($this->client->stream($responses) as $response => $chunk) {
                 $imageUrl = $response->getInfo('user_data');
-                $currentEvents = $eventsPerFinalUrl[$imageUrl] ?? [];
+                $currentEvents = $eventsPerUrl[$imageUrl] ?? [];
 
                 try {
                     if ($chunk->isTimeout()) {
@@ -127,55 +128,6 @@ final readonly class EventHandler
                 }
             }
         }
-    }
-
-    /**
-     * Resolve redirects using HEAD requests and group events by their final URL.
-     * This avoids downloading the same content multiple times when different URLs redirect to the same destination.
-     *
-     * @param array<string, list<Event>> $eventsPerUrl
-     *
-     * @return array<string, list<Event>>
-     */
-    private function resolveRedirectsAndGroupByFinalUrl(array $eventsPerUrl): array
-    {
-        $eventsPerFinalUrl = [];
-        $urlsToResolve = array_keys($eventsPerUrl);
-
-        foreach (array_chunk($urlsToResolve, self::MAX_CONCURRENT_REQUESTS) as $urls) {
-            $responses = [];
-            foreach ($urls as $url) {
-                $response = $this->client->request('HEAD', $url, [
-                    'user_data' => $url,
-                    'max_redirects' => 10,
-                ]);
-                $responses[] = $response;
-            }
-
-            foreach ($responses as $response) {
-                $originalUrl = $response->getInfo('user_data');
-                $events = $eventsPerUrl[$originalUrl];
-
-                try {
-                    // getStatusCode() waits for headers and follows redirects
-                    $statusCode = $response->getStatusCode();
-                    if (200 !== $statusCode) {
-                        // Keep original URL for GET request, which will handle the error
-                        $eventsPerFinalUrl[$originalUrl] = array_merge($eventsPerFinalUrl[$originalUrl] ?? [], $events);
-                        continue;
-                    }
-
-                    // Get the final URL after all redirects
-                    $finalUrl = $response->getInfo('url');
-                    $eventsPerFinalUrl[$finalUrl] = array_merge($eventsPerFinalUrl[$finalUrl] ?? [], $events);
-                } catch (TransportExceptionInterface|HttpExceptionInterface) {
-                    // On error, keep original URL for GET request which will handle/log the error
-                    $eventsPerFinalUrl[$originalUrl] = array_merge($eventsPerFinalUrl[$originalUrl] ?? [], $events);
-                }
-            }
-        }
-
-        return $eventsPerFinalUrl;
     }
 
     public function reset(): void
