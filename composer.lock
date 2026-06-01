@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7d39a0ff7f6f2811a7ea69bced3a5039",
+    "content-hash": "8996a836d8e3fa021fe1f43815448d26",
     "packages": [
         {
             "name": "api-platform/core",
@@ -14847,21 +14847,21 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.4.3",
+            "version": "2.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "891824c6c59f02a56a5dd58ea8edc44e6c0ece29"
+                "reference": "cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/891824c6c59f02a56a5dd58ea8edc44e6c0ece29",
-                "reference": "891824c6c59f02a56a5dd58ea8edc44e6c0ece29",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c",
+                "reference": "cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4|^8.0",
-                "phpstan/phpstan": "^2.1.48"
+                "phpstan/phpstan": "^2.1.56"
             },
             "conflict": {
                 "rector/rector-doctrine": "*",
@@ -14895,7 +14895,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.4.3"
+                "source": "https://github.com/rectorphp/rector/tree/2.4.5"
             },
             "funding": [
                 {
@@ -14903,7 +14903,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-12T11:17:24+00:00"
+            "time": "2026-05-26T21:03:22+00:00"
         },
         {
             "name": "rector/swiss-knife",
