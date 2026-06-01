@@ -11,7 +11,13 @@
 namespace App\Tests\Command;
 
 use App\Entity\Event;
+use App\Entity\Place;
+use App\Entity\User;
+use App\Factory\CityFactory;
+use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\PlaceFactory;
+use App\Factory\UserFactory;
 use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -35,12 +41,28 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
 
     private EventRepository $eventRepository;
 
+    private Place $place;
+
+    private User $user;
+
     #[Override]
     protected function setUp(): void
     {
         parent::setUp();
         $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
         $this->eventRepository = self::getContainer()->get(EventRepository::class);
+
+        // Duplicates of one show share a single venue. Building it explicitly (rather
+        // than letting EventFactory spawn a random Place per event) keeps the country
+        // code fixed and avoids identity-map collisions on Country's app-assigned PK.
+        $country = CountryFactory::createOne(['id' => 'FR']);
+        $city = CityFactory::createOne(['name' => 'Avignon', 'country' => $country]);
+        $this->place = PlaceFactory::createOne([
+            'name' => 'Théâtre Buffon',
+            'city' => $city,
+            'country' => $country,
+        ]);
+        $this->user = UserFactory::createOne();
     }
 
     public function testContentStrategyMergesLegacyDuplicatesIntoTheOldestEvent(): void
@@ -110,6 +132,8 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
             'externalOrigin' => self::ORIGIN,
             'name' => 'Van Gogh',
             'placeExternalId' => 'place-hash',
+            'place' => $this->place,
+            'user' => $this->user,
             'startDate' => $date,
             'endDate' => $date,
             'hours' => $hours,
