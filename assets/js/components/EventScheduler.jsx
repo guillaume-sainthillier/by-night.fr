@@ -1,8 +1,8 @@
 import { h } from 'preact'
-import { useState, useEffect, useMemo } from 'preact/hooks'
+import { useEffect, useMemo, useState } from 'preact/hooks'
+import { dom, findAll } from '@/js/utils/dom'
 import TimesheetGenerator from '@/js/utils/TimesheetGenerator'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
-import { dom, findAll } from '@/js/utils/dom'
 
 const weekdayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 

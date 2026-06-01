@@ -44,7 +44,7 @@
         "@babel/core": "^7.29.0",
         "@babel/plugin-transform-react-jsx": "^7.28.6",
         "@babel/preset-env": "^7.29.0",
-        "@eslint/js": "^10.0.0",
+        "@biomejs/biome": "2.4.16",
         "@hotwired/stimulus": "^3.0.0",
         "@svgr/cli": "^8.1.0",
         "@svgr/webpack": "^8.1.0",
@@ -53,12 +53,8 @@
         "babel-jest": "^30.2.0",
         "core-js": "^3.48.0",
         "es6-promise": "^4.2.6",
-        "eslint": "^10.0.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-webpack-plugin": "^6.0.0",
         "file-loader": "^6.0.0",
         "glob-all": "^3.3.1",
-        "globals": "^17.4.0",
         "husky": "^9.1.6",
         "imports-loader": "^5.0.0",
         "jest": "^30.2.0",
@@ -80,16 +76,16 @@
         "build": "encore production",
         "prepare": "husky",
         "icon:svg": "svgr --icon --out-dir assets/js/icons --ext jsx --no-index --jsx-runtime classic-preact -- assets/icons",
-        "lint": "eslint assets",
+        "lint": "biome check --write assets",
+        "prettier": "prettier --write \"assets/**/*.{scss,md}\"",
+        "format": "yarn lint && yarn prettier",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage"
     },
     "lint-staged": {
-        "*.{scss,md,yaml,yml}": [
-            "prettier --write"
-        ],
-        "*.{js,jsx}": "eslint --fix",
+        "*.{js,jsx,ts,tsx,mjs,json}": "biome check --write --no-errors-on-unmatched",
+        "*.{scss,md,yaml,yml}": "prettier --write",
         "*.php": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "*.twig": "vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php"
     }

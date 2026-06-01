@@ -73,7 +73,7 @@ export const prependHTML = (element, html) => {
     }
 }
 
-export const parents = function (elem, selector) {
+export const parents = (elem, selector) => {
     const parents = []
     for (; elem && elem !== document; elem = elem.parentNode) {
         if (selector) {

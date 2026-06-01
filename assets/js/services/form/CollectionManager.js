@@ -1,6 +1,6 @@
-import { getVirtualForm, setElementValue } from '@/js/utils/utils'
-import { appendHTML, data, dom, findAll, on, trigger, remove } from '@/js/utils/dom'
 import { closest } from '@/js/utils/css'
+import { appendHTML, data, dom, findAll, on, remove, trigger } from '@/js/utils/dom'
+import { getVirtualForm, setElementValue } from '@/js/utils/utils'
 
 export default class CollectionManager {
     /**

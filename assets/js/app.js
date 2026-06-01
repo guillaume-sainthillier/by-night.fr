@@ -10,13 +10,9 @@ import './utils/css'
 import './utils/dom'
 
 import * as Sentry from '@sentry/browser'
-import Container from './services/Container'
-import registerServices from './services'
-
 // Global listeners
 import autocomplete from './global-listeners/autocomplete'
 import scrollToTop from './global-listeners/scroll-to-top'
-
 // Listeners
 import contentRemovalRequest from './listeners/content-removal-request'
 import dropzone from './listeners/dropzone'
@@ -32,6 +28,8 @@ import login from './listeners/login'
 import popup from './listeners/popup'
 import register from './listeners/register'
 import tooltip from './listeners/tooltip'
+import registerServices from './services'
+import Container from './services/Container'
 
 class App {
     #di

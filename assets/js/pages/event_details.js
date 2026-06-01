@@ -1,8 +1,8 @@
 import $ from 'jquery'
-import Widgets from '@/js/components/Widgets'
 import CommentApp from '@/js/components/CommentApp'
+import Widgets from '@/js/components/Widgets'
 
-$(document).ready(function () {
+$(document).ready(() => {
     new Widgets().init()
 
     new CommentApp().init()

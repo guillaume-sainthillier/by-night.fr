@@ -2,9 +2,8 @@ import $ from 'jquery'
 
 export default class Widgets {
     init(selector) {
-        const self = this
-        $(document).ready(function () {
-            self.initMoreWidgets($('.widget', selector || document))
+        $(document).ready(() => {
+            this.initMoreWidgets($('.widget', selector || document))
         })
     }
 
@@ -37,13 +36,13 @@ export default class Widgets {
                         '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
                     )
                     const scrollAreaLastItem = containerBody.find('.scroll-item').last()
-                    $.get(btn.attr('href')).done(function (content) {
+                    $.get(btn.attr('href')).done((content) => {
                         btn.remove()
                         containerBody.append(content)
                         self.initMoreWidgets(container)
                         window.App.dispatchPageLoadedEvent(container[0])
                         if (scrollAreaLastItem.next().length > 0) {
-                            self.scrollTo(scrollAreaLastItem.next(), scrollArea, function () {})
+                            self.scrollTo(scrollAreaLastItem.next(), scrollArea, () => {})
                         }
                     })
 

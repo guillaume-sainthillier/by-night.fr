@@ -68,7 +68,7 @@ export function detectPattern(timesheets) {
         const maxDate = dates[dates.length - 1]
 
         let expectedCount = 0
-        let current = minDate.clone()
+        const current = minDate.clone()
 
         while (current.isSameOrBefore(maxDate)) {
             if (weekdays.includes(current.isoWeekday())) {

@@ -1,14 +1,13 @@
+import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
 import $ from 'jquery'
 import TomSelect from 'tom-select'
-import { setOptions, importLibrary } from '@googlemaps/js-api-loader'
-
+import initEventScheduler from '@/js/listeners/event-scheduler'
+import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createFancybox } from '@/js/services/ui/FancyboxService'
 import { create as createTags } from '@/js/services/ui/TagsService'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
-import initEventScheduler from '@/js/listeners/event-scheduler'
-import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 
 function initDatepickers(container = document) {
     container.querySelectorAll('input.shorcuts_date').forEach((el) => {
@@ -61,18 +60,18 @@ function initWysiwygs(container = document) {
     })
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
     initDatepickers()
     initTagInputs()
     initCategoryInputs()
     initFancyboxes()
     initWysiwygs()
 
-    $('.form-delete form').submit(function () {
-        return window.confirm(
+    $('.form-delete form').submit(() =>
+        window.confirm(
             "Cette action va supprimer l'\u00e9v\u00e9nement ainsi que toutes les donn\u00e9es rattach\u00e9es. Continuer ?"
         )
-    })
+    )
 
     // Initialize event scheduler
     const di = window.App
@@ -285,7 +284,7 @@ $(document).ready(function () {
             },
         })
         // Setup refresh event for placeNameSelect
-        $(eventPlaceName).on('refresh', function () {
+        $(eventPlaceName).on('refresh', () => {
             placeNameSelect.setValue($(eventPlaceName).val(), true)
         })
 
@@ -334,7 +333,7 @@ $(document).ready(function () {
             },
         })
         // Setup refresh event for addressSelect
-        $(eventAddress).on('refresh', function () {
+        $(eventAddress).on('refresh', () => {
             addressSelect.setValue($(eventAddress).val(), true)
         })
 

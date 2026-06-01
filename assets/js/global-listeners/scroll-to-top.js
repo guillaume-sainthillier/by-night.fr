@@ -17,7 +17,7 @@ export default () => {
         return
     }
 
-    toTop.click(function (e) {
+    toTop.click((e) => {
         e.preventDefault()
         $('html, body').animate({ scrollTop: 0 }, settings.scrollSpeed, settings.easingType)
     })

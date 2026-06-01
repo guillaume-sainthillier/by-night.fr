@@ -30,12 +30,10 @@ export const closest = (element, className) => {
     return element.closest(className)
 }
 
-export const siblings = function (element, className) {
-    return Array.prototype.filter.call(element.parentNode.children, function (sibling) {
-        return sibling !== element && (!className || hasClass(sibling, className))
-    })
-}
+export const siblings = (element, className) =>
+    Array.prototype.filter.call(
+        element.parentNode.children,
+        (sibling) => sibling !== element && (!className || hasClass(sibling, className))
+    )
 
-export const sibling = function (element, className) {
-    return siblings(element, className).shift()
-}
+export const sibling = (element, className) => siblings(element, className).shift()

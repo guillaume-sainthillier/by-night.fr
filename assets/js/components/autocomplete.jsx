@@ -1,12 +1,13 @@
 /** @jsx h */
-import { Fragment, h, render } from 'preact'
+
 import { autocomplete } from '@algolia/autocomplete-js'
+import { Fragment, h, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
-import groupBy from 'lodash/groupBy'
 import { Offcanvas } from '@tabler/core/dist/js/tabler.esm'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
+import groupBy from 'lodash/groupBy'
 import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
 import CrosshairIcon from '@/js/icons/lucide/Crosshair'
 import DramaIcon from '@/js/icons/lucide/Drama'

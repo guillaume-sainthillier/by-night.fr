@@ -1,10 +1,10 @@
-import ModalManager from './services/modals/ModalManager'
-import VisibleManager from './services/form/VisibleManager'
-import DisabledManager from './services/form/DisabledManager'
 import CollectionManager from './services/form/CollectionManager'
+import DisabledManager from './services/form/DisabledManager'
 import ElementManager from './services/form/ElementManager'
 import FormManager from './services/form/FormManager'
 import RequiredManager from './services/form/RequiredManager'
+import VisibleManager from './services/form/VisibleManager'
+import ModalManager from './services/modals/ModalManager'
 import ToastManager from './services/modals/ToastManager'
 
 /**

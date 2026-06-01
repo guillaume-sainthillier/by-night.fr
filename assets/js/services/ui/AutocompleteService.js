@@ -24,8 +24,8 @@ export function create({
     onSelection = null,
     onInput = null,
     onError = null,
-                           wrapper = null,
-                           inModal = false,
+    wrapper = null,
+    inModal = false,
     transformResponse = (data) => data['hydra:member'] || data.member || data,
     fetchOptions = { headers: { Accept: 'application/ld+json' } },
 } = {}) {

@@ -18,7 +18,7 @@ export default class TimesheetGenerator {
         const start = moment(startDate).startOf('day')
         const end = moment(endDate).startOf('day')
 
-        let current = start.clone()
+        const current = start.clone()
         let count = 0
         const maxTimesheets = 500
 
@@ -49,7 +49,7 @@ export default class TimesheetGenerator {
         const start = moment(startDate).startOf('day')
         const end = moment(endDate).startOf('day')
 
-        let current = start.clone()
+        const current = start.clone()
         let count = 0
         const maxTimesheets = 500
 

@@ -1,9 +1,9 @@
 import $ from 'jquery'
-import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
-import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
-import Loader2Icon from '@/js/icons/lucide/Loader2'
-import CheckIcon from '@/js/icons/lucide/Check'
 import { iconHtml } from '@/js/components/icons'
+import CheckIcon from '@/js/icons/lucide/Check'
+import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
+import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
+import Loader2Icon from '@/js/icons/lucide/Loader2'
 
 export default class CommentApp {
     constructor() {
@@ -71,7 +71,7 @@ export default class CommentApp {
                 btn.html(iconHtml(self.options.icon_spinner, 'icon-spin') + ' ' + originalText)
                 btn.prop('disabled', true)
 
-                $.get(loadMore.data('url'), function (html) {
+                $.get(loadMore.data('url'), (html) => {
                     const $temp = $(html)
 
                     $temp.each(function () {
@@ -117,7 +117,7 @@ export default class CommentApp {
                     postAnswerContainer
                         .find('.cancel-reply')
                         .off('click')
-                        .click(function () {
+                        .click(() => {
                             postAnswerContainer.removeClass('is-visible')
                             link.html(link.data('original-html'))
                             return false
@@ -138,8 +138,7 @@ export default class CommentApp {
     }
 
     update_reply_count(mainAnswerContainer, answerCount) {
-        const self = this
-        mainAnswerContainer.find(self.options.css_reply_count).html(answerCount)
+        mainAnswerContainer.find(this.options.css_reply_count).html(answerCount)
     }
 
     init_reply_form(answerPostContainer) {
@@ -154,7 +153,7 @@ export default class CommentApp {
                 const mainAnswerContainer = answerPostContainer.closest(self.options.css_main_reply_block)
 
                 $.post($(this).attr('action'), $(this).serialize())
-                    .done(function (response) {
+                    .done((response) => {
                         let answerContainer = mainAnswerContainer.find(self.options.css_replies_container)
                         if (response.success) {
                             // Success - show toast notification
@@ -204,7 +203,7 @@ export default class CommentApp {
                             answerPostContainer
                                 .find('.cancel-reply')
                                 .off('click')
-                                .click(function () {
+                                .click(() => {
                                     answerPostContainer.removeClass('is-visible')
                                     const link = mainAnswerContainer.find(self.options.css_reply_link)
                                     link.html(link.data('original-html'))
@@ -212,10 +211,10 @@ export default class CommentApp {
                                 })
                         }
                     })
-                    .fail(function () {
+                    .fail(() => {
                         self.showToast('error', 'Une erreur est survenue')
                     })
-                    .always(function () {
+                    .always(() => {
                         window.App.resetButtons(form)
                     })
 
@@ -240,9 +239,9 @@ export default class CommentApp {
                         const tempComment = $('<div class="comment is-sending">')
 
                         $.post($(this).attr('action'), $(this).serialize())
-                            .done(function (response) {
+                            .done((response) => {
                                 const mainCommentsContainer = form.closest(self.options.css_main_block_comments)
-                                let postCommentContainer = mainCommentsContainer.find(
+                                const postCommentContainer = mainCommentsContainer.find(
                                     self.options.css_block_poster_comment
                                 )
 
@@ -308,10 +307,10 @@ export default class CommentApp {
                                     self.init_new_comment(postCommentContainer)
                                 }
                             })
-                            .fail(function () {
+                            .fail(() => {
                                 self.showToast('error', 'Une erreur est survenue')
                             })
-                            .always(function () {
+                            .always(() => {
                                 window.App.resetButtons(comment)
                                 tempComment.remove()
                             })

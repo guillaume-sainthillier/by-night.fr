@@ -1,5 +1,5 @@
-import $ from 'jquery'
 import { Modal } from '@tabler/core/dist/js/tabler.esm'
+import $ from 'jquery'
 
 export default (_di, _container) => {
     const modalEl = document.getElementById('modalContentRemovalRequest')
@@ -17,7 +17,7 @@ export default (_di, _container) => {
     let currentEventUrl = null
 
     // Capture event data when modal is opened
-    modalEl.addEventListener('show.bs.modal', function (event) {
+    modalEl.addEventListener('show.bs.modal', (event) => {
         const button = event.relatedTarget
         currentEventId = button.getAttribute('data-event-id')
         currentEventUrl = button.getAttribute('data-event-url')
@@ -30,7 +30,7 @@ export default (_di, _container) => {
     })
 
     // Handle form submission
-    submitBtn.addEventListener('click', function () {
+    submitBtn.addEventListener('click', () => {
         const emailInput = form.querySelector('#removal-email')
         const typeInput = form.querySelector('#removal-type')
         const messageInput = form.querySelector('#removal-message')
@@ -95,7 +95,7 @@ export default (_di, _container) => {
             contentType: 'application/json',
             data: JSON.stringify(data),
         })
-            .done(function (response) {
+            .done((response) => {
                 if (response.success) {
                     alertEl.textContent = response.message
                     alertEl.classList.remove('d-none', 'alert-danger')
@@ -114,7 +114,7 @@ export default (_di, _container) => {
                     showError(response.message || "Une erreur s'est produite")
                 }
             })
-            .fail(function (xhr) {
+            .fail((xhr) => {
                 let errorMessage = "Une erreur s'est produite"
                 if (xhr.responseJSON && xhr.responseJSON.violations) {
                     errorMessage = xhr.responseJSON.violations.map((v) => v.message).join('<br>')
@@ -123,7 +123,7 @@ export default (_di, _container) => {
                 }
                 showError(errorMessage)
             })
-            .always(function () {
+            .always(() => {
                 submitBtn.disabled = false
                 spinner.classList.add('d-none')
             })

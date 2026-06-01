@@ -1,7 +1,7 @@
 import $ from 'jquery'
 
 export default (di, container) => {
-    const handleRegister = function ($dialog) {
+    const handleRegister = ($dialog) => {
         window.App.dispatchPageLoadedEvent($dialog[0]) // $dialog is a jQuery object so we pass the pure dom object
         $dialog
             .find('form')
@@ -12,7 +12,7 @@ export default (di, container) => {
                 const submitButton = $('#_register')
                 submitButton.button('loading')
                 $.post(href, datas)
-                    .done(function (data) {
+                    .done((data) => {
                         submitButton.button('reset')
 
                         if (typeof data.success === 'boolean' && data.success) {
@@ -23,7 +23,7 @@ export default (di, container) => {
                             handleRegister($dialog) // ne rien mettre après
                         }
                     })
-                    .fail(function (jqXHR) {
+                    .fail((jqXHR) => {
                         if (jqXHR.status === 422) {
                             $dialog.html(jqXHR.responseText)
                             handleRegister($dialog) // ne rien mettre après
@@ -42,7 +42,7 @@ export default (di, container) => {
             $dialog
                 .modal('show')
                 .modal('loading')
-                .load($(this).attr('href'), function () {
+                .load($(this).attr('href'), () => {
                     handleRegister($dialog)
                 })
         })
