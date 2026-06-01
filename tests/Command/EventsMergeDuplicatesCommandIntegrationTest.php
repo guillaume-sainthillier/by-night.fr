@@ -68,10 +68,10 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
     public function testContentStrategyMergesLegacyDuplicatesIntoTheOldestEvent(): void
     {
         // Three ticket products of the same show, no timesheets (legacy import shape),
-        // each with its own date. Created in id order, so "2001" is the oldest.
+        // each with its own date and showtime. Created in id order, so "2001" is oldest.
         $this->fnacEvent('2001', new DateTimeImmutable('2026-07-03'), 'À 13h00');
-        $this->fnacEvent('2002', new DateTimeImmutable('2026-07-01'), 'À 13h00');
-        $this->fnacEvent('2003', new DateTimeImmutable('2026-07-02'), 'À 13h00');
+        $this->fnacEvent('2002', new DateTimeImmutable('2026-07-01'), 'À 18h00');
+        $this->fnacEvent('2003', new DateTimeImmutable('2026-07-02'), 'À 20h00');
 
         $this->runMerge(['--strategy' => 'content', '--origin' => self::ORIGIN]);
 
@@ -84,10 +84,15 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
         self::assertSame($canonical->getId(), $duplicateA->getDuplicateOf()?->getId());
         self::assertSame($canonical->getId(), $duplicateB->getDuplicateOf()?->getId());
 
-        // Every date became a timesheet on the canonical, and its range was realigned.
+        // Every date became a timesheet on the canonical, each keeping its showtime,
+        // and the canonical's range was realigned to span them.
         self::assertSame(
             ['2026-07-01', '2026-07-02', '2026-07-03'],
             $this->timesheetDates($canonical),
+        );
+        self::assertSame(
+            ['2026-07-01' => 'À 18h00', '2026-07-02' => 'À 20h00', '2026-07-03' => 'À 13h00'],
+            $this->timesheetHoursByDate($canonical),
         );
         self::assertSame('2026-07-01', $canonical->getStartDate()?->format('Y-m-d'));
         self::assertSame('2026-07-03', $canonical->getEndDate()?->format('Y-m-d'));
@@ -179,5 +184,20 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
         sort($dates);
 
         return $dates;
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function timesheetHoursByDate(Event $event): array
+    {
+        $hoursByDate = [];
+        foreach ($event->getTimesheets() as $timesheet) {
+            $date = $timesheet->getStartAt()?->format('Y-m-d') ?? '';
+            $hoursByDate[$date] = $timesheet->getHours();
+        }
+        ksort($hoursByDate);
+
+        return $hoursByDate;
     }
 }
