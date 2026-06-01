@@ -11,7 +11,6 @@
 namespace App\EntityFactory;
 
 use App\Contracts\EntityFactoryInterface;
-use App\Doctrine\EventSubscriber\EventImageUploadSubscriber;
 use App\Dto\EventDto;
 use App\Dto\TagDto;
 use App\Entity\Event;
@@ -20,6 +19,7 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\EntityProvider\TagEntityProvider;
 use App\Handler\EntityProviderHandler;
+use App\Handler\EventImageDownloadScheduler;
 use DateTimeImmutable;
 
 /**
@@ -29,7 +29,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 {
     public function __construct(
         private EntityProviderHandler $entityProviderHandler,
-        private EventImageUploadSubscriber $eventImageUploadSubscriber,
+        private EventImageDownloadScheduler $imageDownloadScheduler,
     ) {
     }
 
@@ -71,7 +71,9 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         if ($entity->getUrl() !== $dto->imageUrl || null === $entity->getImageSystem()->getName()) {
             $entity->setUrl($dto->imageUrl);
-            $this->eventImageUploadSubscriber->handleEvent($entity);
+            // Defer the (slow) image download + S3 upload to a dedicated async
+            // transport so it no longer blocks the import critical path.
+            $this->imageDownloadScheduler->schedule($entity);
         }
 
         $entity->setFromData($dto->fromData);

@@ -18,6 +18,11 @@ framework:
                 retry_strategy:
                     max_retries: 10
                     delay: 10000
+            image:
+                dsn: '%env(MESSENGER_IMAGE_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 3
+                    delay: 10000
             elastica: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
             sync: 'sync://'
 
@@ -26,6 +31,7 @@ framework:
             App\Dto\EventDto: parser
             App\Message\PurgeCdnCacheUrl: async
             App\Message\RemoveImageThumbnails: async
+            App\Message\DownloadEventImages: image
             FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
             App\Elasticsearch\Message\RefreshElasticaIndex: elastica
             App\Elasticsearch\Message\InsertManyDocuments: async
@@ -40,6 +46,7 @@ when@test:
             transports:
                 async: 'in-memory://'
                 elastica: 'in-memory://'
+                image: 'in-memory://'
                 failed: 'in-memory://'
                 failed-event: 'in-memory://'
                 parser: 'in-memory://'
