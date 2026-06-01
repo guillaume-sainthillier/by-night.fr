@@ -52,3 +52,5 @@ jobs:
               run: yarn install --frozen-lockfile
             - name: Run Biome
               run: yarn lint-ci
+            - name: Run Knip
+              run: yarn knip:ci
