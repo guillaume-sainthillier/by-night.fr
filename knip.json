@@ -18,6 +18,9 @@
         "assets/**/controllers/**/*.{js,jsx}"
     ],
     "project": ["assets/**/*.{js,jsx,ts,tsx}"],
+    "paths": {
+        "@/*": ["assets/*"]
+    },
     "ignore": ["assets/**/translations/**"],
     "ignoreBinaries": ["vendor/bin/.+"],
     "webpack": false,
