@@ -70,7 +70,6 @@
         "watch": "encore dev --watch",
         "build": "encore production",
         "knip": "knip",
-        "knip:ci": "knip --dependencies",
         "prepare": "husky",
         "icon:svg": "svgr --icon --out-dir assets/js/icons --ext jsx --no-index --jsx-runtime classic-preact -- assets/icons",
         "lint": "biome check --write assets",

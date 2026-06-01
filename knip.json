@@ -15,7 +15,8 @@
         "assets/**/pages/**/*.{js,jsx}",
         "assets/**/listeners/**/*.{js,jsx}",
         "assets/**/global-listeners/**/*.{js,jsx}",
-        "assets/**/controllers/**/*.{js,jsx}"
+        "assets/**/controllers/**/*.{js,jsx}",
+        "assets/**/icons/**/*.{js,jsx}"
     ],
     "project": ["assets/**/*.{js,jsx,ts,tsx}"],
     "paths": {

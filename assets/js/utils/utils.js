@@ -16,22 +16,6 @@ export const popup = (href, parent) => {
     window.open(href, 'sharer', windowFeatures)
 }
 
-export const removeSelectOptions = (select, removeEmptyOption = false) => {
-    ;[...findAll('option', select)]
-        .filter((option) => removeEmptyOption === false && !!option.value)
-        .forEach((option) => select.removeChild(option))
-}
-
-export const updateQueryStringParameter = (uri, key, value) => {
-    const re = new RegExp(`([?&])${key}=.*?(&|$)`, 'i')
-    const separator = uri.indexOf('?') !== -1 ? '&' : '?'
-
-    if (uri.match(re)) {
-        return uri.replace(re, `$1${key}=${value}$2`)
-    }
-    return `${uri + separator + key}=${value}`
-}
-
 export const constructArrayDefinition = (definitions) => {
     const theDefinitions = {}
 
@@ -96,7 +80,7 @@ export const getVirtualForm = (container) => {
     return virtualForm
 }
 
-export const getFormValues = (form) => {
+const getFormValues = (form) => {
     const formValues = {}
     for (const [elementName, elementId] of Object.entries(form)) {
         if (elementName.startsWith('_')) {
@@ -143,13 +127,4 @@ export const setElementValue = (element, value) => {
     } else {
         element.value = value
     }
-}
-
-/* eslint no-bitwise: "off" */
-export const uuid = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0
-        const v = c === 'x' ? r : (r & 0x3) | 0x8
-        return v.toString(16)
-    })
 }
