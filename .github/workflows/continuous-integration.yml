@@ -50,5 +50,5 @@ jobs:
               run: composer install --no-interaction --no-progress --prefer-dist
             - name: Install Node dependencies
               run: yarn install --frozen-lockfile
-            - name: Run ESLint
-              run: yarn lint
+            - name: Run Biome
+              run: yarn lint-ci

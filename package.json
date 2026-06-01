@@ -73,6 +73,7 @@
         "prepare": "husky",
         "icon:svg": "svgr --icon --out-dir assets/js/icons --ext jsx --no-index --jsx-runtime classic-preact -- assets/icons",
         "lint": "biome check --write assets",
+        "lint-ci": "biome check assets",
         "prettier": "prettier --write \"assets/**/*.{scss,md}\"",
         "format": "yarn lint && yarn prettier",
         "test": "jest",
