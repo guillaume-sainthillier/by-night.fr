@@ -100,7 +100,7 @@ export function create({
             alwaysShowCalendars: !singleDate && Object.keys(parsedRanges).length === 0,
             locale,
         },
-        function (start, end, label) {
+        (start, end, label) => {
             if (singleDate) {
                 $input.val(start.format('ll'))
                 $fromInput.val(start.format('YYYY-MM-DD'))

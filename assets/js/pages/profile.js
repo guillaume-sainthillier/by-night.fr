@@ -1,10 +1,10 @@
 import $ from 'jquery'
 import SocialLogin from '@/js/components/SocialLogin'
 
-$(document).ready(function () {
+$(document).ready(() => {
     new SocialLogin().init()
 
-    $('#btnDelete').click(function () {
+    $('#btnDelete').click(() => {
         $('#modalDelete').modal('show')
     })
 })

@@ -19,7 +19,7 @@ export default (di, container) => {
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ like: !btn.hasClass(options.css_active_class) }),
-        }).done(function (msg) {
+        }).done((msg) => {
             btn.attr('disabled', !msg.success)
             if (msg.success) {
                 btn.toggleClass(options.css_active_class, msg.like)

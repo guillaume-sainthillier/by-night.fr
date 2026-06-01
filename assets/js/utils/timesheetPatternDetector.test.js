@@ -3,7 +3,7 @@
  * Run: yarn test
  */
 
-import { detectPattern } from './timesheetPatternDetector'
+import { detectPattern } from '@/js/utils/timesheetPatternDetector'
 
 describe('timesheetPatternDetector', () => {
     describe('detectPattern', () => {

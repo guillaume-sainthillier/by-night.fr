@@ -1,4 +1,4 @@
-import { render, h } from 'preact'
+import { h, render } from 'preact'
 import EventScheduler from '@/js/components/EventScheduler'
 import { findOne } from '@/js/utils/dom'
 

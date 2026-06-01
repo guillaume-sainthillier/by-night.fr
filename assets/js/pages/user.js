@@ -2,12 +2,12 @@ import $ from 'jquery'
 import Raphael from 'raphael/raphael'
 import 'morris.js/morris.css'
 import 'morris.js/morris'
-import Loader2Icon from '@/js/icons/lucide/Loader2'
 import { iconHtml } from '@/js/components/icons'
+import Loader2Icon from '@/js/icons/lucide/Loader2'
 
 global.Raphael = Raphael
 
-$(document).ready(function () {
+$(document).ready(() => {
     init()
 
     function init() {
@@ -37,7 +37,7 @@ $(document).ready(function () {
                 btn.html(iconHtml(Loader2Icon, 'icon-spin') + ' ' + originalText)
                 btn.prop('disabled', true)
 
-                $.get(loadMore.data('url'), function (html) {
+                $.get(loadMore.data('url'), (html) => {
                     // Remove the load-more button
                     loadMore.remove()
 
@@ -50,7 +50,7 @@ $(document).ready(function () {
 
                     // Re-initialize any page listeners on new event cards
                     window.App.dispatchPageLoadedEvent(container[0])
-                }).fail(function () {
+                }).fail(() => {
                     // Restore button on error
                     btn.html(originalText)
                     btn.prop('disabled', false)
@@ -83,7 +83,7 @@ $(document).ready(function () {
     function initLieux() {
         const data = []
 
-        $.each(window.datas, function (i, datum) {
+        $.each(window.datas, (i, datum) => {
             data.push({ label: datum.name || '', value: datum.eventsCount })
         })
 
@@ -99,15 +99,17 @@ $(document).ready(function () {
     }
 
     function prepareActivite(datas) {
-        return datas.data.map(function (events, index) {
-            return { period: datas.categories[index], events, full_period: datas.full_categories[index] }
-        })
+        return datas.data.map((events, index) => ({
+            period: datas.categories[index],
+            events,
+            full_period: datas.full_categories[index],
+        }))
     }
 
     function chartActivite(type, colors) {
         const element = `chart-${type}`
         const chart = $(`#${element}`)
-        $.get(chart.data('url')).done(function (datas) {
+        $.get(chart.data('url')).done((datas) => {
             chart.children().remove()
             window.Morris.Area({
                 element,

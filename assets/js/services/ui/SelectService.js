@@ -38,7 +38,7 @@ export function create({
     })
 
     // Setup refresh event listener
-    $(el).on('refresh', function () {
+    $(el).on('refresh', () => {
         instance.setValue($(el).val(), true)
     })
 

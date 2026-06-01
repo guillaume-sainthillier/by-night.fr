@@ -9,7 +9,7 @@ export default () => {
 
     $(window).scroll(
         debounce(
-            function () {
+            () => {
                 if (!toggler.hasClass('collapsed')) {
                     $(elem).collapse('hide')
                 }

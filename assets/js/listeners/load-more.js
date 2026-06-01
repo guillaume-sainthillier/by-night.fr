@@ -10,7 +10,7 @@ export default (di, container) => {
 
         const btn = $(this)
         const container = btn.parent().prev()
-        $.get($(btn).attr('href'), function (html) {
+        $.get($(btn).attr('href'), (html) => {
             const currentContainer = $('<div>').html(html)
             btn.parent().remove()
             currentContainer.insertAfter(container)

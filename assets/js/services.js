@@ -1,11 +1,11 @@
-import ModalManager from './services/modals/ModalManager'
-import VisibleManager from './services/form/VisibleManager'
-import DisabledManager from './services/form/DisabledManager'
-import CollectionManager from './services/form/CollectionManager'
-import ElementManager from './services/form/ElementManager'
-import FormManager from './services/form/FormManager'
-import RequiredManager from './services/form/RequiredManager'
-import ToastManager from './services/modals/ToastManager'
+import CollectionManager from '@/js/services/form/CollectionManager'
+import DisabledManager from '@/js/services/form/DisabledManager'
+import ElementManager from '@/js/services/form/ElementManager'
+import FormManager from '@/js/services/form/FormManager'
+import RequiredManager from '@/js/services/form/RequiredManager'
+import VisibleManager from '@/js/services/form/VisibleManager'
+import ModalManager from '@/js/services/modals/ModalManager'
+import ToastManager from '@/js/services/modals/ToastManager'
 
 /**
  * @param {Container} di

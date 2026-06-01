@@ -1,8 +1,8 @@
-import $ from 'jquery'
 import { Modal } from '@tabler/core/dist/js/tabler.esm'
+import $ from 'jquery'
+import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
 import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
-import { iconHtml } from '@/js/components/icons'
 
 Modal.prototype.loading = function () {
     this.setTitle('By Night')
@@ -52,7 +52,7 @@ $.ajaxSetup({
                 const errors = JSON.parse(error.responseText)
 
                 message = ''
-                $.each(errors, function (k, err) {
+                $.each(errors, (k, err) => {
                     message = `${err.message}<br />`
                 })
             } catch (e) {

@@ -1,8 +1,8 @@
 import $ from 'jquery'
-import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
+import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 
-$(document).ready(function () {
+$(document).ready(() => {
     document.querySelectorAll('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
@@ -25,9 +25,7 @@ $(document).ready(function () {
 
         updateBtn()
 
-        form.submit(function () {
-            return !btn.attr('disabled')
-        })
+        form.submit(() => !btn.attr('disabled'))
 
         createAutocomplete({
             element: field,

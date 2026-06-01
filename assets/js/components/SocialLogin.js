@@ -3,21 +3,20 @@ import { popup } from '@/js/utils/utils'
 
 export default class SocialLogin {
     init() {
-        const self = this
-        self.initOnOff()
+        this.initOnOff()
 
         // Default actions
         $('body')
-            .on('wantConnect', function (event, checkbox) {
-                self.launchSocialConnect(checkbox)
+            .on('wantConnect', (event, checkbox) => {
+                this.launchSocialConnect(checkbox)
             })
-            .on('wantDisconnect', function (event, checkbox) {
-                self.launchSocialDisconnect(checkbox)
+            .on('wantDisconnect', (event, checkbox) => {
+                this.launchSocialDisconnect(checkbox)
             })
-            .on('hasDisconnected', function (event, checkbox) {
-                self.onDisconnectedSocial(checkbox)
+            .on('hasDisconnected', (event, checkbox) => {
+                this.onDisconnectedSocial(checkbox)
             })
-            .on('hasConnected', function (event, ui) {
+            .on('hasConnected', (event, ui) => {
                 const checkbox = ui.target
                 const { user } = ui
 
@@ -52,17 +51,16 @@ export default class SocialLogin {
     }
 
     launchSocialDisconnect(checkbox) {
-        const self = this
         const dialog = $('#dialog_details').modal('loading').modal('show')
 
-        dialog.load($(checkbox).data('href-disconnect'), function () {
-            self.initModalCheckbox(dialog.modal('getBody').find('input:checkbox'))
+        dialog.load($(checkbox).data('href-disconnect'), () => {
+            this.initModalCheckbox(dialog.modal('getBody').find('input:checkbox'))
             dialog
                 .find('form')
                 .off('submit')
                 .submit(function () {
                     dialog.modal('loading')
-                    $.post($(this).attr('action')).done(function () {
+                    $.post($(this).attr('action')).done(() => {
                         dialog.modal('hide')
                         $('body').trigger('hasDisconnected', $(checkbox))
                     })

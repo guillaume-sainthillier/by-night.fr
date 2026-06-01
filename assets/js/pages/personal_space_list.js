@@ -1,11 +1,9 @@
 import $ from 'jquery'
 
-$(document).ready(function () {
-    $('.form-delete').submit(function () {
-        return window.confirm(
-            "Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?"
-        )
-    })
+$(document).ready(() => {
+    $('.form-delete').submit(() =>
+        window.confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?")
+    )
 
     $('.draft').change(function () {
         const self = $(this)
@@ -16,7 +14,7 @@ $(document).ready(function () {
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ draft: !self.prop('checked') }),
-        }).done(function () {
+        }).done(() => {
             self.attr('disabled', false)
         })
     })
@@ -29,7 +27,7 @@ $(document).ready(function () {
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ cancel: self.prop('checked') }),
-        }).done(function () {
+        }).done(() => {
             self.attr('disabled', false)
         })
     })
@@ -41,7 +39,7 @@ $(document).ready(function () {
     const feedbackError = $('#feedback-error')
     const submitBtn = feedbackForm.closest('.modal-content').find('button[type="submit"]')
 
-    feedbackForm.on('submit', function (e) {
+    feedbackForm.on('submit', (e) => {
         e.preventDefault()
 
         const message = feedbackMessage.val().trim()
@@ -60,12 +58,12 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({ message: message }),
         })
-            .done(function (response) {
+            .done((response) => {
                 window.App.get('toastManager').createToast('success', response.message)
                 feedbackModal.modal('hide')
                 $('#feedback-banner').alert('close')
             })
-            .fail(function (xhr) {
+            .fail((xhr) => {
                 let errorMessage = 'Une erreur est survenue'
                 if (xhr.responseJSON && xhr.responseJSON.detail) {
                     errorMessage = xhr.responseJSON.detail
@@ -75,13 +73,13 @@ $(document).ready(function () {
                 feedbackMessage.addClass('is-invalid')
                 feedbackError.text(errorMessage)
             })
-            .always(function () {
+            .always(() => {
                 submitBtn.attr('disabled', false)
             })
     })
 
     // Reset form when modal is closed
-    feedbackModal.on('hidden.bs.modal', function () {
+    feedbackModal.on('hidden.bs.modal', () => {
         feedbackForm[0].reset()
         feedbackMessage.removeClass('is-invalid')
         feedbackError.text('')

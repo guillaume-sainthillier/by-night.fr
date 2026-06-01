@@ -1,37 +1,35 @@
 import '@/scss/app.scss'
 
 // Symfony UX Stimulus
-import '../stimulus_bootstrap.js'
+import '@/stimulus_bootstrap.js'
 
 import $ from 'jquery'
-import './vendors'
-import './overrides'
-import './utils/css'
-import './utils/dom'
+import '@/js/vendors'
+import '@/js/overrides'
+import '@/js/utils/css'
+import '@/js/utils/dom'
 
 import * as Sentry from '@sentry/browser'
-import Container from './services/Container'
-import registerServices from './services'
-
 // Global listeners
-import autocomplete from './global-listeners/autocomplete'
-import scrollToTop from './global-listeners/scroll-to-top'
-
+import autocomplete from '@/js/global-listeners/autocomplete'
+import scrollToTop from '@/js/global-listeners/scroll-to-top'
 // Listeners
-import contentRemovalRequest from './listeners/content-removal-request'
-import dropzone from './listeners/dropzone'
-import emailVerify from './listeners/email-verify'
-import formCollection from './listeners/form-collection'
-import formErrors from './listeners/form-errors'
-import formTarget from './listeners/form-target'
-import imagePreviews from './listeners/image-previews'
-import impersonate from './listeners/impersonate'
-import like from './listeners/like'
-import loadMore from './listeners/load-more'
-import login from './listeners/login'
-import popup from './listeners/popup'
-import register from './listeners/register'
-import tooltip from './listeners/tooltip'
+import contentRemovalRequest from '@/js/listeners/content-removal-request'
+import dropzone from '@/js/listeners/dropzone'
+import emailVerify from '@/js/listeners/email-verify'
+import formCollection from '@/js/listeners/form-collection'
+import formErrors from '@/js/listeners/form-errors'
+import formTarget from '@/js/listeners/form-target'
+import imagePreviews from '@/js/listeners/image-previews'
+import impersonate from '@/js/listeners/impersonate'
+import like from '@/js/listeners/like'
+import loadMore from '@/js/listeners/load-more'
+import login from '@/js/listeners/login'
+import popup from '@/js/listeners/popup'
+import register from '@/js/listeners/register'
+import tooltip from '@/js/listeners/tooltip'
+import registerServices from '@/js/services'
+import Container from '@/js/services/Container'
 
 class App {
     #di

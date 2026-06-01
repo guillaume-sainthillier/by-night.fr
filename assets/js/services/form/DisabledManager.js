@@ -1,6 +1,6 @@
-import ElementManager from './ElementManager'
-import { constructArrayDefinition } from '@/js/utils/utils'
+import ElementManager from '@/js/services/form/ElementManager'
 import { on } from '@/js/utils/dom'
+import { constructArrayDefinition } from '@/js/utils/utils'
 
 export default class DisabledManager {
     constructor() {

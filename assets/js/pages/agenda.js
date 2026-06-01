@@ -1,14 +1,12 @@
 import $ from 'jquery'
 import debounce from 'lodash/debounce'
-
+import { iconHtml } from '@/js/components/icons'
+import Widgets from '@/js/components/Widgets'
+import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
+import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createFancybox } from '@/js/services/ui/FancyboxService'
 import { create as createSelect } from '@/js/services/ui/SelectService'
-
-import Widgets from '@/js/components/Widgets'
-import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
-import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
-import { iconHtml } from '@/js/components/icons'
 
 function initDatepickers(container = document) {
     container.querySelectorAll('input.shorcuts_date').forEach((el) => {
@@ -34,7 +32,7 @@ function initSelects(container = document) {
     })
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
     initDatepickers()
     initFancyboxes()
     initSelects()
@@ -55,7 +53,7 @@ $(document).ready(function () {
 
         $(window).scroll(
             debounce(
-                function () {
+                () => {
                     if (countLoads < countStep || isLoading) {
                         return
                     }
@@ -127,7 +125,7 @@ $(document).ready(function () {
 
             const btn = $(this)
             const container = btn.parent().prev()
-            $.get($(btn).attr('href'), function (html) {
+            $.get($(btn).attr('href'), (html) => {
                 isLoading = true
                 const currentContainer = $('<div>').html(html)
                 btn.parent().remove()

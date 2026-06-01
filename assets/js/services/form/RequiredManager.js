@@ -1,7 +1,7 @@
-import ElementManager from './ElementManager'
-import { constructArrayDefinition } from '@/js/utils/utils'
-import { on } from '@/js/utils/dom'
+import ElementManager from '@/js/services/form/ElementManager'
 import { addClass, removeClass } from '@/js/utils/css'
+import { on } from '@/js/utils/dom'
+import { constructArrayDefinition } from '@/js/utils/utils'
 
 export default class RequiredManager {
     constructor() {
