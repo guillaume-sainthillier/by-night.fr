@@ -40,7 +40,7 @@ abstract class AbstractAwinParser extends AbstractParser
      */
     public function parse(bool $incremental): void
     {
-        $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
+        $path = $this->downloadFeed();
 
         foreach ($this->parseCsvFile($path) as $data) {
             $event = $this->arrayToDto($data);
@@ -51,9 +51,17 @@ abstract class AbstractAwinParser extends AbstractParser
     }
 
     /**
+     * Download the Awin datafeed (with the API key injected) and return its local path.
+     */
+    protected function downloadFeed(): string
+    {
+        return $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
+    }
+
+    /**
      * @return Generator<array<string, string>>
      */
-    private function parseCsvFile(string $path): Generator
+    protected function parseCsvFile(string $path): Generator
     {
         $handle = gzopen($path, 'r');
 

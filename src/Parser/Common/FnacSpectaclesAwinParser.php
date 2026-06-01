@@ -13,9 +13,12 @@ namespace App\Parser\Common;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use DateTimeImmutable;
+use DateTimeInterface;
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -66,6 +69,67 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
     }
 
     /**
+     * Fnac lists one CSV row per ticket product, so a single show shows up as many
+     * near-identical rows (same name, venue and date, only the merchant_product_id
+     * and affiliate link differ). We collapse those rows on a stable show identity
+     * and publish a single event carrying one timesheet per distinct date.
+     *
+     * {@inheritDoc}
+     */
+    #[Override]
+    public function parse(bool $incremental): void
+    {
+        foreach ($this->groupEvents($this->parseCsvFile($this->downloadFeed())) as $event) {
+            $this->publish($event);
+        }
+    }
+
+    /**
+     * Collapse the raw CSV rows into one event per show, each carrying a timesheet
+     * for every distinct date and a price range spanning all ticket products.
+     *
+     * @param iterable<array<string, string>> $rows
+     *
+     * @return list<EventDto>
+     */
+    protected function groupEvents(iterable $rows): array
+    {
+        /** @var array<string, EventDto> $events */
+        $events = [];
+        /** @var array<string, array{min: float, max: float}> $priceRanges */
+        $priceRanges = [];
+
+        foreach ($rows as $data) {
+            $event = $this->arrayToDto($data);
+            if (null === $event) {
+                continue;
+            }
+
+            // arrayToDto() sets externalId to the show identity shared by every
+            // duplicate row, so it doubles as the grouping key.
+            $key = (string) $event->externalId;
+            $price = (float) ($data['search_price'] ?? 0);
+
+            if (!isset($events[$key])) {
+                $events[$key] = $event;
+                $priceRanges[$key] = ['min' => $price, 'max' => $price];
+
+                continue;
+            }
+
+            $this->mergeDuplicateRow($events[$key], $event);
+            $priceRanges[$key]['min'] = min($priceRanges[$key]['min'], $price);
+            $priceRanges[$key]['max'] = max($priceRanges[$key]['max'], $price);
+        }
+
+        foreach ($events as $key => $event) {
+            $this->finalizeEvent($event, $priceRanges[$key]);
+        }
+
+        return array_values($events);
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected function arrayToDto(array $data): ?EventDto
@@ -81,12 +145,6 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             return null;
         }
 
-        // Parse end date from valid_to (YYYY-mm-dd format)
-        $endDate = DateTimeImmutable::createFromFormat('Y-m-d', $data['valid_to']);
-        if (false === $endDate) {
-            $endDate = $startDate;
-        }
-
         // Parse hours from custom_7 (HH:mm format)
         $hours = null;
         $eventTime = trim($data['custom_7'] ?? '');
@@ -94,16 +152,23 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             $hours = \sprintf('À %s', str_replace(':', 'h', $eventTime));
         }
 
-        // Prevents Reject::BAD_EVENT_DATE_INTERVAL
-        $endDate = $endDate->setTime(0, 0);
+        // Normalize to a date-only value (timesheets are stored as dates).
+        // Also prevents Reject::BAD_EVENT_DATE_INTERVAL.
         $startDate = $startDate->setTime(0, 0);
+
+        // This row is a single performance: model it as one timesheet. Duplicate
+        // rows for the same show are folded together in groupEvents().
+        $timesheet = new EventTimesheetDto();
+        $timesheet->startAt = $startDate;
+        $timesheet->endAt = $startDate;
+        $timesheet->hours = $hours;
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
-        $event->externalId = $data['merchant_product_id'];
         $event->startDate = $startDate;
-        $event->endDate = $endDate;
+        $event->endDate = $startDate;
         $event->hours = $hours;
+        $event->timesheets = [$timesheet];
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));
@@ -147,7 +212,80 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         $event->place = $place;
 
+        // Stable show identity: every ticket product for the same show at the same
+        // place hashes to the same id, so duplicate rows share a grouping key and
+        // re-imports stay idempotent regardless of which products are on sale.
+        $event->externalId = sha1(\sprintf('%s|%s', trim((string) $data['product_name']), $place->externalId));
+
         return $event;
+    }
+
+    /**
+     * Fold a duplicate row (carrying a single timesheet) into the event already
+     * built for this show: add its date if new and widen the event's date range.
+     */
+    private function mergeDuplicateRow(EventDto $event, EventDto $row): void
+    {
+        foreach ($row->timesheets as $timesheet) {
+            if (!$this->hasTimesheetForDate($event, $timesheet->startAt)) {
+                $event->timesheets[] = $timesheet;
+            }
+        }
+
+        if (null !== $row->startDate && (null === $event->startDate || $row->startDate < $event->startDate)) {
+            $event->startDate = $row->startDate;
+        }
+
+        if (null !== $row->endDate && (null === $event->endDate || $row->endDate > $event->endDate)) {
+            $event->endDate = $row->endDate;
+        }
+    }
+
+    private function hasTimesheetForDate(EventDto $event, ?DateTimeInterface $date): bool
+    {
+        if (null === $date) {
+            return false;
+        }
+
+        $needle = $date->format('Y-m-d');
+        foreach ($event->timesheets as $timesheet) {
+            if ($timesheet->startAt?->format('Y-m-d') === $needle) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Once every duplicate row has been folded in, derive the aggregate fields:
+     * chronological timesheets, a shared hours label and the full price range.
+     *
+     * @param array{min: float, max: float} $priceRange
+     */
+    private function finalizeEvent(EventDto $event, array $priceRange): void
+    {
+        usort(
+            $event->timesheets,
+            static fn (EventTimesheetDto $a, EventTimesheetDto $b): int => ($a->startAt?->getTimestamp() ?? 0) <=> ($b->startAt?->getTimestamp() ?? 0),
+        );
+
+        // Surface a single event-level hours label only when every date shares it.
+        $distinctHours = array_values(array_unique(array_filter(array_map(
+            static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours,
+            $event->timesheets,
+        ))));
+        $event->hours = 1 === \count($distinctHours) ? $distinctHours[0] : null;
+
+        // Reflect the full ticket price range gathered across the duplicate rows.
+        $event->prices = $priceRange['min'] === $priceRange['max']
+            ? \sprintf('%s€', $this->formatPrice($priceRange['min']))
+            : \sprintf('De %s€ à %s€', $this->formatPrice($priceRange['min']), $this->formatPrice($priceRange['max']));
+    }
+
+    private function formatPrice(float $price): string
+    {
+        return rtrim(rtrim(number_format($price, 2, '.', ''), '0'), '.');
     }
 
     private function getImageUrl(string $url): string
