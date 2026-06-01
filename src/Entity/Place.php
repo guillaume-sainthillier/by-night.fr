@@ -46,6 +46,12 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\OneToMany(targetEntity: PlaceMetadata::class, mappedBy: 'place', cascade: ['persist', 'remove'])]
     private Collection $metadatas;
 
+    /**
+     * @var Collection<int, PlaceNameSlug>
+     */
+    #[ORM\OneToMany(targetEntity: PlaceNameSlug::class, mappedBy: 'place', cascade: ['persist', 'remove'])]
+    private Collection $nameSlugs;
+
     #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $externalId = null;
 
@@ -111,6 +117,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     public function __construct()
     {
         $this->metadatas = new ArrayCollection();
+        $this->nameSlugs = new ArrayCollection();
     }
 
     public function getKeyPrefix(): string
@@ -423,6 +430,46 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
             // set the owning side to null (unless already changed)
             if ($metadata->getPlace() === $this) {
                 $metadata->setPlace(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PlaceNameSlug>
+     */
+    public function getNameSlugs(): Collection
+    {
+        return $this->nameSlugs;
+    }
+
+    public function hasNameSlug(string $slug): bool
+    {
+        foreach ($this->nameSlugs as $nameSlug) {
+            if ($nameSlug->getSlug() === $slug) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function addNameSlug(PlaceNameSlug $nameSlug): self
+    {
+        if (!$this->nameSlugs->contains($nameSlug)) {
+            $this->nameSlugs[] = $nameSlug;
+            $nameSlug->setPlace($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNameSlug(PlaceNameSlug $nameSlug): self
+    {
+        if ($this->nameSlugs->removeElement($nameSlug)) {
+            if ($nameSlug->getPlace() === $this) {
+                $nameSlug->setPlace(null);
             }
         }
 

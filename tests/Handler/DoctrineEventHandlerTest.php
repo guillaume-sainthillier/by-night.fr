@@ -25,6 +25,7 @@ use App\Factory\TagFactory;
 use App\Factory\UserFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Repository\EventRepository;
+use App\Repository\PlaceRepository;
 use App\Tests\AppKernelTestCase;
 use DateTime;
 use Override;
@@ -716,5 +717,95 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $duration,
             \sprintf('Batch import took %.2f seconds, expected < 30 seconds', $duration)
         );
+    }
+
+    /**
+     * A venue imported from two sources with different external ids must resolve to a
+     * single place via the normalized name-slug index (not the external-id pass).
+     */
+    public function testPlaceDeduplicatedByNameSlugAcrossDifferentExternalIds(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // First import creates the place and records its normalized slug.
+        $this->handler->handleOne($this->makeEventWithPlace('slug-evt-1', 'Le Bikini', 'place-A', 'sourceA'));
+
+        // Second import: same venue and city, but a DIFFERENT external id/source, so the
+        // external-id pass misses and resolution must fall to the indexed slug.
+        $this->handler->handleOne($this->makeEventWithPlace('slug-evt-2', 'Le Bikini', 'place-B', 'sourceB'));
+
+        $placeRepository = self::getContainer()->get(PlaceRepository::class);
+        $this->assertSame(1, $placeRepository->count([]), 'The venue must be deduplicated into a single place');
+
+        $place = $placeRepository->findOneBy([]);
+        $this->assertNotNull($place);
+        $this->assertTrue($place->hasNameSlug('bikini'), 'The normalized name slug should be stored');
+        $this->assertCount(2, $place->getMetadatas(), 'Both source external ids should attach to the single place');
+    }
+
+    /**
+     * Two surface forms of the same venue ("Le Bikini" / "BIKINI") normalize to the same
+     * slug and must collapse to one place, even with no external id at all.
+     */
+    public function testPlaceDeduplicatedByNormalizedNameVariants(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('var-evt-1', 'Le Bikini'));
+        $this->handler->handleOne($this->makeEventWithPlace('var-evt-2', 'BIKINI'));
+
+        $placeRepository = self::getContainer()->get(PlaceRepository::class);
+        $this->assertSame(1, $placeRepository->count([]), 'Name variants of the same venue must collapse to one place');
+    }
+
+    /**
+     * Genuinely different venues in the same city must NOT be merged (the slug index
+     * narrows candidates but the comparator still guards against over-merging).
+     */
+    public function testDistinctPlacesAreNotDeduplicated(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('distinct-evt-1', 'Le Bikini'));
+        $this->handler->handleOne($this->makeEventWithPlace('distinct-evt-2', 'Le Zénith'));
+
+        $placeRepository = self::getContainer()->get(PlaceRepository::class);
+        $this->assertSame(2, $placeRepository->count([]), 'Different venues in the same city must stay separate');
+    }
+
+    private function makeEventWithPlace(
+        string $eventExternalId,
+        string $placeName,
+        ?string $placeExternalId = null,
+        ?string $placeOrigin = null,
+    ): EventDto {
+        $country = new CountryDto();
+        $country->code = 'FR';
+
+        $city = new CityDto();
+        $city->name = 'Toulouse';
+        $city->country = $country;
+
+        $place = new PlaceDto();
+        $place->name = $placeName;
+        $place->city = $city;
+        $place->country = $country;
+        $place->externalId = $placeExternalId;
+        $place->externalOrigin = $placeOrigin;
+
+        $dto = new EventDto();
+        $dto->name = 'Concert at ' . $placeName;
+        $dto->description = 'A concert happening at this venue later this week, come along.';
+        $dto->startDate = new DateTime('+1 week');
+        $dto->endDate = new DateTime('+1 week +3 hours');
+        $dto->externalId = $eventExternalId;
+        $dto->externalOrigin = 'slug-test-parser';
+        $dto->parserVersion = '1.0';
+        $dto->place = $place;
+
+        return $dto;
     }
 }

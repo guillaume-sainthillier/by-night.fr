@@ -13,10 +13,15 @@ namespace App\Comparator;
 use App\Contracts\MatchingInterface;
 use App\Dto\PlaceDto;
 use App\Entity\Place;
+use App\Utils\PlaceNameNormalizer;
 use App\Utils\SluggerUtils;
 
 final class PlaceComparator extends AbstractComparator
 {
+    public function __construct(private readonly PlaceNameNormalizer $placeNameNormalizer)
+    {
+    }
+
     public function supports(object $object): bool
     {
         return $object instanceof PlaceDto;
@@ -63,20 +68,9 @@ final class PlaceComparator extends AbstractComparator
             return 100.0;
         }
 
-        $entityPlaceName = $entity->getName();
-        if (null !== $entity->getCity()) {
-            $entityPlaceName = str_ireplace((string) $entity->getCity()->getName(), '', $entityPlaceName);
-        } elseif (null !== $entity->getZipCity()) {
-            $entityPlaceName = str_ireplace((string) $entity->getZipCity()->getName(), '', $entityPlaceName);
-        }
-
-        $dtoPlaceName = $dto->name;
-        if (null !== $dto->city) {
-            $dtoPlaceName = str_ireplace((string) $dto->city->name, '', $dtoPlaceName);
-        }
-
-        $entityPlaceName = $this->sanitize($entityPlaceName);
-        $dtoPlaceName = $this->sanitize($dtoPlaceName);
+        $entityCityName = $entity->getCity()?->getName() ?? $entity->getZipCity()?->getName();
+        $entityPlaceName = $this->placeNameNormalizer->normalize($entity->getName(), $entityCityName) ?? '';
+        $dtoPlaceName = $this->placeNameNormalizer->normalize($dto->name, $dto->city?->name) ?? '';
 
         return $this->getStringMatchingConfidence($entityPlaceName, $dtoPlaceName);
     }
