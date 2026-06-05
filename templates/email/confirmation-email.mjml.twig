@@ -1,0 +1,19 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Confirmez votre adresse e-mail{% endblock %}
+{% block preheader %}Confirmez votre adresse e-mail pour activer votre compte By Night.{% endblock %}
+
+{% block body %}
+    <mj-text mj-class="h1">Bonjour 👋</mj-text>
+    <mj-text>
+        Bienvenue sur By Night ! Pour activer votre compte, confirmez votre adresse e-mail
+        en cliquant sur le bouton ci-dessous.
+    </mj-text>
+    <mj-button href="{{ signedUrl|raw }}">
+        Confirmer mon adresse e-mail
+    </mj-button>
+    <mj-text css-class="muted" padding="20px 0 0 0">
+        Ce lien est valide durant {{ expiresAt|date('g') }} heure(s). Si vous n'êtes pas à
+        l'origine de cette demande, vous pouvez ignorer cet e-mail.
+    </mj-text>
+{% endblock %}

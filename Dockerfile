@@ -64,6 +64,19 @@ COPY --link package.json webpack.config.js yarn.lock ./
 RUN mkdir -p public && \
     yarn build
 
+# Build the MJML rendering extension (ext-mjml / alekitto/mjml-php, Rust mrml engine).
+# No prebuilt binary exists for php8.5 + musl + ZTS yet, so PIE compiles it from source.
+# Only the resulting mjml.so is copied into the final image; the Rust toolchain stays here.
+FROM php_base AS mjml_ext_builder
+
+RUN apk add --no-cache --virtual .mjml-build-deps $PHPIZE_DEPS cargo clang-dev openssl-dev curl
+
+RUN curl -fsSL https://github.com/php/pie/releases/latest/download/pie.phar -o /usr/local/bin/pie \
+    && chmod +x /usr/local/bin/pie
+
+RUN --mount=type=cache,target=/root/.cargo/registry \
+    pie install kcs/mjml:^1.2
+
 FROM php_base
 
 EXPOSE 80
@@ -98,6 +111,10 @@ COPY --link docker/worker.Caddyfile /etc/frankenphp/worker.Caddyfile
 COPY --link docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 COPY --link docker/supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 COPY --link docker/entrypoint.sh /usr/local/bin/docker-entrypoint
+
+# MJML rendering extension (compiled in the mjml_ext_builder stage above)
+COPY --from=mjml_ext_builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+RUN echo "extension=mjml" > "$PHP_INI_DIR/conf.d/docker-php-ext-mjml.ini"
 
 RUN mkdir -p /run/php var/cache var/sessions var/storage/temp var/datas public/build && \
     APP_ENV=prod composer dump-autoload --optimize --classmap-authoritative --no-dev --no-interaction && \

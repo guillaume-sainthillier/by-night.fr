@@ -56,6 +56,7 @@
         "league/oauth2-facebook": "^2.2",
         "league/oauth2-google": "^5.0",
         "neitanod/forceutf8": "^2.0.4",
+        "notfloran/mjml-bundle": "^3.11",
         "pagerfanta/doctrine-orm-adapter": "^4",
         "pagerfanta/twig": "^4",
         "presta/sitemap-bundle": "^4.3",

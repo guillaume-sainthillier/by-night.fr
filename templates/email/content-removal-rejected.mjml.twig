@@ -1,0 +1,18 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Votre demande a été examinée{% endblock %}
+{% block preheader %}Votre demande de suppression de contenu a été examinée.{% endblock %}
+
+{% block body %}
+    <mj-text mj-class="h1">Votre demande de suppression a été examinée</mj-text>
+    <mj-text>Bonjour,</mj-text>
+    <mj-text>
+        Votre demande de suppression de contenu du {{ contentRemovalRequest.createdAt|date('d/m/Y') }}
+        a été examinée par notre équipe. Après étude, nous n'avons pas donné suite à votre demande.
+    </mj-text>
+    <mj-text>
+        Si vous pensez qu'il s'agit d'une erreur ou si vous souhaitez nous apporter des éléments
+        complémentaires, vous pouvez répondre directement à cet e-mail.
+    </mj-text>
+    <mj-text>Merci de votre compréhension.<br />L'équipe By Night</mj-text>
+{% endblock %}

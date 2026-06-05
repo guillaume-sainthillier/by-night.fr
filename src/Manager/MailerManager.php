@@ -33,7 +33,7 @@ final readonly class MailerManager
         $email = new TemplatedEmail()
             ->to($user->getEmail())
             ->subject('Confirmez votre adresse mail')
-            ->htmlTemplate('email/confirmation-email.html.twig')
+            ->htmlTemplate('email/confirmation-email.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
@@ -44,7 +44,7 @@ final readonly class MailerManager
         $email = new TemplatedEmail()
             ->to($user->getEmail())
             ->subject('Changement de mot de passe')
-            ->htmlTemplate('email/reset-password.html.twig')
+            ->htmlTemplate('email/reset-password.mjml.twig')
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
                 'tokenLifetime' => $tokenLifeTime,
@@ -58,7 +58,7 @@ final readonly class MailerManager
         $email = new TemplatedEmail()
             ->to($recipientEmail)
             ->subject('Feedback utilisateur - By Night')
-            ->htmlTemplate('email/feedback.html.twig')
+            ->htmlTemplate('email/feedback.mjml.twig')
             ->context([
                 'user' => $user,
                 'message' => $message,
@@ -91,7 +91,7 @@ final readonly class MailerManager
             ->to($recipientEmail)
             ->replyTo($contentRemovalRequest->getEmail())
             ->subject('Demande de suppression de contenu - By Night')
-            ->htmlTemplate('email/content-removal-request.html.twig')
+            ->htmlTemplate('email/content-removal-request.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
@@ -102,7 +102,7 @@ final readonly class MailerManager
         $this->sendRequesterNotification(
             $contentRemovalRequest,
             'Votre signalement a été traité - By Night',
-            'email/content-removal-event-deleted.html.twig',
+            'email/content-removal-event-deleted.mjml.twig',
         );
     }
 
@@ -111,7 +111,7 @@ final readonly class MailerManager
         $this->sendRequesterNotification(
             $contentRemovalRequest,
             'Votre demande de suppression a été traitée - By Night',
-            'email/content-removal-processed.html.twig',
+            'email/content-removal-processed.mjml.twig',
         );
     }
 
@@ -120,7 +120,7 @@ final readonly class MailerManager
         $this->sendRequesterNotification(
             $contentRemovalRequest,
             'Votre demande de suppression a été examinée - By Night',
-            'email/content-removal-rejected.html.twig',
+            'email/content-removal-rejected.mjml.twig',
         );
     }
 
