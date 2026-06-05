@@ -180,6 +180,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         ];
     }
 
+    #[AdminRoute]
     public function removeImage(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
@@ -196,6 +197,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function removeEvents(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
@@ -215,6 +217,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->generateUrl());
     }
 
+    #[AdminRoute]
     public function markAsProcessed(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
@@ -227,6 +230,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function reject(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
@@ -239,6 +243,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchMarkAsProcessed(BatchActionDto $batchActionDto): Response
     {
         $count = 0;
@@ -257,6 +262,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchReject(BatchActionDto $batchActionDto): Response
     {
         $count = 0;
@@ -275,6 +281,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchRemoveImages(BatchActionDto $batchActionDto): Response
     {
         $count = 0;
@@ -300,6 +307,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchRemoveEvents(BatchActionDto $batchActionDto): Response
     {
         $count = 0;
