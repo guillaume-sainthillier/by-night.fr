@@ -11,11 +11,10 @@
 namespace App\Tests\Api;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use App\Entity\ContentRemovalRequest;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
+use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Override;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -286,11 +285,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        /** @var EntityManagerInterface $entityManager */
-        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
-        $repository = $entityManager->getRepository(ContentRemovalRequest::class);
-
-        $requests = $repository->findBy(['email' => 'persist-test@example.com']);
+        $requests = ContentRemovalRequestFactory::findBy(['email' => 'persist-test@example.com']);
         self::assertCount(1, $requests);
 
         $request = $requests[0];
