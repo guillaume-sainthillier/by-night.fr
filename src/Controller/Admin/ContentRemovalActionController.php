@@ -14,12 +14,11 @@ use App\Entity\ContentRemovalRequest;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\ContentRemovalRequestStatus;
+use App\Manager\MailerManager;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -28,20 +27,20 @@ final class ContentRemovalActionController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly UriSigner $uriSigner,
+        private readonly MailerManager $mailerManager,
     ) {
     }
 
     #[Route(path: '/{id}/remove-events', name: 'admin_content_removal_action_remove_events', methods: ['GET'])]
-    public function removeEvents(Request $request, ContentRemovalRequest $contentRemovalRequest): Response
+    public function removeEvents(ContentRemovalRequest $contentRemovalRequest): Response
     {
-        $this->verifySignedUrl($request);
         $this->ensurePending($contentRemovalRequest);
 
         foreach ($contentRemovalRequest->getEvents() as $event) {
             $this->entityManager->remove($event);
         }
 
+        // The requester is notified by ContentRemovalEventDeletionListener once the events are deleted.
         $this->markAsProcessed($contentRemovalRequest);
         $this->entityManager->flush();
 
@@ -51,9 +50,8 @@ final class ContentRemovalActionController extends AbstractController
     }
 
     #[Route(path: '/{id}/remove-images', name: 'admin_content_removal_action_remove_images', methods: ['GET'])]
-    public function removeImages(Request $request, ContentRemovalRequest $contentRemovalRequest): Response
+    public function removeImages(ContentRemovalRequest $contentRemovalRequest): Response
     {
-        $this->verifySignedUrl($request);
         $this->ensurePending($contentRemovalRequest);
 
         foreach ($contentRemovalRequest->getEvents() as $event) {
@@ -63,19 +61,22 @@ final class ContentRemovalActionController extends AbstractController
         $this->markAsProcessed($contentRemovalRequest);
         $this->entityManager->flush();
 
+        $this->mailerManager->sendContentRemovalProcessedEmail($contentRemovalRequest);
+
         $this->addFlash('success', 'Les images des événements ont été supprimées.');
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
     #[Route(path: '/{id}/mark-processed', name: 'admin_content_removal_action_mark_processed', methods: ['GET'])]
-    public function markProcessed(Request $request, ContentRemovalRequest $contentRemovalRequest): Response
+    public function markProcessed(ContentRemovalRequest $contentRemovalRequest): Response
     {
-        $this->verifySignedUrl($request);
         $this->ensurePending($contentRemovalRequest);
 
         $this->markAsProcessed($contentRemovalRequest);
         $this->entityManager->flush();
+
+        $this->mailerManager->sendContentRemovalProcessedEmail($contentRemovalRequest);
 
         $this->addFlash('success', 'La demande a été marquée comme traitée.');
 
@@ -83,22 +84,18 @@ final class ContentRemovalActionController extends AbstractController
     }
 
     #[Route(path: '/{id}/reject', name: 'admin_content_removal_action_reject', methods: ['GET'])]
-    public function reject(Request $request, ContentRemovalRequest $contentRemovalRequest): Response
+    public function reject(ContentRemovalRequest $contentRemovalRequest): Response
     {
-        $this->verifySignedUrl($request);
         $this->ensurePending($contentRemovalRequest);
 
         $this->markAsRejected($contentRemovalRequest);
         $this->entityManager->flush();
 
+        $this->mailerManager->sendContentRemovalRejectedEmail($contentRemovalRequest);
+
         $this->addFlash('success', 'La demande a été rejetée.');
 
         return $this->redirectToRoute('admin_content_removal_request_index');
-    }
-
-    private function verifySignedUrl(Request $request): void
-    {
-        $this->uriSigner->verify($request);
     }
 
     private function ensurePending(ContentRemovalRequest $contentRemovalRequest): void

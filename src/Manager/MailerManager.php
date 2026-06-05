@@ -13,9 +13,7 @@ namespace App\Manager;
 use App\Entity\ContentRemovalRequest;
 use App\Entity\User;
 use App\Enum\ContentRemovalType;
-use DateInterval;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -26,7 +24,6 @@ final readonly class MailerManager
 {
     public function __construct(
         private MailerInterface $mailer,
-        private UriSigner $uriSigner,
         private UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -74,21 +71,20 @@ final readonly class MailerManager
         ContentRemovalRequest $contentRemovalRequest,
         string $recipientEmail,
     ): void {
-        $expiration = new DateInterval('P7D');
         $id = $contentRemovalRequest->getId();
 
         $context = [
             'contentRemovalRequest' => $contentRemovalRequest,
-            'markProcessedUrl' => $this->generateSignedUrl('admin_content_removal_action_mark_processed', ['id' => $id], $expiration),
-            'rejectUrl' => $this->generateSignedUrl('admin_content_removal_action_reject', ['id' => $id], $expiration),
+            'markProcessedUrl' => $this->generateUrl('admin_content_removal_action_mark_processed', ['id' => $id]),
+            'rejectUrl' => $this->generateUrl('admin_content_removal_action_reject', ['id' => $id]),
         ];
 
         if (ContentRemovalType::Event === $contentRemovalRequest->getType()) {
-            $context['removeEventsUrl'] = $this->generateSignedUrl('admin_content_removal_action_remove_events', ['id' => $id], $expiration);
+            $context['removeEventsUrl'] = $this->generateUrl('admin_content_removal_action_remove_events', ['id' => $id]);
         }
 
         if (ContentRemovalType::Image === $contentRemovalRequest->getType()) {
-            $context['removeImagesUrl'] = $this->generateSignedUrl('admin_content_removal_action_remove_images', ['id' => $id], $expiration);
+            $context['removeImagesUrl'] = $this->generateUrl('admin_content_removal_action_remove_images', ['id' => $id]);
         }
 
         $email = new TemplatedEmail()
@@ -101,11 +97,55 @@ final readonly class MailerManager
         $this->sendMail($email);
     }
 
-    private function generateSignedUrl(string $route, array $params, DateInterval $expiration): string
+    public function sendContentRemovalEventDeletedEmail(ContentRemovalRequest $contentRemovalRequest): void
     {
-        $url = $this->urlGenerator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+        $this->sendRequesterNotification(
+            $contentRemovalRequest,
+            'Votre signalement a été traité - By Night',
+            'email/content-removal-event-deleted.html.twig',
+        );
+    }
 
-        return $this->uriSigner->sign($url, $expiration);
+    public function sendContentRemovalProcessedEmail(ContentRemovalRequest $contentRemovalRequest): void
+    {
+        $this->sendRequesterNotification(
+            $contentRemovalRequest,
+            'Votre demande de suppression a été traitée - By Night',
+            'email/content-removal-processed.html.twig',
+        );
+    }
+
+    public function sendContentRemovalRejectedEmail(ContentRemovalRequest $contentRemovalRequest): void
+    {
+        $this->sendRequesterNotification(
+            $contentRemovalRequest,
+            'Votre demande de suppression a été examinée - By Night',
+            'email/content-removal-rejected.html.twig',
+        );
+    }
+
+    private function sendRequesterNotification(
+        ContentRemovalRequest $contentRemovalRequest,
+        string $subject,
+        string $template,
+    ): void {
+        $recipientEmail = $contentRemovalRequest->getEmail();
+        if (null === $recipientEmail) {
+            return;
+        }
+
+        $email = new TemplatedEmail()
+            ->to($recipientEmail)
+            ->subject($subject)
+            ->htmlTemplate($template)
+            ->context(['contentRemovalRequest' => $contentRemovalRequest]);
+
+        $this->sendMail($email);
+    }
+
+    private function generateUrl(string $route, array $params): string
+    {
+        return $this->urlGenerator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     private function sendMail(Email $email): void
