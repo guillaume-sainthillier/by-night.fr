@@ -1,29 +1,17 @@
 #syntax=docker/dockerfile:1.24-labs
 
 # Versions
-FROM dunglas/frankenphp:1.12-php8.5-alpine AS php_upstream
+# The runtime base (PHP extensions + the MJML extension) is built separately, see
+# docker/base/Dockerfile and .github/workflows/build-base-image.yml.
+ARG BASE_IMAGE=guystlr/by-night-base
+# Mandatory — no default on purpose, so every build states which immutable base it uses.
+# The single source of truth is docker/base/VERSION (e.g. php85-v1); pass it explicitly:
+#   docker build --build-arg BASE_IMAGE_TAG=$(cat docker/base/VERSION) .
+# CI and docker-compose wire this automatically. An unset value fails fast at FROM.
+ARG BASE_IMAGE_TAG
+
+FROM ${BASE_IMAGE}:${BASE_IMAGE_TAG} AS php_base
 FROM node:24-alpine AS node_upstream
-
-# Base image
-FROM php_upstream AS php_base
-WORKDIR /app
-
-RUN IPE_GD_WITHOUTAVIF=1 \
-    install-php-extensions \
-        @composer \
-        amqp \
-        apcu \
-        bcmath \
-        exif \
-        gd \
-        intl \
-        imagick \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        redis \
-        sockets \
-        zip
 
 # Composer install stage
 FROM php_base AS php_builder
@@ -64,19 +52,6 @@ COPY --link package.json webpack.config.js yarn.lock ./
 RUN mkdir -p public && \
     yarn build
 
-# Build the MJML rendering extension (ext-mjml / alekitto/mjml-php, Rust mrml engine).
-# No prebuilt binary exists for php8.5 + musl + ZTS yet, so PIE compiles it from source.
-# Only the resulting mjml.so is copied into the final image; the Rust toolchain stays here.
-FROM php_base AS mjml_ext_builder
-
-RUN apk add --no-cache --virtual .mjml-build-deps $PHPIZE_DEPS cargo clang-dev openssl-dev curl
-
-RUN curl -fsSL https://github.com/php/pie/releases/latest/download/pie.phar -o /usr/local/bin/pie \
-    && chmod +x /usr/local/bin/pie
-
-RUN --mount=type=cache,target=/root/.cargo/registry \
-    pie install kcs/mjml:^1.2
-
 FROM php_base
 
 EXPOSE 80
@@ -88,16 +63,6 @@ ENV APP_ENV=prod
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV SERVER_NAME=:80
 ENV FRANKENPHP_CONFIG="import worker.Caddyfile"
-
-# Install dependencies
-RUN apk add --no-cache \
-    bash \
-    icu-data-full \
-    linux-headers \
-    git \
-    supervisor \
-    tzdata && \
-    echo "Europe/Paris" > /etc/timezone
 
 # Composer install before sources
 COPY --from=php_builder --link /app/vendor ./vendor
@@ -111,10 +76,6 @@ COPY --link docker/worker.Caddyfile /etc/frankenphp/worker.Caddyfile
 COPY --link docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 COPY --link docker/supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 COPY --link docker/entrypoint.sh /usr/local/bin/docker-entrypoint
-
-# MJML rendering extension (compiled in the mjml_ext_builder stage above)
-COPY --from=mjml_ext_builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
-RUN echo "extension=mjml" > "$PHP_INI_DIR/conf.d/docker-php-ext-mjml.ini"
 
 RUN mkdir -p /run/php var/cache var/sessions var/storage/temp var/datas public/build && \
     APP_ENV=prod composer dump-autoload --optimize --classmap-authoritative --no-dev --no-interaction && \

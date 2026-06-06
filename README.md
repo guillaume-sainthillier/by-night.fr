@@ -22,6 +22,32 @@ https://by-night.fr
 - Docker
 - Amazon S3 / Cloudfront
 
+## Docker
+
+The application image is built `FROM` a pre-built runtime base
+(`guystlr/by-night-base`) that bakes in the PHP extensions and the MJML rendering
+extension (`ext-mjml`), so the app build never recompiles them. The base uses
+immutable version tags (`php85-v1`, `php85-v2`, …). The single source of truth is
+**`docker/base/VERSION`**, and the app's `ARG BASE_IMAGE_TAG` has **no default** — it
+must be passed explicitly on every build.
+
+`.github/workflows/build-base-image.yml` builds the base on PRs that touch
+`docker/base/` (validation only) and publishes it on `main` / manual dispatch; the
+release workflow passes `BASE_IMAGE_TAG` from `docker/base/VERSION` automatically.
+
+For local builds, export the version first, then build/pull:
+
+```bash
+export BASE_IMAGE_TAG=$(cat docker/base/VERSION)
+docker compose build
+# pull (or build) the base it references:
+docker pull guystlr/by-night-base:$BASE_IMAGE_TAG
+docker build -t guystlr/by-night-base:$BASE_IMAGE_TAG docker/base
+```
+
+To change the base (e.g. add an extension): edit `docker/base/Dockerfile` **and**
+bump `docker/base/VERSION` (`php85-v1` → `php85-v2`) in the same PR.
+
 ## Setup
 
 ```bash

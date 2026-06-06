@@ -1,0 +1,32 @@
+name: Validate Image Build
+
+# On PRs that touch the image build (app Dockerfile or docker/ config), build the base
+# and then the final application image to validate they compile. Nothing is pushed and
+# no cache is used — this just answers "does the image still build?".
+#
+# The base is built locally first; the app's `FROM` resolves it from the local image
+# store, so this works even when the PR bumps docker/base/VERSION to an unpublished tag.
+on:
+    pull_request:
+        paths:
+            - 'Dockerfile'
+            - 'docker/**'
+            - '!docker/elasticsearch/**'
+            - '.github/workflows/validate-image-build.yml'
+
+jobs:
+    build:
+        name: Build images (no push)
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        env:
+            DOCKER_BUILDKIT: '1'
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Build base, then app
+              run: |
+                  TAG=$(cat docker/base/VERSION)
+                  docker build -t "guystlr/by-night-base:$TAG" docker/base
+                  docker build --build-arg "BASE_IMAGE_TAG=$TAG" -t by-night:pr .
