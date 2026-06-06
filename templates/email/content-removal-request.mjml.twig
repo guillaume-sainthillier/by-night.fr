@@ -43,25 +43,53 @@
 
     <mj-divider />
 
-    <mj-text font-weight="700" padding="0 0 14px 0">Actions rapides</mj-text>
+    <mj-text font-weight="700" padding="0 0 4px 0">Actions rapides</mj-text>
+{% endblock %}
+
+{% block body_sections %}
+    {% set isMultiple = contentRemovalRequest.events|length > 1 %}
+    {% set actions = [] %}
     {% if removeEventsUrl is defined %}
-        <mj-button href="{{ removeEventsUrl }}" background-color="#d63939" align="left" padding="0 0 8px 0">
-            Supprimer {{ contentRemovalRequest.events|length > 1 ? 'les événements' : "l'événement" }}
-        </mj-button>
+        {% set actions = actions|merge([{
+            url: removeEventsUrl,
+            color: '#d63939',
+            label: 'Supprimer ' ~ (isMultiple ? 'les événements' : "l'événement"),
+        }]) %}
     {% endif %}
     {% if removeImagesUrl is defined %}
-        <mj-button href="{{ removeImagesUrl }}" background-color="#f76707" align="left" padding="0 0 8px 0">
-            Supprimer {{ contentRemovalRequest.events|length > 1 ? 'les images' : "l'image" }}
-        </mj-button>
+        {% set actions = actions|merge([{
+            url: removeImagesUrl,
+            color: '#f76707',
+            label: 'Supprimer ' ~ (isMultiple ? 'les images' : "l'image"),
+        }]) %}
     {% endif %}
-    <mj-button href="{{ markProcessedUrl }}" background-color="#2fb344" align="left" padding="0 0 8px 0">
-        Marquer traité
-    </mj-button>
-    <mj-button href="{{ rejectUrl }}" background-color="#667382" align="left" padding="0 0 8px 0">
-        Rejeter
-    </mj-button>
+    {% set actions = actions|merge([
+        {url: markProcessedUrl, color: '#2fb344', label: 'Marquer traité'},
+        {url: rejectUrl, color: '#667382', label: 'Rejeter'},
+    ]) %}
 
-    <mj-text css-class="muted" padding="14px 0 0 0">
-        Ces liens nécessitent une connexion administrateur.
-    </mj-text>
+    <mj-section background-color="#ffffff" padding="0 16px 0 16px">
+        {% for action in actions %}
+            <mj-column vertical-align="top">
+                <mj-button
+                    href="{{ action.url }}"
+                    background-color="{{ action.color }}"
+                    width="100%"
+                    font-size="14px"
+                    inner-padding="11px 6px"
+                    padding="0 4px 12px 4px"
+                >
+                    {{ action.label }}
+                </mj-button>
+            </mj-column>
+        {% endfor %}
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="6px 28px 24px 28px">
+        <mj-column>
+            <mj-text css-class="muted">
+                Ces liens nécessitent une connexion administrateur.
+            </mj-text>
+        </mj-column>
+    </mj-section>
 {% endblock %}

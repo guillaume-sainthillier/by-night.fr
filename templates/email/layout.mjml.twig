@@ -23,7 +23,7 @@
             <mj-section background-color="#3f51b5" padding="28px 0 24px 0">
                 <mj-column vertical-align="middle">
                     <mj-image
-                        src="{{ absolute_url('/apple-touch-icon.png') }}"
+                        src="{{ absolute_url(asset('build/images/email-logo.png')) }}"
                         alt="By Night"
                         width="52px"
                         height="52px"
@@ -46,6 +46,9 @@
                     {% block body %}{% endblock %}
                 </mj-column>
             </mj-section>
+
+            {# Full-width sections appended to the white card (e.g. multi-column button grids) #}
+            {% block body_sections %}{% endblock %}
 
             {# Accent bar #}
             <mj-section background-color="#36a9e1" padding="0">
