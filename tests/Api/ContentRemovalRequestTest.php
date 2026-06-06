@@ -16,9 +16,11 @@ use App\Enum\ContentRemovalType;
 use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
 use Override;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+#[RequiresPhpExtension('mjml')]
 final class ContentRemovalRequestTest extends ApiTestCase
 {
     use Factories;

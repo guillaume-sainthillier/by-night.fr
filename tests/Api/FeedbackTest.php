@@ -14,11 +14,13 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Factory\UserFactory;
 use Override;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+#[RequiresPhpExtension('mjml')]
 final class FeedbackTest extends ApiTestCase
 {
     use Factories;

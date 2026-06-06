@@ -14,6 +14,7 @@ use App\Enum\ContentRemovalRequestStatus;
 use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
 use Override;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\MailerAssertionsTrait;
 
@@ -22,6 +23,7 @@ use function Zenstruck\Foundry\Persistence\flush_after;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+#[RequiresPhpExtension('mjml')]
 final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
 {
     use Factories;

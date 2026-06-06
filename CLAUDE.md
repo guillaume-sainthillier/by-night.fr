@@ -115,7 +115,15 @@ Conventions:
 
 ### Email Tests (MJML)
 
-Transactional emails are MJML templates (`templates/email/*.mjml.twig`) rendered in-process by the `mjml_php` renderer (`config/packages/mjml.yaml`), which requires the **`ext-mjml`** PHP extension (Rust `alekitto/mjml-php`). The extension is compiled into the Docker image but is **not present in a local Homebrew PHP**, so any test that asserts a sent email (`assertEmailCount`, `assertEmailHtmlBodyContains`, …) fails locally with `Class "Mjml\Mjml" not found` and an HTTP 500. Run the email-sending tests in Docker/CI, or install the extension locally.
+Transactional emails are MJML templates (`templates/email/*.mjml.twig`) rendered in-process by the `mjml_php` renderer (`config/packages/mjml.yaml`), which requires the **`ext-mjml`** PHP extension (Rust `alekitto/mjml-php`). It is baked into the Docker image (`docker/base/`) but is **not present in a stock Homebrew PHP**.
+
+Tests that send an email (which renders MJML) are therefore guarded with `#[RequiresPhpExtension('mjml')]` (`ContentRemovalRequestTest`, `FeedbackTest`, `ContentRemovalEventDeletionListenerTest`): they **run** wherever `ext-mjml` is installed and are **skipped** (not failed) where it is absent — so CI (laminas-ci, no `ext-mjml`) stays green. To run them locally, install the extension via PIE:
+
+```bash
+pie install kcs/mjml          # builds mjml.dylib; on macOS copy it to the extension dir as mjml.so
+echo "extension=mjml" > "$(php -r 'echo dirname(php_ini_loaded_file());')/conf.d/ext-mjml.ini" 2>/dev/null || true
+php -m | grep mjml            # verify
+```
 
 ### Event Import Pipeline
 
