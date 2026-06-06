@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\Entity\ContentRemovalRequest;
+use App\Entity\Event;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,5 +28,18 @@ final class ContentRemovalRequestRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ContentRemovalRequest::class);
+    }
+
+    /**
+     * @return ContentRemovalRequest[]
+     */
+    public function findByEvent(Event $event): array
+    {
+        return $this->createQueryBuilder('cr')
+            ->innerJoin('cr.events', 'e')
+            ->where('e = :event')
+            ->setParameter('event', $event)
+            ->getQuery()
+            ->getResult();
     }
 }

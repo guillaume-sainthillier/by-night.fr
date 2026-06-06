@@ -1,0 +1,14 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Nouveau feedback utilisateur{% endblock %}
+{% block preheader %}{{ user.username }} a laissé un feedback sur By Night.{% endblock %}
+
+{% block body %}
+    <mj-text mj-class="h1">Nouveau feedback utilisateur</mj-text>
+    <mj-text>
+        <strong>De&nbsp;:</strong> {{ user.username }} ({{ user.email }})<br />
+        <strong>Date&nbsp;:</strong> {{ 'now'|date('d/m/Y H:i') }}
+    </mj-text>
+    <mj-divider />
+    <mj-text>{{ message|nl2br }}</mj-text>
+{% endblock %}

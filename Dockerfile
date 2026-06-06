@@ -1,29 +1,17 @@
 #syntax=docker/dockerfile:1.24-labs
 
 # Versions
-FROM dunglas/frankenphp:1.12-php8.5-alpine AS php_upstream
+# The runtime base (PHP extensions + the MJML extension) is built separately, see
+# docker/base/Dockerfile and .github/workflows/build-base-image.yml.
+ARG BASE_IMAGE=guystlr/by-night-base
+# Mandatory — no default on purpose, so every build states which immutable base it uses.
+# The single source of truth is docker/base/VERSION (e.g. php85-v1); pass it explicitly:
+#   docker build --build-arg BASE_IMAGE_TAG=$(cat docker/base/VERSION) .
+# CI and docker-compose wire this automatically. An unset value fails fast at FROM.
+ARG BASE_IMAGE_TAG
+
+FROM ${BASE_IMAGE}:${BASE_IMAGE_TAG} AS php_base
 FROM node:24-alpine AS node_upstream
-
-# Base image
-FROM php_upstream AS php_base
-WORKDIR /app
-
-RUN IPE_GD_WITHOUTAVIF=1 \
-    install-php-extensions \
-        @composer \
-        amqp \
-        apcu \
-        bcmath \
-        exif \
-        gd \
-        intl \
-        imagick \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        redis \
-        sockets \
-        zip
 
 # Composer install stage
 FROM php_base AS php_builder
@@ -75,16 +63,6 @@ ENV APP_ENV=prod
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV SERVER_NAME=:80
 ENV FRANKENPHP_CONFIG="import worker.Caddyfile"
-
-# Install dependencies
-RUN apk add --no-cache \
-    bash \
-    icu-data-full \
-    linux-headers \
-    git \
-    supervisor \
-    tzdata && \
-    echo "Europe/Paris" > /etc/timezone
 
 # Composer install before sources
 COPY --from=php_builder --link /app/vendor ./vendor

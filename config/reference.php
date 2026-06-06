@@ -1005,7 +1005,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             servicename?: scalar|Param|null, // Overrules dbname parameter if given and used as SERVICE_NAME or SID connection parameter for Oracle depending on the service parameter.
  *             sessionMode?: scalar|Param|null, // The session mode to use for the oci8 driver
  *             server?: scalar|Param|null, // The name of a running database server to connect to for SQL Anywhere.
- *             default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connexion.
+ *             default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connection.
  *             sslmode?: scalar|Param|null, // Determines whether or with what priority a SSL TCP/IP connection will be negotiated with the server for PostgreSQL.
  *             sslrootcert?: scalar|Param|null, // The name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be verified to be signed by one of these authorities.
  *             sslcert?: scalar|Param|null, // The path to the SSL client certificate file for PostgreSQL.
@@ -1051,7 +1051,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 servicename?: scalar|Param|null, // Overrules dbname parameter if given and used as SERVICE_NAME or SID connection parameter for Oracle depending on the service parameter.
  *                 sessionMode?: scalar|Param|null, // The session mode to use for the oci8 driver
  *                 server?: scalar|Param|null, // The name of a running database server to connect to for SQL Anywhere.
- *                 default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connexion.
+ *                 default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connection.
  *                 sslmode?: scalar|Param|null, // Determines whether or with what priority a SSL TCP/IP connection will be negotiated with the server for PostgreSQL.
  *                 sslrootcert?: scalar|Param|null, // The name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be verified to be signed by one of these authorities.
  *                 sslcert?: scalar|Param|null, // The path to the SSL client certificate file for PostgreSQL.
@@ -1130,7 +1130,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                     lock_path?: scalar|Param|null, // Default: "%kernel.cache_dir%/doctrine/orm/slc/filelock"
  *                     lock_lifetime?: scalar|Param|null, // Default: 60
  *                     type?: scalar|Param|null, // Default: "default"
- *                     lifetime?: scalar|Param|null, // Default: 0
+ *                     lifetime?: scalar|Param|null, // Default: null
  *                     service?: scalar|Param|null,
  *                     name?: scalar|Param|null,
  *                 }>,
@@ -2433,7 +2433,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_fit?: scalar|Param|null, // Default fit mode (contain, cover, crop, fill). // Default: "contain"
  *     cache?: scalar|Param|null, // PSR-6 cache pool for metadata guessing and BlurHash generation. true (default) uses cache.app, false disables caching, or pass a service ID string. // Default: true
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
- *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2484,6 +2483,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     host?: scalar|Param|null, // Default host is "www.google.com", if it is not reachable then use "www.recaptcha.net" instead. // Default: "www.google.com"
  *     enabled?: bool|Param, // Default: true
  * }
+ * @psalm-type MjmlConfig = array{
+ *     renderer?: "binary"|"service"|"mjml_php"|Param, // Default: "binary"
+ *     options?: array{
+ *         binary?: scalar|Param|null, // Path to the MJML binary // Default: null
+ *         node?: scalar|Param|null, // Path to node // Default: null
+ *         service_id?: scalar|Param|null, // Service id when renderer is defined to "service"
+ *         validation_level?: scalar|Param|null, // Validation level. See https://github.com/mjmlio/mjml/tree/master/packages/mjml-validator#validating-mjml // Default: "strict"
+ *         minify?: bool|Param, // Default: false
+ *         mjml_version?: int|Param, // Mjml version // Default: null
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2513,6 +2523,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     ux_icons?: UxIconsConfig,
  *     picasso?: PicassoConfig,
  *     karser_recaptcha3?: KarserRecaptcha3Config,
+ *     mjml?: MjmlConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2546,6 +2557,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
  *         karser_recaptcha3?: KarserRecaptcha3Config,
+ *         mjml?: MjmlConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2576,6 +2588,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
  *         karser_recaptcha3?: KarserRecaptcha3Config,
+ *         mjml?: MjmlConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2610,6 +2623,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
  *         karser_recaptcha3?: KarserRecaptcha3Config,
+ *         mjml?: MjmlConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

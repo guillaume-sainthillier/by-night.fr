@@ -18,10 +18,8 @@ use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
-use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use Override;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -37,10 +35,6 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
 {
     private const string ORIGIN = 'awin.fnac';
 
-    private EntityManagerInterface $entityManager;
-
-    private EventRepository $eventRepository;
-
     private Place $place;
 
     private User $user;
@@ -49,8 +43,6 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
     protected function setUp(): void
     {
         parent::setUp();
-        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
-        $this->eventRepository = self::getContainer()->get(EventRepository::class);
 
         // Duplicates of one show share a single venue. Building it explicitly (rather
         // than letting EventFactory spawn a random Place per event) keeps the country
@@ -123,8 +115,12 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
 
         $this->runMerge(['--strategy' => 'content', '--origin' => self::ORIGIN, '--dry-run' => true]);
 
-        self::assertNull($this->find('4001')->getDuplicateOf());
-        self::assertNull($this->find('4002')->getDuplicateOf());
+        // A dry run plans the merge in memory but must persist nothing, so both events
+        // keep a null duplicateOf in the database. Asserted with a fresh count() query
+        // rather than find(): the dry run leaves its unflushed changes in the manager,
+        // which would otherwise be read back instead of the untouched persisted state.
+        self::assertSame(2, EventFactory::count());
+        self::assertSame(2, EventFactory::count(['duplicateOf' => null]));
     }
 
     /**
@@ -154,22 +150,16 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
         $tester = new CommandTester($application->find('app:events:merge-duplicates'));
         $tester->execute($input);
         $tester->assertCommandIsSuccessful();
-
-        // The command clears the EntityManager; drop any stale identity map so the
-        // assertions below read the persisted state fresh.
-        $this->entityManager->clear();
     }
 
     private function find(string $externalId): Event
     {
-        $event = $this->eventRepository->findOneBy([
+        // The command clears the EntityManager; the proxy returned here auto-refreshes
+        // from the database on access, so assertions read the persisted state fresh.
+        return EventFactory::find([
             'externalId' => $externalId,
             'externalOrigin' => self::ORIGIN,
         ]);
-
-        self::assertInstanceOf(Event::class, $event);
-
-        return $event;
     }
 
     /**

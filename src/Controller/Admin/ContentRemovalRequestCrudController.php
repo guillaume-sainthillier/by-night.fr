@@ -15,6 +15,7 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
+use App\Manager\MailerManager;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -45,6 +46,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly MailerManager $mailerManager,
     ) {
     }
 
@@ -180,6 +182,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         ];
     }
 
+    #[AdminRoute]
     public function removeImage(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
@@ -190,12 +193,14 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         }
 
         $this->markRequestAsProcessed($request);
+        $this->mailerManager->sendContentRemovalProcessedEmail($request);
 
         $this->addFlash('success', 'Les images des événements ont été supprimées.');
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function removeEvents(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
@@ -205,6 +210,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             $this->entityManager->remove($event);
         }
 
+        // The requester is notified by ContentRemovalEventDeletionListener once the events are deleted.
         $this->markRequestAsProcessed($request);
 
         $this->addFlash('success', 'Les événements ont été supprimés.');
@@ -215,69 +221,89 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->generateUrl());
     }
 
+    #[AdminRoute]
     public function markAsProcessed(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
         $request = $context->getEntity()->getInstance();
 
         $this->markRequestAsProcessed($request);
+        $this->mailerManager->sendContentRemovalProcessedEmail($request);
 
         $this->addFlash('success', 'La demande a été marquée comme traitée.');
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function reject(AdminContext $context): Response
     {
         /** @var ContentRemovalRequest $request */
         $request = $context->getEntity()->getInstance();
 
         $this->markRequestAsRejected($request);
+        $this->mailerManager->sendContentRemovalRejectedEmail($request);
 
         $this->addFlash('success', 'La demande a été rejetée.');
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchMarkAsProcessed(BatchActionDto $batchActionDto): Response
     {
-        $count = 0;
+        /** @var ContentRemovalRequest[] $processed */
+        $processed = [];
         foreach ($batchActionDto->getEntityIds() as $id) {
             /** @var ContentRemovalRequest|null $request */
             $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
             if (null !== $request && ContentRemovalRequestStatus::Pending === $request->getStatus()) {
                 $this->markRequestAsProcessed($request, false);
-                ++$count;
+                $processed[] = $request;
             }
         }
 
         $this->entityManager->flush();
-        $this->addFlash('success', \sprintf('%d demande(s) marquée(s) comme traitée(s).', $count));
+
+        foreach ($processed as $request) {
+            $this->mailerManager->sendContentRemovalProcessedEmail($request);
+        }
+
+        $this->addFlash('success', \sprintf('%d demande(s) marquée(s) comme traitée(s).', \count($processed)));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchReject(BatchActionDto $batchActionDto): Response
     {
-        $count = 0;
+        /** @var ContentRemovalRequest[] $rejected */
+        $rejected = [];
         foreach ($batchActionDto->getEntityIds() as $id) {
             /** @var ContentRemovalRequest|null $request */
             $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
             if (null !== $request && ContentRemovalRequestStatus::Pending === $request->getStatus()) {
                 $this->markRequestAsRejected($request, false);
-                ++$count;
+                $rejected[] = $request;
             }
         }
 
         $this->entityManager->flush();
-        $this->addFlash('success', \sprintf('%d demande(s) rejetée(s).', $count));
+
+        foreach ($rejected as $request) {
+            $this->mailerManager->sendContentRemovalRejectedEmail($request);
+        }
+
+        $this->addFlash('success', \sprintf('%d demande(s) rejetée(s).', \count($rejected)));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchRemoveImages(BatchActionDto $batchActionDto): Response
     {
-        $count = 0;
+        /** @var ContentRemovalRequest[] $processed */
+        $processed = [];
         foreach ($batchActionDto->getEntityIds() as $id) {
             /** @var ContentRemovalRequest|null $request */
             $request = $this->entityManager->find(ContentRemovalRequest::class, $id);
@@ -290,16 +316,22 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
                 }
 
                 $this->markRequestAsProcessed($request, false);
-                ++$count;
+                $processed[] = $request;
             }
         }
 
         $this->entityManager->flush();
-        $this->addFlash('success', \sprintf('%d image(s) supprimée(s).', $count));
+
+        foreach ($processed as $request) {
+            $this->mailerManager->sendContentRemovalProcessedEmail($request);
+        }
+
+        $this->addFlash('success', \sprintf('%d image(s) supprimée(s).', \count($processed)));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
 
+    #[AdminRoute]
     public function batchRemoveEvents(BatchActionDto $batchActionDto): Response
     {
         $count = 0;
@@ -314,6 +346,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
                     $this->entityManager->remove($event);
                 }
 
+                // The requester is notified by ContentRemovalEventDeletionListener once the events are deleted.
                 $this->markRequestAsProcessed($request, false);
                 ++$count;
             }

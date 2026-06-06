@@ -1,0 +1,18 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Votre demande a été traitée{% endblock %}
+{% block preheader %}Votre demande de suppression de contenu a été traitée.{% endblock %}
+
+{% block body %}
+    <mj-text mj-class="h1">Votre demande de suppression a été traitée</mj-text>
+    <mj-text>Bonjour,</mj-text>
+    <mj-text>
+        Votre demande de suppression de contenu du {{ contentRemovalRequest.createdAt|date('d/m/Y') }}
+        a été traitée par notre équipe.
+    </mj-text>
+    <mj-text>
+        Si vous constatez que le contenu concerné est toujours visible ou si vous avez d'autres
+        questions, vous pouvez répondre directement à cet e-mail.
+    </mj-text>
+    <mj-text>Merci de nous avoir contactés.<br />L'équipe By Night</mj-text>
+{% endblock %}

@@ -88,6 +88,43 @@ npx eslint --fix "assets/**/*.{js,jsx}"            # ESLint for JavaScript
 # - SCSS/MD/YAML: prettier --write
 ```
 
+### Test Fixtures — Foundry
+
+Tests build their fixtures with **Zenstruck Foundry** factories (`src/Factory/`), **never by hand through the `EntityManager`**. Factories extend `PersistentProxyObjectFactory`, so each created object is a proxy exposing an Active-Record-like API.
+
+```php
+use App\Factory\EventFactory;
+use function Zenstruck\Foundry\Persistence\flush_after;
+
+$event = EventFactory::createOne(['name' => 'Test']);    // persisted proxy
+$event->_delete();                                        // remove + flush
+$event->_refresh();                                       // reload from the DB
+
+EventFactory::find(['externalId' => 'x']);                // single result (throws if missing)
+EventFactory::findBy(['email' => 'a@b.c']);               // list
+EventFactory::count(['duplicateOf' => null]);             // fresh COUNT(*), ignores the unit of work
+```
+
+Conventions:
+
+- **Add a factory** in `src/Factory/` for any entity a test needs — don't `new` + `persist()`/`flush()` in the test, and don't pull the `EntityManager` to create, query, or delete fixtures.
+- **Deleting several entities in one flush** (e.g. to exercise an `onFlush`/`postFlush` listener's de-duplication): wrap the `_delete()` calls in `flush_after(fn () => …)` so they share a single flush instead of one flush each.
+- **Asserting "nothing was persisted"** after code that leaves unflushed in-memory changes (e.g. a `--dry-run` command): use `Factory::count(...)`, which runs a fresh `SELECT COUNT(*)` and ignores the dirty unit of work. Don't use `find()` here — the proxy's auto-refresh throws `ObjectHasUnsavedChanges` on dirty entities.
+- Use the `ResetDatabase` + `Factories` traits (see `tests/AppKernelTestCase.php`).
+- Fetch up-to-date Foundry usage from context7 (`/zenstruck/foundry`) rather than guessing the 2.x API.
+
+### Email Tests (MJML)
+
+Transactional emails are MJML templates (`templates/email/*.mjml.twig`) rendered in-process by the `mjml_php` renderer (`config/packages/mjml.yaml`), which requires the **`ext-mjml`** PHP extension (Rust `alekitto/mjml-php`). It is baked into the Docker image (`docker/base/`) but is **not present in a stock Homebrew PHP**.
+
+Tests that send an email (which renders MJML) are therefore guarded with `#[RequiresPhpExtension('mjml')]` (`ContentRemovalRequestTest`, `FeedbackTest`, `ContentRemovalEventDeletionListenerTest`): they **run** wherever `ext-mjml` is installed and are **skipped** (not failed) where it is absent — so CI (laminas-ci, no `ext-mjml`) stays green. To run them locally, install the extension via PIE:
+
+```bash
+pie install kcs/mjml          # builds mjml.dylib; on macOS copy it to the extension dir as mjml.so
+echo "extension=mjml" > "$(php -r 'echo dirname(php_ini_loaded_file());')/conf.d/ext-mjml.ini" 2>/dev/null || true
+php -m | grep mjml            # verify
+```
+
 ### Event Import Pipeline
 
 ```bash

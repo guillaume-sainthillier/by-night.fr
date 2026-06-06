@@ -13,9 +13,7 @@ namespace App\Manager;
 use App\Entity\ContentRemovalRequest;
 use App\Entity\User;
 use App\Enum\ContentRemovalType;
-use DateInterval;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -26,7 +24,6 @@ final readonly class MailerManager
 {
     public function __construct(
         private MailerInterface $mailer,
-        private UriSigner $uriSigner,
         private UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -36,7 +33,7 @@ final readonly class MailerManager
         $email = new TemplatedEmail()
             ->to($user->getEmail())
             ->subject('Confirmez votre adresse mail')
-            ->htmlTemplate('email/confirmation-email.html.twig')
+            ->htmlTemplate('email/confirmation-email.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
@@ -47,7 +44,7 @@ final readonly class MailerManager
         $email = new TemplatedEmail()
             ->to($user->getEmail())
             ->subject('Changement de mot de passe')
-            ->htmlTemplate('email/reset-password.html.twig')
+            ->htmlTemplate('email/reset-password.mjml.twig')
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
                 'tokenLifetime' => $tokenLifeTime,
@@ -61,7 +58,7 @@ final readonly class MailerManager
         $email = new TemplatedEmail()
             ->to($recipientEmail)
             ->subject('Feedback utilisateur - By Night')
-            ->htmlTemplate('email/feedback.html.twig')
+            ->htmlTemplate('email/feedback.mjml.twig')
             ->context([
                 'user' => $user,
                 'message' => $message,
@@ -74,38 +71,81 @@ final readonly class MailerManager
         ContentRemovalRequest $contentRemovalRequest,
         string $recipientEmail,
     ): void {
-        $expiration = new DateInterval('P7D');
         $id = $contentRemovalRequest->getId();
 
         $context = [
             'contentRemovalRequest' => $contentRemovalRequest,
-            'markProcessedUrl' => $this->generateSignedUrl('admin_content_removal_action_mark_processed', ['id' => $id], $expiration),
-            'rejectUrl' => $this->generateSignedUrl('admin_content_removal_action_reject', ['id' => $id], $expiration),
+            'markProcessedUrl' => $this->generateUrl('admin_content_removal_action_mark_processed', ['id' => $id]),
+            'rejectUrl' => $this->generateUrl('admin_content_removal_action_reject', ['id' => $id]),
         ];
 
         if (ContentRemovalType::Event === $contentRemovalRequest->getType()) {
-            $context['removeEventsUrl'] = $this->generateSignedUrl('admin_content_removal_action_remove_events', ['id' => $id], $expiration);
+            $context['removeEventsUrl'] = $this->generateUrl('admin_content_removal_action_remove_events', ['id' => $id]);
         }
 
         if (ContentRemovalType::Image === $contentRemovalRequest->getType()) {
-            $context['removeImagesUrl'] = $this->generateSignedUrl('admin_content_removal_action_remove_images', ['id' => $id], $expiration);
+            $context['removeImagesUrl'] = $this->generateUrl('admin_content_removal_action_remove_images', ['id' => $id]);
         }
 
         $email = new TemplatedEmail()
             ->to($recipientEmail)
             ->replyTo($contentRemovalRequest->getEmail())
             ->subject('Demande de suppression de contenu - By Night')
-            ->htmlTemplate('email/content-removal-request.html.twig')
+            ->htmlTemplate('email/content-removal-request.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
     }
 
-    private function generateSignedUrl(string $route, array $params, DateInterval $expiration): string
+    public function sendContentRemovalEventDeletedEmail(ContentRemovalRequest $contentRemovalRequest): void
     {
-        $url = $this->urlGenerator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+        $this->sendRequesterNotification(
+            $contentRemovalRequest,
+            'Votre signalement a été traité - By Night',
+            'email/content-removal-event-deleted.mjml.twig',
+        );
+    }
 
-        return $this->uriSigner->sign($url, $expiration);
+    public function sendContentRemovalProcessedEmail(ContentRemovalRequest $contentRemovalRequest): void
+    {
+        $this->sendRequesterNotification(
+            $contentRemovalRequest,
+            'Votre demande de suppression a été traitée - By Night',
+            'email/content-removal-processed.mjml.twig',
+        );
+    }
+
+    public function sendContentRemovalRejectedEmail(ContentRemovalRequest $contentRemovalRequest): void
+    {
+        $this->sendRequesterNotification(
+            $contentRemovalRequest,
+            'Votre demande de suppression a été examinée - By Night',
+            'email/content-removal-rejected.mjml.twig',
+        );
+    }
+
+    private function sendRequesterNotification(
+        ContentRemovalRequest $contentRemovalRequest,
+        string $subject,
+        string $template,
+    ): void {
+        $recipientEmail = $contentRemovalRequest->getEmail();
+        if (null === $recipientEmail) {
+            return;
+        }
+
+        $email = new TemplatedEmail()
+            ->to($recipientEmail)
+            ->subject($subject)
+            ->htmlTemplate($template)
+            ->context(['contentRemovalRequest' => $contentRemovalRequest]);
+
+        $this->sendMail($email);
+    }
+
+    private function generateUrl(string $route, array $params): string
+    {
+        return $this->urlGenerator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     private function sendMail(Email $email): void

@@ -1,0 +1,15 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Votre signalement a été traité{% endblock %}
+{% block preheader %}Le contenu que vous nous avez signalé a été supprimé de By Night.{% endblock %}
+
+{% block body %}
+    <mj-text mj-class="h1">Votre signalement a été traité</mj-text>
+    <mj-text>Bonjour,</mj-text>
+    <mj-text>
+        Suite à votre demande de suppression du {{ contentRemovalRequest.createdAt|date('d/m/Y') }},
+        le contenu que vous nous avez signalé a été supprimé de By Night.
+    </mj-text>
+    <mj-text>Aucune action de votre part n'est nécessaire.</mj-text>
+    <mj-text>Merci de nous avoir contactés.<br />L'équipe By Night</mj-text>
+{% endblock %}

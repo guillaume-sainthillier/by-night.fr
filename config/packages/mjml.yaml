@@ -1,0 +1,4 @@
+# Renders MJML in-process via the ext-mjml extension (alekitto/mjml-php, Rust mrml engine).
+# No Node.js required at runtime. See https://github.com/notFloran/mjml-bundle#mjml_php
+mjml:
+    renderer: 'mjml_php'

@@ -1,6 +1,9 @@
 services:
     app:
-        build: .
+        build: &build
+            context: .
+            args:
+                BASE_IMAGE_TAG: '${BASE_IMAGE_TAG:?required - set from docker/base/VERSION, e.g. export BASE_IMAGE_TAG=php85-v1}'
         env_file:
             - .env
             - .env.local
@@ -10,7 +13,7 @@ services:
             - 8080:80
     worker:
         command: 'worker'
-        build: .
+        build: *build
         env_file:
             - .env
             - .env.local
