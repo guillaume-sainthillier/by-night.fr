@@ -21,7 +21,10 @@
     "autoload-dev": {
         "psr-4": {
             "App\\Tests\\": "tests/"
-        }
+        },
+        "exclude-from-classmap": [
+            "/vendor/rector/swiss-knife/stubs/"
+        ]
     },
     "require": {
         "php": "^8.5",
