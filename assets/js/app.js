@@ -75,7 +75,7 @@ class App {
                 dsn: parameters.dsn,
                 release: parameters.release,
                 environment: parameters.environment,
-                autoSessionTracking: false,
+                sendDefaultPii: true,
             })
 
             Sentry.getCurrentScope().setUser(this.get('user'))
