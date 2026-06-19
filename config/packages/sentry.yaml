@@ -6,6 +6,7 @@ when@prod:
             # see https://docs.sentry.io/platforms/php/data-management/data-collected/ for more info
             send_default_pii: true
             #traces_sample_rate: 0.5
+            release: 'v%env(APP_VERSION)%'
             ignore_exceptions:
                 - 'Symfony\Component\ErrorHandler\Error\FatalError'
                 - 'Symfony\Component\Debug\Exception\FatalErrorException'
