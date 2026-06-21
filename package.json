@@ -35,9 +35,9 @@
         "bootstrap": "5.3.7"
     },
     "devDependencies": {
-        "@babel/core": "^7.29.0",
-        "@babel/plugin-transform-react-jsx": "^7.28.6",
-        "@babel/preset-env": "^7.29.0",
+        "@babel/core": "^8.0.0",
+        "@babel/plugin-transform-react-jsx": "^8.0.0",
+        "@babel/preset-env": "^8.0.0",
         "@biomejs/biome": "2.4.16",
         "@hotwired/stimulus": "^3.0.0",
         "@svgr/cli": "^8.1.0",
