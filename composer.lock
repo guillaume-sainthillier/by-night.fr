@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "67704e6a1cb1f0a0db7138ad0e2cfbbc",
+    "content-hash": "03c441e3c4e7b6b0126dfe007a34839d",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v4.3.13",
+            "version": "v4.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "3e35293359eb401445e6575cf3ee95149a90a879"
+                "reference": "bb5ac429eaf120dd032a393afbf036b8970ca03a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/3e35293359eb401445e6575cf3ee95149a90a879",
-                "reference": "3e35293359eb401445e6575cf3ee95149a90a879",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/bb5ac429eaf120dd032a393afbf036b8970ca03a",
+                "reference": "bb5ac429eaf120dd032a393afbf036b8970ca03a",
                 "shasum": ""
             },
             "require": {
@@ -92,7 +92,7 @@
                 "jangregor/phpstan-prophecy": "^2.1.11",
                 "justinrainbow/json-schema": "^6.5.2",
                 "laravel/framework": "^11.0 || ^12.0 || ^13.0",
-                "mcp/sdk": ">=0.4 <1.0",
+                "mcp/sdk": "^0.6",
                 "orchestra/testbench": "^10.9 || ^11.0",
                 "phpspec/prophecy-phpunit": "^2.2",
                 "phpstan/extension-installer": "^1.1",
@@ -220,9 +220,9 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v4.3.13"
+                "source": "https://github.com/api-platform/core/tree/v4.3.14"
             },
-            "time": "2026-06-13T05:22:06+00:00"
+            "time": "2026-06-19T08:58:11+00:00"
         },
         {
             "name": "aws/aws-crt-php",
