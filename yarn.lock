@@ -5127,9 +5127,9 @@ kind-of@^6.0.2:
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
 knip@^6:
-  version "6.20.0"
-  resolved "https://registry.yarnpkg.com/knip/-/knip-6.20.0.tgz#e7b1ac1accf6ef4e556e648479a76012f4ca37a1"
-  integrity sha512-q+HYrS7FOERk32GM7g43IdTG7TurN7+YMLZrNpCxubZPYZyQwliBgd18yH4oYQL7YgGtOxP2fCqess3K2XaK2Q==
+  version "6.23.0"
+  resolved "https://registry.yarnpkg.com/knip/-/knip-6.23.0.tgz#8581f5c01e24be0b21990094f6444aa15b89f11e"
+  integrity sha512-2DvAOX2pZWiG4SLvRRxOAU0aWGEn1ZoVblI541xIoXFdHqq2THMZXy66/qcY5WGuW3TXhb9T1x1zd/Hd1u+yqg==
   dependencies:
     fdir "^6.5.0"
     formatly "^0.3.0"
@@ -6370,9 +6370,9 @@ type-fest@^0.21.3:
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
 unbash@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.1.tgz#efa4876b0f95ab86931546aa1e699e7e353de7ad"
-  integrity sha512-1ajSo3813sDoVIHx4inJdUS4l5L2ic5cFiddemPiyjb/PZEoBAhFwHtbaEdRDFxbAKy7FCG7s5ww3/uCFawuIA==
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.2.tgz#79ec0fcca990e24c78e6bddcc9b8cb7d756533f0"
+  integrity sha512-8gwNZ29+0/3zmXw7ToIHZtg6wK37xnniRUdBt7B27xZxaxfgR5tGMaGHT0t0dLtBV9fXE7zurh0s6Z1DHVjfWg==
 
 undici-types@~8.3.0:
   version "8.3.0"
