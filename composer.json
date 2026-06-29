@@ -128,7 +128,7 @@
         "symfony/debug-bundle": "7.4.*",
         "symfony/maker-bundle": "^1.67.0",
         "symfony/web-profiler-bundle": "7.4.*",
-        "vincentlanglet/twig-cs-fixer": "^3.14",
+        "vincentlanglet/twig-cs-fixer": "^4.0",
         "zenstruck/foundry": "^2.9.2"
     },
     "replace": {
