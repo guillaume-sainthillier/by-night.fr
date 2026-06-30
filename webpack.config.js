@@ -1,5 +1,10 @@
 const path = require('path')
-const Encore = require('@symfony/webpack-encore')
+// Encore v7 ships as an ESM-only package; required from this CommonJS config it arrives as
+// a module namespace whose API lives on `.default`. v6 returns the Encore object directly
+// (and its proxy throws on unknown props, so we must not touch `.default` there).
+const encoreModule = require('@symfony/webpack-encore')
+const Encore =
+    typeof encoreModule.isRuntimeEnvironmentConfigured === 'function' ? encoreModule : encoreModule.default
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
