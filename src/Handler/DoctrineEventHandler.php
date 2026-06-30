@@ -15,16 +15,10 @@ use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\EntityProviderInterface;
 use App\Dependency\DependencyCatalogue;
-use App\Dto\CityDto;
-use App\Dto\CountryDto;
 use App\Dto\EventDto;
-use App\Dto\PlaceDto;
 use App\Entity\ParserData;
 use App\Exception\UncreatableEntityException;
 use App\Reject\Reject;
-use App\Repository\CityRepository;
-use App\Repository\CountryRepository;
-use App\Repository\ZipCityRepository;
 use App\Utils\ChunkUtils;
 use App\Utils\Firewall;
 use App\Utils\MemoryUtils;
@@ -45,9 +39,6 @@ final readonly class DoctrineEventHandler
         private Firewall $firewall,
         private EntityProviderHandler $entityProviderHandler,
         private EntityFactoryHandler $entityFactoryHandler,
-        private CityRepository $repoCity,
-        private ZipCityRepository $repoZipCity,
-        private CountryRepository $countryRepository,
         private EventImageDownloadScheduler $imageDownloadScheduler,
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
@@ -176,89 +167,6 @@ final readonly class DoctrineEventHandler
 
             $this->firewall->filterEvent($dto);
         }
-    }
-
-    public function guessEventLocation(PlaceDto $dto): void
-    {
-        // No need to find an already blacklisted place
-        if (false === $dto->reject->isValid()) {
-            return;
-        }
-
-        $this->guessPlaceCity($dto);
-    }
-
-    private function guessPlaceCity(PlaceDto $dto): void
-    {
-        // Search for the country first
-        if (null !== $dto->country && null !== $dto->country->name && null === $dto->country->code) {
-            $country = $this->countryRepository->findOneByName($dto->country->name);
-            $dto->country->code = $country?->getId();
-        }
-
-        // No country detected -> next
-        if (null === $dto->country || null === $dto->country->code) {
-            if ($dto->country?->name) {
-                $dto->reject->addReason(Reject::BAD_COUNTRY);
-            } else {
-                $dto->reject->addReason(Reject::NO_COUNTRY_PROVIDED);
-            }
-
-            return;
-        }
-
-        if (!$dto->city?->postalCode && !$dto->city?->name) {
-            return;
-        }
-
-        // Location provided -> Verification in the existing cities database
-        $zipCity = null;
-        $city = null;
-
-        // City + Postal Code
-        if ($dto->city->name && $dto->city->postalCode) {
-            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->city->postalCode, $dto->city->name, $dto->country->code);
-        }
-
-        // City
-        if (!$zipCity && $dto->city->name) {
-            $zipCities = $this->repoZipCity->findAllByCity($dto->city->name, $dto->country->code);
-            if (1 === \count($zipCities)) {
-                $zipCity = $zipCities[0];
-            }
-        }
-
-        // Postal Code
-        if (!$zipCity && $dto->city->postalCode) {
-            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->city->postalCode, $dto->country->code);
-            if (1 === \count($zipCities)) {
-                $zipCity = $zipCities[0];
-            }
-        }
-
-        if (null !== $zipCity) {
-            $city = $zipCity->getParent();
-        }
-
-        // City
-        if (!$city && $dto->city->name) {
-            $cities = $this->repoCity->findAllByName($dto->city->name, $dto->country->code);
-            if (1 === \count($cities)) {
-                $city = $cities[0];
-            }
-        }
-
-        $dto->city ??= new CityDto();
-        if (null !== $city) {
-            $dto->city->entityId = $city->getId();
-            $dto->country ??= new CountryDto();
-            $dto->country->code = $city->getCountry()->getId();
-        } elseif (null !== $zipCity) {
-            $dto->country ??= new CountryDto();
-            $dto->country->code = $zipCity->getCountry()->getId();
-        }
-
-        $dto->reject->setReason(Reject::VALID);
     }
 
     private function flushParserData(): void
