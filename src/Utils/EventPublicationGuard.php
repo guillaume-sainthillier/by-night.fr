@@ -27,7 +27,7 @@ final readonly class EventPublicationGuard
 {
     public function __construct(
         private ParserDataRepository $parserDataRepository,
-        private EventContentHasher $contentHasher,
+        private EventChangeDetector $changeDetector,
     ) {
     }
 
@@ -51,18 +51,14 @@ final readonly class EventPublicationGuard
             return true;
         }
 
-        // Firewall or parser logic changed since we last stored this event →
-        // re-evaluate it (mirrors Firewall's existing version escape hatches).
-        if (Firewall::VERSION !== $parserData->getFirewallVersion() || $dto->parserVersion !== $parserData->getParserVersion()) {
-            return true;
-        }
-
-        // No stored fingerprint yet (legacy row) → publish to backfill it.
-        if (null === $parserData->getContentHash()) {
-            return true;
-        }
-
-        // Publish only when the content actually changed.
-        return $this->contentHasher->hash($dto) !== $parserData->getContentHash();
+        // Publish only when the shared change rule says the event is new or changed —
+        // the exact same rule the consumer-side Firewall applies, so the two gates can
+        // never disagree across the queue.
+        return $this->changeDetector->hasChanged(
+            $dto,
+            $parserData->getContentHash(),
+            $parserData->getFirewallVersion(),
+            $parserData->getParserVersion(),
+        );
     }
 }

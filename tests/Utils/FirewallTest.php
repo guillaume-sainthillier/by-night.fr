@@ -34,17 +34,15 @@ final class FirewallTest extends AppKernelTestCase
 
     public function testExplorations(): void
     {
-        $noNeedToUpdateReject = new Reject()->addReason(Reject::NO_NEED_TO_UPDATE);
-        $badReject = new Reject()->addReason(Reject::BAD_PLACE_LOCATION);
-        $deletedReject = new Reject()->addReason(Reject::EVENT_DELETED);
+        $hasher = new EventContentHasher();
 
-        $now = new DateTimeImmutable();
-        $tomorrow = new DateTimeImmutable('tomorrow');
-
-        // L'événement ne doit pas être valide car il n'a pas changé
-        $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
-        $event = (new EventDto());
-        $event->externalUpdatedAt = $now;
+        // Événement inchangé (même version, même empreinte) -> NO_NEED_TO_UPDATE
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject())
+            ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
@@ -52,10 +50,14 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        // L'événement doit être valide car il a été mis à jour
-        $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
-        $event = (new EventDto());
-        $event->externalUpdatedAt = $tomorrow;
+        // Le contenu a changé (même version) -> on lève NO_NEED_TO_UPDATE
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE))
+            ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
+        $event->name = 'A brand new title'; // mute le contenu APRÈS avoir figé l'empreinte stockée
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
@@ -63,21 +65,28 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals(Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        // L'événement ne doit pas être valide car la version du firewall a changé mais qu'il n'a pas changé
-        $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new EventDto());
-        $event->externalUpdatedAt = $now;
+        // La version du firewall a changé : on réévalue MÊME si le contenu est identique,
+        // car le guard de publication republie déjà ces événements — le consommateur ne
+        // doit pas les écarter silencieusement comme « rien à mettre à jour ».
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE))
+            ->setFirewallVersion('old version')
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
         self::assertNotNull($reject);
-        self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $reject->getReason());
+        self::assertEquals(Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        // L'événement doit être valide car la version du firewall a changé et qu'il n'était pas valide avant
-        $exploration = new ParserData()->setReject($badReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new EventDto());
-        $event->reject = new Reject();
+        // La version du firewall a changé et l'événement n'était pas valide avant -> valide
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::BAD_PLACE_LOCATION))
+            ->setFirewallVersion('old version')
+            ->setParserVersion($event->parserVersion);
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
@@ -86,16 +95,28 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         // L'événement ne doit pas être mis à jour car son créateur l'a supprimé
-        $exploration = new ParserData()->setReject(clone $deletedReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new EventDto());
-        $event->reject = new Reject();
-        $event->parserVersion = 'new version';
+        $event = $this->explorationEvent('new version');
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::EVENT_DELETED))
+            ->setFirewallVersion('old version')
+            ->setParserVersion('1.0');
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
         self::assertNotNull($reject);
         self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $reject->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());
+    }
+
+    private function explorationEvent(string $parserVersion = '1.0'): EventDto
+    {
+        $event = new EventDto();
+        $event->reject = new Reject();
+        $event->parserVersion = $parserVersion;
+        $event->name = 'Concert';
+        $event->description = 'A nice concert in town';
+
+        return $event;
     }
 
     public function testFilterEventStoresContentHashOnNewExploration(): void

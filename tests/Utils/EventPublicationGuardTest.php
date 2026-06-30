@@ -14,6 +14,7 @@ use App\Dto\EventDto;
 use App\Factory\ParserDataFactory;
 use App\Repository\ParserDataRepository;
 use App\Tests\AppKernelTestCase;
+use App\Utils\EventChangeDetector;
 use App\Utils\EventContentHasher;
 use App\Utils\EventPublicationGuard;
 use App\Utils\Firewall;
@@ -32,11 +33,12 @@ final class EventPublicationGuardTest extends AppKernelTestCase
         parent::setUp();
 
         $this->hasher = new EventContentHasher();
-        // Real repository against the test DB so findContentSignaturesByOrigin()
-        // (and its SQL) is exercised end to end, not stubbed.
+        // Real repository against the test DB so the lookup SQL is exercised end to end,
+        // not stubbed. The guard delegates the "has it changed?" verdict to the shared
+        // EventChangeDetector — the same rule the consumer-side Firewall applies.
         $this->guard = new EventPublicationGuard(
             self::getContainer()->get(ParserDataRepository::class),
-            $this->hasher,
+            new EventChangeDetector($this->hasher),
         );
     }
 

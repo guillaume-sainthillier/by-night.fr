@@ -25,7 +25,7 @@ final class Firewall implements BatchResetInterface
     /** @var ParserData[] */
     private array $parserDatas = [];
 
-    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository, private readonly EventContentHasher $contentHasher)
+    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository, private readonly EventContentHasher $contentHasher, private readonly EventChangeDetector $changeDetector)
     {
     }
 
@@ -50,12 +50,9 @@ final class Firewall implements BatchResetInterface
 
     public function hasPlaceToBeUpdated(ParserData $parserData, EventDto $dto): bool
     {
-        return $this->hasExplorationToBeUpdated($parserData, $dto);
-    }
-
-    private function hasExplorationToBeUpdated(ParserData $parserData, EventDto $dto): bool
-    {
-        return self::VERSION !== $parserData->getFirewallVersion() || $dto->parserVersion !== $parserData->getFirewallVersion();
+        // Place explorations carry no content fingerprint, so a version delta is all we
+        // have to decide whether to re-observe them.
+        return $this->changeDetector->hasVersionChanged($dto, $parserData->getFirewallVersion(), $parserData->getParserVersion());
     }
 
     public function isEventDtoValid(EventDto $eventDto): bool
@@ -245,6 +242,21 @@ final class Firewall implements BatchResetInterface
     {
         $reject = $parserData->getReject();
 
+        // Decide "has it changed?" against the PREVIOUSLY stored signature, using the
+        // exact same content-hash rule the publish-time guard applied. This must happen
+        // before we overwrite the fingerprint below.
+        $hasChanged = $this->changeDetector->hasChanged(
+            $eventDto,
+            $parserData->getContentHash(),
+            $parserData->getFirewallVersion(),
+            $parserData->getParserVersion(),
+        );
+        $hasVersionChanged = $this->changeDetector->hasVersionChanged(
+            $eventDto,
+            $parserData->getFirewallVersion(),
+            $parserData->getParserVersion(),
+        );
+
         // Always refresh the stored fingerprint, even on the early-return paths below:
         // otherwise a permanently-rejected (or deleted) event whose feed keeps mutating
         // would fail the publish-time hash check and be re-enqueued on every run.
@@ -255,19 +267,16 @@ final class Firewall implements BatchResetInterface
             return;
         }
 
-        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($parserData, $eventDto);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($parserData, $eventDto);
-
         // L'évémenement n'a pas changé -> non valide
-        if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
+        if (!$hasChanged && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
         // L'événement a changé -> valide
-        } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
+        } elseif ($hasChanged && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
 
         // L'exploration est ancienne -> maj de la version
-        if ($hasFirewallVersionChanged) {
+        if ($hasVersionChanged) {
             $parserData
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($eventDto->parserVersion);
@@ -276,18 +285,6 @@ final class Firewall implements BatchResetInterface
                 $reject->setValid();
             }
         }
-    }
-
-    public function hasEventToBeUpdated(ParserData $parserData, EventDto $dto): bool
-    {
-        $parserDataDate = $parserData->getLastUpdated();
-        $eventDateModification = $dto->getExternalUpdatedAt();
-
-        if (!$parserDataDate || !$eventDateModification) {
-            return true;
-        }
-
-        return $eventDateModification > $parserDataDate;
     }
 
     /**
