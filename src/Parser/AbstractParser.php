@@ -13,21 +13,36 @@ namespace App\Parser;
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
+use App\Utils\EventPublicationGuard;
 use BackedEnum;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 use Throwable;
 
 abstract class AbstractParser implements ParserInterface
 {
     private int $parsedEvents = 0;
 
+    private int $skippedEvents = 0;
+
+    private EventPublicationGuard $publicationGuard;
+
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly MessageBusInterface $messageBus,
         private readonly EventHandler $eventHandler,
     ) {
+    }
+
+    /**
+     * Setter injection keeps the dedup gate out of every parser's constructor.
+     */
+    #[Required]
+    public function setPublicationGuard(EventPublicationGuard $publicationGuard): void
+    {
+        $this->publicationGuard = $publicationGuard;
     }
 
     public function isEnabled(): bool
@@ -66,6 +81,16 @@ abstract class AbstractParser implements ParserInterface
 
         $this->sanitize($eventDto);
         $this->eventHandler->cleanEvent($eventDto);
+
+        // Dedup gate: skip enqueueing an event whose content is unchanged since the
+        // previous run. Hashing happens here, after cleanEvent(), so the fingerprint
+        // matches the one the consumer stores before its own re-clean pass.
+        if (!$this->publicationGuard->shouldPublish($eventDto)) {
+            ++$this->skippedEvents;
+
+            return;
+        }
+
         $this->messageBus->dispatch($eventDto);
         ++$this->parsedEvents;
     }
@@ -76,6 +101,14 @@ abstract class AbstractParser implements ParserInterface
     public function getParsedEvents(): int
     {
         return $this->parsedEvents;
+    }
+
+    /**
+     * Number of events skipped by the dedup gate because their content was unchanged.
+     */
+    public function getSkippedEvents(): int
+    {
+        return $this->skippedEvents;
     }
 
     protected function logException(Throwable $exception, array $context = []): void

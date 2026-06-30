@@ -25,7 +25,7 @@ final class Firewall implements BatchResetInterface
     /** @var ParserData[] */
     private array $parserDatas = [];
 
-    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository)
+    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository, private readonly EventContentHasher $contentHasher)
     {
     }
 
@@ -130,7 +130,8 @@ final class Firewall implements BatchResetInterface
                     ->setReject($dto->reject)
                     ->setReason($dto->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
-                    ->setParserVersion($dto->parserVersion);
+                    ->setParserVersion($dto->parserVersion)
+                    ->setContentHash($this->contentHasher->hash($dto));
 
                 $this->addParserData($parserData);
             } else {
@@ -141,7 +142,8 @@ final class Firewall implements BatchResetInterface
 
                 $parserData
                     ->setReject($dto->reject)
-                    ->setReason($dto->reject->getReason());
+                    ->setReason($dto->reject->getReason())
+                    ->setContentHash($this->contentHasher->hash($dto));
             }
         }
     }
@@ -242,6 +244,11 @@ final class Firewall implements BatchResetInterface
     public function filterEventExploration(ParserData $parserData, EventDto $eventDto): void
     {
         $reject = $parserData->getReject();
+
+        // Always refresh the stored fingerprint, even on the early-return paths below:
+        // otherwise a permanently-rejected (or deleted) event whose feed keeps mutating
+        // would fail the publish-time hash check and be re-enqueued on every run.
+        $parserData->setContentHash($this->contentHasher->hash($eventDto));
 
         // Aucune action sur un événement supprimé sur la plateforme par son créateur
         if ($reject->isEventDeleted()) {

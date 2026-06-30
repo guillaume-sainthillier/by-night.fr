@@ -28,6 +28,8 @@ interface ParserInterface
 
     public function getParsedEvents(): int;
 
+    public function getSkippedEvents(): int;
+
     public function publish(EventDto $eventDto): void;
 
     public function getCommandName(): string;

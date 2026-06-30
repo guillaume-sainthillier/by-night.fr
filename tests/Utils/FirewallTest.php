@@ -15,6 +15,7 @@ use App\Dto\EventTimesheetDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
+use App\Utils\EventContentHasher;
 use App\Utils\Firewall;
 use DateTimeImmutable;
 use Override;
@@ -95,6 +96,42 @@ final class FirewallTest extends AppKernelTestCase
         self::assertNotNull($reject);
         self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $reject->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());
+    }
+
+    public function testFilterEventStoresContentHashOnNewExploration(): void
+    {
+        $dto = $this->createValidEventDto();
+        $dto->externalId = 'evt-hash-new';
+        $dto->externalOrigin = 'openagenda';
+
+        $this->firewall->filterEvent($dto);
+
+        $exploration = $this->firewall->getExploration('evt-hash-new');
+        self::assertNotNull($exploration);
+        self::assertSame(
+            (new EventContentHasher())->hash($dto),
+            $exploration->getContentHash(),
+            'A freshly observed event must store its content fingerprint for the next run to compare.',
+        );
+    }
+
+    public function testFilterEventExplorationRefreshesContentHash(): void
+    {
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE))
+            ->setLastUpdated(new DateTimeImmutable())
+            ->setContentHash('staleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+
+        $event = new EventDto();
+        $event->name = 'A changed title';
+
+        $this->firewall->filterEventExploration($exploration, $event);
+
+        self::assertSame(
+            (new EventContentHasher())->hash($event),
+            $exploration->getContentHash(),
+            'Re-observing an existing exploration must refresh its fingerprint, even on reject paths.',
+        );
     }
 
     public function testValidTimesheetsPassValidation(): void
