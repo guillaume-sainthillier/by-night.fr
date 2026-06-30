@@ -57,9 +57,14 @@ final class Firewall implements BatchResetInterface
 
     public function isEventDtoValid(EventDto $eventDto): bool
     {
-        return null === $eventDto->reject
-        || null === $eventDto->place?->reject
-        || ($eventDto->reject->isValid() && $eventDto->place->reject->isValid());
+        // Place-level rejects are folded into the event reject by mapPlaceRejectToEvent,
+        // but we still check both explicitly. The previous `||` chain returned true as
+        // soon as the place reject was null, so a place-less event (place === null) that
+        // had been rejected with NO_PLACE_PROVIDED was wrongly kept.
+        $isEventValid = $eventDto->reject?->isValid() ?? true;
+        $isPlaceValid = $eventDto->place?->reject?->isValid() ?? true;
+
+        return $isEventValid && $isPlaceValid;
     }
 
     public function filterEvent(EventDto $dto): void

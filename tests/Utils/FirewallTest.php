@@ -12,6 +12,7 @@ namespace App\Tests\Utils;
 
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
+use App\Dto\PlaceDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
@@ -106,6 +107,29 @@ final class FirewallTest extends AppKernelTestCase
         self::assertNotNull($reject);
         self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $reject->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());
+    }
+
+    public function testIsEventDtoValid(): void
+    {
+        // Valid event with a valid place
+        $dto = new EventDto();
+        $dto->reject = new Reject();
+        $dto->place = new PlaceDto();
+        $dto->place->reject = new Reject();
+        self::assertTrue($this->firewall->isEventDtoValid($dto));
+
+        // Rejected, place-less event must NOT be considered valid
+        $dto = new EventDto();
+        $dto->reject = new Reject()->addReason(Reject::NO_PLACE_PROVIDED);
+        $dto->place = null;
+        self::assertFalse($this->firewall->isEventDtoValid($dto), 'A place-less rejected event must be filtered out.');
+
+        // Valid event reject but invalid place reject
+        $dto = new EventDto();
+        $dto->reject = new Reject();
+        $dto->place = new PlaceDto();
+        $dto->place->reject = new Reject()->addReason(Reject::BAD_PLACE_NAME);
+        self::assertFalse($this->firewall->isEventDtoValid($dto));
     }
 
     private function explorationEvent(string $parserVersion = '1.0'): EventDto
