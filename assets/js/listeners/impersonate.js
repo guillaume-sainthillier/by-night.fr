@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2'
 import { create } from '@/js/services/ui/AutocompleteService'
 
-export default (di, container) => {
+export default (_di, container) => {
     container.querySelectorAll('.js-impersonate').forEach((el) => {
         el.addEventListener('click', async (e) => {
             e.preventDefault()

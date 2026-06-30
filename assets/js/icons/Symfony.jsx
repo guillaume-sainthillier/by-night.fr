@@ -1,5 +1,3 @@
-import { h } from 'preact'
-
 const SvgSymfony = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 257" width="1em" height="1em" {...props}>
         <circle cx={128} cy={128.827} r={128} fill="#1a171b" />

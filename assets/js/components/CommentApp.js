@@ -68,7 +68,7 @@ export default class CommentApp {
 
                 // Add spinner to button
                 const originalText = btn.html()
-                btn.html(iconHtml(self.options.icon_spinner, 'icon-spin') + ' ' + originalText)
+                btn.html(`${iconHtml(self.options.icon_spinner, 'icon-spin')} ${originalText}`)
                 btn.prop('disabled', true)
 
                 $.get(loadMore.data('url'), (html) => {

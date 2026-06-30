@@ -116,9 +116,9 @@ export default (_di, _container) => {
             })
             .fail((xhr) => {
                 let errorMessage = "Une erreur s'est produite"
-                if (xhr.responseJSON && xhr.responseJSON.violations) {
+                if (xhr.responseJSON?.violations) {
                     errorMessage = xhr.responseJSON.violations.map((v) => v.message).join('<br>')
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                } else if (xhr.responseJSON?.message) {
                     errorMessage = xhr.responseJSON.message
                 }
                 showError(errorMessage)

@@ -1,6 +1,6 @@
 import $ from 'jquery'
 
-export default (di, container) => {
+export default (_di, container) => {
     const options = {
         css_selector_like: '.btn-like-event',
         css_active_class: 'btn-primary',

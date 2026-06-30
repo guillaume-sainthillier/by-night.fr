@@ -53,7 +53,7 @@ function formatRangeLabel(start, end, ranges, label) {
     }
 
     // Custom format
-    if (!end || !end.isValid()) {
+    if (!end?.isValid()) {
         return `À partir du ${start.format('ll')}`
     }
     if (start.format('YYYY-MM-DD') === end.format('YYYY-MM-DD')) {
