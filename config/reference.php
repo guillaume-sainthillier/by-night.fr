@@ -1,12 +1,6 @@
 <?php
 
-/*
- * This file is part of By Night.
- * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+// This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
@@ -635,7 +629,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     },
  *     rate_limiter?: bool|array{ // Rate limiter configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         limiters?: array<string, array{ // Default: []
  *             lock_factory?: scalar|Param|null, // The service ID of the lock factory used by this limiter (or null to disable locking). // Default: "auto"
  *             cache_pool?: scalar|Param|null, // The cache pool to use for storing the current limiter state. // Default: "cache.rate_limiter"
@@ -2120,6 +2114,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     jsonapi?: array{
  *         use_iri_as_id?: bool|Param, // Set to false to use entity identifiers instead of IRIs as the "id" field in JSON:API responses. // Default: true
+ *         allow_client_generated_id?: bool|Param, // Allow client-generated IDs on JSON:API POST per https://jsonapi.org/format/#crud-creating-client-ids. Off by default to prevent id spoofing on public endpoints. // Default: false
  *     },
  *     eager_loading?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -2433,6 +2428,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_fit?: scalar|Param|null, // Default fit mode (contain, cover, crop, fill). // Default: "contain"
  *     cache?: scalar|Param|null, // PSR-6 cache pool for metadata guessing and BlurHash generation. true (default) uses cache.app, false disables caching, or pass a service ID string. // Default: true
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
+ *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2508,7 +2504,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     security?: SecurityConfig,
  *     monolog?: MonologConfig,
  *     vich_uploader?: VichUploaderConfig,
- *     sentry?: SentryConfig,
  *     flysystem?: FlysystemConfig,
  *     webpack_encore?: WebpackEncoreConfig,
  *     knpu_oauth2_client?: KnpuOauth2ClientConfig,
@@ -2541,7 +2536,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         web_profiler?: WebProfilerConfig,
  *         debug?: DebugConfig,
  *         maker?: MakerConfig,
- *         sentry?: SentryConfig,
  *         flysystem?: FlysystemConfig,
  *         webpack_encore?: WebpackEncoreConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
@@ -2606,7 +2600,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         vich_uploader?: VichUploaderConfig,
  *         web_profiler?: WebProfilerConfig,
  *         debug?: DebugConfig,
- *         sentry?: SentryConfig,
  *         flysystem?: FlysystemConfig,
  *         webpack_encore?: WebpackEncoreConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
