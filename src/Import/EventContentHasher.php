@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Utils;
+namespace App\Import;
 
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;

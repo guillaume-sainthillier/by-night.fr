@@ -11,7 +11,7 @@
 namespace App\Factory;
 
 use App\Entity\ParserData;
-use App\Utils\Firewall;
+use App\Import\Firewall;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

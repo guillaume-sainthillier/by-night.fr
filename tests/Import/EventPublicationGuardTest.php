@@ -8,16 +8,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Utils;
+namespace App\Tests\Import;
 
 use App\Dto\EventDto;
 use App\Factory\ParserDataFactory;
+use App\Import\EventChangeDetector;
+use App\Import\EventContentHasher;
+use App\Import\EventPublicationGuard;
+use App\Import\Firewall;
 use App\Repository\ParserDataRepository;
 use App\Tests\AppKernelTestCase;
-use App\Utils\EventChangeDetector;
-use App\Utils\EventContentHasher;
-use App\Utils\EventPublicationGuard;
-use App\Utils\Firewall;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
 final class EventPublicationGuardTest extends AppKernelTestCase

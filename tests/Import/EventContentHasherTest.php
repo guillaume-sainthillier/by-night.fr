@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Utils;
+namespace App\Tests\Import;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
@@ -16,7 +16,7 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
-use App\Utils\EventContentHasher;
+use App\Import\EventContentHasher;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 

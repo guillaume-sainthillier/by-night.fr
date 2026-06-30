@@ -8,13 +8,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Utils;
+namespace App\Import;
 
 use App\Contracts\BatchResetInterface;
 use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
+use App\Utils\Comparator;
 use DateTimeImmutable;
 use DateTimeInterface;
 

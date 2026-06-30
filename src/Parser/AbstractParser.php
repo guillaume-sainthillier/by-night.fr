@@ -13,7 +13,7 @@ namespace App\Parser;
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
-use App\Utils\EventPublicationGuard;
+use App\Import\EventPublicationGuard;
 use BackedEnum;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;

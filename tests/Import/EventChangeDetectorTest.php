@@ -8,12 +8,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Utils;
+namespace App\Tests\Import;
 
 use App\Dto\EventDto;
-use App\Utils\EventChangeDetector;
-use App\Utils\EventContentHasher;
-use App\Utils\Firewall;
+use App\Import\EventChangeDetector;
+use App\Import\EventContentHasher;
+use App\Import\Firewall;
 use PHPUnit\Framework\TestCase;
 
 final class EventChangeDetectorTest extends TestCase

@@ -8,16 +8,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Utils;
+namespace App\Tests\Import;
 
 use App\Dto\CityDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
+use App\Import\Cleaner;
+use App\Import\EventContentHasher;
 use App\Tests\AppKernelTestCase;
-use App\Utils\Cleaner;
-use App\Utils\EventContentHasher;
 use DateTime;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;

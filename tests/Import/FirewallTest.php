@@ -8,16 +8,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Utils;
+namespace App\Tests\Import;
 
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Entity\ParserData;
+use App\Import\EventContentHasher;
+use App\Import\Firewall;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
-use App\Utils\EventContentHasher;
-use App\Utils\Firewall;
 use DateTimeImmutable;
 use Override;
 
