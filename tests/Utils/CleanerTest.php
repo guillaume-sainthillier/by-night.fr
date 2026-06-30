@@ -17,6 +17,7 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Tests\AppKernelTestCase;
 use App\Utils\Cleaner;
+use App\Utils\EventContentHasher;
 use DateTime;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -111,6 +112,53 @@ final class CleanerTest extends AppKernelTestCase
         ];
     }
 
+    private function cleanAll(EventDto $dto): void
+    {
+        // Mirror EventHandler::cleanEvent, the entry point used on both sides of the queue.
+        $this->cleaner->cleanEvent($dto);
+        if (null !== $dto->place) {
+            $this->cleaner->cleanPlace($dto->place);
+            if (null !== $dto->place->city) {
+                $this->cleaner->cleanCity($dto->place->city);
+            }
+        }
+    }
+
+    private function messyEvent(): EventDto
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->name = '  Le   Grand    Concert  ';
+        $dto->description = "  Une   soirée   d'exception  ";
+        $dto->address = str_repeat('a', 300);
+        $dto->hours = '  De 20h   à 23h  ';
+        $dto->type = '  Concert  ';
+        $dto->category = TagDto::fromString('  Musique  ');
+        $dto->themes = [TagDto::fromString('  Rock  '), TagDto::fromString('  Jazz  ')];
+        $dto->latitude = 43.604652;
+        $dto->longitude = 1.444209;
+
+        $timesheet = new EventTimesheetDto();
+        $timesheet->hours = '  20h - 23h  ';
+        $timesheet->startAt = new DateTime('2024-01-15 20:00:00');
+        $timesheet->endAt = new DateTime('2024-01-15 23:00:00');
+        $dto->timesheets = [$timesheet];
+
+        $place = new PlaceDto();
+        $place->name = '  le   bikini  ';
+        $place->street = '  rue   théodore   monod  ';
+        $place->latitude = 43.604652;
+        $place->longitude = 1.444209;
+
+        $city = new CityDto();
+        $city->name = 'saint - lys';
+        $city->postalCode = 'FR31000ABC';
+        $place->city = $city;
+        $dto->place = $place;
+
+        return $dto;
+    }
+
     public function testCleanPlaceTrimsAndCleans(): void
     {
         $dto = new PlaceDto();
@@ -185,6 +233,25 @@ final class CleanerTest extends AppKernelTestCase
         $this->cleaner->cleanEventTimesheet($dto);
 
         self::assertEquals('De 20h à 23h', $dto->hours);
+    }
+
+    public function testCleaningIsIdempotentForTheDedupFingerprint(): void
+    {
+        // The publish-time guard hashes an event after one clean pass; the consumer
+        // re-cleans the same event before storing its fingerprint. Both fingerprints
+        // must match, which only holds if cleaning is idempotent. Lock that contract:
+        // if a future clean rule stops being stable, the dedup gate would silently
+        // re-enqueue every event on every run, and this test would catch it.
+        $hasher = new EventContentHasher();
+
+        $dto = $this->messyEvent();
+        $this->cleanAll($dto);
+        $firstPass = $hasher->hash($dto);
+
+        $this->cleanAll($dto);
+        $secondPass = $hasher->hash($dto);
+
+        self::assertSame($firstPass, $secondPass);
     }
 
     public function testCleanEventCleansNestedTimesheets(): void

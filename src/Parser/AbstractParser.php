@@ -84,7 +84,8 @@ abstract class AbstractParser implements ParserInterface
 
         // Dedup gate: skip enqueueing an event whose content is unchanged since the
         // previous run. Hashing happens here, after cleanEvent(), so the fingerprint
-        // matches the one the consumer stores before its own re-clean pass.
+        // matches the one the consumer stores before its own re-clean pass — this holds
+        // only because cleaning is idempotent (locked by CleanerTest).
         if (!$this->publicationGuard->shouldPublish($eventDto)) {
             ++$this->skippedEvents;
 
