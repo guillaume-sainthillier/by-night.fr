@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "544064f292b302f568f5968e73fbe1ce",
+    "content-hash": "26e40970b3d3b3fade08aefa8a55524b",
     "packages": [
         {
             "name": "api-platform/core",
@@ -16189,6 +16189,88 @@
                 }
             ],
             "time": "2026-02-06T04:52:52+00:00"
+        },
+        {
+            "name": "shipmonk/dead-code-detector",
+            "version": "0.15.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shipmonk-rnd/dead-code-detector.git",
+                "reference": "e0e8d9ec48a60e4db5d54750e45196683e5f0a3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shipmonk-rnd/dead-code-detector/zipball/e0e8d9ec48a60e4db5d54750e45196683e5f0a3c",
+                "reference": "e0e8d9ec48a60e4db5d54750e45196683e5f0a3c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^2.1.23"
+            },
+            "require-dev": {
+                "behat/behat": "^3.14",
+                "composer-runtime-api": "^2.0",
+                "composer/semver": "^3.4",
+                "doctrine/orm": "^2.19 || ^3.0",
+                "editorconfig-checker/editorconfig-checker": "^10.6.0",
+                "ergebnis/composer-normalize": "^2.48.1",
+                "nette/application": "^3.1",
+                "nette/component-model": "^3.0",
+                "nette/tester": "^2.4",
+                "nette/utils": "^3.0 || ^4.0",
+                "nikic/php-parser": "^5.4.0",
+                "phpbench/phpbench": "^1.2",
+                "phpstan/phpstan-phpunit": "^2.0.4",
+                "phpstan/phpstan-strict-rules": "^2.0.3",
+                "phpstan/phpstan-symfony": "^2.0.2",
+                "phpunit/phpcov": "^8.2",
+                "phpunit/phpunit": "^9.6.22",
+                "shipmonk/coding-standard": "^0.2.0",
+                "shipmonk/composer-dependency-analyser": "^1.8.2",
+                "shipmonk/coverage-guard": "^1.0.0",
+                "shipmonk/name-collision-detector": "^2.1.1",
+                "shipmonk/phpstan-dev": "^0.1.6",
+                "shipmonk/phpstan-rules": "^4.1.0",
+                "symfony/contracts": "^2.5 || ^3.0 || ^4.0",
+                "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/doctrine-bridge": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/event-dispatcher": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/framework-bundle": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/routing": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/validator": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "twig/twig": "^3.0"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ShipMonk\\PHPStan\\DeadCode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Dead code detector to find unused PHP code via PHPStan extension. Can automatically remove dead PHP code. Supports libraries like Symfony, Doctrine, PHPUnit etc. Detects dead cycles. Can detect dead code that is tested.",
+            "keywords": [
+                "PHPStan",
+                "dead code",
+                "static analysis",
+                "unused code"
+            ],
+            "support": {
+                "issues": "https://github.com/shipmonk-rnd/dead-code-detector/issues",
+                "source": "https://github.com/shipmonk-rnd/dead-code-detector/tree/0.15.1"
+            },
+            "time": "2026-03-06T08:53:16+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
