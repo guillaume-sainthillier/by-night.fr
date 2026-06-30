@@ -7,16 +7,16 @@ export default class SocialLogin {
 
         // Default actions
         $('body')
-            .on('wantConnect', (event, checkbox) => {
+            .on('wantConnect', (_event, checkbox) => {
                 this.launchSocialConnect(checkbox)
             })
-            .on('wantDisconnect', (event, checkbox) => {
+            .on('wantDisconnect', (_event, checkbox) => {
                 this.launchSocialDisconnect(checkbox)
             })
-            .on('hasDisconnected', (event, checkbox) => {
+            .on('hasDisconnected', (_event, checkbox) => {
                 this.onDisconnectedSocial(checkbox)
             })
-            .on('hasConnected', (event, ui) => {
+            .on('hasConnected', (_event, ui) => {
                 const checkbox = ui.target
                 const { user } = ui
 

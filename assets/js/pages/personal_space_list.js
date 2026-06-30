@@ -65,9 +65,9 @@ $(document).ready(() => {
             })
             .fail((xhr) => {
                 let errorMessage = 'Une erreur est survenue'
-                if (xhr.responseJSON && xhr.responseJSON.detail) {
+                if (xhr.responseJSON?.detail) {
                     errorMessage = xhr.responseJSON.detail
-                } else if (xhr.responseJSON && xhr.responseJSON.violations) {
+                } else if (xhr.responseJSON?.violations) {
                     errorMessage = xhr.responseJSON.violations.map((v) => v.message).join(', ')
                 }
                 feedbackMessage.addClass('is-invalid')

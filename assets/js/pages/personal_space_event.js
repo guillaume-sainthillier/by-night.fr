@@ -347,7 +347,7 @@ $(document).ready(() => {
         // Pre-populate map in edit mode
         const lat = parseFloat($(eventPlaceLatitude).val())
         const lng = parseFloat($(eventPlaceLongitude).val())
-        if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
+        if (!Number.isNaN(lat) && !Number.isNaN(lng) && (lat !== 0 || lng !== 0)) {
             map.setCenter({ lat, lng })
             marker.position = { lat, lng }
         }

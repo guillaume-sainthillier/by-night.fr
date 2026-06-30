@@ -1,7 +1,7 @@
 /** @jsx h */
 
 import { autocomplete } from '@algolia/autocomplete-js'
-import { Fragment, h, render } from 'preact'
+import { Fragment, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import { Offcanvas } from '@tabler/core/dist/js/tabler.esm'

@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import { findAll, on } from '@/js/utils/dom'
 
-export default (di, container) => {
+export default (_di, container) => {
     const elems = findAll('input[data-target], button[data-target], a[data-target]', container)
 
     if (!elems.length) {

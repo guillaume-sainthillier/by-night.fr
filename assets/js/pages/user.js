@@ -34,7 +34,7 @@ $(document).ready(() => {
 
                 // Add spinner to button
                 const originalText = btn.html()
-                btn.html(iconHtml(Loader2Icon, 'icon-spin') + ' ' + originalText)
+                btn.html(`${iconHtml(Loader2Icon, 'icon-spin')} ${originalText}`)
                 btn.prop('disabled', true)
 
                 $.get(loadMore.data('url'), (html) => {
@@ -83,7 +83,7 @@ $(document).ready(() => {
     function initLieux() {
         const data = []
 
-        $.each(window.datas, (i, datum) => {
+        $.each(window.datas, (_i, datum) => {
             data.push({ label: datum.name || '', value: datum.eventsCount })
         })
 
@@ -122,7 +122,7 @@ $(document).ready(() => {
                 hideHover: 'auto',
                 parseTime: false,
                 resize: true,
-                hoverCallback(index, options, content, row) {
+                hoverCallback(_index, _options, content, row) {
                     const customContent = $(`<div>${content}</div>`)
                     $(customContent).find('.morris-hover-row-label').html(row.full_period)
                     return $(customContent).html()

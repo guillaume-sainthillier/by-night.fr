@@ -52,10 +52,10 @@ $.ajaxSetup({
                 const errors = JSON.parse(error.responseText)
 
                 message = ''
-                $.each(errors, (k, err) => {
+                $.each(errors, (_k, err) => {
                     message = `${err.message}<br />`
                 })
-            } catch (e) {
+            } catch (_e) {
                 /* eslint no-unused-vars: "off" */
             }
 

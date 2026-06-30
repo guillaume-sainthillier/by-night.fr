@@ -1,6 +1,6 @@
 import $ from 'jquery'
 
-export default (di, container) => {
+export default (_di, container) => {
     $('.more', container).click(function (e) {
         e.preventDefault()
 

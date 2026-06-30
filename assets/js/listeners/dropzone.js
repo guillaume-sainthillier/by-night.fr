@@ -54,7 +54,7 @@ const handleFileChange = (e) => {
     const preview = dropzone.querySelector(PREVIEW_SELECTOR)
     const placeholder = dropzone.querySelector(PLACEHOLDER_SELECTOR)
 
-    if (!fileInput.files || !fileInput.files.length) {
+    if (!fileInput.files?.length) {
         // No file selected, show placeholder
         if (preview) {
             preview.innerHTML = ''

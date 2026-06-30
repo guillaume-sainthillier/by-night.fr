@@ -80,7 +80,7 @@ export const getVirtualForm = (container) => {
     return virtualForm
 }
 
-const getFormValues = (form) => {
+const _getFormValues = (form) => {
     const formValues = {}
     for (const [elementName, elementId] of Object.entries(form)) {
         if (elementName.startsWith('_')) {
@@ -90,10 +90,10 @@ const getFormValues = (form) => {
         if (Array.isArray(elementId)) {
             formValues[elementName] = []
             elementId.forEach((collectionItem, i) => {
-                formValues[elementName][i] = getFormValues(collectionItem)
+                formValues[elementName][i] = _getFormValues(collectionItem)
             })
         } else if (typeof elementId === 'object') {
-            formValues[elementName] = getFormValues(elementId)
+            formValues[elementName] = _getFormValues(elementId)
         } else {
             const element = dom(`#${elementId}`)
             formValues[elementName] = getElementValue(element)

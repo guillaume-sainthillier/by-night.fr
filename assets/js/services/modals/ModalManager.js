@@ -42,7 +42,7 @@ export default class ModalManager {
         }
 
         return Swal.fire(params).then((result) => {
-            return result && result.value
+            return result?.value
         })
     }
 }

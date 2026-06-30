@@ -1,4 +1,3 @@
-import { h } from 'preact'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import { dom, findAll } from '@/js/utils/dom'
 import TimesheetGenerator from '@/js/utils/TimesheetGenerator'

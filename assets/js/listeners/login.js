@@ -1,6 +1,6 @@
 import $ from 'jquery'
 
-export default (di, container) => {
+export default (_di, container) => {
     const handleLogin = ($dialog) => {
         window.App.dispatchPageLoadedEvent($dialog[0]) // $dialog is a jQuery object so we pass the pure dom object
         $dialog
