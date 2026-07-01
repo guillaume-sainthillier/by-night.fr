@@ -8,13 +8,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Utils;
+namespace App\Import;
 
 use App\Contracts\BatchResetInterface;
 use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
+use App\Utils\Comparator;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -25,7 +26,7 @@ final class Firewall implements BatchResetInterface
     /** @var ParserData[] */
     private array $parserDatas = [];
 
-    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository)
+    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository, private readonly EventContentHasher $contentHasher, private readonly EventChangeDetector $changeDetector)
     {
     }
 
@@ -50,19 +51,21 @@ final class Firewall implements BatchResetInterface
 
     public function hasPlaceToBeUpdated(ParserData $parserData, EventDto $dto): bool
     {
-        return $this->hasExplorationToBeUpdated($parserData, $dto);
-    }
-
-    private function hasExplorationToBeUpdated(ParserData $parserData, EventDto $dto): bool
-    {
-        return self::VERSION !== $parserData->getFirewallVersion() || $dto->parserVersion !== $parserData->getFirewallVersion();
+        // Place explorations carry no content fingerprint, so a version delta is all we
+        // have to decide whether to re-observe them.
+        return $this->changeDetector->hasVersionChanged($dto, $parserData->getFirewallVersion(), $parserData->getParserVersion());
     }
 
     public function isEventDtoValid(EventDto $eventDto): bool
     {
-        return null === $eventDto->reject
-        || null === $eventDto->place?->reject
-        || ($eventDto->reject->isValid() && $eventDto->place->reject->isValid());
+        // Place-level rejects are folded into the event reject by mapPlaceRejectToEvent,
+        // but we still check both explicitly. The previous `||` chain returned true as
+        // soon as the place reject was null, so a place-less event (place === null) that
+        // had been rejected with NO_PLACE_PROVIDED was wrongly kept.
+        $isEventValid = $eventDto->reject?->isValid() ?? true;
+        $isPlaceValid = $eventDto->place?->reject?->isValid() ?? true;
+
+        return $isEventValid && $isPlaceValid;
     }
 
     public function filterEvent(EventDto $dto): void
@@ -130,7 +133,8 @@ final class Firewall implements BatchResetInterface
                     ->setReject($dto->reject)
                     ->setReason($dto->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
-                    ->setParserVersion($dto->parserVersion);
+                    ->setParserVersion($dto->parserVersion)
+                    ->setContentHash($this->contentHasher->hash($dto));
 
                 $this->addParserData($parserData);
             } else {
@@ -141,7 +145,8 @@ final class Firewall implements BatchResetInterface
 
                 $parserData
                     ->setReject($dto->reject)
-                    ->setReason($dto->reject->getReason());
+                    ->setReason($dto->reject->getReason())
+                    ->setContentHash($this->contentHasher->hash($dto));
             }
         }
     }
@@ -243,24 +248,41 @@ final class Firewall implements BatchResetInterface
     {
         $reject = $parserData->getReject();
 
+        // Decide "has it changed?" against the PREVIOUSLY stored signature, using the
+        // exact same content-hash rule the publish-time guard applied. This must happen
+        // before we overwrite the fingerprint below.
+        $hasChanged = $this->changeDetector->hasChanged(
+            $eventDto,
+            $parserData->getContentHash(),
+            $parserData->getFirewallVersion(),
+            $parserData->getParserVersion(),
+        );
+        $hasVersionChanged = $this->changeDetector->hasVersionChanged(
+            $eventDto,
+            $parserData->getFirewallVersion(),
+            $parserData->getParserVersion(),
+        );
+
+        // Always refresh the stored fingerprint, even on the early-return paths below:
+        // otherwise a permanently-rejected (or deleted) event whose feed keeps mutating
+        // would fail the publish-time hash check and be re-enqueued on every run.
+        $parserData->setContentHash($this->contentHasher->hash($eventDto));
+
         // Aucune action sur un événement supprimé sur la plateforme par son créateur
         if ($reject->isEventDeleted()) {
             return;
         }
 
-        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($parserData, $eventDto);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($parserData, $eventDto);
-
         // L'évémenement n'a pas changé -> non valide
-        if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
+        if (!$hasChanged && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
         // L'événement a changé -> valide
-        } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
+        } elseif ($hasChanged && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
 
         // L'exploration est ancienne -> maj de la version
-        if ($hasFirewallVersionChanged) {
+        if ($hasVersionChanged) {
             $parserData
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($eventDto->parserVersion);
@@ -269,18 +291,6 @@ final class Firewall implements BatchResetInterface
                 $reject->setValid();
             }
         }
-    }
-
-    public function hasEventToBeUpdated(ParserData $parserData, EventDto $dto): bool
-    {
-        $parserDataDate = $parserData->getLastUpdated();
-        $eventDateModification = $dto->getExternalUpdatedAt();
-
-        if (!$parserDataDate || !$eventDateModification) {
-            return true;
-        }
-
-        return $eventDateModification > $parserDataDate;
     }
 
     /**

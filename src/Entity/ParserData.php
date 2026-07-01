@@ -41,6 +41,14 @@ class ParserData
     #[ORM\Column(type: Types::STRING, length: 7, nullable: true)]
     private ?string $parserVersion = null;
 
+    /**
+     * sha1 of the last observed event content. Lets the import command skip
+     * re-enqueueing an event whose payload is byte-for-byte identical to the
+     * previous run. Null for legacy rows and for place explorations.
+     */
+    #[ORM\Column(type: Types::STRING, length: 40, nullable: true)]
+    private ?string $contentHash = null;
+
     private ?Reject $reject = null;
 
     public function getReject(): ?Reject
@@ -123,6 +131,18 @@ class ParserData
     public function setExternalOrigin(string $externalOrigin): self
     {
         $this->externalOrigin = $externalOrigin;
+
+        return $this;
+    }
+
+    public function getContentHash(): ?string
+    {
+        return $this->contentHash;
+    }
+
+    public function setContentHash(?string $contentHash): self
+    {
+        $this->contentHash = $contentHash;
 
         return $this;
     }

@@ -8,14 +8,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Utils;
+namespace App\Tests\Import;
 
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
+use App\Dto\PlaceDto;
 use App\Entity\ParserData;
+use App\Import\EventContentHasher;
+use App\Import\Firewall;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
-use App\Utils\Firewall;
 use DateTimeImmutable;
 use Override;
 
@@ -33,17 +35,15 @@ final class FirewallTest extends AppKernelTestCase
 
     public function testExplorations(): void
     {
-        $noNeedToUpdateReject = new Reject()->addReason(Reject::NO_NEED_TO_UPDATE);
-        $badReject = new Reject()->addReason(Reject::BAD_PLACE_LOCATION);
-        $deletedReject = new Reject()->addReason(Reject::EVENT_DELETED);
+        $hasher = new EventContentHasher();
 
-        $now = new DateTimeImmutable();
-        $tomorrow = new DateTimeImmutable('tomorrow');
-
-        // L'événement ne doit pas être valide car il n'a pas changé
-        $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
-        $event = (new EventDto());
-        $event->externalUpdatedAt = $now;
+        // Événement inchangé (même version, même empreinte) -> NO_NEED_TO_UPDATE
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject())
+            ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
@@ -51,10 +51,14 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        // L'événement doit être valide car il a été mis à jour
-        $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
-        $event = (new EventDto());
-        $event->externalUpdatedAt = $tomorrow;
+        // Le contenu a changé (même version) -> on lève NO_NEED_TO_UPDATE
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE))
+            ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
+        $event->name = 'A brand new title'; // mute le contenu APRÈS avoir figé l'empreinte stockée
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
@@ -62,21 +66,28 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals(Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        // L'événement ne doit pas être valide car la version du firewall a changé mais qu'il n'a pas changé
-        $exploration = new ParserData()->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new EventDto());
-        $event->externalUpdatedAt = $now;
+        // La version du firewall a changé : on réévalue MÊME si le contenu est identique,
+        // car le guard de publication republie déjà ces événements — le consommateur ne
+        // doit pas les écarter silencieusement comme « rien à mettre à jour ».
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE))
+            ->setFirewallVersion('old version')
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
         self::assertNotNull($reject);
-        self::assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $reject->getReason());
+        self::assertEquals(Reject::VALID, $reject->getReason());
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        // L'événement doit être valide car la version du firewall a changé et qu'il n'était pas valide avant
-        $exploration = new ParserData()->setReject($badReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new EventDto());
-        $event->reject = new Reject();
+        // La version du firewall a changé et l'événement n'était pas valide avant -> valide
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::BAD_PLACE_LOCATION))
+            ->setFirewallVersion('old version')
+            ->setParserVersion($event->parserVersion);
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
@@ -85,16 +96,87 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         // L'événement ne doit pas être mis à jour car son créateur l'a supprimé
-        $exploration = new ParserData()->setReject(clone $deletedReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new EventDto());
-        $event->reject = new Reject();
-        $event->parserVersion = 'new version';
+        $event = $this->explorationEvent('new version');
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::EVENT_DELETED))
+            ->setFirewallVersion('old version')
+            ->setParserVersion('1.0');
 
         $this->firewall->filterEventExploration($exploration, $event);
         $reject = $exploration->getReject();
         self::assertNotNull($reject);
         self::assertEquals(Reject::EVENT_DELETED | Reject::VALID, $reject->getReason());
         self::assertEquals('old version', $exploration->getFirewallVersion());
+    }
+
+    public function testIsEventDtoValid(): void
+    {
+        // Valid event with a valid place
+        $dto = new EventDto();
+        $dto->reject = new Reject();
+        $dto->place = new PlaceDto();
+        $dto->place->reject = new Reject();
+        self::assertTrue($this->firewall->isEventDtoValid($dto));
+
+        // Rejected, place-less event must NOT be considered valid
+        $dto = new EventDto();
+        $dto->reject = new Reject()->addReason(Reject::NO_PLACE_PROVIDED);
+        $dto->place = null;
+        self::assertFalse($this->firewall->isEventDtoValid($dto), 'A place-less rejected event must be filtered out.');
+
+        // Valid event reject but invalid place reject
+        $dto = new EventDto();
+        $dto->reject = new Reject();
+        $dto->place = new PlaceDto();
+        $dto->place->reject = new Reject()->addReason(Reject::BAD_PLACE_NAME);
+        self::assertFalse($this->firewall->isEventDtoValid($dto));
+    }
+
+    private function explorationEvent(string $parserVersion = '1.0'): EventDto
+    {
+        $event = new EventDto();
+        $event->reject = new Reject();
+        $event->parserVersion = $parserVersion;
+        $event->name = 'Concert';
+        $event->description = 'A nice concert in town';
+
+        return $event;
+    }
+
+    public function testFilterEventStoresContentHashOnNewExploration(): void
+    {
+        $dto = $this->createValidEventDto();
+        $dto->externalId = 'evt-hash-new';
+        $dto->externalOrigin = 'openagenda';
+
+        $this->firewall->filterEvent($dto);
+
+        $exploration = $this->firewall->getExploration('evt-hash-new');
+        self::assertNotNull($exploration);
+        self::assertSame(
+            (new EventContentHasher())->hash($dto),
+            $exploration->getContentHash(),
+            'A freshly observed event must store its content fingerprint for the next run to compare.',
+        );
+    }
+
+    public function testFilterEventExplorationRefreshesContentHash(): void
+    {
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE))
+            ->setLastUpdated(new DateTimeImmutable())
+            ->setContentHash('staleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+
+        $event = new EventDto();
+        $event->name = 'A changed title';
+
+        $this->firewall->filterEventExploration($exploration, $event);
+
+        self::assertSame(
+            (new EventContentHasher())->hash($event),
+            $exploration->getContentHash(),
+            'Re-observing an existing exploration must refresh its fingerprint, even on reject paths.',
+        );
     }
 
     public function testValidTimesheetsPassValidation(): void

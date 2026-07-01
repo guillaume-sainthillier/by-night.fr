@@ -12,9 +12,9 @@ namespace App\Doctrine\EventListener;
 
 use App\Entity\Event;
 use App\Entity\ParserData;
+use App\Import\Firewall;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
-use App\Utils\Firewall;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;

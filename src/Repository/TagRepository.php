@@ -88,50 +88,6 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
     }
 
     /**
-     * Search tags by name with pagination.
-     *
-     * @return Tag[]
-     */
-    public function findBySearch(?string $search, int $limit, int $offset): array
-    {
-        $qb = $this
-            ->createQueryBuilder('t')
-            ->orderBy('t.name', 'ASC')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
-
-        if (null !== $search && '' !== $search) {
-            $qb
-                ->andWhere('t.name LIKE :search')
-                ->setParameter('search', '%' . $search . '%');
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * Count tags matching a search query.
-     */
-    public function countBySearch(?string $search): int
-    {
-        $qb = $this
-            ->createQueryBuilder('t')
-            ->select('COUNT(t.id)');
-
-        if (null !== $search && '' !== $search) {
-            $qb
-                ->andWhere('t.name LIKE :search')
-                ->setParameter('search', '%' . $search . '%');
-        }
-
-        return (int) $qb
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    /**
      * Find all tags matching the given DTOs by name.
      *
      * @param TagDto[] $dtos

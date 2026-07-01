@@ -33,3 +33,32 @@ parameters:
         - identifier: property.unusedType
           paths:
               - src/Entity
+
+        # shipmonk/dead-code-detector — suppress framework entry points it cannot
+        # trace statically (Twig calls, serializer/Vich PropertyAccess, EasyAdmin
+        # string actions, Foundry states, abstract methods called via subclasses).
+        - identifier: shipmonk.deadMethod
+          paths:
+              - src/App
+              - src/Contracts
+              - src/Controller/Admin
+              - src/Dto
+              - src/Entity
+              - src/Enum
+              - src/Factory
+              - src/SEO
+              - src/Social
+              - src/Updater
+        # render(controller()) fragment (has #[Cache], no #[Route])
+        - '#^Unused App\\Controller\\Location\\EventController::share#'
+        # referenced by string in config/packages/fos_elastica.yaml (query_builder_method)
+        - '#^Unused App\\Repository\\EventRepository::createIsActiveQueryBuilder#'
+        - identifier: shipmonk.deadProperty.neverRead
+          paths:
+              - src/Api
+              - src/Social
+              - src/Updater
+              - src/Validator
+        - identifier: shipmonk.deadConstant
+          paths:
+              - src/Entity

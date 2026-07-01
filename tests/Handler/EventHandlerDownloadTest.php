@@ -12,9 +12,9 @@ namespace App\Tests\Handler;
 
 use App\Entity\Event;
 use App\Handler\EventHandler;
+use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
 use App\Tests\AppKernelTestCase;
-use App\Utils\Cleaner;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;

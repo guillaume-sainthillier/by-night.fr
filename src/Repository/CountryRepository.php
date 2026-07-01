@@ -67,18 +67,6 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
             ->getOneOrNullResult();
     }
 
-    public function findOneByName(?string $country): ?Country
-    {
-        return $this
-            ->createQueryBuilder('c')
-            ->andWhere('c.name = :country OR c.displayName = :country OR c.id = :country')
-            ->setParameter('country', $country)
-            ->getQuery()
-            ->enableResultCache()
-            ->useQueryCache(true)
-            ->getOneOrNullResult();
-    }
-
     /**
      * {@inheritDoc}
      */

@@ -10,53 +10,28 @@
 
 namespace App\Api\Provider;
 
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\Pagination\Pagination;
-use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\CityAutocomplete;
-use App\Api\Pagination\PagerfantaPaginator;
 use App\Entity\City;
 use App\SearchRepository\CityElasticaRepository;
-use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use Closure;
+use Pagerfanta\PagerfantaInterface;
 
 /**
- * @implements ProviderInterface<CityAutocomplete>
+ * @extends AbstractElasticaAutocompleteProvider<CityAutocomplete>
  */
-final readonly class CityAutocompleteProvider implements ProviderInterface
+final readonly class CityAutocompleteProvider extends AbstractElasticaAutocompleteProvider
 {
-    public function __construct(
-        private RepositoryManagerInterface $repositoryManager,
-        private Pagination $pagination,
-    ) {
-    }
-
-    /**
-     * @return iterable<CityAutocomplete>
-     */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable
+    protected function search(string $term): PagerfantaInterface
     {
-        $term = trim((string) ($context['filters']['q'] ?? ''));
-        if ('' === $term) {
-            return [];
-        }
-
-        $limit = $this->pagination->getLimit($operation, $context);
-        $page = $this->pagination->getPage($context);
-
         /** @var CityElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(City::class);
-        $results = $repo->findWithSearch($term);
 
-        $results->setMaxPerPage($limit);
-        $results->setCurrentPage($page);
-
-        /* @var PagerfantaPaginator<City, CityAutocomplete> */
-        return new PagerfantaPaginator($results, $this->transformCity(...));
+        return $repo->findWithSearch($term);
     }
 
-    private function transformCity(City $city): CityAutocomplete
+    protected function transformer(): Closure
     {
-        return new CityAutocomplete(
+        return static fn (City $city): CityAutocomplete => new CityAutocomplete(
             slug: $city->getSlug(),
             name: $city->getFullName(),
         );

@@ -10,46 +10,20 @@
 
 namespace App\Api\Provider;
 
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\Pagination\Pagination;
-use ApiPlatform\State\ProviderInterface;
-use App\Api\Pagination\PagerfantaPaginator;
 use App\Entity\Tag;
 use App\SearchRepository\TagElasticaRepository;
-use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use Pagerfanta\PagerfantaInterface;
 
 /**
- * @implements ProviderInterface<Tag>
+ * @extends AbstractElasticaAutocompleteProvider<Tag>
  */
-final readonly class TagAutocompleteProvider implements ProviderInterface
+final readonly class TagAutocompleteProvider extends AbstractElasticaAutocompleteProvider
 {
-    public function __construct(
-        private RepositoryManagerInterface $repositoryManager,
-        private Pagination $pagination,
-    ) {
-    }
-
-    /**
-     * @return iterable<Tag>
-     */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable
+    protected function search(string $term): PagerfantaInterface
     {
-        $term = trim((string) ($context['filters']['q'] ?? ''));
-        if ('' === $term) {
-            return [];
-        }
-
-        $limit = $this->pagination->getLimit($operation, $context);
-        $page = $this->pagination->getPage($context);
-
         /** @var TagElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(Tag::class);
-        $results = $repo->findWithSearch($term);
 
-        $results->setMaxPerPage($limit);
-        $results->setCurrentPage($page);
-
-        /* @var PagerfantaPaginator<Tag, Tag> */
-        return new PagerfantaPaginator($results, static fn (Tag $tag): Tag => $tag);
+        return $repo->findWithSearch($term);
     }
 }
