@@ -1,11 +1,6 @@
-const path = require('path')
-// Encore v7 ships as an ESM-only package; required from this CommonJS config it arrives as
-// a module namespace whose API lives on `.default`. v6 returns the Encore object directly
-// (and its proxy throws on unknown props, so we must not touch `.default` there).
-const encoreModule = require('@symfony/webpack-encore')
-const Encore =
-    typeof encoreModule.isRuntimeEnvironmentConfigured === 'function' ? encoreModule : encoreModule.default
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
+import path from 'path'
+import Encore from '@symfony/webpack-encore'
+import MomentLocalesPlugin from 'moment-locales-webpack-plugin'
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -78,16 +73,23 @@ Encore
         config.plugins.push([
             '@babel/plugin-transform-react-jsx',
             {
+                // Babel 8 defaults the JSX runtime to "automatic", which rejects a custom
+                // pragma; keep the classic Preact h()/Fragment pragma explicit.
+                runtime: 'classic',
                 pragma: 'h',
                 pragmaFrag: 'Fragment',
             },
         ])
-    })
-
-    // enables @babel/preset-env polyfills
-    .configureBabelPresetEnv((config) => {
-        config.useBuiltIns = 'usage'
-        config.corejs = '3.23'
+        // Babel 8 (shipped with Encore v7) removed the useBuiltIns/corejs options from
+        // @babel/preset-env, so inject core-js polyfills based on usage with the dedicated
+        // plugin instead.
+        config.plugins.push([
+            'babel-plugin-polyfill-corejs3',
+            {
+                method: 'usage-global',
+                version: '3.49',
+            },
+        ])
     })
     .addPlugin(
         new MomentLocalesPlugin({
@@ -95,11 +97,11 @@ Encore
         })
     )
     .addAliases({
-        '@': path.join(__dirname, 'assets'),
+        '@': path.join(import.meta.dirname, 'assets'),
         jQuery: 'jquery', // Summernote
-        jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
-        $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
-        moment$: path.resolve(__dirname, 'node_modules/moment/moment.js'), // daterangepicker
+        jquery: path.resolve(import.meta.dirname, 'node_modules/jquery/dist/jquery.js'),
+        $: path.resolve(import.meta.dirname, 'node_modules/jquery/dist/jquery.js'),
+        moment$: path.resolve(import.meta.dirname, 'node_modules/moment/moment.js'), // daterangepicker
     })
 
     // enables Sass/SCSS support
@@ -108,7 +110,7 @@ Encore
     // Configure SVGR for SVG imports from assets/icons as Preact components
     .addRule({
         test: /\.svg$/,
-        include: path.resolve(__dirname, 'assets/icons'),
+        include: path.resolve(import.meta.dirname, 'assets/icons'),
         use: [
             {
                 loader: '@svgr/webpack',
@@ -155,4 +157,5 @@ Encore
         'window.$': 'jquery',
     })
 
-module.exports = Encore.getWebpackConfig()
+// Encore v7's getWebpackConfig() is async and returns a Promise.
+export default await Encore.getWebpackConfig()

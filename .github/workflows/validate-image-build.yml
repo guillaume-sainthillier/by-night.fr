@@ -20,7 +20,7 @@ on:
             - 'symfony.lock'
             - 'package.json'
             - 'yarn.lock'
-            - 'webpack.config.js'
+            - 'webpack.config.*'
             - 'assets/**'
 
 jobs:
