@@ -1,6 +1,8 @@
 /**
  * Lazy-load Fancybox on every image gallery present at boot.
  * Runs once at App.start().
+ *
+ * @type {Module}
  */
 export default function init() {
     if (document.querySelector('.image-gallery')) {

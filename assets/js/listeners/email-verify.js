@@ -3,6 +3,8 @@ import $ from 'jquery'
 /**
  * Send a verification email when the element is clicked, then dismiss its
  * alert (or remove the element).
+ *
+ * @type {Listener}
  */
 export default {
     selector: 'a.email-verify, button.email-verify',

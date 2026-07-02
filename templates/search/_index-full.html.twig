@@ -48,7 +48,9 @@
 {% block meta_description description %}
 
 {% block body %}
-    {{ include('search/_index-content.html.twig') }}
+    <div {{ load_page('search') }}>
+        {{ include('search/_index-content.html.twig') }}
+    </div>
 {% endblock %}
 
 {% block css -%}

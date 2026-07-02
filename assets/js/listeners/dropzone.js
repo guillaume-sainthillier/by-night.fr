@@ -100,6 +100,8 @@ const handleClick = (e) => {
 
 /**
  * Image dropzone: drag & drop or click-to-pick a single image with preview.
+ *
+ * @type {Listener}
  */
 export default {
     selector: DROPZONE_SELECTOR,

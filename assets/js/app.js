@@ -20,6 +20,7 @@ import impersonate from '@/js/listeners/impersonate'
 import like from '@/js/listeners/like'
 import loadMore from '@/js/listeners/load-more'
 import login from '@/js/listeners/login'
+import pages from '@/js/listeners/pages'
 import popup from '@/js/listeners/popup'
 import register from '@/js/listeners/register'
 import tooltip from '@/js/listeners/tooltip'
@@ -43,26 +44,35 @@ import { findAllSelf } from '@/js/utils/dom'
  * are already connected (so overlapping containers can't double-init), and
  * `unmount(container)` tears down every connected element the container
  * covers, no matter which mount call connected it.
+ *
+ * See `types.js` for `Listener`, `Module`, `Page`, `Cleanup`.
  */
 class App {
     #di = null
 
-    /** @type {Array<(ctx: { app: App }) => void>} */
+    /** @type {Module[]} */
     #modules = []
 
-    /** @type {Array<{ selector: string, connect: (element: Element, ctx: { app: App }) => (() => void) | undefined }>} */
+    /** @type {Listener[]} */
     #listeners = []
 
-    /** @type {Map<Object, Set<Element>>} */
+    /** @type {Map<Listener, Set<Element>>} */
     #tracked = new Map()
 
-    /** @type {WeakMap<Element, Map<Object, () => void>>} */
+    /** @type {WeakMap<Element, Map<Listener, Cleanup>>} */
     #cleanups = new WeakMap()
+
+    /** @type {Object<string, Page>} */
+    #pages = {}
+
+    /** @type {Object<string, Array<() => void>>} */
+    #pageResolvers = {}
 
     constructor() {
         this.#modules = [autocomplete, imagePreviews, scrollToTop]
 
         this.#listeners = [
+            pages,
             contentRemovalRequest,
             dropzone,
             emailVerify,
@@ -142,11 +152,6 @@ class App {
                 }
             })
         })
-
-        if (typeof window.onPageLoaded === 'function') {
-            window.onPageLoaded(this, container)
-            window.onPageLoaded = null
-        }
     }
 
     /**
@@ -167,6 +172,10 @@ class App {
         })
     }
 
+    /**
+     * @param {Listener} listener
+     * @param {Element} element
+     */
     #disconnect(listener, element) {
         this.#tracked.get(listener).delete(element)
 
@@ -184,6 +193,10 @@ class App {
         }
     }
 
+    /**
+     * @param {Element} element
+     * @returns {Map<Listener, Cleanup>}
+     */
     #cleanupsFor(element) {
         let cleanups = this.#cleanups.get(element)
         if (!cleanups) {
@@ -192,6 +205,51 @@ class App {
         }
 
         return cleanups
+    }
+
+    /**
+     * Register a page initializer keyed by id. Resolves any pending
+     * `loadPage(id, …)` calls that arrived before the initializer was known.
+     *
+     * @param {string} pageId
+     * @param {Page} initializer
+     */
+    registerPage(pageId, initializer) {
+        if (this.#pages[pageId]) {
+            console.warn(`Page initializer for ${pageId} already exists.`)
+            return
+        }
+
+        this.#pages[pageId] = initializer
+
+        const resolvers = this.#pageResolvers[pageId]
+        if (resolvers) {
+            delete this.#pageResolvers[pageId]
+            resolvers.forEach((resolve) => resolve())
+        }
+    }
+
+    /**
+     * Invoke a registered page initializer. If the page hasn't been registered
+     * yet (lazy webpack chunk), the call is queued and replayed when
+     * `registerPage` lands.
+     *
+     * Note: `params` must not contain `app` or `container` keys — those are
+     * framework-reserved.
+     *
+     * @param {string} pageId
+     * @param {Object} params
+     * @param {Element} container
+     * @returns {Promise<Cleanup | void>}
+     */
+    async loadPage(pageId, params, container) {
+        if (this.#pages[pageId]) {
+            return this.#pages[pageId]({ app: this, container, ...params })
+        }
+
+        return new Promise((resolve) => {
+            ;(this.#pageResolvers[pageId] ??= []).push(() => resolve(this.loadPage(pageId, params, container)))
+        })
     }
 
     get(key) {

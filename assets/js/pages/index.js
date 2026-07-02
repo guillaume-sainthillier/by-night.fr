@@ -2,7 +2,8 @@ import $ from 'jquery'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize({ apiCityURL }) {
     document.querySelectorAll('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
@@ -29,7 +30,7 @@ $(document).ready(() => {
 
         createAutocomplete({
             element: field,
-            url: window.AppConfig.apiCityURL,
+            url: apiCityURL,
             valueInput: cityValue,
             throttle: 0,
             onSelection: () => {
@@ -41,4 +42,6 @@ $(document).ready(() => {
             },
         })
     })
-})
+}
+
+window.App.registerPage('index', initialize)

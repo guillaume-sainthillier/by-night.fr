@@ -3,6 +3,8 @@ import { popup } from '@/js/utils/utils'
 
 /**
  * Open the link in a centered popup window.
+ *
+ * @type {Listener}
  */
 export default {
     selector: 'a.popup',

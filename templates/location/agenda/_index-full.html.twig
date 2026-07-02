@@ -64,7 +64,7 @@
 {% endblock %}
 
 {% block body %}
-    <div id="bottom-navigation" class="visible">
+    <div id="bottom-navigation" class="visible" {{ load_page('agenda') }}>
         <ul id="custom-tab" class="nav nav-tabs nav-fill justify-content-center bg-primary" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" href="#agenda">

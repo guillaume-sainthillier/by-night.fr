@@ -6,12 +6,6 @@
 {% block title username %}
 {% block page_title username %}
 
-{% block head_js %}
-    <script type="text/javascript">
-        window.datas = {{ places|json_encode|raw }};
-    </script>
-{% endblock %}
-
 {% block breadcrumb %}
     {% do menu.addItem('Membres', url('app_search_index', {type: 'membres'})) %}
     {% do menu.addItem(username, url('app_user_index', {id: user.id, slug: user.slug})) %}
@@ -22,7 +16,7 @@
 {%- endblock %}
 
 {% block body -%}
-    <div class="row">
+    <div class="row" {{ load_page('user', {datas: places}) }}>
         <div class="col-md-3">
             <div class="card fiche_profil">
                 <div class="card-body text-center">

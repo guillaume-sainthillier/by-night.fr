@@ -3,6 +3,8 @@ import $ from 'jquery'
 /**
  * Activate a Bootstrap tooltip on each tooltip-toggle element. Disposes it on
  * disconnect.
+ *
+ * @type {Listener}
  */
 export default {
     selector: '[data-bs-toggle="tooltip"]',

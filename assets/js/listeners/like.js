@@ -7,6 +7,8 @@ const options = {
 
 /**
  * Toggle an event like via AJAX when the like button is clicked.
+ *
+ * @type {Listener}
  */
 export default {
     selector: options.css_selector_like,

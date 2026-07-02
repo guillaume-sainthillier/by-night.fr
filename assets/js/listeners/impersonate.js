@@ -3,6 +3,8 @@ import { create } from '@/js/services/ui/AutocompleteService'
 
 /**
  * Open a user-search dialog and switch to the selected user.
+ *
+ * @type {Listener}
  */
 export default {
     selector: '.js-impersonate',

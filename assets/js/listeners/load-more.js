@@ -3,6 +3,8 @@ import $ from 'jquery'
 /**
  * Load the next page of results and insert it before the button, then mount
  * the new content.
+ *
+ * @type {Listener}
  */
 export default {
     selector: '.more',

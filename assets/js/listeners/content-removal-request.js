@@ -4,6 +4,8 @@ import $ from 'jquery'
 /**
  * Content removal request modal: captures the triggering event data on open,
  * validates the form and submits the request via AJAX.
+ *
+ * @type {Listener}
  */
 export default {
     selector: '#modalContentRemovalRequest',

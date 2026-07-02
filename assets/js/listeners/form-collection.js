@@ -4,6 +4,8 @@ import { findOne } from '@/js/utils/dom'
 /**
  * Symfony form collection buttons: add a prototype-based item or remove the
  * closest one, through the CollectionManager service.
+ *
+ * @type {Listener}
  */
 export default {
     selector: '.add-collection, .remove-collection',

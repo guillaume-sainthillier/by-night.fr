@@ -1,8 +1,8 @@
-import $ from 'jquery'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createFancybox } from '@/js/services/ui/FancyboxService'
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize() {
     document.querySelectorAll('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
@@ -16,4 +16,6 @@ $(document).ready(() => {
     document.querySelectorAll('.image-gallery').forEach((el) => {
         createFancybox({ element: el })
     })
-})
+}
+
+window.App.registerPage('event_index', initialize)

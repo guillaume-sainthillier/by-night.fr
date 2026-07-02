@@ -2,6 +2,8 @@ import $ from 'jquery'
 
 /**
  * Open the register dialog and handle its AJAX form submission.
+ *
+ * @type {Listener}
  */
 export default {
     selector: '.register',

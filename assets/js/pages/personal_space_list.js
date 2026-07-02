@@ -1,6 +1,7 @@
 import $ from 'jquery'
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize({ app }) {
     $('.form-delete').submit(() =>
         window.confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?")
     )
@@ -59,7 +60,7 @@ $(document).ready(() => {
             data: JSON.stringify({ message: message }),
         })
             .done((response) => {
-                window.App.get('toastManager').createToast('success', response.message)
+                app.get('toastManager').createToast('success', response.message)
                 feedbackModal.modal('hide')
                 $('#feedback-banner').alert('close')
             })
@@ -84,4 +85,6 @@ $(document).ready(() => {
         feedbackMessage.removeClass('is-invalid')
         feedbackError.text('')
     })
-})
+}
+
+window.App.registerPage('personal_space_list', initialize)

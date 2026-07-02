@@ -4,6 +4,8 @@ import { isTouchDevice } from '@/js/utils/utils'
 
 /**
  * Wire the global search autocomplete. Runs once at App.start().
+ *
+ * @type {Module}
  */
 export default () => {
     const $autocomplete = $('#autocomplete')

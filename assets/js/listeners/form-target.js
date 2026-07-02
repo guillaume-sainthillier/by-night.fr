@@ -2,6 +2,8 @@ import $ from 'jquery'
 
 /**
  * Submit the form designated by `data-target` when the element is clicked.
+ *
+ * @type {Listener}
  */
 export default {
     selector: 'input[data-target], button[data-target], a[data-target]',
