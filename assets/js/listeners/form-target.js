@@ -1,15 +1,12 @@
 import $ from 'jquery'
-import { findAll, on } from '@/js/utils/dom'
 
-export default (_di, container) => {
-    const elems = findAll('input[data-target], button[data-target], a[data-target]', container)
-
-    if (!elems.length) {
-        return
-    }
-
-    elems.forEach((elem) => {
-        on(elem, 'click', (e) => {
+/**
+ * Submit the form designated by `data-target` when the element is clicked.
+ */
+export default {
+    selector: 'input[data-target], button[data-target], a[data-target]',
+    connect(elem) {
+        const onClick = (e) => {
             const targetSelector = $(elem).data('target')
             const target = $(targetSelector)
             if (!target.length) {
@@ -18,6 +15,10 @@ export default (_di, container) => {
 
             e.preventDefault()
             $(targetSelector).submit()
-        })
-    })
+        }
+
+        elem.addEventListener('click', onClick)
+
+        return () => elem.removeEventListener('click', onClick)
+    },
 }

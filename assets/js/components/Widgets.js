@@ -40,7 +40,7 @@ export default class Widgets {
                         btn.remove()
                         containerBody.append(content)
                         self.initMoreWidgets(container)
-                        window.App.dispatchPageLoadedEvent(container[0])
+                        window.App.mount(container[0])
                         if (scrollAreaLastItem.next().length > 0) {
                             self.scrollTo(scrollAreaLastItem.next(), scrollArea, () => {})
                         }

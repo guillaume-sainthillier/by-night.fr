@@ -49,7 +49,7 @@ $(document).ready(() => {
                     bindLoadMore(container)
 
                     // Re-initialize any page listeners on new event cards
-                    window.App.dispatchPageLoadedEvent(container[0])
+                    window.App.mount(container[0])
                 }).fail(() => {
                     // Restore button on error
                     btn.html(originalText)

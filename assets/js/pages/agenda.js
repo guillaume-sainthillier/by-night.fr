@@ -130,7 +130,7 @@ $(document).ready(() => {
                 const currentContainer = $('<div>').html(html)
                 btn.parent().remove()
                 currentContainer.insertAfter(container)
-                window.App.dispatchPageLoadedEvent(currentContainer[0])
+                window.App.mount(currentContainer[0])
                 initPagination(currentContainer)
             })
         })

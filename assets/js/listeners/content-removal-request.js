@@ -1,137 +1,147 @@
 import { Modal } from '@tabler/core/dist/js/tabler.esm'
 import $ from 'jquery'
 
-export default (_di, _container) => {
-    const modalEl = document.getElementById('modalContentRemovalRequest')
-    if (!modalEl) {
-        return
-    }
+/**
+ * Content removal request modal: captures the triggering event data on open,
+ * validates the form and submits the request via AJAX.
+ */
+export default {
+    selector: '#modalContentRemovalRequest',
+    connect(modalEl) {
+        const modal = Modal.getOrCreateInstance(modalEl)
+        const form = modalEl.querySelector('#content-removal-form')
+        const submitBtn = modalEl.querySelector('#content-removal-submit')
+        const alertEl = modalEl.querySelector('#content-removal-alert')
+        const spinner = submitBtn.querySelector('.spinner-border')
 
-    const modal = Modal.getOrCreateInstance(modalEl)
-    const form = modalEl.querySelector('#content-removal-form')
-    const submitBtn = modalEl.querySelector('#content-removal-submit')
-    const alertEl = modalEl.querySelector('#content-removal-alert')
-    const spinner = submitBtn.querySelector('.spinner-border')
+        let currentEventId = null
+        let currentEventUrl = null
 
-    let currentEventId = null
-    let currentEventUrl = null
-
-    // Capture event data when modal is opened
-    modalEl.addEventListener('show.bs.modal', (event) => {
-        const button = event.relatedTarget
-        currentEventId = button.getAttribute('data-event-id')
-        currentEventUrl = button.getAttribute('data-event-url')
-
-        // Reset form
-        form.reset()
-        form.classList.remove('was-validated')
-        alertEl.classList.add('d-none')
-        alertEl.classList.remove('alert-success', 'alert-danger')
-    })
-
-    // Handle form submission
-    submitBtn.addEventListener('click', () => {
-        const emailInput = form.querySelector('#removal-email')
-        const typeInput = form.querySelector('#removal-type')
-        const messageInput = form.querySelector('#removal-message')
-        const urlsInput = form.querySelector('#removal-urls')
-
-        // Reset validation states
-        emailInput.classList.remove('is-invalid')
-        typeInput.classList.remove('is-invalid')
-        messageInput.classList.remove('is-invalid')
-
-        // Validate
-        let isValid = true
-
-        if (!emailInput.value.trim() || !emailInput.validity.valid) {
-            emailInput.classList.add('is-invalid')
-            isValid = false
+        function showError(message) {
+            alertEl.innerHTML = message
+            alertEl.classList.remove('d-none', 'alert-success')
+            alertEl.classList.add('alert-danger')
         }
 
-        if (!typeInput.value) {
-            typeInput.classList.add('is-invalid')
-            isValid = false
+        // Capture event data when modal is opened
+        const onShow = (event) => {
+            const button = event.relatedTarget
+            currentEventId = button.getAttribute('data-event-id')
+            currentEventUrl = button.getAttribute('data-event-url')
+
+            // Reset form
+            form.reset()
+            form.classList.remove('was-validated')
+            alertEl.classList.add('d-none')
+            alertEl.classList.remove('alert-success', 'alert-danger')
         }
 
-        if (!messageInput.value.trim() || messageInput.value.trim().length < 10) {
-            messageInput.classList.add('is-invalid')
-            isValid = false
-        }
+        // Handle form submission
+        const onSubmit = () => {
+            const emailInput = form.querySelector('#removal-email')
+            const typeInput = form.querySelector('#removal-type')
+            const messageInput = form.querySelector('#removal-message')
+            const urlsInput = form.querySelector('#removal-urls')
 
-        if (!isValid) {
-            form.classList.add('was-validated')
-            return
-        }
+            // Reset validation states
+            emailInput.classList.remove('is-invalid')
+            typeInput.classList.remove('is-invalid')
+            messageInput.classList.remove('is-invalid')
 
-        // Prepare data
-        const urlsText = urlsInput.value.trim()
-        const eventUrls = urlsText
-            ? urlsText
-                  .split('\n')
-                  .map((url) => url.trim())
-                  .filter((url) => url.length > 0)
-            : []
+            // Validate
+            let isValid = true
 
-        if (currentEventUrl) {
-            eventUrls.unshift(currentEventUrl)
-        }
+            if (!emailInput.value.trim() || !emailInput.validity.valid) {
+                emailInput.classList.add('is-invalid')
+                isValid = false
+            }
 
-        const data = {
-            email: emailInput.value.trim(),
-            type: typeInput.value,
-            message: messageInput.value.trim(),
-            eventUrls: eventUrls,
-        }
+            if (!typeInput.value) {
+                typeInput.classList.add('is-invalid')
+                isValid = false
+            }
 
-        // Show loading state
-        submitBtn.disabled = true
-        spinner.classList.remove('d-none')
-        alertEl.classList.add('d-none')
+            if (!messageInput.value.trim() || messageInput.value.trim().length < 10) {
+                messageInput.classList.add('is-invalid')
+                isValid = false
+            }
 
-        $.ajax({
-            url: `/api/events/${currentEventId}/removal-request`,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-        })
-            .done((response) => {
-                if (response.success) {
-                    alertEl.textContent = response.message
-                    alertEl.classList.remove('d-none', 'alert-danger')
-                    alertEl.classList.add('alert-success')
-                    form.classList.add('d-none')
-                    submitBtn.classList.add('d-none')
+            if (!isValid) {
+                form.classList.add('was-validated')
+                return
+            }
 
-                    // Auto-close modal after 3 seconds
-                    setTimeout(() => {
-                        modal.hide()
-                        // Reset for next use
-                        form.classList.remove('d-none')
-                        submitBtn.classList.remove('d-none')
-                    }, 3000)
-                } else {
-                    showError(response.message || "Une erreur s'est produite")
-                }
+            // Prepare data
+            const urlsText = urlsInput.value.trim()
+            const eventUrls = urlsText
+                ? urlsText
+                      .split('\n')
+                      .map((url) => url.trim())
+                      .filter((url) => url.length > 0)
+                : []
+
+            if (currentEventUrl) {
+                eventUrls.unshift(currentEventUrl)
+            }
+
+            const data = {
+                email: emailInput.value.trim(),
+                type: typeInput.value,
+                message: messageInput.value.trim(),
+                eventUrls: eventUrls,
+            }
+
+            // Show loading state
+            submitBtn.disabled = true
+            spinner.classList.remove('d-none')
+            alertEl.classList.add('d-none')
+
+            $.ajax({
+                url: `/api/events/${currentEventId}/removal-request`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
             })
-            .fail((xhr) => {
-                let errorMessage = "Une erreur s'est produite"
-                if (xhr.responseJSON?.violations) {
-                    errorMessage = xhr.responseJSON.violations.map((v) => v.message).join('<br>')
-                } else if (xhr.responseJSON?.message) {
-                    errorMessage = xhr.responseJSON.message
-                }
-                showError(errorMessage)
-            })
-            .always(() => {
-                submitBtn.disabled = false
-                spinner.classList.add('d-none')
-            })
-    })
+                .done((response) => {
+                    if (response.success) {
+                        alertEl.textContent = response.message
+                        alertEl.classList.remove('d-none', 'alert-danger')
+                        alertEl.classList.add('alert-success')
+                        form.classList.add('d-none')
+                        submitBtn.classList.add('d-none')
 
-    function showError(message) {
-        alertEl.innerHTML = message
-        alertEl.classList.remove('d-none', 'alert-success')
-        alertEl.classList.add('alert-danger')
-    }
+                        // Auto-close modal after 3 seconds
+                        setTimeout(() => {
+                            modal.hide()
+                            // Reset for next use
+                            form.classList.remove('d-none')
+                            submitBtn.classList.remove('d-none')
+                        }, 3000)
+                    } else {
+                        showError(response.message || "Une erreur s'est produite")
+                    }
+                })
+                .fail((xhr) => {
+                    let errorMessage = "Une erreur s'est produite"
+                    if (xhr.responseJSON?.violations) {
+                        errorMessage = xhr.responseJSON.violations.map((v) => v.message).join('<br>')
+                    } else if (xhr.responseJSON?.message) {
+                        errorMessage = xhr.responseJSON.message
+                    }
+                    showError(errorMessage)
+                })
+                .always(() => {
+                    submitBtn.disabled = false
+                    spinner.classList.add('d-none')
+                })
+        }
+
+        modalEl.addEventListener('show.bs.modal', onShow)
+        submitBtn.addEventListener('click', onSubmit)
+
+        return () => {
+            modalEl.removeEventListener('show.bs.modal', onShow)
+            submitBtn.removeEventListener('click', onSubmit)
+        }
+    },
 }
