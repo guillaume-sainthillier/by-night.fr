@@ -11,6 +11,8 @@ framework:
             parser:
                 dsn: '%env(MESSENGER_PARSER_TRANSPORT_DSN)%'
                 failure_transport: failed-event
+                # Cap throughput so a big import does not saturate CPU (see rate_limiter.yaml).
+                rate_limiter: messenger_parser
                 retry_strategy:
                     max_retries: 0
             async:
@@ -23,7 +25,10 @@ framework:
                 retry_strategy:
                     max_retries: 3
                     delay: 10000
-            elastica: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
+            elastica:
+                dsn: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
+                # Cap throughput so reindex bursts do not saturate CPU (see rate_limiter.yaml).
+                rate_limiter: messenger_elastica
             sync: 'sync://'
 
         routing:

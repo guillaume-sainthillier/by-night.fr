@@ -18,3 +18,8 @@ framework:
         pools:
             redis.app_cache_pool:
                 adapter: cache.app
+            # Shared (Redis) storage for the Messenger rate limiters. It MUST be shared
+            # across processes so a transport's limit is global, not per-consumer. The
+            # Redis adapter connects lazily, so booting without Redis (e.g. tests) is fine.
+            cache.rate_limiter:
+                adapter: cache.app

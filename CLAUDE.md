@@ -69,7 +69,7 @@ docker-compose up -d
 ```bash
 # PHP Tests
 vendor/bin/phpunit                                 # All tests
-vendor/bin/phpunit tests/Utils/FirewallTest.php    # Single test file
+vendor/bin/phpunit tests/Import/FirewallTest.php   # Single test file
 
 # Static Analysis
 vendor/bin/phpstan analyse                         # PHPStan (level 6)
@@ -158,7 +158,7 @@ The system imports events through a multi-stage pipeline:
 
 2. **Message Queue**: Events are queued in RabbitMQ for async processing
 
-3. **Consumers** (`src/Consumer/AddEventConsumer.php`): Process batches of events
+3. **Consumers** (`src/MessageHandler/EventBatchHandler.php`): Process batches of events
     - `DoctrineEventHandler` orchestrates entity resolution and persistence
 
 4. **Entity Resolution** (`src/Handler/`):
@@ -178,7 +178,7 @@ Entity providers (`src/EntityProvider/`) find existing entities matching DTOs.
 
 ### Key Services
 
-- **Firewall** (`src/Utils/Firewall.php`): Validates and filters event data
+- **Firewall** (`src/Import/Firewall.php`): Validates and filters event data (with the rest of the import-pipeline services — `Cleaner`, `EventContentHasher`, `EventChangeDetector`, `EventPublicationGuard` — in the `App\Import` namespace)
 - **DoctrineEventHandler**: Main orchestrator for event persistence
 - **ImageHelper** (`src/Image/Helper/ImageHelper.php`): Image processing with Glide
 
@@ -274,7 +274,8 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 - `src/Parser/` - Event data parsers for external sources
 - `src/Handler/` - Business logic handlers (DoctrineEventHandler, EventHandler)
-- `src/Consumer/` - RabbitMQ message consumers
+- `src/Import/` - Import-pipeline domain services (Firewall, Cleaner, content hashing, dedup)
+- `src/MessageHandler/` - RabbitMQ message handlers (EventBatchHandler consumes the import queue)
 - `src/Dto/` - Data transfer objects for import pipeline
 - `src/EntityFactory/` - DTO to Entity conversion
 - `src/EntityProvider/` - Entity lookup services

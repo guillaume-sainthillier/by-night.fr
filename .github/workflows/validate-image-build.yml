@@ -13,6 +13,15 @@ on:
             - 'docker/**'
             - '!docker/elasticsearch/**'
             - '.github/workflows/validate-image-build.yml'
+            # The image also runs `composer install` and `yarn build`, so dependency
+            # and frontend changes can break it just like Dockerfile changes can.
+            - 'composer.json'
+            - 'composer.lock'
+            - 'symfony.lock'
+            - 'package.json'
+            - 'yarn.lock'
+            - 'webpack.config.*'
+            - 'assets/**'
 
 jobs:
     build:

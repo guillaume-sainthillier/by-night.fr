@@ -1,0 +1,20 @@
+# Throttles how fast the Messenger workers drain the parser/elastica backlogs so a
+# large nightly import (tens of thousands of messages) stays gentle on CPU instead of
+# pegging every core. token_bucket allows a short burst (`limit`) then refills at
+# `rate` messages/second. Both knobs are env-driven so they can be tuned per host.
+framework:
+    rate_limiter:
+        messenger_parser:
+            policy: 'token_bucket'
+            limit: '%env(int:MESSENGER_PARSER_RATE_LIMIT)%'
+            rate:
+                interval: '1 second'
+                amount: '%env(int:MESSENGER_PARSER_RATE_LIMIT)%'
+            cache_pool: 'cache.rate_limiter'
+        messenger_elastica:
+            policy: 'token_bucket'
+            limit: '%env(int:MESSENGER_ELASTICA_RATE_LIMIT)%'
+            rate:
+                interval: '1 second'
+                amount: '%env(int:MESSENGER_ELASTICA_RATE_LIMIT)%'
+            cache_pool: 'cache.rate_limiter'

@@ -52,21 +52,6 @@ final class UnitOfWorkOptimizer
      *
      * @return T|null
      */
-    public static function getTimeValue(
-        ?DateTimeInterface $originalValue,
-        ?DateTimeInterface $newValue,
-    ): ?DateTimeInterface {
-        return self::getDateTimeInterfaceValue($originalValue, $newValue, 'H:i:s');
-    }
-
-    /**
-     * @template T of DateTimeInterface
-     *
-     * @param T|null $originalValue
-     * @param T|null $newValue
-     *
-     * @return T|null
-     */
     private static function getDateTimeInterfaceValue(
         ?DateTimeInterface $originalValue,
         ?DateTimeInterface $newValue,

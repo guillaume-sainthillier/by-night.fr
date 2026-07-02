@@ -223,25 +223,6 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         return \array_slice($results, 0, $limit);
     }
 
-    public function findAllByName(?string $cityName, ?string $countryId = null): array
-    {
-        $cities = $this->cityManipulator->getCityNameAlternatives($cityName);
-
-        $qb = parent::createQueryBuilder('c')
-            ->where('c.name IN (:cities)')
-            ->setParameter('cities', $cities);
-
-        if ($countryId) {
-            $qb
-                ->andWhere('c.country = :country')
-                ->setParameter('country', $countryId);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
     public function findOneBySlug(string $slug): ?City
     {
         return $this->createQueryBuilder('c')

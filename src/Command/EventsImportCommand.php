@@ -72,11 +72,11 @@ final class EventsImportCommand extends Command
             ));
 
             $parser->parse(!$input->getOption('full'));
-            $nbEvents = $parser->getParsedEvents();
 
             Monitor::writeln(\sprintf(
-                '<info>%d</info> parsed events',
-                $nbEvents
+                '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged)',
+                $parser->getParsedEvents(),
+                $parser->getSkippedEvents()
             ));
         }
 
