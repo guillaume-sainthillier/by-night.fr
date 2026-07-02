@@ -1,20 +1,6 @@
 {
     "$schema": "https://unpkg.com/knip@5/schema.json",
     "entry": [
-        "assets/js/app.js",
-        "assets/js/pages/index.js",
-        "assets/js/pages/admin_infos.js",
-        "assets/js/pages/event_index.js",
-        "assets/js/pages/event_details.js",
-        "assets/js/pages/agenda.js",
-        "assets/js/pages/profile.js",
-        "assets/js/pages/user.js",
-        "assets/js/pages/personal_space_list.js",
-        "assets/js/pages/personal_space_event.js",
-        "assets/js/pages/search.js",
-        "assets/**/pages/**/*.{js,jsx}",
-        "assets/**/listeners/**/*.{js,jsx}",
-        "assets/**/global-listeners/**/*.{js,jsx}",
         "assets/**/controllers/**/*.{js,jsx}",
         "assets/**/icons/**/*.{js,jsx}"
     ],
@@ -22,38 +8,20 @@
     "paths": {
         "@/*": ["assets/*"]
     },
-    "ignore": ["assets/**/translations/**"],
     "ignoreBinaries": ["vendor/bin/.+"],
-    "webpack": false,
     "rules": {
         "unlisted": "off",
         "unresolved": "off"
     },
     "ignoreDependencies": [
         "core-js",
+        "babel-plugin-polyfill-corejs3",
         "regenerator-runtime",
         "es6-promise",
-        "@tabler/core",
-        "@hotwired/stimulus",
-        "@symfony/stimulus-bridge",
-        "^@symfony/ux-",
-        "@svgr/webpack",
         "file-loader",
         "glob-all",
         "imports-loader",
-        "moment-locales-webpack-plugin",
         "node-sass-tilde-importer",
-        "purgecss-webpack-plugin",
-        "@algolia/autocomplete-js",
-        "@algolia/autocomplete-plugin-recent-searches",
-        "@algolia/autocomplete-theme-classic",
-        "@tarekraafat/autocomplete.js",
-        "cookieconsent",
-        "daterangepicker",
-        "fancybox",
-        "hotkeys-js",
-        "moment",
-        "preact-render-to-string",
-        "summernote"
+        "purgecss-webpack-plugin"
     ]
 }
