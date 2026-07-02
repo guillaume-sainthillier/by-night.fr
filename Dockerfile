@@ -47,7 +47,7 @@ COPY --from=node_builder --link /app/vendor ./vendor
 COPY --link assets ./assets
 COPY --link src ./src
 COPY --link templates ./templates
-COPY --link package.json webpack.config.js yarn.lock ./
+COPY --link package.json webpack.config.mjs yarn.lock ./
 
 RUN mkdir -p public && \
     yarn build
