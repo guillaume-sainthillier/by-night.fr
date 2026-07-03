@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f915c5b5c6a20818f40bcc7c107d361a",
+    "content-hash": "8a02dc95c21832cc3c93baac712e9f72",
     "packages": [
         {
             "name": "api-platform/core",
@@ -14360,16 +14360,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.2.1",
+            "version": "13.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "60da0ff1e10a0f72ee18a24117ec3b613a346bba"
+                "reference": "492c067e618de7b3c76105082c90f9d2833401b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/60da0ff1e10a0f72ee18a24117ec3b613a346bba",
-                "reference": "60da0ff1e10a0f72ee18a24117ec3b613a346bba",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/492c067e618de7b3c76105082c90f9d2833401b7",
+                "reference": "492c067e618de7b3c76105082c90f9d2833401b7",
                 "shasum": ""
             },
             "require": {
@@ -14440,7 +14440,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.2.1"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.2.2"
             },
             "funding": [
                 {
@@ -14448,7 +14448,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-06-15T13:14:22+00:00"
+            "time": "2026-06-29T13:36:29+00:00"
         },
         {
             "name": "react/cache",
