@@ -31,9 +31,12 @@ immutable version tags (`php85-v1`, `php85-v2`, …). The single source of truth
 **`docker/base/VERSION`**, and the app's `ARG BASE_IMAGE_TAG` has **no default** — it
 must be passed explicitly on every build.
 
-`.github/workflows/build-base-image.yml` builds the base on PRs that touch
-`docker/base/` (validation only) and publishes it on `main` / manual dispatch; the
-release workflow passes `BASE_IMAGE_TAG` from `docker/base/VERSION` automatically.
+`.github/workflows/build-base-image.yml` publishes the base on `main` / manual
+dispatch — since published tags are immutable, it is a no-op when the
+`docker/base/VERSION` tag already exists. The release workflow passes
+`BASE_IMAGE_TAG` from `docker/base/VERSION` automatically and republishes a missing
+base tag itself before building the app, so releases are self-healing. PR validation
+is handled by `validate-image-build.yml` (builds base then app, no push).
 
 For local builds, export the version first, then build/pull:
 

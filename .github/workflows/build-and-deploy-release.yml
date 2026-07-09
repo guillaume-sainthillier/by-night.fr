@@ -6,7 +6,60 @@ on:
             - v*
 
 jobs:
+    # The release build needs guystlr/by-night-base:<docker/base/VERSION>. It is normally
+    # published from main by build-base-image.yml; this job republishes it when missing
+    # (failed run, deleted tag, ...) so releases never depend on that workflow's state.
+    # Published tags are immutable: when the tag exists this is a no-op (~seconds).
+    base:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        outputs:
+            tag: ${{ steps.version.outputs.tag }}
+        steps:
+            - uses: actions/checkout@v7
+
+            - name: Read base image version
+              id: version
+              run: |
+                  TAG=$(cat docker/base/VERSION)
+                  if [ -z "$TAG" ]; then echo "::error::docker/base/VERSION is empty"; exit 1; fi
+                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+                  echo "Base image version: $TAG"
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v4
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Check if base image already exists
+              id: exists
+              run: |
+                  if docker manifest inspect "guystlr/by-night-base:${{ steps.version.outputs.tag }}" > /dev/null 2>&1; then
+                      echo "exists=true" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Set up Docker Buildx
+              if: steps.exists.outputs.exists == 'false'
+              uses: docker/setup-buildx-action@v4
+
+            - name: Build and push base image
+              if: steps.exists.outputs.exists == 'false'
+              uses: docker/build-push-action@v7
+              with:
+                  context: docker/base
+                  push: true
+                  tags: |
+                      guystlr/by-night-base:${{ steps.version.outputs.tag }}
+                      guystlr/by-night-base:php85
+                  cache-from: type=gha,scope=base
+                  cache-to: type=gha,mode=max,scope=base
+
     build:
+        needs: base
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -25,7 +78,6 @@ jobs:
                   MAJOR=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9]+)\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1\4/g")
                   echo "version=$VERSION" >> $GITHUB_OUTPUT
                   echo "tags=guystlr/by-night:stable,guystlr/by-night:$VERSION,guystlr/by-night:$MAJOR_MINOR,guystlr/by-night:$MAJOR" >> $GITHUB_OUTPUT
-                  echo "base_tag=$(cat docker/base/VERSION)" >> $GITHUB_OUTPUT
 
             - name: Login to Docker Hub
               uses: docker/login-action@v4
@@ -41,7 +93,7 @@ jobs:
                   tags: ${{ steps.version.outputs.tags }}
                   build-args: |
                       APP_VERSION=${{ steps.version.outputs.version }}
-                      BASE_IMAGE_TAG=${{ steps.version.outputs.base_tag }}
+                      BASE_IMAGE_TAG=${{ needs.base.outputs.tag }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
 

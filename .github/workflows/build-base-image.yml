@@ -5,7 +5,10 @@ name: Build Base Image
 # validate-image-build.yml (which builds base -> app), so there is no PR trigger here.
 #
 # The version is the single source of truth in docker/base/VERSION (e.g. php85-v1).
-# Bump it together with any docker/base/ change.
+# Bump it together with any docker/base/ change. Published tags are immutable: when
+# the tag already exists on Docker Hub this workflow is a no-op, so a docker/base/
+# edit without a VERSION bump is never republished. The release workflow also
+# republishes a missing tag itself, so releases never depend on this workflow's state.
 on:
     workflow_dispatch:
     push:
@@ -23,9 +26,6 @@ jobs:
         steps:
             - uses: actions/checkout@v7
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v4
-
             - name: Read base image version
               id: version
               run: |
@@ -40,7 +40,22 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
+            - name: Check if base image already exists
+              id: exists
+              run: |
+                  if docker manifest inspect "guystlr/by-night-base:${{ steps.version.outputs.tag }}" > /dev/null 2>&1; then
+                      echo "exists=true" >> "$GITHUB_OUTPUT"
+                      echo "::notice::guystlr/by-night-base:${{ steps.version.outputs.tag }} is already published — skipping (tags are immutable, bump docker/base/VERSION to publish changes)"
+                  else
+                      echo "exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Set up Docker Buildx
+              if: steps.exists.outputs.exists == 'false'
+              uses: docker/setup-buildx-action@v4
+
             - name: Build and push
+              if: steps.exists.outputs.exists == 'false'
               uses: docker/build-push-action@v7
               with:
                   context: docker/base

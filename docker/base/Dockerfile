@@ -7,9 +7,14 @@
 # slowest part of a cold build, and it changes rarely — only when PHP, the extension list,
 # or the mjml version changes.
 #
-# Build & publish (see .github/workflows/build-base-image.yml):
-#   docker build -t guystlr/by-night-base:php8.5 docker/base
-#   docker push  guystlr/by-night-base:php8.5
+# The version is the single source of truth in docker/base/VERSION (e.g. php85-v1);
+# bump it together with any docker/base/ change. Published tags are immutable — the
+# publishing workflows (build-base-image.yml, and the base job of
+# build-and-deploy-release.yml as a fallback) skip tags that already exist.
+#
+# Build & publish manually:
+#   docker build -t guystlr/by-night-base:$(cat docker/base/VERSION) docker/base
+#   docker push  guystlr/by-night-base:$(cat docker/base/VERSION)
 
 # ── PHP extensions (installed once, shared by the builder and the runtime base) ──
 FROM dunglas/frankenphp:1.12-php8.5-alpine AS php_ext
