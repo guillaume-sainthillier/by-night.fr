@@ -5146,9 +5146,9 @@ kind-of@^6.0.2:
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
 knip@^6:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/knip/-/knip-6.23.0.tgz#8581f5c01e24be0b21990094f6444aa15b89f11e"
-  integrity sha512-2DvAOX2pZWiG4SLvRRxOAU0aWGEn1ZoVblI541xIoXFdHqq2THMZXy66/qcY5WGuW3TXhb9T1x1zd/Hd1u+yqg==
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/knip/-/knip-6.26.0.tgz#45de33ffa4c1c18579861a6b241b78b62cc78f8a"
+  integrity sha512-e9eELEEpBpGTd4H4HB7818/DYj9dMzMyUqAddfYwUN/EbSkgIjOuWEF96W/xHsmV0SDrsdXjIM+oZ2xpPzPsBA==
   dependencies:
     fdir "^6.5.0"
     formatly "^0.3.0"
@@ -5666,10 +5666,15 @@ picomatch@^2.0.4, picomatch@^2.3.1:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.2.tgz#5a942915e26b372dc0f0e6753149a16e6b1c5601"
   integrity sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==
 
-picomatch@^4.0.3, picomatch@^4.0.4:
+picomatch@^4.0.3:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.4.tgz#fd6f5e00a143086e074dffe4c924b8fb293b0589"
   integrity sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==
+
+picomatch@^4.0.4:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.5.tgz#51ea57a17d86f605f81039595fbc40ed06a55fab"
+  integrity sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==
 
 pirates@^4.0.7:
   version "4.0.7"
