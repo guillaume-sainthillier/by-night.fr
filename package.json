@@ -37,7 +37,7 @@
         "@babel/core": "^8.0.0",
         "@babel/plugin-transform-react-jsx": "^8.0.0",
         "@babel/preset-env": "^8.0.0",
-        "@biomejs/biome": "2.4.16",
+        "@biomejs/biome": "2.5.4",
         "@hotwired/stimulus": "^3.0.0",
         "@svgr/cli": "^8.1.0",
         "@svgr/webpack": "^8.1.0",
