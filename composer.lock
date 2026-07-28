@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1eeb23e7dcdb53f85a7d8ae444ce9c45",
+    "content-hash": "8d62f2f97db09d8a7ef383c57c803506",
     "packages": [
         {
             "name": "api-platform/core",
@@ -1718,16 +1718,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v5.1.0",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "45af742ad9195f06f6c8894aa93530f143130926"
+                "reference": "730f0e0a36623acf85b5c12f0cca913f96eab9e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/45af742ad9195f06f6c8894aa93530f143130926",
-                "reference": "45af742ad9195f06f6c8894aa93530f143130926",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/730f0e0a36623acf85b5c12f0cca913f96eab9e7",
+                "reference": "730f0e0a36623acf85b5c12f0cca913f96eab9e7",
                 "shasum": ""
             },
             "require": {
@@ -1792,7 +1792,10 @@
             "autoload": {
                 "psr-4": {
                     "EasyCorp\\Bundle\\EasyAdminBundle\\": "src/"
-                }
+                },
+                "exclude-from-classmap": [
+                    "/tests/Functional/Apps/*/config/reference.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1813,7 +1816,7 @@
             ],
             "support": {
                 "issues": "https://github.com/EasyCorp/EasyAdminBundle/issues",
-                "source": "https://github.com/EasyCorp/EasyAdminBundle/tree/v5.1.0"
+                "source": "https://github.com/EasyCorp/EasyAdminBundle/tree/v5.3.0"
             },
             "funding": [
                 {
@@ -1821,7 +1824,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-20T17:16:01+00:00"
+            "time": "2026-07-21T19:19:06+00:00"
         },
         {
             "name": "egulias/email-validator",
