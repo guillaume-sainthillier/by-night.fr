@@ -98,9 +98,14 @@ const handleClick = (e) => {
     }
 }
 
-export default () => {
-    document.querySelectorAll(DROPZONE_SELECTOR).forEach((dropzone) => {
-        // Remove existing listeners by cloning (simple approach for re-init)
+/**
+ * Image dropzone: drag & drop or click-to-pick a single image with preview.
+ *
+ * @type {Listener}
+ */
+export default {
+    selector: DROPZONE_SELECTOR,
+    connect(dropzone) {
         const fileInput = dropzone.querySelector(FILE_INPUT_SELECTOR)
 
         // Add event listeners
@@ -112,5 +117,16 @@ export default () => {
         if (fileInput) {
             fileInput.addEventListener('change', handleFileChange)
         }
-    })
+
+        return () => {
+            dropzone.removeEventListener('dragover', handleDragOver)
+            dropzone.removeEventListener('dragleave', handleDragLeave)
+            dropzone.removeEventListener('drop', handleDrop)
+            dropzone.removeEventListener('click', handleClick)
+
+            if (fileInput) {
+                fileInput.removeEventListener('change', handleFileChange)
+            }
+        }
+    },
 }

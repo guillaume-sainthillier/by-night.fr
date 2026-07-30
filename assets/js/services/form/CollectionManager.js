@@ -41,7 +41,7 @@ export default class CollectionManager {
 
         if (dispatchEvent === true) {
             trigger(collection, 'collection.add', { item: collectionItem })
-            window.App.dispatchPageLoadedEvent(collectionItem)
+            window.App.mount(collectionItem)
             trigger(collection, 'collection.added', { item: collectionItem })
         }
     }
@@ -128,6 +128,7 @@ export default class CollectionManager {
         const collection = closest(btn, '.collection')
         const collectionItem = closest(btn, data(btn, 'item') || '.form-group')
 
+        window.App.unmount(collectionItem)
         remove(collectionItem)
         trigger(collection, 'collection.deleted')
     }

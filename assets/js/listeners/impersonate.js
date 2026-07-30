@@ -1,9 +1,15 @@
 import Swal from 'sweetalert2'
 import { create } from '@/js/services/ui/AutocompleteService'
 
-export default (_di, container) => {
-    container.querySelectorAll('.js-impersonate').forEach((el) => {
-        el.addEventListener('click', async (e) => {
+/**
+ * Open a user-search dialog and switch to the selected user.
+ *
+ * @type {Listener}
+ */
+export default {
+    selector: '.js-impersonate',
+    connect(el) {
+        const onClick = async (e) => {
             e.preventDefault()
 
             const apiUrl = el.dataset.url
@@ -41,6 +47,10 @@ export default (_di, container) => {
                 url.searchParams.set('_switch_user', result.value)
                 window.location.href = url.toString()
             }
-        })
-    })
+        }
+
+        el.addEventListener('click', onClick)
+
+        return () => el.removeEventListener('click', onClick)
+    },
 }

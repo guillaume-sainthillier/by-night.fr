@@ -1,6 +1,13 @@
 import $ from 'jquery'
-export default (_di, container) => {
-    $('label.bmd-label-static', container).each(function () {
-        $(this).toggleClass('position-static', $(this).find('.invalid-feedback').length > 0)
-    })
+
+/**
+ * Keep static material labels positioned when their field has errors.
+ *
+ * @type {Listener}
+ */
+export default {
+    selector: 'label.bmd-label-static',
+    connect(element) {
+        $(element).toggleClass('position-static', $(element).find('.invalid-feedback').length > 0)
+    },
 }

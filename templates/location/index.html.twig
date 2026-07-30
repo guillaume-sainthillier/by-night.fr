@@ -22,7 +22,7 @@
     {% else %}
         {% set locationUrl = asset('build/images/landing.jpg') %}
     {% endif %}
-    <section class="full_wrapper" style="background-image: url({{ locationUrl }})">
+    <section class="full_wrapper" style="background-image: url({{ locationUrl }})" {{ load_page('event_index') }}>
         <div class="icon fade-black-transp"></div>
         <div class="wrapper">
             <h1>Sortir {{ location.atName }} : l'agenda de vos sorties</h1>

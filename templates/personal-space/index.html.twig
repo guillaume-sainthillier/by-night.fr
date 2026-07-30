@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block body -%}
-    <div class="card">
+    <div class="card" {{ load_page('personal_space_list') }}>
         <div class="card-header">
             <form method="GET" action="{{ path('app_event_list') }}" class="w-100">
                 <twig:InputIcon iconPrepend="lucide:search">

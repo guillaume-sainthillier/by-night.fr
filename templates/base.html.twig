@@ -158,7 +158,7 @@ _______     __  _   _ _____ _____ _    _ _______
 {{ encore_entry_script_tags('app') }}
 <script>
     $(document).ready(function () {
-    App.run({{ {
+    App.start({{ {
         environment: app.environment,
         locale: app.request.locale,
         release: app_version,

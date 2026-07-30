@@ -5,7 +5,7 @@
 {% block breadcrumb_widget '' %}
 
 {% block body %}
-    <section class="full_wrapper" style="background-image: url({{ asset('build/images/landing.jpg') }})">
+    <section class="full_wrapper" style="background-image: url({{ asset('build/images/landing.jpg') }})" {{ load_page('index', {apiCityURL: url('api_cities', {q: '__QUERY__'})}) }}>
         <div class="icon fade-black-transp"></div>
         <div class="wrapper">
             <h1>Trouvez votre prochaine sortie</h1>
@@ -59,14 +59,6 @@
 
 {% block css %}
     {{ encore_entry_link_tags('index') }}
-{% endblock %}
-
-{% block head_js %}
-    <script>
-        var AppConfig = {
-            "apiCityURL": "{{ url('api_cities', {q: '__QUERY__'}) }}"
-        };
-    </script>
 {% endblock %}
 
 {% block js %}

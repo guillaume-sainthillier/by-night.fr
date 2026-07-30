@@ -60,7 +60,8 @@ function initWysiwygs(container = document) {
     })
 }
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize({ app }) {
     initDatepickers()
     initTagInputs()
     initCategoryInputs()
@@ -74,8 +75,7 @@ $(document).ready(() => {
     )
 
     // Initialize event scheduler
-    const di = window.App
-    initEventScheduler(document.body, di)
+    initEventScheduler(document.body, app)
 
     // Initialize timesheet hours sync
     initTimesheetHoursSync(document.body)
@@ -352,4 +352,6 @@ $(document).ready(() => {
             marker.position = { lat, lng }
         }
     }
-})
+}
+
+window.App.registerPage('personal_space_event', initialize)

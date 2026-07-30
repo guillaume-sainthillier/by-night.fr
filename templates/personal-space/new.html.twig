@@ -8,7 +8,7 @@
 {%- endblock %}
 
 {% block body -%}
-    <div class="mb-4 my-event">
+    <div class="mb-4 my-event" {{ load_page('personal_space_event') }}>
         {% block body_form %}
             {{ form_start(form) }}
             {{ form_errors(form) }}

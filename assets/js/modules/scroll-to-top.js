@@ -1,6 +1,11 @@
 import $ from 'jquery'
 import { debounce } from 'lodash'
 
+/**
+ * Show/hide the scroll-to-top button on window scroll. Runs once at App.start().
+ *
+ * @type {Module}
+ */
 export default () => {
     const settings = {
         min: 200,

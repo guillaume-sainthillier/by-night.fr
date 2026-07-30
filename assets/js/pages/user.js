@@ -7,7 +7,8 @@ import Loader2Icon from '@/js/icons/lucide/Loader2'
 
 global.Raphael = Raphael
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize({ app, datas }) {
     init()
 
     function init() {
@@ -49,7 +50,7 @@ $(document).ready(() => {
                     bindLoadMore(container)
 
                     // Re-initialize any page listeners on new event cards
-                    window.App.dispatchPageLoadedEvent(container[0])
+                    app.mount(container[0])
                 }).fail(() => {
                     // Restore button on error
                     btn.html(originalText)
@@ -83,7 +84,7 @@ $(document).ready(() => {
     function initLieux() {
         const data = []
 
-        $.each(window.datas, (_i, datum) => {
+        $.each(datas, (_i, datum) => {
             data.push({ label: datum.name || '', value: datum.eventsCount })
         })
 
@@ -132,4 +133,6 @@ $(document).ready(() => {
             })
         })
     }
-})
+}
+
+window.App.registerPage('user', initialize)

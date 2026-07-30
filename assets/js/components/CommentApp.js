@@ -48,7 +48,7 @@ export default class CommentApp {
         $(self.options.css_main_block_comments).each(function () {
             // Iterate through comments divs (normally 1 per page)
             const commentsContainer = $(this)
-            window.App.dispatchPageLoadedEvent(commentsContainer[0]) // Bind login/register links
+            window.App.mount(commentsContainer[0]) // Bind login/register links
             self.init_new_comment(commentsContainer) // Bind new comment form submission
             self.init_load_reply_form(commentsContainer) // Bind reply links for comments
             self.init_update_reply_count(commentsContainer) // Update reply counter
@@ -110,7 +110,7 @@ export default class CommentApp {
                     .closest(self.options.css_main_reply_block)
                     .find(self.options.css_reply_form_container) // Find the post block
                 postAnswerContainer.removeClass('is-visible').load(link.data('url'), function () {
-                    window.App.dispatchPageLoadedEvent(postAnswerContainer[0]) // Bind login/register links
+                    window.App.mount(postAnswerContainer[0]) // Bind login/register links
                     self.init_reply_form(postAnswerContainer) // Bind new reply form submission
 
                     // Add cancel button handler
@@ -196,7 +196,7 @@ export default class CommentApp {
                             answerPostContainer.html(response.post)
 
                             // Re-initialize form handlers and page events
-                            window.App.dispatchPageLoadedEvent(answerPostContainer[0])
+                            window.App.mount(answerPostContainer[0])
                             self.init_reply_form(answerPostContainer)
 
                             // Re-bind cancel button
@@ -303,7 +303,7 @@ export default class CommentApp {
                                     postCommentContainer.html(response.post)
 
                                     // Re-initialize form handlers and page events
-                                    window.App.dispatchPageLoadedEvent(postCommentContainer[0])
+                                    window.App.mount(postCommentContainer[0])
                                     self.init_new_comment(postCommentContainer)
                                 }
                             })

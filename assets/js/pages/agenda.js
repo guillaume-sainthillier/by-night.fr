@@ -32,7 +32,8 @@ function initSelects(container = document) {
     })
 }
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize({ app }) {
     initDatepickers()
     initFancyboxes()
     initSelects()
@@ -130,7 +131,7 @@ $(document).ready(() => {
                 const currentContainer = $('<div>').html(html)
                 btn.parent().remove()
                 currentContainer.insertAfter(container)
-                window.App.dispatchPageLoadedEvent(currentContainer[0])
+                app.mount(currentContainer[0])
                 initPagination(currentContainer)
             })
         })
@@ -173,4 +174,6 @@ $(document).ready(() => {
             block.hide().removeClass(options.css_initial_hidden)
         }
     }
-})
+}
+
+window.App.registerPage('agenda', initialize)

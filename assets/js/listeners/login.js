@@ -1,40 +1,47 @@
 import $ from 'jquery'
 
-export default (_di, container) => {
-    const handleLogin = ($dialog) => {
-        window.App.dispatchPageLoadedEvent($dialog[0]) // $dialog is a jQuery object so we pass the pure dom object
-        $dialog
-            .find('form')
-            .off('submit')
-            .submit(function () {
-                const href = $(this).attr('action')
-                const datas = $(this).serialize()
-                const submitButton = $('#_submit')
-                submitButton.button('loading')
-                $.post(href, datas)
-                    .done((data) => {
-                        submitButton.button('reset')
+/**
+ * Open the login dialog and handle its AJAX form submission.
+ *
+ * @type {Listener}
+ */
+export default {
+    selector: '.login',
+    connect(element, { app }) {
+        const handleLogin = ($dialog) => {
+            app.mount($dialog[0]) // $dialog is a jQuery object so we pass the pure dom object
+            $dialog
+                .find('form')
+                .off('submit')
+                .submit(function () {
+                    const href = $(this).attr('action')
+                    const datas = $(this).serialize()
+                    const submitButton = $('#_submit')
+                    submitButton.button('loading')
+                    $.post(href, datas)
+                        .done((data) => {
+                            submitButton.button('reset')
 
-                        if (!data.success) {
-                            $dialog.modal('setSmallError', data.message)
-                        } else {
-                            $dialog.modal('hide')
-                            window.location.reload()
-                        }
-                    })
-                    .fail((jqXHR) => {
-                        if (jqXHR.status === 422) {
-                            $dialog.html(jqXHR.responseText)
-                            handleLogin($dialog) // don't add anything after this
-                        }
-                    })
-                return false
-            })
-    }
+                            if (!data.success) {
+                                $dialog.modal('setSmallError', data.message)
+                            } else {
+                                $dialog.modal('hide')
+                                window.location.reload()
+                            }
+                        })
+                        .fail((jqXHR) => {
+                            if (jqXHR.status === 422) {
+                                $dialog.html(jqXHR.responseText)
+                                handleLogin($dialog) // don't add anything after this
+                            }
+                        })
+                    return false
+                })
+        }
 
-    $('.login', container)
-        .off('click')
-        .click(function (e) {
+        const $element = $(element)
+
+        $element.on('click.login', function (e) {
             e.preventDefault()
 
             const $dialog = $('#dialog_details')
@@ -45,4 +52,7 @@ export default (_di, container) => {
                     handleLogin($dialog)
                 })
         })
+
+        return () => $element.off('.login')
+    },
 }

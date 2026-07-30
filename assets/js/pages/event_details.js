@@ -2,7 +2,8 @@ import $ from 'jquery'
 import CommentApp from '@/js/components/CommentApp'
 import Widgets from '@/js/components/Widgets'
 
-$(document).ready(() => {
+/** @type {Page} */
+function initialize() {
     new Widgets().init()
 
     new CommentApp().init()
@@ -34,4 +35,6 @@ $(document).ready(() => {
                 gMap.attr('data-bs-toggled', '1').show('fast')
             }
         })
-})
+}
+
+window.App.registerPage('event_details', initialize)

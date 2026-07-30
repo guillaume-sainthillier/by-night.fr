@@ -10,7 +10,7 @@
 {%- endblock %}
 
 {% block body -%}
-    <ul class="nav nav-pills nav-fill mb-1 justify-content-center">
+    <ul class="nav nav-pills nav-fill mb-1 justify-content-center" {{ load_page('profile') }}>
         <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#profile" aria-controls="profile">
                 <twig:Icon name="lucide:user" />

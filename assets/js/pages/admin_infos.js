@@ -1,3 +1,8 @@
 import SocialLogin from '@/js/components/SocialLogin'
 
-new SocialLogin().init()
+/** @type {Page} */
+function initialize() {
+    new SocialLogin().init()
+}
+
+window.App.registerPage('admin_infos', initialize)
