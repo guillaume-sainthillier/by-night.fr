@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25965cc660833c90e8117dc1d489fb79",
+    "content-hash": "e75acc695c5fbd76394975f15fcd4c01",
     "packages": [
         {
             "name": "api-platform/core",
@@ -11400,16 +11400,16 @@
         },
         {
             "name": "symfony/ux-icons",
-            "version": "v3.2.0",
+            "version": "v3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-icons.git",
-                "reference": "a6b81d5953d5f963fc8f27a3584213d242406ca1"
+                "reference": "449a8873a8077fc21ac2bd98a453c247c320cdd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/a6b81d5953d5f963fc8f27a3584213d242406ca1",
-                "reference": "a6b81d5953d5f963fc8f27a3584213d242406ca1",
+                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/449a8873a8077fc21ac2bd98a453c247c320cdd5",
+                "reference": "449a8873a8077fc21ac2bd98a453c247c320cdd5",
                 "shasum": ""
             },
             "require": {
@@ -11469,7 +11469,7 @@
                 "twig"
             ],
             "support": {
-                "source": "https://github.com/symfony/ux-icons/tree/v3.2.0"
+                "source": "https://github.com/symfony/ux-icons/tree/v3.3.0"
             },
             "funding": [
                 {
