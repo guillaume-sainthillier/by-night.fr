@@ -1,5 +1,3 @@
-/** @jsx h */
-
 import { autocomplete } from '@algolia/autocomplete-js'
 import { Fragment, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'

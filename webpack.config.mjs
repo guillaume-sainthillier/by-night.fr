@@ -73,11 +73,8 @@ Encore
         config.plugins.push([
             '@babel/plugin-transform-react-jsx',
             {
-                // Babel 8 defaults the JSX runtime to "automatic", which rejects a custom
-                // pragma; keep the classic Preact h()/Fragment pragma explicit.
-                runtime: 'classic',
-                pragma: 'h',
-                pragmaFrag: 'Fragment',
+                runtime: 'automatic',
+                importSource: "preact"
             },
         ])
         // Babel 8 (shipped with Encore v7) removed the useBuiltIns/corejs options from
