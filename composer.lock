@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc8fa3d03dd30191067e597d6d8151bd",
+    "content-hash": "27894378fcd72b3b3931afe80d8a4bf0",
     "packages": [
         {
             "name": "api-platform/core",
@@ -16927,16 +16927,16 @@
         },
         {
             "name": "zenstruck/foundry",
-            "version": "v2.10.3",
+            "version": "v2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zenstruck/foundry.git",
-                "reference": "c30a800d5c8a2cf32813bfd89d3f16bbb40e582d"
+                "reference": "3063be3c941e1cdf74144a1a5e1f1c97abf4b8d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zenstruck/foundry/zipball/c30a800d5c8a2cf32813bfd89d3f16bbb40e582d",
-                "reference": "c30a800d5c8a2cf32813bfd89d3f16bbb40e582d",
+                "url": "https://api.github.com/repos/zenstruck/foundry/zipball/3063be3c941e1cdf74144a1a5e1f1c97abf4b8d9",
+                "reference": "3063be3c941e1cdf74144a1a5e1f1c97abf4b8d9",
                 "shasum": ""
             },
             "require": {
@@ -17006,7 +17006,10 @@
                     "Zenstruck\\Foundry\\": "src/",
                     "Zenstruck\\Foundry\\Psalm\\": "utils/psalm",
                     "Zenstruck\\Foundry\\Utils\\Rector\\": "utils/rector/src/"
-                }
+                },
+                "exclude-from-classmap": [
+                    "src/Test/Behat/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -17035,7 +17038,7 @@
             ],
             "support": {
                 "issues": "https://github.com/zenstruck/foundry/issues",
-                "source": "https://github.com/zenstruck/foundry/tree/v2.10.3"
+                "source": "https://github.com/zenstruck/foundry/tree/v2.11.0"
             },
             "funding": [
                 {
@@ -17047,7 +17050,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-20T16:59:23+00:00"
+            "time": "2026-07-27T20:25:22+00:00"
         }
     ],
     "aliases": [],
