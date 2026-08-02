@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.25-labs
+#syntax=docker/dockerfile:1.26-labs
 
 # By Night runtime base image.
 #
