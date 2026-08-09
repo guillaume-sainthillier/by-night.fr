@@ -4335,10 +4335,10 @@ get-stream@^6.0.0:
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-6.0.1.tgz#a262d8eef67aced57c2852ad6167526a43cbf7b7"
   integrity sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==
 
-get-tsconfig@4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.14.0.tgz#985d85c52a9903864280ccc2448d413fbf1efed8"
-  integrity sha512-yTb+8DXzDREzgvYmh6s9vHsSVCHeC0G3PI5bEXNBHtmshPnO+S5O7qgLEOn0I5QvMy6kpZN8K1NKGyilLb93wA==
+get-tsconfig@4.14.1:
+  version "4.14.1"
+  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.14.1.tgz#18173aee7c81897dd4b9eb98bdde499c8649e512"
+  integrity sha512-Dz/6HxkrxgNehhxLVeyv8sad9UzF2xBVeaKBQNDfJ5XiSXmp2gTR0eO0RWiT2NCKS5aGP9jjkOMggTN90qU50A==
   dependencies:
     resolve-pkg-maps "^1.0.0"
 
@@ -5071,13 +5071,13 @@ kind-of@^6.0.2:
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
 knip@^6:
-  version "6.31.0"
-  resolved "https://registry.yarnpkg.com/knip/-/knip-6.31.0.tgz#7f4131111ee9a9480e70d94074ef466a03034059"
-  integrity sha512-NbeIEmUS2VUMjAkbiSNOKPJeV9wpCsr0660sUyKyMQbk4Iom0++nTLInVp4MJ+LfR4kORnw67bDi5tvO7YLnzA==
+  version "6.32.0"
+  resolved "https://registry.yarnpkg.com/knip/-/knip-6.32.0.tgz#470254245bcd21b6f3683eaaabaacada84a627ea"
+  integrity sha512-KDX9OmmOFmlvmxTkrx6Z0GHISMut+pXMSKR8eg84bovaxJKx2NdQD4JYCXveSbvieRe107W6vCD2xCpmz0qBYA==
   dependencies:
     fdir "^6.5.0"
     formatly "^0.3.0"
-    get-tsconfig "4.14.0"
+    get-tsconfig "4.14.1"
     jiti "^2.7.0"
     oxc-parser "^0.142.0"
     oxc-resolver "11.24.2"
@@ -6232,9 +6232,9 @@ type-fest@^0.21.3:
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
 unbash@^4.0.4:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.5.tgz#a63cad7423d331404727b03d70b72b47bd804ff6"
-  integrity sha512-EE9xv9cr93DSppe086Rnbq0jwG7MBCEe22JZ4UQ8Bn9RyUwDSoUpBmzdb5+7PzocdqBEb/K73FGPaQUMmLxTQQ==
+  version "4.0.9"
+  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.9.tgz#a582853112a9412d5e6b3985c6bb5cd87a7ace51"
+  integrity sha512-J8HTKzXbwi6oQKiKEbTKMsc30jKaU5vEzDejemz4bK8OqfENSPWWV8lW+Dl7rvcTTwBmAx/It4PUd1H9RjESIw==
 
 undici-types@~8.3.0:
   version "8.3.0"
