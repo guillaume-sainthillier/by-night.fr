@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb006fd7e3bf124a4aa9c588dc2ebe9b",
+    "content-hash": "5174ee0a63d64e329e7841b030329d72",
     "packages": [
         {
             "name": "api-platform/core",
@@ -3246,16 +3246,16 @@
         },
         {
             "name": "league/flysystem-aws-s3-v3",
-            "version": "3.35.2",
+            "version": "3.35.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-aws-s3-v3.git",
-                "reference": "8475ef9adfc6498b85469e2abec6fe3118cd08c4"
+                "reference": "b03780cb97585ee7e48977f40ed599b33b751634"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/8475ef9adfc6498b85469e2abec6fe3118cd08c4",
-                "reference": "8475ef9adfc6498b85469e2abec6fe3118cd08c4",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/b03780cb97585ee7e48977f40ed599b33b751634",
+                "reference": "b03780cb97585ee7e48977f40ed599b33b751634",
                 "shasum": ""
             },
             "require": {
@@ -3295,9 +3295,9 @@
                 "storage"
             ],
             "support": {
-                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/3.35.2"
+                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/3.35.3"
             },
-            "time": "2026-07-01T23:25:49+00:00"
+            "time": "2026-08-08T16:19:23+00:00"
         },
         {
             "name": "league/flysystem-bundle",
