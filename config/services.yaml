@@ -106,18 +106,5 @@ services:
                   key: '%env(APP_THUMB_S3_KEY)%'
                   secret: '%env(APP_THUMB_S3_SECRET)%'
 
-    # Store session in redis
-    Redis:
-        class: Redis
-        calls:
-            - connect:
-                  - '%env(REDIS_HOST)%'
-                  - '%env(int:REDIS_PORT)%'
-
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
-        arguments:
-            - '@Redis'
-            - { prefix: 'by-night' }
-
     FOS\ElasticaBundle\Persister\AsyncPagerPersister: '@fos_elastica.async_pager_persister'
     FOS\ElasticaBundle\Persister\PersisterRegistry: '@fos_elastica.persister_registry'
