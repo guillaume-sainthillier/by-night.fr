@@ -1,5 +1,5 @@
 {
-    skip_install_trust
+	skip_install_trust
 
 	{$CADDY_GLOBAL_OPTIONS}
 
@@ -10,6 +10,38 @@
 
 {$CADDY_EXTRA_CONFIG}
 
+# Static assets CDN (static.by-night.fr)
+# Serves /app/public/build as root, stripping /build prefix from requests
+{$STATIC_SERVER_NAME} {
+	root * /app/public/build
+	encode zstd br gzip
+
+	handle_path /build/* {
+		file_server
+	}
+
+	log {
+		{$CADDY_SERVER_LOG_OPTIONS}
+	}
+
+	header Cache-Control "public, max-age=31536000, immutable"
+	header Access-Control-Allow-Origin "*"
+}
+
+# S3 reverse proxy CDN (data.by-night.fr)
+{$DATA_SERVER_NAME} {
+	reverse_proxy https://{$DATA_BUCKET_DOMAIN} {
+		header_up Host {$DATA_BUCKET_DOMAIN}
+	}
+
+	log {
+		{$CADDY_SERVER_LOG_OPTIONS}
+	}
+
+	header Cache-Control "public, max-age=31536000, immutable"
+}
+
+# Main app server
 {$SERVER_NAME:localhost} {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
@@ -24,20 +56,20 @@
 	root * /app/public
 	encode zstd br gzip
 
-#	mercure {
-#		# Transport to use (default to Bolt)
-#		transport_url {$MERCURE_TRANSPORT_URL:bolt:///data/mercure.db}
-#		# Publisher JWT key
-#		publisher_jwt {env.MERCURE_PUBLISHER_JWT_KEY} {env.MERCURE_PUBLISHER_JWT_ALG}
-#		# Subscriber JWT key
-#		subscriber_jwt {env.MERCURE_SUBSCRIBER_JWT_KEY} {env.MERCURE_SUBSCRIBER_JWT_ALG}
-#		# Allow anonymous subscribers (double-check that it's what you want)
-#		anonymous
-#		# Enable the subscription API (double-check that it's what you want)
-#		subscriptions
-#		# Extra directives
-#		{$MERCURE_EXTRA_DIRECTIVES}
-#	}
+	#	mercure {
+	#		# Transport to use (default to Bolt)
+	#		transport_url {$MERCURE_TRANSPORT_URL:bolt:///data/mercure.db}
+	#		# Publisher JWT key
+	#		publisher_jwt {env.MERCURE_PUBLISHER_JWT_KEY} {env.MERCURE_PUBLISHER_JWT_ALG}
+	#		# Subscriber JWT key
+	#		subscriber_jwt {env.MERCURE_SUBSCRIBER_JWT_KEY} {env.MERCURE_SUBSCRIBER_JWT_ALG}
+	#		# Allow anonymous subscribers (double-check that it's what you want)
+	#		anonymous
+	#		# Enable the subscription API (double-check that it's what you want)
+	#		subscriptions
+	#		# Extra directives
+	#		{$MERCURE_EXTRA_DIRECTIVES}
+	#	}
 
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
 

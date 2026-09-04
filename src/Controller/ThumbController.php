@@ -26,7 +26,7 @@ final class ThumbController extends Controller
     public function thumbS3(Packages $packages, string $path): Response
     {
         return new RedirectResponse(
-            $packages->getUrl($path, 'aws'),
+            $packages->getUrl($path, 's3'),
             Response::HTTP_MOVED_PERMANENTLY,
         );
     }

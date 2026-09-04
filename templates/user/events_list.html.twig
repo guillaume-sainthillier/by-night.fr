@@ -1,8 +1,4 @@
-{% for event in events %}
-    {% if event.slug %}
-        <twig:Event:ItemCard event="{{ event }}" />
-    {% endif %}
-{% endfor %}
+<twig:Event:ListGridVertical events="{{ events }}" stretched="{{ true }}" />
 
 {% if events.hasNextPage %}
     <div class="load-more text-center my-3" data-url="{{ path(isNext ? 'app_user_events_next' : 'app_user_events_previous', {id: user.id, slug: user.slug, page: events.nextPage}) }}">

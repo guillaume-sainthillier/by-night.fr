@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/membres')]
 final class UserController extends BaseController
 {
-    public const int EVENTS_PER_PAGE = 5;
+    public const int EVENTS_PER_PAGE = 6;
 
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]

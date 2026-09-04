@@ -1,0 +1,33 @@
+{# @var page \App\Entity\Page #}
+{# @var ogImage string|null #}
+{% extends 'layouts/simple.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem(page.title, url('app_page_show', {slug: page.slug})) %}
+{% endblock %}
+
+{% block title page.metaTitle ?: page.title %}
+{% block page_title page.title %}
+{% block meta_description %}{{ page.metaDescription ?: parent() }}{% endblock %}
+{% block og_url url('app_page_show', {slug: page.slug}) %}
+{% block og_type 'article' %}
+{% block og_image %}{{ ogImage ?: parent() }}{% endblock %}
+{% block og_image_width %}{{ page.hasImage and page.image.dimensions ? page.image.dimensions[0] : parent() }}{% endblock %}
+{% block og_image_height %}{{ page.hasImage and page.image.dimensions ? page.image.dimensions[1] : parent() }}{% endblock %}
+
+{% block body %}
+    <div class="page-content">
+        {% if page.hasImage %}
+            <twig:Picasso:Image
+                loader="vich"
+                src="{{ null }}"
+                context="{{ {entity: page, field: 'imageFile'} }}"
+                width="{{ 1200 }}"
+                sizes="(min-width: 1200px) 1100px, 100vw"
+                alt="{{ page.title }}"
+                class="img-fluid rounded mb-4 card-img-top"
+            />
+        {% endif %}
+        {{ page.content|raw }}
+    </div>
+{% endblock %}

@@ -1,10 +1,10 @@
 {# @var users iterable<\App\Entity\User> #}
-{% props users %}
+{% props users, stretched = false %}
 
 <div class="row row-cards row-deck">
     {% for i, user in users %}
-        <div class="col-sm-6 col-lg-4 col-xl-3">
-            <twig:User:ItemCard user="{{ user }}" cardLayout="card-layout-vertical" />
+        <div class="col-sm-6 col-lg-4{{ stretched ? '' : ' col-xl-3' }}">
+            <twig:User:ItemCard user="{{ user }}" />
         </div>
     {% endfor %}
 </div>

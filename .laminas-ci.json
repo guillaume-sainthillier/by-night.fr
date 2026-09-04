@@ -1,5 +1,5 @@
 {
-    "extensions": ["pdo_sqlite"],
+    "extensions": ["pdo_sqlite", "gd"],
     "additional_checks": [
         {
             "name": "Symfony Lint",

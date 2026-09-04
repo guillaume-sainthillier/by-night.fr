@@ -10,10 +10,9 @@
 
 namespace App\MessageHandler;
 
+use App\Cdn\CloudflareCdnPurger;
 use App\Message\PurgeCdnCacheUrl;
-use Aws\CloudFront\CloudFrontClient;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Handler\Acknowledger;
 use Symfony\Component\Messenger\Handler\BatchHandlerInterface;
@@ -26,10 +25,8 @@ final class PurgeCdnCacheUrlHandler implements BatchHandlerInterface
     use BatchHandlerTrait;
 
     public function __construct(
-        private readonly CloudFrontClient $client,
+        private readonly CloudflareCdnPurger $cdnPurger,
         private readonly LoggerInterface $logger,
-        #[Autowire(env: 'AWS_CLOUDFRONT_DISTRIBUTION_ID')]
-        private readonly string $cloudFrontDistributionID,
     ) {
     }
 
@@ -44,16 +41,7 @@ final class PurgeCdnCacheUrlHandler implements BatchHandlerInterface
         $paths = array_map(static fn (array $job): string => $job[0]->path, $jobs);
 
         try {
-            $this->client->createInvalidation([
-                'DistributionId' => $this->cloudFrontDistributionID,
-                'InvalidationBatch' => [
-                    'CallerReference' => uniqid(),
-                    'Paths' => [
-                        'Items' => $paths,
-                        'Quantity' => \count($paths),
-                    ],
-                ],
-            ]);
+            $this->cdnPurger->purge($paths);
 
             foreach ($jobs as [$message, $ack]) {
                 $ack->ack();

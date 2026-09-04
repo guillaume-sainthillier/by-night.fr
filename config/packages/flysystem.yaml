@@ -10,18 +10,28 @@ flysystem:
 
         # S3
         users.storage:
+            visibility: public
             adapter: 'aws'
             options:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
-                bucket: '%env(AWS_S3_BUCKET_NAME)%'
+                bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/users'
 
         events.storage:
+            visibility: public
             adapter: 'aws'
             options:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
-                bucket: '%env(AWS_S3_BUCKET_NAME)%'
+                bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/documents'
+
+        pages.storage:
+            visibility: public
+            adapter: 'aws'
+            options:
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(S3_BUCKET_NAME)%'
+                prefix: 'uploads/pages'
 
         thumbs.s3_storage:
             adapter: 'aws'

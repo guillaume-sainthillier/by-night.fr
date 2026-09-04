@@ -12,6 +12,7 @@ namespace App\EventSubscriber;
 
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
+use App\Repository\PageRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
@@ -34,6 +35,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
         private readonly PlaceRepository $placeRepository,
         private readonly EventRepository $eventRepository,
         private readonly UserRepository $userRepository,
+        private readonly PageRepository $pageRepository,
     ) {
         $this->now = new DateTimeImmutable();
     }
@@ -60,6 +62,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
             'users' => $this->registerUserRoutes(...),
             'events' => $this->registerEventRoutes(...),
             'tags' => $this->registerTagRoutes(...),
+            'pages' => $this->registerPageRoutes(...),
         ];
 
         foreach ($sections as $name => $generateFunction) {
@@ -165,6 +168,22 @@ final class SitemapSuscriber implements EventSubscriberInterface
                 $user['updatedAt'],
                 UrlConcrete::CHANGEFREQ_DAILY,
                 0.4
+            );
+        }
+    }
+
+    private function registerPageRoutes(?string $section): void
+    {
+        $pages = $this->pageRepository->findAllSitemap();
+
+        foreach ($pages as $page) {
+            $this->addUrl(
+                $section,
+                'app_page_show',
+                ['slug' => $page['slug']],
+                $page['updatedAt'],
+                UrlConcrete::CHANGEFREQ_MONTHLY,
+                0.5
             );
         }
     }

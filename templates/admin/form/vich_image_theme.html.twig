@@ -1,0 +1,32 @@
+{# Admin-only widget for VichImageType: the front-office "dropzone" block in form/fields.html.twig
+   relies on the app Encore bundle (CSS/JS) that EasyAdmin does not load. #}
+{% block vich_image_widget %}
+    {% set object = form.parent.vars.data %}
+    {% set has_image = object is not null and object.hasImage is defined and object.hasImage %}
+
+    {% if has_image %}
+        <div class="mb-3">
+            <twig:Picasso:Image
+                loader="vich"
+                src="{{ null }}"
+                context="{{ {entity: object, field: form.vars.name} }}"
+                width="{{ 300 }}"
+                alt="{{ object }}"
+                class="img-fluid rounded"
+            />
+        </div>
+    {% endif %}
+
+    {{ form_widget(form.file, {attr: {class: 'form-control'}}) }}
+
+    {% if form.delete is defined %}
+        {% if has_image %}
+            <div class="mt-2">
+                {{ form_row(form.delete, {label: "Supprimer l'image actuelle"}) }}
+            </div>
+        {% else %}
+            {# Nothing to delete yet: mark it rendered so form_rest() does not print an orphan checkbox #}
+            {% do form.delete.setRendered %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
