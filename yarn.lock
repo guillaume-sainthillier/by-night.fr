@@ -5036,9 +5036,9 @@ kind-of@^6.0.2:
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
 knip@^6:
-  version "6.33.0"
-  resolved "https://registry.yarnpkg.com/knip/-/knip-6.33.0.tgz#e8c02bd538adbe5f92302450f354a0f93cd7001a"
-  integrity sha512-gMXWV2bqgJcdZKsaRgl1oH5V2J0VumhJ2ujfP4M6b9ftpca2BNpvlX3Dq++vVtEey7sU67EXCvZGNkQfG2w1RQ==
+  version "6.34.0"
+  resolved "https://registry.yarnpkg.com/knip/-/knip-6.34.0.tgz#003c3d12b460a83693f6dd99281728988d325d5f"
+  integrity sha512-bbHIrnGspYwe4EBPjjx+lvkUor0F2qfKQc5BPzPI4SOAImYA+k2ueVpIcF7d/W1LEVT7XoJUPt6zELeGZhXBgA==
   dependencies:
     fdir "^6.5.0"
     formatly "^0.7.0"
@@ -6196,9 +6196,9 @@ type-fest@^0.21.3:
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
 unbash@^4.0.10:
-  version "4.0.10"
-  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.10.tgz#116c02b6a36cda03cb5730dcc110b9ce7e4abeb1"
-  integrity sha512-b7zoBQvpWp0vuN5q2vK2RRBR2SvuruQAs50DApdDveBSn3eSYd84IaHodFqQIMlvY9K2VnyBUEXgwOBuGU9GBg==
+  version "4.0.11"
+  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.11.tgz#694c177e8bf8865c1d570177f10ae538617f1577"
+  integrity sha512-FoSOKV7NEofQSkAefMVHam4ZPKYMxjAydxiV72UFEDNV/YofxjGfiZ2A9pZjdL/lRJzTjcu4PABo1JYJX8N5iQ==
 
 undici-types@~8.3.0:
   version "8.3.0"
@@ -6513,6 +6513,6 @@ yocto-queue@^0.1.0:
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
 zod@^4.4.3:
-  version "4.5.3"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-4.5.3.tgz#eed81c34989f66e7c06f579b7c99fe96ccfa75ab"
-  integrity sha512-DVADDs2rc+nEbqt+Lsd1ESk6FokySOACfLuon6MNrLnFfE4EBdgb3DcXrnHmngIZBBdPz2PJMPBtgzaMIk59ZA==
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.5.4.tgz#e215c62420c528dd7951e31fb52c5438f1fd184a"
+  integrity sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==
