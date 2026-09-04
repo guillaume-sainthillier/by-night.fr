@@ -4,5 +4,5 @@ framework:
         base_urls: '%env(APP_ASSET_URL)%'
         packages:
             local:
-            aws:
-                base_urls: '%env(S3_URL)%'
+            s3:
+                base_urls: '%env(S3_PUBLIC_URL)%'

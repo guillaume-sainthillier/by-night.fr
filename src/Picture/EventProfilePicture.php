@@ -41,7 +41,7 @@ final readonly class EventProfilePicture
         if ('upload' === $source) {
             return $this->packages->getUrl(
                 $path,
-                'aws'
+                's3'
             );
         }
 

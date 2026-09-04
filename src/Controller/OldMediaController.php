@@ -37,7 +37,7 @@ final class OldMediaController extends AbstractController
 
         if ($event) {
             $field = $event->getImage()->getName() === $infos['basename'] ? 'imageFile' : 'imageSystemFile';
-            $url = $packages->getUrl($storage->resolvePath($event, $field), 'aws');
+            $url = $packages->getUrl($storage->resolvePath($event, $field), 's3');
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
@@ -52,7 +52,7 @@ final class OldMediaController extends AbstractController
             ->getOneOrNullResult();
         if ($user) {
             $field = $user->getImage()->getName() === $infos['basename'] ? 'imageFile' : 'imageSystemFile';
-            $url = $packages->getUrl($storage->resolvePath($user, $field), 'aws');
+            $url = $packages->getUrl($storage->resolvePath($user, $field), 's3');
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }

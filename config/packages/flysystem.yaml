@@ -10,6 +10,7 @@ flysystem:
 
         # S3
         users.storage:
+            visibility: public
             adapter: 'aws'
             options:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
@@ -17,6 +18,7 @@ flysystem:
                 prefix: 'uploads/users'
 
         events.storage:
+            visibility: public
             adapter: 'aws'
             options:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance

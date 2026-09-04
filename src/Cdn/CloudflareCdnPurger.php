@@ -22,7 +22,7 @@ final readonly class CloudflareCdnPurger
         private string $zoneId,
         #[Autowire(env: 'CLOUDFLARE_API_TOKEN')]
         private string $apiToken,
-        #[Autowire(env: 'S3_URL')]
+        #[Autowire(env: 'S3_PUBLIC_URL')]
         private string $s3Url,
     ) {
     }

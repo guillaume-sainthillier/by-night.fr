@@ -31,9 +31,6 @@
 # S3 reverse proxy CDN (data.by-night.fr)
 {$DATA_SERVER_NAME} {
 	reverse_proxy https://{$DATA_BUCKET_DOMAIN} {
-		transport http {
-			tls_insecure_skip_verify
-		}
 		header_up Host {$DATA_BUCKET_DOMAIN}
 	}
 
