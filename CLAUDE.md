@@ -11,7 +11,7 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Backend**: PHP 8.4, Symfony 7.4
 - **Database**: MySQL 8.0 with Doctrine ORM
 - **Search**: Elasticsearch 7 with FOSElasticaBundle
-- **Caching**: Redis, Varnish 6
+- **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ (php-amqplib/rabbitmq-bundle)
 - **File Storage**: AWS S3 / CloudFront, Flysystem
 - **Frontend**: Webpack Encore, Bootstrap 5, jQuery, Sass, Preact (for reactive components)
@@ -180,17 +180,17 @@ Entity providers (`src/EntityProvider/`) find existing entities matching DTOs.
 
 - **Firewall** (`src/Import/Firewall.php`): Validates and filters event data (with the rest of the import-pipeline services — `Cleaner`, `EventContentHasher`, `EventChangeDetector`, `EventPublicationGuard` — in the `App\Import` namespace)
 - **DoctrineEventHandler**: Main orchestrator for event persistence
-- **ImageHelper** (`src/Image/Helper/ImageHelper.php`): Image processing with Glide
+- **Images**: Handled by the `silarhi/picasso-bundle` (`config/packages/picasso.yaml` — Glide transformer, blur placeholders, thumbnails cached in `thumbs.storage`). Render images with the `<twig:Picasso:Image>` component; per-entity picture services live in `src/Picture/` (e.g. `EventProfilePicture`, `UserProfilePicture`)
 
 ### Routing
 
-Routes are location-prefixed (e.g., `/toulouse/agenda`). The `{location}` parameter is resolved by `LocationConverter` to a `Location` value object containing City/Country context.
+Routes are location-prefixed (e.g., `/toulouse/agenda`). `AppContextSubscriber` (`src/EventSubscriber/AppContextSubscriber.php`, on `kernel.request`) resolves the `{location}` parameter to a `Location` value object containing City/Country context and stores it in `App\App\AppContext`. Routes without a `{location}` parameter fall back to the `app_city` cookie.
 
 ### Caching
 
-- Varnish reverse proxy with tag-based invalidation (`TagsInvalidator`)
-- `#[ReverseProxy]` annotation for cache control on controllers
-- Redis for application caching
+- HTTP cache headers via the `Symfony\Component\HttpKernel\Attribute\Cache` attribute on controllers (e.g. `src/Controller/Location/EventController.php`)
+- Redis for application caching (`$memoryCache` in `config/services.yaml`, bound to the `redis.app_cache_pool` pool)
+- CDN purge (`src/Cdn/CloudflareCdnPurger.php`) and thumbnail cleanup on image changes, via the `PurgeCdnCacheUrl` / `RemoveImageThumbnails` messages dispatched by `src/EventSubscriber/ImageSubscriber.php`
 
 ### Search
 
@@ -229,10 +229,12 @@ The frontend uses a modular listener-based architecture with dependency injectio
     - `popup.js` - Modal interactions
     - etc.
 
-3. **Lazy Listeners** (`assets/js/lazy-listeners/`): Heavy dependencies loaded on-demand
-    - `dates.js` - Date range picker (moment.js, daterangepicker)
-    - `selects.js` - Enhanced select boxes (select2)
-    - `wysiwyg.js` - Rich text editor (summernote)
+3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/modules/image-previews.js`)
+    - `DatepickerService.js` - Date range picker (moment.js, daterangepicker)
+    - `SelectService.js` / `TagsService.js` - Enhanced select boxes and tag inputs (tom-select)
+    - `WysiwygService.js` - Rich text editor (summernote)
+    - `AutocompleteService.js` - Autocomplete inputs (@tarekraafat/autocomplete.js)
+    - `FancyboxService.js` - Image lightbox (fancybox)
 
 **Page-Specific Scripts** (`assets/js/pages/`):
 
@@ -289,8 +291,8 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - `assets/js/pages/` - Page-specific entry points (agenda, search, etc.)
 - `assets/js/global-listeners/` - One-time initialization listeners
 - `assets/js/listeners/` - Re-runnable page listeners
-- `assets/js/lazy-listeners/` - Heavy dependencies loaded on-demand
 - `assets/js/services/` - DI container and service classes
+- `assets/js/services/ui/` - Heavy third-party widgets (datepicker, selects, wysiwyg, ...) loaded only where needed
 - `assets/js/components/` - Reusable UI components (Widgets, CommentApp, etc.)
 - `assets/js/utils/` - Utility functions (DOM helpers, CSS helpers, etc.)
 - `assets/scss/` - Sass stylesheets
