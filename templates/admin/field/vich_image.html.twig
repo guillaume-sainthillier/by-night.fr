@@ -1,0 +1,17 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{# The Vich file property is never hydrated (inject_on_load: false): read the entity, not field.value #}
+{% set instance = entity.instance %}
+{% if instance.hasImage %}
+    <twig:Picasso:Image
+        loader="vich"
+        src="{{ null }}"
+        context="{{ {entity: instance, field: field.property} }}"
+        width="{{ ea.context.crud.currentPage == 'detail' ? 400 : 120 }}"
+        alt="{{ instance }}"
+        class="img-fluid rounded"
+    />
+{% else %}
+    <span class="badge badge-secondary">Aucune image</span>
+{% endif %}

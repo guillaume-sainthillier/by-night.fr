@@ -57,6 +57,8 @@ final class DashboardController extends AbstractDashboardController
     {
         return Crud::new()
             ->setDefaultSort(['id' => 'DESC'])
+            // Admin-only widget for App\Admin\Field\VichImageField (EasyAdmin ignores the global form theme)
+            ->addFormTheme('admin/form/vich_image_theme.html.twig')
         ;
     }
 
@@ -93,6 +95,9 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Users', 'lucide:folder-open');
         yield MenuItem::linkTo(UserCrudController::class, 'Users', 'lucide:users');
         yield MenuItem::linkTo(UserOAuthCrudController::class, 'User socials', 'lucide:megaphone');
+
+        yield MenuItem::section('Contenu', 'lucide:folder-open');
+        yield MenuItem::linkTo(PageCrudController::class, 'Pages', 'lucide:file-text');
 
         yield MenuItem::section('Administration', 'lucide:folder-open');
         yield MenuItem::linkTo(ContentRemovalRequestCrudController::class, 'Demandes suppression', 'lucide:trash-2');

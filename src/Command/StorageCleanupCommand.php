@@ -133,6 +133,7 @@ final class StorageCleanupCommand extends Command
                 $imageCachePath = str_replace([
                     'uploads/documents',
                     'uploads/users',
+                    'uploads/pages',
                 ], '', $path);
                 $this->messageBus->dispatch(new RemoveImageThumbnails(ltrim($imageCachePath, '/')));
                 $this->messageBus->dispatch(new PurgeCdnCacheUrl('/' . ltrim($path, '/')));
@@ -181,6 +182,8 @@ final class StorageCleanupCommand extends Command
             SELECT image_name AS path FROM `user` WHERE image_name IN (:names)
             UNION
             SELECT image_system_name AS path FROM `user` WHERE image_system_name IN (:names)
+            UNION
+            SELECT image_name AS path FROM `page` WHERE image_name IN (:names)
             SQL;
 
         $result = $this->connection->executeQuery($sql, [

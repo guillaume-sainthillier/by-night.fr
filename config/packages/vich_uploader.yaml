@@ -28,3 +28,15 @@ vich_uploader:
                 service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
                 options:
                     date_time_property: createdAt
+
+        page_image:
+            uri_prefix: /uploads/pages
+            upload_destination: pages.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+            directory_namer:
+                service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
+                options:
+                    date_time_property: createdAt
