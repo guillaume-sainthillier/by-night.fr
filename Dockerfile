@@ -73,6 +73,7 @@ COPY --link --exclude=assets --exclude=docker . .
 # Config
 COPY --link docker/Caddyfile /etc/frankenphp/Caddyfile
 COPY --link docker/worker.Caddyfile /etc/frankenphp/worker.Caddyfile
+COPY --link docker/thumbs-proxy.Caddyfile /etc/frankenphp/thumbs-proxy.Caddyfile
 COPY --link docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 COPY --link docker/supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 COPY --link docker/entrypoint.sh /usr/local/bin/docker-entrypoint

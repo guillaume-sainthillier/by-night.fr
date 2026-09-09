@@ -71,6 +71,9 @@
 	#		{$MERCURE_EXTRA_DIRECTIVES}
 	#	}
 
+	# Thumbnails served from the S3 bucket, enabled per environment (see docker/thumbs-proxy.Caddyfile)
+	import {$THUMBS_PROXY_CADDYFILE:/dev/null}
+
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
 	# Disable Topics tracking if not enabled explicitly: https://github.com/jkarlin/topics

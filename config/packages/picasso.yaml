@@ -21,5 +21,8 @@ picasso:
         glide:
             sign_key: '%kernel.secret%'
             cache: 'thumbs.storage'
+            # Rendered variants are written to thumbs.storage at a path mirroring the URL
+            # (/p/image/glide/vich/<path>/<params>.<fmt>) so the web server can serve them
+            # straight from the bucket; PHP only handles the first generation (2026-09-09).
             public_cache:
-                enabled: false
+                enabled: true

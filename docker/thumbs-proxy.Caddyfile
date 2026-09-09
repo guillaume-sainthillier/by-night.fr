@@ -1,0 +1,30 @@
+# Serve Glide thumbnails straight from the thumbs bucket (Picasso public_cache layout:
+# <bucket>/thumbs/glide/<loader>/<path>/<params>.<fmt>, which mirrors /p/image/glide/...).
+# PHP only renders on a miss (OVH S3 answers 403 for a missing/private object) and only
+# for signed URLs, so scanner and legacy hits cost nothing. Imported by docker/Caddyfile when
+# THUMBS_PROXY_CADDYFILE points here (production); dev keeps serving thumbnails through PHP.
+@thumbs path_regexp thumbs ^/p/image/(glide/.+)$
+handle @thumbs {
+	reverse_proxy https://{$THUMBS_BUCKET_DOMAIN} {
+		header_up Host {$THUMBS_BUCKET_DOMAIN}
+		rewrite /thumbs/{re.thumbs.1}
+
+		@hit status 200
+		handle_response @hit {
+			header Cache-Control "public, max-age=31536000, immutable"
+			copy_response
+		}
+
+		@miss status 403 404
+		handle_response @miss {
+			@unsigned not query s=*
+			header @unsigned Cache-Control "no-store"
+			respond @unsigned 404
+			php_server
+		}
+	}
+}
+
+# Pre-2026 thumbnail URLs (/image/glide/...) use the same layout: send them to the cache.
+@legacy_thumbs path_regexp legacy_thumbs ^/image/glide/(.*)$
+redir @legacy_thumbs /p/image/glide/{re.legacy_thumbs.1} permanent
