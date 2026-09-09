@@ -34,6 +34,7 @@ flysystem:
                 prefix: 'uploads/pages'
 
         thumbs.s3_storage:
+            visibility: public # objects must be readable anonymously: served straight from the bucket (picasso public_cache)
             adapter: 'aws'
             options:
                 client: 's3_thumb_client' # The service ID of the Aws\S3\S3Client instance
