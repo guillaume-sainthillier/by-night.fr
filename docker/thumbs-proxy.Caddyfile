@@ -3,11 +3,24 @@
 # PHP only renders on a miss (OVH S3 answers 403 for a missing/private object) and only
 # for signed URLs, so scanner and legacy hits cost nothing. Imported by docker/Caddyfile when
 # THUMBS_PROXY_CADDYFILE points here (production); dev keeps serving thumbnails through PHP.
+#
+# Resilience: DNS/dial timeouts towards OVH S3 surfaced as 502s with Caddy's 3 s default dial
+# timeout, so dials get more time, retries and pooled keep-alive connections, use explicit
+# resolvers (Docker's embedded DNS was the slow hop) and fall back to PHP on proxy errors.
 @thumbs path_regexp thumbs ^/p/image/(glide/.+)$
 handle @thumbs {
 	reverse_proxy https://{$THUMBS_BUCKET_DOMAIN} {
 		header_up Host {$THUMBS_BUCKET_DOMAIN}
 		rewrite /thumbs/{re.thumbs.1}
+		transport http {
+			dial_timeout 10s
+			response_header_timeout 20s
+			keepalive 120s
+			keepalive_idle_conns 64
+			resolvers 213.186.33.99 1.1.1.1
+		}
+		lb_try_duration 6s
+		lb_try_interval 250ms
 
 		@hit status 200
 		handle_response @hit {
@@ -23,6 +36,12 @@ handle @thumbs {
 			php_server
 		}
 	}
+}
+
+# Proxy errors (bucket unreachable, DNS timeout): let PHP serve the thumbnail instead of a 502.
+handle_errors 502 503 504 {
+	header Cache-Control "no-store"
+	php_server
 }
 
 # Pre-2026 thumbnail URLs (/image/glide/...) use the same layout: send them to the cache.
