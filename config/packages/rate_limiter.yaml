@@ -18,3 +18,18 @@ framework:
                 interval: '1 second'
                 amount: '%env(int:MESSENGER_ELASTICA_RATE_LIMIT)%'
             cache_pool: 'cache.rate_limiter'
+        # Cloudflare purge API quota, applied to the "cloudflare.client" scoped HTTP client
+        # (see http_client.yaml). Cloudflare enforces it per account with a token bucket
+        # just like this one: every purge request costs one token whatever the number of
+        # URLs it carries (App\Cdn\CloudflareCdnPurger caps that at 100 per request).
+        # Figures below are the Free plan; other plans only change these two knobs:
+        # Pro 5 req/s + bucket 25, Business 10 req/s + bucket 50, Enterprise 50 req/s +
+        # bucket 500. "5 per minute" is modelled as one token every 12 s: same average,
+        # but the worst-case wait for a token is 12 s instead of 60 s.
+        cloudflare_purge:
+            policy: 'token_bucket'
+            limit: 25
+            rate:
+                interval: '12 seconds'
+                amount: 1
+            cache_pool: 'cache.rate_limiter'
