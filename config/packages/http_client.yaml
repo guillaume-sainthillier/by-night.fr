@@ -1,0 +1,11 @@
+framework:
+    http_client:
+        scoped_clients:
+            # Cloudflare API client used by App\Cdn\CloudflareCdnPurger. The "rate_limiter"
+            # option wraps it in Symfony's ThrottlingHttpClient, which waits for a
+            # "cloudflare_purge" token (see rate_limiter.yaml) before every request, so the
+            # per-account purge quota is enforced whatever code sends the request.
+            cloudflare.client:
+                base_uri: 'https://api.cloudflare.com/client/v4/'
+                auth_bearer: '%env(CLOUDFLARE_API_TOKEN)%'
+                rate_limiter: 'cloudflare_purge'

@@ -63,6 +63,7 @@ final class PurgeCdnCacheUrlHandler implements BatchHandlerInterface
     /** @phpstan-ignore method.unused (called by BatchHandlerTrait) */
     private function getBatchSize(): int
     {
-        return 30;
+        // One batch is one Cloudflare request, so fill it up to the "max operations per request".
+        return CloudflareCdnPurger::MAX_FILES_PER_REQUEST;
     }
 }
