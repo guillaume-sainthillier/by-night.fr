@@ -2960,12 +2960,11 @@
     yargs-parser "^21.0.0"
 
 "@tabler/core@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@tabler/core/-/core-1.4.0.tgz#9e011289d92cf6120655793cef6576fd67eb07f3"
-  integrity sha512-5BigzOlbOH9N0Is4u0rYNRCiwtnUXWO57K9zwuscygcicAa8UV9MGaS4zTgQsZEtZ9tsNANhN/YD8gCBGKYCiw==
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@tabler/core/-/core-1.5.1.tgz#d083f17521acb7df4bc231bc79e653bfeae268c9"
+  integrity sha512-PI9rJq4H4lBh53YP/J+m5Uz6lqVQbsGPmWCMN34IP4KQQ/wy28YMO6a3Eiz1cQHdFFr+3MlU3yYhXdzvFGJfqw==
   dependencies:
     "@popperjs/core" "^2.11.8"
-    bootstrap "5.3.7"
 
 "@tarekraafat/autocomplete.js@^10.2.9":
   version "10.2.10"
