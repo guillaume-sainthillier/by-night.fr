@@ -299,7 +299,8 @@ function initialize({ app }) {
             createFilter: () => true,
             loadThrottle: 250,
             load(query, callback) {
-                fetchPredictions(query, ['address'], addressSessionToken)
+                // Places API (New) has no 'address' collection — use Table B address types instead
+                fetchPredictions(query, ['street_address', 'premise', 'subpremise', 'route'], addressSessionToken)
                     .then((suggestions) =>
                         callback(
                             suggestions.map((s) => ({
