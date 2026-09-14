@@ -339,7 +339,7 @@ function initialize({ app }) {
         })
 
         // Marker drag -> reverse geocode
-        marker.addListener('dragend', () => {
+        marker.addEventListener('gmp-dragend', () => {
             const { lat, lng } = marker.position
             updateMap(lat, lng)
             reverseGeocode(lat, lng)
