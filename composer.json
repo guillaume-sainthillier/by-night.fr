@@ -52,7 +52,7 @@
         "jean85/pretty-package-versions": "^2.1.1",
         "karser/karser-recaptcha3-bundle": "^0.3.0",
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
-        "league/flysystem-aws-s3-v3": "^3.32.0",
+        "league/flysystem-aws-s3-v3": "^3.35.3",
         "league/flysystem-bundle": "^3.7.0",
         "league/flysystem-memory": "^3.31",
         "league/glide-symfony": "^2.1.0",
