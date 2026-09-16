@@ -38,7 +38,7 @@
         "ext-xmlreader": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "api-platform/core": "^4.3.3",
+        "api-platform/core": "^4.3.19",
         "aws/aws-sdk-php": "^3.379.2",
         "babdev/pagerfanta-bundle": "^4.6",
         "beberlei/doctrineextensions": "^1.5",
