@@ -16,6 +16,11 @@
         {
             "matchManagers": ["composer"],
             "rangeStrategy": "bump"
+        },
+        {
+            "matchManagers": ["composer"],
+            "matchDepNames": ["php"],
+            "enabled": false
         }
     ]
 }
