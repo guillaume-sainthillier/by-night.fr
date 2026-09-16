@@ -1,11 +1,11 @@
 import $ from 'jquery'
 import moment from 'moment'
 import 'moment/locale/fr'
-moment.locale('fr')
 import 'daterangepicker'
 import { isTouchDevice } from '@/js/utils/utils'
-
 import '@/scss/lazy-components/_datepicker.scss'
+
+moment.locale('fr')
 
 function resolveElement(element) {
     if (typeof element === 'string') {
