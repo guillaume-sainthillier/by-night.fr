@@ -53,7 +53,7 @@
         "karser/karser-recaptcha3-bundle": "^0.3.0",
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
         "league/flysystem-aws-s3-v3": "^3.35.3",
-        "league/flysystem-bundle": "^3.7.0",
+        "league/flysystem-bundle": "^3.7.1",
         "league/flysystem-memory": "^3.31",
         "league/glide-symfony": "^2.1.0",
         "league/oauth2-facebook": "^2.2",
