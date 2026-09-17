@@ -1,5 +1,15 @@
 <div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v4.0&appId={{ facebook_app_id }}&autoLogAppEvents=1"></script>
+<script>
+    window.fbAsyncInit = function () {
+        FB.init({{ {
+            appId: facebook_app_id,
+            version: facebook_graph_api_version,
+            xfbml: true,
+            autoLogAppEvents: true,
+        }|json_encode|raw }});
+    };
+</script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js"></script>
 <div id="fb-container" class="widget">
     <div class="fb-page"
          data-href="https://www.facebook.com/by.night.fr/"
