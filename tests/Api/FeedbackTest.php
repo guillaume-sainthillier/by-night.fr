@@ -48,7 +48,7 @@ final class FeedbackTest extends ApiTestCase
         ]);
 
         self::assertResponseIsSuccessful();
-        self::assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+        self::assertResponseFormatSame('json');
         self::assertJsonContains([
             'success' => true,
             'message' => 'Merci pour votre retour !',
