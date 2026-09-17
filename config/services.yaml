@@ -10,6 +10,9 @@ parameters:
     feedback_recipient_email: '%env(FEEDBACK_RECIPIENT_EMAIL)%'
     content_removal_recipient_email: '%env(CONTENT_REMOVAL_RECIPIENT_EMAIL)%'
     facebook_id_page: '205292952998805'
+    # Single source of truth for every Meta versioned surface (Graph API + JS SDK).
+    # Each version is supported for 2 years: https://developers.facebook.com/docs/graph-api/changelog/
+    facebook_graph_api_version: 'v26.0'
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
     google_map_id: '%env(GOOGLE_MAP_ID)%'
     twitter_id_page: 'By__Night'
@@ -27,6 +30,7 @@ services:
         autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
+            $facebookGraphApiVersion: '%facebook_graph_api_version%'
             $memoryCache: '@redis.app_cache_pool'
             $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
 

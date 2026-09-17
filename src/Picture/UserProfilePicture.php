@@ -21,6 +21,7 @@ final readonly class UserProfilePicture
         private UploaderHelper $helper,
         private Packages $packages,
         private ImageHelperInterface $imageHelper,
+        private string $facebookGraphApiVersion,
     ) {
     }
 
@@ -94,7 +95,7 @@ final readonly class UserProfilePicture
         if (null !== $info) {
             if (null !== $info->getFacebookId()) {
                 return [
-                    'path' => \sprintf('https://graph.facebook.com/%s/picture?type=large', $info->getFacebookId()),
+                    'path' => \sprintf('https://graph.facebook.com/%s/%s/picture?type=large', $this->facebookGraphApiVersion, $info->getFacebookId()),
                     'source' => 'dist',
                     'entity' => null,
                     'field' => null,
