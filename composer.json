@@ -62,7 +62,7 @@
         "notfloran/mjml-bundle": "^3.11",
         "pagerfanta/doctrine-orm-adapter": "^4",
         "pagerfanta/twig": "^4",
-        "presta/sitemap-bundle": "^4.3",
+        "presta/sitemap-bundle": "^4.3.1",
         "sentry/sentry-symfony": "^5.10.0",
         "silarhi/cursor-pagination": "^2.1",
         "silarhi/picasso-bundle": "^1.3.1",
