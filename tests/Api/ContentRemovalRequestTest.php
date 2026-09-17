@@ -43,7 +43,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         ]);
 
         self::assertResponseIsSuccessful();
-        self::assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+        self::assertResponseFormatSame('json');
         self::assertJsonContains([
             'success' => true,
             'message' => 'Votre demande a bien été envoyée. Nous la traiterons dans les plus brefs délais.',

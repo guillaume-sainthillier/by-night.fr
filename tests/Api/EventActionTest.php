@@ -65,7 +65,7 @@ final class EventActionTest extends ApiTestCase
         ]);
 
         self::assertResponseIsSuccessful();
-        self::assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+        self::assertResponseFormatSame('json');
         self::assertJsonContains(['success' => true]);
 
         $updatedEvent = $event->_refresh();
@@ -124,7 +124,7 @@ final class EventActionTest extends ApiTestCase
         ]);
 
         self::assertResponseIsSuccessful();
-        self::assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+        self::assertResponseFormatSame('json');
         self::assertJsonContains(['success' => true]);
 
         $updatedEvent = $event->_refresh();
@@ -170,7 +170,7 @@ final class EventActionTest extends ApiTestCase
         ]);
 
         self::assertResponseIsSuccessful();
-        self::assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+        self::assertResponseFormatSame('json');
         self::assertJsonContains(['success' => true, 'like' => true]);
 
         $updatedEvent = $event->_refresh();
