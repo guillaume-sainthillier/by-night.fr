@@ -1,8 +1,8 @@
 # Serve Glide thumbnails straight from the thumbs bucket (Picasso public_cache layout:
 # <bucket>/thumbs/glide/<loader>/<path>/<params>.<fmt>, which mirrors /p/image/glide/...).
-# PHP only renders on a miss (OVH S3 answers 403 for a missing/private object) and only
-# for signed URLs, so scanner and legacy hits cost nothing. Imported by docker/Caddyfile when
-# THUMBS_PROXY_CADDYFILE points here (production); dev keeps serving thumbnails through PHP.
+# PHP only renders on a miss (OVH S3 answers 403 for a missing/private object). Imported by
+# docker/Caddyfile when THUMBS_PROXY_CADDYFILE points here (production); dev keeps serving
+# thumbnails through PHP.
 @thumbs path_regexp thumbs ^/p/image/(glide/.+)$
 handle @thumbs {
 	reverse_proxy https://{$THUMBS_BUCKET_DOMAIN} {
@@ -17,12 +17,29 @@ handle @thumbs {
 
 		@miss status 403 404
 		handle_response @miss {
-			@unsigned not query s=*
-			header @unsigned Cache-Control "no-store"
-			respond @unsigned 404
+			# An unsigned URL can never be served: the signature is what carries the
+			# transformation params. But one whose path still looks like a real upload is a
+			# link someone stripped the query string from, and PicassoOriginRedirectSubscriber
+			# can send it to the origin file — so it has to reach PHP.
+			#
+			# Everything else unsigned is scanner noise (/p/image/glide/vich/.env and friends)
+			# and is answered right here, without paying for a kernel boot.
+			@noise {
+				not query s=*
+				not path_regexp ^/p/image/glide/(vich/[0-9]{4}/[0-9]{2}/[0-9]{2}/|filesystem/build/)
+			}
+			header @noise Cache-Control "no-store"
+			respond @noise 404
+
 			php_server
 		}
 	}
+}
+
+# Proxy errors (bucket unreachable, DNS timeout): let PHP serve the thumbnail instead of a 502.
+handle_errors 502 503 504 {
+	header Cache-Control "no-store"
+	php_server
 }
 
 # Pre-2026 thumbnail URLs (/image/glide/...) use the same layout: send them to the cache.
