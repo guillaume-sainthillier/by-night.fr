@@ -12,6 +12,14 @@
     "exclude": [
         {
             "name": "README Linting"
+        },
+        {
+            "name": "PHPUnit",
+            "dependencies": "lowest"
+        },
+        {
+            "name": "PHPUnit",
+            "dependencies": "latest"
         }
     ],
     "additional_composer_arguments": ["--ignore-platform-req=ext-*"]
