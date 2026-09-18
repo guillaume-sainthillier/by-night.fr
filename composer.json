@@ -122,7 +122,7 @@
         "phpstan/phpstan-doctrine": "^2.0.21",
         "phpstan/phpstan-strict-rules": "^2.0.10",
         "phpstan/phpstan-symfony": "^2.0.15",
-        "phpunit/phpunit": "^13.1.7",
+        "phpunit/phpunit": "^13.3.4",
         "rector/rector": "^2.4.2",
         "rector/swiss-knife": "^2.3.5",
         "shipmonk/dead-code-detector": "^1.0.0",
