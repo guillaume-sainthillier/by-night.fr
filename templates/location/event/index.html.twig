@@ -18,6 +18,14 @@
 {% block title event_seo.eventFullTitle(event) %}
 {% block page_title event_seo.eventFullTitle(event) %}
 
+{% block title_after %}
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="btn btn-icon btn-outline-secondary" href="{{ path('admin_event_edit', {entityId: event.id}) }}" data-bs-toggle="tooltip" title="Éditer l'événement">
+            <twig:Icon name="lucide:pencil" />
+        </a>
+    {% endif %}
+{% endblock %}
+
 {% block breadcrumb %}
     {% if location.isCountry %}
         {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
