@@ -80,6 +80,17 @@ services:
         arguments:
             $config: { id: '%env(FACEBOOK_API_ID)%', secret: '%env(FACEBOOK_API_SECRET)%' }
 
+    # src/Admin/Field is excluded from the App\ glob above, so this one is wired by hand. The
+    # priority has to be lower than EasyAdmin's own EmptyDataConfigurator (which is registered
+    # without one, so 0) for this to run after it and win; -9999 is taken by CommonPostConfigurator.
+    App\Admin\Field\Configurator\SluggableEmptyDataConfigurator:
+        autoconfigure: false
+        arguments:
+            # StofDoctrineExtensionsBundle registers the listener without a class alias.
+            $sluggableListener: '@stof_doctrine_extensions.listener.sluggable'
+        tags:
+            - { name: ea.field_configurator, priority: -100 }
+
     App\Validator\Constraints\EventConstraintValidator:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
