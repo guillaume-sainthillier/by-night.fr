@@ -105,7 +105,7 @@
         "symfony/ux-icons": "^3.0",
         "symfony/validator": "7.4.*",
         "symfony/web-link": "7.4.*",
-        "symfony/webpack-encore-bundle": "^2.4",
+        "symfony/webpack-encore-bundle": "^2.4.1",
         "symfony/yaml": "7.4.*",
         "symfonycasts/reset-password-bundle": "^1.25",
         "symfonycasts/verify-email-bundle": "^1.18",
