@@ -178,6 +178,17 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         ;
     }
 
+    public function countActiveEvents(): int
+    {
+        return (int) $this
+            ->createQueryBuilder('e')
+            ->select('COUNT(e.id)')
+            ->where('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     /**
      * @return iterable<array>
      */
