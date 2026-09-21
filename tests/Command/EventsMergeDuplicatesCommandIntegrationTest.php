@@ -186,6 +186,7 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
             $date = $timesheet->getStartAt()?->format('Y-m-d') ?? '';
             $hoursByDate[$date] = $timesheet->getHours();
         }
+
         ksort($hoursByDate);
 
         return $hoursByDate;

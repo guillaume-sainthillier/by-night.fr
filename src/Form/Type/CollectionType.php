@@ -21,9 +21,7 @@ final class CollectionType extends AbstractType
 {
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
-        if (!isset($view->vars['attr'])) {
-            $view->vars['attr'] = [];
-        }
+        $view->vars['attr'] ??= [];
 
         foreach ($view as $entryView) {
             $entryView->vars['block_prefixes'] = $this->replaceCollectionEntryBlockPrefix($entryView->vars['block_prefixes']);

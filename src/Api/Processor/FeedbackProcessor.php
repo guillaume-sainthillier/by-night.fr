@@ -27,7 +27,7 @@ final readonly class FeedbackProcessor implements ProcessorInterface
     public function __construct(
         private MailerManager $mailerManager,
         private Security $security,
-        #[Autowire('%feedback_recipient_email%')]
+        #[Autowire(param: 'feedback_recipient_email')]
         private string $feedbackRecipientEmail,
     ) {
     }

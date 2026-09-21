@@ -20,12 +20,11 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Vich\UploaderBundle\Handler\UploadHandler;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+#[ResetDatabase]
 final class EventHandlerDownloadTest extends AppKernelTestCase
 {
-    use ResetDatabase;
-
     /**
      * Each image URL must be fetched with a single GET — no preflight HEAD.
      */
@@ -41,6 +40,7 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
 
         $event1 = new Event();
         $event1->setUrl('https://example.test/a.jpg');
+
         $event2 = new Event();
         $event2->setUrl('https://example.test/b.jpg');
 
@@ -108,7 +108,7 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
         $event = EventFactory::createOne([
             'url' => 'https://example.test/affiche.gif',
             'imageHash' => 'user-image-hash',
-        ])->_real();
+        ]);
 
         $handler = $this->makeHandler($client);
 

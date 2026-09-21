@@ -11,12 +11,12 @@
 namespace App\Factory;
 
 use App\Entity\PlaceMetadata;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<PlaceMetadata>
+ * @extends PersistentObjectFactory<PlaceMetadata>
  */
-final class PlaceMetadataFactory extends PersistentProxyObjectFactory
+final class PlaceMetadataFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

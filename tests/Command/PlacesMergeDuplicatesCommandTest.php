@@ -81,7 +81,7 @@ final class PlacesMergeDuplicatesCommandTest extends AppKernelTestCase
 
     public function testPreviewChangesNothing(): void
     {
-        $tester = $this->runCommand([]);
+        $tester = $this->doRunCommand([]);
 
         $display = $tester->getDisplay();
         $this->assertStringContainsString(\sprintf('keep #%d "Le Bikini" (2 events)', $this->keeper->getId()), $display);
@@ -96,7 +96,7 @@ final class PlacesMergeDuplicatesCommandTest extends AppKernelTestCase
 
     public function testApplyMergesEverythingIntoThePlaceWithTheMostEvents(): void
     {
-        $tester = $this->runCommand(['--apply' => true]);
+        $tester = $this->doRunCommand(['--apply' => true]);
 
         $this->assertStringContainsString('Merges written', $tester->getDisplay());
 
@@ -120,13 +120,13 @@ final class PlacesMergeDuplicatesCommandTest extends AppKernelTestCase
         $this->assertSame(2, PlaceNameSlugFactory::count());
 
         // Idempotent: a second run finds nothing to do
-        $this->assertStringContainsString('points to a single place', $this->runCommand(['--apply' => true])->getDisplay());
+        $this->assertStringContainsString('points to a single place', $this->doRunCommand(['--apply' => true])->getDisplay());
     }
 
     /**
      * @param array<string, mixed> $input
      */
-    private function runCommand(array $input): CommandTester
+    private function doRunCommand(array $input): CommandTester
     {
         $application = new Application(self::$kernel);
         $tester = new CommandTester($application->find('app:places:merge-duplicates'));

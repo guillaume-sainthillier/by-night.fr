@@ -15,7 +15,6 @@ use App\Handler\EventHandler;
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
 use App\Utils\PaginateTrait;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\PagerfantaInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -50,7 +49,7 @@ final class EventsDownloadImagesCommand extends Command
             ->createQueryBuilder('e')
             ->where('e.url IS NOT NULL')
             ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
-            ->orderBy('e.id', Criteria::DESC)
+            ->orderBy('e.id', 'DESC')
         ;
 
         /** @var PagerfantaInterface<Event> $pagination */

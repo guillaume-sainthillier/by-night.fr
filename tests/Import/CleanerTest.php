@@ -142,6 +142,7 @@ final class CleanerTest extends AppKernelTestCase
         $timesheet->hours = '  20h - 23h  ';
         $timesheet->startAt = new DateTime('2024-01-15 20:00:00');
         $timesheet->endAt = new DateTime('2024-01-15 23:00:00');
+
         $dto->timesheets = [$timesheet];
 
         $place = new PlaceDto();
@@ -153,6 +154,7 @@ final class CleanerTest extends AppKernelTestCase
         $city = new CityDto();
         $city->name = 'saint - lys';
         $city->postalCode = 'FR31000ABC';
+
         $place->city = $city;
         $dto->place = $place;
 

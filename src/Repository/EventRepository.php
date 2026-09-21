@@ -23,7 +23,6 @@ use App\Entity\UserEvent;
 use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -255,7 +254,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.user = :user')
             ->setParameter('user', $user->getId())
-            ->orderBy('e.id', Criteria::DESC);
+            ->orderBy('e.id', 'DESC');
 
         if ($q) {
             $qb->andWhere('e.name LIKE :q OR e.placeName LIKE :q OR e.placeCity LIKE :q OR e.description LIKE :q')
@@ -276,7 +275,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('p.country', 'c')
             ->where('e.endDate >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('events', Criteria::DESC)
+            ->orderBy('events', 'DESC')
             ->groupBy('c.id')
             ->getQuery()
             ->enableResultCache(3600) // 1 hour
@@ -295,7 +294,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->select('DISTINCT e.fromData')
             ->where('e.fromData IS NOT NULL')
-            ->orderBy('e.fromData', Criteria::ASC)
+            ->orderBy('e.fromData', 'ASC')
             ->getQuery()
             ->getSingleColumnResult();
     }
@@ -339,7 +338,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->where('ue.user = :user')
             ->groupBy('p.name')
-            ->orderBy('eventsCount', Criteria::DESC)
+            ->orderBy('eventsCount', 'DESC')
             ->setParameter('user', $user->getId())
             ->setFirstResult(0)
             ->setMaxResults($limit)
@@ -408,7 +407,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->from(User::class, 'u')
             ->join('u.userEvents', 'ue')
             ->where('ue.event = :event')
-            ->orderBy('nb_events', Criteria::DESC)
+            ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id')
             ->setParameter('event', $event->getId())
             ->setFirstResult(($page - 1) * $limit)
@@ -425,7 +424,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.id != :id')
             ->setParameter('from', $event->getStartDate()->format('Y-m-d'))
             ->setParameter('id', $event->getId())
-            ->orderBy('e.name', Criteria::ASC);
+            ->orderBy('e.name', 'ASC');
 
         if (null !== $event->getPlace()->getCity()) {
             $qb
@@ -449,7 +448,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $this
             ->createQueryBuilder('e')
             ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place')
-            ->orderBy('e.endDate', Criteria::ASC)
+            ->orderBy('e.endDate', 'ASC')
             ->setParameter('end_date', $from->format('Y-m-d'))
             ->setParameter('id', $event->getId())
             ->setParameter('place', $event->getPlace()->getId());
@@ -463,8 +462,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $qb = $this
             ->createQueryBuilder('e')
             ->where('e.endDate BETWEEN :from AND :to')
-            ->orderBy('e.endDate', Criteria::ASC)
-            ->addOrderBy('e.participations', Criteria::DESC);
+            ->orderBy('e.endDate', 'ASC')
+            ->addOrderBy('e.participations', 'DESC');
 
         if ($location->isCity()) {
             $qb
@@ -492,8 +491,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.endDate >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('e.endDate', Criteria::ASC)
-            ->addOrderBy('e.participations', Criteria::DESC);
+            ->orderBy('e.endDate', 'ASC')
+            ->addOrderBy('e.participations', 'DESC');
 
         $this->buildLocationParameters($qb, $location);
 

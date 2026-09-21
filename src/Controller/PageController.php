@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PageController extends BaseController
 {
-    #[Route(path: '/p/{slug<%patterns.slug%>}', name: 'app_page_show', methods: ['GET'])]
+    #[Route(path: '/p/{slug:page<%patterns.slug%>}', name: 'app_page_show', methods: ['GET'])]
     public function show(Page $page, PagePicture $pagePicture): Response
     {
         return $this->render('page/show.html.twig', [

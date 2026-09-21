@@ -58,14 +58,17 @@ final class ParserHistoryCrudController extends AbstractCrudController
         $updatedEvents = IntegerField::new('updatedEvents');
         $explorations = IntegerField::new('explorations');
         $id = IdField::new('id', 'ID');
-
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
+        }
+        if (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
-        } elseif (Crud::PAGE_NEW === $pageName) {
+        }
+        if (Crud::PAGE_NEW === $pageName) {
             return [$startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
+        }
+
+        if (Crud::PAGE_EDIT === $pageName) {
             return [$startDate, $fromData, $endDate, $newEvents, $updatedEvents, $explorations];
         }
 

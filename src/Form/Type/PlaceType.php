@@ -14,7 +14,6 @@ use App\Dto\CountryDto;
 use App\Dto\PlaceDto;
 use App\Entity\Country;
 use App\Repository\CountryRepository;
-use Doctrine\Common\Collections\Criteria;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -59,7 +58,7 @@ final class PlaceType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => static fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', Criteria::ASC),
+                'query_builder' => static fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ]);
 

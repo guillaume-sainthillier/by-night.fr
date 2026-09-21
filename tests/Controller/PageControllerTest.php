@@ -12,19 +12,18 @@ namespace App\Tests\Controller;
 
 use App\Factory\PageFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+use function Zenstruck\Foundry\Persistence\save;
+
+#[ResetDatabase]
 final class PageControllerTest extends WebTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     public function testShowRendersContentAndSeoMetadata(): void
     {
         // createClient() must run before any factory call: factories boot the kernel,
         // and WebTestCase refuses to create a client on an already-booted kernel.
-        $client = static::createClient();
+        $client = self::createClient();
         PageFactory::createOne([
             'title' => 'Comment publier un événement',
             'content' => '<h2>Étape 1</h2><p>Créez un <strong>compte</strong>.</p>',
@@ -44,7 +43,7 @@ final class PageControllerTest extends WebTestCase
 
     public function testShowFallsBackToTitleWhenMetaTitleIsEmpty(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         PageFactory::createOne([
             'title' => 'Mentions légales',
             'metaTitle' => null,
@@ -58,7 +57,7 @@ final class PageControllerTest extends WebTestCase
 
     public function testUnknownSlugReturns404(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->request('GET', '/p/does-not-exist');
 
@@ -72,7 +71,7 @@ final class PageControllerTest extends WebTestCase
 
         // updatable: false — renaming must not change the public URL
         $page->setTitle('Mentions légales 2027');
-        $page->_save();
+        save($page);
         self::assertSame('mentions-legales-2026', $page->getSlug());
     }
 }

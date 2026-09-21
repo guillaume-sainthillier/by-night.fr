@@ -12,12 +12,12 @@ namespace App\Factory;
 
 use App\Entity\Country;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Country>
+ * @extends PersistentObjectFactory<Country>
  */
-final class CountryFactory extends PersistentProxyObjectFactory
+final class CountryFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

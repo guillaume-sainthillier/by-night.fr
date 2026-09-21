@@ -12,12 +12,12 @@ namespace App\Factory;
 
 use App\Entity\Event;
 use DateTimeImmutable;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Event>
+ * @extends PersistentObjectFactory<Event>
  */
-final class EventFactory extends PersistentProxyObjectFactory
+final class EventFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

@@ -40,6 +40,10 @@ return RectorConfig::configure()
         phpunit: true,
         symfony: true,
     )
+    ->withSets([
+        Zenstruck\Foundry\Utils\Rector\FoundrySetList::FOUNDRY_2_7,
+        Zenstruck\Foundry\Utils\Rector\FoundrySetList::FOUNDRY_2_9,
+    ])
     ->withSkip([
         Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector::class,
         ControllerMethodInjectionToConstructorRector::class,

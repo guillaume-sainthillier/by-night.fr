@@ -14,18 +14,15 @@ use App\Factory\TagFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 /**
  * Covers the Gedmo slug regeneration on a TextField, which is how every slug but Page's is exposed
  * in the back-office. Page uses SlugField instead, so PageCrudControllerTest covers the other half.
  */
+#[ResetDatabase]
 final class TagCrudControllerTest extends WebTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     public function testCreateTagGeneratesSlugFromNameWhenSlugIsLeftEmpty(): void
     {
         $client = $this->createAdminClient();
@@ -59,9 +56,9 @@ final class TagCrudControllerTest extends WebTestCase
     private function createAdminClient(): KernelBrowser
     {
         // createClient() first: factories boot the kernel and WebTestCase refuses a late client
-        $client = static::createClient();
+        $client = self::createClient();
         $admin = UserFactory::new()->admin()->create();
-        $client->loginUser($admin->_real());
+        $client->loginUser($admin);
 
         return $client;
     }

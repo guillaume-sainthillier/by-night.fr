@@ -29,9 +29,7 @@ final class SluggerUtils
 
     private static function getSluggerInstance(): SluggerInterface
     {
-        if (null === self::$slugger) {
-            self::$slugger = new AsciiSlugger();
-        }
+        self::$slugger ??= new AsciiSlugger();
 
         return self::$slugger;
     }

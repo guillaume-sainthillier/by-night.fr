@@ -165,6 +165,7 @@ final class ImagesBackfillDimensionsCommand extends Command
                         if ($clearMissing) {
                             $this->clearUnreadableImage($entity, $mapping);
                         }
+
                         continue;
                     }
 
@@ -178,8 +179,10 @@ final class ImagesBackfillDimensionsCommand extends Command
             if (!$dryRun) {
                 $this->entityManager->flush();
             }
+
             $this->entityManager->clear();
         }
+
         Monitor::finishProgressBar();
         $io->newLine(2);
 

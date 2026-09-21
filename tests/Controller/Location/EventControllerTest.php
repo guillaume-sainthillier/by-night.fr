@@ -16,21 +16,18 @@ use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+#[ResetDatabase]
 final class EventControllerTest extends WebTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     public function testAdminSeesEditButtonNextToTitle(): void
     {
         // createClient() must run before any factory call: factories boot the kernel,
         // and WebTestCase refuses to create a client on an already-booted kernel.
-        $client = static::createClient();
+        $client = self::createClient();
         $event = $this->createEvent();
-        $client->loginUser(UserFactory::new()->admin()->create()->_real());
+        $client->loginUser(UserFactory::new()->admin()->create());
 
         $client->request('GET', $this->eventUrl($event));
 
@@ -43,9 +40,9 @@ final class EventControllerTest extends WebTestCase
 
     public function testRegularUserDoesNotSeeEditButton(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         $event = $this->createEvent();
-        $client->loginUser(UserFactory::createOne()->_real());
+        $client->loginUser(UserFactory::createOne());
 
         $client->request('GET', $this->eventUrl($event));
 
@@ -55,7 +52,7 @@ final class EventControllerTest extends WebTestCase
 
     public function testAnonymousDoesNotSeeEditButton(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         $event = $this->createEvent();
 
         $client->request('GET', $this->eventUrl($event));
@@ -72,7 +69,7 @@ final class EventControllerTest extends WebTestCase
         return EventFactory::createOne([
             'name' => 'Concert au Bikini',
             'place' => PlaceFactory::createOne(['city' => $city, 'country' => $city->getCountry()]),
-        ])->_real();
+        ]);
     }
 
     private function eventUrl(Event $event): string

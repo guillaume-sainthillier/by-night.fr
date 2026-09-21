@@ -18,12 +18,11 @@ use App\Import\EventPublicationGuard;
 use App\Import\Firewall;
 use App\Repository\ParserDataRepository;
 use App\Tests\AppKernelTestCase;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+#[ResetDatabase]
 final class EventPublicationGuardTest extends AppKernelTestCase
 {
-    use ResetDatabase;
-
     private EventContentHasher $hasher;
 
     private EventPublicationGuard $guard;

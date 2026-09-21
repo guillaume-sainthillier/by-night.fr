@@ -14,14 +14,11 @@ use App\Factory\PageFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+#[ResetDatabase]
 final class PageCrudControllerTest extends WebTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     public function testIndexListsPagesWithViewAction(): void
     {
         $client = $this->createAdminClient();
@@ -67,7 +64,7 @@ final class PageCrudControllerTest extends WebTestCase
 
     public function testAnonymousIsRedirectedToLogin(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->request('GET', '/_administration/page');
 
@@ -77,9 +74,9 @@ final class PageCrudControllerTest extends WebTestCase
     private function createAdminClient(): KernelBrowser
     {
         // createClient() first: factories boot the kernel and WebTestCase refuses a late client
-        $client = static::createClient();
+        $client = self::createClient();
         $admin = UserFactory::new()->admin()->create();
-        $client->loginUser($admin->_real());
+        $client->loginUser($admin);
 
         return $client;
     }

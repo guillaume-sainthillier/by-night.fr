@@ -30,9 +30,9 @@ final class CloudflareCdnPurgerTest extends TestCase
 
     public function testSplitsPathsIntoRequestsOfAtMostHundredFiles(): void
     {
-        $purger = self::makePurger($this->makeClient());
+        $purger = $this->makePurger($this->makeClient());
 
-        $purger->purge(self::paths(250));
+        $purger->purge($this->paths(250));
 
         self::assertCount(3, $this->requests);
         self::assertSame([100, 100, 50], array_map(static fn (array $request): int => \count($request['files']), $this->requests));
@@ -54,9 +54,9 @@ final class CloudflareCdnPurgerTest extends TestCase
             'limit' => 25,
             'rate' => ['interval' => '1 hour', 'amount' => 1],
         ], new InMemoryStorage());
-        $purger = self::makePurger(new ThrottlingHttpClient($this->makeClient(), $limiter->create()));
+        $purger = $this->makePurger(new ThrottlingHttpClient($this->makeClient(), $limiter->create()));
 
-        $purger->purge(self::paths(250));
+        $purger->purge($this->paths(250));
 
         self::assertCount(3, $this->requests);
         self::assertSame(22, $limiter->create()->consume(0)->getRemainingTokens());
@@ -64,7 +64,7 @@ final class CloudflareCdnPurgerTest extends TestCase
 
     public function testSendsNothingForAnEmptyPathList(): void
     {
-        self::makePurger($this->makeClient())->purge([]);
+        $this->makePurger($this->makeClient())->purge([]);
 
         self::assertSame([], $this->requests);
     }
@@ -72,10 +72,10 @@ final class CloudflareCdnPurgerTest extends TestCase
     public function testRejectsUnsuccessfulAnswers(): void
     {
         $client = new MockHttpClient(new MockResponse('{"success":false,"errors":[{"code":1,"message":"nope"}]}'), self::BASE_URI);
-        $purger = self::makePurger($client);
+        $purger = $this->makePurger($client);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Cloudflare purge failed');
+        $this->expectExceptionMessageIsOrContains('Cloudflare purge failed');
 
         $purger->purge(['/uploads/documents/a.jpg']);
     }
@@ -89,7 +89,7 @@ final class CloudflareCdnPurgerTest extends TestCase
         $client = new MockHttpClient(new MockResponse('{"success":false,"errors":[{"code":10000,"message":"rate limited"}]}', [
             'http_code' => 429,
         ]), self::BASE_URI);
-        $purger = self::makePurger($client);
+        $purger = $this->makePurger($client);
 
         $this->expectException(ClientExceptionInterface::class);
 
@@ -112,7 +112,7 @@ final class CloudflareCdnPurgerTest extends TestCase
         }, self::BASE_URI);
     }
 
-    private static function makePurger(HttpClientInterface $client): CloudflareCdnPurger
+    private function makePurger(HttpClientInterface $client): CloudflareCdnPurger
     {
         return new CloudflareCdnPurger($client, 'zone-123', 'https://cdn.example.test/');
     }
@@ -120,7 +120,7 @@ final class CloudflareCdnPurgerTest extends TestCase
     /**
      * @return list<string>
      */
-    private static function paths(int $count): array
+    private function paths(int $count): array
     {
         return array_map(static fn (int $i): string => \sprintf('/uploads/documents/%d.jpg', $i), range(0, $count - 1));
     }

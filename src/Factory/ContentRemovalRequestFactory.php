@@ -14,12 +14,12 @@ use App\Entity\ContentRemovalRequest;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
 use DateTimeImmutable;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ContentRemovalRequest>
+ * @extends PersistentObjectFactory<ContentRemovalRequest>
  */
-final class ContentRemovalRequestFactory extends PersistentProxyObjectFactory
+final class ContentRemovalRequestFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

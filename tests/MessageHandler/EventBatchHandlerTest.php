@@ -107,11 +107,14 @@ final class EventBatchHandlerTest extends AppKernelTestCase
 
         $cityDto = new CityDto();
         $cityDto->name = 'Toulouse';
+
         $countryDto = new CountryDto();
         $countryDto->code = 'FR';
+
         $cityDto->country = $countryDto;
         $placeDto->city = $cityDto;
         $placeDto->country = $countryDto;
+
         $dto->place = $placeDto;
 
         return $dto;

@@ -12,12 +12,12 @@ namespace App\Factory;
 
 use App\Entity\ParserData;
 use App\Import\Firewall;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ParserData>
+ * @extends PersistentObjectFactory<ParserData>
  */
-final class ParserDataFactory extends PersistentProxyObjectFactory
+final class ParserDataFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

@@ -16,7 +16,6 @@ use App\Repository\PlaceRepository;
 use App\Utils\Monitor;
 use App\Utils\PaginateTrait;
 use App\Utils\PlaceNameNormalizer;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\PagerfantaInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -53,7 +52,7 @@ final class PlacesBackfillSlugsCommand extends Command
             ->addSelect('co')
             ->leftJoin('p.city', 'c')
             ->leftJoin('p.country', 'co')
-            ->orderBy('p.id', Criteria::ASC);
+            ->orderBy('p.id', 'ASC');
 
         /** @var PagerfantaInterface<Place> $pagination */
         $pagination = $this->createQueryBuilderPaginator($qb, 1, 500);

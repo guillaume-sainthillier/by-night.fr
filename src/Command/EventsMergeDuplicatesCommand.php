@@ -419,13 +419,11 @@ final class EventsMergeDuplicatesCommand extends Command
         ]);
 
         // Try with -0 suffix
-        if (null === $canonical) {
-            $canonical = $this->eventRepository->findOneBy([
-                'externalId' => $baseId . '-0',
-                'externalOrigin' => $externalOrigin,
-                'duplicateOf' => null,
-            ]);
-        }
+        $canonical ??= $this->eventRepository->findOneBy([
+            'externalId' => $baseId . '-0',
+            'externalOrigin' => $externalOrigin,
+            'duplicateOf' => null,
+        ]);
 
         // If no canonical found, use the current event (first in sorted order)
         return $canonical ?? $event;
@@ -494,6 +492,7 @@ final class EventsMergeDuplicatesCommand extends Command
         $timesheet->setStartAt($startAt);
         $timesheet->setEndAt($endAt);
         $timesheet->setHours($hours);
+
         $canonical->addTimesheet($timesheet);
 
         $existingPairs[$this->getTimesheetKey($startAt, $endAt)] = true;

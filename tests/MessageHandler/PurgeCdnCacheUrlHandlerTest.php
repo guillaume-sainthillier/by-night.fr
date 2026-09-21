@@ -26,7 +26,7 @@ final class PurgeCdnCacheUrlHandlerTest extends TestCase
 
     public function testFlushesOneCloudflareRequestPerHundredMessages(): void
     {
-        $handler = self::makeHandler($this->makeClient());
+        $handler = $this->makeHandler($this->makeClient());
         $acks = [];
 
         for ($i = 1; $i <= 100; ++$i) {
@@ -49,7 +49,7 @@ final class PurgeCdnCacheUrlHandlerTest extends TestCase
     public function testCloudflareErrorsFailTheWholeBatch(): void
     {
         $client = new MockHttpClient(new MockResponse('{"success":false,"errors":[{"code":1,"message":"boom"}]}'));
-        $handler = self::makeHandler($client);
+        $handler = $this->makeHandler($client);
 
         $first = new Acknowledger(PurgeCdnCacheUrlHandler::class);
         $second = new Acknowledger(PurgeCdnCacheUrlHandler::class);
@@ -64,7 +64,7 @@ final class PurgeCdnCacheUrlHandlerTest extends TestCase
         }
     }
 
-    private static function makeHandler(MockHttpClient $client): PurgeCdnCacheUrlHandler
+    private function makeHandler(MockHttpClient $client): PurgeCdnCacheUrlHandler
     {
         return new PurgeCdnCacheUrlHandler(
             new CloudflareCdnPurger($client, 'zone-123', 'https://cdn.example.test'),

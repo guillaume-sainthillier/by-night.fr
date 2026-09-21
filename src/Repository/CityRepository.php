@@ -19,7 +19,6 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Utils\CityManipulator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Override;
@@ -213,7 +212,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         }
 
         $results = $qb
-            ->orderBy('c.population', Criteria::DESC)
+            ->orderBy('c.population', 'DESC')
             ->setMaxResults(50)
             ->getQuery()
             ->getScalarResult();

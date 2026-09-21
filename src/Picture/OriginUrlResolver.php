@@ -39,7 +39,9 @@ final readonly class OriginUrlResolver
      * for a missing file and then cached as one for a day.
      */
     private const int HIT_TTL = 2592000;
+
     private const int MISS_TTL = 86400;
+
     private const int ERROR_TTL = 60;
 
     /**

@@ -35,27 +35,27 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         $this->indexName = $index->getName();
     }
 
-    public function handlesObject($object): bool
+    public function handlesObject(object $object): bool
     {
         return $this->decorated->handlesObject($object);
     }
 
-    public function insertOne($object): void
+    public function insertOne(object $object): void
     {
         $this->insertMany([$object]);
     }
 
-    public function replaceOne($object): void
+    public function replaceOne(object $object): void
     {
         $this->replaceMany([$object]);
     }
 
-    public function deleteOne($object): void
+    public function deleteOne(object $object): void
     {
         $this->deleteMany([$object]);
     }
 
-    public function deleteById($id, $routing = false): void
+    public function deleteById(string $id, string|bool $routing = false): void
     {
         $this->deleteManyByIdentifiers([$id], $routing);
     }

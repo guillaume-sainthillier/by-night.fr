@@ -25,9 +25,7 @@ final readonly class Cleaner
 
     public function cleanEvent(EventDto $dto): void
     {
-        if (null === $dto->endDate) {
-            $dto->endDate = $dto->startDate;
-        }
+        $dto->endDate ??= $dto->startDate;
 
         $dto->name = $this->clean($dto->name ?? '') ?: null;
         $dto->description = $this->clean($dto->description ?? '') ?: null;

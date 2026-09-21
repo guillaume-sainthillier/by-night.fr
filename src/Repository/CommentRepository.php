@@ -16,7 +16,6 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Manager\PreloadManager;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -60,8 +59,8 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
             ->addSelect('user')
             ->where('c.event = :event AND c.parent IS NULL AND c.approved = true')
             ->setParameter('event', $event)
-            ->orderBy('c.createdAt', Criteria::DESC)
-            ->addOrderBy('children.createdAt', Criteria::DESC)
+            ->orderBy('c.createdAt', 'DESC')
+            ->addOrderBy('children.createdAt', 'DESC')
         ;
     }
 
@@ -84,6 +83,6 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
             ->createQueryBuilder('c')
             ->where('c.parent = :parent AND c.approved = true')
             ->setParameter('parent', $comment)
-            ->orderBy('c.createdAt', Criteria::DESC);
+            ->orderBy('c.createdAt', 'DESC');
     }
 }

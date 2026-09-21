@@ -60,7 +60,7 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
     #[UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     public ?File $imageFile = null;
 
-    public ?EmbeddedFile $image = null;
+    public ?EmbeddedFile $image;
 
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
     public ?DateTimeInterface $startDate = null;
