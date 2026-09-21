@@ -47,7 +47,7 @@
         "doctrine/orm": "^3.7.1",
         "easycorp/easyadmin-bundle": "^5.5.1",
         "erusev/parsedown": "^1.8.0",
-        "friendsofsymfony/elastica-bundle": "^7.0",
+        "friendsofsymfony/elastica-bundle": "^7.2.0",
         "huluti/breadcrumbs-bundle": "^1.7",
         "jean85/pretty-package-versions": "^2.1.1",
         "karser/karser-recaptcha3-bundle": "^0.3.0",
