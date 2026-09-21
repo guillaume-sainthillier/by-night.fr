@@ -45,7 +45,7 @@ final readonly class SiteJsonLd
             '@id' => $baseUrl . '#organization',
             'name' => 'By Night',
             'url' => $baseUrl,
-            'logo' => $this->packages->getUrl('build/images/by-night.png', 'local'),
+            'logo' => $this->packages->getUrl('build/images/by-night.png'),
         ];
 
         $sameAs = $this->buildSameAsLinks();
