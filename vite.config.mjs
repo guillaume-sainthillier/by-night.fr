@@ -66,6 +66,8 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 input: {
                     app: `${assets}/js/app.js`,
+                    // EasyAdmin back office, see DashboardController::configureAssets()
+                    admin: `${assets}/js/admin.js`,
                     ...Object.fromEntries(pages.map((page) => [page, `${assets}/js/pages/${page}.js`])),
                 },
             },

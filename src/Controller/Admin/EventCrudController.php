@@ -10,6 +10,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\VichImageField;
 use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
 use App\Enum\EventStatus;
@@ -141,10 +142,16 @@ final class EventCrudController extends AbstractCrudController
         $latitude = NumberField::new('latitude');
         $longitude = NumberField::new('longitude');
         $adresse = TextField::new('address');
-        $panel3 = FormField::addFieldset('Images');
-        $url = TextField::new('url');
-        $imageName = TextField::new('image.name');
-        $imageSystemName = TextField::new('imageSystem.name');
+        $systemImagePanel = FormField::addFieldset('Image système');
+        $imageSystem = VichImageField::new('imageSystemFile', 'Image')
+            ->setHelp('Récupérée à l\'import : un nouvel import peut la remplacer. Pour imposer une image, utilisez l\'image utilisateur.');
+        $url = TextField::new('url', 'URL source')
+            ->setHelp('Image téléchargée à l\'import.');
+        $userImagePanel = FormField::addFieldset('Image utilisateur');
+        $image = VichImageField::new('imageFile', 'Image')
+            ->setHelp('Envoyée par l\'utilisateur, prioritaire sur l\'image système à l\'affichage.');
+        $imageName = TextField::new('image.name')->onlyOnDetail();
+        $imageSystemName = TextField::new('imageSystem.name')->onlyOnDetail();
         $panel4 = FormField::addFieldset('Parser');
         $duplicateOf = AssociationField::new('duplicateOf')
             ->setLabel('Duplicate de (redirige vers)')
@@ -165,14 +172,14 @@ final class EventCrudController extends AbstractCrudController
         $fbInterests = IntegerField::new('fbInterests');
         $participations = IntegerField::new('participations');
         $interests = IntegerField::new('interests');
-        $imageOriginalName = TextField::new('image.originalName');
-        $imageMimeType = TextField::new('image.mimeType');
-        $imageSize = IntegerField::new('image.size');
-        $imageDimensions = ArrayField::new('image.dimensions');
-        $imageSystemOriginalName = TextField::new('imageSystem.originalName');
-        $imageSystemMimeType = TextField::new('imageSystem.mimeType');
-        $imageSystemSize = IntegerField::new('imageSystem.size');
-        $imageSystemDimensions = ArrayField::new('imageSystem.dimensions');
+        $imageOriginalName = TextField::new('image.originalName')->onlyOnDetail();
+        $imageMimeType = TextField::new('image.mimeType')->onlyOnDetail();
+        $imageSize = IntegerField::new('image.size')->onlyOnDetail();
+        $imageDimensions = ArrayField::new('image.dimensions')->onlyOnDetail();
+        $imageSystemOriginalName = TextField::new('imageSystem.originalName')->onlyOnDetail();
+        $imageSystemMimeType = TextField::new('imageSystem.mimeType')->onlyOnDetail();
+        $imageSystemSize = IntegerField::new('imageSystem.size')->onlyOnDetail();
+        $imageSystemDimensions = ArrayField::new('imageSystem.dimensions')->onlyOnDetail();
         $userEvents = AssociationField::new('userEvents')->autocomplete();
         $comments = AssociationField::new('comments')->autocomplete();
 
@@ -228,20 +235,24 @@ final class EventCrudController extends AbstractCrudController
             $placeExternalId,
             $placeFacebookId,
 
-            $panel3,
+            $systemImagePanel,
+            $imageSystem,
             $url,
-            $imageName,
-            $imageOriginalName,
-            $imageMimeType,
-            $imageSize,
-            $imageHash,
-            $imageDimensions,
+            $imageSystemHash,
             $imageSystemName,
             $imageSystemOriginalName,
             $imageSystemMimeType,
             $imageSystemSize,
-            $imageSystemHash,
             $imageSystemDimensions,
+
+            $userImagePanel,
+            $image,
+            $imageHash,
+            $imageName,
+            $imageOriginalName,
+            $imageMimeType,
+            $imageSize,
+            $imageDimensions,
 
             $panel4,
             $duplicateOf,

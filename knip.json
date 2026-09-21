@@ -2,6 +2,7 @@
     "$schema": "https://unpkg.com/knip@5/schema.json",
     "entry": [
         "assets/js/app.js",
+        "assets/js/admin.js",
         "assets/js/pages/*.js",
         "assets/**/controllers/**/*.{js,jsx}",
         "assets/**/icons/**/*.{js,jsx}"
