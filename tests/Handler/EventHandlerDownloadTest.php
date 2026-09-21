@@ -11,6 +11,7 @@
 namespace App\Tests\Handler;
 
 use App\Entity\Event;
+use App\Factory\EventFactory;
 use App\Handler\EventHandler;
 use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
@@ -19,9 +20,12 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Vich\UploaderBundle\Handler\UploadHandler;
+use Zenstruck\Foundry\Test\ResetDatabase;
 
 final class EventHandlerDownloadTest extends AppKernelTestCase
 {
+    use ResetDatabase;
+
     /**
      * Each image URL must be fetched with a single GET — no preflight HEAD.
      */
@@ -89,6 +93,34 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
 
         $this->assertNotContains('HEAD', $methods, 'No preflight HEAD must be issued, even for a redirecting URL');
         $this->assertContains('GET https://example.test/redirect', $requests, 'The source URL is fetched directly with a GET');
+    }
+
+    /**
+     * A downloaded image is the system image: it must not overwrite the hash of the
+     * image uploaded by the user.
+     */
+    public function testDownloadedImageOnlyUpdatesTheSystemImageHash(): void
+    {
+        $gif = (string) base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
+        $client = new MockHttpClient(new MockResponse($gif, ['http_code' => 200]));
+
+        // Persisted (non-null id): uploadFile() only attaches the file, Vich uploads it on flush
+        $event = EventFactory::createOne([
+            'url' => 'https://example.test/affiche.gif',
+            'imageHash' => 'user-image-hash',
+        ])->_real();
+
+        $handler = $this->makeHandler($client);
+
+        try {
+            $handler->handleDownloads([$event]);
+        } finally {
+            $handler->reset();
+        }
+
+        $this->assertNotNull($event->getImageSystemFile());
+        $this->assertSame(md5($gif), $event->getImageSystemHash());
+        $this->assertSame('user-image-hash', $event->getImageHash());
     }
 
     private function makeHandler(MockHttpClient $client): EventHandler
