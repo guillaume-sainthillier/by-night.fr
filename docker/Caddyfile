@@ -10,24 +10,6 @@
 
 {$CADDY_EXTRA_CONFIG}
 
-# Static assets CDN (static.by-night.fr)
-# Serves /app/public/build as root, stripping /build prefix from requests
-{$STATIC_SERVER_NAME} {
-	root * /app/public/build
-	encode zstd br gzip
-
-	handle_path /build/* {
-		file_server
-	}
-
-	log {
-		{$CADDY_SERVER_LOG_OPTIONS}
-	}
-
-	header Cache-Control "public, max-age=31536000, immutable"
-	header Access-Control-Allow-Origin "*"
-}
-
 # S3 reverse proxy CDN (data.by-night.fr)
 {$DATA_SERVER_NAME} {
 	reverse_proxy https://{$DATA_BUCKET_DOMAIN} {

@@ -12,6 +12,7 @@ namespace App\SEO;
 
 use App\App\SocialManager;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class SiteJsonLd
@@ -19,6 +20,7 @@ final readonly class SiteJsonLd
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private Packages $packages,
+        private UrlHelper $urlHelper,
         private SocialManager $socialManager,
     ) {
     }
@@ -45,7 +47,8 @@ final readonly class SiteJsonLd
             '@id' => $baseUrl . '#organization',
             'name' => 'By Night',
             'url' => $baseUrl,
-            'logo' => $this->packages->getUrl('build/images/by-night.png'),
+            // schema.org wants an absolute URL, and asset() only yields the path now that assets are same-origin
+            'logo' => $this->urlHelper->getAbsoluteUrl($this->packages->getUrl('build/images/by-night.png')),
         ];
 
         $sameAs = $this->buildSameAsLinks();

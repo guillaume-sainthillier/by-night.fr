@@ -39,7 +39,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta property="og:type" content="{% block og_type 'website' %}">
     <meta property="og:url" content="{% block og_url url('app_index') %}">
     <meta property="og:locale" content="fr" />
-    <meta property="og:image" content="{% block og_image asset('build/images/by-night.png') %}">
+    <meta property="og:image" content="{% block og_image absolute_url(asset('build/images/by-night.png')) %}">
     <meta property="og:image:width" content="{% block og_image_width '1200' %}">
     <meta property="og:image:height" content="{% block og_image_height '630' %}">
     <meta property="og:image:alt" content="{{ block('og_title') }}">
