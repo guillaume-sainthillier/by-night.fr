@@ -248,13 +248,8 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         }
 
         $needle = $date->format('Y-m-d');
-        foreach ($event->timesheets as $timesheet) {
-            if ($timesheet->startAt?->format('Y-m-d') === $needle) {
-                return true;
-            }
-        }
 
-        return false;
+        return array_any($event->timesheets, static fn ($timesheet) => $timesheet->startAt?->format('Y-m-d') === $needle);
     }
 
     /**

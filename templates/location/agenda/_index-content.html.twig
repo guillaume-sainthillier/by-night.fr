@@ -5,7 +5,7 @@
         <div class="text-center my-4">
             <a id="paginate"
                class="btn btn-outline-primary"
-               href="{{ path(app.request.get('_route'), routeParams) }}">
+               href="{{ path(app.current_route, routeParams) }}">
                 Plus d'événements
             </a>
         </div>

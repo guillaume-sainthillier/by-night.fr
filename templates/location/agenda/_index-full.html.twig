@@ -56,10 +56,10 @@
 
 {% block metas %}
     {% if events.hasPreviousPage() %}
-        <link rel="prev" href="{{ url(app.request.get('_route'), routeParams|merge({page: events.getPreviousPage()})) }}" />
+        <link rel="prev" href="{{ url(app.current_route, routeParams|merge({page: events.getPreviousPage()})) }}" />
     {% endif %}
     {% if events.hasNextPage() %}
-        <link rel="next" href="{{ url(app.request.get('_route'), routeParams|merge({page: events.getNextPage()})) }}" />
+        <link rel="next" href="{{ url(app.current_route, routeParams|merge({page: events.getNextPage()})) }}" />
     {% endif %}
 {% endblock %}
 

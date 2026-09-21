@@ -5,7 +5,6 @@ import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
-import { create as createFancybox } from '@/js/services/ui/FancyboxService'
 import { create as createTags } from '@/js/services/ui/TagsService'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 
@@ -48,12 +47,6 @@ function initCategoryInputs(container = document) {
     })
 }
 
-function initFancyboxes(container = document) {
-    container.querySelectorAll('.image-gallery').forEach((el) => {
-        createFancybox({ element: el })
-    })
-}
-
 function initWysiwygs(container = document) {
     container.querySelectorAll('textarea.wysiwyg').forEach((el) => {
         createWysiwyg({ element: el })
@@ -65,7 +58,6 @@ function initialize({ app }) {
     initDatepickers()
     initTagInputs()
     initCategoryInputs()
-    initFancyboxes()
     initWysiwygs()
 
     $('.form-delete form').submit(() =>

@@ -39,62 +39,98 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
     public function testBackfillsDimensionsFromTheStoredFiles(): void
     {
         // A user upload and an imported image, both stored without dimensions
-        $upload = EventFactory::createOne(['image' => self::image('poster.png')]);
-        $this->store($upload->_real(), 'imageFile', 'events.storage', 8, 5);
-        $imported = EventFactory::createOne(['imageSystem' => self::image('remote.png')]);
-        $this->store($imported->_real(), 'imageSystemFile', 'events.storage', 3, 2);
+        $upload = EventFactory::createOne(['image' => $this->image('poster.png')]);
+        $this->store($upload, 'imageFile', 'events.storage', 8, 5);
+        $imported = EventFactory::createOne(['imageSystem' => $this->image('remote.png')]);
+        $this->store($imported, 'imageSystemFile', 'events.storage', 3, 2);
 
         // Already measured, or no image at all: not candidates
-        $measured = EventFactory::createOne(['image' => self::image('measured.png', [640, 480])]);
+        $measured = EventFactory::createOne(['image' => $this->image('measured.png', [640, 480])]);
         $bare = EventFactory::createOne();
 
         // Users go through the same code path, on their own bucket
-        $avatar = UserFactory::createOne(['image' => self::image('avatar.png')]);
-        $this->store($avatar->_real(), 'imageFile', 'users.storage', 4, 4);
+        $avatar = UserFactory::createOne(['image' => $this->image('avatar.png')]);
+        $this->store($avatar, 'imageFile', 'users.storage', 4, 4);
 
         // The fixtures above are stale in the identity map; the command must load fresh rows
         $this->entityManager->clear();
 
-        $display = $this->runCommand([])->getDisplay();
+        $display = $this->doRunCommand([])->getDisplay();
 
         $this->assertStringContainsString('Image dimensions backfilled', $display);
-        $this->assertSame([8, 5], self::dimensions(EventFactory::find($upload->getId())->getImage()));
-        $this->assertSame([3, 2], self::dimensions(EventFactory::find($imported->getId())->getImageSystem()));
-        $this->assertSame([640, 480], self::dimensions(EventFactory::find($measured->getId())->getImage()));
-        $this->assertNull(self::dimensions(EventFactory::find($bare->getId())->getImage()));
-        $this->assertSame([4, 4], self::dimensions(UserFactory::find($avatar->getId())->getImage()));
+        $this->assertSame([8, 5], $this->dimensions(EventFactory::find($upload->getId())->getImage()));
+        $this->assertSame([3, 2], $this->dimensions(EventFactory::find($imported->getId())->getImageSystem()));
+        $this->assertSame([640, 480], $this->dimensions(EventFactory::find($measured->getId())->getImage()));
+        $this->assertNull($this->dimensions(EventFactory::find($bare->getId())->getImage()));
+        $this->assertSame([4, 4], $this->dimensions(UserFactory::find($avatar->getId())->getImage()));
 
         // Idempotent: a second run finds nothing to do
-        $this->assertStringContainsString('0 row(s) with an image but no dimensions', $this->runCommand(['--entity' => ['event']])->getDisplay());
+        $this->assertStringContainsString('0 row(s) with an image but no dimensions', $this->doRunCommand(['--entity' => ['event']])->getDisplay());
     }
 
     public function testUnreadableFilesAreReportedAndLeftAlone(): void
     {
-        $missing = EventFactory::createOne(['image' => self::image('gone.png')]);
-        $garbage = EventFactory::createOne(['image' => self::image('garbage.png')]);
-        $this->write($garbage->_real(), 'imageFile', 'events.storage', 'definitely not an image');
+        $missing = EventFactory::createOne(['image' => $this->image('gone.png')]);
+        $garbage = EventFactory::createOne(['image' => $this->image('garbage.png')]);
+        $this->write($garbage, 'imageFile', 'events.storage', 'definitely not an image');
         $this->entityManager->clear();
 
-        $display = $this->runCommand(['--entity' => ['event']], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE])->getDisplay();
+        $display = $this->doRunCommand(['--entity' => ['event']], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE])->getDisplay();
 
         $this->assertStringContainsString('Unreadable files:', $display);
         $this->assertStringContainsString(\sprintf('#%d imageFile:', $missing->getId()), $display);
         $this->assertStringContainsString(\sprintf('#%d imageFile:', $garbage->getId()), $display);
-        $this->assertNull(self::dimensions(EventFactory::find($missing->getId())->getImage()));
-        $this->assertNull(self::dimensions(EventFactory::find($garbage->getId())->getImage()));
+        $this->assertNull($this->dimensions(EventFactory::find($missing->getId())->getImage()));
+        $this->assertNull($this->dimensions(EventFactory::find($garbage->getId())->getImage()));
+    }
+
+    public function testClearMissingErasesTheImageAndResetsItsHash(): void
+    {
+        // Missing from every bucket: a user upload, an imported image, and an avatar
+        $upload = EventFactory::createOne(['image' => $this->image('gone.png'), 'imageHash' => 'upload-hash']);
+        $imported = EventFactory::createOne(['imageSystem' => $this->image('gone-too.png'), 'imageSystemHash' => 'system-hash']);
+        $avatar = UserFactory::createOne(['image' => $this->image('gone.png'), 'imageHash' => 'avatar-hash']);
+
+        // Readable in the same run: measured, and its hash kept
+        $intact = EventFactory::createOne(['image' => $this->image('poster.png'), 'imageHash' => 'kept-hash']);
+        $this->store($intact, 'imageFile', 'events.storage', 8, 5);
+        $this->entityManager->clear();
+
+        $display = $this->doRunCommand(['--clear-missing' => true], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE])->getDisplay();
+        $this->assertStringContainsString('Unreadable files, erased:', $display);
+
+        $event = EventFactory::find($upload->getId());
+        $this->assertFalse($event->hasImage());
+        $this->assertNull($event->getImage()->getName());
+        $this->assertNull($event->getImageHash());
+
+        $event = EventFactory::find($imported->getId());
+        $this->assertFalse($event->hasImage());
+        $this->assertNull($event->getImageSystemHash());
+
+        $user = UserFactory::find($avatar->getId());
+        $this->assertFalse($user->hasImage());
+        $this->assertNull($user->getImageHash());
+
+        $event = EventFactory::find($intact->getId());
+        $this->assertSame([8, 5], $this->dimensions($event->getImage()));
+        $this->assertSame('kept-hash', $event->getImageHash());
+
+        // Erased rows are no longer candidates
+        $this->assertStringContainsString('0 row(s) with an image but no dimensions', $this->doRunCommand(['--entity' => ['event']])->getDisplay());
     }
 
     public function testDryRunReadsButWritesNothing(): void
     {
-        $event = EventFactory::createOne(['image' => self::image('poster.png')]);
-        $this->store($event->_real(), 'imageFile', 'events.storage', 8, 5);
+        $event = EventFactory::createOne(['image' => $this->image('poster.png')]);
+        $this->store($event, 'imageFile', 'events.storage', 8, 5);
         $this->entityManager->clear();
 
-        $display = $this->runCommand(['--dry-run' => true])->getDisplay();
+        $display = $this->doRunCommand(['--dry-run' => true])->getDisplay();
 
         $this->assertStringContainsString('nothing was written', $display);
         // The command clears the entity manager, so nothing is left dirty for the proxy to trip on
-        $this->assertNull(self::dimensions(EventFactory::find($event->getId())->getImage()));
+        $this->assertNull($this->dimensions(EventFactory::find($event->getId())->getImage()));
     }
 
     public function testRejectsAnUnknownEntity(): void
@@ -111,7 +147,7 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
      * @param array<string, mixed> $input
      * @param array<string, mixed> $options
      */
-    private function runCommand(array $input, array $options = []): CommandTester
+    private function doRunCommand(array $input, array $options = []): CommandTester
     {
         $application = new Application(self::$kernel);
         $tester = new CommandTester($application->find('app:images:backfill-dimensions'));
@@ -124,7 +160,7 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
     /**
      * @param int[]|null $dimensions
      */
-    private static function image(string $name, ?array $dimensions = null): EmbeddedFile
+    private function image(string $name, ?array $dimensions = null): EmbeddedFile
     {
         $image = new EmbeddedFile();
         $image->setName($name);
@@ -141,7 +177,7 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
      *
      * @return int[]|null
      */
-    private static function dimensions(EmbeddedFile $image): ?array
+    private function dimensions(EmbeddedFile $image): ?array
     {
         $dimensions = $image->getDimensions();
 
@@ -153,7 +189,7 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
      */
     private function store(object $entity, string $fileProperty, string $storageName, int $width, int $height): void
     {
-        $this->write($entity, $fileProperty, $storageName, self::png($width, $height));
+        $this->write($entity, $fileProperty, $storageName, $this->png($width, $height));
     }
 
     private function write(object $entity, string $fileProperty, string $storageName, string $contents): void
@@ -169,7 +205,7 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
     /**
      * Signature + IHDR chunk: all getimagesize() reads to know a PNG's size.
      */
-    private static function png(int $width, int $height): string
+    private function png(int $width, int $height): string
     {
         $ihdr = 'IHDR' . pack('NNCCCCC', $width, $height, 8, 6, 0, 0, 0);
 

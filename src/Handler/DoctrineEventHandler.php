@@ -71,6 +71,7 @@ final readonly class DoctrineEventHandler
         // commit so their workers cannot look up rows that are not visible yet.
         $connection = $this->entityManager->getConnection();
         $connection->beginTransaction();
+
         $this->messageDispatcher->begin();
 
         try {

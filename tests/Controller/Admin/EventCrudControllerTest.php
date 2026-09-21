@@ -16,14 +16,11 @@ use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+#[ResetDatabase]
 final class EventCrudControllerTest extends WebTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     public function testEditFormExposesUserAndSystemImageUploads(): void
     {
         $client = $this->createAdminClient();
@@ -67,7 +64,7 @@ final class EventCrudControllerTest extends WebTestCase
     {
         $client = $this->createAdminClient();
         // Event::hasImage() is true here although the user image field is empty
-        $event = EventFactory::createOne(['imageSystem' => self::embeddedFile('affiche.jpg')]);
+        $event = EventFactory::createOne(['imageSystem' => $this->embeddedFile('affiche.jpg')]);
 
         $crawler = $client->request('GET', \sprintf('/_administration/event/%d/edit', $event->getId()));
 
@@ -108,14 +105,14 @@ final class EventCrudControllerTest extends WebTestCase
     private function createAdminClient(): KernelBrowser
     {
         // createClient() first: factories boot the kernel and WebTestCase refuses a late client
-        $client = static::createClient();
+        $client = self::createClient();
         $admin = UserFactory::new()->admin()->create();
-        $client->loginUser($admin->_real());
+        $client->loginUser($admin);
 
         return $client;
     }
 
-    private static function embeddedFile(string $name): EmbeddedFile
+    private function embeddedFile(string $name): EmbeddedFile
     {
         $file = new EmbeddedFile();
         $file->setName($name);

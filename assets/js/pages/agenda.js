@@ -5,7 +5,6 @@ import Widgets from '@/js/components/Widgets'
 import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
 import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
-import { create as createFancybox } from '@/js/services/ui/FancyboxService'
 import { create as createSelect } from '@/js/services/ui/SelectService'
 
 function initDatepickers(container = document) {
@@ -20,12 +19,6 @@ function initDatepickers(container = document) {
     })
 }
 
-function initFancyboxes(container = document) {
-    container.querySelectorAll('.image-gallery').forEach((el) => {
-        createFancybox({ element: el })
-    })
-}
-
 function initSelects(container = document) {
     container.querySelectorAll('select.form-select:not(.hidden):not(.tomselected)').forEach((el) => {
         createSelect({ element: el })
@@ -35,7 +28,6 @@ function initSelects(container = document) {
 /** @type {Page} */
 function initialize({ app }) {
     initDatepickers()
-    initFancyboxes()
     initSelects()
     initCustomTab()
     initCriterions()

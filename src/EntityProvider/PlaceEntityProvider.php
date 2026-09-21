@@ -151,8 +151,8 @@ final class PlaceEntityProvider extends AbstractEntityProvider
         }
 
         return [
-            array_map(static fn (array $slugs): array => array_values($slugs), $cityGroups),
-            array_map(static fn (array $slugs): array => array_values($slugs), $countryGroups),
+            array_map(array_values(...), $cityGroups),
+            array_map(array_values(...), $countryGroups),
         ];
     }
 

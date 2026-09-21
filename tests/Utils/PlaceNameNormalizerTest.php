@@ -58,16 +58,16 @@ final class PlaceNameNormalizerTest extends TestCase
     public function testResultsAreMemoizedAndStable(): void
     {
         $first = $this->normalizer->normalize('Le Bikini', 'Toulouse');
-        $this->assertNull($this->normalizer->normalize('   ', null));
+        $this->assertNull($this->normalizer->normalize('   '));
 
         // Push more distinct inputs than the cache holds to exercise its reset path
         for ($i = 0; $i < 10_001; ++$i) {
-            $this->normalizer->normalize('Salle ' . $i, null);
+            $this->normalizer->normalize('Salle ' . $i);
         }
 
         $this->assertSame('bikini', $first);
         $this->assertSame($first, $this->normalizer->normalize('Le Bikini', 'Toulouse'));
-        $this->assertNull($this->normalizer->normalize('   ', null), 'Null results are memoized as well');
+        $this->assertNull($this->normalizer->normalize('   '), 'Null results are memoized as well');
     }
 
     public function testBatchResetEmptiesTheCache(): void

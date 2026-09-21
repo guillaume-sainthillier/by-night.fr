@@ -18,7 +18,6 @@ use App\Entity\UserOAuth;
 use App\Manager\PreloadManager;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -115,7 +114,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->createQueryBuilder('u')
             ->addSelect('COUNT(u.id) AS nb_events')
             ->join('u.userEvents', 'c')
-            ->orderBy('nb_events', Criteria::DESC)
+            ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id');
     }
 

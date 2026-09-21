@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
 #[ORM\Entity(repositoryClass: PlaceMetadataRepository::class)]
-#[ORM\Index(name: 'place_metadata_idx', columns: ['external_id', 'external_origin'])]
+#[ORM\UniqueConstraint(name: 'place_metadata_external_id_unique', columns: ['external_id', 'external_origin'])]
 class PlaceMetadata implements ExternalIdentifiableInterface, Stringable
 {
     use EntityIdentityTrait;

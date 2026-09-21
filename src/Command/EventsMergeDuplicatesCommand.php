@@ -44,7 +44,16 @@ final class EventsMergeDuplicatesCommand extends Command
      */
     private const string STRATEGY_CONTENT = 'content';
 
-    private const array STRATEGIES = [self::STRATEGY_SUFFIX, self::STRATEGY_CONTENT];
+    /**
+     * Group events sharing the exact same external identity (origin + external_id),
+     * i.e. the same source event imported twice. The canonical is the most recently
+     * updated row, the one that kept tracking the source; the others become redirect
+     * stubs stripped of that identity, so the unique key on (external_id,
+     * external_origin) holds and the next import lands on the canonical.
+     */
+    private const string STRATEGY_EXACT = 'exact';
+
+    private const array STRATEGIES = [self::STRATEGY_SUFFIX, self::STRATEGY_CONTENT, self::STRATEGY_EXACT];
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -58,7 +67,7 @@ final class EventsMergeDuplicatesCommand extends Command
         $this
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Preview without saving')
             ->addOption('origin', null, InputOption::VALUE_REQUIRED, 'Only process events from this external origin')
-            ->addOption('strategy', null, InputOption::VALUE_REQUIRED, \sprintf('How duplicates are grouped: "%s" or "%s"', self::STRATEGY_SUFFIX, self::STRATEGY_CONTENT), self::STRATEGY_SUFFIX)
+            ->addOption('strategy', null, InputOption::VALUE_REQUIRED, \sprintf('How duplicates are grouped: "%s", "%s" or "%s"', self::STRATEGY_SUFFIX, self::STRATEGY_CONTENT, self::STRATEGY_EXACT), self::STRATEGY_SUFFIX)
             ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Batch size for processing', (string) self::BATCH_SIZE);
     }
 
@@ -147,6 +156,12 @@ final class EventsMergeDuplicatesCommand extends Command
             // Content identity needs a name and a resolved place to group on.
             $qb->andWhere('e.name IS NOT NULL')
                 ->andWhere('e.placeExternalId IS NOT NULL');
+        } elseif (self::STRATEGY_EXACT === $strategy) {
+            // Only rows whose identity is shared by another live row, so the scan
+            // stays proportional to the duplicates rather than to the whole table.
+            $qb->andWhere('e.externalId IS NOT NULL')
+                ->andWhere('e.externalOrigin IS NOT NULL')
+                ->andWhere('EXISTS (SELECT 1 FROM ' . Event::class . ' twin WHERE twin.externalId = e.externalId AND twin.externalOrigin = e.externalOrigin AND twin.duplicateOf IS NULL AND twin.id <> e.id)');
         } else {
             $qb->andWhere('e.externalId IS NOT NULL')
                 ->andWhere('REGEXP(e.externalId, :pattern) = true')
@@ -192,6 +207,10 @@ final class EventsMergeDuplicatesCommand extends Command
             return \sprintf('%s|%s|%s', $event->getExternalOrigin(), $event->getPlaceExternalId(), $event->getName());
         }
 
+        if (self::STRATEGY_EXACT === $strategy) {
+            return \sprintf('%s|%s', $event->getExternalOrigin(), $event->getExternalId());
+        }
+
         $baseId = preg_replace('/-\d+$/', '', $event->getExternalId() ?? '');
 
         return \sprintf('%s|%s', $event->getExternalOrigin(), $baseId);
@@ -233,6 +252,10 @@ final class EventsMergeDuplicatesCommand extends Command
 
             $this->mergeTimesheets($canonical, $duplicate);
             $duplicate->setDuplicateOf($canonical);
+            if (self::STRATEGY_EXACT === $strategy) {
+                $this->absorbDuplicate($canonical, $duplicate);
+            }
+
             ++$mergedCount;
 
             if ($io->isVerbose()) {
@@ -248,7 +271,7 @@ final class EventsMergeDuplicatesCommand extends Command
         }
 
         // Keep the canonical's date range in sync with its (now merged) timesheets.
-        if ($mergedCount > 0 && self::STRATEGY_CONTENT === $strategy) {
+        if ($mergedCount > 0 && \in_array($strategy, [self::STRATEGY_CONTENT, self::STRATEGY_EXACT], true)) {
             $canonical = $this->eventRepository->find($canonicalId);
             if (null !== $canonical) {
                 $this->realignDateRange($canonical);
@@ -267,7 +290,73 @@ final class EventsMergeDuplicatesCommand extends Command
             return $this->selectCanonicalFromGroup($events);
         }
 
+        if (self::STRATEGY_EXACT === $strategy) {
+            return $this->selectLatestUpdated($events);
+        }
+
         return $this->findOrSetCanonical($events[0], $groupKey);
+    }
+
+    /**
+     * Pick the surviving row among exact duplicates: the most recently updated one,
+     * since every import after the incident kept updating whichever row won the
+     * lookup. The source's own timestamp decides when every row carries one (only
+     * DataTourisme, OpenAgenda and SowProg fill it), otherwise our updated-at, then
+     * the highest id.
+     *
+     * @param list<Event> $events
+     */
+    private function selectLatestUpdated(array $events): ?Event
+    {
+        $bySourceTimestamp = array_all($events, static fn (Event $event): bool => null !== $event->getExternalUpdatedAt());
+
+        $canonical = null;
+        foreach ($events as $event) {
+            if (null === $canonical || $this->isFresher($event, $canonical, $bySourceTimestamp)) {
+                $canonical = $event;
+            }
+        }
+
+        return $canonical;
+    }
+
+    private function isFresher(Event $event, Event $reference, bool $bySourceTimestamp): bool
+    {
+        if ($bySourceTimestamp) {
+            $comparison = $event->getExternalUpdatedAt() <=> $reference->getExternalUpdatedAt();
+            if (0 !== $comparison) {
+                return $comparison > 0;
+            }
+        }
+
+        $comparison = $event->getUpdatedAt() <=> $reference->getUpdatedAt();
+        if (0 !== $comparison) {
+            return $comparison > 0;
+        }
+
+        return ($event->getId() ?? 0) > ($reference->getId() ?? 0);
+    }
+
+    /**
+     * A stub keeping the same external identity as its canonical would still trip the
+     * unique key and, worse, keep catching the imports meant for the canonical. Strip
+     * it (nulls are free under a unique index), hand its comments over, and re-point
+     * the events that were redirecting to it, since getCanonicalEvent() does not
+     * follow chains.
+     */
+    private function absorbDuplicate(Event $canonical, Event $duplicate): void
+    {
+        $duplicate->setExternalId(null);
+        $duplicate->setExternalOrigin(null);
+
+        foreach ($duplicate->getComments()->toArray() as $comment) {
+            $duplicate->removeComment($comment);
+            $canonical->addComment($comment);
+        }
+
+        foreach ($this->eventRepository->findBy(['duplicateOf' => $duplicate]) as $chained) {
+            $chained->setDuplicateOf($canonical);
+        }
     }
 
     /**
@@ -330,13 +419,11 @@ final class EventsMergeDuplicatesCommand extends Command
         ]);
 
         // Try with -0 suffix
-        if (null === $canonical) {
-            $canonical = $this->eventRepository->findOneBy([
-                'externalId' => $baseId . '-0',
-                'externalOrigin' => $externalOrigin,
-                'duplicateOf' => null,
-            ]);
-        }
+        $canonical ??= $this->eventRepository->findOneBy([
+            'externalId' => $baseId . '-0',
+            'externalOrigin' => $externalOrigin,
+            'duplicateOf' => null,
+        ]);
 
         // If no canonical found, use the current event (first in sorted order)
         return $canonical ?? $event;
@@ -405,6 +492,7 @@ final class EventsMergeDuplicatesCommand extends Command
         $timesheet->setStartAt($startAt);
         $timesheet->setEndAt($endAt);
         $timesheet->setHours($hours);
+
         $canonical->addTimesheet($timesheet);
 
         $existingPairs[$this->getTimesheetKey($startAt, $endAt)] = true;

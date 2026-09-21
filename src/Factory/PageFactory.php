@@ -11,12 +11,12 @@
 namespace App\Factory;
 
 use App\Entity\Page;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Page>
+ * @extends PersistentObjectFactory<Page>
  */
-final class PageFactory extends PersistentProxyObjectFactory
+final class PageFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

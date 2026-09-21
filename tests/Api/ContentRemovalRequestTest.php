@@ -17,15 +17,12 @@ use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 #[RequiresPhpExtension('mjml')]
+#[ResetDatabase]
 final class ContentRemovalRequestTest extends ApiTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     #[Override]
     protected static ?bool $alwaysBootKernel = true;
 

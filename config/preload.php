@@ -8,6 +8,6 @@
  * with this source code in the file LICENSE.
  */
 
-if (file_exists(\dirname(__DIR__) . '/var/cache/prod/App_KernelProdContainer.preload.php')) {
-    require \dirname(__DIR__) . '/var/cache/prod/App_KernelProdContainer.preload.php';
+foreach (glob(\dirname(__DIR__) . '/var/cache/prod/*.preload.php') ?: [] as $file) {
+    require $file;
 }

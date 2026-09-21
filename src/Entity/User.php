@@ -287,14 +287,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this->salt;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-    }
-
     public function __serialize(): array
     {
         return [
@@ -318,6 +310,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     public function serialize(): string
     {
         return serialize($this->__serialize());
+        // If you store any temporary, sensitive data on the user, clear it here
     }
 
     /**

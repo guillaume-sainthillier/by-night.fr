@@ -67,7 +67,8 @@ final class ReplyController extends BaseController
                 ]),
                 'reply_count' => \count($comment->getChildren()),
             ]);
-        } elseif ($form->isSubmitted()) {
+        }
+        if ($form->isSubmitted()) {
             return new JsonResponse([
                 'success' => false,
                 'post' => $this->renderView('comment/reply/form.html.twig', [

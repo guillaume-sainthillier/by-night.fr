@@ -11,12 +11,12 @@
 namespace App\Factory;
 
 use App\Entity\ZipCity;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ZipCity>
+ * @extends PersistentObjectFactory<ZipCity>
  */
-final class ZipCityFactory extends PersistentProxyObjectFactory
+final class ZipCityFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

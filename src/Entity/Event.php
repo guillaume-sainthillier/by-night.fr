@@ -25,7 +25,6 @@ use DateTimeImmutable;
 use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
@@ -48,7 +47,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_category_idx', columns: ['category'])]
 #[ORM\Index(name: 'event_search_idx', columns: ['place_id', 'end_date', 'start_date'])]
 #[ORM\Index(name: 'event_top_soiree_idx', columns: ['end_date', 'participations'])]
-#[ORM\Index(name: 'event_external_id_idx', columns: ['external_id', 'external_origin'])]
+#[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: '`event`')]
@@ -236,14 +235,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
-    #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $comments;
 
     /**
      * @var Collection<int, EventTimesheet>
      */
     #[ORM\OneToMany(targetEntity: EventTimesheet::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
-    #[ORM\OrderBy(['startAt' => Criteria::ASC])]
+    #[ORM\OrderBy(['startAt' => 'ASC'])]
     private Collection $timesheets;
 
     #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]

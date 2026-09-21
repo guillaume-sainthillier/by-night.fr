@@ -16,6 +16,7 @@ import emailVerify from '@/js/listeners/email-verify'
 import formCollection from '@/js/listeners/form-collection'
 import formErrors from '@/js/listeners/form-errors'
 import formTarget from '@/js/listeners/form-target'
+import imagePreviews from '@/js/listeners/image-previews'
 import impersonate from '@/js/listeners/impersonate'
 import like from '@/js/listeners/like'
 import loadMore from '@/js/listeners/load-more'
@@ -26,7 +27,6 @@ import register from '@/js/listeners/register'
 import tooltip from '@/js/listeners/tooltip'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
-import imagePreviews from '@/js/modules/image-previews'
 import scrollToTop from '@/js/modules/scroll-to-top'
 import registerServices from '@/js/services'
 import Container from '@/js/services/Container'
@@ -69,7 +69,7 @@ class App {
     #pageResolvers = {}
 
     constructor() {
-        this.#modules = [autocomplete, imagePreviews, scrollToTop]
+        this.#modules = [autocomplete, scrollToTop]
 
         this.#listeners = [
             pages,
@@ -79,6 +79,7 @@ class App {
             formCollection,
             formErrors,
             formTarget,
+            imagePreviews,
             impersonate,
             like,
             loadMore,

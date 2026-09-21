@@ -52,14 +52,17 @@ class AdminZoneCrudController extends AbstractCrudController
         $country = AssociationField::new('country');
         $parent = AssociationField::new('parent')->autocomplete();
         $id = IdField::new('id', 'ID');
-
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $name, $latitude, $longitude, $population, $admin1Code, $admin2Code];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
+        }
+        if (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $slug, $name, $latitude, $longitude, $population, $admin1Code, $admin2Code, $country, $parent];
-        } elseif (Crud::PAGE_NEW === $pageName) {
+        }
+        if (Crud::PAGE_NEW === $pageName) {
             return [$slug, $name, $latitude, $longitude, $population, $admin1Code, $admin2Code, $country, $parent];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
+        }
+
+        if (Crud::PAGE_EDIT === $pageName) {
             return [$slug, $name, $latitude, $longitude, $population, $admin1Code, $admin2Code, $country, $parent];
         }
 

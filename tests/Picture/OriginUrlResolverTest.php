@@ -29,12 +29,17 @@ use Symfony\Contracts\Cache\CacheInterface;
 final class OriginUrlResolverTest extends TestCase
 {
     private const string EVENT_IMAGE = '2026/05/30/b60ced9db3974e66aba213cb212c1950-full-image-6a1a6515be8ac690031817.jpg';
+
     private const string USER_IMAGE = '2017/11/27/5aa78efdc33f4482315163.jpg';
 
     private Filesystem $events;
+
     private Filesystem $users;
+
     private Filesystem $pages;
+
     private CacheInterface $cache;
+
     private string $projectDir;
 
     protected function setUp(): void

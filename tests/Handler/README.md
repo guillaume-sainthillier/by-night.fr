@@ -98,6 +98,14 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
     - Timesheets and themes of existing events come from one query each, not one per event
     - Relies on `doctrine.debug_data_holder` (query logging in the test environment)
 
+### 12. Concurrent workers (`tests/MessageHandler/EventBatchHandlerTest.php`)
+
+- **Purpose**: Two workers importing the same new venue must not create a duplicate
+- **What it tests**:
+    - The second insert hits the unique key on `place_metadata`, the batch is rolled back
+    - `EventBatchHandler` re-runs the batch once at warning level and it resolves the other worker's venue
+    - Uses `StaleLookupPlaceEntityProvider`, a test double whose lookups miss on purpose once
+
 ## Running the Tests
 
 **Important**: These tests use **DAMA Doctrine Test Bundle** for automatic transaction rollback, providing test isolation without manual cleanup.

@@ -29,7 +29,7 @@ final readonly class ContentRemovalRequestProcessor implements ProcessorInterfac
     public function __construct(
         private MailerManager $mailerManager,
         private EntityManagerInterface $entityManager,
-        #[Autowire('%content_removal_recipient_email%')]
+        #[Autowire(param: 'content_removal_recipient_email')]
         private string $contentRemovalRecipientEmail,
     ) {
     }

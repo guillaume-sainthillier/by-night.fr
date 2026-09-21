@@ -14,12 +14,14 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Factory\CityFactory;
+use App\Factory\CommentFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
 use Override;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -123,6 +125,64 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
         self::assertSame(2, EventFactory::count(['duplicateOf' => null]));
     }
 
+    public function testExactStrategyKeepsTheLatestUpdatedRowAndStripsTheStubIdentity(): void
+    {
+        // Exact duplicates predate the unique key on (external_id, external_origin): drop it
+        // for the fixtures. SQLite DDL is transactional, the test transaction restores it.
+        $connection = self::getContainer()->get(EntityManagerInterface::class)->getConnection();
+        $connection->executeStatement($connection->getDatabasePlatform()->getDropIndexSQL('event_external_id_unique', 'event'));
+
+        // The same Fnac product imported twice, no source timestamp on this feed: the row
+        // we updated last is the one that kept tracking the source. It is created first,
+        // so the id fallback would pick the wrong row if the timestamps were ignored.
+        $trackedId = $this->exactDuplicate('00047', new DateTimeImmutable('2022-06-29 18:41:53'));
+        $fossilId = $this->exactDuplicate('00047', new DateTimeImmutable('2020-03-18 06:07:12'));
+        $commentId = CommentFactory::createOne(['event' => EventFactory::find(['id' => $fossilId]), 'user' => $this->user])->getId();
+        $chainedId = EventFactory::createOne([
+            'externalId' => '00047-1',
+            'externalOrigin' => self::ORIGIN,
+            'name' => 'Van Gogh',
+            'place' => $this->place,
+            'user' => $this->user,
+            'duplicateOf' => EventFactory::find(['id' => $fossilId]),
+        ])->getId();
+
+        $this->runMerge(['--strategy' => 'exact', '--origin' => self::ORIGIN]);
+
+        $keeper = EventFactory::find(['id' => $trackedId]);
+        $stub = EventFactory::find(['id' => $fossilId]);
+
+        self::assertNull($keeper->getDuplicateOf());
+        self::assertSame('00047', $keeper->getExternalId());
+        self::assertSame($keeper->getId(), $stub->getDuplicateOf()?->getId());
+
+        // The stub gives up the identity: the unique key holds and the next import lands on the keeper
+        self::assertNull($stub->getExternalId());
+        self::assertNull($stub->getExternalOrigin());
+        self::assertSame(1, EventFactory::count(['externalId' => '00047', 'externalOrigin' => self::ORIGIN]));
+
+        // Comments follow the keeper, and redirects are re-pointed rather than chained
+        self::assertSame($keeper->getId(), CommentFactory::find(['id' => $commentId])->getEvent()?->getId());
+        self::assertSame($keeper->getId(), EventFactory::find(['id' => $chainedId])->getDuplicateOf()?->getId());
+    }
+
+    /**
+     * Create one of two rows sharing the exact same external identity.
+     */
+    private function exactDuplicate(string $externalId, DateTimeImmutable $updatedAt): int
+    {
+        return EventFactory::createOne([
+            'externalId' => $externalId,
+            'externalOrigin' => self::ORIGIN,
+            'name' => 'A2H',
+            'place' => $this->place,
+            'user' => $this->user,
+            'startDate' => new DateTimeImmutable('2026-07-01'),
+            'endDate' => new DateTimeImmutable('2026-07-01'),
+            'updatedAt' => $updatedAt,
+        ])->getId();
+    }
+
     /**
      * Create a Fnac-shaped event sharing one show identity (origin + name + place).
      */
@@ -186,6 +246,7 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
             $date = $timesheet->getStartAt()?->format('Y-m-d') ?? '';
             $hoursByDate[$date] = $timesheet->getHours();
         }
+
         ksort($hoursByDate);
 
         return $hoursByDate;

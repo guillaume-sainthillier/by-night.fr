@@ -17,18 +17,17 @@ use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\MailerAssertionsTrait;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\flush_after;
-
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use function Zenstruck\Foundry\Persistence\refresh;
 
 #[RequiresPhpExtension('mjml')]
+#[ResetDatabase]
 final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
 {
-    use Factories;
     use MailerAssertionsTrait;
-    use ResetDatabase;
 
     #[Override]
     protected function setUp(): void
@@ -44,7 +43,7 @@ final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
             'events' => [$event],
         ]);
 
-        $event->_delete();
+        delete($event);
 
         self::assertEmailCount(1);
         $email = self::getMailerMessage();
@@ -52,7 +51,7 @@ final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
         self::assertEmailHtmlBodyContains($email, 'a été supprimé');
 
         // A pending request whose event is purged outside the admin workflow is auto-closed.
-        $request->_refresh();
+        refresh($request);
         self::assertSame(ContentRemovalRequestStatus::Processed, $request->getStatus());
         self::assertNotNull($request->getProcessedAt());
         self::assertNull($request->getProcessedBy());
@@ -60,7 +59,7 @@ final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
 
     public function testNoEmailWhenDeletedEventHasNoRemovalRequest(): void
     {
-        EventFactory::createOne()->_delete();
+        delete(EventFactory::createOne());
 
         self::assertEmailCount(0);
     }
@@ -79,8 +78,8 @@ final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
         // Both deletions must share a single flush so the listener can deduplicate the
         // request they have in common; deleting them one by one would notify twice.
         flush_after(static function () use ($firstEvent, $secondEvent): void {
-            $firstEvent->_delete();
-            $secondEvent->_delete();
+            delete($firstEvent);
+            delete($secondEvent);
         });
 
         // A single e-mail despite two deleted events linked to the same request.

@@ -16,16 +16,12 @@ use App\Factory\UserFactory;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Zenstruck\Foundry\Persistence\Proxy;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 #[RequiresPhpExtension('mjml')]
+#[ResetDatabase]
 final class FeedbackTest extends ApiTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     #[Override]
     protected static ?bool $alwaysBootKernel = true;
 
@@ -120,9 +116,8 @@ final class FeedbackTest extends ApiTestCase
         self::assertResponseStatusCodeSame(422);
     }
 
-    private function createAuthenticatedClient(UserInterface|Proxy $user): Client
+    private function createAuthenticatedClient(UserInterface $user): Client
     {
-        $user = $user instanceof Proxy ? $user->_real() : $user;
         $client = self::createClient();
         $client->loginUser($user);
 

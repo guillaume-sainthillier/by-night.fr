@@ -164,12 +164,10 @@ final class Monitor
     {
         if (self::$enableMonitoring) {
             self::$stopwatch ??= new Stopwatch();
-            if (!isset(self::$stats[$message])) {
-                self::$stats[$message] = [
-                    'time' => [],
-                    'memory' => [],
-                ];
-            }
+            self::$stats[$message] ??= [
+                'time' => [],
+                'memory' => [],
+            ];
 
             self::$stopwatch->start($message, $section);
         }

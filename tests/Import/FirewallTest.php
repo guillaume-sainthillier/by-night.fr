@@ -154,7 +154,7 @@ final class FirewallTest extends AppKernelTestCase
         $exploration = $this->firewall->getExploration('evt-hash-new');
         self::assertNotNull($exploration);
         self::assertSame(
-            (new EventContentHasher())->hash($dto),
+            new EventContentHasher()->hash($dto),
             $exploration->getContentHash(),
             'A freshly observed event must store its content fingerprint for the next run to compare.',
         );
@@ -173,7 +173,7 @@ final class FirewallTest extends AppKernelTestCase
         $this->firewall->filterEventExploration($exploration, $event);
 
         self::assertSame(
-            (new EventContentHasher())->hash($event),
+            new EventContentHasher()->hash($event),
             $exploration->getContentHash(),
             'Re-observing an existing exploration must refresh its fingerprint, even on reject paths.',
         );

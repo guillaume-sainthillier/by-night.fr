@@ -71,7 +71,7 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('Tag with id "999" not found');
+        $this->expectExceptionMessageIsOrContains('Tag with id "999" not found');
 
         $this->manager->getTag(999, 'unknown', 'toulouse', 'app_agenda_by_tag');
     }
@@ -182,7 +182,7 @@ final class TagRedirectManagerTest extends KernelTestCase
             ->willReturn(null);
 
         $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('Tag with slug "unknown-tag" not found');
+        $this->expectExceptionMessageIsOrContains('Tag with slug "unknown-tag" not found');
 
         $this->manager->getTag(null, 'unknown-tag', 'toulouse', 'app_agenda_by_tag');
     }

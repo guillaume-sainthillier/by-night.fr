@@ -17,15 +17,14 @@ use App\Factory\EventFactory;
 use App\Factory\UserFactory;
 use Override;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 use Zenstruck\Foundry\Persistence\Proxy;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
 
+use function Zenstruck\Foundry\Persistence\refresh;
+
+#[ResetDatabase]
 final class EventActionTest extends ApiTestCase
 {
-    use Factories;
-    use ResetDatabase;
-
     #[Override]
     protected static ?bool $alwaysBootKernel = true;
 
@@ -68,7 +67,7 @@ final class EventActionTest extends ApiTestCase
         self::assertResponseFormatSame('json');
         self::assertJsonContains(['success' => true]);
 
-        $updatedEvent = $event->_refresh();
+        $updatedEvent = refresh($event);
         self::assertSame(EventStatus::Cancelled, $updatedEvent->getStatus());
     }
 
@@ -84,7 +83,7 @@ final class EventActionTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        $updatedEvent = $event->_refresh();
+        $updatedEvent = refresh($event);
         self::assertNull($updatedEvent->getStatus());
     }
 
@@ -127,7 +126,7 @@ final class EventActionTest extends ApiTestCase
         self::assertResponseFormatSame('json');
         self::assertJsonContains(['success' => true]);
 
-        $updatedEvent = $event->_refresh();
+        $updatedEvent = refresh($event);
         self::assertTrue($updatedEvent->isDraft());
     }
 
@@ -143,7 +142,7 @@ final class EventActionTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        $updatedEvent = $event->_refresh();
+        $updatedEvent = refresh($event);
         self::assertFalse($updatedEvent->isDraft());
     }
 
@@ -173,7 +172,7 @@ final class EventActionTest extends ApiTestCase
         self::assertResponseFormatSame('json');
         self::assertJsonContains(['success' => true, 'like' => true]);
 
-        $updatedEvent = $event->_refresh();
+        $updatedEvent = refresh($event);
         self::assertSame(1, $updatedEvent->getParticipations());
     }
 
@@ -212,7 +211,6 @@ final class EventActionTest extends ApiTestCase
 
     private function createAuthenticatedClient(UserInterface|Proxy $user): Client
     {
-        $user = $user instanceof Proxy ? $user->_real() : $user;
         $client = self::createClient();
         $client->loginUser($user);
 

@@ -11,12 +11,12 @@
 namespace App\Factory;
 
 use App\Entity\City;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<City>
+ * @extends PersistentObjectFactory<City>
  */
-final class CityFactory extends PersistentProxyObjectFactory
+final class CityFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

@@ -29,7 +29,7 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->command = (new ReflectionClass(EventsMergeDuplicatesCommand::class))->newInstanceWithoutConstructor();
+        $this->command = new ReflectionClass(EventsMergeDuplicatesCommand::class)->newInstanceWithoutConstructor();
     }
 
     public function testSuffixStrategyGroupsSiblingsBySharedBase(): void
@@ -167,15 +167,55 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         $canonical->addTimesheet($this->timesheet('2026-08-01', null));
         $canonical->addTimesheet($this->timesheet('2026-08-05', null));
 
-        (new ReflectionMethod($this->command, 'realignDateRange'))->invoke($this->command, $canonical);
+        new ReflectionMethod($this->command, 'realignDateRange')->invoke($this->command, $canonical);
 
         self::assertSame('2026-08-01', $canonical->getStartDate()?->format('Y-m-d'));
         self::assertSame('2026-08-05', $canonical->getEndDate()?->format('Y-m-d'));
     }
 
+    public function testExactStrategyGroupsByTheFullExternalId(): void
+    {
+        $base = new Event()->setExternalId('SP-123-0')->setExternalOrigin('awin.fnac');
+        $sibling = new Event()->setExternalId('SP-123-1')->setExternalOrigin('awin.fnac');
+        $twin = new Event()->setExternalId('SP-123-0')->setExternalOrigin('awin.fnac');
+
+        self::assertSame($this->groupKey($base, 'exact'), $this->groupKey($twin, 'exact'));
+        self::assertNotSame($this->groupKey($base, 'exact'), $this->groupKey($sibling, 'exact'), 'Unlike the suffix strategy, a "-N" sibling is not an exact duplicate.');
+    }
+
+    public function testExactCanonicalPrefersTheSourceTimestampWhenEveryRowCarriesOne(): void
+    {
+        $staleAtSource = new Event()->setExternalUpdatedAt(new DateTimeImmutable('2022-01-01'));
+        $staleAtSource->setUpdatedAt(new DateTimeImmutable('2023-01-01'));
+
+        $freshAtSource = new Event()->setExternalUpdatedAt(new DateTimeImmutable('2022-06-01'));
+        $freshAtSource->setUpdatedAt(new DateTimeImmutable('2021-01-01'));
+
+        self::assertSame($freshAtSource, $this->selectLatestUpdated([$staleAtSource, $freshAtSource]), 'The source knows better than our own write time.');
+    }
+
+    public function testExactCanonicalFallsBackToOurTimestampWhenARowLacksTheSourceOne(): void
+    {
+        $noSourceTimestamp = new Event()->setExternalUpdatedAt(null);
+        $noSourceTimestamp->setUpdatedAt(new DateTimeImmutable('2023-01-01'));
+
+        $withSourceTimestamp = new Event()->setExternalUpdatedAt(new DateTimeImmutable('2022-06-01'));
+        $withSourceTimestamp->setUpdatedAt(new DateTimeImmutable('2021-01-01'));
+
+        self::assertSame($noSourceTimestamp, $this->selectLatestUpdated([$withSourceTimestamp, $noSourceTimestamp]));
+    }
+
+    /**
+     * @param list<Event> $events
+     */
+    private function selectLatestUpdated(array $events): ?Event
+    {
+        return new ReflectionMethod($this->command, 'selectLatestUpdated')->invoke($this->command, $events);
+    }
+
     private function groupKey(Event $event, string $strategy): string
     {
-        return (new ReflectionMethod($this->command, 'getGroupKey'))->invoke($this->command, $event, $strategy);
+        return new ReflectionMethod($this->command, 'getGroupKey')->invoke($this->command, $event, $strategy);
     }
 
     /**
@@ -183,12 +223,12 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
      */
     private function selectCanonical(array $events): ?Event
     {
-        return (new ReflectionMethod($this->command, 'selectCanonicalFromGroup'))->invoke($this->command, $events);
+        return new ReflectionMethod($this->command, 'selectCanonicalFromGroup')->invoke($this->command, $events);
     }
 
     private function mergeTimesheets(Event $canonical, Event $duplicate): void
     {
-        (new ReflectionMethod($this->command, 'mergeTimesheets'))->invoke($this->command, $canonical, $duplicate);
+        new ReflectionMethod($this->command, 'mergeTimesheets')->invoke($this->command, $canonical, $duplicate);
     }
 
     /**
@@ -215,6 +255,7 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
             $date = $timesheet->getStartAt()?->format('Y-m-d') ?? '';
             $hoursByDate[$date] = $timesheet->getHours();
         }
+
         ksort($hoursByDate);
 
         return $hoursByDate;

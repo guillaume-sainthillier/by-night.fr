@@ -89,7 +89,7 @@ final class EventSEO
         $shortTitle = $event->getName();
         $statusLabel = $this->getStatusLabel($event);
         if (null !== $statusLabel) {
-            $shortTitle = \sprintf('[%s] %s', $statusLabel, $shortTitle);
+            return \sprintf('[%s] %s', $statusLabel, $shortTitle);
         }
 
         return $shortTitle;

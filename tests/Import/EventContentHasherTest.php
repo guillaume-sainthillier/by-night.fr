@@ -120,6 +120,7 @@ final class EventContentHasherTest extends TestCase
         $timesheet->startAt = new DateTimeImmutable('2026-07-25 20:00:00');
         $timesheet->endAt = new DateTimeImmutable('2026-07-25 23:00:00');
         $timesheet->hours = 'À 20h00';
+
         $event->timesheets = [$timesheet];
 
         $place = new PlaceDto();
@@ -136,6 +137,7 @@ final class EventContentHasherTest extends TestCase
         $city->country = $country;
         $place->city = $city;
         $place->country = $country;
+
         $event->place = $place;
 
         return $event;

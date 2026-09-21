@@ -57,14 +57,17 @@ final class ParserDataCrudController extends AbstractCrudController
         $firewallVersion = TextField::new('firewallVersion');
         $parserVersion = TextField::new('parserVersion');
         $id = IdField::new('id', 'ID');
-
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
+        }
+        if (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
-        } elseif (Crud::PAGE_NEW === $pageName) {
+        }
+        if (Crud::PAGE_NEW === $pageName) {
             return [$externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
+        }
+
+        if (Crud::PAGE_EDIT === $pageName) {
             return [$externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
         }
 

@@ -13,6 +13,7 @@ namespace App\MessageHandler;
 use App\Dto\EventDto;
 use App\Handler\DoctrineEventHandler;
 use App\Utils\Monitor;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
@@ -39,43 +40,95 @@ final class EventBatchHandler implements BatchHandlerInterface
         return $this->handle($message, $ack);
     }
 
-    /** @phpstan-ignore method.unused (called by BatchHandlerTrait) */
+    /**
+     * @param array<array{EventDto, Acknowledger}> $jobs
+     *
+     * @phpstan-ignore method.unused (called by BatchHandlerTrait)
+     */
     private function process(array $jobs): void
     {
         $dtos = array_map(static fn (array $job): EventDto => $job[0], $jobs);
 
         try {
-            Monitor::bench('ADD EVENT BATCH', function () use ($dtos): void {
-                $this->doctrineEventHandler->handleManyCLI($dtos);
-            });
-
-            foreach ($jobs as [$dto, $ack]) {
-                $ack->ack();
-            }
-        } catch (Throwable $e) {
-            $this->logger->error('Batch processing failed, retrying one-by-one: {message}', [
+            $this->handleBatch($dtos);
+        } catch (UniqueConstraintViolationException $e) {
+            // Another worker committed the same place, tag or exploration while this
+            // batch was running. The whole batch was rolled back, and on a second run
+            // the lookups find those rows instead of inserting them, so one re-run is
+            // normally all it takes. With concurrent workers this is expected, not an error.
+            $this->logger->warning('Import batch hit a unique key written by a concurrent worker, re-running it once: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
             ]);
 
-            /** @var EntityManagerInterface $em */
-            $em = $this->managerRegistry->getManager();
-            if (!$em->isOpen()) {
-                $this->managerRegistry->resetManager();
-            }
+            try {
+                $this->handleBatch($dtos);
+            } catch (Throwable $e) {
+                $this->handleOneByOne($jobs, $e);
 
-            foreach ($jobs as [$dto, $ack]) {
-                try {
-                    $this->doctrineEventHandler->handleOne($dto);
-                    $ack->ack();
-                } catch (Throwable $e) {
-                    $this->logger->error('Individual event processing failed: {message}', [
-                        'message' => $e->getMessage(),
-                        'exception' => $e,
-                    ]);
-                    $ack->nack($e);
-                }
+                return;
             }
+        } catch (Throwable $e) {
+            $this->handleOneByOne($jobs, $e);
+
+            return;
+        }
+
+        foreach ($jobs as [, $ack]) {
+            $ack->ack();
+        }
+    }
+
+    /**
+     * @param EventDto[] $dtos
+     */
+    private function handleBatch(array $dtos): void
+    {
+        $this->resetClosedManager();
+
+        Monitor::bench('ADD EVENT BATCH', function () use ($dtos): void {
+            $this->doctrineEventHandler->handleManyCLI($dtos);
+        });
+    }
+
+    /**
+     * Last resort once the batch failed as a whole: messages are processed and
+     * acknowledged one at a time so a single bad event cannot block the others.
+     *
+     * @param array<array{EventDto, Acknowledger}> $jobs
+     */
+    private function handleOneByOne(array $jobs, Throwable $batchException): void
+    {
+        $this->logger->error('Batch processing failed, retrying one-by-one: {message}', [
+            'message' => $batchException->getMessage(),
+            'exception' => $batchException,
+        ]);
+
+        foreach ($jobs as [$dto, $ack]) {
+            try {
+                $this->resetClosedManager();
+                $this->doctrineEventHandler->handleOne($dto);
+                $ack->ack();
+            } catch (Throwable $e) {
+                $this->logger->error('Individual event processing failed: {message}', [
+                    'message' => $e->getMessage(),
+                    'exception' => $e,
+                ]);
+                $ack->nack($e);
+            }
+        }
+    }
+
+    /**
+     * A failed flush closes the EntityManager: it has to be reset before any retry,
+     * otherwise every following attempt fails with "EntityManager is closed".
+     */
+    private function resetClosedManager(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->managerRegistry->getManager();
+        if (!$em->isOpen()) {
+            $this->managerRegistry->resetManager();
         }
     }
 
