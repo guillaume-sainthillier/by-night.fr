@@ -12,8 +12,8 @@
         {% for name, social in trendsData.shares %}
             <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
                 <span>
-                    <twig:Icon name="{{ 'fa7-brands:' ~ name }}" />
-                    Partager avec {{ name|upper }}
+                    <twig:Icon name="{{ name|social_icon }}" />
+                    Partager avec {{ name|social_label }}
                 </span>
             </a>
         {% endfor %}

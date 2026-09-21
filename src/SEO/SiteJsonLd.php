@@ -89,7 +89,7 @@ final readonly class SiteJsonLd
 
         $twitterId = $this->socialManager->getTwitterIdPage();
         if ('' !== $twitterId) {
-            $sameAs[] = 'https://twitter.com/' . $twitterId;
+            $sameAs[] = 'https://x.com/' . $twitterId;
         }
 
         return $sameAs;

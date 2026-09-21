@@ -2,7 +2,7 @@
     {% for name, social in shares %}
         <div class="col-6">
             <a href="{{ social.shareUrl }}" class="popup share {{ name }}">
-                <twig:Icon name="{{ 'fa7-brands:' ~ name }}" class="icon-2x" />
+                <twig:Icon name="{{ name|social_icon }}" class="icon-2x" />
                 <span class="number number-xbig">Partager</span>
             </a>
         </div>
