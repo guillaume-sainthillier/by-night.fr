@@ -16,7 +16,6 @@ use App\Entity\User;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use LogicException;
 use Silarhi\CursorPagination\Configuration\OrderConfiguration;
 use Silarhi\CursorPagination\Configuration\OrderConfigurations;
 use Silarhi\CursorPagination\Pagination\CursorPagination;
@@ -27,7 +26,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
-use Vich\UploaderBundle\Mapping\PropertyMappingFactory;
+use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 use Vich\UploaderBundle\Mapping\PropertyMappingInterface;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
@@ -55,7 +54,7 @@ final class ImagesBackfillDimensionsCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly PropertyMappingFactory $mappingFactory,
+        private readonly PropertyMappingFactoryInterface $mappingFactory,
         private readonly StorageInterface $storage,
     ) {
         parent::__construct();
@@ -66,7 +65,7 @@ final class ImagesBackfillDimensionsCommand extends Command
         $this
             ->addOption('entity', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, \sprintf('Restrict to some entities (%s)', implode(', ', array_keys(self::TARGETS))))
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Read the stored files and report, without writing anything')
-            ->addOption('clear-missing', null, InputOption::VALUE_NONE, 'Apply clearUnreadableImage() to the rows whose stored file cannot be read')
+            ->addOption('clear-missing', null, InputOption::VALUE_NONE, 'Erase the image (and its hash) of the rows whose stored file cannot be read')
             ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Rows loaded per flush', (string) self::DEFAULT_BATCH_SIZE);
     }
 
@@ -185,7 +184,7 @@ final class ImagesBackfillDimensionsCommand extends Command
         $io->newLine(2);
 
         if ([] !== $unreadable && $io->isVerbose()) {
-            $io->text('Unreadable files:');
+            $io->text($clearMissing ? 'Unreadable files, erased:' : 'Unreadable files:');
             $io->listing($unreadable);
         }
 
@@ -257,21 +256,28 @@ final class ImagesBackfillDimensionsCommand extends Command
     }
 
     /**
-     * Policy for a row whose stored file cannot be read: the object is missing from the
+     * Erases a row's image whose stored file cannot be read: the object is missing from the
      * bucket, or its bytes are not an image PHP can measure. Only reached with --clear-missing.
      *
-     * TODO(guillaume): decide what "clear" means here. Things to weigh:
-     *  - $mapping->erase($entity) blanks the embedded File (name, size, mimeType, originalName,
-     *    dimensions): hasImage() turns false and the placeholder, or the entity's other image,
-     *    takes over (EventProfilePicture prefers image over imageSystem);
-     *  - an erased Event::imageSystem is picked up again by app:events:download-images, but
-     *    only if imageSystemHash is reset too: EventHandler::uploadFile() skips a download
-     *    whose hash still matches;
-     *  - Event::image and User::image are user uploads nothing can bring back, so erasing
-     *    them is the only way to stop rendering a broken <img>.
+     * Blanking the embedded File (name, size, mimeType, originalName, dimensions) turns
+     * hasImage() false, so the placeholder or the entity's other image takes over. The hash
+     * goes with it: an erased Event::imageSystem is fetched again by app:events:download-images,
+     * but EventHandler::uploadFile() skips a download whose hash still matches. Event::image
+     * and User::image are user uploads nothing can bring back; erasing them only stops a
+     * broken <img> from rendering.
      */
     private function clearUnreadableImage(Event|User|Page $entity, PropertyMappingInterface $mapping): void
     {
-        throw new LogicException(\sprintf('--clear-missing has no policy yet, implement %s().', __METHOD__));
+        $mapping->erase($entity);
+
+        if ($entity instanceof Page) {
+            return;
+        }
+
+        match ($mapping->getFilePropertyName()) {
+            'imageFile' => $entity->setImageHash(null),
+            'imageSystemFile' => $entity->setImageSystemHash(null),
+            default => null,
+        };
     }
 }

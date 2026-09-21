@@ -84,6 +84,42 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
         $this->assertNull(self::dimensions(EventFactory::find($garbage->getId())->getImage()));
     }
 
+    public function testClearMissingErasesTheImageAndResetsItsHash(): void
+    {
+        // Missing from every bucket: a user upload, an imported image, and an avatar
+        $upload = EventFactory::createOne(['image' => self::image('gone.png'), 'imageHash' => 'upload-hash']);
+        $imported = EventFactory::createOne(['imageSystem' => self::image('gone-too.png'), 'imageSystemHash' => 'system-hash']);
+        $avatar = UserFactory::createOne(['image' => self::image('gone.png'), 'imageHash' => 'avatar-hash']);
+
+        // Readable in the same run: measured, and its hash kept
+        $intact = EventFactory::createOne(['image' => self::image('poster.png'), 'imageHash' => 'kept-hash']);
+        $this->store($intact->_real(), 'imageFile', 'events.storage', 8, 5);
+        $this->entityManager->clear();
+
+        $display = $this->runCommand(['--clear-missing' => true], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE])->getDisplay();
+        $this->assertStringContainsString('Unreadable files, erased:', $display);
+
+        $event = EventFactory::find($upload->getId());
+        $this->assertFalse($event->hasImage());
+        $this->assertNull($event->getImage()->getName());
+        $this->assertNull($event->getImageHash());
+
+        $event = EventFactory::find($imported->getId());
+        $this->assertFalse($event->hasImage());
+        $this->assertNull($event->getImageSystemHash());
+
+        $user = UserFactory::find($avatar->getId());
+        $this->assertFalse($user->hasImage());
+        $this->assertNull($user->getImageHash());
+
+        $event = EventFactory::find($intact->getId());
+        $this->assertSame([8, 5], self::dimensions($event->getImage()));
+        $this->assertSame('kept-hash', $event->getImageHash());
+
+        // Erased rows are no longer candidates
+        $this->assertStringContainsString('0 row(s) with an image but no dimensions', $this->runCommand(['--entity' => ['event']])->getDisplay());
+    }
+
     public function testDryRunReadsButWritesNothing(): void
     {
         $event = EventFactory::createOne(['image' => self::image('poster.png')]);
