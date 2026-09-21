@@ -46,3 +46,17 @@ flysystem:
             adapter: 'lazy'
             options:
                 source: 'thumbs.%env(APP_THUMB_STORAGE_SOURCE)%_storage'
+
+when@test:
+    flysystem:
+        storages:
+            # Uploads live in memory: the S3 client has no credentials in tests/CI, and
+            # app:images:backfill-dimensions reads the stored files back, so its tests need
+            # a bucket they can seed. A storage listed here replaces the whole definition
+            # above (the bundle does no deep merge per storage).
+            users.storage:
+                adapter: 'memory'
+            events.storage:
+                adapter: 'memory'
+            pages.storage:
+                adapter: 'memory'
