@@ -48,15 +48,5 @@
 {% block meta_description description %}
 
 {% block body %}
-    <div {{ load_page('search') }}>
-        {{ include('search/_index-content.html.twig') }}
-    </div>
+    {{ include('search/_index-content.html.twig') }}
 {% endblock %}
-
-{% block css -%}
-    {{ reprise_entry_link_tags('search') }}
-{%- endblock %}
-
-{% block js -%}
-    {{ reprise_entry_script_tags('search') }}
-{%- endblock %}

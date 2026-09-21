@@ -15,7 +15,6 @@ const pages = [
     'user',
     'personal_space_list',
     'personal_space_event',
-    'search',
 ]
 
 export default defineConfig(({ mode }) => {
