@@ -241,6 +241,22 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * Import sources used by events, sorted by name. Events created by hand (no source) are left out.
+     *
+     * @return list<string>
+     */
+    public function findDistinctFromData(): array
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->select('DISTINCT e.fromData')
+            ->where('e.fromData IS NOT NULL')
+            ->orderBy('e.fromData', Criteria::ASC)
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+
+    /**
      * @return int[]
      *
      * @psalm-return array<int>

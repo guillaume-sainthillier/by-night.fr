@@ -10,6 +10,7 @@
 
 namespace App\Tests\Controller\Admin;
 
+use App\Admin\Filter\FromDataFilter;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -74,6 +75,34 @@ final class EventCrudControllerTest extends WebTestCase
         self::assertCount(1, $crawler->filter('[data-image-preview-current]'));
         self::assertSelectorExists('input[name="Event[imageSystemFile][delete]"][data-image-preview-delete]');
         self::assertSelectorNotExists('input[name="Event[imageFile][delete]"]');
+    }
+
+    public function testSourceFilterKeepsOnlyEventsOfTheSelectedSource(): void
+    {
+        $client = $this->createAdminClient();
+        $openAgenda = EventFactory::createOne(['fromData' => 'Open Agenda']);
+        $facebook = EventFactory::createOne(['fromData' => 'Facebook']);
+        $manual = EventFactory::createOne(['fromData' => null]);
+
+        $client->request('GET', '/_administration/event', ['filters' => ['fromData' => 'Facebook']]);
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists(\sprintf('tr[data-id="%d"]', $facebook->getId()));
+        self::assertSelectorNotExists(\sprintf('tr[data-id="%d"]', $openAgenda->getId()));
+        self::assertSelectorNotExists(\sprintf('tr[data-id="%d"]', $manual->getId()));
+    }
+
+    public function testSourceFilterWithoutSourceKeepsOnlyManualEvents(): void
+    {
+        $client = $this->createAdminClient();
+        $imported = EventFactory::createOne(['fromData' => 'Open Agenda']);
+        $manual = EventFactory::createOne(['fromData' => null]);
+
+        $client->request('GET', '/_administration/event', ['filters' => ['fromData' => FromDataFilter::NO_SOURCE]]);
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists(\sprintf('tr[data-id="%d"]', $manual->getId()));
+        self::assertSelectorNotExists(\sprintf('tr[data-id="%d"]', $imported->getId()));
     }
 
     private function createAdminClient(): KernelBrowser

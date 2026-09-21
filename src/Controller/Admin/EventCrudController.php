@@ -11,10 +11,12 @@
 namespace App\Controller\Admin;
 
 use App\Admin\Field\VichImageField;
+use App\Admin\Filter\FromDataFilter;
 use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
 use App\Enum\EventStatus;
 use App\Form\Type\EventTimesheetEntityType;
+use App\Repository\EventRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -38,6 +40,11 @@ use Override;
 #[AdminRoute(path: '/event', name: 'event')]
 final class EventCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly EventRepository $eventRepository,
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Event::class;
@@ -84,7 +91,21 @@ final class EventCrudController extends AbstractCrudController
     {
         return $filters
             ->add(EntityFilter::new('user'))
-            ->add(UserWithEventFilter::new('WithUser'));
+            ->add(UserWithEventFilter::new('WithUser'))
+            ->add(FromDataFilter::new('fromData', $this->getFromDataChoices(...), 'Source'));
+    }
+
+    /**
+     * Choices of the "Source" filter, as label => fromData value.
+     *
+     * @return array<string, string>
+     */
+    private function getFromDataChoices(): array
+    {
+        // Read from the events rather than the parsers: sources of removed parsers (Facebook, SoonNight, ...) still own a third of them
+        $sources = $this->eventRepository->findDistinctFromData();
+
+        return array_combine($sources, $sources);
     }
 
     #[Override]
