@@ -32,9 +32,10 @@ export default defineConfig(({ mode }) => {
                     {
                         from: 'assets/images',
                         to: 'images',
-                        // Skip any path with a dot-prefixed segment, so macOS .DS_Store
-                        // files are not copied into public/ or added to manifest.json.
-                        pattern: /^(?!(?:.*\/)?\.)/,
+                        // Skip any path with a dot-prefixed segment (macOS .DS_Store files) and the
+                        // sites/originals/ sources: only the resized sites/<slug>.jpg are referenced
+                        // (templates/location/index.html.twig), the originals would add 40 MB to the build.
+                        pattern: /^(?!(?:.*\/)?\.)(?!sites\/originals\/)/,
                     },
                 ],
             }),

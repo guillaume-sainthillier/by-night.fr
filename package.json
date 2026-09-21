@@ -30,7 +30,8 @@
         "tom-select": "^2.4.6"
     },
     "resolutions": {
-        "bootstrap": "5.3.7"
+        "bootstrap": "5.3.7",
+        "jquery": "3.7.1"
     },
     "devDependencies": {
         "@biomejs/biome": "2.5.14",
