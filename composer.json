@@ -90,7 +90,7 @@
         "symfony/mime": "7.4.*",
         "symfony/monolog-bridge": "7.4.*",
         "symfony/monolog-bundle": "^4.0.2",
-        "symfony/polyfill-apcu": "^1.36",
+        "symfony/polyfill-apcu": "^1.37.0",
         "symfony/process": "7.4.*",
         "symfony/rate-limiter": "7.4.*",
         "symfony/routing": "7.4.*",
