@@ -1,3 +1,3 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:${ELK_STACK_VERSION:-9.3.0}
+FROM docker.elastic.co/elasticsearch/elasticsearch:9.5.4
 
 RUN bin/elasticsearch-plugin install analysis-icu

@@ -1,14 +1,14 @@
 {% extends 'layouts/modal-form.html.twig' %}
 
 {% block title -%}
-    Me déconnecter de {{ service|capitalize }}
+    Me déconnecter de {{ service|social_label }}
 {%- endblock %}
 
 {% block form_action url %}
 
 {% block body -%}
     <p class="lead">
-        Voulez-vous vraiment vous déconnecter de {{ service|capitalize }} ?
+        Voulez-vous vraiment vous déconnecter de {{ service|social_label }} ?
     </p>
 {%- endblock %}
 
