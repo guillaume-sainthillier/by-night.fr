@@ -17,18 +17,26 @@ use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Entity\Event;
+use App\EntityFactory\EventEntityFactory;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\ParserDataFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
 use App\Handler\DoctrineEventHandler;
+use App\Handler\EntityProviderHandler;
+use App\Handler\EventImageDownloadScheduler;
+use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Tests\AppKernelTestCase;
 use DateTime;
+use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Override;
+use RuntimeException;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 /**
  * Integration tests for DoctrineEventHandler.
@@ -807,5 +815,153 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->place = $place;
 
         return $dto;
+    }
+
+    /**
+     * A batch that fails after the explorations were flushed but before the events were
+     * merged must leave no trace: the retry (EventBatchHandler falls back to one message
+     * at a time) would otherwise see the stored content hash, decide nothing changed and
+     * drop the event for good. Messages queued meanwhile must not leave either.
+     */
+    public function testFailedBatchIsRolledBackAndCanBeRetried(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $container = self::getContainer();
+        $container->set(EventEntityFactory::class, new FailOnceEventEntityFactory(new EventEntityFactory(
+            $container->get(EntityProviderHandler::class),
+            $container->get(EventImageDownloadScheduler::class),
+        )));
+        $imageTransport = $container->get('messenger.transport.image');
+        $this->assertInstanceOf(InMemoryTransport::class, $imageTransport);
+
+        $dto = $this->createRetriedEventDto();
+
+        try {
+            $this->handler->handleMany([$dto]);
+            $this->fail('The simulated failure should have propagated');
+        } catch (RuntimeException $e) {
+            $this->assertSame(FailOnceEventEntityFactory::FAILURE_MESSAGE, $e->getMessage());
+        }
+
+        // Nothing of the failed batch survives: no exploration (hence no content hash for
+        // the dedup gates to trust), no event, and no image download queued.
+        $this->assertSame(0, ParserDataFactory::count(['externalId' => 'retry-001']));
+        $this->assertSame(0, EventFactory::count(['externalId' => 'retry-001']));
+        $this->assertCount(0, $imageTransport->getSent());
+
+        // Retry the very same DTO, as EventBatchHandler does after a failed batch
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'retry-001']));
+        $parserData = ParserDataFactory::find(['externalId' => 'retry-001', 'externalOrigin' => 'retry-test']);
+        $this->assertSame(Reject::VALID, $parserData->getReason());
+        $this->assertNotNull($parserData->getContentHash());
+        $this->assertCount(1, $imageTransport->getSent(), 'The image download is released once the batch is committed');
+    }
+
+    /**
+     * Merging existing events reads their timesheets and themes: both must come from a
+     * single batched query, not from one lazy load per event.
+     */
+    public function testMergingExistingEventsBatchLoadsTimesheetsAndThemes(): void
+    {
+        $container = self::getContainer();
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleMany($this->createEventDtosWithTimesheetsAndThemes('v1'));
+
+        $queries = $container->get('doctrine.debug_data_holder');
+        $this->assertInstanceOf(BacktraceDebugDataHolder::class, $queries);
+        $queries->reset();
+
+        // Same events, changed content: every one of them goes through the merge path
+        $this->handler->handleMany($this->createEventDtosWithTimesheetsAndThemes('v2'));
+
+        $selects = array_filter(
+            array_column($queries->getData()['default'] ?? [], 'sql'),
+            static fn (string $sql): bool => str_starts_with($sql, 'SELECT'),
+        );
+        $timesheetSelects = array_filter($selects, static fn (string $sql): bool => str_contains($sql, 'event_timesheet'));
+        $themeSelects = array_filter($selects, static fn (string $sql): bool => str_contains($sql, 'event_tag'));
+
+        $this->assertSame(5, EventFactory::count(['externalOrigin' => 'batch-load-test']));
+        $this->assertCount(1, $timesheetSelects, 'Timesheets must be loaded with a single batched query');
+        $this->assertCount(1, $themeSelects, 'Themes must be loaded with a single batched query');
+    }
+
+    private function createRetriedEventDto(): EventDto
+    {
+        $dto = new EventDto();
+        $dto->name = 'Concert de rattrapage';
+        $dto->description = 'Une description suffisamment longue pour passer le firewall sans souci.';
+        $dto->startDate = new DateTime('+3 days');
+        $dto->endDate = new DateTime('+3 days +2 hours');
+        $dto->externalId = 'retry-001';
+        $dto->externalOrigin = 'retry-test';
+        $dto->parserVersion = '1.0';
+        $dto->imageUrl = 'https://example.com/affiche.jpg';
+
+        $placeDto = new PlaceDto();
+        $placeDto->name = 'Le Bikini';
+        $placeDto->street = 'Rue Théodore Monod';
+
+        $cityDto = new CityDto();
+        $cityDto->name = 'Toulouse';
+        $countryDto = new CountryDto();
+        $countryDto->code = 'FR';
+        $cityDto->country = $countryDto;
+        $placeDto->city = $cityDto;
+        $placeDto->country = $countryDto;
+        $dto->place = $placeDto;
+
+        return $dto;
+    }
+
+    /**
+     * @return EventDto[]
+     */
+    private function createEventDtosWithTimesheetsAndThemes(string $version): array
+    {
+        $dtos = [];
+        for ($i = 1; $i <= 5; ++$i) {
+            $dto = new EventDto();
+            $dto->name = \sprintf('Festival %d', $i);
+            $dto->description = \sprintf('Description %s du festival numéro %d, assez longue pour le firewall.', $version, $i);
+            $dto->startDate = new DateTime(\sprintf('+%d days', $i));
+            $dto->endDate = new DateTime(\sprintf('+%d days', $i + 1));
+            $dto->externalId = \sprintf('batch-load-%03d', $i);
+            $dto->externalOrigin = 'batch-load-test';
+            $dto->parserVersion = '1.0';
+            $dto->category = TagDto::fromString('Concert');
+            $dto->themes = [TagDto::fromString('Musique'), TagDto::fromString('Plein air')];
+
+            foreach ([0, 1] as $day) {
+                $timesheet = new EventTimesheetDto();
+                $timesheet->startAt = new DateTime(\sprintf('+%d days', $i + $day));
+                $timesheet->endAt = new DateTime(\sprintf('+%d days', $i + $day));
+                $timesheet->hours = '20h00';
+                $dto->timesheets[] = $timesheet;
+            }
+
+            $placeDto = new PlaceDto();
+            $placeDto->name = \sprintf('Scène %d', $i);
+            $placeDto->street = \sprintf('%d allée des Fêtes', $i);
+
+            $cityDto = new CityDto();
+            $cityDto->name = 'Toulouse';
+            $countryDto = new CountryDto();
+            $countryDto->code = 'FR';
+            $cityDto->country = $countryDto;
+            $placeDto->city = $cityDto;
+            $placeDto->country = $countryDto;
+            $dto->place = $placeDto;
+
+            $dtos[] = $dto;
+        }
+
+        return $dtos;
     }
 }

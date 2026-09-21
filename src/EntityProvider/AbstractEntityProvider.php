@@ -10,6 +10,7 @@
 
 namespace App\EntityProvider;
 
+use App\Contracts\BatchResetInterface;
 use App\Contracts\DependencyObjectInterface;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\EntityProviderInterface;
@@ -25,10 +26,18 @@ use App\Utils\ChunkUtils;
  *
  * @implements EntityProviderInterface<TDto, TEntity>
  */
-abstract class AbstractEntityProvider implements EntityProviderInterface
+abstract class AbstractEntityProvider implements EntityProviderInterface, BatchResetInterface
 {
     /** @var array<string, TEntity> */
     protected array $entities = [];
+
+    /**
+     * Distinct prefetched entities, keyed by spl_object_id and kept in sync with
+     * $entities so getEntities() does not rebuild the list on every lookup.
+     *
+     * @var array<int, TEntity>
+     */
+    private array $uniqueEntities = [];
 
     /**
      * {@inheritDoc}
@@ -36,13 +45,31 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     public function clear(): void
     {
         $this->entities = [];
+        $this->uniqueEntities = [];
+    }
+
+    /**
+     * Prefetched entities must not outlive the identity map: once the EntityManager
+     * is cleared (end of a chunk, or rollback of a failed batch) they are detached, and
+     * handing one out to the next batch would make Doctrine treat it as a new entity.
+     */
+    public function batchReset(): void
+    {
+        $this->clear();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function prefetchEntities(array $dtos, bool $eager = true): void
+    public function prefetchEntities(array $dtos, bool $eager): void
     {
+        // Only places have a broader (eager) lookup strategy, and PlaceEntityProvider
+        // overrides this method to implement it. For every other entity the eager pass
+        // would re-run the exact same indexed query as the first one, so skip it.
+        if ($eager) {
+            return;
+        }
+
         $chunks = ChunkUtils::getChunksByClass($dtos);
 
         // Per DTO class
@@ -88,6 +115,8 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         foreach ($keys as $key) {
             $this->entities[$key] = $entity;
         }
+
+        $this->uniqueEntities[spl_object_id($entity)] = $entity;
     }
 
     abstract protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface;
@@ -97,12 +126,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
      */
     public function getEntities(): array
     {
-        $uniqueEntities = [];
-        foreach ($this->entities as $entity) {
-            $uniqueEntities[spl_object_id($entity)] = $entity;
-        }
-
-        return array_values($uniqueEntities);
+        return array_values($this->uniqueEntities);
     }
 
     /**

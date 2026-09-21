@@ -128,6 +128,14 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadThemes();
             $loadCategories();
         }
+
+        if ('events:import' === $view) {
+            // Merge path (EventEntityFactory::syncTimesheets / syncThemes) reads both
+            // collections of every existing event: initialize them with one batched
+            // query each instead of two lazy loads per event.
+            $loadTimesheets();
+            $loadThemes();
+        }
     }
 
     /**
@@ -160,9 +168,14 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             return [];
         }
 
-        return $qb
+        /** @var Event[] $events */
+        $events = $qb
             ->getQuery()
             ->execute();
+
+        $this->loadAllEager($events, ['view' => 'events:import']);
+
+        return $events;
     }
 
     /**

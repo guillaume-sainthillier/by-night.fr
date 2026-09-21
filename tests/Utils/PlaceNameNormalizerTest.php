@@ -13,6 +13,7 @@ namespace App\Tests\Utils;
 use App\Utils\PlaceNameNormalizer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionProperty;
 
 final class PlaceNameNormalizerTest extends TestCase
 {
@@ -52,5 +53,36 @@ final class PlaceNameNormalizerTest extends TestCase
         yield 'null name' => [null, 'Toulouse', null];
         yield 'blank name' => ['   ', null, null];
         yield 'only punctuation' => ['@#$%', null, null];
+    }
+
+    public function testResultsAreMemoizedAndStable(): void
+    {
+        $first = $this->normalizer->normalize('Le Bikini', 'Toulouse');
+        $this->assertNull($this->normalizer->normalize('   ', null));
+
+        // Push more distinct inputs than the cache holds to exercise its reset path
+        for ($i = 0; $i < 10_001; ++$i) {
+            $this->normalizer->normalize('Salle ' . $i, null);
+        }
+
+        $this->assertSame('bikini', $first);
+        $this->assertSame($first, $this->normalizer->normalize('Le Bikini', 'Toulouse'));
+        $this->assertNull($this->normalizer->normalize('   ', null), 'Null results are memoized as well');
+    }
+
+    public function testBatchResetEmptiesTheCache(): void
+    {
+        $cache = new ReflectionProperty(PlaceNameNormalizer::class, 'cache');
+
+        $this->normalizer->normalize('Le Bikini', 'Toulouse');
+        $entries = $cache->getValue($this->normalizer);
+        $this->assertIsArray($entries);
+        $this->assertCount(1, $entries);
+
+        // Cleared with the other per-batch state on EntityManager::clear()
+        $this->normalizer->batchReset();
+
+        $this->assertSame([], $cache->getValue($this->normalizer));
+        $this->assertSame('bikini', $this->normalizer->normalize('Le Bikini', 'Toulouse'));
     }
 }

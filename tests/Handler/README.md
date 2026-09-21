@@ -82,6 +82,22 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
     - Update timestamp is set
     - Timestamps are accurate
 
+### 10. Failed batch rollback (`testFailedBatchIsRolledBackAndCanBeRetried`)
+
+- **Purpose**: A batch runs in one transaction; a failure mid-merge must leave no trace
+- **What it tests**:
+    - No `parser_data` row (and thus no content hash) survives the failed batch
+    - No message (image download) leaves before the commit
+    - Retrying the same DTO (what `EventBatchHandler` does) imports the event
+    - Uses `FailOnceEventEntityFactory`, a test double swapped into the container
+
+### 11. Batched collection loading on merge (`testMergingExistingEventsBatchLoadsTimesheetsAndThemes`)
+
+- **Purpose**: Guards against the N+1 on the update path
+- **What it tests**:
+    - Timesheets and themes of existing events come from one query each, not one per event
+    - Relies on `doctrine.debug_data_holder` (query logging in the test environment)
+
 ## Running the Tests
 
 **Important**: These tests use **DAMA Doctrine Test Bundle** for automatic transaction rollback, providing test isolation without manual cleanup.
