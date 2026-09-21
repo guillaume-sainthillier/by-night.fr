@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Stringable;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
@@ -53,7 +54,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 #[ORM\Table(name: 'tag')]
-#[ORM\Index(name: 'tag_name_idx', columns: ['name'])]
+#[ORM\UniqueConstraint(name: 'tag_name_unique', columns: ['name'])]
+#[UniqueEntity(fields: ['name'], message: 'Un tag existe déjà avec ce nom')]
 class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DependencyObjectInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;

@@ -48,7 +48,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_category_idx', columns: ['category'])]
 #[ORM\Index(name: 'event_search_idx', columns: ['place_id', 'end_date', 'start_date'])]
 #[ORM\Index(name: 'event_top_soiree_idx', columns: ['end_date', 'participations'])]
-#[ORM\Index(name: 'event_external_id_idx', columns: ['external_id', 'external_origin'])]
+#[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: '`event`')]

@@ -28,4 +28,34 @@ final class PlaceMetadataRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PlaceMetadata::class);
     }
+
+    /**
+     * External identities recorded on more than one row, whether on one place or on
+     * several: exactly what the unique key on (external_id, external_origin) forbids.
+     *
+     * @return list<array{externalId: string, externalOrigin: string}>
+     */
+    public function findDuplicateKeys(?string $origin = null): array
+    {
+        $qb = $this
+            ->createQueryBuilder('m')
+            ->select('m.externalId AS externalId, m.externalOrigin AS externalOrigin')
+            ->groupBy('m.externalId, m.externalOrigin')
+            ->having('COUNT(m.id) > 1')
+            ->orderBy('m.externalOrigin', 'ASC')
+            ->addOrderBy('m.externalId', 'ASC');
+
+        if (null !== $origin) {
+            $qb
+                ->where('m.externalOrigin = :origin')
+                ->setParameter('origin', $origin);
+        }
+
+        $keys = [];
+        foreach ($qb->getQuery()->getArrayResult() as $row) {
+            $keys[] = ['externalId' => (string) $row['externalId'], 'externalOrigin' => (string) $row['externalOrigin']];
+        }
+
+        return $keys;
+    }
 }
