@@ -1,8 +1,9 @@
 /**
- * Jest tests for timesheetPatternDetector
+ * Tests for timesheetPatternDetector
  * Run: yarn test
  */
 
+import { describe, expect, test } from 'vitest'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
 
 describe('timesheetPatternDetector', () => {
