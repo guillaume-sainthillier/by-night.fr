@@ -1,9 +1,10 @@
 {# @var ea \EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface #}
 {# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
 {# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
-{# The Vich file property is never hydrated (inject_on_load: false): read the entity, not field.value #}
+{# The Vich file property is never hydrated (inject_on_load: false): read the entity, not field.value.
+   The check is per field: Event::hasImage() / User::hasImage() cover both the user and system images. #}
 {% set instance = entity.instance %}
-{% if instance.hasImage %}
+{% if vich_uploader_asset(instance, field.property) is not null %}
     <twig:Picasso:Image
         loader="vich"
         src="{{ null }}"

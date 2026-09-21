@@ -13,7 +13,7 @@ namespace App\Handler;
 use App\Contracts\BatchResetInterface;
 use App\Entity\Event;
 use App\Message\DownloadEventImages;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Messenger\TransactionalMessageDispatcher;
 
 /**
  * Collects events whose image must be (re)downloaded during an import batch and
@@ -21,6 +21,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * persisted (and therefore have an id).
  *
  * This keeps the slow image download + S3 upload out of the import critical path.
+ * The message goes through the TransactionalMessageDispatcher, so it only leaves
+ * once the batch transaction is committed and the event rows are visible.
  */
 final class EventImageDownloadScheduler implements BatchResetInterface
 {
@@ -28,7 +30,7 @@ final class EventImageDownloadScheduler implements BatchResetInterface
     private array $events = [];
 
     public function __construct(
-        private readonly MessageBusInterface $messageBus,
+        private readonly TransactionalMessageDispatcher $messageDispatcher,
     ) {
     }
 
@@ -44,7 +46,8 @@ final class EventImageDownloadScheduler implements BatchResetInterface
     /**
      * Dispatch image downloads for the events collected so far. Must be called
      * after the events have been flushed (so their ids are available) and before
-     * the EntityManager is cleared.
+     * the EntityManager is cleared. The message itself is held back until the
+     * surrounding batch transaction commits.
      */
     public function dispatchPending(): void
     {
@@ -66,7 +69,7 @@ final class EventImageDownloadScheduler implements BatchResetInterface
             return;
         }
 
-        $this->messageBus->dispatch(new DownloadEventImages(array_keys($ids)));
+        $this->messageDispatcher->dispatch(new DownloadEventImages(array_keys($ids)));
     }
 
     public function batchReset(): void

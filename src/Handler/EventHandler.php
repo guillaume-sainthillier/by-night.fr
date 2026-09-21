@@ -169,7 +169,7 @@ final readonly class EventHandler
 
         $file = new UploadedFile($tempFilePath, $originalName, $contentType, test: true);
 
-        $event->setImageHash($hash);
+        $event->setImageSystemHash($hash);
         $event->setImageSystemFile($file);
 
         // We do a manual upload on new entity because preFlush is after prePersist event

@@ -51,6 +51,34 @@ docker build -t guystlr/by-night-base:$BASE_IMAGE_TAG docker/base
 To change the base (e.g. add an extension): edit `docker/base/Dockerfile` **and**
 bump `docker/base/VERSION` (`php85-v1` → `php85-v2`) in the same PR.
 
+### Hashed assets in production
+
+Production (`/apps/by-night.fr` on the server) mounts the external volume `by-nightfr_assets`
+on `public/build` of the `app` and `app-images` services, so each release adds its hashed
+files next to the previous ones and never deletes any: pages opened before a deploy and
+emails sent months ago keep resolving. Docker only fills a named volume once, when it is
+created, so `deploy.sh` copies the new image's build into it right after the pull, before
+the rollout:
+
+```bash
+docker run --rm -v by-nightfr_assets:/mnt guystlr/by-night:stable cp -a /app/public/build/. /mnt/
+```
+
+```yaml
+services:
+    app:
+        volumes:
+            - assets:/app/public/build
+
+volumes:
+    assets:
+        external: true
+        name: by-nightfr_assets
+```
+
+The volume was created by hand and seeded from the last Encore release, so the URLs of
+that era still resolve. The same one-liner with any image tag adds that release's files.
+
 ## Setup
 
 ```bash

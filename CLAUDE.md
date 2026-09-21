@@ -13,7 +13,7 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Search**: Elasticsearch 7 with FOSElasticaBundle
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ (php-amqplib/rabbitmq-bundle)
-- **File Storage**: AWS S3 / CloudFront, Flysystem
+- **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
 - **Frontend**: Webpack Encore, Bootstrap 5, jQuery, Sass, Preact (for reactive components)
 - **Error Tracking**: Sentry
 
@@ -189,6 +189,7 @@ Routes are location-prefixed (e.g., `/toulouse/agenda`). `AppContextSubscriber` 
 ### Caching
 
 - HTTP cache headers via the `Symfony\Component\HttpKernel\Attribute\Cache` attribute on controllers (e.g. `src/Controller/Location/EventController.php`)
+- Built assets ship inside the Docker image (`public/build`, `public/bundles`). Production mounts the external volume `by-nightfr_assets` on `/app/public/build` of `app` and `app-images`; `deploy.sh` fills it from the new image right after the pull (see README), so every release's hashed files accumulate next to the current ones and old tabs or sent emails keep resolving; nothing prunes that volume. Caddy (`docker/Caddyfile`) serves `/build/*` and `/bundles/*` same-origin with one-year `immutable` headers, cached by Cloudflare. There is no separate asset host: `asset()` yields paths, so anything that needs an absolute URL (og:image, JSON-LD, emails) wraps it in `absolute_url()` / `UrlHelper`
 - Redis for application caching (`$memoryCache` in `config/services.yaml`, bound to the `redis.app_cache_pool` pool)
 - CDN purge (`src/Cdn/CloudflareCdnPurger.php`) and thumbnail cleanup on image changes, via the `PurgeCdnCacheUrl` / `RemoveImageThumbnails` messages dispatched by `src/EventSubscriber/ImageSubscriber.php`
 

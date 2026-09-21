@@ -96,7 +96,9 @@ final readonly class OriginUrlResolver
 
         /** @var string|null $url */
         $url = $this->memoryCache->get(
-            'picasso_origin.' . hash('xxh128', $loader . "\0" . $path),
+            // The cached value is a full URL: the namespace was bumped when build assets moved
+            // from static.by-night.fr to the app host, so entries pointing at the old host expire.
+            'picasso_origin.v2.' . hash('xxh128', $loader . "\0" . $path),
             function (ItemInterface $item) use ($loader, $path): ?string {
                 [$url, $degraded] = match ($loader) {
                     'filesystem' => [$this->resolvePublicFile($path), false],

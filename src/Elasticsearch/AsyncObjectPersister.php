@@ -14,10 +14,10 @@ use App\Contracts\MultipleEagerLoaderInterface;
 use App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers;
 use App\Elasticsearch\Message\InsertManyDocuments;
 use App\Elasticsearch\Message\ReplaceManyDocuments;
+use App\Messenger\TransactionalMessageDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastica\Index;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 {
@@ -29,7 +29,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         /** @var class-string */
         private string $entityClass,
         private ElasticaMode $elasticaMode,
-        private MessageBusInterface $messageBus,
+        private TransactionalMessageDispatcher $messageDispatcher,
         private EntityManagerInterface $entityManager,
     ) {
         $this->indexName = $index->getName();
@@ -69,7 +69,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         }
 
         $entityIds = array_map(static fn (object $object): mixed => $object->getId(), $objects);
-        $this->messageBus->dispatch(new InsertManyDocuments($this->indexName, $this->entityClass, $entityIds));
+        $this->messageDispatcher->dispatch(new InsertManyDocuments($this->indexName, $this->entityClass, $entityIds));
     }
 
     public function replaceMany(array $objects): void
@@ -81,7 +81,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         }
 
         $entityIds = array_map(static fn (object $object): mixed => $object->getId(), $objects);
-        $this->messageBus->dispatch(new ReplaceManyDocuments($this->indexName, $this->entityClass, $entityIds));
+        $this->messageDispatcher->dispatch(new ReplaceManyDocuments($this->indexName, $this->entityClass, $entityIds));
     }
 
     public function deleteMany(array $objects): void
@@ -104,7 +104,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
             return;
         }
 
-        $this->messageBus->dispatch(new DeleteManyDocumentsByIdentifiers($this->indexName, $identifiers, $routing));
+        $this->messageDispatcher->dispatch(new DeleteManyDocumentsByIdentifiers($this->indexName, $identifiers, $routing));
     }
 
     /**

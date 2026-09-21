@@ -1,28 +1,32 @@
 {
     "$schema": "https://unpkg.com/knip@5/schema.json",
     "entry": [
+        "assets/js/app.js",
+        "assets/js/admin.js",
+        "assets/js/pages/*.js",
         "assets/**/controllers/**/*.{js,jsx}",
         "assets/**/icons/**/*.{js,jsx}"
     ],
-    "project": ["assets/**/*.{js,jsx,ts,tsx}"],
-    "ignore": ["assets/js/types.js"],
+    "project": [
+        "assets/**/*.{js,jsx,ts,tsx}"
+    ],
+    "ignore": [
+        "assets/js/types.js"
+    ],
     "paths": {
-        "@/*": ["assets/*"]
+        "@/*": [
+            "assets/*"
+        ]
     },
-    "ignoreBinaries": ["vendor/bin/.+"],
+    "ignoreBinaries": [
+        "vendor/bin/.+"
+    ],
     "rules": {
         "unlisted": "off",
         "unresolved": "off"
     },
     "ignoreDependencies": [
-        "core-js",
-        "babel-plugin-polyfill-corejs3",
-        "regenerator-runtime",
         "es6-promise",
-        "file-loader",
-        "glob-all",
-        "imports-loader",
-        "node-sass-tilde-importer",
-        "purgecss-webpack-plugin"
+        "glob-all"
     ]
 }

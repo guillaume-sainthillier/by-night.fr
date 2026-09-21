@@ -19,12 +19,15 @@ use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Exception\UncreatableEntityException;
 use App\Import\Firewall;
+use App\Messenger\TransactionalMessageDispatcher;
 use App\Reject\Reject;
 use App\Utils\ChunkUtils;
 use App\Utils\MemoryUtils;
 use App\Utils\Monitor;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 final readonly class DoctrineEventHandler
 {
@@ -40,6 +43,7 @@ final readonly class DoctrineEventHandler
         private EntityProviderHandler $entityProviderHandler,
         private EntityFactoryHandler $entityFactoryHandler,
         private EventImageDownloadScheduler $imageDownloadScheduler,
+        private TransactionalMessageDispatcher $messageDispatcher,
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }
@@ -58,6 +62,54 @@ final readonly class DoctrineEventHandler
             return;
         }
 
+        // Explorations (parser_data) and events must commit together. The content hash
+        // stored on an exploration is a promise that this exact content is in the event
+        // table, and both dedup gates (EventPublicationGuard before the queue, Firewall
+        // after it) trust it. Committed before the merge, a failed batch was skipped for
+        // good on retry: the hash matched, so nothing "had changed". Messages emitted in
+        // between (image downloads, Elasticsearch documents) are held back until the
+        // commit so their workers cannot look up rows that are not visible yet.
+        $connection = $this->entityManager->getConnection();
+        $connection->beginTransaction();
+        $this->messageDispatcher->begin();
+
+        try {
+            $this->doHandleMany($dtos);
+            $connection->commit();
+        } catch (Throwable $e) {
+            $this->messageDispatcher->rollBack();
+            $this->rollBack($connection);
+
+            throw $e;
+        }
+
+        $this->messageDispatcher->commit();
+    }
+
+    private function rollBack(Connection $connection): void
+    {
+        try {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+        } catch (Throwable $rollbackException) {
+            // Never mask the original failure; the connection is most likely gone anyway.
+            $this->logger->error('Unable to roll back the failed import batch: {message}', [
+                'message' => $rollbackException->getMessage(),
+                'exception' => $rollbackException,
+            ]);
+        } finally {
+            // Drop whatever the failed batch left in the unit of work (BatchResetListener
+            // resets the per-batch services on clear) so a retry starts from a clean state.
+            $this->entityManager->clear();
+        }
+    }
+
+    /**
+     * @param EventDto[] $dtos
+     */
+    private function doHandleMany(array $dtos): void
+    {
         // Drop any leftover from a previously failed batch
         $this->imageDownloadScheduler->batchReset();
 
@@ -338,8 +390,9 @@ final readonly class DoctrineEventHandler
                         $dto->setIdentifierFromEntity($rootEntities[$i]);
                     }
 
-                    // Dispatch image downloads now that events have ids, but
-                    // before the EntityManager clear() resets the scheduler.
+                    // Queue image downloads now that events have ids (the message is
+                    // released once the batch commits), but before the EntityManager
+                    // clear() resets the scheduler.
                     $this->imageDownloadScheduler->dispatchPending();
 
                     // Clear entity providers
@@ -388,7 +441,16 @@ final readonly class DoctrineEventHandler
     public function handleManyCLI(array $dtos): void
     {
         $this->parserHistoryHandler->start();
-        $this->handleMany($dtos);
+
+        try {
+            $this->handleMany($dtos);
+        } catch (Throwable $e) {
+            // Counters of a failed batch must not leak into the next one
+            $this->parserHistoryHandler->reset();
+
+            throw $e;
+        }
+
         $parserHistory = $this->parserHistoryHandler->stop();
 
         $this->entityManager->persist($parserHistory);

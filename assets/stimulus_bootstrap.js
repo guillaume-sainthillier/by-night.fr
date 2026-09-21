@@ -1,4 +1,5 @@
-import { startStimulusApp } from '@symfony/stimulus-bridge'
+import { startStimulusApp } from '@symfony/reprise/stimulus'
 
-// Registers Stimulus controllers from controllers.json and in the controllers/ directory
-startStimulusApp(require.context('@symfony/stimulus-bridge/lazy-controller-loader!./controllers', true, /\.[jt]sx?$/))
+// Registers Stimulus controllers from controllers.json and the controllers/ directory,
+// both resolved at build time by the @symfony/reprise Vite plugin.
+startStimulusApp()

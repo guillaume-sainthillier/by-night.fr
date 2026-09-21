@@ -21,6 +21,7 @@ use App\Parser\Common\SowProgParser;
 use App\Parser\Toulouse\BikiniParser;
 use App\Parser\Toulouse\ToulouseParser;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpFoundation\UrlHelper;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 final readonly class EventProfilePicture
@@ -28,9 +29,14 @@ final readonly class EventProfilePicture
     public function __construct(
         private UploaderHelper $helper,
         private Packages $packages,
+        private UrlHelper $urlHelper,
     ) {
     }
 
+    /**
+     * Absolute URL of the full-size picture (og:image, JSON-LD): the upload, or the
+     * parser placeholder shipped with the build.
+     */
     public function getOriginalPicture(Event|EventDto $event): string
     {
         [
@@ -45,7 +51,8 @@ final readonly class EventProfilePicture
             );
         }
 
-        return $this->packages->getUrl($path);
+        // A build placeholder is served same-origin, so its path only becomes absolute here.
+        return $this->urlHelper->getAbsoluteUrl($path);
     }
 
     public function getPicturePathAndSource(Event|EventDto $event): array

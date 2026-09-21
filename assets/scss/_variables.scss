@@ -18,7 +18,15 @@ $link-footer-color: #0091ff;
 // Configuration
 $enable-dark-mode: true;
 $enable-rounded: true;
-$enable-cssgrid: true;
+$enable-cssgrid: false; // no .grid / .g-col-* in templates
+
+// Tabler variants no template uses, dropped at the source (see ui/_tabler.scss for the audit):
+// the .btn-*, .bg-*, .text-*, --tblr-* … generated for 16 social and 12 extra colours, the
+// vertical navbar layout, and the negative margin utilities (.m*-n1 … n5).
+$enable-navbar-vertical: false;
+$enable-negative-margins: false;
+$social-colors: ();
+$extra-colors: ();
 
 //Misc
 $body-bg: $bgColor;

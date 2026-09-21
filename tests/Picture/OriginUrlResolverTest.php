@@ -19,6 +19,7 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\UrlPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -124,7 +125,7 @@ final class OriginUrlResolverTest extends TestCase
     public function testResolvesAPublicBuildAssetWithoutProbingAnyStorage(): void
     {
         self::assertSame(
-            'https://static.by-night.fr/build/images/logo.png',
+            '/build/images/logo.png',
             $this->createResolver()->resolve('filesystem', 'build/images/logo.png'),
         );
     }
@@ -224,7 +225,7 @@ final class OriginUrlResolverTest extends TestCase
     private function createPackages(): Packages
     {
         return new Packages(
-            new UrlPackage('https://static.by-night.fr', new EmptyVersionStrategy()),
+            new PathPackage('/', new EmptyVersionStrategy()),
             ['s3' => new UrlPackage('https://data.by-night.fr', new EmptyVersionStrategy())],
         );
     }

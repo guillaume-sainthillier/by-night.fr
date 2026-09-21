@@ -13,6 +13,7 @@ namespace App\Picture;
 use App\Entity\User;
 use Silarhi\PicassoBundle\Service\ImageHelperInterface;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpFoundation\UrlHelper;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 final readonly class UserProfilePicture
@@ -20,6 +21,7 @@ final readonly class UserProfilePicture
     public function __construct(
         private UploaderHelper $helper,
         private Packages $packages,
+        private UrlHelper $urlHelper,
         private ImageHelperInterface $imageHelper,
         private string $facebookGraphApiVersion,
     ) {
@@ -40,7 +42,7 @@ final readonly class UserProfilePicture
         }
 
         if ('local' === $source) {
-            return $this->packages->getUrl($path);
+            return $this->urlHelper->getAbsoluteUrl($path);
         }
 
         return $path;

@@ -1,4 +1,4 @@
-import $ from 'jquery'
+import $ from '@/js/jquery-global'
 import 'summernote/dist/summernote-bs5'
 import 'summernote/dist/lang/summernote-fr-FR'
 

@@ -10,6 +10,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\VichImageField;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -91,8 +92,12 @@ final class UserCrudController extends AbstractCrudController
         $enabled = BooleanField::new('enabled');
         $isVerified = BooleanField::new('isVerified');
         $panel2 = FormField::addFieldset('Médias');
-        $imageName = TextField::new('image.name');
-        $imageSystemName = TextField::new('imageSystem.name');
+        $image = VichImageField::new('imageFile', 'Image utilisateur')
+            ->setHelp('Photo de profil envoyée par l\'utilisateur, prioritaire sur l\'image système.');
+        $imageSystem = VichImageField::new('imageSystemFile', 'Image système')
+            ->setHelp('Photo récupérée depuis le réseau social connecté : une prochaine synchronisation peut la remplacer.');
+        $imageName = TextField::new('image.name')->onlyOnDetail();
+        $imageSystemName = TextField::new('imageSystem.name')->onlyOnDetail();
         $passwordRequestedAt = DateTimeField::new('passwordRequestedAt');
         $fromLogin = BooleanField::new('fromLogin');
         $showSocials = BooleanField::new('showSocials');
@@ -100,14 +105,14 @@ final class UserCrudController extends AbstractCrudController
         $imageSystemHash = TextField::new('imageSystemHash');
         $createdAt = DateTimeField::new('createdAt');
         $updatedAt = DateTimeField::new('updatedAt');
-        $imageOriginalName = TextField::new('image.originalName');
-        $imageMimeType = TextField::new('image.mimeType');
-        $imageSize = IntegerField::new('image.size');
-        $imageDimensions = ArrayField::new('image.dimensions');
-        $imageSystemOriginalName = TextField::new('imageSystem.originalName');
-        $imageSystemMimeType = TextField::new('imageSystem.mimeType');
-        $imageSystemSize = IntegerField::new('imageSystem.size');
-        $imageSystemDimensions = ArrayField::new('imageSystem.dimensions');
+        $imageOriginalName = TextField::new('image.originalName')->onlyOnDetail();
+        $imageMimeType = TextField::new('image.mimeType')->onlyOnDetail();
+        $imageSize = IntegerField::new('image.size')->onlyOnDetail();
+        $imageDimensions = ArrayField::new('image.dimensions')->onlyOnDetail();
+        $imageSystemOriginalName = TextField::new('imageSystem.originalName')->onlyOnDetail();
+        $imageSystemMimeType = TextField::new('imageSystem.mimeType')->onlyOnDetail();
+        $imageSystemSize = IntegerField::new('imageSystem.size')->onlyOnDetail();
+        $imageSystemDimensions = ArrayField::new('imageSystem.dimensions')->onlyOnDetail();
         $userEvents = AssociationField::new('userEvents')->autocomplete();
         $city = AssociationField::new('city')->autocomplete();
 
@@ -135,12 +140,14 @@ final class UserCrudController extends AbstractCrudController
             $website,
             $isVerified,
             $panel2,
+            $image,
             $imageName,
             $imageOriginalName,
             $imageMimeType,
             $imageSize,
             $imageHash,
             $imageDimensions,
+            $imageSystem,
             $imageSystemName,
             $imageSystemOriginalName,
             $imageSystemMimeType,

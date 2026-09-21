@@ -1,32 +1,39 @@
 {# Admin-only widget for VichImageType: the front-office "dropzone" block in form/fields.html.twig
-   relies on the app Encore bundle (CSS/JS) that EasyAdmin does not load. #}
+   relies on the app bundle (CSS/JS) that EasyAdmin does not load. The live preview of a newly
+   selected file is handled by the "admin" Reprise entry (assets/js/admin.js). #}
 {% block vich_image_widget %}
-    {% set object = form.parent.vars.data %}
-    {% set has_image = object is not null and object.hasImage is defined and object.hasImage %}
+    {# image_uri is resolved per field, unlike Event::hasImage() / User::hasImage() which are true
+       as soon as the user OR the system image exists #}
+    {% set object = form.vars.object %}
+    {% set has_image = object is not null and form.vars.image_uri is not null %}
 
-    {% if has_image %}
-        <div class="mb-3">
-            <twig:Picasso:Image
-                loader="vich"
-                src="{{ null }}"
-                context="{{ {entity: object, field: form.vars.name} }}"
-                width="{{ 300 }}"
-                alt="{{ object }}"
-                class="img-fluid rounded"
-            />
-        </div>
-    {% endif %}
-
-    {{ form_widget(form.file, {attr: {class: 'form-control'}}) }}
-
-    {% if form.delete is defined %}
+    <div data-image-preview>
         {% if has_image %}
-            <div class="mt-2">
-                {{ form_row(form.delete, {label: "Supprimer l'image actuelle"}) }}
+            <div class="mb-3" data-image-preview-current>
+                <twig:Picasso:Image
+                    loader="vich"
+                    src="{{ null }}"
+                    context="{{ {entity: object, field: form.vars.name} }}"
+                    width="{{ 300 }}"
+                    alt="{{ object }}"
+                    class="img-fluid rounded"
+                />
             </div>
-        {% else %}
-            {# Nothing to delete yet: mark it rendered so form_rest() does not print an orphan checkbox #}
-            {% do form.delete.setRendered %}
         {% endif %}
-    {% endif %}
+
+        <figure class="mb-3" data-image-preview-new hidden>
+            <img width="300" alt="Aperçu de la nouvelle image" class="img-fluid rounded">
+            <figcaption class="form-text">Nouvelle image, enregistrée à la sauvegarde.</figcaption>
+        </figure>
+
+        {# Merge rather than replace: VichImageType puts accept="image/*" on the file input #}
+        {{ form_widget(form.file, {attr: form.file.vars.attr|merge({class: 'form-control', 'data-image-preview-input': ''})}) }}
+
+        {# Vich only adds the delete checkbox when this field holds a file #}
+        {% if form.delete is defined %}
+            <div class="mt-2">
+                {{ form_row(form.delete, {label: "Supprimer l'image actuelle", attr: {'data-image-preview-delete': ''}}) }}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
