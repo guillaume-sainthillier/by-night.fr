@@ -1,8 +1,6 @@
-import $ from 'jquery'
+import '@/js/jquery-global'
 import '@tabler/core/dist/js/tabler.esm'
 import 'cookieconsent'
-
-global.$ = global.jQuery = window.$ = window.jQuery = $
 
 window.cookieconsent.initialise({
     palette: {

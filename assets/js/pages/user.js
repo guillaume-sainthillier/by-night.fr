@@ -1,11 +1,12 @@
-import $ from 'jquery'
 import Raphael from 'raphael/raphael'
+import $ from '@/js/jquery-global'
 import 'morris.js/morris.css'
 import 'morris.js/morris'
 import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
 
-global.Raphael = Raphael
+// morris.js resolves Raphael as a global when it draws a chart
+window.Raphael = Raphael
 
 /** @type {Page} */
 function initialize({ app, datas }) {

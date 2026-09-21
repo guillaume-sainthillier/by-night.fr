@@ -81,7 +81,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    {{ encore_entry_link_tags('app') }}
+    {{ reprise_entry_link_tags('app') }}
     {% block css '' %}
     <!-- ./CSS -->
 
@@ -155,8 +155,9 @@ _______     __  _   _ _____ _____ _    _ _______
 </button>
 
 <!-- JS -->
-{{ encore_entry_script_tags('app') }}
-<script>
+{{ reprise_entry_script_tags('app') }}
+{# A module script so it runs after the app entry module (deferred, document order), once window.$ and window.App exist. #}
+<script type="module">
     $(document).ready(function () {
     App.start({{ {
         environment: app.environment,

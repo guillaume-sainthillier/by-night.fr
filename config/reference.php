@@ -1,12 +1,6 @@
 <?php
 
-/*
- * This file is part of By Night.
- * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+// This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
@@ -1948,16 +1942,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         read_only?: bool|Param, // Converts a file system to read-only // Default: false
  *     }>,
  * }
- * @psalm-type WebpackEncoreConfig = array{
- *     output_path?: scalar|Param|null, // The path where Encore is building the assets - i.e. Encore.setOutputPath()
- *     crossorigin?: false|"anonymous"|"use-credentials"|Param, // crossorigin value when Encore.enableIntegrityHashes() is used, can be false (default), anonymous or use-credentials // Default: false
- *     preload?: bool|Param, // preload all rendered script and link tags automatically via the http2 Link header. // Default: false
- *     cache?: bool|Param, // Enable caching of the entry point file(s) // Default: false
- *     strict_mode?: bool|Param, // Throw an exception if the entrypoints.json file is missing or an entry is missing from the data // Default: true
- *     builds?: array<string, scalar|Param|null>,
- *     script_attributes?: array<string, scalar|Param|null>,
- *     link_attributes?: array<string, scalar|Param|null>,
- * }
  * @psalm-type KnpuOauth2ClientConfig = array{
  *     http_client?: scalar|Param|null, // Service id of HTTP client to use (must implement GuzzleHttp\ClientInterface) // Default: null
  *     http_client_options?: array{
@@ -2498,6 +2482,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mjml_version?: int|Param, // Mjml version // Default: null
  *     },
  * }
+ * @psalm-type RepriseConfig = array{
+ *     output_path?: scalar|Param|null, // Directory where the @symfony/reprise plugin writes entrypoints.json and manifest.json. Set to false to only use named "builds". // Default: "%kernel.project_dir%/public/build"
+ *     builds?: array<string, scalar|Param|null>,
+ *     strict_mode?: bool|Param, // Throw when the entrypoints.json file or a requested entry is missing. // Default: true
+ *     cache?: bool|Param, // Cache the parsed entrypoints.json in a compiled PHP file (warmed at cache:warmup). Enable in production; requires symfony/cache. // Default: false
+ *     preload?: bool|Param, // Register rendered assets as WebLink Link: headers (HTTP/2 preload). No-op when symfony/web-link is absent. // Default: true
+ *     asset_package?: scalar|Param|null, // Name of a framework.assets package used to resolve entry URLs (must have no version strategy). Null uses the default package. // Default: null
+ *     crossorigin?: false|"anonymous"|"use-credentials"|Param, // crossorigin attribute added alongside SRI integrity: false, "anonymous", or "use-credentials". // Default: false
+ *     script_attributes?: list<mixed>,
+ *     link_attributes?: list<mixed>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2513,7 +2508,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     monolog?: MonologConfig,
  *     vich_uploader?: VichUploaderConfig,
  *     flysystem?: FlysystemConfig,
- *     webpack_encore?: WebpackEncoreConfig,
  *     knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *     twig_extra?: TwigExtraConfig,
  *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
@@ -2527,6 +2521,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     picasso?: PicassoConfig,
  *     karser_recaptcha3?: KarserRecaptcha3Config,
  *     mjml?: MjmlConfig,
+ *     reprise?: RepriseConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2545,7 +2540,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         debug?: DebugConfig,
  *         maker?: MakerConfig,
  *         flysystem?: FlysystemConfig,
- *         webpack_encore?: WebpackEncoreConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
@@ -2560,6 +2554,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         picasso?: PicassoConfig,
  *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
+ *         reprise?: RepriseConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2577,7 +2572,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         vich_uploader?: VichUploaderConfig,
  *         sentry?: SentryConfig,
  *         flysystem?: FlysystemConfig,
- *         webpack_encore?: WebpackEncoreConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
@@ -2591,6 +2585,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         picasso?: PicassoConfig,
  *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
+ *         reprise?: RepriseConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2609,7 +2604,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         web_profiler?: WebProfilerConfig,
  *         debug?: DebugConfig,
  *         flysystem?: FlysystemConfig,
- *         webpack_encore?: WebpackEncoreConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
@@ -2625,6 +2619,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         picasso?: PicassoConfig,
  *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
+ *         reprise?: RepriseConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
