@@ -136,7 +136,8 @@ final readonly class Cleaner
 
     public function cleanCity(CityDto $dto): void
     {
-        $dto->postalCode = $this->util->replaceNonNumericChars($dto->postalCode) ?: null;
+        // Digits only, as PostalCodeChecker reads them: "F-31000" kept its dash and missed the zip lookup
+        $dto->postalCode = preg_replace('#\D#', '', (string) $dto->postalCode) ?: null;
         $dto->name = $this->fit($this->cleanPostalString($dto->name ?? ''), 127);
     }
 

@@ -277,6 +277,29 @@ final class CleanerTest extends AppKernelTestCase
         self::assertEquals('31000', $dto->postalCode);
     }
 
+    /**
+     * @return iterable<string, array{?string, ?string}>
+     */
+    public static function providePostalCodes(): iterable
+    {
+        yield 'country prefix with a dash' => ['F-31000', '31000'];
+        yield 'trailing dash' => ['95021-', '95021'];
+        yield 'spaces' => [' 31 000 ', '31000'];
+        yield 'nothing but punctuation' => ['.', null];
+        yield 'null' => [null, null];
+    }
+
+    #[DataProvider('providePostalCodes')]
+    public function testCleanCityKeepsTheDigitsOfThePostalCode(?string $postalCode, ?string $expected): void
+    {
+        $dto = new CityDto();
+        $dto->postalCode = $postalCode;
+
+        $this->cleaner->cleanCity($dto);
+
+        self::assertSame($expected, $dto->postalCode);
+    }
+
     public function testCleanCityCleansName(): void
     {
         $dto = new CityDto();
