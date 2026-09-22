@@ -25,6 +25,8 @@ final class ThumbController extends Controller
     #[Route(path: '/thumb/{path<%patterns.path%>}', name: 'thumb_s3_url', methods: ['GET'])]
     public function thumbS3(Packages $packages, string $path): Response
     {
+        $this->assertStoragePath($path);
+
         return new RedirectResponse(
             $packages->getUrl($path, 's3'),
             Response::HTTP_MOVED_PERMANENTLY,
@@ -34,9 +36,22 @@ final class ThumbController extends Controller
     #[Route(path: '/thumb-asset/{path<%patterns.path%>}', name: 'thumb_asset_url', methods: ['GET'])]
     public function thumbAsset(Packages $packages, string $path): Response
     {
+        $this->assertStoragePath($path);
+
         return new RedirectResponse(
             $packages->getUrl($path, 'local'),
             Response::HTTP_MOVED_PERMANENTLY,
         );
+    }
+
+    /**
+     * The asset packages return absolute ("https://…") and protocol-relative ("//…") URLs untouched:
+     * only paths inside the storage may be redirected, or the route sends visitors anywhere.
+     */
+    private function assertStoragePath(string $path): void
+    {
+        if (1 === preg_match('~^[/\\\\]|^[a-z][a-z0-9+.-]*:~i', $path)) {
+            throw $this->createNotFoundException();
+        }
     }
 }
