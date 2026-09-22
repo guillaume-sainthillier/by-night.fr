@@ -79,6 +79,7 @@
                                       data-confirm-message="{{ 'Cette action va supprimer « {name} » ainsi que toutes les données rattachées.'|trans({name: event.name}, 'messages+intl-icu') }}"
                                       data-confirm-button="{{ 'Supprimer'|trans }}">
                                     <input name="_method" type="hidden" value="DELETE">
+                                    <input name="_token" type="hidden" value="{{ csrf_token('delete-event-' ~ event.id) }}">
                                 </form>
                             </td>
                         </tr>
