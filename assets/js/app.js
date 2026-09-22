@@ -1,3 +1,9 @@
+// Self-hosted instead of fonts.googleapis.com, which would send every visitor's IP address to Google before any
+// consent. Same weights as before; unicode-range keeps unused subsets from being downloaded.
+import '@fontsource/roboto-condensed/300.css'
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
 import '@/scss/app.scss'
 
 // Symfony UX Stimulus
@@ -11,6 +17,7 @@ import '@/js/utils/css'
 import * as Sentry from '@sentry/browser'
 // Per-element listeners (connected on every mount)
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
+import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
 import emailVerify from '@/js/listeners/email-verify'
 import formCollection from '@/js/listeners/form-collection'
@@ -74,6 +81,7 @@ class App {
         this.#listeners = [
             pages,
             contentRemovalRequest,
+            cookieSettings,
             dropzone,
             emailVerify,
             formCollection,
@@ -109,7 +117,8 @@ class App {
                 dsn: parameters.dsn,
                 release: parameters.release,
                 environment: parameters.environment,
-                sendDefaultPii: true,
+                // No IP address: the member id set below is enough to follow up an error
+                sendDefaultPii: false,
             })
 
             Sentry.getCurrentScope().setUser(this.get('user'))

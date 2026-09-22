@@ -80,29 +80,15 @@ _______     __  _   _ _____ _____ _    _ _______
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 
     <!-- CSS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     {{ reprise_entry_link_tags('app') }}
     {% block css '' %}
     <!-- ./CSS -->
 
-    <!-- Google Tag Manager -->
-    <script>(function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          'gtm.start':
-            new Date().getTime(), event: 'gtm.js'
-        });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-TXB7VR2');</script>
-    <!-- End Google Tag Manager -->
-    <script data-ad-client="ca-pub-2072406985754187" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    {# Google's consent platform, AdSense and Tag Manager only run in production: dev and test pages would count as
+       AdSense traffic #}
+    {% if app.environment == 'prod' %}
+        {{ include('fragments/_google-tags.html.twig') }}
+    {% endif %}
 
     {{ site_json_ld() }}
     {% block json_ld '' %}
@@ -166,14 +152,11 @@ _______     __  _   _ _____ _____ _    _ _______
         locale: app.request.locale,
         release: app_version,
         dsn: sentry_dsn,
-        user: (app.user ? {id: app.user.id, username: app.user.username, email: app.user.email} : null),
+        user: (app.user ? {id: app.user.id} : null),
     }|json_encode|raw }});
   });
 </script>
 {%- block js -%}{%- endblock -%}
-<script>
-    var privacyUrl = '{{ path('app_main_cookie')|e('js')|raw }}';
-</script>
 <!-- ./JS -->
 </body>
 </html>

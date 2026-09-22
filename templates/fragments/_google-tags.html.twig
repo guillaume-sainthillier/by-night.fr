@@ -1,0 +1,43 @@
+{#
+    Consent: Google's consent platform (Privacy & messaging in AdSense, delivered by the AdSense tag) shows the banner
+    and sets consent mode. Everything is denied until the visitor answers, and Tag Manager (Google Analytics) only
+    loads once the platform knows the answer ("basic" consent mode), so its tags see the final consent state, and
+    only if at least one purpose was granted: a visitor who refuses never contacts Tag Manager.
+    AdSense stays out of Tag Manager: it carries the banner, and handles the answer itself through the IAB TCF.
+#}
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied'
+  });
+  gtag('set', 'ads_data_redaction', true);
+
+  window.googlefc = window.googlefc || {};
+  window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+  window.googlefc.callbackQueue.push({
+    CONSENT_MODE_DATA_READY: function () {
+      var consent = window.googlefc.getGoogleConsentModeValues();
+      var granted = window.googlefc.ConsentModePurposeStatusEnum.CONSENT_MODE_PURPOSE_STATUS_GRANTED;
+      var anyGranted = [
+        consent.adStoragePurposeConsentStatus,
+        consent.adUserDataPurposeConsentStatus,
+        consent.adPersonalizationPurposeConsentStatus,
+        consent.analyticsStoragePurposeConsentStatus
+      ].indexOf(granted) !== -1;
+      if (!anyGranted || window.byNightGtmLoaded) {
+        return;
+      }
+      window.byNightGtmLoaded = true;
+      dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-TXB7VR2';
+      document.head.appendChild(script);
+    }
+  });
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2072406985754187" crossorigin="anonymous"></script>

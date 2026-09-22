@@ -2,9 +2,10 @@ when@prod:
     sentry:
         dsn: '%env(SENTRY_DSN)%'
         options:
-            # Add request headers, cookies, IP address and the authenticated user
+            # No request headers, cookies, IP address nor authenticated user (whose identifier is the e-mail):
+            # errors are fixable without them, and the privacy policy only announces technical error reports.
             # see https://docs.sentry.io/platforms/php/data-management/data-collected/ for more info
-            send_default_pii: true
+            send_default_pii: false
             #traces_sample_rate: 0.5
             release: 'v%env(APP_VERSION)%'
             ignore_exceptions:
