@@ -16,6 +16,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class AgendaControllerTest extends WebTestCase
 {
+    public function testTheAgendaByPlaceWithoutAPlaceRedirectsToTheCityAgenda(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse/agenda/sortir-a?slug=le-bikini');
+
+        self::assertResponseRedirects('/toulouse/agenda', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
     public function testAListingWithoutResultsIsNotIndexable(): void
     {
         $this->requireRedis();

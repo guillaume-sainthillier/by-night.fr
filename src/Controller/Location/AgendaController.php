@@ -69,6 +69,9 @@ final class AgendaController extends BaseController
             if ($location->getSlug() !== $place->getLocationSlug()) {
                 return $this->redirectToRoute('app_agenda_by_place', ['location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()]);
             }
+        } elseif ('app_agenda_by_place' === $request->attributes->get('_route')) {
+            // "/agenda/sortir-a" without a place is the plain agenda: keep a single URL for it
+            return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         // Handle tag filtering (canonical route with ID)
