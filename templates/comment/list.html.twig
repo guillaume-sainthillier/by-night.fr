@@ -5,7 +5,7 @@
 {% if comments.hasNextPage %}
     <div class="load-more" data-url="{{ path('app_comment_list', {id: event.id, page: comments.nextPage}) }}">
         <button type="button" class="btn btn-outline-primary">
-            Plus de messages
+            Plus de commentaires
         </button>
     </div>
 {% endif %}
