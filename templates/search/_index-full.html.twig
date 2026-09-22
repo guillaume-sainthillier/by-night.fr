@@ -40,7 +40,7 @@
 
 {% set s = result.count > 1 ? 's' : null %}
 {% if term %}
-    {% set description = description ~ '. ' ~ result.count ~ ' ' ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"' %}
+    {% set description = description ~ ' ' ~ result.count ~ ' ' ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"' %}
 {% endif %}
 
 {% block title title %}
