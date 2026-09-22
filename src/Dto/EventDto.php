@@ -21,8 +21,7 @@ use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Event;
 use App\Enum\EventStatus;
-use App\Parser\Common\FnacSpectaclesAwinParser;
-use App\Parser\Common\SeeTicketsKwankoParser;
+use App\Parser\AffiliateParsers;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTimeImmutable;
@@ -152,10 +151,7 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public function isAffiliate(): bool
     {
-        return \in_array($this->parserName, [
-            FnacSpectaclesAwinParser::getParserName(),
-            SeeTicketsKwankoParser::getParserName(),
-        ], true);
+        return AffiliateParsers::isAffiliate($this->parserName);
     }
 
     /**
