@@ -6,7 +6,8 @@
         <twig:Event:ItemCard event="{{ event }}" />
     {% endfor %}
     {% if eventsData.hasNextLink %}
-        <a class="more-content btn btn-outline-primary btn-block" href="{{ eventsData.hasNextLink }}">Plus ({{ eventsData.current }}
-            / {{ eventsData.count }})</a>
+        {# A button rather than a link: the fragment URL feeds the widget and must not be crawled #}
+        <button type="button" class="more-content btn btn-outline-primary btn-block" data-href="{{ eventsData.hasNextLink }}">Plus ({{ eventsData.current }}
+            / {{ eventsData.count }})</button>
     {% endif %}
 {% endif %}

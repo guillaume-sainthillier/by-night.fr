@@ -22,7 +22,7 @@ final class WidgetsController extends BaseController
     {
         $topUsersData = $widgetsManager->getTopUsersData($page);
 
-        return $this->render('location/hinclude/top-users.html.twig', [
+        return $this->renderFragment('location/hinclude/top-users.html.twig', [
             'topUsersData' => $topUsersData,
         ]);
     }

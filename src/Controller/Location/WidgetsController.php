@@ -26,7 +26,7 @@ final class WidgetsController extends BaseController
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
         $eventsData = $widgetsManager->getNextEventsData($event, $location, $page);
 
-        return $this->render('location/hinclude/details-events.html.twig', [
+        return $this->renderFragment('location/hinclude/details-events.html.twig', [
             'eventsData' => $eventsData,
         ]);
     }
@@ -38,7 +38,7 @@ final class WidgetsController extends BaseController
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
         $eventsData = $widgetsManager->getSimilarEventsData($event, $location, $page);
 
-        return $this->render('location/hinclude/details-events.html.twig', [
+        return $this->renderFragment('location/hinclude/details-events.html.twig', [
             'eventsData' => $eventsData,
         ]);
     }
@@ -50,7 +50,7 @@ final class WidgetsController extends BaseController
 
         $topEventsData = $widgetsManager->getTopEventsData($location, $page);
 
-        return $this->render('location/hinclude/events.html.twig', [
+        return $this->renderFragment('location/hinclude/events.html.twig', [
             'topEventsData' => $topEventsData,
         ]);
     }
