@@ -1,0 +1,46 @@
+// Form action bar pinned to the bottom of the viewport (event form of the personal space).
+// It is out of the flow, so the page reserves its height: the footer still scrolls above it,
+// fields focused with Tab stop short of it, and the scroll-to-top button moves above it.
+// That space is its min-height: keep its content on one line, a taller bar would cover the page.
+$form-actions-fixed-height: 4rem;
+
+.form-actions-fixed {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $zindex-fixed;
+    display: flex;
+    align-items: center;
+    min-height: $form-actions-fixed-height;
+    background-color: $white;
+    border-top: 1px solid $card-border-color;
+    box-shadow: 0 -0.25rem 0.75rem rgba($black, 0.08);
+
+    // Phones: the three labelled buttons of the edit page need 417px where a 375px screen offers 359px
+    // (304px at 320px), so the secondary buttons keep only their icon. Screen readers still read the label.
+    @include media-breakpoint-down(sm) {
+        .form-actions-label {
+            @include visually-hidden;
+        }
+
+        // Tabler shifts a button's icon towards its label: centre it once the label is hidden
+        .btn:has(.form-actions-label) .icon {
+            margin: 0;
+        }
+    }
+}
+
+// Not on body: Tabler locks html and body to the viewport height and .page overflows them,
+// so only .page's padding extends the scrollable area
+.page:has(.form-actions-fixed) {
+    padding-bottom: $form-actions-fixed-height;
+}
+
+html:has(.form-actions-fixed) {
+    scroll-padding-bottom: $form-actions-fixed-height;
+}
+
+body:has(.form-actions-fixed) #toTop {
+    bottom: calc(#{$form-actions-fixed-height} + 2%);
+}

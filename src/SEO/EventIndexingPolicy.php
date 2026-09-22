@@ -16,41 +16,37 @@ use Psr\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Decides which event pages are worth a search engine's attention.
+ * Decides which event pages search engines may index and which events the sitemap submits.
  *
- * Every event page stays online for visitors and inbound links. Only the pages this policy
- * accepts are submitted in the sitemap and left indexable; the others carry a "noindex", so
- * the crawl budget and the site's quality signals go to live content instead of the millions
- * of past events Google already declines to index.
+ * Every published event page stays indexable whatever its age: most of the site's organic
+ * clicks land on events that ended years ago (venues, recurring nights, evergreen queries).
+ * The sitemap, on the other hand, only submits upcoming events and those that ended within
+ * the grace period: it steers the crawl budget to new content, while older pages keep their
+ * place in the index on their own merit.
  */
 final readonly class EventIndexingPolicy
 {
     public function __construct(
         private ClockInterface $clock,
-        #[Autowire(param: 'app.seo.event_index_grace_days')]
-        private int $graceDays = 30,
+        #[Autowire(param: 'app.seo.event_sitemap_grace_days')]
+        private int $sitemapGraceDays = 30,
     ) {
     }
 
     /**
-     * Earliest end date (inclusive) an event may have and still be indexable: the grace
-     * period lets Google recrawl a just-finished event and see it end before it is dropped.
+     * Earliest end date (inclusive) an event may have and still be submitted in the sitemap.
      */
-    public function getIndexableSince(): DateTimeImmutable
+    public function getSitemapSince(): DateTimeImmutable
     {
-        return $this->today()->modify(\sprintf('-%d days', $this->graceDays));
+        return $this->today()->modify(\sprintf('-%d days', $this->sitemapGraceDays));
     }
 
+    /**
+     * Drafts are not public and duplicates redirect: neither belongs in the index.
+     */
     public function isIndexable(Event $event): bool
     {
-        if (!$event->isIndexable()) {
-            // Drafts and duplicates: the page redirects or is not public anyway
-            return false;
-        }
-
-        $endDate = $event->getEndDate() ?? $event->getStartDate();
-
-        return null === $endDate || $endDate >= $this->getIndexableSince();
+        return $event->isIndexable();
     }
 
     public function hasEnded(Event $event): bool

@@ -26,31 +26,29 @@ final class EventIndexingPolicyTest extends TestCase
         $this->policy = new EventIndexingPolicy(new MockClock('2026-09-22 10:00:00'), 30);
     }
 
-    public function testIndexableSinceIsMidnightAGracePeriodAgo(): void
+    public function testSitemapSinceIsMidnightAGracePeriodAgo(): void
     {
-        self::assertSame('2026-08-23 00:00:00', $this->policy->getIndexableSince()->format('Y-m-d H:i:s'));
+        self::assertSame('2026-08-23 00:00:00', $this->policy->getSitemapSince()->format('Y-m-d H:i:s'));
     }
 
     #[DataProvider('provideEndDates')]
-    public function testEventsThatEndedBeforeTheGracePeriodAreNotIndexable(string $endDate, bool $expected): void
+    public function testPublishedEventsStayIndexableWhateverTheirAge(string $endDate): void
     {
         $event = new Event()
-            ->setStartDate(new DateTimeImmutable('2026-01-01'))
+            ->setStartDate(new DateTimeImmutable('2014-01-01'))
             ->setEndDate(new DateTimeImmutable($endDate));
 
-        self::assertSame($expected, $this->policy->isIndexable($event));
+        self::assertTrue($this->policy->isIndexable($event));
     }
 
     /**
-     * @return iterable<string, array{string, bool}>
+     * @return iterable<string, array{string}>
      */
     public static function provideEndDates(): iterable
     {
-        yield 'ends tomorrow' => ['2026-09-23', true];
-        yield 'ends today' => ['2026-09-22', true];
-        yield 'ended on the grace boundary' => ['2026-08-23', true];
-        yield 'ended the day before the boundary' => ['2026-08-22', false];
-        yield 'ended a year ago' => ['2025-09-22', false];
+        yield 'ends tomorrow' => ['2026-09-23'];
+        yield 'ended last month' => ['2026-08-15'];
+        yield 'ended a decade ago' => ['2014-10-25'];
     }
 
     public function testDraftsAndDuplicatesAreNeverIndexable(): void
@@ -80,6 +78,5 @@ final class EventIndexingPolicyTest extends TestCase
         $event = new Event()->setStartDate(new DateTimeImmutable('2026-06-01'));
 
         self::assertTrue($this->policy->hasEnded($event));
-        self::assertFalse($this->policy->isIndexable($event));
     }
 }

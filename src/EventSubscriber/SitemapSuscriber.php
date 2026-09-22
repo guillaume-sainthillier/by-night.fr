@@ -27,9 +27,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Builds the sitemap from what is worth indexing right now: listings and places with upcoming
- * events, and the event pages accepted by the EventIndexingPolicy. Google ignores <priority>
- * and <changefreq>, so being listed here is the actual signal.
+ * Builds the sitemap from what deserves the crawl budget right now: listings and places with
+ * upcoming events, and the events ending on or after the EventIndexingPolicy sitemap date.
+ * Google ignores <priority> and <changefreq>, so being listed here is the actual signal; not
+ * being listed does not remove a page from the index.
  */
 final class SitemapSuscriber implements EventSubscriberInterface
 {
@@ -154,7 +155,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
     private function registerEventRoutes(?string $section): void
     {
         $today = $this->today();
-        $events = $this->eventRepository->findAllSiteMap($this->eventIndexingPolicy->getIndexableSince());
+        $events = $this->eventRepository->findAllSiteMap($this->eventIndexingPolicy->getSitemapSince());
 
         foreach ($events as $event) {
             $isEventPast = $event['endDate'] < $today;

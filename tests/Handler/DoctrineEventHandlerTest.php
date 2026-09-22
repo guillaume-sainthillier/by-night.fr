@@ -22,6 +22,7 @@ use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\ParserDataFactory;
+use App\Factory\ParserHistoryFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
@@ -861,6 +862,107 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame(Reject::VALID, $parserData->getReason());
         $this->assertNotNull($parserData->getContentHash());
         $this->assertCount(1, $imageTransport->getSent(), 'The image download is released once the batch is committed');
+    }
+
+    /**
+     * The parser_history row written for the batch (the "Historiques" admin page) must say
+     * which parser the events came from, in the terms the events keep (Event::$fromData).
+     */
+    public function testTheBatchHistoryRecordsTheSourceOfItsEvents(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $dtos = [];
+        foreach (['history-1' => '+3 days', 'history-2' => '+4 days'] as $externalId => $date) {
+            $dto = $this->createSessionEventDto($externalId, new DateTime($date)->format('Y-m-d'));
+            $dto->fromData = 'Open Agenda';
+            $dtos[] = $dto;
+        }
+
+        $this->handler->handleManyCLI($dtos);
+
+        $this->assertSame(1, ParserHistoryFactory::count());
+        $history = ParserHistoryFactory::first();
+        $this->assertSame(['Open Agenda'], $history->getFromData());
+        $this->assertSame(2, $history->getNewEvents());
+        $this->assertSame(0, $history->getUpdatedEvents());
+    }
+
+    /**
+     * A batch is 50 messages from a single queue, so it normally comes from one parser, but
+     * two parsers can share one: the boundary between two parsers of `app:events:import all`,
+     * or two imports running at once. Every source is kept, once each, in first-seen order,
+     * and a DTO without one (built by hand) adds nothing.
+     */
+    public function testTheBatchHistoryKeepsEverySourceOfAMixedBatch(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $batch = [
+            ['mixed-1', 'Open Agenda', '+3 days'],
+            ['mixed-2', 'Data Tourisme', '+4 days'],
+            ['mixed-3', 'Open Agenda', '+5 days'],
+            ['mixed-4', null, '+6 days'],
+        ];
+        $dtos = [];
+        foreach ($batch as [$externalId, $fromData, $date]) {
+            $dto = $this->createSessionEventDto($externalId, new DateTime($date)->format('Y-m-d'));
+            $dto->fromData = $fromData;
+            $dtos[] = $dto;
+        }
+
+        $this->handler->handleManyCLI($dtos);
+
+        $this->assertSame(['Open Agenda', 'Data Tourisme'], ParserHistoryFactory::first()->getFromData());
+    }
+
+    public function testABatchWithoutAnySourceRecordsNone(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleManyCLI([$this->createSessionEventDto('sourceless-1', new DateTime('+3 days')->format('Y-m-d'))]);
+
+        $this->assertSame([], ParserHistoryFactory::first()->getFromData());
+    }
+
+    /**
+     * After a failed batch, EventBatchHandler retries its messages one at a time through
+     * handleOne(). The failure resets the history counters, and that reset must leave the
+     * handler usable: it used to unset() a typed property, so the very next isStarted()
+     * (the first exploration of the retry) threw instead of counting nothing.
+     */
+    public function testAFailedBatchLeavesTheHistoryReadyForTheOneByOneRetry(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $container = self::getContainer();
+        $container->set(EventEntityFactory::class, new FailOnceEventEntityFactory(new EventEntityFactory(
+            $container->get(EntityProviderHandler::class),
+            $container->get(EventImageDownloadScheduler::class),
+            $container->get(EventContentHasher::class),
+        )));
+
+        $dto = $this->createRetriedEventDto();
+
+        try {
+            $this->handler->handleManyCLI([$dto]);
+            $this->fail('The simulated failure should have propagated');
+        } catch (RuntimeException $e) {
+            $this->assertSame(FailOnceEventEntityFactory::FAILURE_MESSAGE, $e->getMessage());
+        }
+
+        // A failed batch leaves no history row behind
+        $this->assertSame(0, ParserHistoryFactory::count());
+
+        // The one-by-one retry goes through handleOne(), which writes no history of its own
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'retry-001']));
+        $this->assertSame(0, ParserHistoryFactory::count());
     }
 
     /**

@@ -36,7 +36,10 @@
 }
 
 @include media-breakpoint-down(md) {
-    .widget {
+    // Agenda (layouts/with-widget.html.twig): its #bottom-navigation tabs show one panel at a time.
+    // Scoped to that layout's columns, so a .widget anywhere else (e.g. the cards of the event form) stays visible.
+    #content > .widget,
+    #widgets > .widget {
         display: none;
 
         &.active {

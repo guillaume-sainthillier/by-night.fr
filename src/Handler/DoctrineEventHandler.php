@@ -469,6 +469,9 @@ final readonly class DoctrineEventHandler
     public function handleManyCLI(array $dtos): void
     {
         $this->parserHistoryHandler->start();
+        foreach ($dtos as $dto) {
+            $this->parserHistoryHandler->addSource($dto->fromData);
+        }
 
         try {
             $this->handleMany($dtos);

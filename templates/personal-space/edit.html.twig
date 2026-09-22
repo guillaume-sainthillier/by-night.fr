@@ -7,15 +7,22 @@
     {% do menu.addItem(event.name, url('app_event_edit', {id: event.id})) %}
 {%- endblock %}
 
+{% block form_actions_end %}
+    {# Sits in the event form's action bar but submits the delete form below, which cannot be nested in it #}
+    <button type="submit" form="event-delete-form" class="btn btn-danger ms-auto">
+        <twig:Icon name="lucide:trash-2" />
+        <span class="form-actions-label">Supprimer</span>
+    </button>
+{% endblock %}
+
 {% block body_form %}
     {{ parent() }}
-    <div class="mt-4 form-delete">
-        <form method="post" action="{{ path('app_event_delete', {id: event.id}) }}">
-            <input name="_method" type="hidden" value="DELETE">
-            <button type="submit" class="btn btn-danger">
-                <twig:Icon name="lucide:trash-2" />
-                Supprimer
-            </button>
-        </form>
-    </div>
+    <form id="event-delete-form"
+          method="post"
+          action="{{ path('app_event_delete', {id: event.id}) }}"
+          data-confirm-title="{{ 'Supprimer cet événement ?'|trans }}"
+          data-confirm-message="{{ 'Cette action va supprimer « {name} » ainsi que toutes les données rattachées.'|trans({name: event.name}, 'messages+intl-icu') }}"
+          data-confirm-button="{{ 'Supprimer'|trans }}">
+        <input name="_method" type="hidden" value="DELETE">
+    </form>
 {% endblock %}
