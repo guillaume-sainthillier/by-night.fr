@@ -20,6 +20,7 @@ use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class FirewallTest extends AppKernelTestCase
 {
@@ -141,6 +142,25 @@ final class FirewallTest extends AppKernelTestCase
         $event->description = 'A nice concert in town';
 
         return $event;
+    }
+
+    /**
+     * @return iterable<string, array{?string, int, bool}>
+     */
+    public static function provideLengths(): iterable
+    {
+        yield 'exactly the minimum' => ['Bal', 3, true];
+        yield 'one short' => ['Ba', 3, false];
+        yield 'accented letters count once' => ['Été', 3, true];
+        yield 'two accented letters stay short' => ['Où', 3, false];
+        yield 'surrounding spaces do not count' => ['  Ba  ', 3, false];
+        yield 'null' => [null, 2, false];
+    }
+
+    #[DataProvider('provideLengths')]
+    public function testTheMinimumLengthCountsCharacters(?string $text, int $min, bool $valid): void
+    {
+        self::assertSame($valid, $this->firewall->checkMinLengthValidity($text, $min));
     }
 
     public function testFilterEventStoresContentHashOnNewExploration(): void

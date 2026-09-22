@@ -154,9 +154,13 @@ final class Firewall implements BatchResetInterface
         }
     }
 
+    /**
+     * At least $min characters once trimmed (isset($str[$min]) wanted one byte more: "Bal" failed a
+     * minimum of 3, while two accented letters passed it).
+     */
     public function checkMinLengthValidity(?string $str, int $min): bool
     {
-        return isset(trim($str ?? '')[$min]);
+        return mb_strlen(trim($str ?? '')) >= $min;
     }
 
     private function isSPAMContent(?string $content): bool
