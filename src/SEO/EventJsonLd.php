@@ -49,7 +49,8 @@ final readonly class EventJsonLd
         ];
 
         if ($event->getStartDate() instanceof DateTimeImmutable) {
-            $schema['startDate'] = $event->getStartDate()->format('c');
+            // DATE columns: the day alone, a midnight time would read as the actual start or end
+            $schema['startDate'] = $event->getStartDate()->format('Y-m-d');
         }
 
         if ($event->getDescription()) {
@@ -58,7 +59,7 @@ final readonly class EventJsonLd
 
         $endDate = $event->getEndDate() ?? $event->getStartDate();
         if ($endDate instanceof DateTimeImmutable) {
-            $schema['endDate'] = $endDate->format('c');
+            $schema['endDate'] = $endDate->format('Y-m-d');
         }
 
         if ($event->hasImage()) {
