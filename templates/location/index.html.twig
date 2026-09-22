@@ -30,7 +30,7 @@
                 <div class="card-body">
                     {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
                     {{ form_row(form.dateRange, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'lucide:calendar-days'}) }}
-                    {{ form_row(form.term, {label: 'Je recherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'lucide:search'}) }}
+                    {{ form_row(form.term, {label: 'Je recherche…', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée…'}, icon_prepend: 'lucide:search'}) }}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary search">

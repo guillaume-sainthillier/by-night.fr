@@ -19,7 +19,7 @@
         <div class="card-header">
             <form method="GET" action="{{ path('app_event_list') }}" class="w-100">
                 <twig:InputIcon iconPrepend="lucide:search">
-                    <input name="q" type="search" class="form-control" placeholder="{{ 'Rechercher un événement...'|trans }}" value="{{ q }}">
+                    <input name="q" type="search" class="form-control" placeholder="{{ 'Rechercher un événement…'|trans }}" value="{{ q }}">
                 </twig:InputIcon>
             </form>
         </div>
@@ -124,7 +124,7 @@
                     <form id="feedback-form" data-action="{{ path('api_feedback') }}">
                         <div class="mb-3">
                             <label for="feedback-message" class="form-label">Votre message</label>
-                            <textarea class="form-control" id="feedback-message" rows="5" placeholder="Partagez votre avis sur le nouveau système..." required minlength="10"></textarea>
+                            <textarea class="form-control" id="feedback-message" rows="5" placeholder="Partagez votre avis sur le nouveau système…" required minlength="10"></textarea>
                             <div class="invalid-feedback" id="feedback-error"></div>
                         </div>
                     </form>

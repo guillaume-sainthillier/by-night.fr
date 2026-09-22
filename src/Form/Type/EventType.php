@@ -52,7 +52,7 @@ final class EventType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Titre',
                 'attr' => [
-                    'placeholder' => 'Choisissez un titre accrocheur...',
+                    'placeholder' => 'Choisissez un titre accrocheur…',
                 ],
             ])
             ->add('description', TextareaType::class, [
@@ -60,7 +60,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'wysiwyg',
-                    'placeholder' => 'Décrivez votre événement...',
+                    'placeholder' => 'Décrivez votre événement…',
                 ],
             ])
             ->add('imageFile', VichImageType::class, [
@@ -111,7 +111,7 @@ final class EventType extends AbstractType
                 'label' => 'Catégorie',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Concert, Spectacle, ...',
+                    'placeholder' => 'Concert, Spectacle…',
                     'class' => 'js-category-input',
                     'data-autocomplete-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                 ],
@@ -120,7 +120,7 @@ final class EventType extends AbstractType
                 'label' => 'Thèmes',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
+                    'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap…',
                     'class' => 'js-tags-input',
                     'data-tags-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                     'data-tags-allow-new' => 'true',

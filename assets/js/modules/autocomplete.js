@@ -29,7 +29,7 @@ export default () => {
     const result = initAutocomplete({
         autocompleteSelector: '#autocomplete',
         searchPlaceholder: 'Recherche',
-        inputPlaceholder: 'Rechercher des événements, villes, membres...',
+        inputPlaceholder: 'Rechercher des événements, villes, membres…',
         globalSearchUrl,
         searchPageUrl,
         enableHotkeys: !isTouchDevice(),
