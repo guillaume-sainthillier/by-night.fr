@@ -49,7 +49,7 @@
     <section class="bg-white py-4 py-xl-6">
         <div class="{{ block('container_class') }}">
             <h2>Que faire {{ location.atName }} aujourd'hui ou ce soir ?</h2>
-            <p>Vous cherchez <strong>que faire {{ location.atName }}</strong> ? Parcourez notre agenda pour trouver un
+            <p>Vous vous demandez <strong>que faire {{ location.atName }}</strong> ? Parcourez notre agenda pour trouver un
                 <strong>concert</strong>, une <strong>expo</strong>, un <strong>spectacle</strong>,
                 un <strong>café</strong> ou une
                 <strong>sortie</strong> dans votre ville.
@@ -91,7 +91,7 @@
                 title_link: 'Concerts ' ~ location.atName,
                 text: 'Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples
                             ' ~ location.atName ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
-                            soirées et pour <strong>sortir se détendre</strong> " ~ location.atName ~ '.',
+                            soirées pour <strong>sortir vous détendre</strong> " ~ location.atName ~ '.',
             }, {
                 title: 'Etudiant',
                 icon: 'flaticon-students17',
@@ -117,7 +117,7 @@
                 color: 'blue',
                 link: path('app_agenda_by_type', {type: 'spectacle', location: location.slug}),
                 title_link: 'Spectacles ' ~ location.atName,
-                text: location.atName ~ ', il y a plein de <strong>spectacles en ' ~ 'now'|date('Y') ~ "</strong> ! Divertissement & culture,
+                text: 'Il y a plein de <strong>spectacles en ' ~ 'now'|date('Y') ~ '</strong> ' ~ location.atName ~ " ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorite grâce à
                             <strong>l'agenda des spectacles " ~ location.atName ~ '</strong>.',
             }, {
@@ -137,7 +137,7 @@
                 title_link: 'Créer un événement',
                 text: "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
                             de communication</strong> " ~ location.atName ~ ' ? <strong>Publiez facilement</strong>
-                            votre événement sur notre plateforme et donnez lui un maximum de <strong>visibilité</strong> !',
+                            votre événement sur notre plateforme et donnez-lui un maximum de <strong>visibilité</strong> !',
             }] %}
             <div class="row row-cards row-deck">
                 {% for i, content in contents %}

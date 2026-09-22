@@ -37,7 +37,7 @@ final class ChangePasswordFormType extends AbstractType
                     'icon-prepend' => 'lucide:key',
                 ],
                 'second_options' => [
-                    'label' => 'Répetez le mot  de passe',
+                    'label' => 'Répétez le mot de passe',
                     'icon-prepend' => 'lucide:key',
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas',

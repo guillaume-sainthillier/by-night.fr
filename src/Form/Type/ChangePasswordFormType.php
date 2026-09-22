@@ -55,7 +55,7 @@ final class ChangePasswordFormType extends AbstractType
                 ],
             ],
             'first_options' => ['label' => 'Mot de passe'],
-            'second_options' => ['label' => 'Répeter le mot de passe'],
+            'second_options' => ['label' => 'Répéter le mot de passe'],
             'invalid_message' => 'Les mots de passe ne correspondent pas.',
         ]);
     }

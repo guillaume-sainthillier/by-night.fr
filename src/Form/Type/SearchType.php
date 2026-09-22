@@ -32,8 +32,8 @@ final class SearchType extends AbstractType
             ])
             ->add('range', NumberType::class, [
                 'html5' => true,
-                'label' => 'Rayon (KM)',
-                'attr' => ['placeholder' => 'Quand quel rayon cherchez-vous ?'],
+                'label' => 'Rayon (km)',
+                'attr' => ['placeholder' => 'Dans quel rayon cherchez-vous ?'],
             ])
             ->add('type', ChoiceType::class, [
                 'choices' => $options['types_manif'],
@@ -50,7 +50,7 @@ final class SearchType extends AbstractType
                 ], ])
             ->add('term', TextType::class, [
                 'required' => false,
-                'label' => 'Mot-clés',
+                'label' => 'Mots-clés',
                 'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'], ])
         ;
     }
