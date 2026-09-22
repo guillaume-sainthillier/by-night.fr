@@ -89,6 +89,42 @@ final class CleanerTest extends AppKernelTestCase
         self::assertEquals(128, \strlen((string) $dto->themes[0]->name));
     }
 
+    /**
+     * @param string[]|null $websites
+     * @param string[]|null $expected
+     */
+    #[DataProvider('websitesProvider')]
+    public function testCleanEventKeepsOnlyTheWebsitesThatCanBeLinked(?array $websites, ?array $expected): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->websiteContacts = $websites;
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertSame($expected, $dto->websiteContacts);
+    }
+
+    /**
+     * @return iterable<string, array{string[]|null, string[]|null}>
+     */
+    public static function websitesProvider(): iterable
+    {
+        yield 'url is kept' => [['https://example.org/billets'], ['https://example.org/billets']];
+        yield 'bare host is kept as typed' => [['www.toulouse-tourisme.com'], ['www.toulouse-tourisme.com']];
+        yield 'surrounding spaces are trimmed' => [['  https://theatre-sorano.fr '], ['https://theatre-sorano.fr']];
+        yield 'spaces in the query keep the url whole' => [['www.ardei-soft.com/spectacle.html?spectacle=La Dispute'], ['www.ardei-soft.com/spectacle.html?spectacle=La Dispute']];
+        yield 'urls separated by a space are split' => [['www.abc-toulouse.fr www.fifigrot.com'], ['www.abc-toulouse.fr', 'www.fifigrot.com']];
+        yield 'urls separated by a semicolon are split' => [['http://www.museemauricedenis.yvelines.fr;http://www.yvelines.fr'], ['http://www.museemauricedenis.yvelines.fr', 'http://www.yvelines.fr']];
+        yield 'urls separated by a comma are split' => [['www.a.fr, www.b.fr'], ['www.a.fr', 'www.b.fr']];
+        yield 'text around a url is dropped' => [['Billets : https://www.helloasso.com/associations/l-art-scenes'], ['https://www.helloasso.com/associations/l-art-scenes']];
+        yield 'text after a url is dropped' => [['https://web.digitick.com/ez3kiel.html Etienne ANDRE'], ['https://web.digitick.com/ez3kiel.html']];
+        yield 'duplicates are merged' => [['www.a.fr', 'www.a.fr www.b.fr'], ['www.a.fr', 'www.b.fr']];
+        yield 'what cannot be linked is dropped' => [['92.05.40.65', 'javascript:alert(1)', 'sortir-a-toulouse/agenda', 'http://à venir', ''], null];
+        yield 'empty list' => [[], null];
+        yield 'null' => [null, null];
+    }
+
     #[DataProvider('coordinatesProvider')]
     public function testCleanEventCleansCoordinates(?float $input, ?float $expected): void
     {
@@ -137,6 +173,7 @@ final class CleanerTest extends AppKernelTestCase
         $dto->themes = [TagDto::fromString('  Rock  '), TagDto::fromString('  Jazz  ')];
         $dto->latitude = 43.604652;
         $dto->longitude = 1.444209;
+        $dto->websiteContacts = ['  www.b.fr www.a.fr ', 'Http://C.fr', 'www.a.fr', 'à venir'];
 
         $timesheet = new EventTimesheetDto();
         $timesheet->hours = '  20h - 23h  ';
