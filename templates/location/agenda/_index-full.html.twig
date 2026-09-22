@@ -63,6 +63,12 @@
     {% endif %}
 {% endblock %}
 
+{% block meta_robots %}
+    {% if events.nbResults == 0 %}
+        <meta name="robots" content="noindex, follow">
+    {% endif %}
+{% endblock %}
+
 {% block body %}
     <div id="bottom-navigation" class="visible" {{ load_page('agenda') }}>
         <ul id="custom-tab" class="nav nav-tabs nav-fill justify-content-center bg-primary" role="tablist">

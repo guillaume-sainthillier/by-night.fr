@@ -15,6 +15,12 @@
     Découvrez le profil de {{ username }} sur By Night : {{ favoriteEventsCount }} événement{{ favoriteEventsCount > 1 ? 's' }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
 {%- endblock %}
 
+{% block meta_robots %}
+    {% if nextEvents.nbResults == 0 and previousEvents.nbResults == 0 %}
+        <meta name="robots" content="noindex, follow">
+    {% endif %}
+{% endblock %}
+
 {% block body -%}
     <div class="row" {{ load_page('user', {datas: places}) }}>
         <div class="col-md-3">
