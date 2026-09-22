@@ -132,11 +132,12 @@ final class HtmlFormatter
     }
 
     /**
-     * Bare URLs at the start of a line or after a space become links; the ones already inside a tag are left alone.
+     * Bare http(s) and ftp URLs at the start of a line or after a space become links; the ones already
+     * inside a tag are left alone, and other schemes ("javascript://…" typed in a comment) stay text.
      */
     public function linkifyUrls(string $text): string
     {
-        return (string) preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $text);
+        return (string) preg_replace("#(^|[\n ])((http|https|ftp)://)?((?:https?|ftp)://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $text);
     }
 
     /**

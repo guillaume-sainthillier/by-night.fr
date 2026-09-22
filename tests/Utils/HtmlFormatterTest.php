@@ -142,6 +142,17 @@ final class HtmlFormatterTest extends TestCase
         );
     }
 
+    public function testLinkifyUrlsOnlyLinksWebAddresses(): void
+    {
+        $text = 'voir javascript://%0Aalert%28document.cookie%29 ou data://x ici';
+
+        self::assertSame($text, $this->formatter->linkifyUrls($text));
+        self::assertSame(
+            'fichier <a href="ftp://example.org/programme.pdf" target="_blank" rel="nofollow">ftp://example.org/programme.pdf</a>',
+            $this->formatter->linkifyUrls('fichier ftp://example.org/programme.pdf')
+        );
+    }
+
     public function testLinkifyUrlsLeavesUrlsInsideTagsAlone(): void
     {
         $html = '<a href="https://example.org">https://example.org</a>';
