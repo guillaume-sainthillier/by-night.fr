@@ -60,12 +60,6 @@ function initialize({ app }) {
     initCategoryInputs()
     initWysiwygs()
 
-    $('.form-delete form').submit(() =>
-        window.confirm(
-            "Cette action va supprimer l'\u00e9v\u00e9nement ainsi que toutes les donn\u00e9es rattach\u00e9es. Continuer\u00a0?"
-        )
-    )
-
     // Initialize event scheduler
     initEventScheduler(document.body, app)
 

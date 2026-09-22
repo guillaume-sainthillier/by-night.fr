@@ -2,12 +2,6 @@ import $ from 'jquery'
 
 /** @type {Page} */
 function initialize({ app }) {
-    $('.form-delete').submit(() =>
-        window.confirm(
-            "Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer\u00a0?"
-        )
-    )
-
     $('.draft').change(function () {
         const self = $(this)
 

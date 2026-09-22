@@ -21,6 +21,7 @@ import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
 import emailVerify from '@/js/listeners/email-verify'
 import formCollection from '@/js/listeners/form-collection'
+import formConfirm from '@/js/listeners/form-confirm'
 import formErrors from '@/js/listeners/form-errors'
 import formTarget from '@/js/listeners/form-target'
 import imagePreviews from '@/js/listeners/image-previews'
@@ -85,6 +86,7 @@ class App {
             dropzone,
             emailVerify,
             formCollection,
+            formConfirm,
             formErrors,
             formTarget,
             imagePreviews,

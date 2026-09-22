@@ -72,7 +72,12 @@
                                         <twig:Icon name="lucide:trash-2" class="text-danger" />
                                     </button>
                                 </div>
-                                <form class="d-none form-delete-{{ event.id }}" method="post" action="{{ path('app_event_delete', {id: event.id}) }}">
+                                <form class="d-none form-delete-{{ event.id }}"
+                                      method="post"
+                                      action="{{ path('app_event_delete', {id: event.id}) }}"
+                                      data-confirm-title="{{ 'Supprimer cet événement ?'|trans }}"
+                                      data-confirm-message="{{ 'Cette action va supprimer « {name} » ainsi que toutes les données rattachées.'|trans({name: event.name}, 'messages+intl-icu') }}"
+                                      data-confirm-button="{{ 'Supprimer'|trans }}">
                                     <input name="_method" type="hidden" value="DELETE">
                                 </form>
                             </td>
