@@ -149,20 +149,70 @@ final class HtmlFormatterTest extends TestCase
         self::assertSame($html, $this->formatter->linkifyUrls($html));
     }
 
-    public function testStripUnsafeTagsLeavesHarmlessHtmlUntouched(): void
+    public function testSanitizeLeavesFormattingUntouched(): void
     {
-        $html = '<p>Concert <strong>gratuit</strong></p><iframe src="https://example.org"></iframe>';
+        $html = '<h3>Programme</h3><p>Concert <strong>gratuit</strong>, <em>dès 20h</em></p><ul><li>Bar</li></ul><blockquote>Venez !</blockquote>';
 
-        self::assertSame($html, $this->formatter->stripUnsafeTags($html));
+        self::assertSame($html, $this->formatter->sanitize($html));
     }
 
-    public function testStripUnsafeTagsFiltersTextWithAScript(): void
+    #[DataProvider('provideScriptVectors')]
+    public function testSanitizeRemovesWhatCouldRunScript(string $html, string $expected): void
     {
-        $html = $this->formatter->stripUnsafeTags('<p>Concert</p><script>track()</script><iframe></iframe>');
+        self::assertSame($expected, $this->formatter->sanitize($html));
+    }
 
-        self::assertStringNotContainsString('<script', $html);
-        self::assertStringNotContainsString('<iframe', $html);
-        self::assertStringContainsString('<p>Concert</p>', $html);
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideScriptVectors(): iterable
+    {
+        yield 'event handler' => ['<p>Hello <img src="https://example.org/a.jpg" onerror="alert(1)"></p>', '<p>Hello <img src="https://example.org/a.jpg" /></p>'];
+        yield 'unquoted javascript link' => ['<a href=javascript:alert(1)>clic</a>', '<a>clic</a>'];
+        yield 'handler and inline style' => ['<b onmouseover="alert(1)" style="position:fixed">x</b>', '<b>x</b>'];
+        yield 'svg' => ['<svg onload=alert(1)><circle/></svg>ok', 'ok'];
+        yield 'script' => ['<p>x</p><script>alert(1)</script>fin', '<p>x</p>fin'];
+        yield 'style block' => ['<p>x</p><style>body{display:none}</style>fin', '<p>x</p>fin'];
+        yield 'unclosed style block' => ['<p>avant</p><STYLE type="text/css">body{display:none}', '<p>avant</p>'];
+        yield 'frame with a javascript source' => ['<iframe src="javascript:alert(1)"></iframe>', ''];
+        yield 'frame with a data source' => ['<iframe src="data:text/html,<script>alert(1)</script>"></iframe>', ''];
+    }
+
+    public function testSanitizeKeepsVideoPlayersInsertedByTheEditor(): void
+    {
+        self::assertSame(
+            '<iframe frameborder="0" src="https://www.youtube.com/embed/Wu1EPoy4IH8" width="640" height="360"></iframe>',
+            $this->formatter->sanitize('<iframe frameborder="0" src="//www.youtube.com/embed/Wu1EPoy4IH8" width="640" height="360" class="note-video-clip"></iframe>')
+        );
+    }
+
+    public function testSanitizeRemovesFramesOutsideKnownPlayers(): void
+    {
+        self::assertSame('après', $this->formatter->sanitize('<iframe src="https://evil.example/login" width="500"></iframe>après'));
+        self::assertSame('', $this->formatter->sanitize('<iframe onload="var i=this.id" src="http://www.junodownload.com/player"></iframe>'));
+    }
+
+    public function testSanitizeKeepsTheTextOfUnknownTagsButNotWordSettings(): void
+    {
+        self::assertSame(
+            'rouge centré',
+            trim($this->formatter->sanitize('<font color="red">rouge</font> <center>centré</center><xml><w:View>Normal</w:View></xml>'))
+        );
+    }
+
+    public function testSanitizeUpgradesProtocolRelativeImages(): void
+    {
+        self::assertSame(
+            '<img src="https://cdn.example.org/a.jpg" alt="affiche" />',
+            $this->formatter->sanitize('<img src="//cdn.example.org/a.jpg" alt="affiche">')
+        );
+    }
+
+    public function testFormatDoesNotTruncateLongDescriptions(): void
+    {
+        $text = str_repeat('é', 15_000);
+
+        self::assertSame('<p>' . $text . '</p>', $this->formatter->format('<p>' . $text . '</p>'));
     }
 
     public function testFormatChainsEveryStep(): void

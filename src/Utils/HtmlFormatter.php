@@ -10,13 +10,50 @@
 
 namespace App\Utils;
 
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerAction;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
+
 /**
  * Prepares the free text shipped by feeds or typed by members (event descriptions, comments, websites)
- * for rendering: links get an absolute target and open in a new tab, bare URLs become links.
+ * for rendering: links get an absolute target and open in a new tab, bare URLs become links, and
+ * the markup is reduced to formatting that cannot run script.
  */
 final class HtmlFormatter
 {
-    private const string ALLOWED_TAGS = '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>';
+    /**
+     * Formatting kept as is, with the attributes of FORMATTING_ATTRIBUTES.
+     */
+    private const array FORMATTING_ELEMENTS = [
+        'abbr', 'address', 'article', 'aside', 'b', 'bdo', 'blockquote', 'br', 'caption', 'cite', 'code', 'col', 'colgroup',
+        'dd', 'del', 'details', 'dfn', 'div', 'dl', 'dt', 'em', 'figcaption', 'figure', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'hgroup', 'hr', 'i', 'ins', 'li', 'mark', 'ol', 'p', 'pre', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'small',
+        'span', 'strong', 'sub', 'summary', 'sup', 'table', 'tbody', 'tfoot', 'thead', 'time', 'tr', 'u', 'ul', 'var', 'wbr',
+    ];
+
+    private const array FORMATTING_ATTRIBUTES = ['title', 'dir', 'lang'];
+
+    /**
+     * Elements carrying a link, a media or a table layout, with the attributes they keep.
+     */
+    private const array ELEMENTS_WITH_ATTRIBUTES = [
+        'a' => ['href', 'title', 'target', 'rel'],
+        'img' => ['src', 'alt', 'title', 'width', 'height'],
+        'iframe' => ['src', 'title', 'width', 'height', 'frameborder', 'allowfullscreen'],
+        'td' => ['colspan', 'rowspan'],
+        'th' => ['colspan', 'rowspan', 'scope'],
+    ];
+
+    /**
+     * Removed with their content: code, styles and the settings Word pastes along with the text.
+     * Any other element missing from the lists above only loses its tag (<font>, <center>, <o:p>…).
+     */
+    private const array DROPPED_ELEMENTS = [
+        'script', 'noscript', 'template', 'xml', 'svg', 'math', 'object', 'embed', 'applet', 'frameset', 'frame', 'base',
+    ];
+
+    private ?HtmlSanitizerInterface $sanitizer = null;
 
     /**
      * A host, optionally with a port and a path: "www.example.org", "théâtre.fr:8080/billets?id=1".
@@ -74,7 +111,7 @@ final class HtmlFormatter
 
     public function format(?string $html): string
     {
-        return $this->stripUnsafeTags($this->linkifyUrls($this->rewriteAnchors((string) $html)));
+        return $this->sanitize($this->linkifyUrls($this->rewriteAnchors((string) $html)));
     }
 
     /**
@@ -103,15 +140,47 @@ final class HtmlFormatter
     }
 
     /**
-     * Only text mentioning script, style or link tags is filtered down to the allowed tags.
+     * Keeps the formatting of the allow-lists above and drops everything able to run script: event
+     * handlers, javascript: URLs, <script>, <svg>, <style> blocks, frames outside known players.
      */
-    public function stripUnsafeTags(string $html): string
+    public function sanitize(string $html): string
     {
-        if (!preg_match('#<(.*)(script|style|link)#i', $html)) {
-            return $html;
+        // The sanitizer only drops body elements: a <style> or <title> would lose its tag but show its text
+        $html = (string) preg_replace('~<(style|title)\b[^>]*>.*?(?:</\1\s*>|$)~is', '', $html);
+        $html = $this->getSanitizer()->sanitize($html);
+
+        // A frame whose source was refused has nothing left to show
+        return (string) preg_replace('~<iframe(?![^>]*\ssrc=)[^>]*>.*?</iframe>~is', '', $html);
+    }
+
+    private function getSanitizer(): HtmlSanitizerInterface
+    {
+        if (null !== $this->sanitizer) {
+            return $this->sanitizer;
         }
 
-        return strip_tags($html, self::ALLOWED_TAGS);
+        $config = new HtmlSanitizerConfig()
+            ->defaultAction(HtmlSanitizerAction::Block)
+            ->allowLinkSchemes(['http', 'https', 'mailto', 'tel'])
+            ->allowRelativeLinks()
+            ->allowMediaSchemes(['http', 'https', 'data'])
+            ->withAttributeSanitizer(new MediaSourceSanitizer())
+            // Descriptions are TEXT columns: nothing is cut at the default 20 000 bytes
+            ->withMaxInputLength(-1);
+
+        foreach (self::FORMATTING_ELEMENTS as $element) {
+            $config = $config->allowElement($element, self::FORMATTING_ATTRIBUTES);
+        }
+
+        foreach (self::ELEMENTS_WITH_ATTRIBUTES as $element => $attributes) {
+            $config = $config->allowElement($element, $attributes);
+        }
+
+        foreach (self::DROPPED_ELEMENTS as $element) {
+            $config = $config->dropElement($element);
+        }
+
+        return $this->sanitizer = new HtmlSanitizer($config);
     }
 
     /**
