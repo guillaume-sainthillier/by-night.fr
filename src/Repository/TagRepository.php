@@ -88,6 +88,43 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
     }
 
     /**
+     * Names the database considers equal on more than one tag, one spelling per
+     * group. Its collation decides what "equal" means (case, accents, trailing
+     * spaces), exactly like the unique key on tag.name does.
+     *
+     * @return list<string>
+     */
+    public function findDuplicateNames(): array
+    {
+        $names = $this
+            ->createQueryBuilder('t')
+            ->select('t.name AS name')
+            ->groupBy('t.name')
+            ->having('COUNT(t.id) > 1')
+            ->orderBy('t.name', 'ASC')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_map(strval(...), $names);
+    }
+
+    /**
+     * Every tag whose name the database considers equal to the given one, oldest first.
+     *
+     * @return Tag[]
+     */
+    public function findAllSharingName(string $name): array
+    {
+        return $this
+            ->createQueryBuilder('t')
+            ->where('t.name = :name')
+            ->setParameter('name', $name)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Find all tags matching the given DTOs by name.
      *
      * @param TagDto[] $dtos

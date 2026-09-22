@@ -17,9 +17,10 @@ final class Version20260921132913 extends AbstractMigration
 {
     /**
      * Tables that carry real data: a duplicate key there has to be resolved before this
-     * migration can be applied, with app:places:merge-duplicates --apply for places and
-     * app:events:merge-duplicates --strategy=exact for events. Redirect stubs left by
-     * the latter carry no external identity, which the checks and the keys allow.
+     * migration can be applied: app:places:merge-duplicates --apply for places,
+     * app:events:merge-duplicates --strategy=exact for events and
+     * app:tags:merge-duplicates --apply for tags. Redirect stubs left by the events
+     * command carry no external identity, which the checks and the keys allow.
      */
     private const array DUPLICATE_KEY_CHECKS = [
         'place_metadata' => 'SELECT external_id, external_origin, COUNT(*) AS c FROM place_metadata GROUP BY external_id, external_origin HAVING c > 1',
