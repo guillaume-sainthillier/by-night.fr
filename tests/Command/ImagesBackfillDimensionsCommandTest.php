@@ -14,7 +14,11 @@ use App\Factory\EventFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppKernelTestCase;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\InMemory\InMemoryFilesystemAdapter;
+use League\Flysystem\UnableToCheckFileExistence;
+use League\Flysystem\UnableToReadFile;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -82,6 +86,36 @@ final class ImagesBackfillDimensionsCommandTest extends AppKernelTestCase
         $this->assertStringContainsString(\sprintf('#%d imageFile:', $garbage->getId()), $display);
         $this->assertNull($this->dimensions(EventFactory::find($missing->getId())->getImage()));
         $this->assertNull($this->dimensions(EventFactory::find($garbage->getId())->getImage()));
+    }
+
+    public function testClearMissingKeepsTheImagesOfAStorageItCannotReach(): void
+    {
+        $event = EventFactory::createOne(['image' => $this->image('poster.png'), 'imageHash' => 'kept-hash']);
+        $this->entityManager->clear();
+        // The bucket times out: Vich's resolveStream() answers null as for a missing object
+        self::getContainer()->set('events.storage', new Filesystem(new class extends InMemoryFilesystemAdapter {
+            public function fileExists(string $path): bool
+            {
+                throw UnableToCheckFileExistence::forLocation($path);
+            }
+
+            public function read(string $path): string
+            {
+                throw UnableToReadFile::fromLocation($path, 'timeout');
+            }
+
+            public function readStream(string $path): void
+            {
+                throw UnableToReadFile::fromLocation($path, 'timeout');
+            }
+        }));
+
+        $display = $this->doRunCommand(['--entity' => ['event'], '--clear-missing' => true])->getDisplay();
+
+        $event = EventFactory::find($event->getId());
+        $this->assertTrue($event->hasImage(), 'An unreachable file is no proof that it is gone');
+        $this->assertSame('kept-hash', $event->getImageHash());
+        $this->assertStringContainsString('Unreachable (kept)', $display);
     }
 
     public function testClearMissingErasesTheImageAndResetsItsHash(): void

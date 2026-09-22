@@ -16,6 +16,9 @@ use App\Entity\User;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
+use Psr\Container\ContainerInterface;
 use Silarhi\CursorPagination\Configuration\OrderConfiguration;
 use Silarhi\CursorPagination\Configuration\OrderConfigurations;
 use Silarhi\CursorPagination\Pagination\CursorPagination;
@@ -25,6 +28,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Throwable;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 use Vich\UploaderBundle\Mapping\PropertyMappingInterface;
@@ -56,6 +61,13 @@ final class ImagesBackfillDimensionsCommand extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly PropertyMappingFactoryInterface $mappingFactory,
         private readonly StorageInterface $storage,
+        /** The Flysystem storages the Vich mappings upload to, by service id */
+        #[AutowireLocator([
+            'users.storage' => new Autowire(service: 'users.storage'),
+            'events.storage' => new Autowire(service: 'events.storage'),
+            'pages.storage' => new Autowire(service: 'pages.storage'),
+        ])]
+        private readonly ContainerInterface $filesystems,
     ) {
         parent::__construct();
     }
@@ -100,7 +112,7 @@ final class ImagesBackfillDimensionsCommand extends Command
             $rows[] = [$name, ...array_values($stats)];
         }
 
-        $io->table(['Entity', 'Rows', 'Backfilled', 'Unreadable', 'Skipped (SVG)'], $rows);
+        $io->table(['Entity', 'Rows', 'Backfilled', 'Unreadable', 'Skipped (SVG)', 'Unreachable (kept)'], $rows);
 
         if ($dryRun) {
             $io->note('Dry run: nothing was written.');
@@ -115,11 +127,11 @@ final class ImagesBackfillDimensionsCommand extends Command
      * @param class-string<Event|User|Page> $class
      * @param array<string, string>         $fields file property => embedded File property
      *
-     * @return array{rows: int, backfilled: int, unreadable: int, skipped: int}
+     * @return array{rows: int, backfilled: int, unreadable: int, skipped: int, unreachable: int}
      */
     private function backfill(string $class, array $fields, int $batchSize, bool $dryRun, bool $clearMissing, SymfonyStyle $io): array
     {
-        $stats = ['rows' => 0, 'backfilled' => 0, 'unreadable' => 0, 'skipped' => 0];
+        $stats = ['rows' => 0, 'backfilled' => 0, 'unreadable' => 0, 'skipped' => 0, 'unreachable' => 0];
 
         // Keyset pagination on the id: rows leave the filter as they get fixed, so a
         // page counter would skip every other page.
@@ -163,7 +175,11 @@ final class ImagesBackfillDimensionsCommand extends Command
                         ++$stats['unreadable'];
                         $unreadable[] = \sprintf('#%d %s: %s', $entity->getId(), $fileProperty, $this->storage->resolvePath($entity, $fileProperty, null, true));
                         if ($clearMissing) {
-                            $this->clearUnreadableImage($entity, $mapping);
+                            if ($this->isGoneOrBroken($entity, $mapping, $fileProperty)) {
+                                $this->clearUnreadableImage($entity, $mapping);
+                            } else {
+                                ++$stats['unreachable'];
+                            }
                         }
 
                         continue;
@@ -242,7 +258,15 @@ final class ImagesBackfillDimensionsCommand extends Command
             fclose($stream);
         }
 
-        if (false === $contents || '' === $contents) {
+        return false === $contents ? null : $this->measure($contents);
+    }
+
+    /**
+     * @return array{0: int, 1: int}|null null when the bytes are not an image PHP can measure
+     */
+    private function measure(string $contents): ?array
+    {
+        if ('' === $contents) {
             return null;
         }
 
@@ -256,6 +280,29 @@ final class ImagesBackfillDimensionsCommand extends Command
         }
 
         return false === $info ? null : [$info[0], $info[1]];
+    }
+
+    /**
+     * Vich's resolveStream() answers null for any storage error (a timeout, a 5xx, a 403) as it
+     * does for a missing object: before erasing, the file must be confirmed gone, or read back
+     * and still not be an image. When the storage cannot tell, the image is kept, as nothing
+     * could bring an upload back once erased (app:storage:cleanup then deletes its file).
+     */
+    private function isGoneOrBroken(object $entity, PropertyMappingInterface $mapping, string $fileProperty): bool
+    {
+        $filesystem = $this->filesystems->get((string) $mapping->getUploadDestination());
+        \assert($filesystem instanceof FilesystemOperator);
+        $path = (string) $this->storage->resolvePath($entity, $fileProperty, null, true);
+
+        try {
+            if (!$filesystem->fileExists($path)) {
+                return true;
+            }
+
+            return null === $this->measure($filesystem->read($path));
+        } catch (FilesystemException) {
+            return false;
+        }
     }
 
     /**
