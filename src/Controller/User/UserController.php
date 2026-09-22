@@ -121,8 +121,16 @@ final class UserController extends BaseController
      */
     private function getDataOfWeek(EventRepository $repo, User $user): array
     {
-        $datas = $repo->getStatsUser($user, 'DAYOFWEEK');
+        return $this->getWeekChart($repo->getStatsUser($user, 'DAYOFWEEK'));
+    }
 
+    /**
+     * @param array<int, int> $datas event counts keyed by MySQL's DAYOFWEEK(), from 1 (Sunday) to 7 (Saturday)
+     *
+     * @return array[]
+     */
+    private function getWeekChart(array $datas): array
+    {
         $final_datas = [
             'categories' => [],
             'data' => [],
@@ -131,7 +139,8 @@ final class UserController extends BaseController
 
         foreach (range(1, 7) as $day) {
             $date = new DateTimeImmutable('0' . $day . '-01-' . date('Y'));
-            $dayNumber = $date->format('w');
+            // PHP numbers the days from 0 (Sunday), DAYOFWEEK() from 1
+            $dayNumber = (int) $date->format('w') + 1;
             $dateFormatter = IntlDateFormatter::create(
                 Locale::getDefault(),
                 IntlDateFormatter::NONE,
