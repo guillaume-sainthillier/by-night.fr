@@ -152,7 +152,7 @@ final class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_check_email');
         }
 
-        $mailer->sendResetPasswordEmail($user, $resetToken, $this->resetPasswordHelper->getTokenLifetime());
+        $mailer->sendResetPasswordEmail($user, $resetToken);
 
         // Store the token object in session for retrieval in check-email route.
         $this->setTokenObjectInSession($resetToken);

@@ -13,7 +13,7 @@
         Confirmer mon adresse e-mail
     </mj-button>
     <mj-text css-class="muted" padding="20px 0 0 0">
-        Ce lien est valide durant {{ expiresAt|date('g') }} heure(s). Si vous n'êtes pas à
+        Ce lien est valable {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}. Si vous n'êtes pas à
         l'origine de cette demande, vous pouvez ignorer cet e-mail.
     </mj-text>
 {% endblock %}

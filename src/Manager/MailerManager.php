@@ -39,7 +39,7 @@ final readonly class MailerManager
         $this->sendMail($email);
     }
 
-    public function sendResetPasswordEmail(User $user, ResetPasswordToken $resetPasswordToken, int $tokenLifeTime): void
+    public function sendResetPasswordEmail(User $user, ResetPasswordToken $resetPasswordToken): void
     {
         $email = new TemplatedEmail()
             ->to($user->getEmail())
@@ -47,7 +47,6 @@ final readonly class MailerManager
             ->htmlTemplate('email/reset-password.mjml.twig')
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
-                'tokenLifetime' => $tokenLifeTime,
             ]);
 
         $this->sendMail($email);
