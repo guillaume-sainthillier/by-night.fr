@@ -129,6 +129,16 @@ class Comment implements Stringable
         return $this->children;
     }
 
+    /**
+     * The replies shown under the comment, as the later pages of replies filter them too.
+     *
+     * @return Collection<int, Comment>
+     */
+    public function getApprovedChildren(): Collection
+    {
+        return $this->children->filter(static fn (self $child): bool => true === $child->isApproved());
+    }
+
     public function addChild(self $child): self
     {
         if (!$this->children->contains($child)) {

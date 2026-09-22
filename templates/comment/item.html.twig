@@ -33,7 +33,7 @@
     <div class="reply-form-container ms-5"></div>
 
     {# Replies container - always visible #}
-    {% set childrenSlice = comment.children|slice(0, 6) %}
+    {% set childrenSlice = comment.approvedChildren|slice(0, 6) %}
     {% if childrenSlice|length > 0 %}
         <div class="chat-bubbles replies-container mt-2 ms-5">
             {% for reply in childrenSlice|slice(0, 5) %}
