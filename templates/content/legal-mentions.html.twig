@@ -1,129 +1,163 @@
 {% extends 'layouts/simple.html.twig' %}
 
 {% block breadcrumb %}
-    {% do menu.addItem('Mentions Légales', url('app_legal_mentions')) %}
+    {% do menu.addItem('Mentions légales', url('app_legal_mentions')) %}
 {%- endblock %}
 
-{% block title 'Mentions Légales' %}
-{% block page_title 'Mentions Légales' %}
-{% block meta_description 'Nos mentions légales.' %}
+{% block title 'Mentions légales' %}
+{% block page_title 'Mentions légales' %}
+{% block meta_description 'Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.' %}
 
 {% block body %}
-    <br />
-    <h2>1. Présentation de notre site web</h2>
-    <p>Conformément à la loi n° 2004-2005 du 21 juin 2004 pour la confiance dans l'économie numérique, notre site web
-        créé par <a href="https://by-night.fr" title="By Night"><strong>By Night</strong></a>, propriétaire du site <a
-                href="https://by-night.fr" title="By Night"><strong>by-night.fr</strong></a>, met à disposition du public
-        les informations concernant notre entreprise.<br />
-        Éventuellement modifiables, nous vous invitons donc à consulter nos mentions légales le plus souvent possible,
-        de manière à en prendre connaissance fréquemment</p>
+    <p class="text-muted">Dernière mise à jour : 22 septembre 2026</p>
 
-    <p>Le site <a href="{{ url('app_index') }}" title="By Night"><strong>By Night</strong></a> appartient à
-        By Night, dont le siège social est situé à l'adresse suivante : Toulouse.<br />
-        Personne physique ou morale, By Night est responsable de la publication, dont l'adresse e-mail est la suivante :
-        <a href="mailto:support@by-night.fr"><strong>support@by-night.fr</strong></a><br />
-        Le webmaster, <strong>Guillaume Sainthillier</strong>, est responsable de l'administration du site, dont
-        l'adresse e-mail est la suivante : <a
-                href="mailto:guillaume@sainthillier.fr"><strong>guillaume@sainthillier.fr</strong></a>.<br />
-        Le site <a href="{{ url('app_index') }}" title="By Night"><strong>By Night</strong></a> est hébergé
-        par OVH :
-        <br />
-        SAS au capital de 10 000 000 € RCS Roubaix – Tourcoing 424 761 419 00045
-        <br />
-        Code APE 6202A - N° TVA : FR 22 424 761 419.
-        <br />
-        Siège social : 2 rue Kellermann 59100 Roubaix - France.
+    <h2>Éditeur</h2>
+    <p>
+        Le site <a href="{{ url('app_index') }}">by-night.fr</a> (« By Night ») est édité à titre non professionnel
+        par une personne physique. Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans
+        l'économie numérique, son identité et ses coordonnées ont été communiquées à l'hébergeur du site et ne sont
+        pas rendues publiques.
+    </p>
+    <p>Pour toute question, écrivez à <a href="mailto:support@by-night.fr">support@by-night.fr</a>.</p>
+
+    <h2>Hébergeur</h2>
+    <p>
+        OVH SAS, au capital de 50 000 000 €, RCS Lille Métropole 424 761 419<br />
+        2 rue Kellermann, 59100 Roubaix, France<br />
+        Téléphone : 1007 depuis la France, +33 9 72 10 10 07 depuis l'étranger
     </p>
 
-    <br />
-    <h2>2. Conditions générales d’utilisation du site et des services proposés.</h2>
-
-    <p>En utilisant notre site web <a href="{{ url('app_index') }}"
-                                      title="By Night"><strong>By Night</strong></a>, vous acceptez pleinement et
-        entièrement les conditions générales d'utilisation précisées dans nos mentions légales. Accessible à tout type
-        de visiteurs, il est important de préciser toutefois qu'une interruption pour maintenance du site web peut-être
-        décidée par By Night. Les dates et heures d'interruptions seront néanmoins précisées à l'avance aux
-        utilisateurs.</p>
-    <br />
-    <h2>3. Les produits ou services proposés par <a href="{{ url('app_index') }}"
-                                                    title="By Night"><strong>By Night</strong></a></h2>
-
-    <p>En accord avec sa politique de communication, le site <a href="{{ url('app_index') }}"
-                                                                title="By Night"><strong>By Night</strong></a> a
-        pour vocation d'informer les utilisateurs sur les services proposés par By Night, qui s'efforce alors de fournir
-        des informations précises sur son activité. Cependant, des inexactitudes ou des omissions peuvent exister : la
-        société ne pourra en aucun cas être tenue pour responsable pour toute erreur présente sur le site <a
-                href="{{ url('app_index') }}" title="By Night"><strong>By Night</strong></a>.</p>
-    <br />
-    <h2>4. Limitations contractuelles</h2>
-
-    <p>Les informations retranscrites sur notre site web <a href="{{ url('app_index') }}"
-                                                            title="By Night"><strong>By Night</strong></a> font
-        l’objet de démarches qualitatives, en vue de nous assurer de leur fiabilité. Cependant, nous ne pourrons
-        encourir de responsabilités en cas d’inexactitudes techniques lors de nos explications.<br />
-        Si vous constatez une erreur concernant des informations que nous auront pu omettre, n’hésitez pas à nous le
-        signaler par e-mail à <a href="mailto:support@by-night.fr"><strong>support@by-night.fr</strong></a>.</p>
-
-    <p>Les liens reliés directement ou indirectement à notre site web <a href="{{ url('app_index') }}"
-                                                                         title="By Night"><strong>By Night</strong></a>
-        ne sont pas sous le contrôle de notre société. Par conséquent, nous ne pouvons nous assurer de l’exactitude des
-        informations présentes sur ces autres sites Internet.</p>
-
-    <p>Utilisant la technologie JavaScript, le site <a href="{{ url('app_index') }}"
-                                                       title="By Night"><strong>By Night</strong></a> ne pourra
-        être tenu pour responsable en cas de dommages matériels liés à son utilisation. Par ailleurs, toute autre type
-        de conséquence liée à l'exploitation du site <a href="{{ url('app_index') }}"
-                                                        title="By Night"><strong>By Night</strong></a>, qu'elle
-        soit direct ou indirect (bug, incompatibilité, virus, perte de marché, etc.).</p>
-    <br />
-    <h2>5. Propriété intellectuelle et contenu du site Internet</h2>
-
-    <p>Le contenu rédactionnel du site web <a href="{{ url('app_index') }}"
-                                              title="By Night"><strong>By Night</strong></a> appartient
-        exclusivement à By Night. Toute violation des droits d’auteur est sanctionnée par l’article L.335-2 du Code de
-        la Propriété Intellectuelle, avec une peine encourue de 2 ans d’emprisonnement et de 150 000€ d’amende</p>
-
-    <p>Le site <a href="{{ url('app_index') }}" title="By Night"><strong>By Night</strong></a> ne pourra
-        être mis en cause en cas de propos injurieux, à caractère raciste, diffamant ou pornographique, échangés sur les
-        espaces interactifs. La société se réserve également le droit de supprimer tout contenu contraire aux valeurs de
-        l'entreprise ou à la législation applicable en France.</p>
-
-    <p>En naviguant sur le site
-        <a href="{{ url('app_index') }}" title="By Night"><strong>By Night</strong></a>,
-        l'utilisateur accepte également l'installation de cookies éventuelle sur son ordinateur.</p>
-    <br />
-    <h2>6. Données personnelles, respect de votre vie privée et de vos libertés</h2>
-
-    <p>Toute informations recueillie sur le site web <a href="{{ url('app_index') }}"
-                                                        title="By Night"><strong>By Night</strong></a> se font dans
-        le cadre des besoins liés à l'utilisation de notre plateforme, tels que le formulaire de commande ou la demande
-        d'inscription à la Newsletter. Par ailleurs, le désabonnement de la Newsletter se fait grâce au lien situé en
-        pied de page.<br />
-        By Night s'engage à ne céder en aucun cas les informations concernant les utilisateurs du site Internet, de
-        quelque façon qu'il soit (vente, échange, prêt, location, don).</p>
-
-    <p>Conformément à la loi « informatique et libertés » du 6 janvier 1978 modifiée en 2004, l’utilisateur bénéficie
-        d’un droit d’accès et de rectification aux informations le concernant, droit qu’il peut exercer à tout moment en
-        adressant un e-mail à l’adresse <a
-                href="mailto:guillaume@sainthillier.fr"><strong>guillaume@sainthillier.fr</strong></a>, ou en effectuant
-        sa demande par courrier, à l’adresse suivante : Toulouse.</p>
-
-    <br />
-    <h2>7. Droit applicable et lois concernées</h2>
-
-    <p>Soumis au droit français, le site web <a href="{{ url('app_index') }}"
-                                                title="By Night"><strong>By Night</strong></a> est encadré par la
-        loi n° 2004-2005 du 21 juin 2004 pour la confiance dans l'économie numérique, l’article L.335-2 du Code de la
-        Propriété Intellectuelle et la loi « informatique et libertés » du 6 janvier 1978 modifiée en 2004.</p>
-
-    <br />
-    <h2>8. Suppression de données</h2>
-    <p>Vous pouvez, à tout moment, supprimer l'ensemble de données vous concernant. Pour cela, cliquez sur
-        "Mon Compte", puis "Supprimer le compte".
+    <h2>Utilisation du site</h2>
+    <p>
+        By Night est un agenda gratuit des sorties en France. Il rassemble des événements diffusés par des sources
+        partenaires (agendas ouverts, offices de tourisme, billetteries…) et des événements publiés par ses membres.
+        La consultation est libre ; un compte est nécessaire pour publier un événement, commenter ou enregistrer des
+        favoris.
     </p>
     <p>
-        Pour toute demande de suppression d'événements, veuillez envoyer un e-mail à
-        <a href="mailto:support@by-night.fr">support@by-night.fr</a> en précisant
-        l'URL de(s) l'événement(s) concerné(s).
+        Le site peut être interrompu pour maintenance ou à la suite d'une panne. By Night ne peut être tenu pour
+        responsable d'une indisponibilité, même prolongée.
+    </p>
+
+    <h2>Informations publiées</h2>
+    <p>
+        Les informations sur les événements (dates, horaires, lieux, tarifs…) proviennent de la source indiquée sur
+        chaque page d'événement ou du membre qui l'a publié. Elles peuvent changer sans que By Night en soit informé :
+        vérifiez-les auprès de l'organisateur ou de la billetterie avant de vous déplacer. By Night ne peut être tenu
+        pour responsable d'une erreur, d'un report ou d'une annulation.
+    </p>
+    <p>
+        Chaque membre est responsable des événements et des commentaires qu'il publie, qui doivent respecter la loi et
+        les droits des tiers. By Night peut retirer sans préavis tout contenu illicite, injurieux, discriminatoire,
+        trompeur ou sans rapport avec l'objet du site, et suspendre le compte de son auteur.
+    </p>
+    <p>
+        Le site affiche des publicités, et certains liens vers des billetteries sont des liens d'affiliation : By Night
+        peut percevoir une commission sur les achats effectués depuis ces liens, sans surcoût pour vous. Les sites
+        vers lesquels mènent les liens de By Night ne sont pas sous son contrôle et engagent la seule responsabilité de
+        leurs éditeurs.
+    </p>
+
+    <h2>Signaler un contenu</h2>
+    <p>
+        Pour demander le retrait d'un événement ou d'une image qui vous concerne, utilisez le lien « Signaler ce
+        contenu » sur la page de l'événement. Votre demande est examinée et vous êtes informé par e-mail de la suite
+        qui lui est donnée.
+    </p>
+    <p>
+        Pour signaler tout autre contenu que vous estimez illicite, écrivez à
+        <a href="mailto:support@by-night.fr">support@by-night.fr</a> en indiquant l'adresse de la page, le contenu en
+        cause et les raisons pour lesquelles il devrait être retiré.
+    </p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>
+        La structure du site, sa présentation et les textes rédigés pour By Night sont protégés par le droit d'auteur.
+        Leur reproduction, totale ou partielle, sans autorisation constitue une contrefaçon sanctionnée par les
+        articles L.335-2 et suivants du Code de la propriété intellectuelle.
+    </p>
+    <p>
+        Les descriptions et les images des événements restent la propriété de leurs auteurs. Elles sont reprises de la
+        source indiquée sur chaque page d'événement, ou publiées par des membres qui déclarent en détenir les droits.
+        En publiant un contenu sur By Night, vous l'autorisez à l'afficher sur le site.
+    </p>
+
+    <h2>Données personnelles</h2>
+    <p>
+        Le responsable du traitement est l'éditeur du site, que vous pouvez contacter à
+        <a href="mailto:support@by-night.fr">support@by-night.fr</a>. By Night ne vend ni ne loue vos données.
+    </p>
+
+    <h3>Données collectées</h3>
+    <ul>
+        <li>
+            <strong>Votre compte</strong> : nom d'utilisateur, adresse e-mail et mot de passe (conservé sous une forme
+            hachée, illisible), ainsi que, si vous les renseignez, vos prénom, nom, ville, description, site web et
+            photo de profil. Si vous vous connectez avec Facebook, Google ou X, ce réseau nous transmet votre
+            identifiant, votre nom, votre adresse e-mail, votre photo de profil et les jetons nécessaires à la
+            connexion.
+        </li>
+        <li>
+            <strong>Votre activité</strong> : les événements que vous publiez, vos favoris et vos commentaires.
+        </li>
+        <li>
+            <strong>Vos messages</strong> : les avis que vous nous envoyez depuis votre espace, et les demandes de
+            retrait de contenu (adresse e-mail, message, pages concernées).
+        </li>
+        <li>
+            <strong>La sécurité</strong> : le formulaire d'inscription est protégé contre les inscriptions automatisées
+            par Google reCAPTCHA, et les erreurs techniques sont transmises à Sentry pour être corrigées.
+        </li>
+        <li>
+            <strong>La mesure d'audience et la publicité</strong> : le site utilise Google Tag Manager pour charger ses
+            outils de mesure d'audience et Google AdSense pour afficher des publicités. Les cookies qu'ils déposent
+            sont décrits dans notre <a href="{{ path('app_main_cookie') }}">politique de cookies</a>.
+        </li>
+    </ul>
+
+    <h3>Finalités et bases légales</h3>
+    <p>
+        Vos données servent à gérer votre compte, à afficher votre profil et vos publications, à répondre à vos
+        messages, à protéger le site et à en mesurer la fréquentation. Ces traitements reposent sur l'exécution du
+        service que vous utilisez (compte, publications), sur l'intérêt légitime de By Night (réponse à vos messages,
+        sécurité) et, pour la mesure d'audience et la publicité personnalisée, sur votre consentement.
+    </p>
+
+    <h3>Destinataires</h3>
+    <p>
+        Vos données ne sont accessibles qu'à l'éditeur du site et à ses prestataires techniques, dans la limite de ce
+        qui est nécessaire à leur mission : OVH (hébergement), Cloudflare (diffusion des pages), le prestataire d'envoi
+        des e-mails, Sentry (suivi des erreurs) et Google (reCAPTCHA, cartes, mesure d'audience et publicité).
+        Certains de ces prestataires sont établis hors de l'Union européenne, notamment aux États-Unis ; ces
+        transferts sont encadrés par les garanties prévues par le RGPD (décision d'adéquation ou clauses
+        contractuelles types de la Commission européenne).
+    </p>
+
+    <h3>Durée de conservation</h3>
+    <p>
+        Les données de votre compte sont conservées tant que votre compte existe. Lorsque vous le supprimez, vos
+        informations personnelles, vos connexions aux réseaux sociaux, vos favoris et vos commentaires sont effacés ;
+        vos événements sont, à votre choix, supprimés ou conservés sans lien avec votre compte. Les avis sont conservés
+        le temps d'y répondre, et les demandes de retrait le temps de les traiter puis pour garder la trace des
+        retraits effectués.
+    </p>
+
+    <h3>Vos droits</h3>
+    <p>
+        Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos
+        données, du droit de vous opposer à leur traitement et du droit de retirer votre consentement à tout moment.
+        Vous pouvez modifier vos informations depuis <a href="{{ path('app_user_edit') }}">votre compte</a>, et le
+        supprimer depuis l'onglet « Supprimer le compte ». Pour exercer vos autres droits, écrivez à
+        <a href="mailto:support@by-night.fr">support@by-night.fr</a>.
+    </p>
+    <p>
+        Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL
+        (<a href="https://www.cnil.fr" rel="nofollow">www.cnil.fr</a>).
+    </p>
+
+    <h2>Droit applicable</h2>
+    <p>
+        Les présentes mentions légales sont régies par le droit français. En cas de litige, et à défaut de solution
+        amiable, les tribunaux français sont compétents.
     </p>
 {% endblock %}
