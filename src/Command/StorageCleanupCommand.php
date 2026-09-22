@@ -13,6 +13,8 @@ namespace App\Command;
 use App\Message\PurgeCdnCacheUrl;
 use App\Message\RemoveImageThumbnails;
 use Aws\S3\S3Client;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Generator;
@@ -33,6 +35,13 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final class StorageCleanupCommand extends Command
 {
     private const int DEFAULT_BATCH_SIZE = 1000;
+
+    /**
+     * Vich writes a file to the bucket during the flush that stores its name: until that
+     * transaction commits (an import batch downloads its images one after the other), the file
+     * looks unreferenced. Recent files are left for a later run.
+     */
+    private const string MIN_AGE = '24 hours';
 
     public function __construct(
         private readonly Connection $connection,
@@ -156,9 +165,14 @@ final class StorageCleanupCommand extends Command
             'Prefix' => 'uploads/',
         ]);
 
+        $uploadedBefore = new DateTimeImmutable('-' . self::MIN_AGE);
         foreach ($paginator as $page) {
-            /** @var array{Key: string, Size: int} $object */
+            /** @var array{Key: string, Size: int, LastModified: DateTimeInterface} $object */
             foreach ($page['Contents'] ?? [] as $object) {
+                if ($object['LastModified'] > $uploadedBefore) {
+                    continue;
+                }
+
                 yield basename($object['Key']) => [
                     'key' => $object['Key'],
                     'size' => $object['Size'],
