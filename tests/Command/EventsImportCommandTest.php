@@ -15,7 +15,10 @@ use App\Repository\ParserStateRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Override;
+use Psr\Log\NullLogger;
+use ReflectionProperty;
 use RuntimeException;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -89,6 +92,20 @@ final class EventsImportCommandTest extends AppKernelTestCase
         self::assertSame([$previousRun->format('U')], [$this->parserStates->findLastParsedAt('fake')?->format('U')], 'The next run re-fetches from the previous one');
     }
 
+    public function testAFailingParserDoesNotStopTheOthersOfAFullRun(): void
+    {
+        $failing = new RecordingParser('failing', failing: true);
+        $next = new RecordingParser('next');
+
+        $tester = new CommandTester(new EventsImportCommand([$failing, $next], $this->parserStates, new NullLogger()));
+        $status = $tester->execute(['parser' => 'all']);
+
+        self::assertSame(Command::FAILURE, $status);
+        self::assertSame([null], $next->runs, 'The parser after the failing one still ran');
+        self::assertNotNull($this->parserStates->findLastParsedAt('next'));
+        self::assertNull($this->parserStates->findLastParsedAt('failing'));
+    }
+
     public function testEveryEnabledParserHasItsOwnWatermarkAndDisabledOnesAreSkipped(): void
     {
         $this->parserStates->markParsed('first', new DateTimeImmutable('2026-09-20 02:00:00'));
@@ -111,7 +128,7 @@ final class EventsImportCommandTest extends AppKernelTestCase
      */
     private function import(array $parsers, string $parserName, array $options = []): void
     {
-        $tester = new CommandTester(new EventsImportCommand($parsers, $this->parserStates));
+        $tester = new CommandTester(new EventsImportCommand($parsers, $this->parserStates, new NullLogger()));
         $tester->execute(['parser' => $parserName, ...$options]);
     }
 }
