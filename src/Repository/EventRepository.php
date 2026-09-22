@@ -514,6 +514,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->join('e.userEvents', 'cal')
             ->where('cal.user = :user')
+            ->andWhere('e.draft = false')
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
             ->orderBy('e.endDate', $isNext ? 'ASC' : 'DESC')
             ->setParameter('user', $user->getId())
@@ -585,6 +586,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.startDate = :from')
             ->andWhere('e.id != :id')
             ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', $event->getStartDate()->format('Y-m-d'))
             ->setParameter('id', $event->getId())
             ->orderBy('e.name', 'ASC');
@@ -610,7 +612,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         return $this
             ->createQueryBuilder('e')
-            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place AND e.duplicateOf IS NULL')
+            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place AND e.duplicateOf IS NULL AND e.draft = false')
             ->orderBy('e.endDate', 'ASC')
             ->setParameter('end_date', $from->format('Y-m-d'))
             ->setParameter('id', $event->getId())
@@ -626,6 +628,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.endDate BETWEEN :from AND :to')
             ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->orderBy('e.endDate', 'ASC')
             ->addOrderBy('e.participations', 'DESC');
 
@@ -655,6 +658,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('e.endDate', 'ASC')
             ->addOrderBy('e.participations', 'DESC');
