@@ -12,7 +12,9 @@ namespace App\Repository;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\PlaceDto;
+use App\Entity\Event;
 use App\Entity\Place;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -263,14 +265,23 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * @return iterable<array>
+     * Places hosting at least one published event ending on or after $from.
+     *
+     * @return iterable<array{slug: string, city_slug: string}>
      */
-    public function findAllSitemap(): iterable
+    public function findAllSitemap(DateTimeInterface $from): iterable
     {
         return $this
             ->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('p.slug IS NOT NULL')
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->groupBy('p.slug, c.slug')
             ->getQuery()
             ->toIterable();
     }

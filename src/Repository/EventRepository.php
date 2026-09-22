@@ -22,6 +22,7 @@ use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Manager\PreloadManager;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -388,9 +389,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * Published events ending on or after $since: the ones whose page is worth indexing.
+     *
      * @return iterable<array>
      */
-    public function findAllSiteMap(): iterable
+    public function findAllSiteMap(DateTimeInterface $since): iterable
     {
         return $this
             ->createQueryBuilder('e')
@@ -399,6 +402,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->leftJoin('p.city', 'c')
             ->join('p.country', 'c3')
             ->where('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.endDate >= :since')
+            ->setParameter('since', $since->format('Y-m-d'))
             ->orderBy('e.endDate', 'DESC')
             ->getQuery()
             ->toIterable();

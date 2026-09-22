@@ -10,34 +10,49 @@
 
 namespace App\EventSubscriber;
 
+use App\Controller\Location\AgendaController;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use App\Repository\PageRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\UserRepository;
+use App\SEO\EventIndexingPolicy;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Psr\Clock\ClockInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Builds the sitemap from what is worth indexing right now: listings and places with upcoming
+ * events, and the event pages accepted by the EventIndexingPolicy. Google ignores <priority>
+ * and <changefreq>, so being listed here is the actual signal.
+ */
 final class SitemapSuscriber implements EventSubscriberInterface
 {
-    private UrlContainerInterface $urlContainer;
+    /**
+     * A city needs a full agenda page of upcoming events before its per-category pages are
+     * submitted: with fewer, most of those five pages would be empty listings.
+     */
+    public const int CATEGORY_PAGES_MIN_EVENTS = AgendaController::EVENT_PER_PAGE;
 
-    private readonly DateTimeInterface $now;
+    private const array AGENDA_TYPES = ['concert', 'etudiant', 'famille', 'spectacle', 'exposition'];
+
+    private UrlContainerInterface $urlContainer;
 
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly ClockInterface $clock,
+        private readonly EventIndexingPolicy $eventIndexingPolicy,
         private readonly CityRepository $cityRepository,
         private readonly PlaceRepository $placeRepository,
         private readonly EventRepository $eventRepository,
         private readonly UserRepository $userRepository,
         private readonly PageRepository $pageRepository,
     ) {
-        $this->now = new DateTimeImmutable();
     }
 
     /**
@@ -101,22 +116,25 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerAgendaRoutes(?string $section): void
     {
-        $cities = $this->cityRepository->findAllSitemap();
+        $cities = $this->cityRepository->findAllSitemap($this->today());
 
         foreach ($cities as $city) {
             $this->addUrl($section, 'app_location_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
             $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'concert', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'etudiant', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'famille', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'spectacle', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'exposition', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+
+            if ((int) $city['nb'] < self::CATEGORY_PAGES_MIN_EVENTS) {
+                continue;
+            }
+
+            foreach (self::AGENDA_TYPES as $type) {
+                $this->addUrl($section, 'app_agenda_by_type', ['type' => $type, 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            }
         }
     }
 
     private function registerPlacesRoutes(?string $section): void
     {
-        $places = $this->placeRepository->findAllSitemap();
+        $places = $this->placeRepository->findAllSitemap($this->today());
 
         foreach ($places as $place) {
             $this->addUrl(
@@ -127,18 +145,19 @@ final class SitemapSuscriber implements EventSubscriberInterface
                     'location' => $place['city_slug'],
                 ],
                 null,
-                UrlConcrete::CHANGEFREQ_NEVER,
-                0.1
+                UrlConcrete::CHANGEFREQ_DAILY,
+                0.6
             );
         }
     }
 
     private function registerEventRoutes(?string $section): void
     {
-        $events = $this->eventRepository->findAllSiteMap();
+        $today = $this->today();
+        $events = $this->eventRepository->findAllSiteMap($this->eventIndexingPolicy->getIndexableSince());
 
         foreach ($events as $event) {
-            $isEventPast = $event['endDate'] < $this->now;
+            $isEventPast = $event['endDate'] < $today;
             $this->addUrl(
                 $section,
                 'app_event_details',
@@ -148,15 +167,16 @@ final class SitemapSuscriber implements EventSubscriberInterface
                     'location' => $event['city_slug'] ?? $event['country_slug'] ?? 'unknown',
                 ],
                 $event['updatedAt'],
-                $isEventPast ? UrlConcrete::CHANGEFREQ_NEVER : UrlConcrete::CHANGEFREQ_DAILY,
-                $isEventPast ? 0.1 : 1.0
+                $isEventPast ? UrlConcrete::CHANGEFREQ_WEEKLY : UrlConcrete::CHANGEFREQ_DAILY,
+                $isEventPast ? 0.3 : 1.0
             );
         }
     }
 
     private function registerUserRoutes(?string $section): void
     {
-        $users = $this->userRepository->findAllSitemap();
+        $users = $this->userRepository->findAllSitemap($this->today());
+
         foreach ($users as $user) {
             $this->addUrl(
                 $section,
@@ -202,6 +222,11 @@ final class SitemapSuscriber implements EventSubscriberInterface
         foreach ($staticRoutes as $route) {
             $this->addUrl($section, $route);
         }
+    }
+
+    private function today(): DateTimeImmutable
+    {
+        return $this->clock->now()->setTime(0, 0);
     }
 
     private function addUrl(string $section, string $name, array $params = [], ?DateTimeInterface $lastMod = null, ?string $changefreq = null, float $priority = 0.6): void
