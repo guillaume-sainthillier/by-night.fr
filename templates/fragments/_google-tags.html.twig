@@ -1,8 +1,10 @@
 {#
     Consent: Google's consent platform (Privacy & messaging in AdSense, delivered by the AdSense tag) shows the banner
-    and sets consent mode. Everything is denied until the visitor answers, and Tag Manager (Google Analytics) only
-    loads once the platform knows the answer ("basic" consent mode), so its tags see the final consent state, and
-    only if at least one purpose was granted: a visitor who refuses never contacts Tag Manager.
+    and sets consent mode. Everything is denied until the visitor answers ("basic" consent mode). Once the platform
+    knows the answer, and only if a purpose was granted, the script below loads Tag Manager and pushes its "gtm.js"
+    event. The GA4 tag must therefore stay on the "All Pages" (Page View) trigger: AdSense's Google Tag Gateway health
+    check (gtm.js?gtg_health=1) starts the container on every page, before any consent and without that event, so an
+    "Initialization" trigger would be evaluated while consent is still denied, and never again.
     AdSense stays out of Tag Manager: it carries the banner, and handles the answer itself through the IAB TCF.
 #}
 <script>
