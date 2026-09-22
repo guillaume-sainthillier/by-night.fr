@@ -175,8 +175,14 @@ final class DateRangeType extends AbstractType
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($ranges): void {
             $data = $event->getData();
 
-            $from = ($data['from'] ?? null) ?: null;
-            $to = ($data['to'] ?? null) ?: null;
+            // Straight from the query string: "dateRange=x" or "dateRange[from][]=1" are no dates,
+            // the fields reject them as invalid input
+            if (!\is_array($data)) {
+                return;
+            }
+
+            $from = \is_string($data['from'] ?? null) && '' !== $data['from'] ? $data['from'] : null;
+            $to = \is_string($data['to'] ?? null) && '' !== $data['to'] ? $data['to'] : null;
 
             if (null === $from) {
                 return;
