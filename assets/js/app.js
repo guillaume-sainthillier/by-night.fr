@@ -17,6 +17,7 @@ import '@/js/utils/css'
 import * as Sentry from '@sentry/browser'
 // Per-element listeners (connected on every mount)
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
+import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
 import emailVerify from '@/js/listeners/email-verify'
 import formCollection from '@/js/listeners/form-collection'
@@ -80,6 +81,7 @@ class App {
         this.#listeners = [
             pages,
             contentRemovalRequest,
+            cookieSettings,
             dropzone,
             emailVerify,
             formCollection,

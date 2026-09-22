@@ -4,104 +4,129 @@
     {% do menu.addItem('Cookies', url('app_main_cookie')) %}
 {% endblock %}
 
-{% block title 'Cookies / Vie privée' %}
-{% block page_title 'Cookies / Vie privée' %}
-{% block meta_description 'Notre politique concernant vos cookies et votre vie privée.' %}
+{% block title 'Politique de cookies' %}
+{% block page_title 'Politique de cookies' %}
+{% block meta_description 'Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.' %}
 
 {% block body %}
-    <br/>
-    <p class="lead text-center">Nous souhaitons vous informer de manière claire et transparente sur l'usage des
-        cookies lors de votre navigation sur nos sites web et mobiles.</p>
+    <p class="text-muted">Dernière mise à jour : 22 septembre 2026</p>
 
-    <h2>Qu'est-ce qu'un cookie ?</h2>
+    <p class="lead">
+        Un cookie est un petit fichier déposé sur votre appareil (ordinateur, tablette, téléphone) par le site que vous
+        consultez ou par un service tiers. Sans votre accord, By Night n'utilise que les cookies nécessaires à son
+        fonctionnement : ceux qui servent à mesurer l'audience et à la publicité ne sont déposés que si vous l'acceptez.
+    </p>
+    <p>
+        <a href="{{ path('app_main_cookie') }}" class="btn btn-primary" data-cookie-consent>Gérer mes cookies</a>
+    </p>
 
-    <p>Un cookie (ou témoin de connexion) est un ensemble de données stocké sur le disque dur de votre terminal
-        (ordinateur, tablette, mobile) par le biais de votre logiciel de navigation à l'occasion de la consultation d'un
-        service en ligne.</p>
+    <h2>Cookies nécessaires au fonctionnement du site</h2>
+    <p>Indispensables au site, ils ne demandent pas votre accord.</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Cookie</th>
+                    <th>Rôle</th>
+                    <th>Durée</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>app_city</code></td>
+                    <td>Retient la dernière ville consultée, pour vous y ramener.</td>
+                    <td>1 an</td>
+                </tr>
+                <tr>
+                    <td><code>PHPSESSID</code></td>
+                    <td>Maintient votre session, par exemple une fois connecté.</td>
+                    <td>Jusqu'à la fermeture du navigateur</td>
+                </tr>
+                <tr>
+                    <td><code>REMEMBERME</code></td>
+                    <td>Vous garde connecté si vous avez coché « Se souvenir de moi ».</td>
+                    <td>1 an</td>
+                </tr>
+                <tr>
+                    <td><code>__Host-…</code></td>
+                    <td>Protège les formulaires contre les envois frauduleux.</td>
+                    <td>Jusqu'à la fermeture du navigateur</td>
+                </tr>
+                <tr>
+                    <td><code>FCCDCF</code> et cookies associés</td>
+                    <td>Enregistrent vos choix sur les cookies (plateforme de consentement de Google).</td>
+                    <td>Fixée par Google</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        La barre de recherche garde aussi vos recherches récentes dans le stockage local de votre navigateur, pour vous
+        les proposer à nouveau. Elles ne nous sont jamais transmises, et vous pouvez les effacer depuis la liste des
+        suggestions.
+    </p>
 
-    <p>Les cookies enregistrés par nous ou par des tiers lorsque vous visitez nos sites ne vous reconnaissent pas
-        personnellement en tant qu'individu, mais reconnaissent seulement l'appareil que vous êtes en train d'utiliser.
-        Les cookies ne stockent aucune donnée personnelle sensible mais donnent simplement une information sur votre
-        navigation de façon à ce que votre terminal puisse être reconnu plus tard.</p>
+    <h2>Mesure d'audience, avec votre accord</h2>
+    <p>
+        Si vous l'acceptez, Google Analytics, chargé par Google Tag Manager, mesure la fréquentation du site (pages
+        vues, durée et provenance des visites) pour nous aider à l'améliorer. Sans votre accord, Google Tag Manager n'est
+        pas chargé et aucun cookie de mesure d'audience n'est déposé.
+    </p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Cookie</th>
+                    <th>Rôle</th>
+                    <th>Durée</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>_ga</code>, <code>_ga_…</code></td>
+                    <td>Distinguent les visiteurs et leurs visites (Google Analytics).</td>
+                    <td>2 ans au plus</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <p>Les cookies ne causent aucun dommage à votre appareil, mais permettent plus facilement par exemple de retrouver
-        vos préférences, de pré-remplir certains champs et d'adapter le contenu de nos services.</p>
+    <h2>Publicité, avec votre accord</h2>
+    <p>
+        Le site affiche des publicités Google AdSense. Si vous l'acceptez, Google et ses partenaires utilisent des
+        cookies (par exemple <code>__gads</code>, <code>__gpi</code> ou <code>IDE</code>) pour choisir des publicités
+        adaptées à vos centres d'intérêt, en limiter la répétition et en mesurer l'efficacité. Sans votre accord, seules
+        des publicités limitées, sans cookie, peuvent s'afficher.
+    </p>
+    <p>
+        La liste de ces partenaires et de leurs finalités figure dans la fenêtre de consentement, sous « Gérer les
+        options », où vous pouvez faire vos choix finalité par finalité et partenaire par partenaire. Google décrit ses
+        cookies et leurs durées sur
+        <a href="https://policies.google.com/technologies/cookies?hl=fr" rel="nofollow">sa page consacrée aux cookies</a>.
+    </p>
 
-    <p>Vous seul(e) choisissez si vous souhaitez avoir des cookies enregistrés sur votre appareil et vous pouvez
-        facilement contrôler l'enregistrement des cookies. Pour une information spécifique sur la gestion et le contrôle
-        des cookies, veuillez vous référer à la rubrique 3. Vos choix concernant les cookies.</p>
-
-    <h2>Quels sont les cookies présents sur nos sites ?</h2>
-
-    <h3>2.1 Les cookies fonctionnels</h3>
-    <p>Les cookies fonctionnels que nous émettons nous permettent :</p>
+    <h2>Services tiers</h2>
+    <p>Certaines pages intègrent des services qui appliquent leur propre politique de cookies :</p>
     <ul>
-        <li>d'adapter la présentation de nos sites et espaces publicitaires aux préférences d'affichage de votre
-            terminal (langue utilisée, résolution d'affichage, système d'exploitation utilisé, etc), selon les matériels
-            et les logiciels de visualisation ou de lecture que votre terminal comporte ;
-        </li>
-        <li>d'améliorer votre expérience utilisateur en pré-remplissant certains champs de nos formulaires</li>
+        <li>Google reCAPTCHA, sur le formulaire d'inscription, pour le protéger contre les robots ;</li>
+        <li>Google Maps, sur le formulaire de création d'événement, pour localiser le lieu ;</li>
+        <li>Facebook, Google et X, uniquement si vous choisissez de vous connecter avec l'un de ces réseaux.</li>
     </ul>
 
-    <h3>2.2 Les cookies de statistiques (ou analytiques)</h3>
-    <p>Les cookies analytiques que nous émettons nous permettent de mieux connaître nos sites et d'améliorer nos
-        services en établissant des statistiques et volumes de fréquentation et d'utilisation.</p>
-
-    <h3>2.3 Les cookies publicitaires</h3>
-    <p>Les cookies publicitaires servent à afficher des publicités plus pertinentes pour vous et vos centres d'intérêt.
-        Ils sont aussi utilisés pour limiter le nombre de fois où vous voyez une publicité et pour aider à mesurer
-        l'efficacité d'une campagne publicitaire. Leur durée de vie est de 60 jours.</p>
-
-    <h3>2.4 Les cookies émis par des tiers</h3>
-    <p>Lorsque vous visitez nos sites, certains cookies ne sont pas enregistrés par nous mais par des tiers partenaires
-        pour la diffusion de publicité ciblée. Pour plus d'informations sur les cookies enregistrés par nos partenaires,
-        nous vous suggérons de visiter leur site.</p>
-    <ul>
-        <li>Google : <a href="https://www.google.fr/intl/fr/policies/technologies/cookies/" rel="nofollow">https://www.google.fr/intl/fr/policies/technologies/cookies/</a>
-        </li>
-    </ul>
-
-    <h2>Vos choix concernant les cookies</h2>
-    <p>Il est important de noter que tout paramétrage que vous pouvez entreprendre sera susceptible de modifier votre
-        navigation sur Internet et vos conditions d'accès à certains services nécessitant l'utilisation de cookies.</p>
-
-    <p>Si vous refusez l'enregistrement de ces derniers dans votre terminal, ou si vous supprimez ceux qui y sont
-        enregistrés, vous ne pourrez plus bénéficier d'un certain nombre de fonctionnalités qui peuvent être nécessaires
-        pour naviguer dans certains espaces de nos sites.</p>
-
-    <p>Vous pouvez faire le choix à tout moment d'exprimer et de modifier vos souhaits, par les moyens décrits
-        ci-dessous :</p>
-
-    <h3>3.1 Les choix qui vous sont offerts par votre logiciel de navigation</h3>
-
-    <p>Vous pouvez configurer votre logiciel de navigation de manière à ce que des cookies soient enregistrés dans votre
-        terminal ou, au contraire, qu'ils soient rejetés. Certains navigateurs vous permettent de définir des règles
-        pour gérer les cookies site par site.</p>
-
-    <p>Pour la gestion des cookies, la configuration de chaque navigateur est différente. Elle est décrite dans le menu
-        d'aide de votre navigateur, qui vous permettra de savoir de quelle manière modifier vos souhaits :</p>
-    <ul>
-        <li>Pour Internet Explorer™ : <a href="http://windows.microsoft.com/fr-FR/windows-vista/Block-or-allow-cookies"
-                                         rel="nofollow">http://windows.microsoft.com/fr-FR/windows-vista/Block-or-allow-cookies</a>
-        </li>
-        <li>Pour Safari™ : <a href="http://docs.info.apple.com/article.html?path=Safari/3.0/fr/9277.html"
-                              rel="nofollow">http://docs.info.apple.com/article.html?path=Safari/3.0/fr/9277.html</a>
-        </li>
-        <li>Pour Chrome™ : <a href="http://support.google.com/chrome/bin/answer.py?hl=fr&hlrm=en&answer=95647"
-                              rel="nofollow">http://support.google.com/chrome/bin/answer.py?hl=fr&hlrm=en&answer=95647</a>
-        </li>
-        <li>Pour Firefox™ : <a href="http://support.mozilla.org/fr/kb/activer-desactiver-cookies" rel="nofollow">http://support.mozilla.org/fr/kb/activer-desactiver-cookies</a>
-        </li>
-        <li>Pour Opera™ : <a href="http://help.opera.com/Windows/10.20/fr/cookies.html" rel="nofollow">http://help.opera.com/Windows/10.20/fr/cookies.html</a>
-        </li>
-    </ul>
-
-    <h3>3.2 Vos choix exprimés en ligne auprès de plateformes interprofessionnelles</h3>
-    <p>By Night s'engage à respecter de bonnes pratiques concernant l'usage des cookies publicitaires et vous conseille
-        de vous connecter au site <a href="http://www.youronlinechoices.com/fr/controler-ses-cookies/" rel="nofollow">http://www.youronlinechoices.com/fr/controler-ses-cookies/</a>.
-        Cette plateforme partagée par de nombreux professionnels de la publicité sur Internet vous offre la possibilité
-        de refuser ou d'accepter les cookies publicitaires utilisés par ces entreprises.</p>
-
-    <p>Notez que cette procédure n'empêchera pas l'affichage de publicités sur les sites Internet que vous visitez. Elle
-        ne bloquera que les technologies qui permettent d'adapter des publicités à vos centres d'intérêt.</p>
+    <h2>Gérer vos choix</h2>
+    <p>
+        Lors de votre première visite, un bandeau vous permet d'accepter ou de refuser les cookies de mesure d'audience
+        et de publicité. Vous pouvez changer d'avis à tout moment avec le lien « Gérer mes cookies » en bas de chaque
+        page. Refuser ne vous empêche pas d'utiliser le site.
+    </p>
+    <p>
+        Vous pouvez aussi bloquer ou supprimer les cookies depuis les réglages de votre navigateur, comme l'explique la
+        CNIL sur
+        <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/comment-se-proteger/maitriser-votre-navigateur" rel="nofollow">sa
+            page consacrée aux navigateurs</a>. Bloquer tous les cookies peut toutefois vous empêcher de vous connecter.
+    </p>
+    <p>
+        Pour en savoir plus sur le traitement de vos données personnelles, consultez nos
+        <a href="{{ path('app_legal_mentions') }}">mentions légales</a>.
+    </p>
 {% endblock %}
