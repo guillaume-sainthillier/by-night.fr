@@ -14,6 +14,7 @@ import TagsIcon from '@/js/icons/lucide/Tags'
 import Trash2Icon from '@/js/icons/lucide/Trash2'
 import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 import UserIcon from '@/js/icons/lucide/User'
+import { splitHighlights } from '@/js/utils/highlight'
 
 export default function init({
     autocompleteSelector = '#autocomplete',
@@ -281,12 +282,20 @@ function TypeIcon({ type, className = '' }) {
 function HighlightedText({ item, attribute }) {
     const highlightedValue = item.highlightResult?.[attribute]?.value || item[attribute] || ''
 
-    // Convert __aa-highlight__ tags to <mark> tags for styling
-    const html = highlightedValue
-        .replace(/__aa-highlight__/g, '<mark class="aa-HighlightedText p-0">')
-        .replace(/__\/aa-highlight__/g, '</mark>')
-
-    return <span dangerouslySetInnerHTML={{ __html: html }} />
+    // Text nodes only: the value is a member's or a feed's name, not HTML
+    return (
+        <span>
+            {splitHighlights(highlightedValue).map(({ text, highlighted }, index) =>
+                highlighted ? (
+                    <mark key={index} className="aa-HighlightedText p-0">
+                        {text}
+                    </mark>
+                ) : (
+                    <Fragment key={index}>{text}</Fragment>
+                )
+            )}
+        </span>
+    )
 }
 
 function ResultItem({ item, onRemove }) {
