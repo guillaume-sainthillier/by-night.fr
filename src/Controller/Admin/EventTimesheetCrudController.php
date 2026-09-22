@@ -32,8 +32,8 @@ final class EventTimesheetCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Timesheet')
-            ->setEntityLabelInPlural('Timesheets')
+            ->setEntityLabelInSingular('Date')
+            ->setEntityLabelInPlural('Dates')
             ->setSearchFields(['id', 'hours', 'event.name']);
     }
 

@@ -54,8 +54,8 @@ final class EventCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Event')
-            ->setEntityLabelInPlural('Events')
+            ->setEntityLabelInSingular('Événement')
+            ->setEntityLabelInPlural('Événements')
             ->setSearchFields([
                 'id',
                 'externalId',
@@ -175,7 +175,7 @@ final class EventCrudController extends AbstractCrudController
         $imageSystemName = TextField::new('imageSystem.name')->onlyOnDetail();
         $panel4 = FormField::addFieldset('Parser');
         $duplicateOf = AssociationField::new('duplicateOf')
-            ->setLabel('Duplicate de (redirige vers)')
+            ->setLabel('Doublon de (redirige vers)')
             ->autocomplete()
             ->setHelp('Si défini, cet événement redirigera vers l\'événement principal');
         $identityHash = TextField::new('identityHash', 'Empreinte d\'identité')

@@ -88,7 +88,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Event === $entity->getType() && $entity->getEvents()->count() > 0)
             ->addCssClass('btn btn-danger');
 
-        $markAsProcessed = Action::new('markAsProcessed', 'Marquer traité', 'lucide:check')
+        $markAsProcessed = Action::new('markAsProcessed', 'Marquer comme traitée', 'lucide:check')
             ->linkToCrudAction('markAsProcessed')
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus())
             ->addCssClass('btn btn-success');
@@ -98,7 +98,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus())
             ->addCssClass('btn btn-secondary');
 
-        $batchMarkAsProcessed = Action::new('batchMarkAsProcessed', 'Marquer traité', 'lucide:check')
+        $batchMarkAsProcessed = Action::new('batchMarkAsProcessed', 'Marquer comme traitée', 'lucide:check')
             ->linkToCrudAction('batchMarkAsProcessed')
             ->addCssClass('btn btn-success');
 

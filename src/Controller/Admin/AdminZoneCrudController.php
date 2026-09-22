@@ -34,8 +34,8 @@ class AdminZoneCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Admin Zone')
-            ->setEntityLabelInPlural('Admin Zones')
+            ->setEntityLabelInSingular('Zone administrative')
+            ->setEntityLabelInPlural('Zones administratives')
             ->setSearchFields(['id', 'slug', 'name', 'latitude', 'longitude', 'population', 'admin1Code', 'admin2Code']);
     }
 

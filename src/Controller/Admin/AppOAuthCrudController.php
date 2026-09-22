@@ -27,7 +27,7 @@ final class AppOAuthCrudController extends OAuthCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setEntityLabelInSingular('App social')
-            ->setEntityLabelInPlural('App sociaux');
+            ->setEntityLabelInSingular('Réseau social du site')
+            ->setEntityLabelInPlural('Réseaux sociaux du site');
     }
 }

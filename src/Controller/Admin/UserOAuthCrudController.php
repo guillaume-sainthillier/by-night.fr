@@ -37,7 +37,7 @@ final class UserOAuthCrudController extends OAuthCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setEntityLabelInSingular('User social')
-            ->setEntityLabelInPlural('User sociaux');
+            ->setEntityLabelInSingular('Réseau social de membre')
+            ->setEntityLabelInPlural('Réseaux sociaux des membres');
     }
 }
