@@ -31,6 +31,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 final class CountryRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
+    /**
+     * Country rows are edited in the admin (postal code patterns): a bounded lifetime
+     * keeps cached rows from outliving those edits, and any stale entry heals itself.
+     */
+    private const int RESULT_CACHE_LIFETIME = 3600;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Country::class);
@@ -61,7 +67,7 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
         return $qb
             ->groupBy('c')
             ->getQuery()
-            ->enableResultCache()
+            ->enableResultCache(self::RESULT_CACHE_LIFETIME)
             ->useQueryCache(true)
             ->setMaxResults(1)
             ->getOneOrNullResult();
@@ -77,9 +83,12 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
         $namesWheres = [];
 
         foreach ($dtos as $dto) {
-            if (null !== $dto->code) {
-                $idsWheres[$dto->code] = true;
-            } elseif (null !== $dto->name) {
+            // Match on the canonical code: SQLite compares ids case-sensitively, MySQL does
+            // not, and the comparator that runs afterwards is strict either way.
+            $code = $dto->getNormalizedCode();
+            if (null !== $code) {
+                $idsWheres[$code] = true;
+            } elseif (null !== $dto->name && '' !== trim($dto->name)) {
                 $namesWheres[$dto->name] = true;
             }
         }
@@ -103,7 +112,7 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
         return $qb
             ->where(implode(' OR ', $wheres))
             ->getQuery()
-            ->enableResultCache()
+            ->enableResultCache(self::RESULT_CACHE_LIFETIME)
             ->useQueryCache(true)
             ->execute();
     }

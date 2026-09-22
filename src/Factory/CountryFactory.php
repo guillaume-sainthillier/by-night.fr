@@ -55,4 +55,30 @@ final class CountryFactory extends PersistentObjectFactory
             'postalCodeRegex' => '^[0-9]{5}$',
         ]);
     }
+
+    public static function switzerland(): self
+    {
+        return self::new([
+            'id' => 'CH',
+            'name' => 'Suisse',
+            'displayName' => 'Suisse',
+            'atDisplayName' => 'en Suisse',
+            'capital' => 'Berne',
+            'locale' => 'fr',
+            'postalCodeRegex' => '^[1-9][0-9]{3}$',
+        ]);
+    }
+
+    public static function belgium(): self
+    {
+        return self::new([
+            'id' => 'BE',
+            'name' => 'Belgique',
+            'displayName' => 'Belgique',
+            'atDisplayName' => 'en Belgique',
+            'capital' => 'Bruxelles',
+            'locale' => 'fr',
+            'postalCodeRegex' => '^[1-9][0-9]{3}$',
+        ]);
+    }
 }

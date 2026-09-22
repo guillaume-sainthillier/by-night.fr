@@ -183,6 +183,24 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         self::assertNotSame($this->groupKey($base, 'exact'), $this->groupKey($sibling, 'exact'), 'Unlike the suffix strategy, a "-N" sibling is not an exact duplicate.');
     }
 
+    public function testExactStrategyFoldsCaseAndTrailingSpacesLikeTheCollation(): void
+    {
+        $upper = (new Event())->setExternalId('ABC-1')->setExternalOrigin('OpenAgenda');
+        $lowerPadded = (new Event())->setExternalId('abc-1 ')->setExternalOrigin('openagenda');
+
+        self::assertSame($this->groupKey($upper, 'exact'), $this->groupKey($lowerPadded, 'exact'), 'The unique key would reject both spellings, so they must be merged together.');
+    }
+
+    public function testExactCanonicalNeverPicksAStubWhileALiveRowExists(): void
+    {
+        $stub = (new Event())->setDuplicateOf(new Event());
+        $stub->setUpdatedAt(new DateTimeImmutable('2024-01-01'));
+        $live = new Event();
+        $live->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
+
+        self::assertSame($live, $this->selectLatestUpdated([$stub, $live]));
+    }
+
     public function testExactCanonicalPrefersTheSourceTimestampWhenEveryRowCarriesOne(): void
     {
         $staleAtSource = new Event()->setExternalUpdatedAt(new DateTimeImmutable('2022-01-01'));

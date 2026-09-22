@@ -169,7 +169,11 @@ final class OpenAgendaParser extends AbstractParser
         }
 
         $location = $data['location'];
-        $countryCode = $location['countryCode'];
+        // The feed does not always carry the clean ISO alpha-2 the docs promise: locations
+        // created by bulk imports have shown up empty or lower-cased before OpenAgenda
+        // normalises them. An unusable value must take the region/department fallback
+        // rather than travel as a code that no Country row will ever match.
+        $countryCode = self::normalizeCountryCode($location['countryCode'] ?? null);
         if (
             null === $countryCode
             && (
@@ -317,5 +321,20 @@ final class OpenAgendaParser extends AbstractParser
     public function getCommandName(): string
     {
         return 'openagenda';
+    }
+
+    /**
+     * Upper-cased, trimmed ISO alpha-2 code, or null for anything else ("", "fr " is
+     * fine, "FRA" or "France" is not).
+     */
+    private static function normalizeCountryCode(mixed $code): ?string
+    {
+        if (!\is_string($code)) {
+            return null;
+        }
+
+        $code = strtoupper(trim($code));
+
+        return 1 === preg_match('/^[A-Z]{2}$/', $code) ? $code : null;
     }
 }

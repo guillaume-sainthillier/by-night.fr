@@ -31,7 +31,9 @@ final class CountryComparator extends AbstractComparator
         \assert($entity instanceof Country);
         \assert($dto instanceof CountryDto);
 
-        if ($entity->getId() === $dto->code || $entity->getId() === $dto->name) {
+        // Compare the canonical code: an "fr" or "FR " from a feed names the same row.
+        $code = $dto->getNormalizedCode();
+        if ((null !== $code && $entity->getId() === $code) || $entity->getId() === $dto->name) {
             return new Matching($entity, 100.0);
         }
 

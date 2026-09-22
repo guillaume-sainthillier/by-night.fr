@@ -166,6 +166,40 @@ final class EventsMergeDuplicatesCommandIntegrationTest extends AppKernelTestCas
         self::assertSame($keeper->getId(), EventFactory::find(['id' => $chainedId])->getDuplicateOf()?->getId());
     }
 
+    public function testExactStrategyStripsTheIdentityOfStubsThatStillShareIt(): void
+    {
+        $connection = self::getContainer()->get(EntityManagerInterface::class)->getConnection();
+        $connection->executeStatement($connection->getDatabasePlatform()->getDropIndexSQL('event_external_id_unique', 'event'));
+
+        // A content merge from before left a redirect stub that kept its identity, and a
+        // later import created a live row under the very same identity.
+        $liveId = $this->exactDuplicate('00099', new DateTimeImmutable('2022-06-29 18:41:53'));
+        $otherCanonicalId = $this->exactDuplicate('00098', new DateTimeImmutable('2022-06-29 18:41:53'));
+        $stubId = EventFactory::createOne([
+            'externalId' => '00099',
+            'externalOrigin' => self::ORIGIN,
+            'name' => 'A2H',
+            'place' => $this->place,
+            'user' => $this->user,
+            'updatedAt' => new DateTimeImmutable('2024-01-01'),
+            'duplicateOf' => EventFactory::find(['id' => $otherCanonicalId]),
+        ])->getId();
+
+        $this->runMerge(['--strategy' => 'exact', '--origin' => self::ORIGIN]);
+
+        // The live row keeps the identity even though the stub was updated more recently
+        $live = EventFactory::find(['id' => $liveId]);
+        self::assertNull($live->getDuplicateOf());
+        self::assertSame('00099', $live->getExternalId());
+
+        // The stub loses it and still redirects where it did
+        $stub = EventFactory::find(['id' => $stubId]);
+        self::assertNull($stub->getExternalId());
+        self::assertNull($stub->getExternalOrigin());
+        self::assertSame($otherCanonicalId, $stub->getDuplicateOf()?->getId());
+        self::assertSame(1, EventFactory::count(['externalId' => '00099', 'externalOrigin' => self::ORIGIN]));
+    }
+
     /**
      * Create one of two rows sharing the exact same external identity.
      */

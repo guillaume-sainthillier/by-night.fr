@@ -15,19 +15,22 @@ use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
-use App\Utils\Comparator;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 final class Firewall implements BatchResetInterface
 {
-    public const string VERSION = '1.1';
+    public const string VERSION = '1.2';
 
     /** @var ParserData[] */
     private array $parserDatas = [];
 
-    public function __construct(private readonly Comparator $comparator, private readonly ParserDataRepository $parserDataRepository, private readonly EventContentHasher $contentHasher, private readonly EventChangeDetector $changeDetector)
-    {
+    public function __construct(
+        private readonly ParserDataRepository $parserDataRepository,
+        private readonly EventContentHasher $contentHasher,
+        private readonly EventChangeDetector $changeDetector,
+        private readonly PostalCodeChecker $postalCodeChecker,
+    ) {
     }
 
     public function loadExternalIdsData(array $ids): void
@@ -202,8 +205,9 @@ final class Firewall implements BatchResetInterface
             $dto->place->reject->addReason(Reject::BAD_PLACE_NAME);
         }
 
-        $codePostal = $this->comparator->sanitizeNumber($dto->place->city?->postalCode);
-        if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
+        // The expected postal code format depends on the country (5 digits in France,
+        // 4 in Switzerland or Belgium): the checker reads it from the Country row.
+        if (!$this->postalCodeChecker->accepts($dto->place->country, $dto->place->city?->postalCode)) {
             $dto->place->reject->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
         }
 
@@ -225,11 +229,6 @@ final class Firewall implements BatchResetInterface
                     ->setReason($dto->place->reject->getReason());
             }
         }
-    }
-
-    private function checkLengthValidity(?string $str, int $length): bool
-    {
-        return mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
     private function mapPlaceRejectToEvent(EventDto $dto): void
