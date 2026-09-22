@@ -82,9 +82,9 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_index');
         }
 
-        $errors = $form->getErrors(true);
-        foreach ($errors as $error) {
-            $this->addFlash('error', $error);
+        // The messages only: a FormError holds its form, which the session cannot serialize
+        foreach ($form->getErrors(true) as $error) {
+            $this->addFlash('error', $error->getMessage());
         }
 
         return $this->redirectToRoute('app_user_edit');
