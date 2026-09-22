@@ -29,17 +29,13 @@ final readonly class JsonLdExtension
     #[AsTwigFunction(name: 'event_json_ld', isSafe: ['html'])]
     public function eventJsonLd(Event $event): string
     {
-        $json = $this->eventJsonLd->generateEventJsonLd($event);
-
-        return \sprintf('<script type="application/ld+json">%s</script>', $json);
+        return $this->script($this->eventJsonLd->generateEventJsonLd($event));
     }
 
     #[AsTwigFunction(name: 'site_json_ld', isSafe: ['html'])]
     public function siteJsonLd(): string
     {
-        $json = $this->siteJsonLd->generateSiteJsonLd();
-
-        return \sprintf('<script type="application/ld+json">%s</script>', $json);
+        return $this->script($this->siteJsonLd->generateSiteJsonLd());
     }
 
     #[AsTwigFunction(name: 'breadcrumb_json_ld', isSafe: ['html'])]
@@ -51,6 +47,19 @@ final readonly class JsonLdExtension
             return '';
         }
 
-        return \sprintf('<script type="application/ld+json">%s</script>', $json);
+        return $this->script($json);
+    }
+
+    /**
+     * Names, places and search terms end up in these blocks: a "</script>" among them would close
+     * the element and let the rest run as HTML. JSON only carries "<", ">" and "&" inside strings,
+     * where their unicode escapes decode to the same text.
+     */
+    private function script(string $json): string
+    {
+        $unsafe = ['<', '>', '&'];
+        $escaped = array_map(static fn (string $char): string => \sprintf('\\u%04X', \ord($char)), $unsafe);
+
+        return \sprintf('<script type="application/ld+json">%s</script>', str_replace($unsafe, $escaped, $json));
     }
 }
