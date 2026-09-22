@@ -51,6 +51,24 @@ final readonly class LazyLocationFactory
     }
 
     /**
+     * Create a Location with its City loaded right away, or null when no city has this slug. For a
+     * slug the visitor sends back (the app_city cookie), which may name a city renamed or merged since:
+     * a lazy City would only fail when first read, from a template, as a server error.
+     */
+    public function createWithCity(string $slug): ?Location
+    {
+        $city = $this->cityRepository->findOneBySlug($slug);
+        if (null === $city) {
+            return null;
+        }
+
+        $location = new Location();
+        $location->setCity($city);
+
+        return $location;
+    }
+
+    /**
      * Create a Location with a lazy-loaded Country.
      * The Country entity will only be loaded from the database when accessed.
      */

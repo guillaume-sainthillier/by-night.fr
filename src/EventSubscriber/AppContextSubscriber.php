@@ -97,8 +97,8 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Fallback to cookie city when no location in URL.
-     * Uses lazy loading to defer database query.
+     * Fallback to cookie city when no location in URL. The city is loaded right away: a cookie
+     * naming a city renamed or merged since is ignored instead of breaking every page reading it.
      */
     private function resolveLocationFromCookie(Request $request): void
     {
@@ -111,11 +111,9 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
             return;
         }
 
-        try {
-            $location = $this->lazyLocationFactory->createWithLazyCity($citySlug);
+        $location = $this->lazyLocationFactory->createWithCity($citySlug);
+        if (null !== $location) {
             $this->appContext->setLocation($location);
-        } catch (RuntimeException) {
-            // Invalid cookie city, ignore silently
         }
     }
 }
