@@ -47,9 +47,10 @@ final class EventsMergeDuplicatesCommand extends Command
     /**
      * Group events sharing the exact same external identity (origin + external_id),
      * i.e. the same source event imported twice. The canonical is the most recently
-     * updated row, the one that kept tracking the source; the others become redirect
-     * stubs stripped of that identity, so the unique key on (external_id,
-     * external_origin) holds and the next import lands on the canonical.
+     * updated live row, the one that kept tracking the source; the others become
+     * redirect stubs stripped of that identity, so the unique key on (external_id,
+     * external_origin) holds and the next import lands on the canonical. Stubs left by
+     * the other strategies that still carry a shared identity lose it as well.
      */
     private const string STRATEGY_EXACT = 'exact';
 
@@ -149,21 +150,23 @@ final class EventsMergeDuplicatesCommand extends Command
 
     private function createDuplicateCandidatesQueryBuilder(?string $origin, string $strategy): QueryBuilder
     {
-        $qb = $this->eventRepository->createQueryBuilder('e')
-            ->where('e.duplicateOf IS NULL');
+        $qb = $this->eventRepository->createQueryBuilder('e');
 
-        if (self::STRATEGY_CONTENT === $strategy) {
-            // Content identity needs a name and a resolved place to group on.
-            $qb->andWhere('e.name IS NOT NULL')
-                ->andWhere('e.placeExternalId IS NOT NULL');
-        } elseif (self::STRATEGY_EXACT === $strategy) {
-            // Only rows whose identity is shared by another live row, so the scan
-            // stays proportional to the duplicates rather than to the whole table.
-            $qb->andWhere('e.externalId IS NOT NULL')
+        if (self::STRATEGY_EXACT === $strategy) {
+            // Every row still carrying an identity shared with another row, redirect
+            // stubs of earlier merges included: the unique key counts them too. The
+            // EXISTS keeps the scan proportional to the duplicates, not to the table.
+            $qb->where('e.externalId IS NOT NULL')
                 ->andWhere('e.externalOrigin IS NOT NULL')
-                ->andWhere('EXISTS (SELECT 1 FROM ' . Event::class . ' twin WHERE twin.externalId = e.externalId AND twin.externalOrigin = e.externalOrigin AND twin.duplicateOf IS NULL AND twin.id <> e.id)');
+                ->andWhere('EXISTS (SELECT 1 FROM ' . Event::class . ' twin WHERE twin.externalId = e.externalId AND twin.externalOrigin = e.externalOrigin AND twin.id <> e.id)');
+        } elseif (self::STRATEGY_CONTENT === $strategy) {
+            // Content identity needs a name and a resolved place to group on.
+            $qb->where('e.duplicateOf IS NULL')
+                ->andWhere('e.name IS NOT NULL')
+                ->andWhere('e.placeExternalId IS NOT NULL');
         } else {
-            $qb->andWhere('e.externalId IS NOT NULL')
+            $qb->where('e.duplicateOf IS NULL')
+                ->andWhere('e.externalId IS NOT NULL')
                 ->andWhere('REGEXP(e.externalId, :pattern) = true')
                 ->setParameter('pattern', '-[0-9]+$');
         }
@@ -208,7 +211,9 @@ final class EventsMergeDuplicatesCommand extends Command
         }
 
         if (self::STRATEGY_EXACT === $strategy) {
-            return \sprintf('%s|%s', $event->getExternalOrigin(), $event->getExternalId());
+            // Folded the way the columns' collation (utf8mb4_unicode_ci, PAD SPACE)
+            // compares them, so two spellings the unique key rejects land in one group.
+            return \sprintf('%s|%s', $this->foldIdentity($event->getExternalOrigin()), $this->foldIdentity($event->getExternalId()));
         }
 
         $baseId = preg_replace('/-\d+$/', '', $event->getExternalId() ?? '');
@@ -246,9 +251,29 @@ final class EventsMergeDuplicatesCommand extends Command
 
             // Re-fetch duplicate event if cleared
             $duplicate = $this->eventRepository->find($event->getId());
-            if (null === $duplicate || null !== $duplicate->getDuplicateOf()) {
+            if (null === $duplicate) {
                 continue;
             }
+
+            if (null !== $duplicate->getDuplicateOf()) {
+                // Already a stub of another event. Only the exact strategy has work
+                // left here: the identity the stub kept would trip the unique key.
+                if (self::STRATEGY_EXACT !== $strategy) {
+                    continue;
+                }
+
+                if ($io->isVerbose()) {
+                    $io->writeln(\sprintf('  [%s] Stub #%d (ext: %s) loses its identity, kept by #%d', $dryRun ? 'DRY-RUN' : 'MERGE', $duplicate->getId(), $duplicate->getExternalId(), $canonicalId));
+                }
+
+                $this->stripIdentity($duplicate);
+                ++$mergedCount;
+
+                continue;
+            }
+
+            // Read before the exact strategy strips it, so the log still shows it
+            $duplicateExternalId = $duplicate->getExternalId();
 
             $this->mergeTimesheets($canonical, $duplicate);
             $duplicate->setDuplicateOf($canonical);
@@ -263,7 +288,7 @@ final class EventsMergeDuplicatesCommand extends Command
                     '  [%s] Event #%d (ext: %s) -> #%d (ext: %s)',
                     $dryRun ? 'DRY-RUN' : 'MERGE',
                     $duplicate->getId(),
-                    $duplicate->getExternalId(),
+                    $duplicateExternalId,
                     $canonical->getId(),
                     $canonical->getExternalId()
                 ));
@@ -308,6 +333,13 @@ final class EventsMergeDuplicatesCommand extends Command
      */
     private function selectLatestUpdated(array $events): ?Event
     {
+        // A redirect stub must not become the canonical while a live row exists: the
+        // identity has to stay on the page people actually reach.
+        $liveEvents = array_values(array_filter($events, static fn (Event $event): bool => null === $event->getDuplicateOf()));
+        if ([] !== $liveEvents) {
+            $events = $liveEvents;
+        }
+
         $bySourceTimestamp = array_all($events, static fn (Event $event): bool => null !== $event->getExternalUpdatedAt());
 
         $canonical = null;
@@ -346,8 +378,7 @@ final class EventsMergeDuplicatesCommand extends Command
      */
     private function absorbDuplicate(Event $canonical, Event $duplicate): void
     {
-        $duplicate->setExternalId(null);
-        $duplicate->setExternalOrigin(null);
+        $this->stripIdentity($duplicate);
 
         foreach ($duplicate->getComments()->toArray() as $comment) {
             $duplicate->removeComment($comment);
@@ -357,6 +388,23 @@ final class EventsMergeDuplicatesCommand extends Command
         foreach ($this->eventRepository->findBy(['duplicateOf' => $duplicate]) as $chained) {
             $chained->setDuplicateOf($canonical);
         }
+    }
+
+    private function stripIdentity(Event $event): void
+    {
+        // Stubs are not indexed; no need to wake the Elasticsearch listener for this
+        $event->batchUpdate = true;
+        $event->setExternalId(null);
+        $event->setExternalOrigin(null);
+    }
+
+    /**
+     * Lower-cased and right-trimmed, which is how utf8mb4_unicode_ci compares two
+     * identities (accents are folded too, but identities are ASCII ids and hashes).
+     */
+    private function foldIdentity(?string $value): string
+    {
+        return mb_strtolower(rtrim($value ?? '', ' '));
     }
 
     /**
