@@ -15,6 +15,7 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class EventControllerTest extends WebTestCase
@@ -60,14 +61,42 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorTextContains('.page-header h1', $event->getName());
     }
 
-    private function createEvent(): Event
+    public function testAnEventThatEndedLongAgoStaysOnlineButIsNotIndexed(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('-60 days'));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
+        self::assertSelectorTextContains('#event-ended', 'Cet événement est terminé');
+    }
+
+    public function testAnUpcomingEventIsIndexable(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('meta[name="robots"]');
+        self::assertSelectorNotExists('#event-ended');
+    }
+
+    private function createEvent(?DateTimeImmutable $date = null): Event
     {
         $city = CityFactory::toulouse()->create();
-
-        return EventFactory::createOne([
+        $attributes = [
             'name' => 'Concert au Bikini',
             'place' => PlaceFactory::createOne(['city' => $city, 'country' => $city->getCountry()]),
-        ]);
+        ];
+        if (null !== $date) {
+            $attributes += ['startDate' => $date, 'endDate' => $date];
+        }
+
+        return EventFactory::createOne($attributes);
     }
 
     private function eventUrl(Event $event): string

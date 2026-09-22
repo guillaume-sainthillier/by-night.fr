@@ -74,6 +74,8 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- ./DC -->
 
     {% block metas '' %}
+    {# Pages not worth indexing (empty listings, long-ended events, empty profiles) set a "noindex" here #}
+    {% block meta_robots '' %}
 
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 

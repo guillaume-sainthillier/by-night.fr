@@ -54,6 +54,12 @@
     {% endfor %}
 {% endblock %}
 
+{% block meta_robots %}
+    {% if not event_seo.isIndexable(event) %}
+        <meta name="robots" content="noindex, follow">
+    {% endif %}
+{% endblock %}
+
 {% block og_title eventShortName %}
 {% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
 {% block og_image original %}
@@ -72,6 +78,14 @@
     {% else %}
         <div class="card" id="event">
             <div class="row g-0">
+                {% if event_seo.hasEnded(event) %}
+                    <div class="col-12">
+                        <div class="alert alert-secondary mb-0" id="event-ended">
+                            <twig:Icon name="lucide:calendar-clock" />
+                            <span>Cet événement est terminé. Retrouvez les prochaines sorties {{ event.place.location.atName }} dans <a href="{{ path('app_agenda_index', {location: event.place.locationSlug}) }}">l'agenda</a>.</span>
+                        </div>
+                    </div>
+                {% endif %}
                 {% if event.status or event.statusMessage %}
                     <div class="col-12">
                         <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
