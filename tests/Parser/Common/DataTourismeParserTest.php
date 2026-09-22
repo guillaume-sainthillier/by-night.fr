@@ -220,6 +220,22 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertNull($event->hours, 'Several distinct schedules: no single summary');
     }
 
+    public function testTheEventSpansItsPeriodsWhateverTheirOrder(): void
+    {
+        // As served for event 3491797: the latest period first
+        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+            ['startDate' => '2026-09-11', 'endDate' => '2026-09-11'],
+            ['startDate' => '2026-08-14', 'endDate' => '2026-08-14'],
+            ['startDate' => '2026-08-20', 'endDate' => '2026-08-21'],
+        ]])], null)];
+
+        $this->parser->parse(null);
+
+        $event = $this->dispatched[0];
+        self::assertSame('2026-08-14', $event->startDate?->format('Y-m-d'));
+        self::assertSame('2026-09-11', $event->endDate?->format('Y-m-d'));
+    }
+
     public function testDescriptionFallsBackToShortDescriptionThenComment(): void
     {
         $this->responses = [self::page([
