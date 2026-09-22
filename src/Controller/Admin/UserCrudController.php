@@ -90,7 +90,8 @@ final class UserCrudController extends AbstractCrudController
         $oAuth = AssociationField::new('oAuth')->autocomplete();
         $website = TextField::new('website');
         $enabled = BooleanField::new('enabled');
-        $isVerified = BooleanField::new('isVerified');
+        // "verified" goes through isVerified() and setVerified(): "isVerified" had no setter
+        $isVerified = BooleanField::new('verified');
         $panel2 = FormField::addFieldset('Médias');
         $image = VichImageField::new('imageFile', 'Image utilisateur')
             ->setHelp('Photo de profil envoyée par l\'utilisateur, prioritaire sur l\'image système.');
