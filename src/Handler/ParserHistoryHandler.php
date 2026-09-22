@@ -22,6 +22,13 @@ final class ParserHistoryHandler
         'nbExplorations' => 0,
     ];
 
+    /**
+     * Distinct sources (Event::$fromData) of the events of the batch, in first-seen order.
+     *
+     * @var list<string>
+     */
+    private array $sources = [];
+
     private ?ParserHistory $parserHistory = null;
 
     public function addExploration(): self
@@ -58,6 +65,21 @@ final class ParserHistoryHandler
         return $this->add('nbBlacklists');
     }
 
+    /**
+     * Records where one event of the batch comes from: EventDto::$fromData, the parser's
+     * display name that the event keeps as Event::$fromData. A DTO built by hand has none.
+     */
+    public function addSource(?string $source): self
+    {
+        if (!$this->isStarted() || null === $source || '' === $source || \in_array($source, $this->sources, true)) {
+            return $this;
+        }
+
+        $this->sources[] = $source;
+
+        return $this;
+    }
+
     public function stop(): ParserHistory
     {
         $this
@@ -66,7 +88,7 @@ final class ParserHistoryHandler
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNewEvents($this->getNbInserts())
             ->setUpdatedEvents($this->getNbUpdates())
-            ->setFromData('?');
+            ->setFromData($this->sources);
 
         return $this->parserHistory;
     }
@@ -101,6 +123,7 @@ final class ParserHistoryHandler
         // Call GC
         unset($this->parserHistory, $this->stats);
 
+        $this->sources = [];
         $this->stats = [
             'nbBlacklists' => 0,
             'nbInserts' => 0,

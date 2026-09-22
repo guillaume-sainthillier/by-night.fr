@@ -28,8 +28,14 @@ class ParserHistory
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $endDate;
 
-    #[ORM\Column(type: Types::STRING, length: 127)]
-    private ?string $fromData = null;
+    /**
+     * Parsers (the Event::$fromData display names) whose events the batch processed, in
+     * first-seen order; empty when none of the events carried one.
+     *
+     * @var list<string>
+     */
+    #[ORM\Column(type: Types::JSON)]
+    private array $fromData = [];
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $newEvents = 0;
@@ -72,12 +78,18 @@ class ParserHistory
         return $this;
     }
 
-    public function getFromData(): ?string
+    /**
+     * @return list<string>
+     */
+    public function getFromData(): array
     {
         return $this->fromData;
     }
 
-    public function setFromData(string $fromData): self
+    /**
+     * @param list<string> $fromData
+     */
+    public function setFromData(array $fromData): self
     {
         $this->fromData = $fromData;
 

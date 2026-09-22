@@ -16,10 +16,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 use RuntimeException;
 
@@ -52,7 +52,7 @@ final class ParserHistoryCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $startDate = DateTimeField::new('startDate');
-        $fromData = TextField::new('fromData');
+        $fromData = ArrayField::new('fromData');
         $endDate = DateTimeField::new('endDate');
         $newEvents = IntegerField::new('newEvents');
         $updatedEvents = IntegerField::new('updatedEvents');

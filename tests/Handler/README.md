@@ -115,6 +115,15 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
     - Re-importing the sibling with a moved date replaces the inherited row; re-importing the canonical re-syncs its own rows and keeps the inherited one
     - The resolution itself is covered in `tests/Import/EventFamilyResolverTest.php`, the catch-up command in `tests/Command/EventsResolveFamiliesCommandTest.php`
 
+### 14. Batch history sources (`testTheBatchHistoryRecordsTheSourceOfItsEvents`, `testTheBatchHistoryKeepsEverySourceOfAMixedBatch`, `testABatchWithoutAnySourceRecordsNone`)
+
+- **Purpose**: The `parser_history` row written per batch (the "Historiques" admin page) must say which parsers the events came from
+- **What it tests**:
+    - `fromData` (a `json` list) holds the parser display names carried by `EventDto::$fromData` (the same value as `Event::$fromData`), once each in first-seen order, no longer a `?` placeholder
+    - A DTO without a source (built by hand) adds nothing, and a batch without any stores an empty list
+    - The counters of the batch (new events) are recorded alongside
+    - The admin page rendering and the search on that column are covered in `tests/Controller/Admin/ParserHistoryCrudControllerTest.php`
+
 ## Running the Tests
 
 **Important**: These tests use **DAMA Doctrine Test Bundle** for automatic transaction rollback, providing test isolation without manual cleanup.
