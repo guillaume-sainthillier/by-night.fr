@@ -63,9 +63,9 @@ final class SowProgParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
-        $modifiedSince = $incremental ? 1_000 * (time() - 86_400) : 0;
+        $modifiedSince = null === $since ? 0 : 1_000 * self::withSafetyMargin($since)->getTimestamp();
         $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents?modifiedSince=' . $modifiedSince);
         $events = $response->toArray();
 

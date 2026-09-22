@@ -57,20 +57,20 @@ final class OpenAgendaParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         $agendasUidAndSlugs = $this->getAgendasUidAndSlugs();
 
         foreach ($agendasUidAndSlugs as $agendasUidAndSlug) {
-            $this->fetchAgendaEvents($incremental, [$agendasUidAndSlug]);
+            $this->fetchAgendaEvents($since, [$agendasUidAndSlug]);
         }
     }
 
-    private function fetchAgendaEvents(bool $incremental, iterable $agendaIdAndSlugs): void
+    private function fetchAgendaEvents(?DateTimeImmutable $since, iterable $agendaIdAndSlugs): void
     {
         foreach ($agendaIdAndSlugs as $agendaIdAndSlug) {
             [$agendaId, $agendaSlug] = $agendaIdAndSlug;
-            $events = $this->getAgendaEvents($incremental, $agendaId);
+            $events = $this->getAgendaEvents($since, $agendaId);
             foreach ($events as $event) {
                 $eventDto = $this->arrayToDto($event, $agendaSlug);
                 if (null === $eventDto) {
@@ -82,10 +82,10 @@ final class OpenAgendaParser extends AbstractParser
         }
     }
 
-    private function getAgendaEvents(bool $incremental, int $agendaId): iterable
+    private function getAgendaEvents(?DateTimeImmutable $since, int $agendaId): iterable
     {
-        $filter = $incremental
-            ? ['updatedAt' => ['gte' => new DateTimeImmutable('yesterday', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
+        $filter = null !== $since
+            ? ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]]
             : ['timings' => ['gte' => new DateTimeImmutable('now', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
 
         $after = [];

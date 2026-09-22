@@ -24,7 +24,7 @@ final class TestParser extends AbstractParser
         return 'test';
     }
 
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         $placeId = 'SP-9999999-' . random_int(0, 100000);
         $placeName = 'CECI ' . random_int(0, 50000) . 'EST UNIQUE - ' . random_int(0, 100000);

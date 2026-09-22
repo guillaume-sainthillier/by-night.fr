@@ -81,9 +81,9 @@ final class DataTourismeParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
-        $url = $incremental ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
+        $url = null !== $since ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
         $directory = $this->getFeed(\sprintf($url, $this->dataTourismeAppKey));
 
         $finder = new Finder();

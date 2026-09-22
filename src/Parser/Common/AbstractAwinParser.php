@@ -13,6 +13,7 @@ namespace App\Parser\Common;
 use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
+use DateTimeImmutable;
 use Generator;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -38,7 +39,7 @@ abstract class AbstractAwinParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         $path = $this->downloadFeed();
 

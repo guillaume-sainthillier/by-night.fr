@@ -61,7 +61,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
      * {@inheritDoc}
      */
     #[Override]
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         $path = $this->downloadCsv();
 

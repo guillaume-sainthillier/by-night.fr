@@ -37,7 +37,7 @@ final class ToulouseParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         $fichier = $this->downloadCSV();
 

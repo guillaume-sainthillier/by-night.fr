@@ -133,7 +133,8 @@ bin/console rabbitmq:setup-fabric
 bin/console messenger:setup-transports
 
 # Import events from a parser
-bin/console app:events:import <parser-name> -vv
+bin/console app:events:import <parser-name> -vv          # changes since the parser's last run
+bin/console app:events:import <parser-name> --full -vv   # whole catalogue
 
 # Process queued events
 bin/console rabbitmq:batch:consumer add_event -vv
@@ -155,6 +156,7 @@ The system imports events through a multi-stage pipeline:
     - Extend `AbstractParser`, implement `ParserInterface`
     - Each parser has a command name (e.g., `openagenda`, `toulouse.opendata`)
     - Parsers create `EventDto` objects and publish them via `EventProducer`
+    - `parse(?DateTimeImmutable $since)`: `app:events:import` passes the start of the parser's previous successful run (stored in `parser_state`, see `ParserStateRepository`) so incremental sources fetch only what changed since then; `null` (first run, or `--full`) means a full import
 
 2. **Message Queue**: Events are queued in RabbitMQ for async processing
 
