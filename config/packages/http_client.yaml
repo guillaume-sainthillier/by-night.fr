@@ -9,3 +9,12 @@ framework:
                 base_uri: 'https://api.cloudflare.com/client/v4/'
                 auth_bearer: '%env(CLOUDFLARE_API_TOKEN)%'
                 rate_limiter: 'cloudflare_purge'
+
+            # DATAtourisme API client used by App\Parser\Common\DataTourismeParser. Same
+            # mechanism: every request first takes a "datatourisme_api" token (see
+            # rate_limiter.yaml), so the published quotas hold whatever the caller does.
+            datatourisme.client:
+                base_uri: 'https://api.datatourisme.fr/v1/'
+                headers:
+                    X-API-Key: '%env(DATATOURISME_API_KEY)%'
+                rate_limiter: 'datatourisme_api'

@@ -157,6 +157,7 @@ The system imports events through a multi-stage pipeline:
     - Each parser has a command name (e.g., `openagenda`, `toulouse.opendata`)
     - Parsers create `EventDto` objects and publish them via `EventProducer`
     - `parse(?DateTimeImmutable $since)`: `app:events:import` passes the start of the parser's previous successful run (stored in `parser_state`, see `ParserStateRepository`) so incremental sources fetch only what changed since then; `null` (first run, or `--full`) means a full import
+    - `DataTourismeParser` reads the DATAtourisme API (`DATATOURISME_API_KEY`) through the `datatourisme.client` scoped HTTP client, throttled to the API quotas by the `datatourisme_api` rate limiter (`config/packages/rate_limiter.yaml`)
 
 2. **Message Queue**: Events are queued in RabbitMQ for async processing
 
