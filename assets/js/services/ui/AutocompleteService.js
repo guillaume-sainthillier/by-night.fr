@@ -1,4 +1,5 @@
 import autoComplete from '@tarekraafat/autocomplete.js'
+import { highlightMatch } from '@/js/utils/highlight'
 
 function resolveElement(element) {
     if (typeof element === 'string') {
@@ -86,9 +87,8 @@ export function create({
                 }
             },
         },
-        resultItem: {
-            highlight,
-        },
+        // The library renders each match as HTML: this engine escapes the record before marking the match
+        searchEngine: (query, record) => highlightMatch(query, record, highlight),
         events: {
             input: {
                 selection: (event) => {
