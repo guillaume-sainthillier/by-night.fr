@@ -104,7 +104,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
         $cities = $this->cityRepository->findAllSitemap();
 
         foreach ($cities as $city) {
-            $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_location_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
             $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
             $this->addUrl($section, 'app_agenda_by_type', ['type' => 'concert', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
             $this->addUrl($section, 'app_agenda_by_type', ['type' => 'etudiant', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
@@ -123,7 +123,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
                 $section,
                 'app_agenda_by_place',
                 [
-                    'slug' => $place['slug'],
+                    'placeSlug' => $place['slug'],
                     'location' => $place['city_slug'],
                 ],
                 null,
