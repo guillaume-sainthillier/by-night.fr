@@ -22,8 +22,9 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     use EntityIdentityTrait;
     use ResetPasswordRequestTrait;
 
+    // A pending request must not keep its user from being deleted
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     public function __construct(User $user, DateTimeImmutable $expiresAt, string $selector, string $hashedToken)
