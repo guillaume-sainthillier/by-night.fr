@@ -929,6 +929,43 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
     }
 
     /**
+     * After a failed batch, EventBatchHandler retries its messages one at a time through
+     * handleOne(). The failure resets the history counters, and that reset must leave the
+     * handler usable: it used to unset() a typed property, so the very next isStarted()
+     * (the first exploration of the retry) threw instead of counting nothing.
+     */
+    public function testAFailedBatchLeavesTheHistoryReadyForTheOneByOneRetry(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $container = self::getContainer();
+        $container->set(EventEntityFactory::class, new FailOnceEventEntityFactory(new EventEntityFactory(
+            $container->get(EntityProviderHandler::class),
+            $container->get(EventImageDownloadScheduler::class),
+            $container->get(EventContentHasher::class),
+        )));
+
+        $dto = $this->createRetriedEventDto();
+
+        try {
+            $this->handler->handleManyCLI([$dto]);
+            $this->fail('The simulated failure should have propagated');
+        } catch (RuntimeException $e) {
+            $this->assertSame(FailOnceEventEntityFactory::FAILURE_MESSAGE, $e->getMessage());
+        }
+
+        // A failed batch leaves no history row behind
+        $this->assertSame(0, ParserHistoryFactory::count());
+
+        // The one-by-one retry goes through handleOne(), which writes no history of its own
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'retry-001']));
+        $this->assertSame(0, ParserHistoryFactory::count());
+    }
+
+    /**
      * Merging existing events reads their timesheets and themes: both must come from a
      * single batched query, not from one lazy load per event.
      */

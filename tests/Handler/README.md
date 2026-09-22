@@ -124,6 +124,14 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
     - The counters of the batch (new events) are recorded alongside
     - The admin page rendering and the search on that column are covered in `tests/Controller/Admin/ParserHistoryCrudControllerTest.php`
 
+### 15. Failed batch then one-by-one retry (`testAFailedBatchLeavesTheHistoryReadyForTheOneByOneRetry`)
+
+- **Purpose**: `EventBatchHandler` retries a failed batch one message at a time through `handleOne()`; the history counters reset by the failure must not break that path
+- **What it tests**:
+    - The failed batch writes no `parser_history` row
+    - `handleOne()` right after the failure imports the event (a regression: `reset()` used to `unset()` a typed property, and the next `isStarted()` threw)
+    - Uses `FailOnceEventEntityFactory`, like test 10
+
 ## Running the Tests
 
 **Important**: These tests use **DAMA Doctrine Test Bundle** for automatic transaction rollback, providing test isolation without manual cleanup.

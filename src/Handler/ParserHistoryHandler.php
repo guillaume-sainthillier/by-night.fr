@@ -120,9 +120,10 @@ final class ParserHistoryHandler
 
     public function reset(): void
     {
-        // Call GC
-        unset($this->parserHistory, $this->stats);
-
+        // Plain reassignment: unset() would leave the typed properties uninitialized, and the
+        // first isStarted() of the next batch (the one-by-one retry that follows a failed
+        // batch) would throw instead of counting nothing.
+        $this->parserHistory = null;
         $this->sources = [];
         $this->stats = [
             'nbBlacklists' => 0,
