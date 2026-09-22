@@ -200,6 +200,15 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame(['0000eb03-9346-3cc8-ab23-dbb259b8e493'], $this->externalIds());
     }
 
+    public function testDatatourismeUuidStandsInForAProducerIdentifierTooLongToStore(): void
+    {
+        $this->responses = [self::page([self::apiEvent(['identifier' => str_repeat('Salle-des-fetes-Concert-du-samedi-', 5)])], null)];
+
+        $this->parser->parse(null);
+
+        self::assertSame(['0000eb03-9346-3cc8-ab23-dbb259b8e493'], $this->externalIds());
+    }
+
     public function testEveryPeriodOfTheScheduleBecomesATimesheet(): void
     {
         $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
