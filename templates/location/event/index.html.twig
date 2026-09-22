@@ -252,7 +252,12 @@
                             <div class="detail-item">
                                 <twig:Icon name="lucide:globe" />
                                 <p class="one-line">
-                                    <a rel="nofollow" href="{{ websiteContact|ensure_protocol }}">{{ websiteContact }}</a>
+                                    {% set websiteUrl = websiteContact|ensure_protocol %}
+                                    {% if websiteUrl %}
+                                        <a rel="nofollow" href="{{ websiteUrl }}">{{ websiteContact }}</a>
+                                    {% else %}
+                                        {{ websiteContact }}
+                                    {% endif %}
                                 </p>
                             </div>
                         {% endfor %}
