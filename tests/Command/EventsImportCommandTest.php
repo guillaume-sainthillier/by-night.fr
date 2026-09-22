@@ -11,6 +11,7 @@
 namespace App\Tests\Command;
 
 use App\Command\EventsImportCommand;
+use App\Parser\Common\TestParser;
 use App\Repository\ParserStateRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -130,5 +131,15 @@ final class EventsImportCommandTest extends AppKernelTestCase
     {
         $tester = new CommandTester(new EventsImportCommand($parsers, $this->parserStates, new NullLogger()));
         $tester->execute(['parser' => $parserName, ...$options]);
+    }
+
+    public function testTheTestParserIsNotAmongTheParsersOutsideDevelopment(): void
+    {
+        $parsers = new ReflectionProperty(EventsImportCommand::class, 'parsers')->getValue(self::getContainer()->get(EventsImportCommand::class));
+
+        self::assertNotEmpty($parsers);
+        foreach ($parsers as $parser) {
+            self::assertNotInstanceOf(TestParser::class, $parser);
+        }
     }
 }
