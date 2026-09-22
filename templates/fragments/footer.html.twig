@@ -43,7 +43,7 @@
                     {% for city in random_cities(country) %}
                         <li>
                             <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                            <a title="Sortir à {{ city.name }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
+                            <a title="Sortir {{ city.name|at_place }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
                                 {{ city.name }}
                             </a>
                         </li>

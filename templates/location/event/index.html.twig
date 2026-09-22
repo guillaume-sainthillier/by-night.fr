@@ -31,7 +31,7 @@
         {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
     {% else %}
         {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
-        {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_index', {location: location.city.slug})) %}
+        {% do menu.addItem('Sortir ' ~ event.placeCity|at_place, url('app_agenda_index', {location: location.city.slug})) %}
     {% endif %}
 
     {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, placeSlug: place.slug})) %}
@@ -299,9 +299,9 @@
                                 {% endif %}
                                 {% if event.placeName %}
                                     <a class="badge text-bg-info"
-                                       title="Sortir à {{ event.placeName }}"
+                                       title="Sortir {{ event.placeName|at_place }}"
                                        href="{{ path('app_agenda_by_place', {placeSlug: event.place.slug, location: event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">Événements à {{ event.placeName }}</strong>
+                                        <strong class="font-weight-normal">Événements {{ event.placeName|at_place }}</strong>
                                     </a>
                                 {% endif %}
 

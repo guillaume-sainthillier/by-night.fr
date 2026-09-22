@@ -57,18 +57,18 @@
                 Il y en a pour tous les goûts et pour tous les âges ! Des
                 <strong>visites de parcs en famille</strong> aux <strong>soirées étudiantes</strong>
                 les plus branchées dans les
-                <strong>discothèques</strong> de {{ location.name }}, trouvez l'événement qui vous correspond.
+                <strong>discothèques</strong> {{ location.name|of_place }}, trouvez l'événement qui vous correspond.
             </p>
             {% if location.isCity %}
                 <p>{{ location.appName }} centralise pour vous les
-                    <strong>événements et bons plans culturels</strong> sur la ville de {{ location.name }} et ses environs.
+                    <strong>événements et bons plans culturels</strong> sur la ville {{ location.name|of_place }} et ses environs.
                     Notre objectif : rassembler toutes les
-                    <strong>choses à faire à {{ location.name }}</strong> et vous
+                    <strong>choses à faire {{ location.atName }}</strong> et vous
                     offrir une plateforme unique pour trouver les meilleures <strong>idées de sorties</strong>.
                 </p>
             {% else %}
                 <p>{{ location.appName }} centralise pour vous les
-                    <strong>événements et bons plans culturels</strong> dans toutes les villes de {{ location.name }}.
+                    <strong>événements et bons plans culturels</strong> dans toutes les villes {{ location.name|of_place }}.
                     Notre objectif : rassembler toutes les
                     <strong>choses à faire {{ location.atName }}</strong> et vous
                     offrir une plateforme unique pour trouver les meilleures <strong>idées de sorties</strong>.
@@ -111,7 +111,7 @@
                 title_link: 'Sorties familles ' ~ location.atName,
                 text: 'Trouvez des idées pour <strong>sortir en famille</strong> ' ~ location.atName ~ ' avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
-                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de ' ~ location.name ~ ' !',
+                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près ' ~ location.name|of_place ~ ' !',
             }, {
                 title: 'Spectacle',
                 icon: 'flaticon-tickets',

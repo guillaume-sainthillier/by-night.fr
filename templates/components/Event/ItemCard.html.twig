@@ -59,7 +59,7 @@
                 <div class="detail-item">
                     <twig:Icon name="lucide:map-pin" />
                     <div>
-                        <span title="Sortir à {{ event.placeName }}">
+                        <span title="Sortir {{ event.placeName|at_place }}">
                             <strong class="font-weight-normal">{{ event.placeName }}</strong>
                         </span>
                         {% if event.placeCity %}

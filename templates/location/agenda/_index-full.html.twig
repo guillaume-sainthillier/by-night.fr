@@ -9,7 +9,7 @@
 } %}
 
 {%- block title -%}
-{% if placeName is not null %}Sortir à {{ placeName -}}{% if place %}, {{ place.cityName -}}{% endif %}
+{% if placeName is not null %}Sortir {{ placeName|at_place -}}{% if place %}, {{ place.cityName -}}{% endif %}
 {% elseif tag is not null %}{{- tag|ucfirst -}}
 {% else %}{{ type_labels[type] ?? 'Événements' }}{% endif %}
 {% if placeName is null %} {{ location.atName }}{% endif %}
@@ -17,7 +17,7 @@
 {%- endblock -%}
 
 {%- block page_title -%}
-{% if placeName is not null %}Sortir à {{ placeName -}}, {{ place.cityName -}}
+{% if placeName is not null %}Sortir {{ placeName|at_place -}}, {{ place.cityName -}}
 {% elseif tag is not null %}{{- tag|ucfirst -}}
 {% else %}{{ type_labels[type] ?? 'Événements' }}{% endif %}
 {% if placeName is null %} {{ location.atName }}{% endif %}
@@ -49,7 +49,7 @@
 {% block meta_description -%}
     {{ block('title')|striptags }}.
     {% if location.isCountry %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.country.atDisplayName }}. Découvrez les événements à ne pas manquer.{% endif %}
-    {% if location.isCity %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties à {{ location.city.name }}. Découvrez les événements à ne pas manquer.{% endif %}
+    {% if location.isCity %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.atName }}. Découvrez les événements à ne pas manquer.{% endif %}
 {%- endblock %}
 
 {% block metas %}

@@ -93,6 +93,29 @@ final class AgendaControllerTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Zénith Toulouse Métropole');
     }
 
+    public function testAPlaceAgendaContractsThePrepositionWithThePlaceArticle(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+
+        $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini?range=not-a-number');
+
+        self::assertSelectorTextContains('h1', 'Sortir au Bikini');
+    }
+
+    public function testACityAgendaContractsThePrepositionWithTheCityArticle(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        $city = CityFactory::createOne(['name' => 'Le Mans']);
+
+        $client->request('GET', \sprintf('/%s/agenda?range=not-a-number', $city->getSlug()));
+
+        self::assertSelectorTextContains('h1', 'Événements au Mans');
+    }
+
     public function testATypeAgendaNamesTheTypeLikeItsHeadingInTheBreadcrumb(): void
     {
         $this->requireRedis();

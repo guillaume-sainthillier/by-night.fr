@@ -1,6 +1,6 @@
 {% if eventsData.page == 1 and eventsData.events|length == 0 %}
-    <p>Aucun événement prévu à {{ eventsData.place.name }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
-            un événement à {{ eventsData.place.name }}</a> ?</p>
+    <p>Aucun événement prévu {{ eventsData.place.name|at_place }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
+            un événement {{ eventsData.place.name|at_place }}</a> ?</p>
 {% else %}
     {% for event in eventsData.events %}
         <twig:Event:ItemCard event="{{ event }}" />

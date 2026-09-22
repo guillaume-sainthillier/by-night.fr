@@ -12,6 +12,7 @@ namespace App\App;
 
 use App\Entity\City;
 use App\Entity\Country;
+use App\Utils\FrenchPreposition;
 
 final class Location
 {
@@ -44,7 +45,7 @@ final class Location
     public function getAtName(): ?string
     {
         if (null !== $this->city) {
-            return \sprintf('à %s', $this->city->getName());
+            return FrenchPreposition::at((string) $this->city->getName());
         }
 
         if (null !== $this->country) {
