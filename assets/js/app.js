@@ -1,3 +1,9 @@
+// Self-hosted instead of fonts.googleapis.com, which would send every visitor's IP address to Google before any
+// consent. Same weights as before; unicode-range keeps unused subsets from being downloaded.
+import '@fontsource/roboto-condensed/300.css'
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
 import '@/scss/app.scss'
 
 // Symfony UX Stimulus

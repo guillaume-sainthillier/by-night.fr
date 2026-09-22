@@ -28,4 +28,15 @@ final class ContentControllerTest extends WebTestCase
         self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
         self::assertSelectorExists('a[href="/cookie"]');
     }
+
+    public function testFontsAreSelfHosted(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/cookie');
+
+        self::assertResponseIsSuccessful();
+        // fonts.googleapis.com would send every visitor's IP address to Google before any consent
+        self::assertStringNotContainsString('fonts.googleapis.com', (string) $client->getResponse()->getContent());
+    }
 }
