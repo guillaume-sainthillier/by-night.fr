@@ -373,7 +373,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
+            // The populate pages through this query with LIMIT/OFFSET: an import batch shares its
+            // createdAt second, and without a unique tie-breaker MySQL may order those rows
+            // differently from one page to the next, indexing some twice and skipping others
             ->addOrderBy('e.createdAt', 'DESC')
+            ->addOrderBy('e.id', 'DESC')
         ;
     }
 
