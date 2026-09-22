@@ -207,10 +207,7 @@ final readonly class CountryImporter
         );
 
         // Delete all zip cities
-        $this->em->createQuery('
-            DELETE FROM App:ZipCity zc
-            WHERE zc.country = :country
-        ')
+        $this->em->createQuery(\sprintf('DELETE FROM %s zc WHERE zc.country = :country', ZipCity::class))
             ->setParameter('country', $country->getId())
             ->execute();
 
@@ -440,9 +437,9 @@ final readonly class CountryImporter
 
                 break;
             case 'FR':
-                $this->em->createQuery(" UPDATE App:AdminZone2 c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'")->execute();
-                $this->em->createQuery(" UPDATE App:City c SET c.slug = 'paris' WHERE c.slug = 'paris-1'")->execute();
-                $this->em->createQuery(" UPDATE App:AdminZone2 c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'")->execute();
+                $this->em->createQuery(\sprintf("UPDATE %s c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'", AdminZone2::class))->execute();
+                $this->em->createQuery(\sprintf("UPDATE %s c SET c.slug = 'paris' WHERE c.slug = 'paris-1'", City::class))->execute();
+                $this->em->createQuery(\sprintf("UPDATE %s c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'", AdminZone2::class))->execute();
                 $this->manualAssociation([
                     'la-defense',
                     'percy',
@@ -507,7 +504,7 @@ final readonly class CountryImporter
 
     private function deleteEmptyDatas(Country $country): void
     {
-        $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
+        $this->em->createQuery(\sprintf('DELETE FROM %s zc WHERE zc.parent IS NULL AND zc.country = :country', ZipCity::class))->execute([
             'country' => $country->getId(),
         ]);
     }
