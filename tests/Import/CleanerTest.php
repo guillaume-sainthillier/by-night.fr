@@ -89,6 +89,50 @@ final class CleanerTest extends AppKernelTestCase
         self::assertEquals(128, \strlen((string) $dto->themes[0]->name));
     }
 
+    public function testCleanEventFitsTheEventColumns(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->name = str_repeat('é', 300);
+        $dto->source = 'https://example.org/' . str_repeat('a', 300);
+        $dto->imageUrl = 'https://example.org/' . str_repeat('b', 300) . '.jpg';
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertSame(255, mb_strlen((string) $dto->name));
+        self::assertNull($dto->source, 'A cut link would lead nowhere');
+        self::assertNull($dto->imageUrl);
+    }
+
+    public function testCleanEventKeepsLinksThatFit(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->source = 'https://openagenda.com/agendas/1/events/2';
+        $dto->imageUrl = 'https://cdn.openagenda.com/main/a.jpg';
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertSame('https://openagenda.com/agendas/1/events/2', $dto->source);
+        self::assertSame('https://cdn.openagenda.com/main/a.jpg', $dto->imageUrl);
+    }
+
+    public function testCleanPlaceAndCityFitTheirColumns(): void
+    {
+        $place = new PlaceDto();
+        $place->name = str_repeat('Salle ', 60);
+        $place->street = str_repeat('Chemin de Mi-Chemin ', 10);
+        $city = new CityDto();
+        $city->name = str_repeat('Saint-', 30);
+
+        $this->cleaner->cleanPlace($place);
+        $this->cleaner->cleanCity($city);
+
+        self::assertLessThanOrEqual(255, mb_strlen((string) $place->name));
+        self::assertLessThanOrEqual(127, mb_strlen((string) $place->street));
+        self::assertLessThanOrEqual(127, mb_strlen((string) $city->name));
+    }
+
     /**
      * @param string[]|null $websites
      * @param string[]|null $expected
