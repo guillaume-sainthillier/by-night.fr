@@ -93,6 +93,7 @@ final readonly class CountryImporter
 
             $adminCode1 = $this->formatAdminZoneCode($data[10]);
             $adminCode2 = $this->formatAdminZoneCode($data[11]);
+            $country = $this->managedCountry($country);
 
             $existingEntity = $this->em->getRepository($entity::class)->find((int) $data[0]);
             if (null !== $existingEntity) {
@@ -182,6 +183,23 @@ final readonly class CountryImporter
         return $code;
     }
 
+    /**
+     * The loops clear the entity manager every few hundred rows, which detaches the country they
+     * attach each row to: a detached country reads as a new entity on the next flush ("A new entity
+     * was found through the relationship"), so it is fetched back as a reference first.
+     */
+    private function managedCountry(Country $country): Country
+    {
+        if ($this->em->contains($country)) {
+            return $country;
+        }
+
+        $reference = $this->em->getReference(Country::class, $country->getId());
+        \assert($reference instanceof Country);
+
+        return $reference;
+    }
+
     private function sanitizeAdminZone(AdminZone $entity): void
     {
         if ('FR' == $entity->getCountry()->getId() && $entity instanceof AdminZone2) {
@@ -225,6 +243,7 @@ final readonly class CountryImporter
             ++$i;
 
             $city = new ZipCity();
+            $country = $this->managedCountry($country);
 
             $adminCode1 = $this->formatAdminZoneCode($data[4]);
             $adminCode2 = $this->formatAdminZoneCode($data[6]);
