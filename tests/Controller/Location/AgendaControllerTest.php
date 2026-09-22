@@ -79,6 +79,33 @@ final class AgendaControllerTest extends WebTestCase
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
     }
 
+    public function testAPlaceAgendaKeepsThePlaceNameAsWritten(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        PlaceFactory::createOne(['name' => 'Zénith Toulouse Métropole', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+
+        // An invalid filter skips the Elasticsearch query and renders the listing with no result
+        $client->request('GET', '/toulouse/agenda/sortir-a/zenith-toulouse-metropole?range=not-a-number');
+
+        // |capitalize used to lower-case everything after the first letter: "Zénith toulouse métropole"
+        self::assertSelectorTextContains('h1', 'Zénith Toulouse Métropole');
+    }
+
+    public function testATypeAgendaNamesTheTypeLikeItsHeadingInTheBreadcrumb(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse/agenda/sortir/etudiant?range=not-a-number');
+
+        self::assertSelectorTextContains('h1', 'Soirées étudiantes');
+        // The breadcrumb used to show the raw route parameter: "Etudiant"
+        self::assertAnySelectorTextSame('.breadcrumb-item', 'Soirées étudiantes');
+    }
+
     /**
      * The listing page reads the event types through the Redis-backed cache, which CI does not run.
      */

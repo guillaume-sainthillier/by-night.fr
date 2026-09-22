@@ -1,27 +1,25 @@
 {% extends 'layouts/with-widget.html.twig' %}
 
+{% set type_labels = {
+    concert: 'Concerts',
+    etudiant: 'Soirées étudiantes',
+    exposition: 'Expositions',
+    famille: 'Sorties familles',
+    spectacle: 'Spectacles',
+} %}
+
 {%- block title -%}
-{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.cityName -}}{% endif %}
-{% elseif tag is not null %}{{- tag|capitalize -}}
-{% elseif type == 'exposition' %}Expositions
-{% elseif type == 'concert' %}Concerts
-{% elseif type == 'famille' %}Sorties familles
-{% elseif type == 'spectacle' %}Spectacles
-{% elseif type == 'etudiant' %}Soirées étudiantes
-{% else %}Événements{% endif %}
+{% if placeName is not null %}Sortir à {{ placeName -}}{% if place %}, {{ place.cityName -}}{% endif %}
+{% elseif tag is not null %}{{- tag|ucfirst -}}
+{% else %}{{ type_labels[type] ?? 'Événements' }}{% endif %}
 {% if placeName is null %} {{ location.atName }}{% endif %}
 {% if page > 1 %} (Page {{ page }}){% endif %}
 {%- endblock -%}
 
 {%- block page_title -%}
-{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.cityName -}}
-{% elseif tag is not null %}{{- tag|capitalize -}}
-{% elseif type == 'exposition' %}Expositions
-{% elseif type == 'concert' %}Concerts
-{% elseif type == 'famille' %}Sorties familles
-{% elseif type == 'spectacle' %}Spectacles
-{% elseif type == 'etudiant' %}Soirées étudiantes
-{% else %}Événements{% endif %}
+{% if placeName is not null %}Sortir à {{ placeName -}}, {{ place.cityName -}}
+{% elseif tag is not null %}{{- tag|ucfirst -}}
+{% else %}{{ type_labels[type] ?? 'Événements' }}{% endif %}
 {% if placeName is null %} {{ location.atName }}{% endif %}
 {%- endblock -%}
 
@@ -35,11 +33,11 @@
     {% do menu.addItem('Agenda', url('app_agenda_index', {location: location.slug})) %}
 
     {% if placeName is not null %}
-        {% do menu.addItem(placeName|capitalize, url('app_agenda_by_place', {placeSlug: placeSlug, location: location.slug})) %}
+        {% do menu.addItem(placeName, url('app_agenda_by_place', {placeSlug: placeSlug, location: location.slug})) %}
     {% elseif tagEntity is defined and tagEntity is not null %}
-        {% do menu.addItem(tag|capitalize, url('app_agenda_by_tag', {tagSlug: tagEntity.slug, tagId: tagEntity.id, location: location.slug})) %}
+        {% do menu.addItem(tag|ucfirst, url('app_agenda_by_tag', {tagSlug: tagEntity.slug, tagId: tagEntity.id, location: location.slug})) %}
     {% elseif type is not null %}
-        {% do menu.addItem(type|capitalize, url('app_agenda_by_type', {type: type, location: location.slug})) %}
+        {% do menu.addItem(type_labels[type], url('app_agenda_by_type', {type: type, location: location.slug})) %}
     {% endif %}
     {% if page > 1 %}
         {% do menu.addItem('Page ' ~ page, url('app_agenda_index', {page: page, location: location.slug})) %}
