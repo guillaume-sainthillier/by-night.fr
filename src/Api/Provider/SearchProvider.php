@@ -21,6 +21,7 @@ use App\Entity\Tag;
 use App\Entity\User;
 use App\SearchRepository\CityElasticaRepository;
 use App\SearchRepository\EventElasticaRepository;
+use App\SearchRepository\ResultWindow;
 use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\HybridResult;
@@ -57,6 +58,9 @@ final readonly class SearchProvider implements ProviderInterface
 
         // Divide limit by 4 to get items per type (events, cities, users, tags)
         $itemsPerType = max(1, (int) ceil($limit / 4));
+        if (!ResultWindow::contains($page, $itemsPerType)) {
+            return [];
+        }
 
         // Get paginated hybrid results from each repository
         $eventsPaginator = $this->getEventsPaginator($query, $page, $itemsPerType);

@@ -16,6 +16,7 @@ use App\Repository\EventRepository;
 use App\Repository\UserRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
+use App\SearchRepository\ResultWindow;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Pagerfanta\PagerfantaInterface;
@@ -34,6 +35,9 @@ final class SearchController extends AbstractController
         $q = trim($request->query->get('q') ?? '');
         $type = $request->query->get('type');
         $page = max($request->query->getInt('page'), 1);
+        if (!ResultWindow::contains($page, self::ITEMS_PER_PAGE)) {
+            throw $this->createNotFoundException();
+        }
 
         if ($type && !\in_array($type, ['evenements', 'membres'], true)) {
             $type = null;

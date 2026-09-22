@@ -23,6 +23,7 @@ use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
+use App\SearchRepository\ResultWindow;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -116,6 +117,8 @@ final class AgendaController extends BaseController
                 self::EVENT_PER_PAGE,
                 ['view' => 'events:agenda:list'],
             );
+            // Pages past the result window redirect to the last one below
+            $events->setMaxNbPages(ResultWindow::getMaxPages(self::EVENT_PER_PAGE));
         } else {
             $isValid = false;
             $events = $this->createEmptyPaginator($page, self::EVENT_PER_PAGE);
