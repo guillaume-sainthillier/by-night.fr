@@ -17,6 +17,73 @@ use PHPUnit\Framework\TestCase;
 
 class EventTest extends TestCase
 {
+    public function testSessionsAreTheTimesheetsInChronologicalOrder(): void
+    {
+        $event = new Event();
+        $event->setStartDate(new DateTimeImmutable('2026-10-03'));
+        $event->setEndDate(new DateTimeImmutable('2026-10-10'));
+        $event->addTimesheet($this->sessionOn('2026-10-10', 'À 21h00'));
+        $event->addTimesheet($this->sessionOn('2026-10-03', 'À 20h30'));
+
+        self::assertSame(
+            ['2026-10-03', '2026-10-10'],
+            array_map(static fn (EventTimesheet $session): ?string => $session->getStartAt()?->format('Y-m-d'), $event->getSessions()),
+        );
+    }
+
+    public function testAnEventWithoutTimesheetsHasOneSessionSpanningItsRange(): void
+    {
+        $event = new Event();
+        $event->setStartDate(new DateTimeImmutable('2026-10-03'));
+        $event->setEndDate(new DateTimeImmutable('2026-10-05'));
+        $event->setHours('De 10h à 18h');
+
+        $sessions = $event->getSessions();
+
+        self::assertCount(1, $sessions);
+        self::assertSame('2026-10-03', $sessions[0]->getStartAt()?->format('Y-m-d'));
+        self::assertSame('2026-10-05', $sessions[0]->getEndAt()?->format('Y-m-d'));
+        self::assertSame('De 10h à 18h', $sessions[0]->getHours());
+        self::assertCount(0, $event->getTimesheets(), 'The synthesized session is not a timesheet row.');
+    }
+
+    public function testSessionForPrefersTheFirstSessionOverlappingTheWindow(): void
+    {
+        $event = new Event();
+        $event->addTimesheet($this->sessionOn('2026-09-25'));
+        $event->addTimesheet($this->sessionOn('2026-09-27'));
+        $event->addTimesheet($this->sessionOn('2026-10-10'));
+
+        $day = static fn (?EventTimesheet $session): ?string => $session?->getStartAt()?->format('Y-m-d');
+
+        self::assertSame('2026-09-27', $day($event->getSessionFor(new DateTimeImmutable('2026-09-26'), new DateTimeImmutable('2026-09-28'))), 'The session the visitor searched for.');
+        self::assertSame('2026-09-27', $day($event->getSessionFor(new DateTimeImmutable('2026-09-26'))), 'The next session as of that day.');
+        self::assertSame('2026-09-25', $day($event->getSessionFor(new DateTimeImmutable('2026-09-25'))), 'A session ending today is still on.');
+        self::assertSame('2026-09-27', $day($event->getSessionFor(new DateTimeImmutable('2026-09-26'), new DateTimeImmutable('2026-09-26'))), 'Nothing in the window: the next session.');
+        self::assertSame('2026-10-10', $day($event->getSessionFor(new DateTimeImmutable('2026-10-11'))), 'All over: the last session.');
+        self::assertNull(new Event()->setStartDate(null)->getSessionFor(), 'No date at all, nothing to show.');
+    }
+
+    public function testCountUpcomingSessions(): void
+    {
+        $event = new Event();
+        $event->addTimesheet($this->sessionOn('2026-09-25'));
+        $event->addTimesheet($this->sessionOn('2026-09-27'));
+        $event->addTimesheet($this->sessionOn('2026-10-10'));
+
+        self::assertSame(3, $event->countUpcomingSessions(new DateTimeImmutable('2026-09-25')));
+        self::assertSame(2, $event->countUpcomingSessions(new DateTimeImmutable('2026-09-26')));
+        self::assertSame(0, $event->countUpcomingSessions(new DateTimeImmutable('2026-10-11')));
+    }
+
+    private function sessionOn(string $date, ?string $hours = null): EventTimesheet
+    {
+        return new EventTimesheet()
+            ->setStartAt(new DateTimeImmutable($date))
+            ->setEndAt(new DateTimeImmutable($date))
+            ->setHours($hours);
+    }
+
     public function testMajEndDateSetsEndDateFromStartDateWhenNoTimesheets(): void
     {
         $event = new Event();

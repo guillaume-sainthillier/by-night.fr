@@ -229,6 +229,8 @@ final readonly class EventFamilyResolver
             }
         }
 
+        $changed = false;
+
         $own = [];
         foreach ($canonical->getOwnTimesheets() as $timesheet) {
             if (null === $timesheet->getStartAt()) {
@@ -246,6 +248,7 @@ final readonly class EventFamilyResolver
             $endAt = $canonical->getEndDate() ?? $startAt;
             $canonical->addTimesheet($this->timesheet($startAt, $endAt, $canonical->getHours(), null));
             $own[$this->key($startAt, $endAt, $canonical->getHours())] = true;
+            $changed = true;
         }
 
         /** @var array<string, array{0: DateTimeImmutable, 1: DateTimeImmutable, 2: string|null, 3: Event}> $desired */
@@ -272,10 +275,18 @@ final readonly class EventFamilyResolver
             }
 
             $canonical->removeTimesheet($inherited);
+            $changed = true;
         }
 
         foreach ($desired as [$startAt, $endAt, $hours, $lender]) {
             $canonical->addTimesheet($this->timesheet($startAt, $endAt, $hours, $lender));
+            $changed = true;
+        }
+
+        // Sessions are indexed and the search listener only watches the event row: an
+        // inherited date coming or going must mark the canonical updated.
+        if ($changed) {
+            $canonical->setUpdatedAt(new DateTimeImmutable());
         }
 
         $this->realign($canonical);

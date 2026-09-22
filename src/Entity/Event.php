@@ -22,6 +22,7 @@ use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -1347,5 +1348,81 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function getInheritedTimesheets(): ReadableCollection
     {
         return $this->timesheets->filter(static fn (EventTimesheet $timesheet): bool => $timesheet->isInherited());
+    }
+
+    /**
+     * Every occurrence of the event in chronological order: its timesheets, own and
+     * inherited, or its date range when it has none (imported before the timesheet
+     * model, or by a parser that only knows a range). One entry per session is what
+     * the agenda indexes, filters and sorts on.
+     *
+     * @return list<EventTimesheet>
+     */
+    #[Groups(['elasticsearch:event:details'])]
+    public function getSessions(): array
+    {
+        $sessions = $this->timesheets->toArray();
+        if ([] === $sessions) {
+            if (null === $this->startDate) {
+                return [];
+            }
+
+            // Transient: never added to the collection, so never persisted
+            $sessions = [
+                new EventTimesheet()
+                    ->setStartAt($this->startDate)
+                    ->setEndAt($this->endDate ?? $this->startDate)
+                    ->setHours($this->hours),
+            ];
+        }
+
+        usort($sessions, static fn (EventTimesheet $a, EventTimesheet $b): int => [$a->getStartAt(), $a->getEndAt()] <=> [$b->getStartAt(), $b->getEndAt()]);
+
+        return $sessions;
+    }
+
+    /**
+     * The session to show for the event as of a day, or within a window: the first one
+     * overlapping the window, else the first one still running or upcoming on that day,
+     * else the last one once they are all over.
+     */
+    public function getSessionFor(?DateTimeInterface $from = null, ?DateTimeInterface $to = null): ?EventTimesheet
+    {
+        $sessions = $this->getSessions();
+        if ([] === $sessions) {
+            return null;
+        }
+
+        $fromDay = ($from ?? new DateTimeImmutable())->format('Y-m-d');
+        $toDay = $to?->format('Y-m-d');
+
+        $upcoming = array_values(array_filter($sessions, static fn (EventTimesheet $session): bool => self::sessionEndDay($session) >= $fromDay));
+        foreach ($upcoming as $session) {
+            if (null === $toDay || self::sessionStartDay($session) <= $toDay) {
+                return $session;
+            }
+        }
+
+        return $upcoming[0] ?? $sessions[\count($sessions) - 1];
+    }
+
+    /**
+     * Number of sessions still running or upcoming as of a day.
+     */
+    public function countUpcomingSessions(?DateTimeInterface $from = null): int
+    {
+        $fromDay = ($from ?? new DateTimeImmutable())->format('Y-m-d');
+
+        return \count(array_filter($this->getSessions(), static fn (EventTimesheet $session): bool => self::sessionEndDay($session) >= $fromDay));
+    }
+
+    private static function sessionStartDay(EventTimesheet $session): string
+    {
+        return $session->getStartAt()?->format('Y-m-d') ?? '';
+    }
+
+    private static function sessionEndDay(EventTimesheet $session): string
+    {
+        return ($session->getEndAt() ?? $session->getStartAt())?->format('Y-m-d') ?? '';
     }
 }

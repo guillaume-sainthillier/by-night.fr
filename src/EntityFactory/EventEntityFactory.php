@@ -50,8 +50,11 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTimeImmutable::createFromInterface($dto->externalUpdatedAt));
 
-        // Sync timesheets from DTO
-        $this->syncTimesheets($entity, $dto);
+        // Sync timesheets from DTO. Sessions are indexed and the search listener only
+        // watches the event row: a timesheet change alone must still mark it updated.
+        if ($this->syncTimesheets($entity, $dto)) {
+            $entity->setUpdatedAt(new DateTimeImmutable());
+        }
 
         $entity->setStartDate(null === $dto->startDate ? null : DateTimeImmutable::createFromInterface($dto->startDate));
         $entity->setEndDate(null === $dto->endDate ? null : DateTimeImmutable::createFromInterface($dto->endDate));
@@ -175,65 +178,72 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
     /**
      * Sync timesheets from DTO to entity.
-     * - Updates hours for existing timesheets (matching start/end dates)
-     * - Adds new timesheets from DTO
-     * - Removes timesheets not present in DTO
+     * - Keeps the timesheets the DTO still carries (same dates and hours label)
+     * - Adds the new ones
+     * - Removes the ones the DTO no longer carries
      *
      * Only the event's own timesheets are the import's to sync: the ones it inherits
      * from the duplicate siblings of its family (see EventFamilyResolver) are left alone.
+     *
+     * @return bool whether any timesheet was added or removed
      */
-    private function syncTimesheets(Event $entity, EventDto $dto): void
+    private function syncTimesheets(Event $entity, EventDto $dto): bool
     {
+        $changed = false;
         $existingTimesheets = $entity->getOwnTimesheets()->toArray();
 
-        // Build a map of existing timesheets by their start/end dates for quick lookup
-        $existingMap = [];
+        /** @var array<string, true> $existingKeys */
+        $existingKeys = [];
         foreach ($existingTimesheets as $existing) {
-            $key = $this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt());
-            $existingMap[$key] = $existing;
+            $existingKeys[$this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())] = true;
         }
 
-        // Track which DTOs we've processed
-        $processedKeys = [];
-
-        // Process DTOs: update existing or add new
+        /** @var array<string, true> $wantedKeys */
+        $wantedKeys = [];
         foreach ($dto->timesheets as $timesheetDto) {
             $startAt = null === $timesheetDto->startAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->startAt);
             $endAt = null === $timesheetDto->endAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->endAt);
-            $key = $this->getTimesheetKey($startAt, $endAt);
+            $key = $this->getTimesheetKey($startAt, $endAt, $timesheetDto->hours);
+            $wantedKeys[$key] = true;
 
-            if (isset($existingMap[$key])) {
-                // Update existing timesheet hours
-                $existingMap[$key]->setHours($timesheetDto->hours);
-            } else {
-                // Add new timesheet
-                $timesheet = new EventTimesheet();
-                $timesheet->setStartAt($startAt);
-                $timesheet->setEndAt($endAt);
-                $timesheet->setHours($timesheetDto->hours);
-                $entity->addTimesheet($timesheet);
+            if (isset($existingKeys[$key])) {
+                continue;
             }
 
-            $processedKeys[] = $key;
+            $timesheet = new EventTimesheet();
+            $timesheet->setStartAt($startAt);
+            $timesheet->setEndAt($endAt);
+            $timesheet->setHours($timesheetDto->hours);
+            $entity->addTimesheet($timesheet);
+            $existingKeys[$key] = true;
+            $changed = true;
         }
 
-        // Remove timesheets that are not in the DTO
         foreach ($existingTimesheets as $existing) {
-            $key = $this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt());
-            if (!\in_array($key, $processedKeys, true)) {
-                $entity->removeTimesheet($existing);
+            if (isset($wantedKeys[$this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())])) {
+                continue;
             }
+
+            $entity->removeTimesheet($existing);
+            $changed = true;
         }
+
+        return $changed;
     }
 
     /**
-     * Generate a unique key for a timesheet based on start and end dates.
+     * A timesheet is stored as a pair of dates and an hours label, so that is its
+     * identity. The time of day a source sends is dropped: two sessions on the same
+     * day only differ by their label, and an unchanged session keeps its row across
+     * imports instead of being deleted and recreated.
      */
-    private function getTimesheetKey(?DateTimeImmutable $startAt, ?DateTimeImmutable $endAt): string
+    private function getTimesheetKey(?DateTimeImmutable $startAt, ?DateTimeImmutable $endAt, ?string $hours): string
     {
-        $start = $startAt?->format('Y-m-d H:i:s') ?? 'null';
-        $end = $endAt?->format('Y-m-d H:i:s') ?? 'null';
-
-        return $start . '|' . $end;
+        return \sprintf(
+            '%s|%s|%s',
+            $startAt?->format('Y-m-d') ?? 'null',
+            $endAt?->format('Y-m-d') ?? 'null',
+            $hours ?? '',
+        );
     }
 }

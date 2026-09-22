@@ -126,6 +126,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             // Load themes before categories to avoid multiple queries for categories when themes are loaded
             $loadThemes();
             $loadCategories();
+            // Sessions are indexed, one per timesheet
+            $loadTimesheets();
         }
 
         if ('events:import' === $view) {

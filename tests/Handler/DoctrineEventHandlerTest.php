@@ -941,6 +941,65 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame('2026-10-11', $canonical->getEndDate()?->format('Y-m-d'));
     }
 
+    public function testUnchangedSessionsKeepTheirRowsAcrossImports(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // Two sessions on the same day, told apart by their hours label
+        $workshop = function (string $afternoonHours, string $description) {
+            $dto = $this->createSessionEventDto('oa-1', '2026-10-03');
+            $dto->description = $description;
+
+            $afternoon = new EventTimesheetDto();
+            $afternoon->startAt = new DateTime('2026-10-03 14:00:00');
+            $afternoon->endAt = new DateTime('2026-10-03 16:00:00');
+            $afternoon->hours = $afternoonHours;
+            $dto->timesheets[] = $afternoon;
+
+            return $dto;
+        };
+
+        $this->handler->handleOne($workshop('À 14h00', 'Un atelier de poterie pour découvrir le tour, ouvert à tous les niveaux.'));
+
+        $event = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
+        $this->assertNotNull($event);
+        $rowIds = $this->timesheetIdsByHours($event);
+        $this->assertSame(['À 14h00', 'À 20h30'], array_keys($rowIds), 'Same day, two sessions: two rows');
+
+        // The description changes, the sessions do not: their rows survive untouched even
+        // though the source sends a time of day and the rows are stored as dates
+        $this->handler->handleOne($workshop('À 14h00', 'Un atelier de poterie pour découvrir le tour, désormais ouvert aux enfants.'));
+
+        $event = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
+        $this->assertNotNull($event);
+        $this->assertSame($rowIds, $this->timesheetIdsByHours($event), 'Unchanged sessions keep their rows');
+
+        // One session's label changes: only that row is replaced
+        $this->handler->handleOne($workshop('À 15h00', 'Un atelier de poterie pour découvrir le tour, désormais ouvert aux enfants.'));
+
+        $event = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
+        $this->assertNotNull($event);
+        $newRowIds = $this->timesheetIdsByHours($event);
+        $this->assertSame(['À 15h00', 'À 20h30'], array_keys($newRowIds));
+        $this->assertSame($rowIds['À 20h30'], $newRowIds['À 20h30'], 'The untouched session keeps its row');
+    }
+
+    /**
+     * @return array<string, int|null> timesheet id by hours label, in label order
+     */
+    private function timesheetIdsByHours(Event $event): array
+    {
+        $ids = [];
+        foreach ($event->getTimesheets() as $timesheet) {
+            $ids[(string) $timesheet->getHours()] = $timesheet->getId();
+        }
+
+        ksort($ids);
+
+        return $ids;
+    }
+
     /**
      * One OpenAgenda record of the same workshop: same title, description and venue,
      * its own uid and its own single session.

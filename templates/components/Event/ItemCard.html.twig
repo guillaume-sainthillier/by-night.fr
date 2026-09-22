@@ -1,5 +1,7 @@
 {# @var event \App\Entity\Event #}
-{% props event %}
+{# @var from \DateTimeInterface|null the day the listing starts from (today by default) #}
+{# @var to \DateTimeInterface|null the day the listing ends, when a window was searched #}
+{% props event, from = null, to = null %}
 
 <div class="card card-event card-layout scroll-item">
     {% if event.status or event.statusMessage %}
@@ -21,36 +23,38 @@
                     <span>{{ event.name }}</span>
                 </a>
             </h3>
-            <div class="detail-item">
-                {% set startDate = event.startDate|date('d/m/Y') %}
-                {% set endDate = event.endDate|date('d/m/Y') %}
+            {# The session the visitor is looking for, not the event's overall range #}
+            {% set session = event.sessionFor(from, to) %}
+            {% set otherDates = event.countUpcomingSessions(from) - 1 %}
+            {% if session %}
+                <div class="detail-item">
+                    <twig:Icon name="lucide:calendar-days" />
+                    <div>
+                        {% if session.endAt == null or session.startAt|date('Y-m-d') == session.endAt|date('Y-m-d') %}
+                            <time datetime="{{ session.startAt|date('Y-m-d') }}">
+                                {{ session.startAt|date('d/m/Y') }}
+                            </time>
+                        {% else %}
+                            <time datetime="{{ session.startAt|date('Y-m-d') }}">
+                                {{ session.startAt|date('d/m/Y') }}
+                            </time>
+                            -
 
-                <twig:Icon name="lucide:calendar-days" />
-                <div>
-                    {% if event.endDate == null or event.startDate == event.endDate %}
-                        <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
-                            {{ startDate }}
-                        </time>
-                    {% else %}
-                        <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">
-                            {{ startDate }}
-                        </time>
-                        -
-
-                        <time datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">
-                            {{ endDate }}
-                        </time>
-                    {% endif %}
-                    <small class="text-muted">
-                        {%- if event.timesheets|length > 0 and event.timesheets|first.hours %}
-                            - {{ event.timesheets|first.hours }}
-                            {%- if event.timesheets|length > 1 %} (+{{ event.timesheets|length - 1 }}){% endif %}
-                        {%- elseif event.hours %}
-                            - {{ event.hours }}
-                        {%- endif -%}
-                    </small>
+                            <time datetime="{{ session.endAt|date('Y-m-d') }}">
+                                {{ session.endAt|date('d/m/Y') }}
+                            </time>
+                        {% endif %}
+                        <small class="text-muted">
+                            {%- if session.hours %}
+                                - {{ session.hours }}
+                            {%- endif %}
+                            {%- if otherDates > 0 %}
+                                (+{{ otherDates }} autre{{ otherDates > 1 ? 's' }} date{{ otherDates > 1 ? 's' }})
+                            {%- endif -%}
+                        </small>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             {% if event.placeName %}
                 <div class="detail-item">
                     <twig:Icon name="lucide:map-pin" />

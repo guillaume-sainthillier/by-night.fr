@@ -1,5 +1,5 @@
 {% if events.nbResults > 0 %}
-    <twig:Event:ListGridVertical events="{{ events }}" stretched="{{ true }}" />
+    <twig:Event:ListGridVertical events="{{ events }}" stretched="{{ true }}" from="{{ search.from }}" to="{{ search.to }}" />
 
     {% if events.hasNextPage() %}
         <div class="text-center my-4">

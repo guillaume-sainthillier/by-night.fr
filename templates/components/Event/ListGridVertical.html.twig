@@ -1,10 +1,12 @@
 {# @var events iterable<\App\Entity\Event> #}
-{% props events, stretched = false %}
+{# @var from \DateTimeInterface|null the day the listing starts from, passed down to the cards #}
+{# @var to \DateTimeInterface|null the day the listing ends, when a window was searched #}
+{% props events, stretched = false, from = null, to = null %}
 
 <div class="row row-cards row-deck">
     {% for i, event in events %}
         <div class="col-sm-6 col-lg-4{{ stretched ? '' : ' col-xl-3' }}">
-            <twig:Event:ItemCard event="{{ event }}" />
+            <twig:Event:ItemCard event="{{ event }}" from="{{ from }}" to="{{ to }}" />
         </div>
     {% endfor %}
 </div>

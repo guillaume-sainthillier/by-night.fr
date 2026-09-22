@@ -104,6 +104,19 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         self::assertSame('2026-10-11', $canonical->getEndDate()?->format('Y-m-d'));
     }
 
+    public function testInheritingADateMarksTheCanonicalUpdatedForTheSearchIndex(): void
+    {
+        $firstId = $this->sibling('oa-1', '2026-10-03');
+        $secondId = $this->sibling('oa-2', '2026-10-10');
+        $this->reload($firstId)->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
+        $this->entityManager->flush();
+
+        $this->resolve([$secondId]);
+
+        // The listener that refreshes the index only watches the event row
+        self::assertGreaterThan(new DateTimeImmutable('2020-01-02'), $this->reload($firstId)->getUpdatedAt());
+    }
+
     public function testResolutionIsIdempotent(): void
     {
         $firstId = $this->sibling('oa-1', '2026-10-03');
@@ -113,10 +126,14 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         $inheritedId = $this->inheritedTimesheetId($firstId);
         self::assertNotNull($inheritedId);
 
+        $this->reload($firstId)->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
+        $this->entityManager->flush();
+
         $this->resolve([$firstId, $secondId]);
         $this->resolve([$firstId]);
 
         self::assertSame($inheritedId, $this->inheritedTimesheetId($firstId), 'An unchanged inherited row is kept, not recreated.');
+        self::assertSame('2020-01-01', $this->reload($firstId)->getUpdatedAt()?->format('Y-m-d'), 'Nothing changed, so the search index is not asked to refresh.');
         self::assertCount(2, $this->reload($firstId)->getTimesheets());
         self::assertCount(1, $this->reload($secondId)->getTimesheets());
     }
