@@ -32,6 +32,22 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
         return 'country';
     }
 
+    /**
+     * The ISO alpha-2 code as stored in Country::$id, or null when the feed value is
+     * unusable. Feeds are not consistent ("fr", " FR ", ""), and every lookup below the
+     * parsers (repository, comparator) compares against the canonical upper-case id.
+     */
+    public function getNormalizedCode(): ?string
+    {
+        if (null === $this->code) {
+            return null;
+        }
+
+        $code = strtoupper(trim($this->code));
+
+        return '' === $code ? null : $code;
+    }
+
     public function getUniqueKey(): string
     {
         if (null === $this->code && null === $this->name) {

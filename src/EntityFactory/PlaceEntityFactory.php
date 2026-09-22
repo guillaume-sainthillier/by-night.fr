@@ -20,6 +20,7 @@ use App\Entity\PlaceNameSlug;
 use App\Exception\UncreatableEntityException;
 use App\Handler\EntityProviderHandler;
 use App\Utils\PlaceNameNormalizer;
+use Psr\Log\LoggerInterface;
 
 /**
  * @implements EntityFactoryInterface<PlaceDto, Place>
@@ -29,6 +30,7 @@ final readonly class PlaceEntityFactory implements EntityFactoryInterface
     public function __construct(
         private EntityProviderHandler $entityProviderHandler,
         private PlaceNameNormalizer $placeNameNormalizer,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -52,18 +54,31 @@ final readonly class PlaceEntityFactory implements EntityFactoryInterface
         $entity->setCountryName($dto->country?->name ?? $entity->getCountryName());
         $entity->setCityName($dto->city?->name ?? $entity->getCityName());
 
+        // A city or country that does not resolve this time must not erase the one a
+        // previous import resolved: the DTO strings above are refreshed either way.
         if (null !== $dto->city) {
             $cityEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->city::class);
             /** @var City|null $city */
             $city = $cityEntityProvider->getEntity($dto->city);
-            $entity->setCity($city);
+            $entity->setCity($city ?? $entity->getCity());
         }
 
         if (null !== $dto->country) {
             $countryEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->country::class);
             /** @var Country|null $country */
             $country = $countryEntityProvider->getEntity($dto->country);
-            $entity->setCountry($country);
+            if (null === $country && null === $entity->getCountry() && (null !== $dto->country->code || null !== $dto->country->name)) {
+                // Country dependencies are references: an unresolved one is skipped upstream
+                // without a word, and the place ends up unsearchable by location.
+                $this->logger->warning('Place "{place}" ({origin} {externalId}) is stored without country: "{country}" matches no Country row', [
+                    'place' => $dto->name,
+                    'origin' => $dto->externalOrigin,
+                    'externalId' => $dto->externalId,
+                    'country' => $dto->country->code ?? $dto->country->name,
+                ]);
+            }
+
+            $entity->setCountry($country ?? $entity->getCountry());
         }
 
         // Metadatas
