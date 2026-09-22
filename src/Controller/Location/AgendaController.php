@@ -59,6 +59,10 @@ final class AgendaController extends BaseController
         $place = null;
         $tag = null;
 
+        if (null === $placeSlug && 'app_agenda_by_place' === $request->attributes->get('_route')) {
+            return $this->redirectLegacyPlaceUrl($request, $location, $placeRepository);
+        }
+
         // Handle place filtering
         if (null !== $placeSlug) {
             $place = $placeRepository->findOneBy(['slug' => $placeSlug]);
@@ -69,9 +73,6 @@ final class AgendaController extends BaseController
             if ($location->getSlug() !== $place->getLocationSlug()) {
                 return $this->redirectToRoute('app_agenda_by_place', ['location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()]);
             }
-        } elseif ('app_agenda_by_place' === $request->attributes->get('_route')) {
-            // "/agenda/sortir-a" without a place is the plain agenda: keep a single URL for it
-            return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         // Handle tag filtering (canonical route with ID)
@@ -148,6 +149,33 @@ final class AgendaController extends BaseController
             'topEventsData' => $topEventsData,
             'topUsersData' => $topUsersData,
         ]);
+    }
+
+    /**
+     * "/agenda/sortir-a" without a place is not a page of its own. The sitemap used to link it
+     * with the place as "?slug=…", so that parameter still leads to the place's own URL, in the
+     * place's own city; anything else goes to the city agenda.
+     */
+    private function redirectLegacyPlaceUrl(Request $request, Location $location, PlaceRepository $placeRepository): Response
+    {
+        $legacySlug = $request->query->getString('slug');
+        $place = null;
+        if ('' !== $legacySlug) {
+            // Place slugs are not unique: prefer the place in the city the URL names
+            // (the location's city is a lazy proxy, hence the id rather than the object)
+            $city = $location->getCity();
+            $place = (null !== $city ? $placeRepository->findOneBy(['slug' => $legacySlug, 'city' => $city->getId()]) : null)
+                ?? $placeRepository->findOneBy(['slug' => $legacySlug]);
+        }
+
+        if (null === $place) {
+            return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
+        }
+
+        return $this->redirectToRoute('app_agenda_by_place', [
+            'location' => $place->getLocationSlug(),
+            'placeSlug' => $place->getSlug(),
+        ], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     /**

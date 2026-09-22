@@ -11,17 +11,57 @@
 namespace App\Tests\Controller\Location;
 
 use App\Factory\CityFactory;
+use App\Factory\PlaceFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 final class AgendaControllerTest extends WebTestCase
 {
+    public function testALegacyPlaceUrlRedirectsToThePlaceInItsOwnCity(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $ramonville = CityFactory::createOne(['name' => 'Ramonville-Saint-Agne', 'country' => $toulouse->getCountry()]);
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $ramonville, 'country' => $ramonville->getCountry()]);
+
+        // The sitemap used to submit places as "?slug=…" under the city of the place
+        $client->request('GET', '/toulouse/agenda/sortir-a?slug=le-bikini');
+
+        self::assertResponseRedirects(
+            \sprintf('/%s/agenda/sortir-a/le-bikini', $ramonville->getSlug()),
+            Response::HTTP_MOVED_PERMANENTLY
+        );
+    }
+
+    public function testALegacyPlaceUrlPrefersThePlaceInTheCityItNames(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $toulouse->getCountry()]);
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $albi, 'country' => $albi->getCountry()]);
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+
+        $client->request('GET', '/toulouse/agenda/sortir-a?slug=le-bikini');
+
+        self::assertResponseRedirects('/toulouse/agenda/sortir-a/le-bikini', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    public function testALegacyPlaceUrlWithAnUnknownPlaceRedirectsToTheCityAgenda(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse/agenda/sortir-a?slug=nowhere');
+
+        self::assertResponseRedirects('/toulouse/agenda', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
     public function testTheAgendaByPlaceWithoutAPlaceRedirectsToTheCityAgenda(): void
     {
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $client->request('GET', '/toulouse/agenda/sortir-a?slug=le-bikini');
+        $client->request('GET', '/toulouse/agenda/sortir-a');
 
         self::assertResponseRedirects('/toulouse/agenda', Response::HTTP_MOVED_PERMANENTLY);
     }
