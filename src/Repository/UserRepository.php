@@ -14,6 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\UserDto;
 use App\Entity\User;
+use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
 use App\Manager\PreloadManager;
 use DateTimeInterface;
@@ -85,13 +86,24 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     /**
+     * Members whose calendar holds at least one published event ending on or after $from:
+     * the profile page lists that calendar, so anyone else has an empty profile.
+     *
      * @return iterable<array>
      */
-    public function findAllSitemap(): iterable
+    public function findAllSitemap(DateTimeInterface $from): iterable
     {
         return $this
             ->createQueryBuilder('u')
             ->select('u.id, u.slug, u.updatedAt')
+            ->join(UserEvent::class, 'ue', 'WITH', 'ue.user = u')
+            ->join('ue.event', 'e')
+            ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('u.slug IS NOT NULL')
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->groupBy('u.id, u.slug, u.updatedAt')
             ->getQuery()
             ->toIterable();
     }

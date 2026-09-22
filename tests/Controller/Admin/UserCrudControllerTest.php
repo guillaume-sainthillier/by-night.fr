@@ -14,9 +14,7 @@ use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class UserCrudControllerTest extends WebTestCase
 {
     public function testEditFormPreviewsOnlyTheUploadedProfilePicture(): void

@@ -106,6 +106,15 @@ The `DoctrineEventHandlerTest.php` file includes comprehensive tests for:
     - `EventBatchHandler` re-runs the batch once at warning level and it resolves the other worker's venue
     - Uses `StaleLookupPlaceEntityProvider`, a test double whose lookups miss on purpose once
 
+### 13. Event families (`testSiblingsWithDistinctExternalIdsAreGroupedIntoAFamily`)
+
+- **Purpose**: The same event published under distinct external ids (an OpenAgenda organizer creating one event per session) must show up once
+- **What it tests**:
+    - Both rows get the same identity hash (`EventContentHasher::identity()`) and form a family: the oldest is the canonical, the other one redirects to it and is not indexable
+    - The canonical carries the sibling's date as an inherited timesheet (`source_event_id`) and its range spans both sessions
+    - Re-importing the sibling with a moved date replaces the inherited row; re-importing the canonical re-syncs its own rows and keeps the inherited one
+    - The resolution itself is covered in `tests/Import/EventFamilyResolverTest.php`, the catch-up command in `tests/Command/EventsResolveFamiliesCommandTest.php`
+
 ## Running the Tests
 
 **Important**: These tests use **DAMA Doctrine Test Bundle** for automatic transaction rollback, providing test isolation without manual cleanup.

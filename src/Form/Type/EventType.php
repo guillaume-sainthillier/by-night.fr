@@ -52,7 +52,7 @@ final class EventType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Titre',
                 'attr' => [
-                    'placeholder' => 'Choisissez un titre accrocheur...',
+                    'placeholder' => 'Choisissez un titre accrocheur…',
                 ],
             ])
             ->add('description', TextareaType::class, [
@@ -60,20 +60,20 @@ final class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'wysiwyg',
-                    'placeholder' => 'Décrivez votre événement...',
+                    'placeholder' => 'Décrivez votre événement…',
                 ],
             ])
             ->add('imageFile', VichImageType::class, [
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
-                'help' => 'Pour un meilleur rendu, préférez une image au format 16:9 (ex: 1920x1080)',
+                'help' => "Pour un meilleur rendu, préférez une image au format 16:9 (ex.\u{a0}: 1920\u{a0}×\u{a0}1080).",
             ])
             ->add('hours', TextType::class, [
                 'label' => 'Horaires affichés',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'A 20h, de 21h à minuit',
+                    'placeholder' => 'À 20h, de 21h à minuit',
                 ],
             ])
             ->add('timesheets', CollectionType::class, [
@@ -89,7 +89,7 @@ final class EventType extends AbstractType
                 'label' => 'Tarif',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => '17€ avec préventes, 20€ sur place',
+                    'placeholder' => "17\u{a0}€ avec préventes, 20\u{a0}€ sur place",
                 ],
             ])
             ->add('status', EnumType::class, [
@@ -103,7 +103,7 @@ final class EventType extends AbstractType
                 'label' => 'Message de statut',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Précisez le statut (ex: Reporté au 15 mars)',
+                    'placeholder' => "Précisez le statut (ex.\u{a0}: reporté au 15 mars)",
                 ],
                 'help' => 'Message personnalisé affiché aux visiteurs',
             ])
@@ -111,7 +111,7 @@ final class EventType extends AbstractType
                 'label' => 'Catégorie',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Concert, Spectacle, ...',
+                    'placeholder' => 'Concert, Spectacle…',
                     'class' => 'js-category-input',
                     'data-autocomplete-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                 ],
@@ -120,7 +120,7 @@ final class EventType extends AbstractType
                 'label' => 'Thèmes',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
+                    'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap…',
                     'class' => 'js-tags-input',
                     'data-tags-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                     'data-tags-allow-new' => 'true',
@@ -168,8 +168,8 @@ final class EventType extends AbstractType
             ->add('emailContacts', CollectionType::class, [
                 'entry_type' => EmailType::class,
                 'required' => false,
-                'add_entry_label' => 'Ajouter un email',
-                'label' => 'Emails de contact',
+                'add_entry_label' => 'Ajouter un e-mail',
+                'label' => 'E-mails de contact',
                 'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,

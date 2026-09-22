@@ -12,8 +12,14 @@
 {% endblock %}
 
 {% block meta_description -%}
-    Découvrez le profil de {{ username }} sur By Night : {{ favoriteEventsCount }} événement{{ favoriteEventsCount > 1 ? 's' }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
+    Découvrez le profil de {{ username }} sur By Night : {{ '{count, plural, one {# événement} other {# événements}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
 {%- endblock %}
+
+{% block meta_robots %}
+    {% if nextEvents.nbResults == 0 and previousEvents.nbResults == 0 %}
+        <meta name="robots" content="noindex, follow">
+    {% endif %}
+{% endblock %}
 
 {% block body -%}
     <div class="row" {{ load_page('user', {datas: places}) }}>
@@ -35,7 +41,7 @@
                 <div class="card-body text-center">
                     <div>
                         <span class="text-primary h5 mb-0">{{ favoriteEventsCount }}</span>
-                        <span class="d-block">favori{{ favoriteEventsCount > 1 ? 's' }}</span>
+                        <span class="d-block">{{ '{count, plural, one {favori} other {favoris}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }}</span>
                     </div>
                 </div>
                 <div class="card-body text-center">
@@ -60,7 +66,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#passes" data-bs-toggle="tab">
-                        Passé{{ previousEvents.nbResults > 1 ? 's' }}
+                        {{ '{count, plural, one {Passé} other {Passés}}'|trans({count: previousEvents.nbResults}, 'messages+intl-icu') }}
                         {% if previousEvents.nbResults > 0 %}
                             <span class="badge text-bg-primary ms-1">{{ previousEvents.nbResults }}</span>
                         {% endif %}
@@ -116,7 +122,7 @@
                                          data-url="{{ path('app_user_stats', {type: 'annee', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-info" role="status">
-                                                <span class="visually-hidden">Loading...</span>
+                                                <span class="visually-hidden">Chargement…</span>
                                             </div>
                                         </div>
                                     </div>
@@ -127,7 +133,7 @@
                                          data-url="{{ path('app_user_stats', {type: 'mois', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-success" role="status">
-                                                <span class="visually-hidden">Loading...</span>
+                                                <span class="visually-hidden">Chargement…</span>
                                             </div>
                                         </div>
                                     </div>
@@ -138,7 +144,7 @@
                                          data-url="{{ path('app_user_stats', {type: 'semaine', id: user.id, slug: user.slug}) }}">
                                         <div class="text-center">
                                             <div class="spinner-border spinner-border-lg text-info" role="status">
-                                                <span class="visually-hidden">Loading...</span>
+                                                <span class="visually-hidden">Chargement…</span>
                                             </div>
                                         </div>
                                     </div>

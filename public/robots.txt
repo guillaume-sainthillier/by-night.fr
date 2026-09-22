@@ -1,14 +1,14 @@
 # www.robotstxt.org/
 # www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
+#
+# Widget fragments (/top/soirees, /prochaines-soirees, /autres-soirees, /top/membres) are no
+# longer blocked here: they answer with "X-Robots-Tag: noindex", which Google can only see when
+# it is allowed to fetch them.
 
 User-agent: *
-Disallow:/*/tweeter-feed/*
-Disallow:/login-social/*
-Disallow:/espace-perso/*
-Disallow:/top/membres/*
-Disallow:/*/top/soirees/*
-Disallow:/*/autres-soirees/*
-Disallow:/*/prochaines-soirees/*
+Disallow: /*/tweeter-feed/*
+Disallow: /login-social/*
+Disallow: /espace-perso/*
 
 # Sitemap files
 Sitemap: https://by-night.fr/sitemap/sitemap.xml

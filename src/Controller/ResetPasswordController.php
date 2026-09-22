@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Translation\TranslatableMessage;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
@@ -93,10 +94,7 @@ final class ResetPasswordController extends AbstractController
         try {
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $resetPasswordException) {
-            $this->addFlash('error', \sprintf(
-                'Un problème est survenu lors de votre demande - %s',
-                $resetPasswordException->getReason()
-            ));
+            $this->addFlash('error', new TranslatableMessage($resetPasswordException->getReason(), [], 'ResetPasswordBundle'));
 
             return $this->redirectToRoute('app_forgot_password_request');
         }
@@ -144,15 +142,12 @@ final class ResetPasswordController extends AbstractController
         try {
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
         } catch (ResetPasswordExceptionInterface $resetPasswordException) {
-            $this->addFlash('error', \sprintf(
-                'Un problème est survenu lors de votre demande - %s',
-                $resetPasswordException->getReason()
-            ));
+            $this->addFlash('error', new TranslatableMessage($resetPasswordException->getReason(), [], 'ResetPasswordBundle'));
 
             return $this->redirectToRoute('app_check_email');
         }
 
-        $mailer->sendResetPasswordEmail($user, $resetToken, $this->resetPasswordHelper->getTokenLifetime());
+        $mailer->sendResetPasswordEmail($user, $resetToken);
 
         // Store the token object in session for retrieval in check-email route.
         $this->setTokenObjectInSession($resetToken);

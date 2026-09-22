@@ -16,10 +16,8 @@ use App\Factory\UserFactory;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 #[RequiresPhpExtension('mjml')]
-#[ResetDatabase]
 final class FeedbackTest extends ApiTestCase
 {
     #[Override]
@@ -47,7 +45,7 @@ final class FeedbackTest extends ApiTestCase
         self::assertResponseFormatSame('json');
         self::assertJsonContains([
             'success' => true,
-            'message' => 'Merci pour votre retour !',
+            'message' => "Merci pour votre retour\u{a0}!",
         ]);
     }
 

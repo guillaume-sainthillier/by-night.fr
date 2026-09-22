@@ -4,6 +4,7 @@ import CheckIcon from '@/js/icons/lucide/Check'
 import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
 import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
+import { plural } from '@/js/utils/plural'
 
 export default class CommentApp {
     constructor() {
@@ -157,7 +158,7 @@ export default class CommentApp {
                         let answerContainer = mainAnswerContainer.find(self.options.css_replies_container)
                         if (response.success) {
                             // Success - show toast notification
-                            self.showToast('success', 'Réponse envoyée avec succès!')
+                            self.showToast('success', 'Réponse envoyée avec succès\u00a0!')
 
                             // Clear textarea
                             textarea.val('').trigger('blur')
@@ -247,7 +248,7 @@ export default class CommentApp {
 
                                 if (response.success) {
                                     // Success - show toast notification
-                                    self.showToast('success', 'Commentaire envoyé avec succès!')
+                                    self.showToast('success', 'Commentaire envoyé avec succès\u00a0!')
 
                                     // Clear textarea with animation
                                     textarea.val('').trigger('blur')
@@ -255,8 +256,12 @@ export default class CommentApp {
                                     // Update comment counter
                                     if (response.count !== undefined) {
                                         const heading = mainCommentsContainer.find(self.options.css_heading_comments)
-                                        const plural = response.count > 1 ? 's' : ''
-                                        heading.find('span').text(`${response.count} Commentaire${plural}`)
+                                        heading.find('span').text(
+                                            plural(response.count, {
+                                                one: '# Commentaire',
+                                                other: '# Commentaires',
+                                            })
+                                        )
                                         // Remove "Soyez le premier à réagir" message if it exists
                                         heading.find('small').remove()
                                     }

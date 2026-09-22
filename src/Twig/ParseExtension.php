@@ -10,60 +10,24 @@
 
 namespace App\Twig;
 
+use App\Utils\HtmlFormatter;
 use Twig\Attribute\AsTwigFilter;
 
-final class ParseExtension
+final readonly class ParseExtension
 {
+    public function __construct(private HtmlFormatter $htmlFormatter)
+    {
+    }
+
     #[AsTwigFilter(name: 'ensure_protocol')]
     public function ensureProtocol(?string $link): ?string
     {
-        if (!preg_match('#^(http|https|ftp)#', (string) $link)) {
-            return 'http://' . $link;
-        }
-
-        return $link;
+        return $this->htmlFormatter->ensureProtocol($link);
     }
 
     #[AsTwigFilter(name: 'parse_tags')]
-    public function parseTags(?string $texte): ?string
+    public function parseTags(?string $html): string
     {
-        $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', (string) $texte);
-        $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', (string) $texte);
-
-        if (!preg_match('#<(.*)(script|style|link)#i', (string) $texte)) {
-            return $texte;
-        }
-
-        return strip_tags((string) $texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
-    }
-
-    #[AsTwigFilter(name: 'resume')]
-    public function resume(?string $text): string
-    {
-        if (null === $text) {
-            return '';
-        }
-
-        $replaced_text = str_replace('&#13;', '<br>', $text);
-        $stripped_text = strip_tags($replaced_text);
-        $shorted_text = mb_substr($stripped_text, 0, 250);
-
-        // striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
-        $linked_text = preg_replace_callback(
-            '~((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|"|\'|:|\<|$|\.\s)~i',
-            static fn ($matches) => '<a rel="nofollow" href="$1" target="_blank">$3</a>$4',
-            $shorted_text
-        );
-
-        $final_text = $this->trimBr($linked_text);
-
-        return trim((string) $final_text);
-    }
-
-    private function trimBr(?string $string): ?string
-    {
-        $string = preg_replace('#^\s*(?:<br\s*\/?>\s*)*#i', '', (string) $string);
-
-        return preg_replace('#\s*(?:<br\s*\/?>\s*)*$#i', '', (string) $string);
+        return $this->htmlFormatter->format($html);
     }
 }

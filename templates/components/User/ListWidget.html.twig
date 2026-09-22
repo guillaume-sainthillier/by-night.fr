@@ -16,7 +16,7 @@
                 {{ user.username|capitalize }}
             </p>
             {% if nbEvents > 0 %}
-                <small class="text-muted">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' : '' }}</small>
+                <small class="text-muted">{{ '{count, plural, one {# événement} other {# événements}}'|trans({count: nbEvents}, 'messages+intl-icu') }}</small>
             {% endif %}
         </div>
     </a>

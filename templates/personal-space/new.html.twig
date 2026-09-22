@@ -50,14 +50,14 @@
                              data-end-date-field="{{ form.dateRange.to.vars.id }}"
                              data-collection-id="{{ form.timesheets.vars.id }}"
                              data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}">
-                            <p class="text-muted">Chargement...</p>
+                            <p class="text-muted">Chargement…</p>
                         </div>
 
                         {{ form_row(form.timesheets) }}
                     </twig:Card>
 
                     {# Part 3 #}
-                    <twig:Card header="Lieux" icon="lucide:map-pinned" showFooter="{{ false }}">
+                    <twig:Card header="Lieu" icon="lucide:map-pinned" showFooter="{{ false }}">
                         {{ form_errors(form.place) }}
                         {{ form_row(form.place.name, {icon_prepend: 'lucide:map-pin'}) }}
                         {{ form_row(form.address, {icon_prepend: 'lucide:crosshair'}) }}
@@ -81,7 +81,7 @@
             </div>
             <hr />
             <div class="mt-2">
-                <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes événements">
                     <twig:Icon name="lucide:chevron-left" />
                     Retour
                 </a>

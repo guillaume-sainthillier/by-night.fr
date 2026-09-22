@@ -32,5 +32,10 @@ final class StatsExtensionTest extends TestCase
         yield 'floors instead of rounding up' => [2_098_765, "2 millions d'événements"];
         yield 'keeps the 100K digit' => [2_134_567, "2,1 millions d'événements"];
         yield 'never rounds up past the next million' => [12_987_654, "12,9 millions d'événements"];
+        // "mille" and plain numbers take no "de": the phrase used to read "19 mille d'événements"
+        yield 'below a million, the whole count grouped by thousands' => [19_234, "19\u{202F}234 événements"];
+        yield 'just below a million' => [999_999, "999\u{202F}999 événements"];
+        yield 'a few' => [500, '500 événements'];
+        yield 'singular' => [1, '1 événement'];
     }
 }

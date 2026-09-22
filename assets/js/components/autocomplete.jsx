@@ -19,7 +19,7 @@ export default function init({
     autocompleteSelector = '#autocomplete',
     container = document,
     searchPlaceholder = 'Recherche globale',
-    inputPlaceholder = 'Rechercher des événements, villes, membres...',
+    inputPlaceholder = 'Rechercher des événements, villes, membres…',
     globalSearchUrl = null,
     searchPageUrl = null,
     enableHotkeys = true,
@@ -102,9 +102,9 @@ export default function init({
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
                             <div className="spinner-border text-primary" role="status">
-                                <span className="visually-hidden">Chargement...</span>
+                                <span className="visually-hidden">Chargement…</span>
                             </div>
-                            <h2 className="mt-4 h5">Recherche en cours...</h2>
+                            <h2 className="mt-4 h5">Recherche en cours…</h2>
                         </div>
                     </div>,
                     root

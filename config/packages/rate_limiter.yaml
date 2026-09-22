@@ -33,3 +33,16 @@ framework:
                 interval: '12 seconds'
                 amount: 1
             cache_pool: 'cache.rate_limiter'
+        # DATAtourisme API quotas (https://api.datatourisme.fr/v1/docs): 20-30 concurrent
+        # requests, ~10 req/s sustained, 1000 req/hour. One token bucket covers all three:
+        # the bucket size caps the burst (and our sequential pagination never has more
+        # than one request in flight), the refill rate is exactly 1000/hour spread as 5
+        # tokens every 18 s so a page is never more than 18 s away. A full import of the
+        # ~62k upcoming events is ~250 pages of 250, i.e. about 15 minutes.
+        datatourisme_api:
+            policy: 'token_bucket'
+            limit: 10
+            rate:
+                interval: '18 seconds'
+                amount: 5
+            cache_pool: 'cache.rate_limiter'

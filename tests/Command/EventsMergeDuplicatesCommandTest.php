@@ -111,6 +111,11 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
             ['2026-08-01' => 'À 20h00', '2026-08-02' => 'À 18h00'],
             $this->timesheetHoursByDate($canonical),
         );
+        // The added date is tagged with the duplicate it comes from, the canonical's own is not.
+        self::assertSame(
+            ['2026-08-01' => null, '2026-08-02' => 2],
+            $this->timesheetSourcesByDate($canonical),
+        );
         self::assertTrue($canonical->batchUpdate);
         self::assertTrue($duplicate->batchUpdate);
     }
@@ -157,6 +162,11 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         self::assertSame(
             ['2026-08-01' => 'À 13h00', '2026-08-02' => 'À 21h00'],
             $this->timesheetHoursByDate($canonical),
+        );
+        // The seeded own date has no source, the merged one names the duplicate.
+        self::assertSame(
+            ['2026-08-01' => null, '2026-08-02' => 2],
+            $this->timesheetSourcesByDate($canonical),
         );
     }
 
@@ -277,6 +287,22 @@ final class EventsMergeDuplicatesCommandTest extends TestCase
         ksort($hoursByDate);
 
         return $hoursByDate;
+    }
+
+    /**
+     * @return array<string, int|null>
+     */
+    private function timesheetSourcesByDate(Event $event): array
+    {
+        $sourcesByDate = [];
+        foreach ($event->getTimesheets() as $timesheet) {
+            $date = $timesheet->getStartAt()?->format('Y-m-d') ?? '';
+            $sourcesByDate[$date] = $timesheet->getSourceEvent()?->getId();
+        }
+
+        ksort($sourcesByDate);
+
+        return $sourcesByDate;
     }
 
     private function event(int $id, string $externalId, string $origin, string $name = 'Show', string $placeExternalId = 'place'): Event

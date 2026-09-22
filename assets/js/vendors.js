@@ -13,7 +13,7 @@ window.cookieconsent.initialise({
     },
     content: {
         message:
-            "En poursuivant votre navigation, vous acceptez l'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d'intérêts et mesurer la fréquentation de nos services.",
+            "En poursuivant votre navigation, vous acceptez l'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d'intérêt et mesurer la fréquentation de nos services.",
         dismiss: "J'ai compris",
         link: 'En savoir plus',
         href: window.privacyUrl,

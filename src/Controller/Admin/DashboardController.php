@@ -85,28 +85,28 @@ final class DashboardController extends AbstractDashboardController
     #[Override]
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToUrl('Back to Home', 'lucide:home', '../')->setLinkTarget('_blank')->setLinkRel('noreferrer');
+        yield MenuItem::linkToUrl('Retour au site', 'lucide:home', '../')->setLinkTarget('_blank')->setLinkRel('noreferrer');
 
-        yield MenuItem::section('Commnunity', 'lucide:folder-open');
-        yield MenuItem::linkTo(EventCrudController::class, 'Events', 'lucide:calendar-days');
-        yield MenuItem::linkTo(PlaceCrudController::class, 'Places', 'lucide:map-pin');
-        yield MenuItem::linkTo(CommentCrudController::class, 'Comments', 'lucide:message-square');
-        yield MenuItem::linkTo(UserEventCrudController::class, 'User Event', 'lucide:heart');
+        yield MenuItem::section('Communauté', 'lucide:folder-open');
+        yield MenuItem::linkTo(EventCrudController::class, 'Événements', 'lucide:calendar-days');
+        yield MenuItem::linkTo(PlaceCrudController::class, 'Lieux', 'lucide:map-pin');
+        yield MenuItem::linkTo(CommentCrudController::class, 'Commentaires', 'lucide:message-square');
+        yield MenuItem::linkTo(UserEventCrudController::class, 'Agendas', 'lucide:heart');
         yield MenuItem::linkTo(TagCrudController::class, 'Tags', 'lucide:tags');
 
-        yield MenuItem::section('Users', 'lucide:folder-open');
-        yield MenuItem::linkTo(UserCrudController::class, 'Users', 'lucide:users');
-        yield MenuItem::linkTo(UserOAuthCrudController::class, 'User socials', 'lucide:megaphone');
+        yield MenuItem::section('Membres', 'lucide:folder-open');
+        yield MenuItem::linkTo(UserCrudController::class, 'Membres', 'lucide:users');
+        yield MenuItem::linkTo(UserOAuthCrudController::class, 'Réseaux sociaux des membres', 'lucide:megaphone');
 
         yield MenuItem::section('Contenu', 'lucide:folder-open');
         yield MenuItem::linkTo(PageCrudController::class, 'Pages', 'lucide:file-text');
 
         yield MenuItem::section('Administration', 'lucide:folder-open');
-        yield MenuItem::linkTo(ContentRemovalRequestCrudController::class, 'Demandes suppression', 'lucide:trash-2');
-        yield MenuItem::linkTo(CountryCrudController::class, 'Countries', 'lucide:globe');
-        yield MenuItem::linkTo(AppOAuthCrudController::class, 'Site socials', 'lucide:megaphone');
+        yield MenuItem::linkTo(ContentRemovalRequestCrudController::class, 'Demandes de suppression', 'lucide:trash-2');
+        yield MenuItem::linkTo(CountryCrudController::class, 'Pays', 'lucide:globe');
+        yield MenuItem::linkTo(AppOAuthCrudController::class, 'Réseaux sociaux du site', 'lucide:megaphone');
         yield MenuItem::linkTo(ParserDataCrudController::class, 'Explorations', 'lucide:eye');
-        yield MenuItem::linkTo(ParserHistoryCrudController::class, 'Historique Maj', 'lucide:history');
+        yield MenuItem::linkTo(ParserHistoryCrudController::class, 'Historique des imports', 'lucide:history');
     }
 
     /**

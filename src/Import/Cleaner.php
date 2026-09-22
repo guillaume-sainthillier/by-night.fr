@@ -15,12 +15,15 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
+use App\Utils\HtmlFormatter;
 use App\Utils\Util;
 
 final readonly class Cleaner
 {
-    public function __construct(private Util $util)
-    {
+    public function __construct(
+        private Util $util,
+        private HtmlFormatter $htmlFormatter,
+    ) {
     }
 
     public function cleanEvent(EventDto $dto): void
@@ -30,7 +33,7 @@ final readonly class Cleaner
         $dto->name = $this->clean($dto->name ?? '') ?: null;
         $dto->description = $this->clean($dto->description ?? '') ?: null;
         $dto->phoneContacts = $dto->phoneContacts ?: null;
-        $dto->websiteContacts = $dto->websiteContacts ?: null;
+        $dto->websiteContacts = $this->cleanWebsites($dto->websiteContacts) ?: null;
         $dto->emailContacts = $dto->emailContacts ?: null;
         $dto->address = mb_substr($dto->address ?? '', 0, 255) ?: null;
         $dto->type = mb_substr($dto->type ?? '', 0, 128) ?: null;
@@ -67,6 +70,37 @@ final readonly class Cleaner
     public function cleanEventTimesheet(EventTimesheetDto $dto): void
     {
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
+    }
+
+    /**
+     * Feeds pack several websites into one value ("www.a.fr www.b.fr", "http://a.fr;http://b.fr",
+     * "https://a.fr/billets Etienne ANDRE") or ship text and phone numbers as websites. A value that can
+     * be linked is kept whole, as typed (spaces in its query string belong to the URL); any other is
+     * split, and only the parts that can be linked are kept.
+     *
+     * @param string[]|null $websites
+     *
+     * @return string[]
+     */
+    private function cleanWebsites(?array $websites): array
+    {
+        $cleaned = [];
+        foreach ($websites ?? [] as $website) {
+            $website = mb_trim((string) $website);
+            if (null !== $this->htmlFormatter->ensureProtocol($website)) {
+                $cleaned[] = $website;
+
+                continue;
+            }
+
+            foreach (preg_split('~[\s;,]+~u', $website, -1, \PREG_SPLIT_NO_EMPTY) ?: [] as $part) {
+                if (null !== $this->htmlFormatter->ensureProtocol($part)) {
+                    $cleaned[] = $part;
+                }
+            }
+        }
+
+        return array_values(array_unique($cleaned));
     }
 
     private function clean(?string $string): string

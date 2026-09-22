@@ -1,7 +1,7 @@
 {% extends 'layouts/full.html.twig' %}
 
 {% block title 'Sorties, concerts, spectacles et soirées partout en France' %}
-{% block meta_description 'Découvrez des milliers d\'événements près de chez vous : concerts, spectacles, expos, soirées et sorties en famille. Choisissez votre ville et trouvez votre prochaine sortie !' %}
+{% block meta_description 'Découvrez des milliers d\'événements près de chez vous : concerts, spectacles, expos, soirées et sorties en famille. Choisissez votre ville et trouvez votre prochaine sortie !' %}
 {% block breadcrumb_widget '' %}
 
 {% block body %}
@@ -42,7 +42,7 @@
                         <div class="card text-center">
                             <div class="card-body">
                                 <h2 class="card-title">{{ stat.displayName }}</h2>
-                                <h5 class="card-subtitle text-muted">{{ stat.events }} événement{{ stat.events > 1 ? 's' }} à découvrir</h5>
+                                <h5 class="card-subtitle text-muted">{{ '{count, plural, one {# événement} other {# événements}} à découvrir'|trans({count: stat.events}, 'messages+intl-icu') }}</h5>
                             </div>
                             <div class="card-footer text-center py-2">
                                 <a class="btn btn-outline-primary" href="{{ path('app_agenda_index', {location: stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">

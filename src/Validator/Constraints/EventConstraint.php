@@ -19,7 +19,7 @@ final class EventConstraint extends Constraint
 {
     public string $badEventName = "Le nom de l'événement est incorrect.";
 
-    public string $badEventDate = "Les date de début et de fin de l'événement doivent être remplies.";
+    public string $badEventDate = "Les dates de début et de fin de l'événement doivent être remplies.";
 
     public string $badEventDateInterval = 'La date de fin doit être supérieure ou égale à la date de début.';
 

@@ -22,6 +22,7 @@ use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Manager\PreloadManager;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -126,6 +127,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             // Load themes before categories to avoid multiple queries for categories when themes are loaded
             $loadThemes();
             $loadCategories();
+            // Sessions are indexed, one per timesheet
+            $loadTimesheets();
         }
 
         if ('events:import' === $view) {
@@ -175,6 +178,159 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $this->loadAllEager($events, ['view' => 'events:import']);
 
         return $events;
+    }
+
+    /**
+     * Rows whose family may have changed once the given events were imported: the
+     * events themselves, their current canonical (they may have left its family) and
+     * their current duplicates (they may have left theirs). Timesheets are not loaded:
+     * most batches stop there, with no family to rebuild.
+     *
+     * @param int[] $eventIds
+     *
+     * @return Event[]
+     */
+    public function findFamilyCandidates(array $eventIds): array
+    {
+        if ([] === $eventIds) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.id IN (:ids)')
+            ->orWhere('e.duplicateOf IN (:ids)')
+            ->orWhere(\sprintf('e.id IN (SELECT IDENTITY(d.duplicateOf) FROM %s d WHERE d.id IN (:ids) AND d.duplicateOf IS NOT NULL)', Event::class))
+            ->setParameter('ids', $eventIds)
+            ->orderBy('e.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Among the given identity hashes, the ones shared by at least two rows.
+     *
+     * @param string[] $hashes
+     *
+     * @return string[]
+     */
+    public function findSharedIdentityHashes(array $hashes): array
+    {
+        if ([] === $hashes) {
+            return [];
+        }
+
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('e.identityHash AS hash')
+            ->where('e.identityHash IN (:hashes)')
+            ->groupBy('e.identityHash')
+            ->having('COUNT(e.id) > 1')
+            ->setParameter('hashes', $hashes)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($rows, 'hash');
+    }
+
+    /**
+     * Identity hashes shared by at least two rows, in hash order after the given one
+     * (keyset pagination for app:events:resolve-families).
+     *
+     * @return string[]
+     */
+    public function findSharedIdentityHashesAfter(?string $origin, ?string $after, int $limit): array
+    {
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->select('e.identityHash AS hash')
+            ->where('e.identityHash IS NOT NULL')
+            ->groupBy('e.identityHash')
+            ->having('COUNT(e.id) > 1')
+            ->orderBy('e.identityHash', 'ASC')
+            ->setMaxResults($limit);
+
+        if (null !== $origin) {
+            $qb->andWhere('e.externalOrigin = :origin')->setParameter('origin', $origin);
+        }
+
+        if (null !== $after) {
+            $qb->andWhere('e.identityHash > :after')->setParameter('after', $after);
+        }
+
+        return array_column($qb->getQuery()->getScalarResult(), 'hash');
+    }
+
+    /**
+     * Every member of the given families, in id order, timesheets not loaded.
+     *
+     * @param string[] $hashes
+     *
+     * @return Event[]
+     */
+    public function findAllByIdentityHashes(array $hashes): array
+    {
+        if ([] === $hashes) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.identityHash IN (:hashes)')
+            ->setParameter('hashes', $hashes)
+            ->orderBy('e.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The given canonicals and every row pointing at them, timesheets loaded in the
+     * same query.
+     *
+     * @param int[] $canonicalIds
+     *
+     * @return Event[]
+     */
+    public function findFamiliesWithTimesheets(array $canonicalIds): array
+    {
+        if ([] === $canonicalIds) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('e')
+            ->addSelect('t')
+            ->leftJoin('e.timesheets', 't')
+            ->where('e.id IN (:ids)')
+            ->orWhere('e.duplicateOf IN (:ids)')
+            ->setParameter('ids', $canonicalIds)
+            ->orderBy('e.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Imported rows still lacking an identity hash, in id order after the given id
+     * (keyset pagination for app:events:resolve-families).
+     *
+     * @return Event[]
+     */
+    public function findWithoutIdentityHash(?string $origin, int $afterId, int $limit): array
+    {
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->where('e.identityHash IS NULL')
+            ->andWhere('e.externalOrigin IS NOT NULL')
+            ->andWhere('e.id > :afterId')
+            ->setParameter('afterId', $afterId)
+            ->orderBy('e.id', 'ASC')
+            ->setMaxResults($limit);
+
+        if (null !== $origin) {
+            $qb->andWhere('e.externalOrigin = :origin')->setParameter('origin', $origin);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -233,9 +389,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * Published events ending on or after $since: the ones whose page is worth indexing.
+     *
      * @return iterable<array>
      */
-    public function findAllSiteMap(): iterable
+    public function findAllSiteMap(DateTimeInterface $since): iterable
     {
         return $this
             ->createQueryBuilder('e')
@@ -243,6 +401,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->leftJoin('p.city', 'c')
             ->join('p.country', 'c3')
+            ->where('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.endDate >= :since')
+            ->setParameter('since', $since->format('Y-m-d'))
             ->orderBy('e.endDate', 'DESC')
             ->getQuery()
             ->toIterable();
@@ -422,6 +584,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.startDate = :from')
             ->andWhere('e.id != :id')
+            ->andWhere('e.duplicateOf IS NULL')
             ->setParameter('from', $event->getStartDate()->format('Y-m-d'))
             ->setParameter('id', $event->getId())
             ->orderBy('e.name', 'ASC');
@@ -447,7 +610,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         return $this
             ->createQueryBuilder('e')
-            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place')
+            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place AND e.duplicateOf IS NULL')
             ->orderBy('e.endDate', 'ASC')
             ->setParameter('end_date', $from->format('Y-m-d'))
             ->setParameter('id', $event->getId())
@@ -462,6 +625,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $qb = $this
             ->createQueryBuilder('e')
             ->where('e.endDate BETWEEN :from AND :to')
+            ->andWhere('e.duplicateOf IS NULL')
             ->orderBy('e.endDate', 'ASC')
             ->addOrderBy('e.participations', 'DESC');
 
@@ -490,6 +654,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $qb = $this
             ->createQueryBuilder('e')
             ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('e.endDate', 'ASC')
             ->addOrderBy('e.participations', 'DESC');

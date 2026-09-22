@@ -12,7 +12,11 @@ namespace App\Repository;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\PlaceDto;
+use App\Entity\Event;
 use App\Entity\Place;
+use App\Entity\PlaceMetadata;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -228,6 +232,57 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * Ids of the places no event points to, created before $createdBefore and, when
+     * $origin is given, carrying at least one identity from that external origin.
+     *
+     * @return list<int>
+     */
+    public function findEventlessIds(?string $origin, DateTimeImmutable $createdBefore): array
+    {
+        $qb = $this
+            ->createQueryBuilder('p')
+            ->select('p.id')
+            ->where(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
+            ->andWhere('p.createdAt <= :createdBefore')
+            ->setParameter('createdBefore', $createdBefore)
+            ->orderBy('p.id', 'ASC');
+
+        if (null !== $origin) {
+            $qb
+                ->andWhere(\sprintf('EXISTS (SELECT m.id FROM %s m WHERE m.place = p AND m.externalOrigin = :origin)', PlaceMetadata::class))
+                ->setParameter('origin', $origin);
+        }
+
+        return array_map(intval(...), $qb->getQuery()->getSingleColumnResult());
+    }
+
+    /**
+     * The given place ids that still have no event.
+     *
+     * @param list<int> $placeIds
+     *
+     * @return list<int>
+     */
+    public function onlyEventless(array $placeIds): array
+    {
+        if ([] === $placeIds) {
+            return [];
+        }
+
+        $ids = $this
+            ->createQueryBuilder('p')
+            ->select('p.id')
+            ->where('p.id IN (:ids)')
+            ->andWhere(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
+            ->setParameter('ids', $placeIds)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_map(intval(...), $ids);
+    }
+
+    /**
      * Batch-load metadatas and name slugs for the found places (separate queries to
      * avoid a cartesian product), so downstream matching/storing stays in-memory.
      *
@@ -263,14 +318,23 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * @return iterable<array>
+     * Places hosting at least one published event ending on or after $from.
+     *
+     * @return iterable<array{slug: string, city_slug: string}>
      */
-    public function findAllSitemap(): iterable
+    public function findAllSitemap(DateTimeInterface $from): iterable
     {
         return $this
             ->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
+            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('p.slug IS NOT NULL')
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->groupBy('p.slug, c.slug')
             ->getQuery()
             ->toIterable();
     }

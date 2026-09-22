@@ -57,20 +57,20 @@ final class OpenAgendaParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         $agendasUidAndSlugs = $this->getAgendasUidAndSlugs();
 
         foreach ($agendasUidAndSlugs as $agendasUidAndSlug) {
-            $this->fetchAgendaEvents($incremental, [$agendasUidAndSlug]);
+            $this->fetchAgendaEvents($since, [$agendasUidAndSlug]);
         }
     }
 
-    private function fetchAgendaEvents(bool $incremental, iterable $agendaIdAndSlugs): void
+    private function fetchAgendaEvents(?DateTimeImmutable $since, iterable $agendaIdAndSlugs): void
     {
         foreach ($agendaIdAndSlugs as $agendaIdAndSlug) {
             [$agendaId, $agendaSlug] = $agendaIdAndSlug;
-            $events = $this->getAgendaEvents($incremental, $agendaId);
+            $events = $this->getAgendaEvents($since, $agendaId);
             foreach ($events as $event) {
                 $eventDto = $this->arrayToDto($event, $agendaSlug);
                 if (null === $eventDto) {
@@ -82,10 +82,10 @@ final class OpenAgendaParser extends AbstractParser
         }
     }
 
-    private function getAgendaEvents(bool $incremental, int $agendaId): iterable
+    private function getAgendaEvents(?DateTimeImmutable $since, int $agendaId): iterable
     {
-        $filter = $incremental
-            ? ['updatedAt' => ['gte' => new DateTimeImmutable('yesterday', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]]
+        $filter = null !== $since
+            ? ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]]
             : ['timings' => ['gte' => new DateTimeImmutable('now', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
 
         $after = [];
@@ -198,13 +198,7 @@ final class OpenAgendaParser extends AbstractParser
             $timesheetDto = new EventTimesheetDto();
             $timesheetDto->startAt = new DateTimeImmutable($timing['begin']);
             $timesheetDto->endAt = new DateTimeImmutable($timing['end']);
-
-            // Generate hours string for this timing
-            if ($timesheetDto->startAt->format('Y-m-d') !== $timesheetDto->endAt->format('Y-m-d')) {
-                $timesheetDto->hours = \sprintf('De %s à %s', $timesheetDto->startAt->format("H\hi"), $timesheetDto->endAt->format("H\hi"));
-            } else {
-                $timesheetDto->hours = \sprintf('A %s', $timesheetDto->startAt->format("H\hi"));
-            }
+            $timesheetDto->hours = self::hours($timesheetDto->startAt, $timesheetDto->endAt);
 
             $timesheets[] = $timesheetDto;
             $allHours[$timesheetDto->hours] = true;
@@ -216,9 +210,9 @@ final class OpenAgendaParser extends AbstractParser
         $startDate = new DateTimeImmutable($firstTiming['begin']);
         $endDate = new DateTimeImmutable($lastTiming['end']);
 
-        // Generate aggregate hours string - use first unique hour if all are the same,
-        // otherwise use the first hour from the list (most relevant for display)
-        $hours = array_key_first($allHours);
+        // One slot repeated over the dates summarises the event; distinct slots (a morning
+        // and an afternoon session, say) cannot, the timesheets carry them.
+        $hours = 1 === \count($allHours) ? array_key_first($allHours) : null;
 
         $mdParser = new Parsedown();
         $description = $mdParser->text($data['longDescription'] ?? $data['description']);
@@ -321,6 +315,18 @@ final class OpenAgendaParser extends AbstractParser
     public function getCommandName(): string
     {
         return 'openagenda';
+    }
+
+    /**
+     * A timing is one slot with both ends, "De 09h00 à 12h30"; OpenAgenda repeats the
+     * start as the end when the producer gave none, "À 09h00".
+     */
+    private static function hours(DateTimeInterface $begin, DateTimeInterface $end): string
+    {
+        $start = $begin->format('H\hi');
+        $finish = $end->format('H\hi');
+
+        return $start === $finish ? \sprintf('À %s', $start) : \sprintf('De %s à %s', $start, $finish);
     }
 
     /**

@@ -19,8 +19,8 @@ final readonly class ContentRemovalRequestInput
      * @param string[] $eventUrls
      */
     public function __construct(
-        #[Assert\NotBlank(message: 'Veuillez entrer votre adresse email')]
-        #[Assert\Email(message: 'Veuillez entrer une adresse email valide')]
+        #[Assert\NotBlank(message: 'Veuillez entrer votre adresse e-mail')]
+        #[Assert\Email(message: 'Veuillez entrer une adresse e-mail valide')]
         public string $email = '',
 
         #[Assert\NotNull(message: 'Veuillez sélectionner le type de contenu à supprimer')]

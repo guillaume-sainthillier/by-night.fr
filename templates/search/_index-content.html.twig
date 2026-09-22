@@ -46,13 +46,11 @@
 
     {% if term %}
         <h2>
-            {% if result.count == 0 %}Aucun{% else %}{{ result.count }}{% endif %}
-            {{ result.label }}{{ s }} trouvé{{ s }}
+            {{ result.message|trans({count: result.count}, 'messages+intl-icu') }}
         </h2>
         {% if events.nbResults > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
-                {% set s = events.nbResults > 1 ? 's' : null %}
-                <h3>Événement{{ s }} <span class="badge text-bg-info number number-sm">{{ events.nbResults }}</span>
+                <h3>{{ '{count, plural, one {Événement} other {Événements}}'|trans({count: events.nbResults}, 'messages+intl-icu') }} <span class="badge text-bg-info number number-sm">{{ events.nbResults }}</span>
                 </h3>
             {% endif %}
             {{ include('search/content-events.html.twig') }}
@@ -60,8 +58,7 @@
 
         {% if users.nbResults > 0 and (not type or type == 'membres') %}
             {% if type != 'membres' %}
-                {% set s = users.nbResults > 1 ? 's' : null %}
-                <h3>Membre{{ s }} <span class="badge text-bg-info number number-sm">{{ users.nbResults }}</span></h3>
+                <h3>{{ '{count, plural, one {Membre} other {Membres}}'|trans({count: users.nbResults}, 'messages+intl-icu') }} <span class="badge text-bg-info number number-sm">{{ users.nbResults }}</span></h3>
             {% endif %}
             {{ include('search/content-users.html.twig') }}
         {% endif %}

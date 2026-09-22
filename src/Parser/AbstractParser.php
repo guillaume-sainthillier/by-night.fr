@@ -15,6 +15,7 @@ use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Import\EventPublicationGuard;
 use BackedEnum;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -110,6 +111,16 @@ abstract class AbstractParser implements ParserInterface
     public function getSkippedEvents(): int
     {
         return $this->skippedEvents;
+    }
+
+    /**
+     * Lower bound of an incremental fetch: the previous run start pushed back by a safety
+     * margin, so clock skew with the source or its indexing lag cannot hide a change.
+     * Re-fetching an unchanged event is free: the publication guard drops it.
+     */
+    protected static function withSafetyMargin(DateTimeImmutable $since): DateTimeImmutable
+    {
+        return $since->modify('-1 hour');
     }
 
     protected function logException(Throwable $exception, array $context = []): void

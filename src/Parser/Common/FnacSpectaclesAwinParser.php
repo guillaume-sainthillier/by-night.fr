@@ -77,7 +77,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
      * {@inheritDoc}
      */
     #[Override]
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
         foreach ($this->groupEvents($this->parseCsvFile($this->downloadFeed())) as $event) {
             $this->publish($event);

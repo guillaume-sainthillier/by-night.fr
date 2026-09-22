@@ -1,12 +1,13 @@
 {% if eventsData.page == 1 and eventsData.events|length == 0 %}
-    <p>Aucun événement prévu à {{ eventsData.place.name }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
-            un événement à {{ eventsData.place.name }}</a> ?</p>
+    <p>Aucun événement prévu {{ eventsData.place.name|at_place }} pour le moment ! Vous souhaitez <a href="{{ path('app_event_new') }}">créer
+            un événement {{ eventsData.place.name|at_place }}</a> ?</p>
 {% else %}
     {% for event in eventsData.events %}
         <twig:Event:ItemCard event="{{ event }}" />
     {% endfor %}
     {% if eventsData.hasNextLink %}
-        <a class="more-content btn btn-outline-primary btn-block" href="{{ eventsData.hasNextLink }}">Plus ({{ eventsData.current }}
-            / {{ eventsData.count }})</a>
+        {# A button rather than a link: the fragment URL feeds the widget and must not be crawled #}
+        <button type="button" class="more-content btn btn-outline-primary btn-block" data-href="{{ eventsData.hasNextLink }}">Plus ({{ eventsData.current }}
+            / {{ eventsData.count }})</button>
     {% endif %}
 {% endif %}

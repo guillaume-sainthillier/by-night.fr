@@ -124,7 +124,7 @@ final class DateRangeType extends AbstractType
             'inherit_data' => true,
             'from_field' => 'from',
             'to_field' => 'to',
-            'label' => 'Quand ?',
+            'label' => "Quand\u{a0}?",
             'ranges' => DateRangePreset::cases(), // DateRangePreset[], empty array for none
             'single_date_picker' => false,
             // DateType options (passed through to child fields)
@@ -230,7 +230,7 @@ final class DateRangeType extends AbstractType
     private function formatCustomDateLabel(DateTimeInterface $from, ?DateTimeInterface $to): string
     {
         if (null === $to) {
-            return \sprintf('A partir du %s', $this->formatDate($from));
+            return \sprintf('À partir du %s', $this->formatDate($from));
         }
 
         if ($to->format('Y-m-d') === $from->format('Y-m-d')) {

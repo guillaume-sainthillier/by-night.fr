@@ -88,6 +88,17 @@ fos_elastica:
                 endDate:
                     type: date
                     format: yyyy-MM-dd
+                # One entry per session (Event::getSessions()), so the agenda can filter
+                # and sort on the dates an event actually takes place, not on its range
+                sessions:
+                    type: nested
+                    properties:
+                        startAt:
+                            type: date
+                            format: yyyy-MM-dd
+                        endAt:
+                            type: date
+                            format: yyyy-MM-dd
                 draft:
                     type: boolean
                 placeName:

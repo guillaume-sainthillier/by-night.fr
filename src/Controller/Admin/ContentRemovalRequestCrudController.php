@@ -39,6 +39,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Override;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\TranslatableMessage;
 
 #[AdminRoute(path: '/content-removal-request', name: 'content_removal_request')]
 final class ContentRemovalRequestCrudController extends AbstractCrudController
@@ -87,7 +88,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus() && ContentRemovalType::Event === $entity->getType() && $entity->getEvents()->count() > 0)
             ->addCssClass('btn btn-danger');
 
-        $markAsProcessed = Action::new('markAsProcessed', 'Marquer traité', 'lucide:check')
+        $markAsProcessed = Action::new('markAsProcessed', 'Marquer comme traitée', 'lucide:check')
             ->linkToCrudAction('markAsProcessed')
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus())
             ->addCssClass('btn btn-success');
@@ -97,7 +98,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             ->displayIf(static fn (ContentRemovalRequest $entity): bool => ContentRemovalRequestStatus::Pending === $entity->getStatus())
             ->addCssClass('btn btn-secondary');
 
-        $batchMarkAsProcessed = Action::new('batchMarkAsProcessed', 'Marquer traité', 'lucide:check')
+        $batchMarkAsProcessed = Action::new('batchMarkAsProcessed', 'Marquer comme traitée', 'lucide:check')
             ->linkToCrudAction('batchMarkAsProcessed')
             ->addCssClass('btn btn-success');
 
@@ -269,7 +270,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             $this->mailerManager->sendContentRemovalProcessedEmail($request);
         }
 
-        $this->addFlash('success', \sprintf('%d demande(s) marquée(s) comme traitée(s).', \count($processed)));
+        $this->addFlash('success', $this->countMessage('{count, plural, one {# demande marquée comme traitée} other {# demandes marquées comme traitées}}.', \count($processed)));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
@@ -294,7 +295,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             $this->mailerManager->sendContentRemovalRejectedEmail($request);
         }
 
-        $this->addFlash('success', \sprintf('%d demande(s) rejetée(s).', \count($rejected)));
+        $this->addFlash('success', $this->countMessage('{count, plural, one {# demande rejetée} other {# demandes rejetées}}.', \count($rejected)));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
@@ -326,7 +327,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
             $this->mailerManager->sendContentRemovalProcessedEmail($request);
         }
 
-        $this->addFlash('success', \sprintf('%d image(s) supprimée(s).', \count($processed)));
+        $this->addFlash('success', $this->countMessage('{count, plural, one {# image supprimée} other {# images supprimées}}.', \count($processed)));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
@@ -353,7 +354,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         }
 
         $this->entityManager->flush();
-        $this->addFlash('success', \sprintf('%d événement(s) supprimé(s).', $count));
+        $this->addFlash('success', $this->countMessage('{count, plural, one {# événement supprimé} other {# événements supprimés}}.', $count));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
     }
@@ -392,5 +393,13 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         if ($flush) {
             $this->entityManager->flush();
         }
+    }
+
+    /**
+     * The flash templates translate their messages, so the ICU domain agrees the words with the count.
+     */
+    private function countMessage(string $pattern, int $count): TranslatableMessage
+    {
+        return new TranslatableMessage($pattern, ['count' => $count], 'messages+intl-icu');
     }
 }

@@ -30,14 +30,14 @@ final class ChangePasswordFormType extends AbstractType
                 'type' => PasswordType::class,
                 'first_options' => [
                     'constraints' => [
-                        new NotBlank(message: 'Please enter a password'),
+                        new NotBlank(message: 'Veuillez saisir un mot de passe.'),
                         new Length(min: 6, max: 255, minMessage: 'Votre mot de passe doit comporter au moins {{ limit }} caractères'),
                     ],
                     'label' => 'Nouveau mot de passe',
                     'icon-prepend' => 'lucide:key',
                 ],
                 'second_options' => [
-                    'label' => 'Répetez le mot  de passe',
+                    'label' => 'Répétez le mot de passe',
                     'icon-prepend' => 'lucide:key',
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas',

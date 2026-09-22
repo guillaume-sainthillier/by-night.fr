@@ -11,6 +11,7 @@
 namespace App\Tests\Parser\Common;
 
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Factory\AdminZone1Factory;
 use App\Factory\CountryFactory;
 use App\Parser\Common\OpenAgendaParser;
@@ -18,14 +19,12 @@ use App\Tests\AppKernelTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionMethod;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 /**
  * The feed's location.countryCode is not always the clean ISO alpha-2 it should be.
  * Whatever the parser puts in CountryDto::$code is compared against Country::$id all the
  * way down, so it must leave here canonical or not at all.
  */
-#[ResetDatabase]
 final class OpenAgendaParserTest extends AppKernelTestCase
 {
     private OpenAgendaParser $parser;
@@ -90,6 +89,35 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertSame('FR', $dto->place?->country?->code, 'The region names the country when the code cannot');
     }
 
+    public function testEachTimingKeepsItsStartAndEndTimes(): void
+    {
+        // A day with a morning and an afternoon session, then an evening with no end time
+        $dto = $this->arrayToDto(self::feedEvent(event: ['timings' => [
+            ['begin' => '2026-09-01T09:00:00+02:00', 'end' => '2026-09-01T12:30:00+02:00'],
+            ['begin' => '2026-09-01T13:30:00+02:00', 'end' => '2026-09-01T18:30:00+02:00'],
+            ['begin' => '2026-09-02T20:00:00+02:00', 'end' => '2026-09-02T20:00:00+02:00'],
+        ]]));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertSame(
+            ['De 09h00 à 12h30', 'De 13h30 à 18h30', 'À 20h00'],
+            array_map(static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours, $dto->timesheets)
+        );
+        self::assertSame('2026-09-01', $dto->timesheets[0]->startAt?->format('Y-m-d'));
+        self::assertNull($dto->hours, 'Distinct slots: no single summary for the event');
+    }
+
+    public function testOneSlotRepeatedOverTheDatesSummarisesTheEvent(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(event: ['timings' => [
+            ['begin' => '2026-10-01T20:00:00+02:00', 'end' => '2026-10-01T22:00:00+02:00'],
+            ['begin' => '2026-10-02T20:00:00+02:00', 'end' => '2026-10-02T22:00:00+02:00'],
+        ]]));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertSame('De 20h00 à 22h00', $dto->hours);
+    }
+
     private function arrayToDto(array $data): ?EventDto
     {
         $method = new ReflectionMethod(OpenAgendaParser::class, 'arrayToDto');
@@ -104,12 +132,13 @@ final class OpenAgendaParserTest extends AppKernelTestCase
      * A minimal event as the events endpoint returns it (detailed=1, monolingual=fr).
      *
      * @param array<string, mixed> $location overrides for the embedded location
+     * @param array<string, mixed> $event    top-level overrides (timings, ...)
      *
      * @return array<string, mixed>
      */
-    private static function feedEvent(array $location = []): array
+    private static function feedEvent(array $location = [], array $event = []): array
     {
-        return [
+        return array_replace([
             'uid' => 123456,
             'slug' => 'concert-au-parc',
             'title' => 'Concert au parc',
@@ -138,6 +167,6 @@ final class OpenAgendaParserTest extends AppKernelTestCase
                 'phone' => null,
                 'email' => null,
             ], $location),
-        ];
+        ], $event);
     }
 }

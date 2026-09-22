@@ -5,16 +5,16 @@
 {% block body -%}
     {{ include('security/login-content.html.twig', {partial: true}) }}
     <p class="mt-4 mb-0">
-        Pas encore membre ?
+        Pas encore membre ?
         <a class="register" href="{{ path('app_register') }}"
            title="Créez votre compte gratuitement">
-            Créez votre compte gratuitement !
+            Créez votre compte gratuitement !
         </a>
     </p>
 {%- endblock %}
 
 {% block footer -%}
-    <button class="btn btn-primary" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+    <button class="btn btn-primary" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter…">
         Se connecter
     </button>
 {%- endblock %}

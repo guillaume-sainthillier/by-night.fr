@@ -40,6 +40,17 @@ final class EventElasticaRepository extends Repository
 
     public function findWithSearch(SearchEvent $search): AdapterInterface
     {
+        return new FantaPaginatorAdapter($this->createPaginatorAdapter($this->createSearchQuery($search)));
+    }
+
+    /**
+     * The agenda query: location, then sessions (one must overlap the requested
+     * window), then text, tags and types. Sorted by the soonest-ending session in the
+     * window, so an event is listed by its next date rather than by its overall range,
+     * or by relevance when a term is searched.
+     */
+    public function createSearchQuery(SearchEvent $search): Query
+    {
         $sortByScore = false;
         $mainQuery = new BoolQuery();
         $location = null;
@@ -62,65 +73,23 @@ final class EventElasticaRepository extends Repository
             $mainQuery->addFilter($filterBool);
         }
 
+        // One entry per session in the index: the event is listed when one of its
+        // sessions overlaps the requested window, not when its overall range does.
+        // The same condition drives the sort below.
+        $sessionFilter = null;
         if (null !== $search->getFrom()) {
-            if (null === $search->getTo()) {
-                $mainQuery->addFilter(new Range('endDate', [
-                    'gte' => $search->getFrom()->format('Y-m-d'),
+            $sessionFilter = new BoolQuery();
+            $sessionFilter->addFilter(new Range('sessions.endAt', [
+                'gte' => $search->getFrom()->format('Y-m-d'),
+            ]));
+
+            if (null !== $search->getTo()) {
+                $sessionFilter->addFilter(new Range('sessions.startAt', [
+                    'lte' => $search->getTo()->format('Y-m-d'),
                 ]));
-            } else {
-                $filterDate = new BoolQuery();
-                /*
-                 * 4 cas :
-                 * 1) [debForm; finForm] € [deb; fin]
-                 * 2) [deb; fin] € [debForm; finForm]
-                 * 3) deb € [debForm; finForm]
-                 * 4) fin € [debForm; finForm]
-                */
-
-                // Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
-                $cas1 = new BoolQuery();
-                $cas1
-                    ->addMust(new Range('startDate', [
-                        'lte' => $search->getFrom()->format('Y-m-d'),
-                    ])
-                    )
-                    ->addMust(new Range('endDate', [
-                        'gte' => $search->getTo()->format('Y-m-d'),
-                    ]));
-
-                // Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
-                $cas2 = new BoolQuery();
-                $cas2
-                    ->addMust(new Range('startDate', [
-                        'gte' => $search->getFrom()->format('Y-m-d'),
-                    ])
-                    )
-                    ->addMust(new Range('endDate', [
-                        'lte' => $search->getTo()->format('Y-m-d'),
-                    ]));
-
-                // Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new Range('startDate', [
-                    'gte' => $search->getFrom()->format('Y-m-d'),
-                    'lte' => $search->getTo()->format('Y-m-d'),
-                ]);
-
-                // Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new Range('endDate', [
-                    'gte' => $search->getFrom()->format('Y-m-d'),
-                    'lte' => $search->getTo()->format('Y-m-d'),
-                ]);
-
-                $filterDate
-                    ->addShould($cas1)
-                    ->addShould($cas2)
-                    ->addShould($cas3)
-                    ->addShould($cas4)
-                    ->setMinimumShouldMatch(1)
-                ;
-
-                $mainQuery->addFilter($filterDate);
             }
+
+            $mainQuery->addFilter(new Nested()->setPath('sessions')->setQuery($sessionFilter));
         }
 
         // Query
@@ -185,7 +154,14 @@ final class EventElasticaRepository extends Repository
         $finalQuery = Query::create($mainQuery);
         $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
         if (!$sortByScore) {
-            $finalQuery->addSort(['endDate' => 'asc']);
+            // Soonest-ending session in the window first: a one-day session sorts by
+            // its day, an exhibition still running by its last day, as the range did.
+            $sort = ['order' => 'asc', 'mode' => 'min', 'nested' => ['path' => 'sessions']];
+            if (null !== $sessionFilter) {
+                $sort['nested']['filter'] = $sessionFilter->toArray();
+            }
+
+            $finalQuery->addSort(['sessions.endAt' => $sort]);
 
             if ($location) {
                 $finalQuery->addSort(['_geo_distance' => [
@@ -196,7 +172,7 @@ final class EventElasticaRepository extends Repository
             }
         }
 
-        return new FantaPaginatorAdapter($this->createPaginatorAdapter($finalQuery));
+        return $finalQuery;
     }
 
     /**

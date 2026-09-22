@@ -17,10 +17,8 @@ use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 #[RequiresPhpExtension('mjml')]
-#[ResetDatabase]
 final class ContentRemovalRequestTest extends ApiTestCase
 {
     #[Override]

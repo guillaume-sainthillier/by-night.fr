@@ -23,6 +23,9 @@ parameters:
     patterns.slug: '[^/]+'
     patterns.social: 'facebook|google|twitter'
     patterns.admin_social: 'facebook_admin|google_admin|twitter_admin'
+    # Days after its end date during which an event page is still submitted in the sitemap and
+    # left indexable; older events stay online but carry a "noindex" (App\SEO\EventIndexingPolicy).
+    app.seo.event_index_grace_days: 30
 
 services:
     # default configuration for services in *this* file

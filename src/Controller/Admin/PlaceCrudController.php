@@ -36,8 +36,8 @@ final class PlaceCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Place')
-            ->setEntityLabelInPlural('Places')
+            ->setEntityLabelInSingular('Lieu')
+            ->setEntityLabelInPlural('Lieux')
             ->setSearchFields([
                 'id',
                 'name',

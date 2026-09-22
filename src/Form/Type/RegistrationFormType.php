@@ -32,7 +32,7 @@ final class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'Adresse mail',
+                'label' => 'Adresse e-mail',
             ])
             ->add('username', null, [
                 'label' => "Nom d'utilisateur",
@@ -41,7 +41,7 @@ final class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'type' => PasswordType::class,
                 'constraints' => [
-                    new NotBlank(message: 'Please enter a password'),
+                    new NotBlank(message: 'Veuillez saisir un mot de passe.'),
                 ],
                 'options' => [
                     'attr' => [

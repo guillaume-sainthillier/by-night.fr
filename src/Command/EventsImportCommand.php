@@ -11,7 +11,9 @@
 namespace App\Command;
 
 use App\Contracts\ParserInterface;
+use App\Repository\ParserStateRepository;
 use App\Utils\Monitor;
+use DateTimeImmutable;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,6 +31,7 @@ final class EventsImportCommand extends Command
     public function __construct(
         #[AutowireIterator(ParserInterface::class)]
         private readonly iterable $parsers,
+        private readonly ParserStateRepository $parserStates,
     ) {
         parent::__construct();
     }
@@ -40,7 +43,7 @@ final class EventsImportCommand extends Command
     {
         $this
             ->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
-            ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible');
+            ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible au lieu des seuls changements depuis le dernier import');
     }
 
     /**
@@ -49,6 +52,7 @@ final class EventsImportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $parserName = $input->getArgument('parser');
+        $full = (bool) $input->getOption('full');
 
         foreach ($this->parsers as $parser) {
             if ('all' !== $parserName && $parser->getCommandName() !== $parserName) {
@@ -66,12 +70,22 @@ final class EventsImportCommand extends Command
                 continue;
             }
 
+            // The watermark is the run *start*: whatever the source changes while we
+            // are fetching is picked up by the next run rather than lost in between.
+            $startedAt = new DateTimeImmutable();
+            $since = $full ? null : $this->parserStates->findLastParsedAt($parser->getCommandName());
+
             Monitor::writeln(\sprintf(
-                'Starting <info>%s</info>',
-                $parser->getName()
+                'Starting <info>%s</info> (%s)',
+                $parser->getName(),
+                null === $since ? 'full import' : \sprintf('changes since %s', $since->format('Y-m-d H:i:s'))
             ));
 
-            $parser->parse(!$input->getOption('full'));
+            $parser->parse($since);
+
+            // Only a run that completed moves the watermark: after a failure the next run
+            // re-fetches from the previous one, and the dedup gate absorbs the overlap.
+            $this->parserStates->markParsed($parser->getCommandName(), $startedAt);
 
             Monitor::writeln(\sprintf(
                 '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged)',

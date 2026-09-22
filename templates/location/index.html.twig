@@ -1,10 +1,10 @@
 {% extends 'layouts/full.html.twig' %}
 
 {% block body_id 'page-location-index' %}
-{% block title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
+{% block title 'Agenda des sorties ' ~ location.atName ~ ' : concerts, spectacles, expos et soirées' %}
 
 {% block meta_description -%}
-    Que faire {{ location.atName }} ? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
+    Que faire {{ location.atName }} ? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
 {%- endblock %}
 
 {% block breadcrumb %}
@@ -25,12 +25,12 @@
     <section class="full_wrapper" style="background-image: url({{ locationUrl }})" {{ load_page('event_index') }}>
         <div class="icon fade-black-transp"></div>
         <div class="wrapper">
-            <h1>Sortir {{ location.atName }} : l'agenda de vos sorties</h1>
+            <h1>Sortir {{ location.atName }} : l'agenda de vos sorties</h1>
             <div class="no-margin-form card search_container">
                 <div class="card-body">
                     {{ form_start(form, {action: path('app_agenda_index', {location: location.slug})}) }}
                     {{ form_row(form.dateRange, {label: 'Je veux sortir ' ~ location.atName, icon_prepend: 'lucide:calendar-days'}) }}
-                    {{ form_row(form.term, {label: 'Je recherche...', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée, ...'}, icon_prepend: 'lucide:search'}) }}
+                    {{ form_row(form.term, {label: 'Je recherche…', attr: {placeholder: 'Concert, bar, spectacle, enfant, soirée…'}, icon_prepend: 'lucide:search'}) }}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary search">
@@ -43,33 +43,32 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            {% set s = events.nbResults > 1 ? 's' %}
-            <h2 class="text-primary h4">{{ events.nbResults }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
+            <h2 class="text-primary h4">{{ '{count, plural, one {# événement et bon plan culturel} other {# événements et bons plans culturels}}'|trans({count: events.nbResults}, 'messages+intl-icu') }} {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white py-4 py-xl-6">
         <div class="{{ block('container_class') }}">
-            <h2>Que faire {{ location.atName }} aujourd'hui ou ce soir ?</h2>
-            <p>Vous cherchez <strong>que faire {{ location.atName }}</strong> ? Parcourez notre agenda pour trouver un
+            <h2>Que faire {{ location.atName }} aujourd'hui ou ce soir ?</h2>
+            <p>Vous vous demandez <strong>que faire {{ location.atName }}</strong> ? Parcourez notre agenda pour trouver un
                 <strong>concert</strong>, une <strong>expo</strong>, un <strong>spectacle</strong>,
                 un <strong>café</strong> ou une
                 <strong>sortie</strong> dans votre ville.
-                Il y en a pour tous les goûts et pour tous les âges ! Des
+                Il y en a pour tous les goûts et pour tous les âges ! Des
                 <strong>visites de parcs en famille</strong> aux <strong>soirées étudiantes</strong>
                 les plus branchées dans les
-                <strong>discothèques</strong> de {{ location.name }}, trouvez l'événement qui vous correspond.
+                <strong>discothèques</strong> {{ location.name|of_place }}, trouvez l'événement qui vous correspond.
             </p>
             {% if location.isCity %}
                 <p>{{ location.appName }} centralise pour vous les
-                    <strong>événements et bons plans culturels</strong> sur la ville de {{ location.name }} et ses environs.
-                    Notre objectif : rassembler toutes les
-                    <strong>choses à faire à {{ location.name }}</strong> et vous
+                    <strong>événements et bons plans culturels</strong> sur la ville {{ location.name|of_place }} et ses environs.
+                    Notre objectif : rassembler toutes les
+                    <strong>choses à faire {{ location.atName }}</strong> et vous
                     offrir une plateforme unique pour trouver les meilleures <strong>idées de sorties</strong>.
                 </p>
             {% else %}
                 <p>{{ location.appName }} centralise pour vous les
-                    <strong>événements et bons plans culturels</strong> dans toutes les villes de {{ location.name }}.
-                    Notre objectif : rassembler toutes les
+                    <strong>événements et bons plans culturels</strong> dans toutes les villes {{ location.name|of_place }}.
+                    Notre objectif : rassembler toutes les
                     <strong>choses à faire {{ location.atName }}</strong> et vous
                     offrir une plateforme unique pour trouver les meilleures <strong>idées de sorties</strong>.
                 </p>
@@ -91,34 +90,34 @@
                 link: path('app_agenda_by_type', {type: 'concert', location: location.slug}),
                 title_link: 'Concerts ' ~ location.atName,
                 text: 'Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples
-                            ' ~ location.atName ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
-                            soirées et pour <strong>sortir se détendre</strong> " ~ location.atName ~ '.',
+                            ' ~ location.atName ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
+                            soirées pour <strong>sortir vous détendre</strong> " ~ location.atName ~ '.',
             }, {
-                title: 'Etudiant',
+                title: 'Étudiant',
                 icon: 'flaticon-students17',
                 color: 'orange',
                 link: path('app_agenda_by_type', {type: 'etudiant', location: location.slug}),
                 title_link: 'Soirées étudiantes ' ~ location.atName,
                 text: "Envie de <strong>soirée étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en
-                            <strong>discothèque</strong> ce soir ? " ~ location.appName ~ " regroupe
-                            <strong>l'agenda des soirées</strong> rien que pour vous !",
+                            <strong>discothèque</strong> ce soir ? " ~ location.appName ~ " regroupe
+                            <strong>l'agenda des soirées</strong> rien que pour vous !",
             }, {
                 title: 'Famille',
                 icon: 'flaticon-father16',
                 color: 'green',
                 link: path('app_agenda_by_type', {type: 'famille', location: location.slug}),
-                title_link: 'Sorties familles ' ~ location.atName,
+                title_link: 'Sorties en famille ' ~ location.atName,
                 text: 'Trouvez des idées pour <strong>sortir en famille</strong> ' ~ location.atName ~ ' avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
-                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de ' ~ location.name ~ ' !',
+                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près ' ~ location.name|of_place ~ ' !',
             }, {
                 title: 'Spectacle',
                 icon: 'flaticon-tickets',
                 color: 'blue',
                 link: path('app_agenda_by_type', {type: 'spectacle', location: location.slug}),
                 title_link: 'Spectacles ' ~ location.atName,
-                text: location.atName ~ ', il y a plein de <strong>spectacles en ' ~ 'now'|date('Y') ~ "</strong> ! Divertissement & culture,
+                text: 'Il y a plein de <strong>spectacles en ' ~ 'now'|date('Y') ~ '</strong> ' ~ location.atName ~ " ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorite grâce à
                             <strong>l'agenda des spectacles " ~ location.atName ~ '</strong>.',
             }, {
@@ -127,9 +126,9 @@
                 color: 'darkblue',
                 link: path('app_agenda_by_type', {type: 'exposition', location: location.slug}),
                 title_link: 'Les expos ' ~ location.atName,
-                text: 'Les <strong>expos ' ~ location.atName ~ "</strong> sont nombreuses ! Envie d'aller visiter les
-                    <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir
-                    les <strong>expos à voir " ~ location.atName ~ "</strong> ? C'est par ici !",
+                text: 'Les <strong>expos ' ~ location.atName ~ "</strong> sont nombreuses ! Envie d'aller visiter les
+                    <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir
+                    les <strong>expos à voir " ~ location.atName ~ "</strong> ? C'est par ici !",
             }, {
                 title: 'Organisateur',
                 icon: 'flaticon-calendar60',
@@ -137,8 +136,8 @@
                 link: path('app_event_new'),
                 title_link: 'Créer un événement',
                 text: "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
-                            de communication</strong> " ~ location.atName ~ ' ? <strong>Publiez facilement</strong>
-                            votre événement sur notre plateforme et donnez lui un maximum de <strong>visibilité</strong> !',
+                            de communication</strong> " ~ location.atName ~ ' ? <strong>Publiez facilement</strong>
+                            votre événement sur notre plateforme et donnez-lui un maximum de <strong>visibilité</strong> !',
             }] %}
             <div class="row row-cards row-deck">
                 {% for i, content in contents %}

@@ -16,7 +16,7 @@ export default function initTimesheetHoursSync(container) {
      */
     const updateTimesheetPlaceholders = () => {
         const hoursValue = hoursField.value.trim()
-        const placeholder = hoursValue || 'A 20h, de 21h à minuit'
+        const placeholder = hoursValue || 'À 20h, de 21h à minuit'
 
         // Update existing timesheet hours fields
         const timesheetHoursFields = findAll('.timesheet-hours', timesheetsCollection)

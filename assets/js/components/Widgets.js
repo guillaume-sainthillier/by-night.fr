@@ -13,7 +13,7 @@ export default class Widgets {
         elems.each(function () {
             const container = $(this)
             const containerActions = container.find('.more-container')
-            const moreContentLink = container.find('a.more-content')
+            const moreContentLink = container.find('.more-content')
             const scrollArea = container.find('.scroll-area')
             const containerBody = container.find('.scroll-area-content').length
                 ? container.find('.scroll-area-content')
@@ -36,7 +36,7 @@ export default class Widgets {
                         '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
                     )
                     const scrollAreaLastItem = containerBody.find('.scroll-item').last()
-                    $.get(btn.attr('href')).done((content) => {
+                    $.get(btn.data('href')).done((content) => {
                         btn.remove()
                         containerBody.append(content)
                         self.initMoreWidgets(container)

@@ -48,11 +48,17 @@ final readonly class StatsExtension
      */
     public static function formatEventsCount(int $count): string
     {
-        // Compact long form ("1,9 million", "2,1 millions") floored to 100K so "Plus de …" never overstates.
+        // From a million: compact long form ("1,9 million", "2,1 millions") floored to 100K so "Plus de …"
+        // never overstates, and "de" as after any "million". Below, the whole count, grouped by thousands.
         return MessageFormatter::formatMessage(
             'fr',
-            "{count, number, ::compact-long .# rounding-mode-floor} d''événements",
-            ['count' => $count],
+            <<<'ICU'
+                {scale, select,
+                    millions {{count, number, ::compact-long .# rounding-mode-floor} d''événements}
+                    other {{count, plural, one {# événement} other {# événements}}}
+                }
+                ICU,
+            ['scale' => $count >= 1_000_000 ? 'millions' : 'other', 'count' => $count],
         ) ?: throw new RuntimeException(intl_get_error_message());
     }
 }

@@ -30,7 +30,7 @@
                     </li>
                     <li>
                         <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="Un problème, une question ? Contactez-nous" href="mailto:support@by-night.fr">
+                        <a title="Un problème, une question ? Contactez-nous" href="mailto:support@by-night.fr">
                             Contact
                         </a>
                     </li>
@@ -43,7 +43,7 @@
                     {% for city in random_cities(country) %}
                         <li>
                             <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                            <a title="Sortir à {{ city.name }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
+                            <a title="Sortir {{ city.name|at_place }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
                                 {{ city.name }}
                             </a>
                         </li>
@@ -57,7 +57,7 @@
                         <ul class="fa-ul">
                             <li>
                                 <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Actualités technique autour du Web et de PHP" href="https://blog.silarhi.fr">
+                                <a title="Actualités techniques autour du Web et de PHP" href="https://blog.silarhi.fr">
                                     Actualités Web & PHP
                                 </a>
                             </li>
@@ -111,7 +111,7 @@
                             </li>
                             <li>
                                 <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage Nalo {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-bforbank">
+                                <a title="Offre de parrainage BforBank {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-bforbank">
                                     Parrainage BforBank
                                 </a>
                             </li>

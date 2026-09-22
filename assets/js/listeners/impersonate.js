@@ -19,10 +19,10 @@ export default {
                 title: 'Impersonation',
                 input: 'text',
                 inputLabel: 'Rechercher un utilisateur',
-                inputPlaceholder: 'Username ou email...',
+                inputPlaceholder: "Nom d'utilisateur ou e-mail…",
                 showCancelButton: true,
                 cancelButtonText: 'Annuler',
-                confirmButtonText: 'Impersonifier',
+                confirmButtonText: 'Se connecter en tant que',
                 heightAuto: false,
                 didOpen() {
                     autocomplete = create({

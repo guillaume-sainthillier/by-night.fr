@@ -16,6 +16,23 @@ use IntlDateFormatter;
 
 final class EventSEO
 {
+    public function __construct(private readonly EventIndexingPolicy $indexingPolicy)
+    {
+    }
+
+    /**
+     * Whether search engines should index the event page (see EventIndexingPolicy).
+     */
+    public function isIndexable(Event $event): bool
+    {
+        return $this->indexingPolicy->isIndexable($event);
+    }
+
+    public function hasEnded(Event $event): bool
+    {
+        return $this->indexingPolicy->hasEnded($event);
+    }
+
     public function getEventDescription(Event $event): string
     {
         $description = \sprintf('Découvrez %s.', $event->getName());

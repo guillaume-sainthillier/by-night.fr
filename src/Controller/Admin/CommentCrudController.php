@@ -33,8 +33,8 @@ final class CommentCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Comment')
-            ->setEntityLabelInPlural('Comment')
+            ->setEntityLabelInSingular('Commentaire')
+            ->setEntityLabelInPlural('Commentaires')
             ->setSearchFields(['id', 'comment', 'user.username', 'user.email']);
     }
 

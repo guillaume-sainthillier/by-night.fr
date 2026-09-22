@@ -19,46 +19,73 @@ use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use DateTimeImmutable;
+use DateTimeZone;
 use Override;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\PropertyAccess\Exception\AccessException;
-use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use ZipArchive;
 
+/**
+ * Imports the "Fêtes et manifestations" of the DATAtourisme API (https://api.datatourisme.fr/v1/docs).
+ *
+ * The API replaces the Diffuseur flux (zip archives of JSON-LD files, shut down in October
+ * 2027). Its objects are the same ontology flattened: plain keys ("label", not "rdfs:label"),
+ * multilingual values as {"@fr": "…"} maps, and neither a venue identifier nor contact
+ * e-mails any more. Requests go through the "datatourisme.client" scoped client, which
+ * enforces the API quotas (see config/packages/rate_limiter.yaml).
+ */
 final class DataTourismeParser extends AbstractParser
 {
-    private const string UUID_REGEX = '#^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$#';
+    /**
+     * The API maximum.
+     */
+    private const int PAGE_SIZE = 250;
 
-    private const string INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
+    /**
+     * Only what arrayToDto() reads, down to the sub-field (the selection is hierarchical, so
+     * naming a parent would drag along its whole subtree: venue opening hours, day-of-week
+     * labels, contact addresses…). Saves about a sixth of every page.
+     */
+    private const array FIELDS = [
+        'uuid',
+        'uri',
+        'identifier',
+        'label',
+        'type',
+        'isObsolete',
+        'lastUpdate',
+        'lastUpdateDatatourisme',
+        'comment',
+        'hasDescription.description',
+        'hasDescription.shortDescription',
+        'hasTheme.label',
+        'hasMainRepresentation.hasRelatedResource.locator',
+        'takesPlaceAt.startDate',
+        'takesPlaceAt.endDate',
+        'takesPlaceAt.startTime',
+        'takesPlaceAt.endTime',
+        'isLocatedAt.geo',
+        'isLocatedAt.address',
+        'hasContact.telephone',
+        'hasContact.homepage',
+        'hasBookingContact.telephone',
+        'hasBookingContact.homepage',
+    ];
 
-    private const string UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
-
-    private readonly PropertyAccessorInterface $propertyAccessor;
+    /**
+     * An address line that names a way or an area rather than a venue: it starts with a
+     * number, a way word ("rue", "av.", "allée"…) or a road number, or is just the town
+     * centre. (*UCP) makes the word boundary Unicode-aware, so "Château" is not "ch.".
+     */
+    private const string STREET_LINE_REGEX = '/(*UCP)^(?:\d|(?:rue|ruelle|avenue|av|boulevard|bd|place|pl|route|rte|chemin|ch|all[ée]es?|impasse|quai|cours|passage|square|promenade|esplanade|lieu[- ]dit|hameau|voie|sentier|traverse|montée|faubourg|fbg|rond[- ]point|carrefour|parvis|venelle)(?:\.|\b)|(?:z\.?a\.?c?\.?|z\.?i\.?)(?=\s|$)|(?:rd|rn|d|n)\s?\d+\b|(?:le |la |les )?(?:bourg|village|centre[ -]?ville|centre[ -]?bourg)$)/iu';
 
     public function __construct(
         LoggerInterface $logger,
         MessageBusInterface $messageBus,
         EventHandler $eventHandler,
-        private readonly HttpClientInterface $client,
-        #[Autowire('%kernel.project_dir%/var/storage/temp')]
-        private readonly string $tempPath,
-        #[Autowire(env: 'DATATOURISME_APP_KEY')]
-        private readonly string $dataTourismeAppKey,
+        private readonly HttpClientInterface $datatourismeClient,
     ) {
         parent::__construct($logger, $messageBus, $eventHandler);
-
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-            ->enableExceptionOnInvalidIndex()
-            ->enableExceptionOnInvalidPropertyPath()
-            ->getPropertyAccessor();
     }
 
     /**
@@ -71,317 +98,297 @@ final class DataTourismeParser extends AbstractParser
 
     /**
      * {@inheritDoc}
+     *
+     * 4.0: the API replaced the Diffuseur flux, so every event is re-read once.
      */
     #[Override]
     public static function getParserVersion(): string
     {
-        return '3.0';
+        return '4.0';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function parse(bool $incremental): void
+    public function parse(?DateTimeImmutable $since): void
     {
-        $url = $incremental ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
-        $directory = $this->getFeed(\sprintf($url, $this->dataTourismeAppKey));
+        // A past event is useless whatever changed: both imports keep only the events still
+        // running or to come. The API compares dates at day granularity, so an incremental
+        // import starts from the (UTC) day the previous run started: at most one day of
+        // overlap, which the publication guard drops for free.
+        $filters = [\sprintf('takesPlaceAt.endDate[gte]=%s', new DateTimeImmutable('today')->format('Y-m-d'))];
+        if (null !== $since) {
+            $filters[] = \sprintf('lastUpdateDatatourisme[gte]=%s', self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d'));
+        }
 
-        $finder = new Finder();
-        $files = $finder
-            ->files()
-            ->name('*.json')
-            ->in($directory)
-            ->depth('> 0');
+        $url = 'entertainmentAndEvent';
+        $query = [
+            'fields' => implode(',', self::FIELDS),
+            'lang' => 'fr',
+            'page_size' => self::PAGE_SIZE,
+            'filters' => implode(' and ', $filters),
+        ];
 
-        $fs = new Filesystem();
-        foreach ($files as $file) {
-            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, \JSON_THROW_ON_ERROR);
-            $dtos = array_filter($this->arrayToDtos($datas));
+        // Page numbers stop working past 10 000 results: follow the cursor links instead.
+        while (null !== $url) {
+            $data = $this->datatourismeClient->request('GET', $url, ['query' => $query])->toArray();
 
-            foreach ($dtos as $dto) {
-                $this->publish($dto);
+            foreach ($data['objects'] ?? [] as $object) {
+                $dto = $this->arrayToDto($object);
+                if (null !== $dto) {
+                    $this->publish($dto);
+                }
             }
 
-            $fs->remove($file->getPathname());
+            $url = $data['meta']['next'] ?? null;
+            $query = []; // the "next" link carries the whole query string
         }
     }
 
-    private function getFeed(string $url): string
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function arrayToDto(array $data): ?EventDto
     {
-        // Remove previous extracts
-        $fs = new Filesystem();
-
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . \sprintf('%s.zip', md5($url));
-        $extractDirectory = $this->tempPath . \DIRECTORY_SEPARATOR . md5($url);
-
-        if ($fs->exists($extractDirectory)) {
-            $fs->remove($extractDirectory);
+        if (true === ($data['isObsolete'] ?? false)) {
+            return null;
         }
 
-        // Download fresh version
-        $response = $this->client->request('GET', $url);
-
-        $fileHandler = fopen($filePath, 'w');
-        foreach ($this->client->stream($response) as $chunk) {
-            fwrite($fileHandler, $chunk->getContent());
+        $location = $data['isLocatedAt'][0] ?? null;
+        $address = $location['address'][0] ?? null;
+        if (!\is_array($location) || !\is_array($address) || empty($data['takesPlaceAt'])) {
+            return null;
         }
 
-        // Extract zip
-        $zip = new ZipArchive();
-        $res = $zip->open($filePath);
-        if (true !== $res) {
-            throw new RuntimeException(\sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
-        }
-
-        $zip->extractTo($extractDirectory);
-        $zip->close();
-
-        $fs->remove($filePath);
-
-        return $extractDirectory;
-    }
-
-    private function arrayToDtos(array $datas): array
-    {
-        if (empty($datas['isLocatedAt']) || empty($datas['takesPlaceAt'])) {
-            return [];
-        }
-
-        $datas['hasTheme'] ??= [];
-        $datas['hasBookingContact'] ??= [];
-        $datas['hasContact'] ??= [];
-
-        $typesManifestation = [];
-        foreach ($datas['@type'] as $type) {
-            $typesManifestation[] = $this->getFrenchType($type);
-        }
-
-        $typesManifestation = array_filter(array_unique($typesManifestation));
-
-        $categoriesManifestation = [];
-        foreach ($datas['hasTheme'] as $theme) {
-            $categoriesManifestation[] = $this->getDataValue($theme, '[rdfs:label][fr][0]');
-        }
-
-        $categoriesManifestation = array_filter(array_unique($categoriesManifestation));
-
-        $countryName =
-            $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][0][isPartOfDepartment][0][isPartOfRegion][0][isPartOfCountry][0][rdfs:label][fr][0]')
-            ?? $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][isPartOfDepartment][isPartOfRegion][isPartOfCountry][rdfs:label][fr][0]')
-        ;
-        $latitude = (float) $this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:latitude]');
-        $longitude = (float) $this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:longitude]');
-
-        $emails = [];
-        $phones = [];
-        $websites = [];
-
-        foreach (['hasBookingContact', 'hasContact'] as $key) {
-            foreach ($datas[$key] as $currentDatas) {
-                if (!empty($currentDatas['schema:email'])) {
-                    /** @psalm-suppress DuplicateArrayKey */
-                    $emails = [...$emails, ...(array) $currentDatas['schema:email']];
-                }
-
-                if (!empty($currentDatas['schema:telephone'])) {
-                    /** @psalm-suppress DuplicateArrayKey */
-                    $phones = [...$phones, ...(array) $currentDatas['schema:telephone']];
-                }
-
-                if (!empty($currentDatas['foaf:homepage'])) {
-                    /** @psalm-suppress DuplicateArrayKey */
-                    $websites = [...$websites, ...(array) $currentDatas['foaf:homepage']];
-                }
-            }
-        }
-
-        $websites = array_filter(array_unique($websites));
-        $phones = array_filter(array_unique($phones));
-        $emails = array_filter(array_unique($emails));
-
-        $lastUpdate = new DateTimeImmutable($datas['lastUpdate']);
-        $lastUpdate = $lastUpdate->setTime(0, 0);
-
-        if (isset($datas['lastUpdateDatatourisme'])) {
-            $lastUpdateDatatourisme = new DateTimeImmutable($datas['lastUpdateDatatourisme']);
-        } else {
-            $lastUpdateDatatourisme = null;
-        }
-
-        $updatedAt = max($lastUpdate, $lastUpdateDatatourisme);
-
-        $description = $this->getDataValue($datas, [
-            '[hasDescription][0][dc:description][fr][0]',
-            '[rdfs:comment][fr][0]',
-            '[rdfs:label][fr][0]',
-        ]);
-
-        $url = $this->getDataValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][0][ebucore:locator][0]');
-
-        // Build timesheets from all schedule dates
-        $timesheets = [];
-        $allHours = [];
-
-        foreach ($datas['takesPlaceAt'] as $date) {
-            if (empty($date['endDate'])) {
-                continue;
-            }
-
-            $timesheetDto = new EventTimesheetDto();
-            $timesheetDto->startAt = new DateTimeImmutable($date['startDate']);
-            $timesheetDto->endAt = new DateTimeImmutable($date['endDate']);
-
-            $startTime = $date['startTime'] ?? null;
-            $endTime = $date['endTime'] ?? null;
-
-            if ($startTime && $endTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $endTime);
-                $timesheetDto->hours = \sprintf('De %s à %s', $startTime, $endTime);
-            } elseif ($startTime) {
-                $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', (string) $startTime);
-                $timesheetDto->hours = \sprintf('À %s', $startTime);
-            }
-
-            $timesheets[] = $timesheetDto;
-            if ($timesheetDto->hours) {
-                $allHours[$timesheetDto->hours] = true;
-            }
-        }
-
+        $timesheets = $this->timesheets($data['takesPlaceAt']);
         if ([] === $timesheets) {
-            return [];
+            return null;
         }
 
-        // Compute aggregate start/end dates from first and last timesheets
-        $firstTimesheet = reset($timesheets);
-        $lastTimesheet = end($timesheets);
-        $startDate = $firstTimesheet->startAt;
-        $endDate = $lastTimesheet->endAt;
+        $types = array_values(array_unique(array_filter(array_map($this->getFrenchType(...), (array) ($data['type'] ?? [])))));
+        $themes = array_values(array_unique(array_filter(array_map(
+            fn (array $theme): ?string => $this->text($theme['label'] ?? null),
+            (array) ($data['hasTheme'] ?? []),
+        ))));
 
-        // Use first unique hour for aggregate display
-        $hours = \count($allHours) > 1 ? null : array_key_first($allHours);
+        $websites = [];
+        $phones = [];
+        $emails = [];
+        foreach ([...(array) ($data['hasBookingContact'] ?? []), ...(array) ($data['hasContact'] ?? [])] as $contact) {
+            $websites = [...$websites, ...(array) ($contact['homepage'] ?? [])];
+            $phones = [...$phones, ...(array) ($contact['telephone'] ?? [])];
+            $emails = [...$emails, ...(array) ($contact['email'] ?? [])];
+        }
+
+        $lastUpdate = null === $this->string($data['lastUpdate'] ?? null) ? null : new DateTimeImmutable($data['lastUpdate'])->setTime(0, 0);
+        $lastUpdateDatatourisme = null === $this->string($data['lastUpdateDatatourisme'] ?? null) ? null : new DateTimeImmutable($data['lastUpdateDatatourisme']);
+
+        $hours = array_values(array_unique(array_filter(array_map(static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours, $timesheets))));
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
-        $event->externalId = $datas['dc:identifier'];
-        $event->externalUpdatedAt = $updatedAt;
-        $event->name = $this->getDataValue($datas, '[rdfs:label][fr][0]');
-        $event->description = $description;
-        $event->type = implode(', ', $typesManifestation);
+        // The producer's identifier is what the Diffuseur flux exposed as dc:identifier, so
+        // the events imported before the API keep their identity; DATAtourisme's own uuid
+        // only steps in when a producer sends none.
+        $event->externalId = $this->string($data['identifier'] ?? null) ?? $data['uuid'];
+        $event->externalUpdatedAt = max($lastUpdate, $lastUpdateDatatourisme);
+        $event->name = $this->text($data['label'] ?? null);
+        $event->description = $this->text($data['hasDescription'][0]['description'] ?? null)
+            ?? $this->text($data['hasDescription'][0]['shortDescription'] ?? null)
+            ?? $this->text($data['comment'] ?? null)
+            ?? $event->name;
+        $event->type = implode(', ', $types);
 
-        // First category becomes the main category, rest become themes
-        if ([] !== $categoriesManifestation) {
-            $event->category = TagDto::fromString(array_shift($categoriesManifestation));
-            foreach ($categoriesManifestation as $themeLabel) {
-                $event->themes[] = TagDto::fromString($themeLabel);
+        // First theme becomes the main category, the rest become themes
+        if ([] !== $themes) {
+            $event->category = TagDto::fromString(array_shift($themes));
+            foreach ($themes as $theme) {
+                $event->themes[] = TagDto::fromString($theme);
             }
         }
 
-        $event->source = $datas['@id'];
-        $event->latitude = $latitude;
-        $event->longitude = $longitude;
-        $event->imageUrl = $url;
-        $event->websiteContacts = $websites;
-        $event->emailContacts = $emails;
-        $event->phoneContacts = $phones;
-        $event->startDate = $startDate;
-        $event->endDate = $endDate;
-        $event->hours = $hours;
+        $event->source = $this->string($data['uri'] ?? null);
+        $event->latitude = (float) ($location['geo']['latitude'] ?? 0);
+        $event->longitude = (float) ($location['geo']['longitude'] ?? 0);
+        $event->imageUrl = $this->first($data['hasMainRepresentation'][0]['hasRelatedResource'][0]['locator'] ?? null);
+        $event->websiteContacts = array_values(array_unique(array_filter($websites)));
+        $event->phoneContacts = array_values(array_unique(array_filter($phones)));
+        $event->emailContacts = array_values(array_unique(array_filter($emails)));
+        $event->startDate = $timesheets[0]->startAt;
+        $event->endDate = $timesheets[array_key_last($timesheets)]->endAt;
+        $event->hours = 1 === \count($hours) ? $hours[0] : null;
         $event->timesheets = $timesheets;
 
-        $place = new PlaceDto();
-        $place->name = $this->getDataValue($datas, [
-            '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
-            '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
-        ]);
-        $place->street = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]');
-        $place->externalId = \sprintf('DT-%s', $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')));
+        $streetLines = array_values(array_filter(array_map($this->string(...), (array) ($address['streetAddress'] ?? []))));
+        $cityName = $this->string($address['addressLocality'] ?? null) ?? $this->text($address['hasAddressCity']['label'] ?? null);
+        $postalCode = $this->string($address['postalCode'] ?? null);
 
+        ['name' => $venueName, 'street' => $street] = self::venue($streetLines, $cityName);
+
+        // The flux identified an address with a uuid the API dropped, so the normalised
+        // address itself is now the venue identity: same lines at the same postal code,
+        // same venue, whatever name the heuristic derives from them.
+        $place = new PlaceDto();
+        $place->name = $venueName ?? $cityName;
+        $place->street = $street;
+        $place->externalId = \sprintf('DT-%s', md5(mb_strtolower(preg_replace('/\s+/', ' ', implode('|', [...$streetLines, $postalCode ?? '', $cityName ?? ''])))));
         $event->place = $place;
 
         $city = new CityDto();
-        $city->name = $this->getDataValue($datas, [
-            '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
-            '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
-        ]);
-        $city->postalCode = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]');
-
+        $city->name = $cityName;
+        $city->postalCode = $postalCode;
         $place->city = $city;
 
         $country = new CountryDto();
-        $country->name = $countryName;
-
+        $country->name = $this->text($address['hasAddressCity']['isPartOfDepartment']['isPartOfRegion']['isPartOfCountry']['label'] ?? null);
         $city->country = $country;
         $place->country = $country;
 
-        return [$event];
+        return $event;
+    }
+
+    /**
+     * One timesheet per period of the schedule; periods without dates are dropped.
+     *
+     * @param list<array<string, mixed>> $periods
+     *
+     * @return list<EventTimesheetDto>
+     */
+    private function timesheets(array $periods): array
+    {
+        $timesheets = [];
+        foreach ($periods as $period) {
+            $startDate = $this->string($period['startDate'] ?? null);
+            $endDate = $this->string($period['endDate'] ?? null);
+            if (null === $startDate || null === $endDate) {
+                continue;
+            }
+
+            $timesheet = new EventTimesheetDto();
+            $timesheet->startAt = new DateTimeImmutable($startDate);
+            $timesheet->endAt = new DateTimeImmutable($endDate);
+            $timesheet->hours = $this->hours($this->string($period['startTime'] ?? null), $this->string($period['endTime'] ?? null));
+            $timesheets[] = $timesheet;
+        }
+
+        return $timesheets;
+    }
+
+    /**
+     * "20:30" or "20:30:00" → "De 20h30 à 22h00" / "À 20h30" (also when the end equals the start,
+     * a placeholder many producers send).
+     */
+    private function hours(?string $startTime, ?string $endTime): ?string
+    {
+        $startTime = null === $startTime ? null : preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
+        $endTime = null === $endTime ? null : preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $endTime);
+
+        if (null === $startTime) {
+            return null;
+        }
+
+        if (null === $endTime || $endTime === $startTime) {
+            return \sprintf('À %s', $startTime);
+        }
+
+        return \sprintf('De %s à %s', $startTime, $endTime);
+    }
+
+    /**
+     * DATAtourisme describes where an event happens as a postal address, never as a venue,
+     * yet producers mostly write the venue on an address line: "TMP - Théâtre Municipal
+     * Pazenais" then "7 rue du Ballon", or "Salle des fêtes" alone. A line that names a way
+     * is the street, a line repeating the town is noise, anything else is the venue. With
+     * no venue line the caller falls back to the town, as the flux-era import always did.
+     *
+     * @param list<string> $lines
+     *
+     * @return array{name: ?string, street: ?string}
+     */
+    private static function venue(array $lines, ?string $town): array
+    {
+        $venues = [];
+        $streets = [];
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ('' === $line || (null !== $town && mb_strtolower($line) === mb_strtolower(trim($town)))) {
+                continue;
+            }
+
+            if (1 === preg_match(self::STREET_LINE_REGEX, $line)) {
+                $streets[] = $line;
+            } else {
+                $venues[] = $line;
+            }
+        }
+
+        return [
+            'name' => $venues[0] ?? null,
+            'street' => $streets[0] ?? $venues[1] ?? null,
+        ];
     }
 
     private function getFrenchType(string $type): ?string
     {
         $mapping = [
-            'schema:BusinessEvent' => 'Business',
-            'schema:ChildrensEvent' => 'Famille',
-            'schema:ComedyEvent' => 'Spectacle',
-            'schema:CourseInstance' => 'Cours',
-            'schema:DanceEvent' => 'Dance',
-            // 'schema:DeliveryEvent' => 'DeliveryEvent',
-            'schema:EducationEvent' => 'Famille',
-            // 'schema:EventSeries' => 'Exposition',
-            'schema:ExhibitionEvent' => 'ExhibitionEvent',
-            'schema:Festival' => 'Concert, Musique',
-            'schema:FoodEvent' => 'Nourriture',
-            'schema:LiteraryEvent' => 'Littérature',
-            'schema:MusicEvent' => 'Musique',
-            'schema:PublicationEvent' => 'Recherche',
-            'schema:BroadcastEvent' => 'Radio',
-            // 'schema:OnDemandEvent' => 'OnDemandEvent',
-            'schema:SaleEvent' => 'Commerce',
-            // 'schema:ScreeningEvent' => 'ScreeningEvent',
-            'schema:SocialEvent' => 'Communautaire',
-            'schema:SportsEvent' => 'Sport',
-            'schema:TheaterEvent' => 'Théâtre',
-            'schema:VisualArtsEvent' => 'Art',
+            'BusinessEvent' => 'Business',
             'ChildrensEvent' => 'Famille',
-            'CulturalEvent' => 'Culture',
-            'Festival' => 'Concert, Musique',
-            'Concert' => 'Concert',
-            'Theater' => 'Théâtre',
-            'TheaterEvent' => 'Théâtre',
+            'ComedyEvent' => 'Spectacle',
+            'ShowEvent' => 'Spectacle',
+            'CourseInstance' => 'Cours',
+            'DanceEvent' => 'Danse',
+            'EducationEvent' => 'Famille',
             'Exhibition' => 'Exposition',
+            'ExhibitionEvent' => 'Exposition',
+            'Festival' => 'Concert, Musique',
+            'FoodEvent' => 'Nourriture',
+            'LiteraryEvent' => 'Littérature',
+            'MusicEvent' => 'Musique',
+            'Concert' => 'Concert',
+            'PublicationEvent' => 'Recherche',
+            'BroadcastEvent' => 'Radio',
+            'SaleEvent' => 'Commerce',
             'GarageSale' => 'Brocante',
+            'SocialEvent' => 'Communautaire',
             'SportsEvent' => 'Sport',
             'SportsCompetition' => 'Compétition',
+            'TheaterEvent' => 'Théâtre',
+            'Theater' => 'Théâtre',
+            'VisualArtsEvent' => 'Art',
+            'CulturalEvent' => 'Culture',
         ];
 
-        return $mapping[$type] ?? null;
+        // The flux prefixed the schema.org classes ("schema:MusicEvent"), the API does not.
+        return $mapping[preg_replace('/^schema:/', '', $type)] ?? null;
     }
 
     /**
-     * @param string|string[] $paths
+     * Multilingual values come as {"@fr": "…"} maps (we ask for lang=fr); other texts are plain.
      */
-    private function getDataValue(array $datas, array|string $paths, mixed $defaultValue = null): mixed
+    private function text(mixed $value): ?string
     {
-        foreach ((array) $paths as $path) {
-            try {
-                return $this->propertyAccessor->getValue($datas, $path);
-            } catch (AccessException|UnexpectedTypeException) {
-            }
+        if (\is_array($value)) {
+            $value = $value['@fr'] ?? (array_values($value)[0] ?? null);
         }
 
-        return $defaultValue;
+        return $this->first($value);
     }
 
-    private function getExternalIdFromUrl(string $url): string
+    /**
+     * A value the API serialises either as a string or as a list of strings.
+     */
+    private function first(mixed $value): ?string
     {
-        $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
-
-        if (!preg_match(self::UUID_REGEX, $path)) {
-            throw new RuntimeException(\sprintf('Unable to guess id FROM url "%s"', $url));
+        if (\is_array($value)) {
+            $value = $value[0] ?? null;
         }
 
-        return $path;
+        return $this->string($value);
+    }
+
+    private function string(mixed $value): ?string
+    {
+        return \is_string($value) && '' !== trim($value) ? $value : null;
     }
 
     /**

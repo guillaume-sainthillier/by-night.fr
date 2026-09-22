@@ -1,10 +1,10 @@
 {% extends 'layouts/default-stretch.html.twig' %}
 
 {% block title -%}
-    Mot de passe oublié ? {% block title_reset %}{% endblock %}
+    Mot de passe oublié ? {% block title_reset %}{% endblock %}
 {%- endblock %}
 
 {% block breadcrumb -%}
-    {% do menu.addItem('Mot de passe perdu', url('app_forgot_password_request')) %}
+    {% do menu.addItem('Mot de passe oublié', url('app_forgot_password_request')) %}
     {% block breadcrumb_reset %}{% endblock %}
 {%- endblock %}

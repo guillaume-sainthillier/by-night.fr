@@ -1,5 +1,6 @@
 <twig:User:ListWidget users="{{ topUsersData.users }}" />
 {% if topUsersData.hasNextLink %}
-    <a class="more-content btn btn-outline-primary btn-block" href="{{ topUsersData.hasNextLink }}">
-        Plus ({{ topUsersData.current }} / {{ topUsersData.count }})</a>
+    {# A button rather than a link: the fragment URL feeds the widget and must not be crawled #}
+    <button type="button" class="more-content btn btn-outline-primary btn-block" data-href="{{ topUsersData.hasNextLink }}">
+        Plus ({{ topUsersData.current }} / {{ topUsersData.count }})</button>
 {% endif %}

@@ -20,4 +20,4 @@
     </div>
 </div>
 
-<small class="ms-3 text-muted {{ trendsData.count == 0 ? 'd-none' }}">{{ trendsData.count }} intérêt{{ trendsData.count > 1 ? 's' }}</small>
+<small class="ms-3 text-muted {{ trendsData.count == 0 ? 'd-none' }}">{{ '{count, plural, one {# intérêt} other {# intérêts}}'|trans({count: trendsData.count}, 'messages+intl-icu') }}</small>

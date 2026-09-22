@@ -15,6 +15,7 @@ use App\Utils\PaginateTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractController extends BaseController
 {
@@ -27,6 +28,20 @@ abstract class AbstractController extends BaseController
     protected function getEntityManager(): EntityManagerInterface
     {
         return $this->entityManager;
+    }
+
+    /**
+     * Renders an HTML fragment fetched by a widget's "Plus" button: it is not a page, so
+     * search engines must not index it.
+     *
+     * @param array<string, mixed> $parameters
+     */
+    protected function renderFragment(string $view, array $parameters = []): Response
+    {
+        $response = $this->render($view, $parameters);
+        $response->headers->set('X-Robots-Tag', 'noindex');
+
+        return $response;
     }
 
     public function getAppUser(): User

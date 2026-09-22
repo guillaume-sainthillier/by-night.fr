@@ -32,22 +32,21 @@ final readonly class MailerManager
     {
         $email = new TemplatedEmail()
             ->to($user->getEmail())
-            ->subject('Confirmez votre adresse mail')
+            ->subject('Confirmez votre adresse e-mail - By Night')
             ->htmlTemplate('email/confirmation-email.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
     }
 
-    public function sendResetPasswordEmail(User $user, ResetPasswordToken $resetPasswordToken, int $tokenLifeTime): void
+    public function sendResetPasswordEmail(User $user, ResetPasswordToken $resetPasswordToken): void
     {
         $email = new TemplatedEmail()
             ->to($user->getEmail())
-            ->subject('Changement de mot de passe')
+            ->subject('Réinitialisation de votre mot de passe - By Night')
             ->htmlTemplate('email/reset-password.mjml.twig')
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
-                'tokenLifetime' => $tokenLifeTime,
             ]);
 
         $this->sendMail($email);
@@ -101,7 +100,7 @@ final readonly class MailerManager
     {
         $this->sendRequesterNotification(
             $contentRemovalRequest,
-            'Votre signalement a été traité - By Night',
+            'Votre demande de suppression a été traitée - By Night',
             'email/content-removal-event-deleted.mjml.twig',
         );
     }

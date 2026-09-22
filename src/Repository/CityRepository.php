@@ -18,6 +18,7 @@ use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Utils\CityManipulator;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -153,14 +154,20 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     }
 
     /**
-     * @return iterable<array>
+     * Cities with at least one published event ending on or after $from, with that event count.
+     *
+     * @return iterable<array{slug: string, nb: int|string}>
      */
-    public function findAllSitemap(): iterable
+    public function findAllSitemap(DateTimeInterface $from): iterable
     {
         return parent::createQueryBuilder('c')
-            ->select('c.slug')
+            ->select('c.slug, COUNT(e.id) AS nb')
             ->join(Place::class, 'p', 'WITH', 'p.city = c')
             ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->setParameter('from', $from->format('Y-m-d'))
             ->groupBy('c.slug')
             ->getQuery()
             ->toIterable();

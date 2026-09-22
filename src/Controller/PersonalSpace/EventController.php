@@ -93,7 +93,7 @@ final class EventController extends BaseController
             $em->flush();
             $this->addFlash(
                 'success',
-                'Votre événement a bien été créé. Merci !'
+                "Votre événement a bien été créé. Merci\u{a0}!"
             );
 
             return $this->redirectToRoute('app_event_list');

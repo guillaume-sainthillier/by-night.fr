@@ -51,7 +51,7 @@
                             {{ form_row(form.email) }}
                             {% if not app.user.verified %}
                                 <button type="button" data-href="{{ path('app_send_verification_email') }}" class="btn btn-sm btn-primary email-verify">
-                                    Vérifier l'email
+                                    Vérifier l'adresse e-mail
                                 </button>
                             {% endif %}
                         </div>
@@ -118,11 +118,11 @@
                 <div class="card-body">
                     <div class="alert alert-warning mb-4">
                         <twig:Icon name="lucide:triangle-alert" class="me-2" />
-                        <strong>Attention :</strong> La suppression de votre compte est définitive et irréversible.
+                        <strong>Attention :</strong> La suppression de votre compte est définitive et irréversible.
                     </div>
-                    <p class="mb-3">En supprimant votre compte, les éléments suivants seront effacés :</p>
+                    <p class="mb-3">Si vous supprimez votre compte, les éléments suivants seront effacés :</p>
                     <ul class="mb-0">
-                        <li>Vos informations personnelles (nom, email, photo de profil)</li>
+                        <li>Vos informations personnelles (nom, adresse e-mail, photo de profil)</li>
                         <li>Vos préférences et paramètres</li>
                         <li>Vos connexions aux réseaux sociaux</li>
                         <li>Vos événements favoris</li>

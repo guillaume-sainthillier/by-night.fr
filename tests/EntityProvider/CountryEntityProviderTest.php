@@ -16,7 +16,6 @@ use App\Factory\CountryFactory;
 use App\Tests\AppKernelTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 /**
  * Country rows are only ever matched, never created: a DTO that does not resolve here
@@ -24,7 +23,6 @@ use Zenstruck\Foundry\Attribute\ResetDatabase;
  * whatever their case or padding, and on every database (SQLite compares ids
  * case-sensitively, MySQL does not).
  */
-#[ResetDatabase]
 final class CountryEntityProviderTest extends AppKernelTestCase
 {
     private CountryEntityProvider $provider;

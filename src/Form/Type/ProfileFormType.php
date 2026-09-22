@@ -33,7 +33,7 @@ final class ProfileFormType extends AbstractType
                 'label' => "Nom d'utilisateur",
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Adresse email',
+                'label' => 'Adresse e-mail',
             ])
             ->add('firstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])
@@ -61,7 +61,7 @@ final class ProfileFormType extends AbstractType
                 'label' => 'Photo de profil',
                 'delete_label' => "Supprimer l'image de profil",
                 'layout' => 'horizontal',
-                'help' => 'Pour un meilleur rendu, préférez une image au format 1:1 (ex: 1024x1024 pixels).',
+                'help' => "Pour un meilleur rendu, préférez une image au format 1:1 (ex.\u{a0}: 1024\u{a0}×\u{a0}1024 pixels).",
                 'thumb_params' => [
                     'height' => 200,
                 ],

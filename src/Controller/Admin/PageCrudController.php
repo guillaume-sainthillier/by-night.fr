@@ -74,7 +74,7 @@ final class PageCrudController extends AbstractCrudController
         $slug = SlugField::new('slug', 'Slug')
             ->setTargetFieldName('title')
             ->setRequired(false)
-            ->setHelp('URL publique : <code>/p/{slug}</code>. Laissez vide pour le générer depuis le titre.');
+            ->setHelp("URL publique\u{a0}: <code>/p/{slug}</code>. Laissez vide pour le générer depuis le titre.");
         $image = VichImageField::new('imageFile', 'Image');
         $content = CodeEditorField::new('content', 'Contenu HTML')
             ->setLanguage('xml')
