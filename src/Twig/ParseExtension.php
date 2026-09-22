@@ -36,34 +36,4 @@ final class ParseExtension
 
         return strip_tags((string) $texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
     }
-
-    #[AsTwigFilter(name: 'resume')]
-    public function resume(?string $text): string
-    {
-        if (null === $text) {
-            return '';
-        }
-
-        $replaced_text = str_replace('&#13;', '<br>', $text);
-        $stripped_text = strip_tags($replaced_text);
-        $shorted_text = mb_substr($stripped_text, 0, 250);
-
-        // striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
-        $linked_text = preg_replace_callback(
-            '~((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|"|\'|:|\<|$|\.\s)~i',
-            static fn ($matches) => '<a rel="nofollow" href="$1" target="_blank">$3</a>$4',
-            $shorted_text
-        );
-
-        $final_text = $this->trimBr($linked_text);
-
-        return trim((string) $final_text);
-    }
-
-    private function trimBr(?string $string): ?string
-    {
-        $string = preg_replace('#^\s*(?:<br\s*\/?>\s*)*#i', '', (string) $string);
-
-        return preg_replace('#\s*(?:<br\s*\/?>\s*)*$#i', '', (string) $string);
-    }
 }

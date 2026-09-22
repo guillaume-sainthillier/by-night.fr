@@ -16,12 +16,6 @@ use Twig\Attribute\AsTwigFilter;
 
 final class DateExtension
 {
-    #[AsTwigFilter(name: 'datetime')]
-    public function getDateTime(string $string): DateTimeImmutable
-    {
-        return new DateTimeImmutable($string);
-    }
-
     #[AsTwigFilter(name: 'diff_date')]
     public function diffDate(DateTimeInterface $date): string
     {
@@ -33,8 +27,7 @@ final class DateExtension
      *
      * @psalm-return array{short: string, long: string, full: string}
      */
-    #[AsTwigFilter(name: 'stats_diff_date')]
-    public function statsDiffDate(DateTimeInterface $date): array
+    private function statsDiffDate(DateTimeInterface $date): array
     {
         $diff = $date->diff(new DateTimeImmutable());
         if ($diff->y > 0) {
