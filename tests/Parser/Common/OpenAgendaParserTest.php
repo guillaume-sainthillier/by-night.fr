@@ -14,11 +14,18 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Factory\AdminZone1Factory;
 use App\Factory\CountryFactory;
+use App\Handler\EventHandler;
 use App\Parser\Common\OpenAgendaParser;
+use App\Repository\CountryRepository;
 use App\Tests\AppKernelTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Psr\Log\NullLogger;
 use ReflectionMethod;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 /**
  * The feed's location.countryCode is not always the clean ISO alpha-2 it should be.
@@ -168,5 +175,31 @@ final class OpenAgendaParserTest extends AppKernelTestCase
                 'email' => null,
             ], $location),
         ], $event);
+    }
+
+    public function testTheAgendaListGivesUpAfterAFewFailedAttempts(): void
+    {
+        $requests = 0;
+        $client = new MockHttpClient(static function () use (&$requests): MockResponse {
+            ++$requests;
+
+            return new MockResponse('{"message":"invalid key"}', ['http_code' => 401]);
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'revoked-key',
+        );
+
+        try {
+            $parser->parse(null);
+            self::fail('A key the API keeps refusing must fail the run');
+        } catch (ClientExceptionInterface) {
+        }
+
+        self::assertSame(3, $requests);
     }
 }

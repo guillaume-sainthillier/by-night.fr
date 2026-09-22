@@ -32,6 +32,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class OpenAgendaParser extends AbstractParser
 {
+    /**
+     * Attempts at the same page of the agenda list before the run gives up.
+     */
+    private const int MAX_ATTEMPTS = 3;
+
     private const int EVENT_BATCH_SIZE = 300;
 
     public function __construct(
@@ -118,6 +123,7 @@ final class OpenAgendaParser extends AbstractParser
     private function getAgendasUidAndSlugs(): iterable
     {
         $after = [];
+        $failedAttempts = 0;
         while (true) {
             try {
                 $response = $this->client->request('GET', 'https://api.openagenda.com/v2/agendas', [
@@ -130,6 +136,7 @@ final class OpenAgendaParser extends AbstractParser
                 ]);
 
                 $data = $response->toArray();
+                $failedAttempts = 0;
 
                 foreach ($data['agendas'] as $agenda) {
                     $summary = $agenda['summary'];
@@ -149,6 +156,12 @@ final class OpenAgendaParser extends AbstractParser
 
                 $after = $data['after'];
             } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
+                // A revoked key, a quota or an outage never goes away by asking again: past a few
+                // attempts the run fails, and the next one starts over from the same watermark
+                if (++$failedAttempts >= self::MAX_ATTEMPTS) {
+                    throw $exception;
+                }
+
                 $this->logException($exception);
             }
         }
