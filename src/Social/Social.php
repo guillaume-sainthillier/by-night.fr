@@ -77,6 +77,16 @@ abstract class Social
         $this->disconnectInfo($user->getOAuth());
     }
 
+    /**
+     * The id of the account of this network linked to the user, null when none is.
+     */
+    public function getUserSocialId(User $user): ?string
+    {
+        $id = PropertyAccess::createPropertyAccessor()->getValue($user->getOAuth(), $this->getInfoPropertyPrefix() . 'Id');
+
+        return null === $id ? null : (string) $id;
+    }
+
     protected function connectInfo(OAuth $info, array $datas): void
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();

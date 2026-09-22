@@ -40,6 +40,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         private readonly SocialProvider $socialProvider,
         private readonly OAuthDataProvider $oAuthDataProvider,
         private readonly UserRepository $userRepository,
+        private readonly UnverifiedAccountClaim $unverifiedAccountClaim,
     ) {
     }
 
@@ -79,6 +80,10 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                     $existingUser = $this
                         ->userRepository
                         ->findOneBySocial($datas['email'], $social->getInfoPropertyPrefix(), $datas['id']);
+
+                    if (null !== $existingUser) {
+                        $this->unverifiedAccountClaim->claim($existingUser, $social, (string) $datas['id']);
+                    }
                 }
 
                 if (null === $existingUser) {
