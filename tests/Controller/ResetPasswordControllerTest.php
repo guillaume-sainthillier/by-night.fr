@@ -30,6 +30,17 @@ final class ResetPasswordControllerTest extends WebTestCase
         self::assertAnySelectorTextContains('form', 'Veuillez saisir votre adresse e-mail.');
     }
 
+    public function testAnInvalidResetLinkIsExplainedInFrench(): void
+    {
+        $client = self::createClient();
+        $client->followRedirects();
+
+        $client->request('GET', '/mot-de-passe-perdu/reset/not-a-valid-token');
+
+        // The flash used to show the bundle's English reason: "The reset password link is invalid…"
+        self::assertSelectorTextContains('.alert-danger', "Le lien de réinitialisation du mot de passe n'est pas valide.");
+    }
+
     public function testTheResetEmailStatesHowLongTheLinkIsValid(): void
     {
         $client = self::createClient();
