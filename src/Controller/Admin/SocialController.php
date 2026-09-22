@@ -16,8 +16,10 @@ use App\Social\Social;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/social/{service<%patterns.admin_social%>}')]
+#[IsGranted('ROLE_ADMIN')]
 final class SocialController extends AbstractController
 {
     #[Route(path: '/deconnexion', name: 'app_administration_disconnect_service', methods: ['POST'])]

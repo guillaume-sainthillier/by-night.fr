@@ -18,8 +18,10 @@ use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/login-social')]
+#[IsGranted('ROLE_ADMIN')]
 final class LoginSocialController extends AbstractController
 {
     #[Route(path: '/check-{service<%patterns.admin_social%>}', name: 'admin_login_social_check', methods: ['GET', 'POST'])]
