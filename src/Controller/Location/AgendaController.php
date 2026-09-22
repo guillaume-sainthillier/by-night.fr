@@ -66,7 +66,7 @@ final class AgendaController extends BaseController
 
         // Handle place filtering
         if (null !== $placeSlug) {
-            $place = $placeRepository->findOneBy(['slug' => $placeSlug]);
+            $place = $this->findPlace($placeRepository, $location, $placeSlug);
             if (null === $place) {
                 return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()]);
             }
@@ -164,11 +164,7 @@ final class AgendaController extends BaseController
         $legacySlug = $request->query->getString('slug');
         $place = null;
         if ('' !== $legacySlug) {
-            // Place slugs are not unique: prefer the place in the city the URL names
-            // (the location's city is a lazy proxy, hence the id rather than the object)
-            $city = $location->getCity();
-            $place = (null !== $city ? $placeRepository->findOneBy(['slug' => $legacySlug, 'city' => $city->getId()]) : null)
-                ?? $placeRepository->findOneBy(['slug' => $legacySlug]);
+            $place = $this->findPlace($placeRepository, $location, $legacySlug);
         }
 
         if (null === $place) {
@@ -179,6 +175,25 @@ final class AgendaController extends BaseController
             'location' => $place->getLocationSlug(),
             'placeSlug' => $place->getSlug(),
         ], Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    /**
+     * Place slugs are not unique ("salle-des-fetes" names hundreds of places): the place in the city
+     * the URL names (or without a city, in its country) comes first; another one is only a fallback,
+     * which the caller redirects to its own URL. The location's city and country are lazy proxies,
+     * hence their ids rather than the objects.
+     */
+    private function findPlace(PlaceRepository $placeRepository, Location $location, string $slug): ?Place
+    {
+        $city = $location->getCity();
+        $country = $location->getCountry();
+        $place = match (true) {
+            null !== $city => $placeRepository->findOneBy(['slug' => $slug, 'city' => $city->getId()]),
+            null !== $country => $placeRepository->findOneBy(['slug' => $slug, 'country' => $country->getId(), 'city' => null]),
+            default => null,
+        };
+
+        return $place ?? $placeRepository->findOneBy(['slug' => $slug]);
     }
 
     /**
