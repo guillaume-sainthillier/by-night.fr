@@ -228,7 +228,8 @@ final class OpenAgendaParser extends AbstractParser
         $hours = 1 === \count($allHours) ? array_key_first($allHours) : null;
 
         $mdParser = new Parsedown();
-        $description = $mdParser->text($data['longDescription'] ?? $data['description']);
+        // An empty long description ("") must fall back too: the check above lets it through
+        $description = $mdParser->text(($data['longDescription'] ?? null) ?: $data['description']);
 
         $type = $data['keywords'] ?? [];
 

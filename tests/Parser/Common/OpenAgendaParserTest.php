@@ -114,6 +114,14 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertNull($dto->hours, 'Distinct slots: no single summary for the event');
     }
 
+    public function testAnEmptyLongDescriptionFallsBackOnTheDescription(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(event: ['longDescription' => '', 'description' => 'Concert de jazz en plein air']));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertStringContainsString('Concert de jazz en plein air', (string) $dto->description);
+    }
+
     public function testOneSlotRepeatedOverTheDatesSummarisesTheEvent(): void
     {
         $dto = $this->arrayToDto(self::feedEvent(event: ['timings' => [
