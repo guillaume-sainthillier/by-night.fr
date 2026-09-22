@@ -230,7 +230,7 @@ final class DateRangeType extends AbstractType
     private function formatCustomDateLabel(DateTimeInterface $from, ?DateTimeInterface $to): string
     {
         if (null === $to) {
-            return \sprintf('A partir du %s', $this->formatDate($from));
+            return \sprintf('À partir du %s', $this->formatDate($from));
         }
 
         if ($to->format('Y-m-d') === $from->format('Y-m-d')) {

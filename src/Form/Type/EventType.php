@@ -73,7 +73,7 @@ final class EventType extends AbstractType
                 'label' => 'Horaires affichés',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'A 20h, de 21h à minuit',
+                    'placeholder' => 'À 20h, de 21h à minuit',
                 ],
             ])
             ->add('timesheets', CollectionType::class, [

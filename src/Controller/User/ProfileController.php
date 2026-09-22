@@ -75,7 +75,7 @@ final class ProfileController extends AbstractController
             $em->remove($user);
             $em->flush();
 
-            $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
+            $this->addFlash('info', 'Votre compte a bien été supprimé. À bientôt sur By Night !');
 
             $tokenStorage->setToken(null);
 
