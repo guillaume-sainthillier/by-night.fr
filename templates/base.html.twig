@@ -152,7 +152,7 @@ _______     __  _   _ _____ _____ _    _ _______
         locale: app.request.locale,
         release: app_version,
         dsn: sentry_dsn,
-        user: (app.user ? {id: app.user.id, username: app.user.username, email: app.user.email} : null),
+        user: (app.user ? {id: app.user.id} : null),
     }|json_encode|raw }});
   });
 </script>

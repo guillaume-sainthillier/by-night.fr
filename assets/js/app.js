@@ -117,7 +117,8 @@ class App {
                 dsn: parameters.dsn,
                 release: parameters.release,
                 environment: parameters.environment,
-                sendDefaultPii: true,
+                // No IP address: the member id set below is enough to follow up an error
+                sendDefaultPii: false,
             })
 
             Sentry.getCurrentScope().setUser(this.get('user'))
