@@ -14,6 +14,8 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Entity\PlaceMetadata;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -227,6 +229,57 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
         $this->hydrateCollections($places);
 
         return $places;
+    }
+
+    /**
+     * Ids of the places no event points to, created before $createdBefore and, when
+     * $origin is given, carrying at least one identity from that external origin.
+     *
+     * @return list<int>
+     */
+    public function findEventlessIds(?string $origin, DateTimeImmutable $createdBefore): array
+    {
+        $qb = $this
+            ->createQueryBuilder('p')
+            ->select('p.id')
+            ->where(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
+            ->andWhere('p.createdAt <= :createdBefore')
+            ->setParameter('createdBefore', $createdBefore)
+            ->orderBy('p.id', 'ASC');
+
+        if (null !== $origin) {
+            $qb
+                ->andWhere(\sprintf('EXISTS (SELECT m.id FROM %s m WHERE m.place = p AND m.externalOrigin = :origin)', PlaceMetadata::class))
+                ->setParameter('origin', $origin);
+        }
+
+        return array_map(intval(...), $qb->getQuery()->getSingleColumnResult());
+    }
+
+    /**
+     * The given place ids that still have no event.
+     *
+     * @param list<int> $placeIds
+     *
+     * @return list<int>
+     */
+    public function onlyEventless(array $placeIds): array
+    {
+        if ([] === $placeIds) {
+            return [];
+        }
+
+        $ids = $this
+            ->createQueryBuilder('p')
+            ->select('p.id')
+            ->where('p.id IN (:ids)')
+            ->andWhere(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
+            ->setParameter('ids', $placeIds)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_map(intval(...), $ids);
     }
 
     /**
