@@ -168,8 +168,8 @@ final class EventType extends AbstractType
             ->add('emailContacts', CollectionType::class, [
                 'entry_type' => EmailType::class,
                 'required' => false,
-                'add_entry_label' => 'Ajouter un email',
-                'label' => 'Emails de contact',
+                'add_entry_label' => 'Ajouter un e-mail',
+                'label' => 'E-mails de contact',
                 'layout' => 'simple',
                 'entry_options' => [
                     'label' => false,

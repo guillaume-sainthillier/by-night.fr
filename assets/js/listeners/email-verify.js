@@ -15,7 +15,7 @@ export default {
             e.preventDefault()
             const url = $(this).attr('href') || $(this).data('href')
             $.post(url).done(() => {
-                app.get('toastManager').createToast('success', 'Un email de vérification a bien été envoyé.')
+                app.get('toastManager').createToast('success', 'Un e-mail de vérification a bien été envoyé.')
                 if ($(this).closest('.alert').length > 0) {
                     $(this).closest('.alert').alert('close')
                 } else {

@@ -33,7 +33,7 @@ final class ProfileFormType extends AbstractType
                 'label' => "Nom d'utilisateur",
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Adresse email',
+                'label' => 'Adresse e-mail',
             ])
             ->add('firstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])

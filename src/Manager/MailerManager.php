@@ -32,7 +32,7 @@ final readonly class MailerManager
     {
         $email = new TemplatedEmail()
             ->to($user->getEmail())
-            ->subject('Confirmez votre adresse mail')
+            ->subject('Confirmez votre adresse e-mail')
             ->htmlTemplate('email/confirmation-email.mjml.twig')
             ->context($context);
 

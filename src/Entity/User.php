@@ -34,7 +34,7 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[Vich\Uploadable]
-#[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cet email')]
+#[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cette adresse e-mail')]
 #[UniqueEntity(fields: ['username'], message: 'Un utilisateur existe déjà pour ce nom')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
