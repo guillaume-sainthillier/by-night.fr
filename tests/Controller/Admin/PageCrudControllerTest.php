@@ -14,9 +14,7 @@ use App\Factory\PageFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class PageCrudControllerTest extends WebTestCase
 {
     public function testIndexListsPagesWithViewAction(): void

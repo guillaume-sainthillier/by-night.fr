@@ -14,13 +14,11 @@ use App\Factory\TagFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 /**
  * Covers the Gedmo slug regeneration on a TextField, which is how every slug but Page's is exposed
  * in the back-office. Page uses SlugField instead, so PageCrudControllerTest covers the other half.
  */
-#[ResetDatabase]
 final class TagCrudControllerTest extends WebTestCase
 {
     public function testCreateTagGeneratesSlugFromNameWhenSlugIsLeftEmpty(): void

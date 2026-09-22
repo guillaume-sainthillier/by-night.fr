@@ -18,14 +18,12 @@ use App\Tests\AppKernelTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionMethod;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 /**
  * The feed's location.countryCode is not always the clean ISO alpha-2 it should be.
  * Whatever the parser puts in CountryDto::$code is compared against Country::$id all the
  * way down, so it must leave here canonical or not at all.
  */
-#[ResetDatabase]
 final class OpenAgendaParserTest extends AppKernelTestCase
 {
     private OpenAgendaParser $parser;

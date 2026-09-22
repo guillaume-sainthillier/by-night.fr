@@ -15,9 +15,7 @@ use App\Factory\CountryFactory;
 use App\Import\PostalCodeChecker;
 use App\Tests\AppKernelTestCase;
 use Override;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class PostalCodeCheckerTest extends AppKernelTestCase
 {
     private PostalCodeChecker $checker;

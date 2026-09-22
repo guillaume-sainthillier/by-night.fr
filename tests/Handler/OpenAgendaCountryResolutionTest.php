@@ -23,9 +23,7 @@ use App\Tests\AppKernelTestCase;
 use DateTime;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class OpenAgendaCountryResolutionTest extends AppKernelTestCase
 {
     private DoctrineEventHandler $handler;

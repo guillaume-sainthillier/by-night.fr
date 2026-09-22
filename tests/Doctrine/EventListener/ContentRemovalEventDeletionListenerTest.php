@@ -17,14 +17,12 @@ use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\MailerAssertionsTrait;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\flush_after;
 use function Zenstruck\Foundry\Persistence\refresh;
 
 #[RequiresPhpExtension('mjml')]
-#[ResetDatabase]
 final class ContentRemovalEventDeletionListenerTest extends KernelTestCase
 {
     use MailerAssertionsTrait;

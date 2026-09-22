@@ -21,9 +21,7 @@ use App\Tests\AppKernelTestCase;
 use Override;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class PlacesBackfillCountriesCommandTest extends AppKernelTestCase
 {
     private Place $toulousePlace;

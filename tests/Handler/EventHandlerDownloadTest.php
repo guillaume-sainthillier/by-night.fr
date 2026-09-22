@@ -20,9 +20,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Vich\UploaderBundle\Handler\UploadHandler;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class EventHandlerDownloadTest extends AppKernelTestCase
 {
     /**

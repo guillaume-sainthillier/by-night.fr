@@ -12,11 +12,9 @@ namespace App\Tests\Controller;
 
 use App\Factory\PageFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 use function Zenstruck\Foundry\Persistence\save;
 
-#[ResetDatabase]
 final class PageControllerTest extends WebTestCase
 {
     public function testShowRendersContentAndSeoMetadata(): void

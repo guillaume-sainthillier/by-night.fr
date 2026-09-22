@@ -17,12 +17,10 @@ use App\Factory\EventFactory;
 use App\Factory\UserFactory;
 use Override;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 use Zenstruck\Foundry\Persistence\Proxy;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
-#[ResetDatabase]
 final class EventActionTest extends ApiTestCase
 {
     #[Override]

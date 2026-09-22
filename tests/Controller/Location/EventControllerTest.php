@@ -16,9 +16,7 @@ use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class EventControllerTest extends WebTestCase
 {
     public function testAdminSeesEditButtonNextToTitle(): void

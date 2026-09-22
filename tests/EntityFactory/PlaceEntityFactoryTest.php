@@ -22,9 +22,7 @@ use App\Handler\EntityProviderHandler;
 use App\Tests\AppKernelTestCase;
 use App\Utils\PlaceNameNormalizer;
 use Override;
-use Zenstruck\Foundry\Attribute\ResetDatabase;
 
-#[ResetDatabase]
 final class PlaceEntityFactoryTest extends AppKernelTestCase
 {
     private PlaceEntityFactory $factory;
