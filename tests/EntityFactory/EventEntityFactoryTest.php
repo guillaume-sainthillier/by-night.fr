@@ -31,4 +31,18 @@ final class EventEntityFactoryTest extends AppKernelTestCase
         self::assertInstanceOf(Event::class, $event);
         self::assertSame('Concert', $event->getType());
     }
+
+    public function testTheParserVersionIsStoredForTheExplorationOfADeletedEvent(): void
+    {
+        $dto = new EventDto();
+        $dto->name = 'Nuit du jazz';
+        $dto->parserVersion = '4.0';
+        $dto->startDate = new DateTimeImmutable('2026-10-01');
+        $dto->endDate = new DateTimeImmutable('2026-10-01');
+
+        $event = self::getContainer()->get(EventEntityFactory::class)->create(null, $dto);
+
+        self::assertInstanceOf(Event::class, $event);
+        self::assertSame('4.0', $event->getParserVersion());
+    }
 }

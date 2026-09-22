@@ -83,6 +83,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         $entity->setFromData($dto->fromData);
+        // Stamped on the exploration when the event gets deleted (EventParserDataListener)
+        $entity->setParserVersion($dto->parserVersion);
         $entity->setSource($dto->source);
 
         // Convert category TagDto to Tag entity
