@@ -18,6 +18,7 @@ use App\Dependency\DependencyCatalogue;
 use App\Dto\EventDto;
 use App\Entity\ParserData;
 use App\Exception\UncreatableEntityException;
+use App\Import\EventFamilyResolver;
 use App\Import\Firewall;
 use App\Messenger\TransactionalMessageDispatcher;
 use App\Reject\Reject;
@@ -44,6 +45,7 @@ final readonly class DoctrineEventHandler
         private EntityFactoryHandler $entityFactoryHandler,
         private EventImageDownloadScheduler $imageDownloadScheduler,
         private TransactionalMessageDispatcher $messageDispatcher,
+        private EventFamilyResolver $familyResolver,
     ) {
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }
@@ -131,6 +133,12 @@ final readonly class DoctrineEventHandler
         $this->cleanEvents($allowedEvents);
 
         $this->mergeWithDatabase($allowedEvents);
+
+        // Rows describing the same event under distinct external ids are grouped into a
+        // family (a canonical plus redirecting duplicates lending it their dates) once
+        // their content is in place. Same transaction: a family is never half-wired.
+        $this->familyResolver->resolveForEvents($this->getEntityIds($allowedEvents));
+        $this->entityManager->clear();
     }
 
     /**
@@ -160,6 +168,25 @@ final readonly class DoctrineEventHandler
 
             if (null !== $dto->place && null !== $dto->place->getExternalId()) {
                 $ids[$dto->place->getExternalId()] = true;
+            }
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * Ids of the events the merge resolved or created for these DTOs.
+     *
+     * @param EventDto[] $dtos
+     *
+     * @return int[]
+     */
+    private function getEntityIds(array $dtos): array
+    {
+        $ids = [];
+        foreach ($dtos as $dto) {
+            if (null !== $dto->entityId) {
+                $ids[$dto->entityId] = true;
             }
         }
 

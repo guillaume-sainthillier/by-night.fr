@@ -42,6 +42,9 @@ final class EventTimesheetCrudController extends AbstractCrudController
     {
         $id = IdField::new('id', 'ID');
         $event = AssociationField::new('event')->autocomplete();
+        $sourceEvent = AssociationField::new('sourceEvent', 'Hérité de')
+            ->autocomplete()
+            ->setHelp('Renseigné sur les dates qu\'un événement principal hérite d\'un doublon de sa famille : elles suivent ce doublon et disparaissent avec lui.');
         $startAt = DateTimeField::new('startAt', 'Début');
         $endAt = DateTimeField::new('endAt', 'Fin');
         $hours = TextField::new('hours', 'Horaires affichés');
@@ -49,12 +52,13 @@ final class EventTimesheetCrudController extends AbstractCrudController
         $updatedAt = DateTimeField::new('updatedAt');
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $event, $startAt, $endAt, $hours];
+            return [$id, $event, $sourceEvent, $startAt, $endAt, $hours];
         }
 
         return [
             $id->hideOnForm(),
             $event,
+            $sourceEvent,
             $startAt,
             $endAt,
             $hours,

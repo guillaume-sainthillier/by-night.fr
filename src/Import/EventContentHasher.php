@@ -35,6 +35,45 @@ final class EventContentHasher
     }
 
     /**
+     * Fingerprint of the event *identity*: what makes two records of one source the
+     * same event even though each carries its own dates. Two OpenAgenda uids created
+     * for two sessions of the same workshop share it; the same title at the same venue
+     * with another description does not.
+     *
+     * Deliberately left out: dates, timesheets, hours, the source URL (one per record)
+     * and the image (re-uploaded per record). Null when the event cannot be grouped:
+     * no origin (user-created), no name, or no place external id (a generic title at
+     * an unidentified venue is no evidence of sameness).
+     */
+    public function identity(EventDto $dto): ?string
+    {
+        return $this->identityOf(
+            $dto->externalOrigin,
+            $dto->place?->externalId,
+            $dto->name,
+            $dto->description,
+        );
+    }
+
+    /**
+     * The one definition of "the same event", also computed from the stored columns of
+     * rows imported before the hash existed (app:events:resolve-families).
+     */
+    public function identityOf(?string $origin, ?string $placeExternalId, ?string $name, ?string $description): ?string
+    {
+        if (null === $origin || null === $placeExternalId || null === $name || '' === $name) {
+            return null;
+        }
+
+        return sha1((string) json_encode([
+            'origin' => $origin,
+            'placeExternalId' => $placeExternalId,
+            'name' => $name,
+            'description' => $description,
+        ], \JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function canonicalize(EventDto $dto): array

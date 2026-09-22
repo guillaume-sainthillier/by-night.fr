@@ -20,6 +20,7 @@ use Stringable;
 #[ORM\Index(name: 'event_timesheet_event_idx', columns: ['event_id'])]
 #[ORM\Index(name: 'event_timesheet_start_idx', columns: ['start_at'])]
 #[ORM\Index(name: 'event_timesheet_end_idx', columns: ['end_at'])]
+#[ORM\Index(name: 'event_timesheet_source_event_idx', columns: ['source_event_id'])]
 class EventTimesheet implements Stringable
 {
     use EntityIdentityTrait;
@@ -28,6 +29,16 @@ class EventTimesheet implements Stringable
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'timesheets')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Event $event = null;
+
+    /**
+     * Set on the rows a canonical event inherits from a duplicate sibling of its family
+     * (see EventFamilyResolver): the row mirrors one of that sibling's own timesheets,
+     * is rebuilt whenever the sibling changes and goes away with it (ON DELETE CASCADE).
+     * NULL on an event's own timesheets, the ones its import keeps in sync.
+     */
+    #[ORM\ManyToOne(targetEntity: Event::class)]
+    #[ORM\JoinColumn(name: 'source_event_id', nullable: true, onDelete: 'CASCADE')]
+    private ?Event $sourceEvent = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?DateTimeImmutable $startAt = null;
@@ -56,6 +67,26 @@ class EventTimesheet implements Stringable
         $this->event = $event;
 
         return $this;
+    }
+
+    public function getSourceEvent(): ?Event
+    {
+        return $this->sourceEvent;
+    }
+
+    public function setSourceEvent(?Event $sourceEvent): self
+    {
+        $this->sourceEvent = $sourceEvent;
+
+        return $this;
+    }
+
+    /**
+     * Whether this row was lent by a duplicate sibling rather than imported for this event.
+     */
+    public function isInherited(): bool
+    {
+        return null !== $this->sourceEvent;
     }
 
     public function getStartAt(): ?DateTimeImmutable

@@ -28,6 +28,7 @@ use App\Factory\UserFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
+use App\Import\EventContentHasher;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
@@ -832,6 +833,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $container->set(EventEntityFactory::class, new FailOnceEventEntityFactory(new EventEntityFactory(
             $container->get(EntityProviderHandler::class),
             $container->get(EventImageDownloadScheduler::class),
+            $container->get(EventContentHasher::class),
         )));
         $imageTransport = $container->get('messenger.transport.image');
         $this->assertInstanceOf(InMemoryTransport::class, $imageTransport);
@@ -890,6 +892,115 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame(5, EventFactory::count(['externalOrigin' => 'batch-load-test']));
         $this->assertCount(1, $timesheetSelects, 'Timesheets must be loaded with a single batched query');
         $this->assertCount(1, $themeSelects, 'Themes must be loaded with a single batched query');
+    }
+
+    public function testSiblingsWithDistinctExternalIdsAreGroupedIntoAFamily(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // Two OpenAgenda uids, one per session of the same workshop
+        $this->handler->handleMany([
+            $this->createSessionEventDto('oa-1', '2026-10-03'),
+            $this->createSessionEventDto('oa-2', '2026-10-10'),
+        ]);
+
+        $canonical = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
+        $sibling = $this->eventRepository->findOneBy(['externalId' => 'oa-2']);
+        $this->assertNotNull($canonical);
+        $this->assertNotNull($sibling);
+        $siblingId = $sibling->getId();
+
+        $this->assertNotNull($canonical->getIdentityHash());
+        $this->assertSame($canonical->getIdentityHash(), $sibling->getIdentityHash());
+        $this->assertNull($canonical->getDuplicateOf(), 'The oldest row is the canonical');
+        $this->assertSame($canonical->getId(), $sibling->getDuplicateOf()?->getId());
+        $this->assertFalse($sibling->isIndexable(), 'Only the canonical is listed');
+
+        // The canonical shows both sessions and spans them; the sibling keeps its own
+        $this->assertSame(['2026-10-03' => null, '2026-10-10' => $siblingId], $this->timesheetSources($canonical));
+        $this->assertSame('2026-10-03', $canonical->getStartDate()?->format('Y-m-d'));
+        $this->assertSame('2026-10-10', $canonical->getEndDate()?->format('Y-m-d'));
+        $this->assertSame(['2026-10-10' => null], $this->timesheetSources($sibling));
+
+        // The sibling's session moves: the canonical follows
+        $this->handler->handleMany([$this->createSessionEventDto('oa-2', '2026-10-11')]);
+
+        $canonical = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
+        $this->assertNotNull($canonical);
+        $this->assertSame(['2026-10-03' => null, '2026-10-11' => $siblingId], $this->timesheetSources($canonical));
+        $this->assertSame('2026-10-11', $canonical->getEndDate()?->format('Y-m-d'));
+
+        // The canonical is re-imported: its own date is synced, the inherited one is kept
+        $this->handler->handleMany([$this->createSessionEventDto('oa-1', '2026-10-04')]);
+
+        $canonical = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
+        $this->assertNotNull($canonical);
+        $this->assertSame(['2026-10-04' => null, '2026-10-11' => $siblingId], $this->timesheetSources($canonical));
+        $this->assertSame('2026-10-04', $canonical->getStartDate()?->format('Y-m-d'));
+        $this->assertSame('2026-10-11', $canonical->getEndDate()?->format('Y-m-d'));
+    }
+
+    /**
+     * One OpenAgenda record of the same workshop: same title, description and venue,
+     * its own uid and its own single session.
+     */
+    private function createSessionEventDto(string $externalId, string $date): EventDto
+    {
+        $dto = new EventDto();
+        $dto->name = 'Atelier poterie';
+        $dto->description = 'Un atelier de poterie pour découvrir le tour, ouvert à tous les niveaux.';
+        $dto->externalId = $externalId;
+        $dto->externalOrigin = 'openagenda';
+        $dto->parserVersion = '1.0';
+        $dto->source = 'https://openagenda.com/atelier/events/' . $externalId;
+        $dto->startDate = new DateTime($date);
+        $dto->endDate = new DateTime($date);
+        $dto->hours = 'À 20h30';
+
+        $timesheet = new EventTimesheetDto();
+        $timesheet->startAt = new DateTime($date . ' 20:30:00');
+        $timesheet->endAt = new DateTime($date . ' 22:30:00');
+        $timesheet->hours = 'À 20h30';
+        $dto->timesheets = [$timesheet];
+
+        $placeDto = new PlaceDto();
+        $placeDto->name = 'Le Bikini';
+        $placeDto->street = 'Rue Théodore Monod';
+        $placeDto->externalId = 'loc-1';
+        $placeDto->externalOrigin = 'openagenda';
+
+        $cityDto = new CityDto();
+        $cityDto->name = 'Toulouse';
+
+        $countryDto = new CountryDto();
+        $countryDto->code = 'FR';
+
+        $cityDto->country = $countryDto;
+        $placeDto->city = $cityDto;
+        $placeDto->country = $countryDto;
+
+        $dto->place = $placeDto;
+
+        return $dto;
+    }
+
+    /**
+     * The event's timesheet dates, each with the id of the sibling it was inherited
+     * from (null for the event's own rows).
+     *
+     * @return array<string, int|null>
+     */
+    private function timesheetSources(Event $event): array
+    {
+        $sources = [];
+        foreach ($event->getTimesheets() as $timesheet) {
+            $sources[(string) $timesheet->getStartAt()?->format('Y-m-d')] = $timesheet->getSourceEvent()?->getId();
+        }
+
+        ksort($sources);
+
+        return $sources;
     }
 
     private function createRetriedEventDto(): EventDto

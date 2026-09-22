@@ -88,8 +88,9 @@ final class EventDtoFactory
 
         $event->place = $place;
 
-        // Map timesheets from entity to DTO
-        foreach ($entity->getTimesheets() as $timesheetEntity) {
+        // Map the event's own timesheets to the DTO: the ones inherited from duplicate
+        // siblings are rebuilt by EventFamilyResolver, not round-tripped through a DTO
+        foreach ($entity->getOwnTimesheets() as $timesheetEntity) {
             $timesheetDto = new EventTimesheetDto();
             $timesheetDto->startAt = $timesheetEntity->getStartAt() ? clone $timesheetEntity->getStartAt() : null;
             $timesheetDto->endAt = $timesheetEntity->getEndAt() ? clone $timesheetEntity->getEndAt() : null;

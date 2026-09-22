@@ -497,6 +497,7 @@ final class EventsMergeDuplicatesCommand extends Command
                 $canonical->getStartDate(),
                 $canonical->getEndDate() ?? $canonical->getStartDate(),
                 $canonical->getHours(),
+                null,
                 $existingPairs,
             );
         }
@@ -507,7 +508,7 @@ final class EventsMergeDuplicatesCommand extends Command
                 continue;
             }
 
-            $this->addTimesheet($canonical, $startAt, $endAt, $hours, $existingPairs);
+            $this->addTimesheet($canonical, $startAt, $endAt, $hours, $duplicate, $existingPairs);
         }
     }
 
@@ -520,7 +521,7 @@ final class EventsMergeDuplicatesCommand extends Command
     private function getTimesheetTuples(Event $event): array
     {
         $tuples = [];
-        foreach ($event->getTimesheets() as $timesheet) {
+        foreach ($event->getOwnTimesheets() as $timesheet) {
             $tuples[] = [$timesheet->getStartAt(), $timesheet->getEndAt(), $timesheet->getHours()];
         }
 
@@ -532,14 +533,16 @@ final class EventsMergeDuplicatesCommand extends Command
     }
 
     /**
+     * @param Event|null          $source        the duplicate the date comes from, null for the canonical's own date
      * @param array<string, true> $existingPairs
      */
-    private function addTimesheet(Event $canonical, ?DateTimeImmutable $startAt, ?DateTimeImmutable $endAt, ?string $hours, array &$existingPairs): void
+    private function addTimesheet(Event $canonical, ?DateTimeImmutable $startAt, ?DateTimeImmutable $endAt, ?string $hours, ?Event $source, array &$existingPairs): void
     {
         $timesheet = new EventTimesheet();
         $timesheet->setStartAt($startAt);
         $timesheet->setEndAt($endAt);
         $timesheet->setHours($hours);
+        $timesheet->setSourceEvent($source);
 
         $canonical->addTimesheet($timesheet);
 

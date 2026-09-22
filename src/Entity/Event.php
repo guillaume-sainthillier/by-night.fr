@@ -25,6 +25,7 @@ use DateTimeImmutable;
 use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ReadableCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
@@ -49,6 +50,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_top_soiree_idx', columns: ['end_date', 'participations'])]
 #[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
+#[ORM\Index(name: 'event_identity_hash_idx', columns: ['identity_hash'])]
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: '`event`')]
 #[ORM\HasLifecycleCallbacks]
@@ -281,6 +283,15 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'SET NULL')]
     private ?Event $duplicateOf = null;
+
+    /**
+     * Fingerprint of what makes an imported event the same event as another one of its
+     * origin, regardless of when it takes place (see EventContentHasher::identity()).
+     * Rows sharing it form a family: one is the canonical event, the others redirect
+     * to it through $duplicateOf and lend it their timesheets (EventFamilyResolver).
+     */
+    #[ORM\Column(type: Types::STRING, length: 40, nullable: true)]
+    private ?string $identityHash = null;
 
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
     #[ORM\Column(type: Types::STRING, length: 255)]
@@ -1303,5 +1314,38 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function getCanonicalEvent(): self
     {
         return $this->duplicateOf ?? $this;
+    }
+
+    public function getIdentityHash(): ?string
+    {
+        return $this->identityHash;
+    }
+
+    public function setIdentityHash(?string $identityHash): self
+    {
+        $this->identityHash = $identityHash;
+
+        return $this;
+    }
+
+    /**
+     * The timesheets imported for this very event, as opposed to the ones it inherits
+     * from the duplicate siblings of its family. This is the set an import syncs.
+     *
+     * @return ReadableCollection<int, EventTimesheet>
+     */
+    public function getOwnTimesheets(): ReadableCollection
+    {
+        return $this->timesheets->filter(static fn (EventTimesheet $timesheet): bool => !$timesheet->isInherited());
+    }
+
+    /**
+     * The timesheets lent by the duplicate siblings of this event's family.
+     *
+     * @return ReadableCollection<int, EventTimesheet>
+     */
+    public function getInheritedTimesheets(): ReadableCollection
+    {
+        return $this->timesheets->filter(static fn (EventTimesheet $timesheet): bool => $timesheet->isInherited());
     }
 }

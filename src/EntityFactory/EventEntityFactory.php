@@ -20,6 +20,7 @@ use App\Entity\User;
 use App\EntityProvider\TagEntityProvider;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
+use App\Import\EventContentHasher;
 use DateTimeImmutable;
 
 /**
@@ -30,6 +31,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
     public function __construct(
         private EntityProviderHandler $entityProviderHandler,
         private EventImageDownloadScheduler $imageDownloadScheduler,
+        private EventContentHasher $contentHasher,
     ) {
     }
 
@@ -44,6 +46,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setExternalId($dto->externalId);
         $entity->setExternalOrigin($dto->externalOrigin);
+        $entity->setIdentityHash($this->contentHasher->identity($dto));
 
         $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTimeImmutable::createFromInterface($dto->externalUpdatedAt));
 
@@ -175,10 +178,13 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
      * - Updates hours for existing timesheets (matching start/end dates)
      * - Adds new timesheets from DTO
      * - Removes timesheets not present in DTO
+     *
+     * Only the event's own timesheets are the import's to sync: the ones it inherits
+     * from the duplicate siblings of its family (see EventFamilyResolver) are left alone.
      */
     private function syncTimesheets(Event $entity, EventDto $dto): void
     {
-        $existingTimesheets = $entity->getTimesheets()->toArray();
+        $existingTimesheets = $entity->getOwnTimesheets()->toArray();
 
         // Build a map of existing timesheets by their start/end dates for quick lookup
         $existingMap = [];

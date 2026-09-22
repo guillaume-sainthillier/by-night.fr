@@ -102,6 +102,73 @@ final class EventContentHasherTest extends TestCase
         self::assertNotSame($base, $this->hasher->hash($rescheduled));
     }
 
+    public function testIdentityIgnoresWhenTheEventTakesPlace(): void
+    {
+        $base = $this->hasher->identity($this->event());
+        self::assertNotNull($base);
+
+        // Another uid, created by the organizer for another session of the same workshop
+        $otherSession = $this->event();
+        $otherSession->externalId = 'evt-2';
+        $otherSession->source = 'https://openagenda.com/agenda/events/evt-2';
+        $otherSession->imageUrl = 'https://cdn.openagenda.com/another-upload.jpg';
+        $otherSession->startDate = new DateTimeImmutable('2026-08-01 21:00:00');
+        $otherSession->endDate = new DateTimeImmutable('2026-08-01 23:30:00');
+        $otherSession->hours = 'À 21h00';
+        $otherSession->timesheets[0]->startAt = new DateTimeImmutable('2026-08-01 21:00:00');
+        $otherSession->timesheets[0]->endAt = new DateTimeImmutable('2026-08-01 23:30:00');
+        $otherSession->timesheets[0]->hours = 'À 21h00';
+
+        self::assertSame($base, $this->hasher->identity($otherSession), 'Same event, other session: same identity.');
+        self::assertNotSame($this->hasher->hash($this->event()), $this->hasher->hash($otherSession), 'The content fingerprint, on the contrary, tells them apart.');
+    }
+
+    public function testIdentityChangesWithWhatTheEventIs(): void
+    {
+        $base = $this->hasher->identity($this->event());
+
+        $renamed = $this->event();
+        $renamed->name = 'Another name';
+
+        $rewritten = $this->event();
+        $rewritten->description = 'Another description';
+
+        $moved = $this->event();
+        $moved->place->externalId = 'place-2';
+
+        $elsewhere = $this->event();
+        $elsewhere->externalOrigin = 'datatourisme';
+
+        foreach ([$renamed, $rewritten, $moved, $elsewhere] as $other) {
+            self::assertNotSame($base, $this->hasher->identity($other));
+        }
+    }
+
+    public function testIdentityIsNullWhenTheEventCannotBeGrouped(): void
+    {
+        $userCreated = $this->event();
+        $userCreated->externalOrigin = null;
+
+        $unidentifiedVenue = $this->event();
+        $unidentifiedVenue->place->externalId = null;
+
+        $nameless = $this->event();
+        $nameless->name = null;
+
+        self::assertNull($this->hasher->identity($userCreated));
+        self::assertNull($this->hasher->identity($unidentifiedVenue));
+        self::assertNull($this->hasher->identity($nameless));
+    }
+
+    public function testIdentityFromStoredColumnsMatchesTheImportOne(): void
+    {
+        self::assertSame(
+            $this->hasher->identity($this->event()),
+            $this->hasher->identityOf('openagenda', 'place-1', 'Concert', 'A nice concert in town'),
+            'The backfill must land on the very hash the import computes.',
+        );
+    }
+
     private function event(): EventDto
     {
         $event = new EventDto();

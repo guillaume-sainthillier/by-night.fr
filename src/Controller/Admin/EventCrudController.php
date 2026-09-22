@@ -178,6 +178,9 @@ final class EventCrudController extends AbstractCrudController
             ->setLabel('Duplicate de (redirige vers)')
             ->autocomplete()
             ->setHelp('Si défini, cet événement redirigera vers l\'événement principal');
+        $identityHash = TextField::new('identityHash', 'Empreinte d\'identité')
+            ->onlyOnDetail()
+            ->setHelp('Partagée par les événements importés qui décrivent le même événement sous des identifiants distincts (même famille).');
         $fromData = TextField::new('fromData');
         $parserVersion = TextField::new('parserVersion');
         $source = TextField::new('source');
@@ -277,6 +280,7 @@ final class EventCrudController extends AbstractCrudController
 
             $panel4,
             $duplicateOf,
+            $identityHash,
             $externalId,
             $externalOrigin,
             $externalUpdatedAt,
