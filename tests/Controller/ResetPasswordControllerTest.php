@@ -53,6 +53,7 @@ final class ResetPasswordControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/mot-de-passe-perdu/verifier-email');
         self::assertEmailCount(1);
+        self::assertEmailHeaderSame(self::getMailerMessage(), 'Subject', 'Réinitialisation de votre mot de passe - By Night');
         // The token lives 3600 seconds: the e-mail used to read that as a timestamp and say "2 heure(s)".
         self::assertEmailHtmlBodyContains(self::getMailerMessage(), 'Ce lien est valable 1 heure.');
     }
