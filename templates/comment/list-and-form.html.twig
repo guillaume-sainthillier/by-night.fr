@@ -1,6 +1,6 @@
 <div class="comments-container">
     <h3 class="heading">
-        <span>{{ comments.nbResults }} Commentaire{{ comments.nbResults > 1 ? 's' }}</span>
+        <span>{{ '{count, plural, one {# Commentaire} other {# Commentaires}}'|trans({count: comments.nbResults}, 'messages+intl-icu') }}</span>
         {% if comments.nbResults == 0 %}
             <small class="text-muted">Soyez le premier à réagir</small>
         {% endif %}

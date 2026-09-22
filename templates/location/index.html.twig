@@ -43,8 +43,7 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            {% set s = events.nbResults > 1 ? 's' %}
-            <h2 class="text-primary h4">{{ events.nbResults }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
+            <h2 class="text-primary h4">{{ '{count, plural, one {# événement et bon plan culturel} other {# événements et bons plans culturels}}'|trans({count: events.nbResults}, 'messages+intl-icu') }} {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white py-4 py-xl-6">

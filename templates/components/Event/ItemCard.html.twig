@@ -49,7 +49,7 @@
                                 - {{ session.hours }}
                             {%- endif %}
                             {%- if otherDates > 0 %}
-                                (+{{ otherDates }} autre{{ otherDates > 1 ? 's' }} date{{ otherDates > 1 ? 's' }})
+                                (+{{ '{count, plural, one {# autre date} other {# autres dates}}'|trans({count: otherDates}, 'messages+intl-icu') }})
                             {%- endif -%}
                         </small>
                     </div>

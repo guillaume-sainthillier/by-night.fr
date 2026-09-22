@@ -4,18 +4,18 @@
     {% set pageTitle = 'Rechercher des événements, lieux et membres' %}
     {% set title = 'Recherche' %}
     {% set description = 'Trouvez des événements, concerts, spectacles et sorties parmi des milliers de références.' %}
-    {% set result = {count: (events.nbResults + users.nbResults), label: 'résultat'} %}
+    {% set result = {count: (events.nbResults + users.nbResults), message: '{count, plural, =0 {Aucun résultat trouvé} one {# résultat trouvé} other {# résultats trouvés}}'} %}
     {% set name = 'Tout' %}
 {% elseif type == 'evenements' %}
     {% set pageTitle = 'Rechercher des événements' %}
     {% set title = 'Rechercher des événements' %}
     {% set description = 'Trouvez des concerts, spectacles, expos et sorties près de chez vous.' %}
-    {% set result = {count: events.nbResults, label: 'événement'} %}
+    {% set result = {count: events.nbResults, message: '{count, plural, =0 {Aucun événement trouvé} one {# événement trouvé} other {# événements trouvés}}'} %}
     {% set name = 'Événements' %}
 {% elseif type == 'membres' %}
     {% set pageTitle = 'Rechercher des membres' %}
     {% set title = 'Rechercher des membres' %}
-    {% set result = {count: users.nbResults, label: 'membre'} %}
+    {% set result = {count: users.nbResults, message: '{count, plural, =0 {Aucun membre trouvé} one {# membre trouvé} other {# membres trouvés}}'} %}
     {% set description = 'Retrouvez les membres de la communauté By Night et découvrez leurs sorties favorites.' %}
     {% set name = 'Membres' %}
 {% endif %}
@@ -38,9 +38,8 @@
     {% endif %}
 {% endblock %}
 
-{% set s = result.count > 1 ? 's' : null %}
 {% if term %}
-    {% set description = description ~ ' ' ~ result.count ~ ' ' ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"' %}
+    {% set description = description ~ ' ' ~ result.message|trans({count: result.count}, 'messages+intl-icu') ~ ' pour la recherche "' ~ term ~ '"' %}
 {% endif %}
 
 {% block title title %}

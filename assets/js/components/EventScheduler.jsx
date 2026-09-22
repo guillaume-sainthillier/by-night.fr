@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import { dom, findAll } from '@/js/utils/dom'
+import { plural } from '@/js/utils/plural'
 import TimesheetGenerator from '@/js/utils/TimesheetGenerator'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
 
@@ -148,7 +149,10 @@ export default function EventScheduler({
                 })
             }
 
-            window.App.get('toastManager').createToast('success', `${timesheets.length} dates générées`)
+            window.App.get('toastManager').createToast(
+                'success',
+                plural(timesheets.length, { one: '# date générée', other: '# dates générées' })
+            )
         } catch (error) {
             console.error('Failed to generate timesheets:', error)
             window.App.get('toastManager').createToast('error', 'Erreur lors de la génération des dates')
@@ -229,7 +233,8 @@ export default function EventScheduler({
 
             {previewCount > 0 ? (
                 <div className="preview">
-                    <span className="preview-count">{previewCount}</span> dates seront générées
+                    <span className="preview-count">{previewCount}</span>{' '}
+                    {plural(previewCount, { one: 'date sera générée', other: 'dates seront générées' })}
                 </div>
             ) : null}
 

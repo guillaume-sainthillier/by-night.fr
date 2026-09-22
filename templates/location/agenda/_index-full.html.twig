@@ -101,7 +101,7 @@
             </div>
         {% else %}
             <h3 class="info">
-                <span class="badge text-bg-info">{{ events.nbResults }} événement{{ events.nbResults > 1 ? 's' }}</span>
+                <span class="badge text-bg-info">{{ '{count, plural, one {# événement} other {# événements}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}</span>
             </h3>
             {{ include('location/agenda/_index-content.html.twig', {partial: false}) }}
         {% endif %}

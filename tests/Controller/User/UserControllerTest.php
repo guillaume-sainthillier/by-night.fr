@@ -40,6 +40,18 @@ final class UserControllerTest extends WebTestCase
         self::assertSelectorNotExists('meta[name="robots"]');
     }
 
+    public function testTheProfileAgreesTheFavoritesCountWithItsNoun(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['username' => 'fan']);
+        UserEventFactory::createMany(2, ['user' => $user]);
+
+        $client->request('GET', $this->profilePath($user));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('meta[name="description"][content*="2 événements en favoris"]');
+    }
+
     private function profilePath(User $user): string
     {
         return \sprintf('/membres/%s--%d', $user->getSlug(), $user->getId());

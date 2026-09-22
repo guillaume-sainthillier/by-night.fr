@@ -25,7 +25,9 @@ use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use MessageFormatter;
 use Pagerfanta\PagerfantaInterface;
+use RuntimeException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -199,7 +201,9 @@ final readonly class SearchProvider implements ProviderInterface
                 category: 'Villes',
                 label: $city->getName(),
                 shortDescription: $city->getCountry()?->getName() ?? '',
-                description: \sprintf('%s habitants', number_format($city->getPopulation() ?? 0, 0, ',', ' ')),
+                description: null !== $city->getPopulation()
+                    ? $this->formatCount('{count, plural, one {# habitant} other {# habitants}}', $city->getPopulation())
+                    : null,
                 url: $this->urlGenerator->generate('app_location_index', ['location' => $city->getSlug()]),
                 highlightResult: [
                     'label' => [
@@ -238,7 +242,7 @@ final readonly class SearchProvider implements ProviderInterface
                 category: 'Membres',
                 label: $user->getUsername(),
                 shortDescription: $fullName,
-                description: \sprintf('%d événement(s)', $user->getUserEvents()->count()),
+                description: $this->formatCount('{count, plural, one {# événement} other {# événements}}', $user->getUserEvents()->count()),
                 url: $this->urlGenerator->generate('app_user_index', ['slug' => $user->getSlug(), 'id' => $user->getId()]),
                 highlightResult: [
                     'label' => [
@@ -288,5 +292,14 @@ final readonly class SearchProvider implements ProviderInterface
         }
 
         return $results;
+    }
+
+    /**
+     * Agrees the noun with the count and groups thousands the French way ("1 habitant", "12 345 habitants").
+     */
+    private function formatCount(string $pattern, int $count): string
+    {
+        return MessageFormatter::formatMessage('fr', $pattern, ['count' => $count])
+            ?: throw new RuntimeException(intl_get_error_message());
     }
 }

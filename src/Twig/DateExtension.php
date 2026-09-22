@@ -12,78 +12,38 @@ namespace App\Twig;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use MessageFormatter;
+use RuntimeException;
 use Twig\Attribute\AsTwigFilter;
 
 final class DateExtension
 {
+    /**
+     * "Il y a 1 jour", "Il y a 3 heures", "À l'instant": the largest elapsed unit, spelled out and
+     * agreed with its count by ICU.
+     */
     #[AsTwigFilter(name: 'diff_date')]
     public function diffDate(DateTimeInterface $date): string
     {
-        return $this->statsDiffDate($date)['full'];
-    }
-
-    /**
-     * @return string[]
-     *
-     * @psalm-return array{short: string, long: string, full: string}
-     */
-    private function statsDiffDate(DateTimeInterface $date): array
-    {
         $diff = $date->diff(new DateTimeImmutable());
-        if ($diff->y > 0) {
-            // Années
-            return [
-                'short' => \sprintf('%d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
-                'long' => \sprintf('%d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
-                'full' => \sprintf('Il y a %d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
-            ];
-        }
-        if ($diff->m > 0) {
-            // Mois
-            return [
-                'short' => \sprintf('%d mois', $diff->m),
-                'long' => \sprintf('%d mois', $diff->m),
-                'full' => \sprintf('Il y a %d mois', $diff->m),
-            ];
-        }
-        if ($diff->d > 0) {
-            // Jours
-            return [
-                'short' => \sprintf('%d j', $diff->d),
-                'long' => \sprintf('%d jours', $diff->d),
-                'full' => \sprintf('Il y a %d jours', $diff->d),
-            ];
-        }
-        if ($diff->h > 0) {
-            // Heures
-            return [
-                'short' => \sprintf('%d h', $diff->h),
-                'long' => \sprintf('%d heure%s', $diff->h, $diff->h > 1 ? 's' : ''),
-                'full' => \sprintf('Il y a %d heure%s', $diff->h, $diff->h > 1 ? 's' : ''),
-            ];
-        }
-        if ($diff->i > 0) {
-            // Minutes
-            return [
-                'short' => \sprintf('%d min', $diff->i),
-                'long' => \sprintf('%d minute%s', $diff->i, $diff->i > 1 ? 's' : ''),
-                'full' => \sprintf('Il y a %d minute%s', $diff->i, $diff->i > 1 ? 's' : ''),
-            ];
+        [$count, $unit] = match (true) {
+            $diff->y > 0 => [$diff->y, 'year'],
+            $diff->m > 0 => [$diff->m, 'month'],
+            $diff->d > 0 => [$diff->d, 'day'],
+            $diff->h > 0 => [$diff->h, 'hour'],
+            $diff->i > 0 => [$diff->i, 'minute'],
+            $diff->s > 30 => [$diff->s, 'second'],
+            default => [0, null],
+        };
+
+        if (null === $unit) {
+            return "À l'instant";
         }
 
-        if ($diff->s > 30) {
-            // Secondes
-            return [
-                'short' => \sprintf('%d s', $diff->s),
-                'long' => \sprintf('%d secondes', $diff->s),
-                'full' => \sprintf('Il y a %d secondes', $diff->s),
-            ];
-        }
-
-        return [
-            'short' => '0 s',
-            'long' => "à l'instant",
-            'full' => "À l'instant",
-        ];
+        return MessageFormatter::formatMessage(
+            'fr',
+            \sprintf('Il y a {count, number, ::measure-unit/duration-%s unit-width-full-name}', $unit),
+            ['count' => $count],
+        ) ?: throw new RuntimeException(intl_get_error_message());
     }
 }
