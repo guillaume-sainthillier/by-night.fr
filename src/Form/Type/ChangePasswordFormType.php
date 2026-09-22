@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class ChangePasswordFormType extends AbstractType
@@ -57,6 +58,11 @@ final class ChangePasswordFormType extends AbstractType
             'first_options' => ['label' => 'Mot de passe'],
             'second_options' => ['label' => 'Répéter le mot de passe'],
             'invalid_message' => 'Les mots de passe ne correspondent pas.',
+            // The rules of the reset form: an empty password reached the hasher as null (500)
+            'constraints' => [
+                new NotBlank(message: 'Veuillez saisir un mot de passe.'),
+                new Length(min: 6, max: 255, minMessage: 'Votre mot de passe doit comporter au moins {{ limit }} caractères'),
+            ],
         ]);
     }
 

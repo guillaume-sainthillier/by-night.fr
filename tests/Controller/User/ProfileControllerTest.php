@@ -10,8 +10,13 @@
 
 namespace App\Tests\Controller\User;
 
+use App\Entity\User;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use function Zenstruck\Foundry\Persistence\refresh;
 
 final class ProfileControllerTest extends WebTestCase
 {
@@ -28,5 +33,25 @@ final class ProfileControllerTest extends WebTestCase
         $client->followRedirect();
         self::assertResponseIsSuccessful();
         self::assertSame(1, UserFactory::count(['id' => $user->getId()]), 'The account is kept');
+    }
+
+    public function testAnEmptyNewPasswordIsRejected(): void
+    {
+        $client = self::createClient();
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $user = UserFactory::createOne(['password' => $hasher->hashPassword(new User(), 'ancien-mot-de-passe')]);
+        $client->loginUser($user);
+        $passwordHash = $user->getPassword();
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Mettre à jour le mot de passe', [
+            'change_password_form[currentPassword]' => 'ancien-mot-de-passe',
+            'change_password_form[plainPassword][first]' => '',
+            'change_password_form[plainPassword][second]' => '',
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        refresh($user);
+        self::assertSame($passwordHash, $user->getPassword());
     }
 }
