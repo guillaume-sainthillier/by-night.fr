@@ -17,6 +17,19 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 #[RequiresPhpExtension('mjml')]
 final class ResetPasswordControllerTest extends WebTestCase
 {
+    public function testAnEmptyEmailIsRejectedInFrench(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/mot-de-passe-perdu');
+        $client->submitForm('Réinitialiser le mot de passe', [
+            'reset_password_request_form[email]' => '',
+        ]);
+
+        self::assertResponseIsUnprocessable();
+        self::assertAnySelectorTextContains('form', 'Veuillez saisir votre adresse e-mail.');
+    }
+
     public function testTheResetEmailStatesHowLongTheLinkIsValid(): void
     {
         $client = self::createClient();

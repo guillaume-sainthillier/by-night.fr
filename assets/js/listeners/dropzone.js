@@ -75,7 +75,7 @@ const handleFileChange = (e) => {
     const reader = new FileReader()
     reader.onload = (event) => {
         if (preview) {
-            preview.innerHTML = `<img src="${event.target.result}" alt="Preview" class="img-fluid rounded" />`
+            preview.innerHTML = `<img src="${event.target.result}" alt="Aperçu" class="img-fluid rounded" />`
             preview.classList.remove('d-none')
         }
         if (placeholder) {
