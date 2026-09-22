@@ -61,7 +61,7 @@ final class ProfileFormType extends AbstractType
                 'label' => 'Photo de profil',
                 'delete_label' => "Supprimer l'image de profil",
                 'layout' => 'horizontal',
-                'help' => 'Pour un meilleur rendu, préférez une image au format 1:1 (ex: 1024x1024 pixels).',
+                'help' => "Pour un meilleur rendu, préférez une image au format 1:1 (ex.\u{a0}: 1024\u{a0}×\u{a0}1024 pixels).",
                 'thumb_params' => [
                     'height' => 200,
                 ],

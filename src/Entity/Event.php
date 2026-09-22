@@ -77,7 +77,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Gedmo\Slug(fields: ['name'], unique: false)]
     private ?string $slug = null;
 
-    #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
+    #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement\u{a0}!")]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $description = null;
@@ -197,7 +197,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
 
-    #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
+    #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement\u{a0}!")]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
     private ?string $name = null;

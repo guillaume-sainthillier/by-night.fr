@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block meta_description -%}
-    Découvrez le profil de {{ username }} sur By Night : {{ '{count, plural, one {# événement} other {# événements}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
+    Découvrez le profil de {{ username }} sur By Night : {{ '{count, plural, one {# événement} other {# événements}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
 {%- endblock %}
 
 {% block meta_robots %}

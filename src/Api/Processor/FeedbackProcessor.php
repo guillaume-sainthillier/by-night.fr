@@ -41,7 +41,7 @@ final readonly class FeedbackProcessor implements ProcessorInterface
 
         return new FeedbackOutput(
             success: true,
-            message: 'Merci pour votre retour !',
+            message: "Merci pour votre retour\u{a0}!",
         );
     }
 }

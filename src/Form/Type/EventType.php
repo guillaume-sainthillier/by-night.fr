@@ -67,7 +67,7 @@ final class EventType extends AbstractType
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
-                'help' => 'Pour un meilleur rendu, préférez une image au format 16:9 (ex: 1920x1080)',
+                'help' => "Pour un meilleur rendu, préférez une image au format 16:9 (ex.\u{a0}: 1920\u{a0}×\u{a0}1080).",
             ])
             ->add('hours', TextType::class, [
                 'label' => 'Horaires affichés',
@@ -89,7 +89,7 @@ final class EventType extends AbstractType
                 'label' => 'Tarif',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => '17€ avec préventes, 20€ sur place',
+                    'placeholder' => "17\u{a0}€ avec préventes, 20\u{a0}€ sur place",
                 ],
             ])
             ->add('status', EnumType::class, [
@@ -103,7 +103,7 @@ final class EventType extends AbstractType
                 'label' => 'Message de statut',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Précisez le statut (ex: Reporté au 15 mars)',
+                    'placeholder' => "Précisez le statut (ex.\u{a0}: reporté au 15 mars)",
                 ],
                 'help' => 'Message personnalisé affiché aux visiteurs',
             ])

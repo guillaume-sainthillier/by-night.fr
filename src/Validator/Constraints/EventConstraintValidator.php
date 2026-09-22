@@ -112,7 +112,7 @@ final class EventConstraintValidator extends ConstraintValidator implements Batc
         }
 
         if (0 === \count($this->context->getViolations())) {
-            $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé. Code d'erreur : " . $reject->getReason())->addViolation();
+            $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé. Code d'erreur\u{a0}: " . $reject->getReason())->addViolation();
         }
     }
 

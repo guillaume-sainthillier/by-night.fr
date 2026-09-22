@@ -158,7 +158,7 @@ export default class CommentApp {
                         let answerContainer = mainAnswerContainer.find(self.options.css_replies_container)
                         if (response.success) {
                             // Success - show toast notification
-                            self.showToast('success', 'Réponse envoyée avec succès!')
+                            self.showToast('success', 'Réponse envoyée avec succès\u00a0!')
 
                             // Clear textarea
                             textarea.val('').trigger('blur')
@@ -248,7 +248,7 @@ export default class CommentApp {
 
                                 if (response.success) {
                                     // Success - show toast notification
-                                    self.showToast('success', 'Commentaire envoyé avec succès!')
+                                    self.showToast('success', 'Commentaire envoyé avec succès\u00a0!')
 
                                     // Clear textarea with animation
                                     textarea.val('').trigger('blur')

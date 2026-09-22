@@ -69,11 +69,11 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?string $fromData = null;
 
-    #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
-    #[Assert\Length(max: 255, maxMessage: 'Le nom de votre événement dépasse les 255 caractères autorisés !')]
+    #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement\u{a0}!")]
+    #[Assert\Length(max: 255, maxMessage: "Le nom de votre événement dépasse les 255 caractères autorisés\u{a0}!")]
     public ?string $name = null;
 
-    #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
+    #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement\u{a0}!")]
     public ?string $description = null;
 
     // When used by parsers

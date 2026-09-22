@@ -28,16 +28,16 @@ final class SearchType extends AbstractType
     {
         $builder
             ->add('dateRange', DateRangeType::class, [
-                'label' => 'Quand ?',
+                'label' => "Quand\u{a0}?",
             ])
             ->add('range', NumberType::class, [
                 'html5' => true,
                 'label' => 'Rayon (km)',
-                'attr' => ['placeholder' => 'Dans quel rayon cherchez-vous ?'],
+                'attr' => ['placeholder' => "Dans quel rayon cherchez-vous\u{a0}?"],
             ])
             ->add('type', ChoiceType::class, [
                 'choices' => $options['types_manif'],
-                'label' => 'Quoi ?',
+                'label' => "Quoi\u{a0}?",
                 'multiple' => true,
                 'expanded' => false,
                 'disabled' => [] === $options['types_manif'],
@@ -51,7 +51,7 @@ final class SearchType extends AbstractType
             ->add('term', TextType::class, [
                 'required' => false,
                 'label' => 'Mots-clés',
-                'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'], ])
+                'attr' => ['placeholder' => "Quel événement cherchez-vous\u{a0}?"], ])
         ;
     }
 

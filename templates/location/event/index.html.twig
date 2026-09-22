@@ -88,7 +88,7 @@
                 {% endif %}
                 {% if event.status or event.statusMessage %}
                     <div class="col-12">
-                        <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
+                        <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
                     </div>
                 {% endif %}
                 <div class="col-lg-7">
@@ -124,7 +124,7 @@
                             <div class="detail-item">
                                 <twig:Icon name="lucide:calendar-days" />
                                 <div>
-                                    <div class="mb-1">Détail des dates :</div>
+                                    <div class="mb-1">Détail des dates :</div>
                                     <div class="timesheets-list">
                                         {% for timesheet in event.timesheets %}
                                             <div class="timesheet-entry">
@@ -319,7 +319,7 @@
                             <div class="detail-item">
                                 <twig:Icon name="lucide:info" />
                                 <p>
-                                    Source : <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
+                                    Source : <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
                                 </p>
                             </div>
                         {% endif %}
