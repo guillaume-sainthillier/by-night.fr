@@ -43,6 +43,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
             paginationEnabled: true,
             paginationItemsPerPage: 20,
             paginationClientItemsPerPage: true,
+            paginationMaximumItemsPerPage: 50,
             normalizationContext: ['groups' => ['tag:list']],
             name: 'api_tags',
             provider: TagAutocompleteProvider::class,

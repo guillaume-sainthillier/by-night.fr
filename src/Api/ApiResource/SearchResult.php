@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             paginationEnabled: true,
             paginationItemsPerPage: 15,
             paginationClientItemsPerPage: true,
+            paginationMaximumItemsPerPage: 50,
             name: 'api_search',
             provider: SearchProvider::class,
             parameters: [
