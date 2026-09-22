@@ -79,16 +79,18 @@
                     </twig:Card>
                 </div>
             </div>
-            <hr />
-            <div class="mt-2">
-                <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes événements">
-                    <twig:Icon name="lucide:chevron-left" />
-                    Retour
-                </a>
-                <button type="submit" class="ms-2 btn btn-primary">
-                    <twig:Icon name="lucide:save" />
-                    Sauvegarder
-                </button>
+            <div class="form-actions-fixed">
+                <div class="{{ block('container_class') }} d-flex gap-2">
+                    <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes événements">
+                        <twig:Icon name="lucide:chevron-left" />
+                        <span class="form-actions-label">Retour</span>
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <twig:Icon name="lucide:save" />
+                        Sauvegarder
+                    </button>
+                    {% block form_actions_end '' %}
+                </div>
             </div>
 
             {{ form_rest(form) }}
