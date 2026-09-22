@@ -99,6 +99,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $this->syncThemes($entity, $dto);
 
         $entity->setName($dto->name);
+        $entity->setType($dto->type);
         $entity->setDescription($dto->description);
         $entity->setHours($dto->hours);
         $entity->setPrices($dto->prices);
