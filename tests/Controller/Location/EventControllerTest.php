@@ -61,16 +61,27 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorTextContains('.page-header h1', $event->getName());
     }
 
-    public function testAnEventThatEndedLongAgoStaysOnlineButIsNotIndexed(): void
+    public function testAnEventThatEndedLongAgoStaysIndexableWithAnEndedNotice(): void
     {
         $client = self::createClient();
-        $event = $this->createEvent(new DateTimeImmutable('-60 days'));
+        $event = $this->createEvent(new DateTimeImmutable('-10 years'));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('meta[name="robots"]');
+        self::assertSelectorTextContains('#event-ended', 'Cet événement est terminé');
+    }
+
+    public function testADraftEventIsNotIndexed(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'), draft: true);
 
         $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
-        self::assertSelectorTextContains('#event-ended', 'Cet événement est terminé');
     }
 
     public function testAnUpcomingEventIsIndexable(): void
@@ -85,12 +96,13 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorNotExists('#event-ended');
     }
 
-    private function createEvent(?DateTimeImmutable $date = null): Event
+    private function createEvent(?DateTimeImmutable $date = null, bool $draft = false): Event
     {
         $city = CityFactory::toulouse()->create();
         $attributes = [
             'name' => 'Concert au Bikini',
             'place' => PlaceFactory::createOne(['city' => $city, 'country' => $city->getCountry()]),
+            'draft' => $draft,
         ];
         if (null !== $date) {
             $attributes += ['startDate' => $date, 'endDate' => $date];
