@@ -76,7 +76,9 @@ final readonly class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 3_000, "\t", escape: '\\'))) {
+        // No length limit: the alternate names of a big city (Paris…) run over thousands of characters,
+        // and a longer line was split into two broken rows, both skipped
+        while (false !== ($data = fgetcsv($fd, 0, "\t", escape: '\\'))) {
             if (!\in_array($data[7], ['ADM1', 'ADM2'], true) && 'P' !== $data[6]) {
                 continue;
             }
@@ -235,7 +237,7 @@ final readonly class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 1_000, "\t", escape: '\\'))) {
+        while (false !== ($data = fgetcsv($fd, 0, "\t", escape: '\\'))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }
