@@ -107,6 +107,7 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(AppOAuthCrudController::class, 'Réseaux sociaux du site', 'lucide:megaphone');
         yield MenuItem::linkTo(ParserDataCrudController::class, 'Explorations', 'lucide:eye');
         yield MenuItem::linkTo(ParserHistoryCrudController::class, 'Historique des imports', 'lucide:history');
+        yield MenuItem::linkTo(ParserStateCrudController::class, 'Points de reprise', 'lucide:calendar-clock');
     }
 
     /**
