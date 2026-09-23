@@ -23,7 +23,7 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 final class AsyncObjectPersisterTest extends AppKernelTestCase
 {
-    public function testAnUpdatedEventIsIndexedWhole(): void
+    public function testAnUpdatedEventIsUpserted(): void
     {
         $event = EventFactory::createOne();
         $decorated = new class implements ObjectPersisterInterface {
@@ -86,7 +86,9 @@ final class AsyncObjectPersisterTest extends AppKernelTestCase
         );
         $persister->doReplaceMany([$event]);
 
-        // A partial update would keep the fields that became null in the stored document
-        self::assertSame(['insertMany'], $decorated->calls);
+        // An upsert, so a document missing from the index is created rather than rejected.
+        // The fields that became null are not left behind: the index serializes them as null
+        // (serialize_null in fos_elastica.yaml), and the merge clears what was stored.
+        self::assertSame(['replaceMany'], $decorated->calls);
     }
 }

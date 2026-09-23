@@ -67,6 +67,10 @@ fos_elastica:
             serializer:
                 groups:
                     - 'elasticsearch:event:details'
+                # An update is merged into the stored document: a field that became null must be sent as
+                # null to clear it, or the document would keep the value it had (a removed category, a
+                # place without a city, a cleared description would stay searchable until a full populate)
+                serialize_null: true
             properties:
                 name:
                     type: text
@@ -188,6 +192,10 @@ fos_elastica:
             serializer:
                 groups:
                     - 'elasticsearch:city:details'
+                # An update is merged into the stored document: a field that became null must be sent as
+                # null to clear it, or the document would keep the value it had (a removed category, a
+                # place without a city, a cleared description would stay searchable until a full populate)
+                serialize_null: true
             properties:
                 name:
                     type: text
@@ -237,6 +245,10 @@ fos_elastica:
             serializer:
                 groups:
                     - 'elasticsearch:user:details'
+                # An update is merged into the stored document: a field that became null must be sent as
+                # null to clear it, or the document would keep the value it had (a removed category, a
+                # place without a city, a cleared description would stay searchable until a full populate)
+                serialize_null: true
             properties:
                 username:
                     type: text
@@ -265,6 +277,10 @@ fos_elastica:
             serializer:
                 groups:
                     - 'elasticsearch:tag:details'
+                # An update is merged into the stored document: a field that became null must be sent as
+                # null to clear it, or the document would keep the value it had (a removed category, a
+                # place without a city, a cleared description would stay searchable until a full populate)
+                serialize_null: true
             properties:
                 name:
                     type: text

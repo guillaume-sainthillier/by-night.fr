@@ -122,10 +122,10 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
     public function doReplaceMany(array $entities): void
     {
         $this->eagerLoad($entities);
-        // Indexed whole: FOS's replaceMany() sends partial updates merged into the stored document,
-        // and the serializer leaves null fields out, so a category, a city or a description
-        // removed from the event stayed searchable. Indexing also creates a missing document.
-        $this->decorated->insertMany($entities);
+        // An upsert: the document is merged into the stored one, and created when it is missing.
+        // The indexes serialize null values (fos_elastica.yaml) so that a field which became null
+        // is sent as null and clears what was stored, instead of being left out of the update.
+        $this->decorated->replaceMany($entities);
     }
 
     /**
