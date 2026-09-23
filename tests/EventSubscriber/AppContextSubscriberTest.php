@@ -14,6 +14,7 @@ use App\Factory\CityFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\HttpFoundation\Response;
 
 final class AppContextSubscriberTest extends WebTestCase
 {
@@ -48,5 +49,16 @@ final class AppContextSubscriberTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('a[href^="/toulouse"]');
+    }
+
+    public function testAnUnknownCityInTheUrlIsStillNotFound(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        // The slug of the URL is readable without loading the city: what needs the city itself still 404s
+        $client->request('GET', '/ville-inconnue/agenda');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 }

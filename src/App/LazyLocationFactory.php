@@ -10,11 +10,13 @@
 
 namespace App\App;
 
+use App\Entity\AdminZone;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
 use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -43,6 +45,9 @@ final readonly class LazyLocationFactory
         /** @var City $lazyCity */
         $lazyCity = $reflector->newLazyProxy(fn (): City => $this->cityRepository->findOneBySlug($slug)
             ?? throw new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug)));
+        // The URL already carries the slug: handing it to the proxy lets whoever only needs it (the
+        // cookie refresh of CitySubscriber, a link back to the city) read it without any query.
+        new ReflectionProperty(AdminZone::class, 'slug')->setRawValueWithoutLazyInitialization($lazyCity, $slug);
 
         $location = new Location();
         $location->setCity($lazyCity);
@@ -79,6 +84,7 @@ final readonly class LazyLocationFactory
         /** @var Country $lazyCountry */
         $lazyCountry = $reflector->newLazyProxy(fn (): Country => $this->countryRepository->findOneBy(['slug' => $slug])
             ?? throw new NotFoundHttpException(\sprintf('Country with slug "%s" not found', $slug)));
+        new ReflectionProperty(Country::class, 'slug')->setRawValueWithoutLazyInitialization($lazyCountry, $slug);
 
         $location = new Location();
         $location->setCountry($lazyCountry);
