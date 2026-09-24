@@ -160,15 +160,6 @@ final class EventContentHasherTest extends TestCase
         self::assertNull($this->hasher->identity($nameless));
     }
 
-    public function testIdentityFromStoredColumnsMatchesTheImportOne(): void
-    {
-        self::assertSame(
-            $this->hasher->identity($this->event()),
-            $this->hasher->identityOf('openagenda', 'place-1', 'Concert', 'A nice concert in town'),
-            'The backfill must land on the very hash the import computes.',
-        );
-    }
-
     private function event(): EventDto
     {
         $event = new EventDto();

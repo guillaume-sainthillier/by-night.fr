@@ -109,21 +109,6 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * Resolve the given families from scratch (backfill).
-     *
-     * @param string[] $hashes identity hashes shared by at least two rows
-     */
-    public function resolveFamilies(array $hashes): void
-    {
-        $dirty = [];
-        $this->wireFamilies($hashes, $dirty);
-        $this->entityManager->flush();
-
-        $this->materializeAll(array_keys($dirty));
-        $this->entityManager->flush();
-    }
-
-    /**
      * Elect a canonical per family and point every other member at it.
      *
      * @param string[]         $familyHashes

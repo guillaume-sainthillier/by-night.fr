@@ -234,34 +234,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * Identity hashes shared by at least two rows, in hash order after the given one
-     * (keyset pagination for app:events:resolve-families).
-     *
-     * @return string[]
-     */
-    public function findSharedIdentityHashesAfter(?string $origin, ?string $after, int $limit): array
-    {
-        $qb = $this
-            ->createQueryBuilder('e')
-            ->select('e.identityHash AS hash')
-            ->where('e.identityHash IS NOT NULL')
-            ->groupBy('e.identityHash')
-            ->having('COUNT(e.id) > 1')
-            ->orderBy('e.identityHash', 'ASC')
-            ->setMaxResults($limit);
-
-        if (null !== $origin) {
-            $qb->andWhere('e.externalOrigin = :origin')->setParameter('origin', $origin);
-        }
-
-        if (null !== $after) {
-            $qb->andWhere('e.identityHash > :after')->setParameter('after', $after);
-        }
-
-        return array_column($qb->getQuery()->getScalarResult(), 'hash');
-    }
-
-    /**
      * Every member of the given families, in id order, timesheets not loaded.
      *
      * @param string[] $hashes
@@ -307,30 +279,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('e.id', 'ASC')
             ->getQuery()
             ->getResult();
-    }
-
-    /**
-     * Imported rows still lacking an identity hash, in id order after the given id
-     * (keyset pagination for app:events:resolve-families).
-     *
-     * @return Event[]
-     */
-    public function findWithoutIdentityHash(?string $origin, int $afterId, int $limit): array
-    {
-        $qb = $this
-            ->createQueryBuilder('e')
-            ->where('e.identityHash IS NULL')
-            ->andWhere('e.externalOrigin IS NOT NULL')
-            ->andWhere('e.id > :afterId')
-            ->setParameter('afterId', $afterId)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults($limit);
-
-        if (null !== $origin) {
-            $qb->andWhere('e.externalOrigin = :origin')->setParameter('origin', $origin);
-        }
-
-        return $qb->getQuery()->getResult();
     }
 
     /**
