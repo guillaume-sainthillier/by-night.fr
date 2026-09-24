@@ -58,6 +58,50 @@
             }
         }
 
+        .timesheets {
+            .timesheet-entry-past {
+                opacity: 0.6;
+            }
+
+            // Past and later sessions of a long list, folded without JavaScript
+            .timesheets-fold {
+                // A .btn: the disclosure marker would sit beside it, the chevron replaces it
+                summary {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.25rem;
+                    margin: 0.5rem 0;
+                    list-style: none;
+
+                    &::-webkit-details-marker {
+                        display: none;
+                    }
+
+                    svg {
+                        transition: transform 0.2s ease;
+                    }
+                }
+
+                .timesheets-fold-hide {
+                    display: none;
+                }
+
+                &[open] > summary {
+                    svg {
+                        transform: rotate(90deg);
+                    }
+
+                    .timesheets-fold-show {
+                        display: none;
+                    }
+
+                    .timesheets-fold-hide {
+                        display: inline;
+                    }
+                }
+            }
+        }
+
         .detail-item {
             margin-bottom: 1rem;
 
@@ -93,7 +137,9 @@
         margin-bottom: 0;
     }
 
-    .icon {
+    // The row's leading icon, lowered onto the first text line: an icon nested further
+    // (a button's chevron) keeps its own alignment
+    > .icon {
         flex-shrink: 0;
         text-align: center;
         position: relative;

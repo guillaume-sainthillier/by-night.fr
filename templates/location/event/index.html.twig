@@ -125,30 +125,7 @@
                                 <twig:Icon name="lucide:calendar-days" />
                                 <div>
                                     <div class="mb-1">Détail des dates :</div>
-                                    <div class="timesheets-list">
-                                        {% for timesheet in event.timesheets %}
-                                            <div class="timesheet-entry">
-                                                {% if timesheet.startAt|date('Y-m-d') == timesheet.endAt|date('Y-m-d') %}
-                                                    Le
-                                                    <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
-                                                        {{ timesheet.startAt|format_date('full') }}
-                                                    </time>
-                                                {% else %}
-                                                    Du
-                                                    <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
-                                                        {{ timesheet.startAt|format_date('full') }}
-                                                    </time>
-                                                    au
-                                                    <time datetime="{{ timesheet.endAt|date('Y-m-d\\TH:i:sO') }}">
-                                                        {{ timesheet.endAt|format_date('full') }}
-                                                    </time>
-                                                {% endif %}
-                                                {% if timesheet.hours %}
-                                                    <span class="text-muted">({{ timesheet.hours }})</span>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
+                                    <twig:Event:Timesheets event="{{ event }}" />
                                 </div>
                             </div>
                         {% endif %}
