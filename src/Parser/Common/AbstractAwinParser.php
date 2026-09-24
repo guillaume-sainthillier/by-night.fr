@@ -39,15 +39,10 @@ abstract class AbstractAwinParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
-        $path = $this->downloadFeed();
-
-        foreach ($this->parseCsvFile($path) as $data) {
-            $event = $this->arrayToDto($data);
-            if (null !== $event) {
-                $this->publish($event);
-            }
+        foreach ($this->parseCsvFile($this->downloadFeed()) as $data) {
+            yield $this->arrayToDto($data);
         }
     }
 

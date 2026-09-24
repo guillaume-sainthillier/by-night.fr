@@ -10,7 +10,6 @@
 
 namespace App\Contracts;
 
-use App\Dto\EventDto;
 use DateTimeImmutable;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
@@ -37,8 +36,6 @@ interface ParserInterface
     public function getParsedEvents(): int;
 
     public function getSkippedEvents(): int;
-
-    public function publish(EventDto $eventDto): void;
 
     public function getCommandName(): string;
 }

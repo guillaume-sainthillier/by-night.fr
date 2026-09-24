@@ -37,11 +37,9 @@ final class ToulouseParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
-        $fichier = $this->downloadCSV();
-
-        $this->parseCSV($fichier);
+        return $this->parseCSV($this->downloadCSV());
     }
 
     /**
@@ -59,7 +57,10 @@ final class ToulouseParser extends AbstractParser
         return $path_file;
     }
 
-    private function parseCSV(string $fichier): void
+    /**
+     * @return iterable<EventDto>
+     */
+    private function parseCSV(string $fichier): iterable
     {
         $fic = fopen($fichier, 'r');
         fgetcsv($fic, 0, ';', '"', '"'); // Ouverture de la première ligne
@@ -133,7 +134,7 @@ final class ToulouseParser extends AbstractParser
 
             $event->place = $place;
 
-            $this->publish($event);
+            yield $event;
         }
 
         fclose($fic);

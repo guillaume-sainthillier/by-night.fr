@@ -30,7 +30,7 @@ final class TestParser extends AbstractParser
         return 'test';
     }
 
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
         $placeId = 'SP-9999999-' . random_int(0, 100000);
         $placeName = 'CECI ' . random_int(0, 50000) . 'EST UNIQUE - ' . random_int(0, 100000);
@@ -57,7 +57,7 @@ final class TestParser extends AbstractParser
 
             $eventDto->place = $place;
 
-            $this->publish($eventDto);
+            yield $eventDto;
         }
     }
 

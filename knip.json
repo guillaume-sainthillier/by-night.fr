@@ -7,9 +7,6 @@
         "assets/**/controllers/**/*.{js,jsx}",
         "assets/**/icons/**/*.{js,jsx}"
     ],
-    "project": [
-        "assets/**/*.{js,jsx,ts,tsx}"
-    ],
     "ignore": [
         "assets/js/types.js"
     ],
@@ -18,9 +15,6 @@
             "assets/*"
         ]
     },
-    "ignoreBinaries": [
-        "vendor/bin/.+"
-    ],
     "rules": {
         "unlisted": "off",
         "unresolved": "off"

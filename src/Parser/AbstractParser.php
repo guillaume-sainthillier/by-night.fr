@@ -24,6 +24,11 @@ use Throwable;
 
 abstract class AbstractParser implements ParserInterface
 {
+    /**
+     * Events checked against the dedup gate with one parser_data query.
+     */
+    private const int PUBLISH_CHUNK_SIZE = 500;
+
     private int $parsedEvents = 0;
 
     private int $skippedEvents = 0;
@@ -69,8 +74,27 @@ abstract class AbstractParser implements ParserInterface
 
     /**
      * {@inheritDoc}
+     *
+     * Final: every event goes through the chunked dedup gate of publishMany(); a parser only
+     * says what its source holds, in fetchEvents().
      */
-    public function publish(EventDto $eventDto): void
+    final public function parse(?DateTimeImmutable $since): void
+    {
+        $this->publishMany($this->fetchEvents($since));
+    }
+
+    /**
+     * The source's events, best yielded as they are read: the stream is consumed chunk by
+     * chunk, so a whole feed never sits in memory. A null entry (a row the parser could not
+     * map) is skipped, which lets a parser yield its arrayToDto() results as they are.
+     *
+     * @param DateTimeImmutable|null $since see {@see ParserInterface::parse()}
+     *
+     * @return iterable<EventDto|null>
+     */
+    abstract protected function fetchEvents(?DateTimeImmutable $since): iterable;
+
+    private function publish(EventDto $eventDto): void
     {
         $eventDto->parserName = static::getParserName();
         $eventDto->parserVersion = static::getParserVersion();
@@ -95,6 +119,52 @@ abstract class AbstractParser implements ParserInterface
 
         $this->messageBus->dispatch($eventDto);
         ++$this->parsedEvents;
+    }
+
+    /**
+     * Publishes the stream chunk by chunk, each chunk checked against the previous run with
+     * a single query rather than one per event.
+     *
+     * @param iterable<EventDto|null> $eventDtos
+     */
+    private function publishMany(iterable $eventDtos): void
+    {
+        $chunk = [];
+        foreach ($eventDtos as $eventDto) {
+            if (null === $eventDto) {
+                continue;
+            }
+
+            $chunk[] = $eventDto;
+            if (\count($chunk) >= self::PUBLISH_CHUNK_SIZE) {
+                $this->publishChunk($chunk);
+                $chunk = [];
+            }
+        }
+
+        if ([] !== $chunk) {
+            $this->publishChunk($chunk);
+        }
+    }
+
+    /**
+     * @param list<EventDto> $eventDtos
+     */
+    private function publishChunk(array $eventDtos): void
+    {
+        // publish() stamps the origin: it is the command name, known before
+        $this->publicationGuard->prefetch(
+            $this->getCommandName(),
+            array_map(static fn (EventDto $eventDto): ?string => $eventDto->externalId, $eventDtos),
+        );
+
+        try {
+            foreach ($eventDtos as $eventDto) {
+                $this->publish($eventDto);
+            }
+        } finally {
+            $this->publicationGuard->reset();
+        }
     }
 
     /**

@@ -12,6 +12,7 @@ namespace App\Import;
 
 use App\Dto\EventDto;
 use App\Repository\ParserDataRepository;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Publish-time deduplication gate.
@@ -22,13 +23,52 @@ use App\Repository\ParserDataRepository;
  * in front of the queue: it compares the event's content fingerprint (and the
  * firewall/parser versions) against the previous run's {@see \App\Entity\ParserData}
  * and lets only NEW or CHANGED events through.
+ *
+ * Parsers publishing through {@see \App\Parser\AbstractParser::publishMany()} have the
+ * signatures of each chunk {@see prefetch()}ed in one query; any other event costs a
+ * lookup of its own.
  */
-final readonly class EventPublicationGuard
+final class EventPublicationGuard implements ResetInterface
 {
+    /**
+     * Signatures of the chunk being published, by origin then external id; null marks an
+     * event looked up and absent (a new one).
+     *
+     * @var array<string, array<string, array{contentHash: ?string, firewallVersion: ?string, parserVersion: ?string}|null>>
+     */
+    private array $prefetched = [];
+
     public function __construct(
-        private ParserDataRepository $parserDataRepository,
-        private EventChangeDetector $changeDetector,
+        private readonly ParserDataRepository $parserDataRepository,
+        private readonly EventChangeDetector $changeDetector,
     ) {
+    }
+
+    /**
+     * Loads the signatures of the events about to be published in one query, in place of
+     * the previous chunk's: memory stays bounded whatever the size of the feed.
+     *
+     * @param iterable<string|null> $externalIds
+     */
+    public function prefetch(string $externalOrigin, iterable $externalIds): void
+    {
+        $this->prefetched = [];
+
+        $known = [];
+        foreach ($externalIds as $externalId) {
+            if (null !== $externalId && '' !== trim($externalId)) {
+                $known[$externalId] = null;
+            }
+        }
+
+        $ids = array_map(strval(...), array_keys($known));
+        foreach (array_chunk($ids, 1_000) as $chunk) {
+            foreach ($this->parserDataRepository->findSignatures($externalOrigin, $chunk) as $externalId => $signature) {
+                $known[$externalId] = $signature;
+            }
+        }
+
+        $this->prefetched[$externalOrigin] = $known;
     }
 
     public function shouldPublish(EventDto $dto): bool
@@ -41,13 +81,10 @@ final readonly class EventPublicationGuard
             return true;
         }
 
-        $parserData = $this->parserDataRepository->findOneBy([
-            'externalId' => $externalId,
-            'externalOrigin' => $externalOrigin,
-        ]);
+        $signature = $this->getSignature($externalOrigin, $externalId);
 
         // Never seen before → new event.
-        if (null === $parserData) {
+        if (null === $signature) {
             return true;
         }
 
@@ -56,9 +93,26 @@ final readonly class EventPublicationGuard
         // never disagree across the queue.
         return $this->changeDetector->hasChanged(
             $dto,
-            $parserData->getContentHash(),
-            $parserData->getFirewallVersion(),
-            $parserData->getParserVersion(),
+            $signature['contentHash'],
+            $signature['firewallVersion'],
+            $signature['parserVersion'],
         );
+    }
+
+    public function reset(): void
+    {
+        $this->prefetched = [];
+    }
+
+    /**
+     * @return array{contentHash: ?string, firewallVersion: ?string, parserVersion: ?string}|null
+     */
+    private function getSignature(string $externalOrigin, string $externalId): ?array
+    {
+        if (\array_key_exists($externalId, $this->prefetched[$externalOrigin] ?? [])) {
+            return $this->prefetched[$externalOrigin][$externalId];
+        }
+
+        return $this->parserDataRepository->findSignatures($externalOrigin, [$externalId])[$externalId] ?? null;
     }
 }

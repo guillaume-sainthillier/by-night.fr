@@ -20,6 +20,7 @@ use App\Entity\Place;
 use App\Utils\CityManipulator;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Override;
@@ -81,7 +82,6 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
      */
     public function findAllByDtos(array $dtos, bool $eager): array
     {
-        $wheres = [];
         $cityNameWheres = [];
         $postalCodesWheres = [];
 
@@ -104,10 +104,30 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             }
         }
 
-        if ([] === $cityNameWheres && [] === $postalCodesWheres) {
+        // One query per criterion: OR-ed together, the name branch and the joined postal code
+        // branch kept MySQL off both indexes and every lookup read all the cities of the country.
+        $found = [];
+        foreach ([$this->findByNames($cityNameWheres), $this->findByPostalCodes($postalCodesWheres)] as $results) {
+            foreach ($results as $city) {
+                $found[$city->getId()] = $city;
+            }
+        }
+
+        return array_values($found);
+    }
+
+    /**
+     * @param array<string, array<string|int, true>> $cityNameWheres city names by country id
+     *
+     * @return City[]
+     */
+    private function findByNames(array $cityNameWheres): array
+    {
+        if ([] === $cityNameWheres) {
             return [];
         }
 
+        $wheres = [];
         $queryBuilder = parent::createQueryBuilder('c')
             ->addSelect('country')
             ->join('c.country', 'country');
@@ -124,27 +144,51 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
 
             $queryBuilder
                 ->setParameter($countryPlaceholder, $countryId)
-                ->setParameter($cityNamesPlaceholder, array_keys($cityNames));
+                ->setParameter($cityNamesPlaceholder, array_map(strval(...), array_keys($cityNames)), ArrayParameterType::STRING);
             ++$i;
         }
 
-        if ([] !== $postalCodesWheres) {
-            $queryBuilder->leftJoin('c.zipCities', 'z');
-            $i = 1;
-            foreach ($postalCodesWheres as $countryId => $postalCodes) {
-                $countryPlaceholder = \sprintf('postal_code_country_%d', $i);
-                $postalCodesPlaceholder = \sprintf('postal_code_names_%d', $i);
-                $wheres[] = \sprintf(
-                    '(c.country = :%s AND z.postalCode IN(:%s))',
-                    $countryPlaceholder,
-                    $postalCodesPlaceholder
-                );
+        return $queryBuilder
+            ->where(implode(' OR ', $wheres))
+            ->getQuery()
+            ->getResult();
+    }
 
-                $queryBuilder
-                    ->setParameter($countryPlaceholder, $countryId)
-                    ->setParameter($postalCodesPlaceholder, array_keys($postalCodes));
-                ++$i;
-            }
+    /**
+     * @param array<string, array<string|int, true>> $postalCodesWheres postal codes by country id
+     *
+     * @return City[]
+     */
+    private function findByPostalCodes(array $postalCodesWheres): array
+    {
+        if ([] === $postalCodesWheres) {
+            return [];
+        }
+
+        $wheres = [];
+        $queryBuilder = parent::createQueryBuilder('c')
+            ->addSelect('country')
+            ->join('c.country', 'country')
+            ->join('c.zipCities', 'z');
+
+        $i = 1;
+        foreach ($postalCodesWheres as $countryId => $postalCodes) {
+            $countryPlaceholder = \sprintf('postal_code_country_%d', $i);
+            $postalCodesPlaceholder = \sprintf('postal_code_names_%d', $i);
+            // Filtered on the zip code's own country too, so the lookup starts from the
+            // zip_city (country, postal code) index rather than from the cities
+            $wheres[] = \sprintf(
+                '(z.country = :%1$s AND z.postalCode IN(:%2$s) AND c.country = :%1$s)',
+                $countryPlaceholder,
+                $postalCodesPlaceholder
+            );
+
+            // Array keys turn "31000" into an int: bound as integers, MySQL would compare
+            // postal_code numerically and could not use the zip_city index on it.
+            $queryBuilder
+                ->setParameter($countryPlaceholder, $countryId)
+                ->setParameter($postalCodesPlaceholder, array_map(strval(...), array_keys($postalCodes)), ArrayParameterType::STRING);
+            ++$i;
         }
 
         return $queryBuilder
