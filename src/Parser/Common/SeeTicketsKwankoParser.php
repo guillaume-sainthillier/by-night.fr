@@ -104,6 +104,8 @@ final class SeeTicketsKwankoParser extends AbstractParser
                 throw new RuntimeException('Unable to read CSV headers');
             }
 
+            $headers = self::normalizeHeaders($headers);
+
             while (false !== ($row = fgetcsv($handle, 0, ',', '"', ''))) {
                 if (\count($row) !== \count($headers)) {
                     continue;
@@ -123,6 +125,20 @@ final class SeeTicketsKwankoParser extends AbstractParser
         } finally {
             fclose($handle);
         }
+    }
+
+    /**
+     * Kwanko groups the product columns ("tickets|venue_name", "tickets|eventDate",
+     * "price|actualp") since mid-2026, while "pid", "name", "desc"… stay bare: drop the
+     * group so both layouts read the same. No two columns share a name once stripped.
+     *
+     * @param list<string|null> $headers
+     *
+     * @return list<string>
+     */
+    private static function normalizeHeaders(array $headers): array
+    {
+        return array_map(static fn (?string $header): string => preg_replace('/^.*\|/', '', (string) $header), $headers);
     }
 
     /**
