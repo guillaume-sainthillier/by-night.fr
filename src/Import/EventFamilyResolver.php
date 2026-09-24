@@ -35,8 +35,8 @@ use Psr\Log\LoggerInterface;
  *  - its start and end dates span that union, since the listings filter and sort
  *    on them.
  *
- * Links that predate the identity hash (app:events:merge-duplicates) are left as
- * they are: a row without a hash is neither moved nor asked to lend its dates.
+ * Links that predate the identity hash are left as they are: a row without a hash
+ * is neither moved nor asked to lend its dates.
  */
 final readonly class EventFamilyResolver
 {
@@ -109,21 +109,6 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * Resolve the given families from scratch (backfill).
-     *
-     * @param string[] $hashes identity hashes shared by at least two rows
-     */
-    public function resolveFamilies(array $hashes): void
-    {
-        $dirty = [];
-        $this->wireFamilies($hashes, $dirty);
-        $this->entityManager->flush();
-
-        $this->materializeAll(array_keys($dirty));
-        $this->entityManager->flush();
-    }
-
-    /**
      * Elect a canonical per family and point every other member at it.
      *
      * @param string[]         $familyHashes
@@ -163,8 +148,8 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * The current canonical keeps its role, so public URLs stay put and a choice made
-     * by app:events:merge-duplicates is respected; otherwise the oldest row wins.
+     * The current canonical keeps its role, so public URLs stay put and a link made
+     * before the identity hash is respected; otherwise the oldest row wins.
      *
      * @param non-empty-list<Event> $members
      */

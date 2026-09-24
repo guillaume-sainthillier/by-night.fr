@@ -14,11 +14,12 @@ use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use FOS\ElasticaBundle\Serializer\Callback;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * The event document carries one entry per session (config/packages/fos_elastica.yaml),
- * produced by the same serializer group the index is built with.
+ * The event document as config/packages/fos_elastica.yaml has it built: one entry per session,
+ * and every field serialized even when it is null.
  */
 final class EventDocumentTest extends AppKernelTestCase
 {
@@ -57,6 +58,29 @@ final class EventDocumentTest extends AppKernelTestCase
 
         self::assertIsArray($document);
         self::assertSame([['startAt' => '2026-09-01', 'endAt' => '2026-12-31']], $document['sessions']);
+    }
+
+    /**
+     * An indexed event is sent as an update merged into the stored document, so a field that
+     * became null has to be part of the document as null: left out, the merge would keep the
+     * value the field had, and a deleted category or a removed place would stay searchable.
+     */
+    public function testAFieldThatBecameNullIsStillPartOfTheDocument(): void
+    {
+        $event = new Event();
+        $event->setName('Concert sans lieu');
+        $event->setStartDate(new DateTimeImmutable('2026-11-05'));
+        $event->setEndDate(new DateTimeImmutable('2026-11-05'));
+
+        $callback = self::getContainer()->get('fos_elastica.index.event.serializer.callback');
+        self::assertInstanceOf(Callback::class, $callback);
+        $document = json_decode($callback->serialize($event), true);
+
+        self::assertIsArray($document);
+        foreach (['description', 'category', 'place', 'placeName', 'placeCity', 'type'] as $field) {
+            self::assertArrayHasKey($field, $document, \sprintf('"%s" must be sent so the update clears it', $field));
+            self::assertNull($document[$field]);
+        }
     }
 
     private function normalizer(): NormalizerInterface

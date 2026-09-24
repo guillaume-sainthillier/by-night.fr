@@ -30,8 +30,11 @@ final readonly class Cleaner
     {
         $dto->endDate ??= $dto->startDate;
 
-        $dto->name = $this->clean($dto->name ?? '') ?: null;
+        // Every value must fit its column: MySQL refuses a longer one and the whole batch fails with it
+        $dto->name = $this->fit($this->clean($dto->name ?? ''), 255);
         $dto->description = $this->clean($dto->description ?? '') ?: null;
+        $dto->source = $this->fitUrl($dto->source, 256);
+        $dto->imageUrl = $this->fitUrl($dto->imageUrl, 255);
         $dto->phoneContacts = $dto->phoneContacts ?: null;
         $dto->websiteContacts = $this->cleanWebsites($dto->websiteContacts) ?: null;
         $dto->emailContacts = $dto->emailContacts ?: null;
@@ -82,7 +85,7 @@ final readonly class Cleaner
      *
      * @return string[]
      */
-    public function cleanWebsites(?array $websites): array
+    private function cleanWebsites(?array $websites): array
     {
         $cleaned = [];
         foreach ($websites ?? [] as $website) {
@@ -108,18 +111,34 @@ final readonly class Cleaner
         return trim($string ?? '');
     }
 
+    private function fit(string $string, int $length): ?string
+    {
+        return rtrim(mb_substr($string, 0, $length)) ?: null;
+    }
+
+    /**
+     * A link cut to its column would lead nowhere: one too long for it is dropped.
+     */
+    private function fitUrl(?string $url, int $length): ?string
+    {
+        $url = trim($url ?? '');
+
+        return '' === $url || mb_strlen($url) > $length ? null : $url;
+    }
+
     public function cleanPlace(PlaceDto $dto): void
     {
-        $dto->name = $this->cleanNormalString($dto->name ?? '') ?: null;
-        $dto->street = $this->cleanNormalString($dto->street ?? '') ?: null;
+        $dto->name = $this->fit($this->cleanNormalString($dto->name ?? ''), 255);
+        $dto->street = $this->fit($this->cleanNormalString($dto->street ?? ''), 127);
         $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
         $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
     }
 
     public function cleanCity(CityDto $dto): void
     {
-        $dto->postalCode = $this->util->replaceNonNumericChars($dto->postalCode) ?: null;
-        $dto->name = $this->cleanPostalString($dto->name ?? '') ?: null;
+        // Digits only, as PostalCodeChecker reads them: "F-31000" kept its dash and missed the zip lookup
+        $dto->postalCode = preg_replace('#\D#', '', (string) $dto->postalCode) ?: null;
+        $dto->name = $this->fit($this->cleanPostalString($dto->name ?? ''), 127);
     }
 
     private function cleanNormalString(?string $string): string

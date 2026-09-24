@@ -63,12 +63,9 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
 
     public function loadUserByIdentifier(string $identifier): ?UserInterface
     {
-        return $this
-            ->createQueryBuilder('u')
-            ->where('u.username = :usernameOrEmail OR u.email = :usernameOrEmail')
-            ->setParameter('usernameOrEmail', $identifier)
-            ->getQuery()
-            ->getOneOrNullResult();
+        // Each column is unique on its own, not across both: a member whose username is another
+        // member's e-mail matched two rows here, and that member could no longer log in
+        return $this->findOneBy(['email' => $identifier]) ?? $this->findOneBy(['username' => $identifier]);
     }
 
     /**

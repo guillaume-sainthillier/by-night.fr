@@ -161,15 +161,13 @@ final class EventFamilyResolverTest extends AppKernelTestCase
 
     public function testTheCurrentCanonicalKeepsItsRoleOverAnOlderDuplicate(): void
     {
-        // Linked the other way round than the id order, as the merge command may have done
+        // Linked the other way round than the id order, as links made before the identity hash may be
         $olderId = $this->sibling('oa-1', '2026-10-03');
         $newerId = $this->sibling('oa-2', '2026-10-10');
         $this->reload($olderId)->setDuplicateOf($this->reload($newerId));
         $this->entityManager->flush();
-        $this->entityManager->clear();
 
-        $this->resolver->resolveFamilies([self::HASH]);
-        $this->entityManager->clear();
+        $this->resolve([$olderId]);
 
         self::assertNull($this->reload($newerId)->getDuplicateOf(), 'Public URLs stay put: the current canonical is not demoted.');
         self::assertSame($newerId, $this->reload($olderId)->getDuplicateOf()?->getId());
@@ -180,7 +178,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
     {
         $canonicalId = $this->sibling('oa-1', '2026-10-03');
 
-        // A stub left by the exact merge strategy: no identity of its own, a fossil date
+        // A redirect stub from before the identity hash: no identity of its own, a fossil date
         $stubId = EventFactory::createOne([
             'externalId' => null,
             'externalOrigin' => null,

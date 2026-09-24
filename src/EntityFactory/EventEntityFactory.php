@@ -83,6 +83,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         $entity->setFromData($dto->fromData);
+        // Stamped on the exploration when the event gets deleted (EventParserDataListener)
+        $entity->setParserVersion($dto->parserVersion);
         $entity->setSource($dto->source);
 
         // Convert category TagDto to Tag entity
@@ -99,6 +101,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $this->syncThemes($entity, $dto);
 
         $entity->setName($dto->name);
+        $entity->setType($dto->type);
         $entity->setDescription($dto->description);
         $entity->setHours($dto->hours);
         $entity->setPrices($dto->prices);

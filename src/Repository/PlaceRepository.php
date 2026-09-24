@@ -205,33 +205,6 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * Every place recorded under the given external identity, oldest first, with its
-     * metadata and name slugs loaded.
-     *
-     * @return Place[]
-     */
-    public function findAllByExternalIdentity(string $externalId, string $externalOrigin): array
-    {
-        /** @var Place[] $places */
-        $places = $this
-            ->createQueryBuilder('p')
-            ->distinct()
-            ->join('p.metadatas', 'm')
-            ->where('m.externalId = :externalId')
-            ->andWhere('m.externalOrigin = :externalOrigin')
-            ->setParameter('externalId', $externalId)
-            ->setParameter('externalOrigin', $externalOrigin)
-            ->orderBy('p.createdAt', 'ASC')
-            ->addOrderBy('p.id', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        $this->hydrateCollections($places);
-
-        return $places;
-    }
-
-    /**
      * Ids of the places no event points to, created before $createdBefore and, when
      * $origin is given, carrying at least one identity from that external origin.
      *

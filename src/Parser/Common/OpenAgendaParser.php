@@ -32,6 +32,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class OpenAgendaParser extends AbstractParser
 {
+    /**
+     * Attempts at the same page of the agenda list before the run gives up.
+     */
+    private const int MAX_ATTEMPTS = 3;
+
     private const int EVENT_BATCH_SIZE = 300;
 
     public function __construct(
@@ -84,9 +89,13 @@ final class OpenAgendaParser extends AbstractParser
 
     private function getAgendaEvents(?DateTimeImmutable $since, int $agendaId): iterable
     {
+        // A full import keeps the events not over yet. timings[gte] only matches a timing that
+        // begins in the range, which drops an exhibition begun last week and running for a
+        // month; "current" (a timing under way) and "upcoming" together are exactly the
+        // events that have not ended.
         $filter = null !== $since
             ? ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]]
-            : ['timings' => ['gte' => new DateTimeImmutable('now', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
+            : ['relative' => ['current', 'upcoming']];
 
         $after = [];
         while (true) {
@@ -118,6 +127,7 @@ final class OpenAgendaParser extends AbstractParser
     private function getAgendasUidAndSlugs(): iterable
     {
         $after = [];
+        $failedAttempts = 0;
         while (true) {
             try {
                 $response = $this->client->request('GET', 'https://api.openagenda.com/v2/agendas', [
@@ -130,15 +140,14 @@ final class OpenAgendaParser extends AbstractParser
                 ]);
 
                 $data = $response->toArray();
+                $failedAttempts = 0;
 
                 foreach ($data['agendas'] as $agenda) {
-                    $summary = $agenda['summary'];
-                    if (
-                        isset($summary['publishedEvents']['current'])
-                        && isset($summary['publishedEvents']['upcoming'])
-                        && 0 !== $summary['publishedEvents']['current']
-                        && 0 !== $summary['publishedEvents']['upcoming']
-                    ) {
+                    // One event not over yet, running (current) or to come (upcoming), is
+                    // enough: a season announced weeks ahead has nothing running yet, and
+                    // an agenda down to its last exhibition has nothing to come
+                    $publishedEvents = $agenda['summary']['publishedEvents'] ?? [];
+                    if (($publishedEvents['current'] ?? 0) + ($publishedEvents['upcoming'] ?? 0) > 0) {
                         yield [$agenda['uid'], $agenda['slug']];
                     }
                 }
@@ -149,6 +158,12 @@ final class OpenAgendaParser extends AbstractParser
 
                 $after = $data['after'];
             } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
+                // A revoked key, a quota or an outage never goes away by asking again: past a few
+                // attempts the run fails, and the next one starts over from the same watermark
+                if (++$failedAttempts >= self::MAX_ATTEMPTS) {
+                    throw $exception;
+                }
+
                 $this->logException($exception);
             }
         }
@@ -215,7 +230,8 @@ final class OpenAgendaParser extends AbstractParser
         $hours = 1 === \count($allHours) ? array_key_first($allHours) : null;
 
         $mdParser = new Parsedown();
-        $description = $mdParser->text($data['longDescription'] ?? $data['description']);
+        // An empty long description ("") must fall back too: the check above lets it through
+        $description = $mdParser->text(($data['longDescription'] ?? null) ?: $data['description']);
 
         $type = $data['keywords'] ?? [];
 

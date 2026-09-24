@@ -200,6 +200,15 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame(['0000eb03-9346-3cc8-ab23-dbb259b8e493'], $this->externalIds());
     }
 
+    public function testDatatourismeUuidStandsInForAProducerIdentifierTooLongToStore(): void
+    {
+        $this->responses = [self::page([self::apiEvent(['identifier' => str_repeat('Salle-des-fetes-Concert-du-samedi-', 5)])], null)];
+
+        $this->parser->parse(null);
+
+        self::assertSame(['0000eb03-9346-3cc8-ab23-dbb259b8e493'], $this->externalIds());
+    }
+
     public function testEveryPeriodOfTheScheduleBecomesATimesheet(): void
     {
         $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
@@ -218,6 +227,22 @@ final class DataTourismeParserTest extends AppKernelTestCase
             array_map(static fn ($timesheet): ?string => $timesheet->hours, $event->timesheets)
         );
         self::assertNull($event->hours, 'Several distinct schedules: no single summary');
+    }
+
+    public function testTheEventSpansItsPeriodsWhateverTheirOrder(): void
+    {
+        // As served for event 3491797: the latest period first
+        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+            ['startDate' => '2026-09-11', 'endDate' => '2026-09-11'],
+            ['startDate' => '2026-08-14', 'endDate' => '2026-08-14'],
+            ['startDate' => '2026-08-20', 'endDate' => '2026-08-21'],
+        ]])], null)];
+
+        $this->parser->parse(null);
+
+        $event = $this->dispatched[0];
+        self::assertSame('2026-08-14', $event->startDate?->format('Y-m-d'));
+        self::assertSame('2026-09-11', $event->endDate?->format('Y-m-d'));
     }
 
     public function testDescriptionFallsBackToShortDescriptionThenComment(): void

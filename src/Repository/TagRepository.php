@@ -10,7 +10,6 @@
 
 namespace App\Repository;
 
-use App\Contracts\BatchResetInterface;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\TagDto;
 use App\Entity\Tag;
@@ -27,48 +26,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Tag[]    findAll()
  * @method Tag[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TagRepository extends ServiceEntityRepository implements BatchResetInterface, DtoFindableRepositoryInterface
+class TagRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
-    /** @var array<string, Tag> In-memory cache of created tags by lowercase name */
-    private array $createdTags = [];
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tag::class);
-    }
-
-    public function batchReset(): void
-    {
-        $this->createdTags = [];
-    }
-
-    /**
-     * Find a tag by name or create a new one if it doesn't exist.
-     * Uses in-memory cache to return the same Tag instance within a request.
-     */
-    public function findOrCreateByName(string $name, bool $fromBatch): Tag
-    {
-        $name = trim($name);
-        $cacheKey = mb_strtolower($name);
-
-        // Check in-memory cache first
-        if (isset($this->createdTags[$cacheKey])) {
-            return $this->createdTags[$cacheKey];
-        }
-
-        $tag = $this->findOneByName($name);
-
-        if (null === $tag) {
-            $tag = new Tag();
-            $tag->batchUpdate = $fromBatch;
-            $tag->setName($name);
-            $this->getEntityManager()->persist($tag);
-        }
-
-        // Cache for future calls within the same request
-        $this->createdTags[$cacheKey] = $tag;
-
-        return $tag;
     }
 
     /**
@@ -85,43 +47,6 @@ class TagRepository extends ServiceEntityRepository implements BatchResetInterfa
     public function findOneBySlug(string $slug): ?Tag
     {
         return $this->findOneBy(['slug' => $slug]);
-    }
-
-    /**
-     * Names the database considers equal on more than one tag, one spelling per
-     * group. Its collation decides what "equal" means (case, accents, trailing
-     * spaces), exactly like the unique key on tag.name does.
-     *
-     * @return list<string>
-     */
-    public function findDuplicateNames(): array
-    {
-        $names = $this
-            ->createQueryBuilder('t')
-            ->select('t.name AS name')
-            ->groupBy('t.name')
-            ->having('COUNT(t.id) > 1')
-            ->orderBy('t.name', 'ASC')
-            ->getQuery()
-            ->getSingleColumnResult();
-
-        return array_map(strval(...), $names);
-    }
-
-    /**
-     * Every tag whose name the database considers equal to the given one, oldest first.
-     *
-     * @return Tag[]
-     */
-    public function findAllSharingName(string $name): array
-    {
-        return $this
-            ->createQueryBuilder('t')
-            ->where('t.name = :name')
-            ->setParameter('name', $name)
-            ->orderBy('t.id', 'ASC')
-            ->getQuery()
-            ->getResult();
     }
 
     /**

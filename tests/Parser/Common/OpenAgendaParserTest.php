@@ -14,11 +14,18 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Factory\AdminZone1Factory;
 use App\Factory\CountryFactory;
+use App\Handler\EventHandler;
 use App\Parser\Common\OpenAgendaParser;
+use App\Repository\CountryRepository;
 use App\Tests\AppKernelTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Psr\Log\NullLogger;
 use ReflectionMethod;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 /**
  * The feed's location.countryCode is not always the clean ISO alpha-2 it should be.
@@ -107,6 +114,14 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertNull($dto->hours, 'Distinct slots: no single summary for the event');
     }
 
+    public function testAnEmptyLongDescriptionFallsBackOnTheDescription(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(event: ['longDescription' => '', 'description' => 'Concert de jazz en plein air']));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertStringContainsString('Concert de jazz en plein air', (string) $dto->description);
+    }
+
     public function testOneSlotRepeatedOverTheDatesSummarisesTheEvent(): void
     {
         $dto = $this->arrayToDto(self::feedEvent(event: ['timings' => [
@@ -168,5 +183,114 @@ final class OpenAgendaParserTest extends AppKernelTestCase
                 'email' => null,
             ], $location),
         ], $event);
+    }
+
+    public function testTheAgendaListGivesUpAfterAFewFailedAttempts(): void
+    {
+        $requests = 0;
+        $client = new MockHttpClient(static function () use (&$requests): MockResponse {
+            ++$requests;
+
+            return new MockResponse('{"message":"invalid key"}', ['http_code' => 401]);
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'revoked-key',
+        );
+
+        try {
+            $parser->parse(null);
+            self::fail('A key the API keeps refusing must fail the run');
+        } catch (ClientExceptionInterface) {
+        }
+
+        self::assertSame(3, $requests);
+    }
+
+    public function testAFullImportFetchesTheEventsNotOverYet(): void
+    {
+        $eventQueries = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$eventQueries): MockResponse {
+            if (str_contains($url, '/events')) {
+                parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
+                $eventQueries[] = $query;
+
+                return new MockResponse('{"events":[],"after":null}');
+            }
+
+            return new MockResponse(json_encode([
+                'agendas' => [self::feedAgenda(42, current: 1, upcoming: 1)],
+                'after' => null,
+            ], \JSON_THROW_ON_ERROR));
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $parser->parse(null);
+
+        // An exhibition begun last week is still worth listing: the filter must not be on the start
+        self::assertCount(1, $eventQueries);
+        self::assertSame(['current', 'upcoming'], $eventQueries[0]['relative'] ?? null);
+        self::assertArrayNotHasKey('timings', $eventQueries[0]);
+    }
+
+    public function testEveryAgendaWithAnEventNotOverYetIsRead(): void
+    {
+        $readAgendas = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$readAgendas): MockResponse {
+            if (preg_match('#/agendas/(\d+)/events#', $url, $matches)) {
+                $readAgendas[] = (int) $matches[1];
+
+                return new MockResponse('{"events":[],"after":null}');
+            }
+
+            return new MockResponse(json_encode([
+                'agendas' => [
+                    self::feedAgenda(1, current: 2, upcoming: 5),
+                    self::feedAgenda(2, current: 0, upcoming: 3),
+                    self::feedAgenda(3, current: 1, upcoming: 0),
+                    self::feedAgenda(4, current: 0, upcoming: 0),
+                ],
+                'after' => null,
+            ], \JSON_THROW_ON_ERROR));
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $parser->parse(null);
+
+        // A season announced weeks ahead has nothing running yet, an agenda down to its last
+        // exhibition has nothing to come: only the agenda with every event over is skipped
+        self::assertSame([1, 2, 3], $readAgendas);
+    }
+
+    /**
+     * An agenda as the agenda list returns it (fields=summary).
+     *
+     * @return array<string, mixed>
+     */
+    private static function feedAgenda(int $uid, int $current, int $upcoming): array
+    {
+        return [
+            'uid' => $uid,
+            'slug' => 'agenda-' . $uid,
+            'summary' => ['publishedEvents' => ['passed' => 10, 'current' => $current, 'upcoming' => $upcoming]],
+        ];
     }
 }

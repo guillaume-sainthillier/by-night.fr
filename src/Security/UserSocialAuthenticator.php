@@ -40,6 +40,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         private readonly SocialProvider $socialProvider,
         private readonly OAuthDataProvider $oAuthDataProvider,
         private readonly UserRepository $userRepository,
+        private readonly UnverifiedAccountClaim $unverifiedAccountClaim,
     ) {
     }
 
@@ -57,12 +58,12 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
 
     public function supports(Request $request): bool
     {
-        return 'login_social_check' === $request->attributes->get('_route');
+        return 'login_social_check' === $request->attributes->getString('_route');
     }
 
     public function authenticate(Request $request): Passport
     {
-        $service = $request->attributes->get('service');
+        $service = $request->attributes->getString('service');
         $client = $this->clientRegistry->getClient($service);
         $accessToken = $this->fetchAccessToken($client);
 
@@ -79,6 +80,10 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                     $existingUser = $this
                         ->userRepository
                         ->findOneBySocial($datas['email'], $social->getInfoPropertyPrefix(), $datas['id']);
+
+                    if (null !== $existingUser) {
+                        $this->unverifiedAccountClaim->claim($existingUser, $social, (string) $datas['id']);
+                    }
                 }
 
                 if (null === $existingUser) {
@@ -124,7 +129,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
     {
         return new RedirectResponse(
             $this->router->generate('login_social_success', [
-                'service' => $request->attributes->get('service'),
+                'service' => $request->attributes->getString('service'),
             ])
         );
     }

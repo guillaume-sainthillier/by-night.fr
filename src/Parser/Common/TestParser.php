@@ -16,7 +16,13 @@ use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
 use DateTimeImmutable;
+use Symfony\Component\DependencyInjection\Attribute\When;
 
+/**
+ * Publishes 100 "test" events in Marseille: a development tool, absent from the other environments
+ * so that app:events:import without a parser name never runs it.
+ */
+#[When(env: 'dev')]
 final class TestParser extends AbstractParser
 {
     public static function getParserName(): string

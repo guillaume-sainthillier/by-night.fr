@@ -76,7 +76,9 @@ final readonly class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 3_000, "\t", escape: '\\'))) {
+        // No length limit: the alternate names of a big city (Paris…) run over thousands of characters,
+        // and a longer line was split into two broken rows, both skipped
+        while (false !== ($data = fgetcsv($fd, 0, "\t", escape: '\\'))) {
             if (!\in_array($data[7], ['ADM1', 'ADM2'], true) && 'P' !== $data[6]) {
                 continue;
             }
@@ -93,6 +95,7 @@ final readonly class CountryImporter
 
             $adminCode1 = $this->formatAdminZoneCode($data[10]);
             $adminCode2 = $this->formatAdminZoneCode($data[11]);
+            $country = $this->managedCountry($country);
 
             $existingEntity = $this->em->getRepository($entity::class)->find((int) $data[0]);
             if (null !== $existingEntity) {
@@ -182,6 +185,23 @@ final readonly class CountryImporter
         return $code;
     }
 
+    /**
+     * The loops clear the entity manager every few hundred rows, which detaches the country they
+     * attach each row to: a detached country reads as a new entity on the next flush ("A new entity
+     * was found through the relationship"), so it is fetched back as a reference first.
+     */
+    private function managedCountry(Country $country): Country
+    {
+        if ($this->em->contains($country)) {
+            return $country;
+        }
+
+        $reference = $this->em->getReference(Country::class, $country->getId());
+        \assert($reference instanceof Country);
+
+        return $reference;
+    }
+
     private function sanitizeAdminZone(AdminZone $entity): void
     {
         if ('FR' == $entity->getCountry()->getId() && $entity instanceof AdminZone2) {
@@ -207,10 +227,7 @@ final readonly class CountryImporter
         );
 
         // Delete all zip cities
-        $this->em->createQuery('
-            DELETE FROM App:ZipCity zc
-            WHERE zc.country = :country
-        ')
+        $this->em->createQuery(\sprintf('DELETE FROM %s zc WHERE zc.country = :country', ZipCity::class))
             ->setParameter('country', $country->getId())
             ->execute();
 
@@ -220,7 +237,7 @@ final readonly class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 1_000, "\t", escape: '\\'))) {
+        while (false !== ($data = fgetcsv($fd, 0, "\t", escape: '\\'))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }
@@ -228,6 +245,7 @@ final readonly class CountryImporter
             ++$i;
 
             $city = new ZipCity();
+            $country = $this->managedCountry($country);
 
             $adminCode1 = $this->formatAdminZoneCode($data[4]);
             $adminCode2 = $this->formatAdminZoneCode($data[6]);
@@ -440,9 +458,9 @@ final readonly class CountryImporter
 
                 break;
             case 'FR':
-                $this->em->createQuery(" UPDATE App:AdminZone2 c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'")->execute();
-                $this->em->createQuery(" UPDATE App:City c SET c.slug = 'paris' WHERE c.slug = 'paris-1'")->execute();
-                $this->em->createQuery(" UPDATE App:AdminZone2 c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'")->execute();
+                $this->em->createQuery(\sprintf("UPDATE %s c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'", AdminZone2::class))->execute();
+                $this->em->createQuery(\sprintf("UPDATE %s c SET c.slug = 'paris' WHERE c.slug = 'paris-1'", City::class))->execute();
+                $this->em->createQuery(\sprintf("UPDATE %s c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'", AdminZone2::class))->execute();
                 $this->manualAssociation([
                     'la-defense',
                     'percy',
@@ -507,7 +525,7 @@ final readonly class CountryImporter
 
     private function deleteEmptyDatas(Country $country): void
     {
-        $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
+        $this->em->createQuery(\sprintf('DELETE FROM %s zc WHERE zc.parent IS NULL AND zc.country = :country', ZipCity::class))->execute([
             'country' => $country->getId(),
         ]);
     }

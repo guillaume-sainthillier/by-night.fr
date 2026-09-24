@@ -12,6 +12,7 @@ namespace App\Tests\Controller\PersonalSpace;
 
 use App\Factory\EventFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 final class EventControllerTest extends WebTestCase
 {
@@ -33,5 +34,35 @@ final class EventControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/espace-perso/mes-soirees');
         self::assertSame(0, EventFactory::count(['id' => $eventId]));
+    }
+
+    public function testTheDeleteFormOfTheListDeletesTheEvent(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        $eventId = $event->getId();
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+
+        self::assertResponseIsSuccessful();
+        $client->submit($crawler->filter(\sprintf('form.form-delete-%d', $eventId))->form());
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertSame(0, EventFactory::count(['id' => $eventId]));
+    }
+
+    public function testADeletionWithoutTheTokenOfItsPageIsRefused(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        $eventId = $event->getId();
+        $client->loginUser($event->getUser());
+
+        // What a form posted from another site would send
+        $client->request('POST', \sprintf('/espace-perso/%d', $eventId), ['_method' => 'DELETE']);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertSame(1, EventFactory::count(['id' => $eventId]));
     }
 }

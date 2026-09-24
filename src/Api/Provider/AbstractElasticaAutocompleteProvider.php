@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\Pagination;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\Pagination\PagerfantaPaginator;
+use App\SearchRepository\ResultWindow;
 use Closure;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Pagerfanta\PagerfantaInterface;
@@ -46,9 +47,15 @@ abstract readonly class AbstractElasticaAutocompleteProvider implements Provider
             return [];
         }
 
+        $limit = $this->pagination->getLimit($operation, $context);
+        $page = $this->pagination->getPage($context);
+        if (!ResultWindow::contains($page, $limit)) {
+            return [];
+        }
+
         $results = $this->search($term);
-        $results->setMaxPerPage($this->pagination->getLimit($operation, $context));
-        $results->setCurrentPage($this->pagination->getPage($context));
+        $results->setMaxPerPage($limit);
+        $results->setCurrentPage($page);
 
         return new PagerfantaPaginator($results, $this->transformer());
     }

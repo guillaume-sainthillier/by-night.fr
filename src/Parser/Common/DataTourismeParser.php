@@ -37,6 +37,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class DataTourismeParser extends AbstractParser
 {
     /**
+     * Length of event.external_id and parser_data.external_id.
+     */
+    private const int MAX_EXTERNAL_ID_LENGTH = 127;
+
+    /**
      * The API maximum.
      */
     private const int PAGE_SIZE = 250;
@@ -189,8 +194,10 @@ final class DataTourismeParser extends AbstractParser
         $event->fromData = self::getParserName();
         // The producer's identifier is what the Diffuseur flux exposed as dc:identifier, so
         // the events imported before the API keep their identity; DATAtourisme's own uuid
-        // only steps in when a producer sends none.
-        $event->externalId = $this->string($data['identifier'] ?? null) ?? $data['uuid'];
+        // steps in when a producer sends none, or one too long for event.external_id (some
+        // producers compose it from the venue, the title and the date).
+        $identifier = $this->string($data['identifier'] ?? null);
+        $event->externalId = null !== $identifier && mb_strlen($identifier) <= self::MAX_EXTERNAL_ID_LENGTH ? $identifier : $data['uuid'];
         $event->externalUpdatedAt = max($lastUpdate, $lastUpdateDatatourisme);
         $event->name = $this->text($data['label'] ?? null);
         $event->description = $this->text($data['hasDescription'][0]['description'] ?? null)
@@ -214,8 +221,9 @@ final class DataTourismeParser extends AbstractParser
         $event->websiteContacts = array_values(array_unique(array_filter($websites)));
         $event->phoneContacts = array_values(array_unique(array_filter($phones)));
         $event->emailContacts = array_values(array_unique(array_filter($emails)));
-        $event->startDate = $timesheets[0]->startAt;
-        $event->endDate = $timesheets[array_key_last($timesheets)]->endAt;
+        // The periods come in no particular order: the event spans from the earliest to the latest
+        $event->startDate = min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
+        $event->endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
         $event->hours = 1 === \count($hours) ? $hours[0] : null;
         $event->timesheets = $timesheets;
 

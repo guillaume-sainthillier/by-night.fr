@@ -14,8 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 require_once \dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
 return static function (array $context) {
-    if ($context['APP_MAINTENANCE']) {
-        return new Response(file_get_contents(__DIR__ . '/maintenance.html'), Response::HTTP_SERVICE_UNAVAILABLE);
+    // The prod image's .env.local.php returns [], so this is only set when the container environment sets it.
+    if (filter_var($context['APP_MAINTENANCE'] ?? false, \FILTER_VALIDATE_BOOL)) {
+        return new Response(file_get_contents(__DIR__ . '/maintenance.html'), Response::HTTP_SERVICE_UNAVAILABLE, [
+            // Upper bound of a maintenance window, so crawlers come back right after it.
+            // Symfony already defaults to Cache-Control: no-cache, private, which keeps this page out of shared caches.
+            'Retry-After' => '60',
+        ]);
     }
 
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);

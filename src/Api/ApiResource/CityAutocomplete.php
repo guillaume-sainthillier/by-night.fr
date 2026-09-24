@@ -33,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             paginationEnabled: true,
             paginationItemsPerPage: 7,
             paginationClientItemsPerPage: true,
+            paginationMaximumItemsPerPage: 50,
             name: 'api_cities',
             provider: CityAutocompleteProvider::class,
             parameters: [

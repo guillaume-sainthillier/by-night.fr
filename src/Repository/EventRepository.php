@@ -234,34 +234,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * Identity hashes shared by at least two rows, in hash order after the given one
-     * (keyset pagination for app:events:resolve-families).
-     *
-     * @return string[]
-     */
-    public function findSharedIdentityHashesAfter(?string $origin, ?string $after, int $limit): array
-    {
-        $qb = $this
-            ->createQueryBuilder('e')
-            ->select('e.identityHash AS hash')
-            ->where('e.identityHash IS NOT NULL')
-            ->groupBy('e.identityHash')
-            ->having('COUNT(e.id) > 1')
-            ->orderBy('e.identityHash', 'ASC')
-            ->setMaxResults($limit);
-
-        if (null !== $origin) {
-            $qb->andWhere('e.externalOrigin = :origin')->setParameter('origin', $origin);
-        }
-
-        if (null !== $after) {
-            $qb->andWhere('e.identityHash > :after')->setParameter('after', $after);
-        }
-
-        return array_column($qb->getQuery()->getScalarResult(), 'hash');
-    }
-
-    /**
      * Every member of the given families, in id order, timesheets not loaded.
      *
      * @param string[] $hashes
@@ -310,61 +282,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * Imported rows still lacking an identity hash, in id order after the given id
-     * (keyset pagination for app:events:resolve-families).
-     *
-     * @return Event[]
-     */
-    public function findWithoutIdentityHash(?string $origin, int $afterId, int $limit): array
-    {
-        $qb = $this
-            ->createQueryBuilder('e')
-            ->where('e.identityHash IS NULL')
-            ->andWhere('e.externalOrigin IS NOT NULL')
-            ->andWhere('e.id > :afterId')
-            ->setParameter('afterId', $afterId)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults($limit);
-
-        if (null !== $origin) {
-            $qb->andWhere('e.externalOrigin = :origin')->setParameter('origin', $origin);
-        }
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * Number of events attached to each of the given places. Places without events
-     * are absent from the result.
-     *
-     * @param int[] $placeIds
-     *
-     * @return array<int, int> place id => number of events
-     */
-    public function countByPlaces(array $placeIds): array
-    {
-        if ([] === $placeIds) {
-            return [];
-        }
-
-        $rows = $this
-            ->createQueryBuilder('e')
-            ->select('IDENTITY(e.place) AS placeId, COUNT(e.id) AS nb')
-            ->where('e.place IN (:places)')
-            ->setParameter('places', $placeIds)
-            ->groupBy('e.place')
-            ->getQuery()
-            ->getArrayResult();
-
-        $counts = [];
-        foreach ($rows as $row) {
-            $counts[(int) $row['placeId']] = (int) $row['nb'];
-        }
-
-        return $counts;
-    }
-
-    /**
      * User in types.event.persistence.provider.query_builder_method (fos_elastice.yaml)
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
@@ -373,7 +290,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
+            // The populate pages through this query with LIMIT/OFFSET: an import batch shares its
+            // createdAt second, and without a unique tie-breaker MySQL may order those rows
+            // differently from one page to the next, indexing some twice and skipping others
             ->addOrderBy('e.createdAt', 'DESC')
+            ->addOrderBy('e.id', 'DESC')
         ;
     }
 
@@ -514,6 +435,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->join('e.userEvents', 'cal')
             ->where('cal.user = :user')
+            ->andWhere('e.draft = false')
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
             ->orderBy('e.endDate', $isNext ? 'ASC' : 'DESC')
             ->setParameter('user', $user->getId())
@@ -585,6 +507,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.startDate = :from')
             ->andWhere('e.id != :id')
             ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', $event->getStartDate()->format('Y-m-d'))
             ->setParameter('id', $event->getId())
             ->orderBy('e.name', 'ASC');
@@ -610,7 +533,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         return $this
             ->createQueryBuilder('e')
-            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place AND e.duplicateOf IS NULL')
+            ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place AND e.duplicateOf IS NULL AND e.draft = false')
             ->orderBy('e.endDate', 'ASC')
             ->setParameter('end_date', $from->format('Y-m-d'))
             ->setParameter('id', $event->getId())
@@ -626,6 +549,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.endDate BETWEEN :from AND :to')
             ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->orderBy('e.endDate', 'ASC')
             ->addOrderBy('e.participations', 'DESC');
 
@@ -655,6 +579,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('e.endDate', 'ASC')
             ->addOrderBy('e.participations', 'DESC');

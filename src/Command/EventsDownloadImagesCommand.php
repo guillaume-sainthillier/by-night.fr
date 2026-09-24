@@ -14,12 +14,14 @@ use App\Entity\Event;
 use App\Handler\EventHandler;
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
-use App\Utils\PaginateTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Pagerfanta\PagerfantaInterface;
+use Silarhi\CursorPagination\Configuration\OrderConfiguration;
+use Silarhi\CursorPagination\Configuration\OrderConfigurations;
+use Silarhi\CursorPagination\Pagination\CursorPagination;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -29,7 +31,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class EventsDownloadImagesCommand extends Command
 {
-    use PaginateTrait;
+    private const int DEFAULT_BATCH_SIZE = 50;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -39,28 +41,35 @@ final class EventsDownloadImagesCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Events downloaded per flush', (string) self::DEFAULT_BATCH_SIZE);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title('Handling event image download');
+        $batchSize = max(1, (int) $input->getOption('batch-size'));
 
         $qb = $this
             ->eventRepository
             ->createQueryBuilder('e')
             ->where('e.url IS NOT NULL')
             ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
-            ->orderBy('e.id', 'DESC')
         ;
 
-        /** @var PagerfantaInterface<Event> $pagination */
-        $pagination = $this->createQueryBuilderPaginator($qb, 1, 50);
-        Monitor::createProgressBar($pagination->getNbPages());
-        for ($i = 1; $i <= $pagination->getNbPages(); ++$i) {
-            $pagination->setCurrentPage($i);
+        // Keyset pagination on the id: a downloaded image takes its event out of the filter, so
+        // page numbers moved the offset past as many events as the page before had fixed, and
+        // about half of the backlog was never attempted.
+        $configurations = new OrderConfigurations(
+            new OrderConfiguration('e.id', static fn (Event $event): ?int => $event->getId(), orderAscending: false),
+        );
+        /** @var CursorPagination<Event> $pagination */
+        $pagination = new CursorPagination($qb, $configurations, $batchSize, fetchJoinCollection: false);
 
-            $events = $pagination->getCurrentPageResults();
-            $events = \is_array($events) ? $events : iterator_to_array($events);
-
+        Monitor::createProgressBar((int) ceil(\count($pagination) / $batchSize));
+        foreach ($pagination->getChunkResults() as $events) {
             // Images are not part of the indexed document: flag the events so the
             // FOS Elastica listener skips re-indexing them (ConditionalUpdate).
             foreach ($events as $event) {

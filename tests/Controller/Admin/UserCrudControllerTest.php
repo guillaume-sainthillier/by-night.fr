@@ -13,7 +13,10 @@ namespace App\Tests\Controller\Admin;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
+
+use function Zenstruck\Foundry\Persistence\refresh;
 
 final class UserCrudControllerTest extends WebTestCase
 {
@@ -44,6 +47,23 @@ final class UserCrudControllerTest extends WebTestCase
         self::assertCount(2, $crawler->filter('.field-image .badge')->reduce(
             static fn ($badge): bool => 'Aucune image' === trim($badge->text()),
         ));
+    }
+
+    public function testSavingAUserMarksThemVerified(): void
+    {
+        $client = $this->createAdminClient();
+        $user = UserFactory::createOne(['verified' => false]);
+
+        $crawler = $client->request('GET', \sprintf('/_administration/user/%d/edit', $user->getId()));
+        $form = $crawler->selectButton('Sauvegarder les modifications')->form();
+        $verified = $form['User[verified]'];
+        self::assertInstanceOf(ChoiceFormField::class, $verified);
+        $verified->tick();
+        $client->submit($form);
+
+        self::assertResponseRedirects();
+        refresh($user);
+        self::assertTrue($user->isVerified());
     }
 
     private function createAdminClient(): KernelBrowser

@@ -57,7 +57,7 @@ final readonly class PicassoOriginRedirectSubscriber implements EventSubscriberI
 
         $request = $event->getRequest();
 
-        if ('picasso_image' !== $request->attributes->get('_route')) {
+        if ('picasso_image' !== $request->attributes->getString('_route')) {
             return;
         }
 

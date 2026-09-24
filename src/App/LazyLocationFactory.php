@@ -10,11 +10,13 @@
 
 namespace App\App;
 
+use App\Entity\AdminZone;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
 use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -43,9 +45,30 @@ final readonly class LazyLocationFactory
         /** @var City $lazyCity */
         $lazyCity = $reflector->newLazyProxy(fn (): City => $this->cityRepository->findOneBySlug($slug)
             ?? throw new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug)));
+        // The URL already carries the slug: handing it to the proxy lets whoever only needs it (the
+        // cookie refresh of CitySubscriber, a link back to the city) read it without any query.
+        new ReflectionProperty(AdminZone::class, 'slug')->setRawValueWithoutLazyInitialization($lazyCity, $slug);
 
         $location = new Location();
         $location->setCity($lazyCity);
+
+        return $location;
+    }
+
+    /**
+     * Create a Location with its City loaded right away, or null when no city has this slug. For a
+     * slug the visitor sends back (the app_city cookie), which may name a city renamed or merged since:
+     * a lazy City would only fail when first read, from a template, as a server error.
+     */
+    public function createWithCity(string $slug): ?Location
+    {
+        $city = $this->cityRepository->findOneBySlug($slug);
+        if (null === $city) {
+            return null;
+        }
+
+        $location = new Location();
+        $location->setCity($city);
 
         return $location;
     }
@@ -61,6 +84,7 @@ final readonly class LazyLocationFactory
         /** @var Country $lazyCountry */
         $lazyCountry = $reflector->newLazyProxy(fn (): Country => $this->countryRepository->findOneBy(['slug' => $slug])
             ?? throw new NotFoundHttpException(\sprintf('Country with slug "%s" not found', $slug)));
+        new ReflectionProperty(Country::class, 'slug')->setRawValueWithoutLazyInitialization($lazyCountry, $slug);
 
         $location = new Location();
         $location->setCountry($lazyCountry);

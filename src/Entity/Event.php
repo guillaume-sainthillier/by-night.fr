@@ -14,10 +14,7 @@ use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Enum\EventStatus;
-use App\Parser\Common\BilletsReducAwinParser;
-use App\Parser\Common\CDiscountAwinParser;
-use App\Parser\Common\FnacSpectaclesAwinParser;
-use App\Parser\Common\SeeTicketsKwankoParser;
+use App\Parser\AffiliateParsers;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
@@ -399,12 +396,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function isAffiliate(): bool
     {
-        return \in_array($this->fromData, [
-            FnacSpectaclesAwinParser::getParserName(),
-            SeeTicketsKwankoParser::getParserName(),
-            BilletsReducAwinParser::getParserName(),
-            CDiscountAwinParser::getParserName(),
-        ], true);
+        return AffiliateParsers::isAffiliate($this->fromData);
     }
 
     public function getImageFile(): ?File

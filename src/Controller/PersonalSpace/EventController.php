@@ -131,8 +131,13 @@ final class EventController extends BaseController
 
     #[Route(path: '{id<%patterns.id%>}', name: 'app_event_delete', methods: ['DELETE'])]
     #[IsGranted(EventVoter::DELETE, subject: 'event')]
-    public function delete(Event $event): Response
+    public function delete(Request $request, Event $event): Response
     {
+        // The delete forms carry a token only their page can issue: no other site can post them
+        if (!$this->isCsrfTokenValid('delete-event-' . $event->getId(), $request->getPayload()->getString('_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
+
         $em = $this->getEntityManager();
         $em->remove($event);
         $em->flush();

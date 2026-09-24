@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 final class CityAutocompleteType extends AbstractType
 {
@@ -46,6 +47,9 @@ final class CityAutocompleteType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(message: 'Veuillez choisir une ville pour continuer'),
+                    // The value becomes the first segment of the redirect: "/evil.example" would send
+                    // the visitor to //evil.example/agenda. City and country slugs never go beyond these.
+                    new Regex(pattern: '/^[a-z0-9-]+$/', message: 'Veuillez choisir une ville pour continuer'),
                 ],
             ]);
     }

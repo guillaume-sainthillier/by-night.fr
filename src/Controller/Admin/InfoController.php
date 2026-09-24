@@ -15,8 +15,10 @@ use App\Controller\AbstractController;
 use App\Entity\AppOAuth;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/info')]
+#[IsGranted('ROLE_ADMIN')]
 final class InfoController extends AbstractController
 {
     #[Route(path: '/', name: 'app_administration_info_index', methods: ['GET'])]

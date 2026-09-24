@@ -46,6 +46,33 @@ final class AgendaControllerTest extends WebTestCase
         self::assertResponseRedirects('/toulouse/agenda/sortir-a/le-bikini', Response::HTTP_MOVED_PERMANENTLY);
     }
 
+    public function testAPlaceUrlShowsThePlaceOfTheCityItNames(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $toulouse->getCountry()]);
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $albi, 'country' => $albi->getCountry()]);
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+
+        // An invalid filter skips the Elasticsearch query: the place lookup still runs first
+        $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini?range=not-a-number');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testAPlaceUrlNamingAnotherCityRedirectsToThePlace(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $toulouse->getCountry()]);
+        PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $albi, 'country' => $albi->getCountry()]);
+
+        $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini');
+
+        self::assertResponseRedirects(\sprintf('/%s/agenda/sortir-a/le-bikini', $albi->getSlug()));
+    }
+
     public function testALegacyPlaceUrlWithAnUnknownPlaceRedirectsToTheCityAgenda(): void
     {
         $client = self::createClient();

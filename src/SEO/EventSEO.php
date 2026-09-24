@@ -71,7 +71,8 @@ final class EventSEO
 
     public function getEventDate(Event $event): string
     {
-        if (!$event->getEndDate() || $event->getStartDate() === $event->getEndDate()) {
+        // Two DateTime objects hydrated from the same day are never identical (===): compare the days
+        if (!$event->getEndDate() || $event->getStartDate()?->format('Y-m-d') === $event->getEndDate()->format('Y-m-d')) {
             return \sprintf('le %s',
                 $this->formatDate($event->getStartDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
             );

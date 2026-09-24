@@ -47,29 +47,16 @@ final class EventContentHasher
      */
     public function identity(EventDto $dto): ?string
     {
-        return $this->identityOf(
-            $dto->externalOrigin,
-            $dto->place?->externalId,
-            $dto->name,
-            $dto->description,
-        );
-    }
-
-    /**
-     * The one definition of "the same event", also computed from the stored columns of
-     * rows imported before the hash existed (app:events:resolve-families).
-     */
-    public function identityOf(?string $origin, ?string $placeExternalId, ?string $name, ?string $description): ?string
-    {
-        if (null === $origin || null === $placeExternalId || null === $name || '' === $name) {
+        $placeExternalId = $dto->place?->externalId;
+        if (null === $dto->externalOrigin || null === $placeExternalId || null === $dto->name || '' === $dto->name) {
             return null;
         }
 
         return sha1((string) json_encode([
-            'origin' => $origin,
+            'origin' => $dto->externalOrigin,
             'placeExternalId' => $placeExternalId,
-            'name' => $name,
-            'description' => $description,
+            'name' => $dto->name,
+            'description' => $dto->description,
         ], \JSON_UNESCAPED_UNICODE));
     }
 
