@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\Contracts\ExternalIdentifiableInterface;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\QueryBuilder;
 
 trait DtoFindableTrait
@@ -45,9 +46,13 @@ trait DtoFindableTrait
                 $externalIdsPlaceholder
             );
 
+            // Array keys turn numeric ids ("111293") into ints, and Doctrine infers an array's
+            // type from its first element: bound as integers, MySQL would compare the VARCHAR
+            // column numerically, so every "FMA…" id (cast to 0) would match — hundreds of
+            // thousands of rows for one batch.
             $queryBuilder
                 ->setParameter($externalOriginPlaceholder, $externalOrigin)
-                ->setParameter($externalIdsPlaceholder, array_keys($ids));
+                ->setParameter($externalIdsPlaceholder, array_map(strval(...), array_keys($ids)), ArrayParameterType::STRING);
             ++$i;
         }
 
