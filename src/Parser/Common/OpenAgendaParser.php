@@ -143,13 +143,11 @@ final class OpenAgendaParser extends AbstractParser
                 $failedAttempts = 0;
 
                 foreach ($data['agendas'] as $agenda) {
-                    $summary = $agenda['summary'];
-                    if (
-                        isset($summary['publishedEvents']['current'])
-                        && isset($summary['publishedEvents']['upcoming'])
-                        && 0 !== $summary['publishedEvents']['current']
-                        && 0 !== $summary['publishedEvents']['upcoming']
-                    ) {
+                    // One event not over yet, running (current) or to come (upcoming), is
+                    // enough: a season announced weeks ahead has nothing running yet, and
+                    // an agenda down to its last exhibition has nothing to come
+                    $publishedEvents = $agenda['summary']['publishedEvents'] ?? [];
+                    if (($publishedEvents['current'] ?? 0) + ($publishedEvents['upcoming'] ?? 0) > 0) {
                         yield [$agenda['uid'], $agenda['slug']];
                     }
                 }
