@@ -70,6 +70,9 @@ export default defineConfig(({ mode }) => {
                     admin: `${assets}/js/admin.js`,
                     ...Object.fromEntries(pages.map((page) => [page, `${assets}/js/pages/${page}.js`])),
                 },
+                // Rolldown does not keep side-effect import order across chunks by default;
+                // jquery-global.js must run before Bootstrap and the jQuery plugins evaluate.
+                output: { strictExecutionOrder: true },
             },
 
             // Dev build profile, used by `yarn dev` and `yarn watch`.
