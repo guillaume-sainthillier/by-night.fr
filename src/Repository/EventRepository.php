@@ -196,12 +196,24 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             return [];
         }
 
+        // The canonicals first, by primary key: as a subquery OR-ed with the two other
+        // conditions, it kept MySQL from using any index, and every import batch scanned
+        // the whole duplicate_of index (~2.4M rows, ~4 s). Two plain INs merge both indexes.
+        $canonicalIds = $this
+            ->createQueryBuilder('d')
+            ->select('IDENTITY(d.duplicateOf)')
+            ->where('d.id IN (:ids)')
+            ->andWhere('d.duplicateOf IS NOT NULL')
+            ->setParameter('ids', $eventIds)
+            ->getQuery()
+            ->getSingleColumnResult();
+
         return $this
             ->createQueryBuilder('e')
             ->where('e.id IN (:ids)')
-            ->orWhere('e.duplicateOf IN (:ids)')
-            ->orWhere(\sprintf('e.id IN (SELECT IDENTITY(d.duplicateOf) FROM %s d WHERE d.id IN (:ids) AND d.duplicateOf IS NOT NULL)', Event::class))
-            ->setParameter('ids', $eventIds)
+            ->orWhere('e.duplicateOf IN (:eventIds)')
+            ->setParameter('ids', array_values(array_unique([...$eventIds, ...array_map(intval(...), $canonicalIds)])))
+            ->setParameter('eventIds', $eventIds)
             ->orderBy('e.id', 'ASC')
             ->getQuery()
             ->getResult();
