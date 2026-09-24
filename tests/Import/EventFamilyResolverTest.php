@@ -178,7 +178,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
     {
         $canonicalId = $this->sibling('oa-1', '2026-10-03');
 
-        // A stub left by the exact merge strategy: no identity of its own, a fossil date
+        // A redirect stub from before the identity hash: no identity of its own, a fossil date
         $stubId = EventFactory::createOne([
             'externalId' => null,
             'externalOrigin' => null,
