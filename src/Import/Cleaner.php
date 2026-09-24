@@ -85,7 +85,7 @@ final readonly class Cleaner
      *
      * @return string[]
      */
-    public function cleanWebsites(?array $websites): array
+    private function cleanWebsites(?array $websites): array
     {
         $cleaned = [];
         foreach ($websites ?? [] as $website) {
