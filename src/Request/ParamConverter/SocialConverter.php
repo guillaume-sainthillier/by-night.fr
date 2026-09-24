@@ -34,8 +34,8 @@ final readonly class SocialConverter implements ValueResolverInterface
             return [];
         }
 
-        $service = $request->attributes->get('service');
-        if (null === $service && !$argument->isNullable()) {
+        $service = $request->attributes->getString('service');
+        if ('' === $service && !$argument->isNullable()) {
             throw new InvalidArgumentException('Route attribute is missing');
         }
 

@@ -32,14 +32,14 @@ final class SearchController extends AbstractController
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
     public function index(Request $request, RepositoryManagerInterface $rm, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
-        $q = trim($request->query->get('q') ?? '');
-        $type = $request->query->get('type');
+        $q = trim($request->query->getString('q'));
+        $type = $request->query->getString('type');
         $page = max($request->query->getInt('page'), 1);
         if (!ResultWindow::contains($page, self::ITEMS_PER_PAGE)) {
             throw $this->createNotFoundException();
         }
 
-        if ($type && !\in_array($type, ['evenements', 'membres'], true)) {
+        if (!\in_array($type, ['evenements', 'membres'], true)) {
             $type = null;
         }
 

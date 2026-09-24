@@ -60,7 +60,7 @@ final class AgendaController extends BaseController
         $place = null;
         $tag = null;
 
-        if (null === $placeSlug && 'app_agenda_by_place' === $request->attributes->get('_route')) {
+        if (null === $placeSlug && 'app_agenda_by_place' === $request->attributes->getString('_route')) {
             return $this->redirectLegacyPlaceUrl($request, $location, $placeRepository);
         }
 
@@ -126,7 +126,7 @@ final class AgendaController extends BaseController
 
         // Redirect if page exceeds results
         if ($page > $events->getNbPages()) {
-            return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getNbPages())]));
+            return $this->redirectToRoute($request->attributes->getString('_route'), array_merge($routeParams, ['page' => max(1, $events->getNbPages())]));
         }
 
         // Widget data

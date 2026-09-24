@@ -48,7 +48,7 @@ final readonly class CitySubscriber implements EventSubscriberInterface
 
         // Update cookie if it's different from the current city
         $request = $event->getRequest();
-        $currentCookie = $request->cookies->get('app_city');
+        $currentCookie = $request->cookies->getString('app_city');
 
         if ($city->getSlug() !== $currentCookie) {
             $cookie = Cookie::create('app_city', $city->getSlug(), '+1 year');

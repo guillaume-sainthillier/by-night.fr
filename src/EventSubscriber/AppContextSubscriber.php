@@ -66,7 +66,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
      */
     private function resolveLocationFromUrl(Request $request): void
     {
-        $locationSlug = $request->attributes->get('location');
+        $locationSlug = $request->attributes->getString('location');
 
         // Handle special "unknown" location (no lazy loading needed)
         if ('unknown' === $locationSlug) {
@@ -84,7 +84,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
 
         try {
             // Create lazy-loaded location - database query deferred until access
-            if (!str_starts_with((string) $locationSlug, 'c--')) {
+            if (!str_starts_with($locationSlug, 'c--')) {
                 $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
             } else {
                 $location = $this->lazyLocationFactory->createWithLazyCountry($locationSlug);
@@ -102,12 +102,8 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
      */
     private function resolveLocationFromCookie(Request $request): void
     {
-        if (!$request->cookies->has('app_city')) {
-            return;
-        }
-
-        $citySlug = $request->cookies->get('app_city');
-        if (empty($citySlug)) {
+        $citySlug = $request->cookies->getString('app_city');
+        if ('' === $citySlug) {
             return;
         }
 
