@@ -11,7 +11,6 @@
 namespace App\Tests\Command;
 
 use App\Contracts\ParserInterface;
-use App\Dto\EventDto;
 use DateTimeImmutable;
 use RuntimeException;
 
@@ -71,11 +70,6 @@ final class RecordingParser implements ParserInterface
     public function getSkippedEvents(): int
     {
         return 0;
-    }
-
-    // @phpstan-ignore shipmonk.deadMethod (interface contract, not exercised by the command)
-    public function publish(EventDto $eventDto): void
-    {
     }
 
     public function getCommandName(): string

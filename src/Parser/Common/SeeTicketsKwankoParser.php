@@ -61,12 +61,13 @@ final class SeeTicketsKwankoParser extends AbstractParser
      * {@inheritDoc}
      */
     #[Override]
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
         $path = $this->downloadCsv();
 
+        // Removed once the stream is consumed, or abandoned on a failure downstream
         try {
-            $this->parseCsv($path);
+            yield from $this->readEvents($path);
         } finally {
             new Filesystem()->remove($path);
         }
@@ -91,7 +92,10 @@ final class SeeTicketsKwankoParser extends AbstractParser
         return $path;
     }
 
-    private function parseCsv(string $path): void
+    /**
+     * @return iterable<EventDto|null>
+     */
+    private function readEvents(string $path): iterable
     {
         $handle = fopen($path, 'r');
         if (false === $handle) {
@@ -113,14 +117,16 @@ final class SeeTicketsKwankoParser extends AbstractParser
 
                 $data = array_combine($headers, $row);
 
+                // A malformed row is logged and skipped; a failure to publish stops the run
                 try {
                     $event = $this->arrayToDto($data);
-                    if (null !== $event) {
-                        $this->publish($event);
-                    }
                 } catch (Throwable $e) {
                     $this->logException($e, ['data' => $data]);
+
+                    continue;
                 }
+
+                yield $event;
             }
         } finally {
             fclose($handle);

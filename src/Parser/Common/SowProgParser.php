@@ -63,19 +63,14 @@ final class SowProgParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
         $modifiedSince = null === $since ? 0 : 1_000 * self::withSafetyMargin($since)->getTimestamp();
         $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents?modifiedSince=' . $modifiedSince);
         $events = $response->toArray();
 
         foreach ($events['eventDescription'] as $eventAsArray) {
-            $event = $this->arrayToDto($eventAsArray);
-            if (null === $event) {
-                continue;
-            }
-
-            $this->publish($event);
+            yield $this->arrayToDto($eventAsArray);
         }
     }
 

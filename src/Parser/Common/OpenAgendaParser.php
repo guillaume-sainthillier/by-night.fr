@@ -62,27 +62,11 @@ final class OpenAgendaParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
-        $agendasUidAndSlugs = $this->getAgendasUidAndSlugs();
-
-        foreach ($agendasUidAndSlugs as $agendasUidAndSlug) {
-            $this->fetchAgendaEvents($since, [$agendasUidAndSlug]);
-        }
-    }
-
-    private function fetchAgendaEvents(?DateTimeImmutable $since, iterable $agendaIdAndSlugs): void
-    {
-        foreach ($agendaIdAndSlugs as $agendaIdAndSlug) {
-            [$agendaId, $agendaSlug] = $agendaIdAndSlug;
-            $events = $this->getAgendaEvents($since, $agendaId);
-            foreach ($events as $event) {
-                $eventDto = $this->arrayToDto($event, $agendaSlug);
-                if (null === $eventDto) {
-                    continue;
-                }
-
-                $this->publish($eventDto);
+        foreach ($this->getAgendasUidAndSlugs() as [$agendaId, $agendaSlug]) {
+            foreach ($this->getAgendaEvents($since, $agendaId) as $event) {
+                yield $this->arrayToDto($event, $agendaSlug);
             }
         }
     }

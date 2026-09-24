@@ -77,11 +77,11 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
      * {@inheritDoc}
      */
     #[Override]
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
-        foreach ($this->groupEvents($this->parseCsvFile($this->downloadFeed())) as $event) {
-            $this->publish($event);
-        }
+        // Not a generator: a show's rows can sit anywhere in the feed, so no event is complete
+        // before the last row is read. The grouped events (one per show) are the least to keep.
+        return $this->groupEvents($this->parseCsvFile($this->downloadFeed()));
     }
 
     /**

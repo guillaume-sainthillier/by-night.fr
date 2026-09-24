@@ -115,7 +115,7 @@ final class DataTourismeParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function parse(?DateTimeImmutable $since): void
+    protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
         // A past event is useless whatever changed: both imports keep only the events still
         // running or to come. The API compares dates at day granularity, so an incremental
@@ -139,10 +139,7 @@ final class DataTourismeParser extends AbstractParser
             $data = $this->datatourismeClient->request('GET', $url, ['query' => $query])->toArray();
 
             foreach ($data['objects'] ?? [] as $object) {
-                $dto = $this->arrayToDto($object);
-                if (null !== $dto) {
-                    $this->publish($dto);
-                }
+                yield $this->arrayToDto($object);
             }
 
             $url = $data['meta']['next'] ?? null;
