@@ -10,7 +10,6 @@
 
 namespace App\Repository;
 
-use App\Contracts\BatchResetInterface;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\TagDto;
 use App\Entity\Tag;
@@ -27,48 +26,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Tag[]    findAll()
  * @method Tag[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TagRepository extends ServiceEntityRepository implements BatchResetInterface, DtoFindableRepositoryInterface
+class TagRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
-    /** @var array<string, Tag> In-memory cache of created tags by lowercase name */
-    private array $createdTags = [];
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tag::class);
-    }
-
-    public function batchReset(): void
-    {
-        $this->createdTags = [];
-    }
-
-    /**
-     * Find a tag by name or create a new one if it doesn't exist.
-     * Uses in-memory cache to return the same Tag instance within a request.
-     */
-    public function findOrCreateByName(string $name, bool $fromBatch): Tag
-    {
-        $name = trim($name);
-        $cacheKey = mb_strtolower($name);
-
-        // Check in-memory cache first
-        if (isset($this->createdTags[$cacheKey])) {
-            return $this->createdTags[$cacheKey];
-        }
-
-        $tag = $this->findOneByName($name);
-
-        if (null === $tag) {
-            $tag = new Tag();
-            $tag->batchUpdate = $fromBatch;
-            $tag->setName($name);
-            $this->getEntityManager()->persist($tag);
-        }
-
-        // Cache for future calls within the same request
-        $this->createdTags[$cacheKey] = $tag;
-
-        return $tag;
     }
 
     /**
