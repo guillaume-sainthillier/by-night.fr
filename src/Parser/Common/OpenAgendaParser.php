@@ -89,9 +89,13 @@ final class OpenAgendaParser extends AbstractParser
 
     private function getAgendaEvents(?DateTimeImmutable $since, int $agendaId): iterable
     {
+        // A full import keeps the events not over yet. timings[gte] only matches a timing that
+        // begins in the range, which drops an exhibition begun last week and running for a
+        // month; "current" (a timing under way) and "upcoming" together are exactly the
+        // events that have not ended.
         $filter = null !== $since
             ? ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]]
-            : ['timings' => ['gte' => new DateTimeImmutable('now', new DateTimeZone('UTC'))->setTime(0, 0)->format(DateTimeInterface::ATOM)]];
+            : ['relative' => ['current', 'upcoming']];
 
         $after = [];
         while (true) {

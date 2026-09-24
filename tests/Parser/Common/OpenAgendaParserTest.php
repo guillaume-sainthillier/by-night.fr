@@ -210,4 +210,41 @@ final class OpenAgendaParserTest extends AppKernelTestCase
 
         self::assertSame(3, $requests);
     }
+
+    public function testAFullImportFetchesTheEventsNotOverYet(): void
+    {
+        $eventQueries = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$eventQueries): MockResponse {
+            if (str_contains($url, '/events')) {
+                parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
+                $eventQueries[] = $query;
+
+                return new MockResponse('{"events":[],"after":null}');
+            }
+
+            return new MockResponse(json_encode([
+                'agendas' => [[
+                    'uid' => 42,
+                    'slug' => 'agenda',
+                    'summary' => ['publishedEvents' => ['current' => 1, 'upcoming' => 1]],
+                ]],
+                'after' => null,
+            ], \JSON_THROW_ON_ERROR));
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $parser->parse(null);
+
+        // An exhibition begun last week is still worth listing: the filter must not be on the start
+        self::assertCount(1, $eventQueries);
+        self::assertSame(['current', 'upcoming'], $eventQueries[0]['relative'] ?? null);
+        self::assertArrayNotHasKey('timings', $eventQueries[0]);
+    }
 }
