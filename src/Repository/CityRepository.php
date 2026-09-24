@@ -20,6 +20,7 @@ use App\Entity\Place;
 use App\Utils\CityManipulator;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Override;
@@ -124,7 +125,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
 
             $queryBuilder
                 ->setParameter($countryPlaceholder, $countryId)
-                ->setParameter($cityNamesPlaceholder, array_keys($cityNames));
+                ->setParameter($cityNamesPlaceholder, array_map(strval(...), array_keys($cityNames)), ArrayParameterType::STRING);
             ++$i;
         }
 
@@ -140,9 +141,11 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
                     $postalCodesPlaceholder
                 );
 
+                // Array keys turn "31000" into an int: bound as integers, MySQL would compare
+                // postal_code numerically and could not use the zip_city index on it.
                 $queryBuilder
                     ->setParameter($countryPlaceholder, $countryId)
-                    ->setParameter($postalCodesPlaceholder, array_keys($postalCodes));
+                    ->setParameter($postalCodesPlaceholder, array_map(strval(...), array_keys($postalCodes)), ArrayParameterType::STRING);
                 ++$i;
             }
         }
