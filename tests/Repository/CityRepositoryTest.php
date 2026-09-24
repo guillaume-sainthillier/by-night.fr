@@ -12,6 +12,8 @@ namespace App\Tests\Repository;
 
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
+use App\Entity\City;
+use App\Factory\AdminZone1Factory;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\ZipCityFactory;
@@ -19,6 +21,7 @@ use App\Repository\CityRepository;
 use App\Tests\AppKernelTestCase;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class CityRepositoryTest extends AppKernelTestCase
 {
@@ -74,6 +77,34 @@ final class CityRepositoryTest extends AppKernelTestCase
             [$toulouse->getId(), $bourg->getId()],
             array_map(static fn ($city) => $city->getId(), $cities),
         );
+    }
+
+    public function testCitiesAreLoadedWithTheirParentWithoutAQueryEach(): void
+    {
+        $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        $occitanie = AdminZone1Factory::createOne(['name' => 'Occitanie', 'country' => $france]);
+        $toulouse = CityFactory::createOne(['name' => 'Toulouse', 'country' => $france, 'parent' => $occitanie]);
+        $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $france, 'parent' => $occitanie]);
+        ZipCityFactory::createOne(['name' => 'Albi', 'postalCode' => '81000', 'country' => $france, 'parent' => $albi]);
+        // Nothing from the identity map: every row is hydrated from the lookup
+        self::getContainer()->get(EntityManagerInterface::class)->clear();
+
+        $queries = self::getContainer()->get('doctrine.debug_data_holder');
+        self::assertInstanceOf(BacktraceDebugDataHolder::class, $queries);
+        $queries->reset();
+
+        $cities = self::getContainer()->get(CityRepository::class)->findAllByDtos([
+            $this->createCityDto('31000', 'Toulouse'),
+            $this->createCityDto('81000'),
+        ], false);
+        $parents = array_map(static fn (City $city): ?string => $city->getParent()?->getName(), $cities);
+
+        self::assertEqualsCanonicalizing([$toulouse->getId(), $albi->getId()], array_map(static fn (City $city) => $city->getId(), $cities));
+        self::assertSame(['Occitanie', 'Occitanie'], $parents);
+        // One query per criterion, the parents joined: none loaded row by row. The parent is
+        // an admin_zone inheritance root, which Doctrine cannot proxy, so a missing join
+        // would show as one "WHERE t0.id = ?" query per city.
+        self::assertCount(2, $queries->getData()['default'] ?? []);
     }
 
     private function createCityDto(string $postalCode, ?string $name = null): CityDto
