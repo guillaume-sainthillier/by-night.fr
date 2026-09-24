@@ -1,0 +1,17 @@
+{#
+    An event's picture in a fixed 4:3 frame, whatever the size or shape the source sent: the
+    picture fits inside whole, never cropped nor enlarged, over a blurred copy of itself (a
+    20px variant, blown up by CSS) that fills the rest of the frame.
+#}
+{# @var event \App\Entity\Event #}
+{# @var width int #}
+{% props event, width = 800 %}
+{% set picture = event_picture(event) %}
+<div {{ attributes.defaults({class: 'event-poster'}) }}>
+    <span
+        class="event-poster-backdrop"
+        style="background-image: url('{{ picasso_image_url(picture.src ?? '', width: 20, quality: 20, loader: picture.loader, context: picture.context) }}')"
+        aria-hidden="true"
+    ></span>
+    <twig:Event:Thumb event="{{ event }}" width="{{ width }}" />
+</div>

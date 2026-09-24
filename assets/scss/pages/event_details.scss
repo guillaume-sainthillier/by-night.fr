@@ -3,20 +3,52 @@
         overflow: hidden;
 
         a.image-gallery {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
             border-bottom: 1px solid $card-border-color;
 
             @include media-breakpoint-up(lg) {
                 border-bottom: none;
                 border-right: 1px solid $card-border-color;
-                min-height: 200px;
+            }
+        }
+
+        // Sources send every size and shape, from 222px squares to 1536x3840 posters: the frame
+        // stays 4:3 (the best fit for that mix) and the picture adapts, so a tall poster no
+        // longer stretches the card nor pushes the date below the first screen on mobile.
+        .event-poster {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background-color: $gray-200;
+
+            // Beside the details, fill the column when they are the taller: no white band
+            @include media-breakpoint-up(lg) {
+                min-height: 100%;
+            }
+
+            .event-poster-backdrop {
+                position: absolute;
+                inset: 0;
+                background-position: center;
+                background-size: cover;
+                background-repeat: no-repeat;
+                // Scaled past the frame so the blur's faded edges stay out of sight
+                transform: scale(1.2);
+                filter: blur(24px) brightness(0.85);
+            }
+
+            picture {
+                display: contents;
             }
 
             img {
-                max-width: 100%;
-                height: auto;
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                // The whole picture, never enlarged: a 222px square keeps its size, a poster fits
+                object-fit: scale-down;
             }
         }
 
