@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26931fbe469061738d0fd2de401b6b13",
+    "content-hash": "6ad056f0693ab2b30f91862f88588b63",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v4.4.0",
+            "version": "v5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "a45ebe1b44d19a1dd33e0bacf706db85e01e3ad0"
+                "reference": "51877e193f1077add758e475727bf4ea5a3ccb7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/a45ebe1b44d19a1dd33e0bacf706db85e01e3ad0",
-                "reference": "a45ebe1b44d19a1dd33e0bacf706db85e01e3ad0",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/51877e193f1077add758e475727bf4ea5a3ccb7c",
+                "reference": "51877e193f1077add758e475727bf4ea5a3ccb7c",
                 "shasum": ""
             },
             "require": {
@@ -73,6 +73,7 @@
                 "api-platform/serializer": "self.version",
                 "api-platform/state": "self.version",
                 "api-platform/symfony": "self.version",
+                "api-platform/test": "self.version",
                 "api-platform/validator": "self.version"
             },
             "require-dev": {
@@ -181,7 +182,7 @@
                     "dev-3.4": "3.4.x-dev",
                     "dev-4.1": "4.1.x-dev",
                     "dev-4.2": "4.2.x-dev",
-                    "dev-main": "4.4.x-dev"
+                    "dev-main": "5.0.x-dev"
                 }
             },
             "autoload": {
@@ -220,9 +221,9 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v4.4.0"
+                "source": "https://github.com/api-platform/core/tree/v5.0.0"
             },
-            "time": "2026-09-16T15:10:24+00:00"
+            "time": "2026-09-16T15:12:22+00:00"
         },
         {
             "name": "aws/aws-crt-php",
