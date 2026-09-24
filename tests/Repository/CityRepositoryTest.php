@@ -51,19 +51,38 @@ final class CityRepositoryTest extends AppKernelTestCase
 
         $query = $queries->getData()['default'][0] ?? null;
         self::assertNotNull($query);
-        self::assertSame(['FR', '31000', '01000'], array_values($query['params']));
-        self::assertSame(
-            [ParameterType::STRING, ParameterType::STRING, ParameterType::STRING],
-            array_values($query['types']),
+        self::assertSame(['FR', '31000', '01000', 'FR'], array_values($query['params']));
+        self::assertSame(array_fill(0, 4, ParameterType::STRING), array_values($query['types']));
+    }
+
+    public function testCitiesFoundByNameAndByPostalCodeAreMergedOnce(): void
+    {
+        $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        $toulouse = CityFactory::createOne(['name' => 'Toulouse', 'country' => $france]);
+        $bourg = CityFactory::createOne(['name' => 'Bourg-en-Bresse', 'country' => $france]);
+        ZipCityFactory::createOne(['name' => 'Toulouse', 'postalCode' => '31000', 'country' => $france, 'parent' => $toulouse]);
+        ZipCityFactory::createOne(['name' => 'Bourg-en-Bresse', 'postalCode' => '01000', 'country' => $france, 'parent' => $bourg]);
+
+        $cities = self::getContainer()->get(CityRepository::class)->findAllByDtos([
+            // Found by both its name and its postal code: listed once
+            $this->createCityDto('31000', 'Toulouse'),
+            // Found by its postal code only
+            $this->createCityDto('01000', 'Bourg'),
+        ], false);
+
+        self::assertEqualsCanonicalizing(
+            [$toulouse->getId(), $bourg->getId()],
+            array_map(static fn ($city) => $city->getId(), $cities),
         );
     }
 
-    private function createCityDto(string $postalCode): CityDto
+    private function createCityDto(string $postalCode, ?string $name = null): CityDto
     {
         $country = new CountryDto();
         $country->entityId = 'FR';
 
         $city = new CityDto();
+        $city->name = $name;
         $city->postalCode = $postalCode;
         $city->country = $country;
 
