@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4bba1342fa1122ba8096ce6ad9deada9",
+    "content-hash": "26931fbe469061738d0fd2de401b6b13",
     "packages": [
         {
             "name": "api-platform/core",
@@ -10247,16 +10247,16 @@
         },
         {
             "name": "symfony/reprise",
-            "version": "v1.1.3",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/reprise.git",
-                "reference": "955a7e65d676c96050569c5876de5548fc0f07e7"
+                "reference": "3eedb47af8cb4f686d67e778b63b0987743ced3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/reprise/zipball/955a7e65d676c96050569c5876de5548fc0f07e7",
-                "reference": "955a7e65d676c96050569c5876de5548fc0f07e7",
+                "url": "https://api.github.com/repos/symfony/reprise/zipball/3eedb47af8cb4f686d67e778b63b0987743ced3d",
+                "reference": "3eedb47af8cb4f686d67e778b63b0987743ced3d",
                 "shasum": ""
             },
             "require": {
@@ -10310,7 +10310,7 @@
             ],
             "support": {
                 "issues": "https://github.com/symfony/reprise/issues",
-                "source": "https://github.com/symfony/reprise/tree/v1.1.3"
+                "source": "https://github.com/symfony/reprise/tree/v1.2.0"
             },
             "funding": [
                 {
@@ -10330,7 +10330,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-11T06:43:32+00:00"
+            "time": "2026-09-23T19:41:33+00:00"
         },
         {
             "name": "symfony/routing",
