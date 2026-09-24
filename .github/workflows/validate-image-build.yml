@@ -1,11 +1,14 @@
 name: Validate Image Build
 
-# On PRs that touch the image build (app Dockerfile or docker/ config), build the base
-# and then the final application image to validate they compile. Nothing is pushed and
-# no cache is used — this just answers "does the image still build?".
+# On PRs that touch the image build (app Dockerfile or docker/ config), build the final
+# application image to validate it compiles. Nothing is pushed and no cache is used —
+# this just answers "does the image still build?".
 #
-# The base is built locally first; the app's `FROM` resolves it from the local image
-# store, so this works even when the PR bumps docker/base/VERSION to an unpublished tag.
+# The base (docker/base) is stable and slow to build (ext-mjml compiles from Rust), so it
+# is only rebuilt when the PR changes docker/base/. Otherwise the published, immutable
+# guystlr/by-night-base:<docker/base/VERSION> is pulled. Either way it lands in the local
+# image store, where the app's `FROM` resolves it — so a PR that bumps VERSION to an
+# unpublished tag still validates.
 on:
     pull_request:
         paths:
@@ -31,11 +34,43 @@ jobs:
             contents: read
         env:
             DOCKER_BUILDKIT: '1'
+            # Secrets can't be tested in `if:`; empty on fork PRs.
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         steps:
             - uses: actions/checkout@v7
+              with:
+                  # HEAD is the PR merge commit and HEAD^1 the base branch tip, so
+                  # `git diff HEAD^1 HEAD` is exactly what the PR changes.
+                  fetch-depth: 2
 
-            - name: Build base, then app
+            # The base image is private. Without credentials (fork PRs) the pull below
+            # fails and the base is built locally instead.
+            - name: Login to Docker Hub
+              if: env.DOCKER_USERNAME != ''
+              uses: docker/login-action@v4
+              with:
+                  username: ${{ env.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Pull or build base image
+              id: base
               run: |
                   TAG=$(cat docker/base/VERSION)
-                  docker build -t "guystlr/by-night-base:$TAG" docker/base
-                  docker build --build-arg "BASE_IMAGE_TAG=$TAG" -t by-night:pr .
+                  if [ -z "$TAG" ]; then echo "::error::docker/base/VERSION is empty"; exit 1; fi
+                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+                  IMAGE="guystlr/by-night-base:$TAG"
+
+                  if git diff --quiet HEAD^1 HEAD -- docker/base/; then
+                      if docker pull --quiet "$IMAGE"; then
+                          echo "::notice::docker/base/ unchanged — reusing published $IMAGE"
+                          exit 0
+                      fi
+                      echo "::warning::$IMAGE could not be pulled (unpublished, or no registry credentials) — building it locally"
+                  elif git diff --quiet HEAD^1 HEAD -- docker/base/VERSION; then
+                      echo "::warning file=docker/base/VERSION::docker/base/ changed without a VERSION bump — published tags are immutable, so this change will never be published"
+                  fi
+
+                  docker build -t "$IMAGE" docker/base
+
+            - name: Build app image
+              run: docker build --build-arg "BASE_IMAGE_TAG=${{ steps.base.outputs.tag }}" -t by-night:pr .
