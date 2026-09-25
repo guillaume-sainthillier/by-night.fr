@@ -43,7 +43,7 @@ final readonly class EventRedirectManager
         if (null === $eventId) {
             $event = $this->eventRepository->findOneBy(['slug' => $eventSlug]);
         } else {
-            $event = $this->eventRepository->find($eventId);
+            $event = $this->eventRepository->findOneWithPlace($eventId);
         }
 
         if (null === $event) {

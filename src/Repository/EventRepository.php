@@ -305,6 +305,26 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The event with the place, city and country its URL and page are built from, in one query.
+     * The city's parent is joined too: it targets the AdminZone inheritance root, which Doctrine
+     * cannot proxy, so hydrating a city without it loads it with a query of its own.
+     */
+    public function findOneWithPlace(int $id): ?Event
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->addSelect('p', 'city', 'cityParent', 'country')
+            ->leftJoin('e.place', 'p')
+            ->leftJoin('p.city', 'city')
+            ->leftJoin('city.parent', 'cityParent')
+            ->leftJoin('p.country', 'country')
+            ->where('e.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Highest id of the table, drafts and duplicates included.
      */
     public function findMaxId(): int
