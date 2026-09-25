@@ -126,11 +126,9 @@ final class SowProgParser extends AbstractParser
             }
         }
 
-        // Compute aggregate start/end dates from first and last schedules
-        $firstSchedule = reset($scheduleDates);
-        $lastSchedule = end($scheduleDates);
-        $startDate = new DateTimeImmutable($firstSchedule['date']);
-        $endDate = new DateTimeImmutable($lastSchedule['endDate']);
+        // The schedules come in no particular order: the event spans from the earliest to the latest
+        $startDate = min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
+        $endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
 
         // Use first unique hour for aggregate display
         $hours = \count($allHours) > 1 ? null : array_key_first($allHours);
