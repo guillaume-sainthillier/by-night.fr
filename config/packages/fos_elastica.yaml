@@ -250,13 +250,9 @@ fos_elastica:
                 # place without a city, a cleared description would stay searchable until a full populate)
                 serialize_null: true
             properties:
+                # Public data only: a member is found by the name shown on their profile. Their first
+                # and last names are private and must not make them searchable
                 username:
-                    type: text
-                    analyzer: text_analyzer
-                firstname:
-                    type: text
-                    analyzer: text_analyzer
-                lastname:
                     type: text
                     analyzer: text_analyzer
             persistence:

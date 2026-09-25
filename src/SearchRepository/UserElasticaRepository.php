@@ -20,6 +20,9 @@ use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
+/**
+ * Members are found by their username only: it is the one name their public profile shows.
+ */
 final class UserElasticaRepository extends Repository
 {
     public function findWithSearch(?string $q): AdapterInterface
@@ -28,11 +31,7 @@ final class UserElasticaRepository extends Repository
 
         $match = new MultiMatch();
         $match
-            ->setFields([
-                'username^5',
-                'lastname^3',
-                'firstname',
-            ])
+            ->setFields(['username'])
             ->setQuery($q ?? '')
             ->setFuzziness('auto')
             ->setOperator('AND')
@@ -55,11 +54,7 @@ final class UserElasticaRepository extends Repository
     {
         $multiMatch = new MultiMatch();
         $multiMatch
-            ->setFields([
-                'username^5',
-                'lastname^3',
-                'firstname',
-            ])
+            ->setFields(['username'])
             ->setQuery($query)
             ->setFuzziness('auto')
             ->setOperator('AND');
@@ -70,16 +65,6 @@ final class UserElasticaRepository extends Repository
         $finalQuery->setHighlight([
             'fields' => [
                 'username' => [
-                    'pre_tags' => ['__aa-highlight__'],
-                    'post_tags' => ['__/aa-highlight__'],
-                    'number_of_fragments' => 0,
-                ],
-                'firstname' => [
-                    'pre_tags' => ['__aa-highlight__'],
-                    'post_tags' => ['__/aa-highlight__'],
-                    'number_of_fragments' => 0,
-                ],
-                'lastname' => [
                     'pre_tags' => ['__aa-highlight__'],
                     'post_tags' => ['__/aa-highlight__'],
                     'number_of_fragments' => 0,

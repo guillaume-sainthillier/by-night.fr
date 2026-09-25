@@ -245,24 +245,21 @@ final readonly class SearchProvider implements ProviderInterface
             $user = $result->getTransformed();
             $highlights = $result->getResult()->getHighlights();
 
-            $fullName = $user->getFirstname() && $user->getLastname()
-                ? $user->getFirstname() . ' ' . $user->getLastname()
-                : '';
+            // Only what the member's public profile shows: never their first or last name
+            $memberSince = $user->getCreatedAt()?->format('Y');
+            $shortDescription = null !== $memberSince ? 'Membre depuis ' . $memberSince : '';
 
             $results[] = new SearchResult(
                 id: 'user-' . $user->getId(),
                 type: 'users',
                 category: 'Membres',
                 label: $user->getUsername(),
-                shortDescription: $fullName,
+                shortDescription: $shortDescription,
                 description: $this->formatCount('{count, plural, one {# événement} other {# événements}}', $user->getUserEvents()->count()),
                 url: $this->urlGenerator->generate('app_user_index', ['slug' => $user->getSlug(), 'id' => $user->getId()]),
                 highlightResult: [
                     'label' => [
                         'value' => $highlights['username'][0] ?? $user->getUsername(),
-                    ],
-                    'shortDescription' => [
-                        'value' => $highlights['firstname'][0] ?? $highlights['lastname'][0] ?? $fullName,
                     ],
                 ],
             );
