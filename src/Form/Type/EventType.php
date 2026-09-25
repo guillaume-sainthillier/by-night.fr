@@ -213,7 +213,10 @@ final class EventType extends AbstractType
             $data->place->city->country = $data->place->country;
         }
 
-        $this->doctrineEventHandler->handleOne($data);
+        // Only judged here, for the validation to show the verdict: the controller saves the
+        // event once the whole form, its CSRF token included, is valid. Saved here, it was
+        // written (image upload included) whatever the validation found.
+        $this->doctrineEventHandler->judge($data);
     }
 
     /**

@@ -19,6 +19,7 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Form\Type\EventType;
+use App\Handler\DoctrineEventHandler;
 use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
@@ -54,7 +55,7 @@ final class EventController extends BaseController
     }
 
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager, DoctrineEventHandler $doctrineEventHandler): Response
     {
         if (!$this->isGranted(EventVoter::CREATE)) {
             return $this->redirectToRoute('app_event_list');
@@ -70,6 +71,7 @@ final class EventController extends BaseController
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $doctrineEventHandler->handleOne($eventDto);
             $user = $entityManager->getReference(User::class, $eventDto->user->entityId);
             $event = $entityManager->getReference(Event::class, $eventDto->entityId);
             $event->setParticipations(1);
@@ -106,7 +108,7 @@ final class EventController extends BaseController
 
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
-    public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
+    public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory, DoctrineEventHandler $doctrineEventHandler): Response
     {
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTimeImmutable());
@@ -117,6 +119,7 @@ final class EventController extends BaseController
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $doctrineEventHandler->handleOne($dto);
             $this->getEntityManager()->flush();
             $this->addFlash('success', 'Votre événement a bien été modifié');
 

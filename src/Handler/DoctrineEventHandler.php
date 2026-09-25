@@ -56,6 +56,26 @@ final readonly class DoctrineEventHandler
     }
 
     /**
+     * Runs the checks an event must pass to be kept (see Firewall::filterEvent()) and leaves
+     * their verdict on the DTO, without writing anything: the event form shows it as
+     * validation errors (EventConstraintValidator) before the event is saved with handleOne().
+     */
+    public function judge(EventDto $dto): void
+    {
+        $dto->reject = new Reject();
+        if (null !== $dto->place) {
+            $dto->place->reject = new Reject();
+        }
+
+        try {
+            $this->firewall->filterEvent($dto);
+        } finally {
+            // The exploration it noted is handleOne()'s business
+            $this->firewall->batchReset();
+        }
+    }
+
+    /**
      * @param EventDto[] $dtos
      */
     public function handleMany(array $dtos): void
