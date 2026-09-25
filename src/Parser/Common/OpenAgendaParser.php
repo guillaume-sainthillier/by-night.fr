@@ -16,6 +16,7 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
+use App\Enum\EventStatus;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Repository\CountryRepository;
@@ -277,6 +278,7 @@ final class OpenAgendaParser extends AbstractParser
         }
 
         $event->prices = $data['conditions'] ?? null;
+        $event->status = self::status($data['status'] ?? null);
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];
         $event->address = $location['address'];
@@ -342,5 +344,22 @@ final class OpenAgendaParser extends AbstractParser
         $code = strtoupper(trim($code));
 
         return 1 === preg_match('/^[A-Z]{2}$/', $code) ? $code : null;
+    }
+
+    /**
+     * OpenAgenda's status, {id, label} with includeLabels: 1 scheduled, 2 rescheduled, 3 moved
+     * online (still taking place), 4 postponed, 5 full, 6 cancelled. It was not read: a
+     * cancelled event was listed as taking place.
+     */
+    private static function status(mixed $status): ?EventStatus
+    {
+        $id = \is_array($status) ? ($status['id'] ?? null) : $status;
+
+        return match (is_numeric($id) ? (int) $id : null) {
+            4 => EventStatus::Postponed,
+            5 => EventStatus::SoldOut,
+            6 => EventStatus::Cancelled,
+            default => null,
+        };
     }
 }
