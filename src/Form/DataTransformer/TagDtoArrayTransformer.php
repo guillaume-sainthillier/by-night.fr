@@ -21,6 +21,13 @@ use Symfony\Component\Form\DataTransformerInterface;
 final class TagDtoArrayTransformer implements DataTransformerInterface
 {
     /**
+     * Stands for a comma inside a name, which the field and its tags widget would take for two
+     * themes: DataTourisme names some themes so ("Peintures, arts graphiques"). A single low-9
+     * quotation mark looks the same and nobody types it.
+     */
+    private const string COMMA_IN_NAME = "\u{201A}";
+
+    /**
      * Transforms a TagDto array to a comma-separated string (for display in form).
      */
     public function transform(mixed $value): ?string
@@ -30,7 +37,7 @@ final class TagDtoArrayTransformer implements DataTransformerInterface
         }
 
         $names = array_filter(array_map(
-            static fn (TagDto $dto) => $dto->name,
+            static fn (TagDto $dto) => null === $dto->name ? null : str_replace(',', self::COMMA_IN_NAME, $dto->name),
             $value
         ));
 
@@ -52,7 +59,10 @@ final class TagDtoArrayTransformer implements DataTransformerInterface
             return [];
         }
 
-        $names = array_filter(array_map(trim(...), explode(',', (string) $value)));
+        $names = array_filter(array_map(
+            static fn (string $name): string => trim(str_replace(self::COMMA_IN_NAME, ',', $name)),
+            explode(',', (string) $value)
+        ));
 
         return array_map(
             TagDto::fromString(...),
