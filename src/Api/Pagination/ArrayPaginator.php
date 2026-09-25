@@ -28,13 +28,16 @@ use Traversable;
 final readonly class ArrayPaginator implements IteratorAggregate, PaginatorInterface
 {
     /**
-     * @param list<T> $items
+     * @param list<T>  $items
+     * @param int|null $lastPage when the pages do not hold $itemsPerPage items of one list,
+     *                           as the search, which lists a few items of each type per page
      */
     public function __construct(
         private array $items,
         private int $totalItems,
         private int $currentPage,
         private int $itemsPerPage,
+        private ?int $lastPage = null,
     ) {
     }
 
@@ -45,6 +48,10 @@ final readonly class ArrayPaginator implements IteratorAggregate, PaginatorInter
 
     public function getLastPage(): float
     {
+        if (null !== $this->lastPage) {
+            return (float) max($this->lastPage, 1);
+        }
+
         if (0 >= $this->itemsPerPage) {
             return 1.;
         }
