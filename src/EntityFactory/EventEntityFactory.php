@@ -150,19 +150,19 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         /** @var TagEntityProvider $tagEntityProvider */
         $tagEntityProvider = $this->entityProviderHandler->getEntityProvider(TagDto::class);
 
-        // Build map of desired theme names (lowercase for comparison)
+        // Keyed by Tag::getUniqueKey(), the key the provider resolved them by: two spellings
+        // of one tag are one theme
         $desiredThemes = [];
         foreach ($dto->themes as $tagDto) {
             $tagEntity = $tagEntityProvider->getEntity($tagDto);
             if (null !== $tagEntity) {
-                $desiredThemes[mb_strtolower((string) $tagEntity->getName())] = $tagEntity;
+                $desiredThemes[$tagEntity->getUniqueKey()] = $tagEntity;
             }
         }
 
-        // Build map of existing theme names
         $existingThemes = [];
         foreach ($entity->getThemes() as $theme) {
-            $existingThemes[mb_strtolower((string) $theme->getName())] = $theme;
+            $existingThemes[$theme->getUniqueKey()] = $theme;
         }
 
         // Remove themes not in DTO
