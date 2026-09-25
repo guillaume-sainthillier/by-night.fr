@@ -951,6 +951,52 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame($hamlet->getId(), EventFactory::find(['externalId' => 'pau-73'])->getPlace()?->getCity()?->getId());
     }
 
+    /**
+     * A town the import cannot resolve leaves the place without a city: its postal code
+     * and town name are then all that locate it, and two places of one name in two
+     * départements stay two places.
+     */
+    public function testPlacesWithoutACityAreNotMergedAcrossTowns(): void
+    {
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-vendee', 'Salle des fêtes', 'Saint-Jean-de-Beugné', '85210'));
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-gard', 'Salle des fêtes', 'Saint-Jean-de-Serres', '30350'));
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-same-code', 'Salle des fêtes', 'Tuffalun', '85210'));
+
+        $vendee = EventFactory::find(['externalId' => 'sdf-vendee'])->getPlace();
+        $gard = EventFactory::find(['externalId' => 'sdf-gard'])->getPlace();
+        $sameCode = EventFactory::find(['externalId' => 'sdf-same-code'])->getPlace();
+        $this->assertNotNull($vendee);
+        $this->assertNull($vendee->getCity(), 'The town is unknown to the city table');
+        $this->assertNotSame($vendee->getId(), $gard?->getId(), 'Two départements, two places');
+        $this->assertNotSame($vendee->getId(), $sameCode?->getId(), 'One postal code, two towns, two places');
+        $this->assertSame('85210', PlaceFactory::find(['id' => $vendee->getId()])->getCityPostalCode(), 'The first place keeps its own address');
+    }
+
+    public function testAPlaceWithoutACityIsFoundAgainInItsTown(): void
+    {
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-1', 'Salle des fêtes', 'Tuffalun', '49700'));
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-2', 'Salle des Fêtes', 'TUFFALUN', '49700'));
+
+        $this->assertSame(
+            EventFactory::find(['externalId' => 'sdf-1'])->getPlace()?->getId(),
+            EventFactory::find(['externalId' => 'sdf-2'])->getPlace()?->getId(),
+        );
+    }
+
+    private function makeEventInUnknownTown(string $eventExternalId, string $placeName, string $town, string $postalCode): EventDto
+    {
+        $dto = $this->makeEventWithPlace($eventExternalId, $placeName);
+        \assert(null !== $dto->place?->city);
+        $dto->place->city->name = $town;
+        $dto->place->city->postalCode = $postalCode;
+
+        return $dto;
+    }
+
     private function makeEventWithPlace(
         string $eventExternalId,
         string $placeName,
