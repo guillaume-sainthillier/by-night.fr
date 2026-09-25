@@ -62,6 +62,8 @@ final readonly class OriginUrlResolver
         'uploads/documents',
         'uploads/users',
         'uploads/pages',
+        'uploads/cities',
+        'uploads/countries',
     ];
 
     public function __construct(
@@ -69,7 +71,7 @@ final readonly class OriginUrlResolver
         private CacheInterface $memoryCache,
         private LoggerInterface $logger,
         /**
-         * A locator rather than three arguments: probing stops at the first hit, so
+         * A locator rather than one argument per storage: probing stops at the first hit, so
          * the storages further down the list — and the S3 clients behind them — are
          * never built on the common path.
          */
@@ -77,6 +79,8 @@ final readonly class OriginUrlResolver
             'uploads/documents' => new Autowire(service: 'events.storage'),
             'uploads/users' => new Autowire(service: 'users.storage'),
             'uploads/pages' => new Autowire(service: 'pages.storage'),
+            'uploads/cities' => new Autowire(service: 'cities.storage'),
+            'uploads/countries' => new Autowire(service: 'countries.storage'),
         ])]
         private ContainerInterface $uploadStorages,
         #[Autowire(param: 'kernel.project_dir')]

@@ -33,6 +33,22 @@ flysystem:
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/pages'
 
+        countries.storage:
+            visibility: public
+            adapter: 'aws'
+            options:
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(S3_BUCKET_NAME)%'
+                prefix: 'uploads/countries'
+
+        cities.storage:
+            visibility: public
+            adapter: 'aws'
+            options:
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(S3_BUCKET_NAME)%'
+                prefix: 'uploads/cities'
+
         thumbs.s3_storage:
             visibility: public # objects must be readable anonymously: served straight from the bucket (picasso public_cache)
             adapter: 'aws'
@@ -58,4 +74,8 @@ when@test:
             events.storage:
                 adapter: 'memory'
             pages.storage:
+                adapter: 'memory'
+            countries.storage:
+                adapter: 'memory'
+            cities.storage:
                 adapter: 'memory'

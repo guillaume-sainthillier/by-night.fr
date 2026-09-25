@@ -10,10 +10,16 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\VichImageField;
 use App\Entity\Country;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
@@ -40,13 +46,25 @@ final class CountryCrudController extends AbstractCrudController
                 'atDisplayName',
                 'capital',
                 'postalCodeRegex',
+                'headline',
             ]);
+    }
+
+    #[Override]
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters->add('featured');
     }
 
     #[Override]
     public function configureFields(string $pageName): iterable
     {
-        $id = TextField::new('id', 'ID');
+        $identityPanel = FormField::addFieldset('Identité');
+        // The code is the primary key every city, place and event of the country points to:
+        // only set on creation
+        $id = TextField::new('id', 'Code pays')
+            ->setHelp('Code ISO 3166-1 alpha-2 en majuscules (FR, BE, CH…).')
+            ->setFormTypeOption('disabled', Crud::PAGE_EDIT === $pageName);
         $locale = TextField::new('locale');
         $name = TextField::new('name');
         $displayName = TextField::new('displayName');
@@ -55,11 +73,24 @@ final class CountryCrudController extends AbstractCrudController
         $postalCodeRegex = TextField::new('postalCodeRegex');
         $slug = TextField::new('slug');
 
+        $portalPanel = FormField::addFieldset('Portail');
+        $headline = TextField::new('headline', 'Accroche')
+            ->setHelp('Une phrase sous le nom du pays, en tête de son portail.');
+        $description = TextEditorField::new('description', 'Description')
+            ->setHelp('Présentation du pays affichée sur son portail.');
+        $heroImage = VichImageField::new('heroImageFile', 'Image de couverture');
+        $heroCaption = TextField::new('heroCaption', "Légende de l'image")
+            ->setHelp('Légende ou crédit photo affiché sur l’image de couverture.');
+        $featured = BooleanField::new('featured', 'Mis en avant');
+        $displayOrder = IntegerField::new('displayOrder', "Ordre d'affichage")
+            ->setHelp('Les plus petits en premier. Laissez vide pour ne pas classer le pays.');
+
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $displayName, $atDisplayName];
+            return [$id, $heroImage, $displayName, $atDisplayName, $featured, $displayOrder];
         }
 
         return [
+            $identityPanel,
             $id,
             $slug,
             $locale,
@@ -68,6 +99,13 @@ final class CountryCrudController extends AbstractCrudController
             $atDisplayName,
             $capital,
             $postalCodeRegex,
+            $portalPanel,
+            $headline,
+            $description,
+            $heroImage,
+            $heroCaption,
+            $featured,
+            $displayOrder,
         ];
     }
 }
