@@ -278,9 +278,21 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      * When set, this event is a duplicate and should redirect to the canonical event.
      * The duplicate event is kept for SEO purposes (existing URLs continue to work).
      */
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'duplicates')]
     #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'SET NULL')]
     private ?Event $duplicateOf = null;
+
+    /**
+     * The rows redirecting to this event: one page with it, deleted along with it. Left behind,
+     * the foreign key only emptied their duplicate_of_id and each came back as a page of its
+     * own, until the next import elected one in place of the deleted event: a takedown or an
+     * admin deletion did not hold. Removed through the entity manager, each is also recorded
+     * as deleted in its exploration (EventParserDataListener), so no import brings it back.
+     *
+     * @var Collection<int, Event>
+     */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'duplicateOf', cascade: ['remove'], fetch: 'EXTRA_LAZY')]
+    private Collection $duplicates;
 
     /**
      * Fingerprint of what makes an imported event the same event as another one of its
@@ -331,6 +343,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         $this->comments = new ArrayCollection();
         $this->timesheets = new ArrayCollection();
         $this->themes = new ArrayCollection();
+        $this->duplicates = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }
@@ -1285,6 +1298,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function isArchive(): ?bool
     {
         return $this->archive;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getDuplicates(): Collection
+    {
+        return $this->duplicates;
     }
 
     public function getDuplicateOf(): ?self
