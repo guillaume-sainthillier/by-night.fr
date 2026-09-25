@@ -37,5 +37,10 @@ interface ParserInterface
 
     public function getSkippedEvents(): int;
 
+    /**
+     * Records of the source the parser could not map, left out of the run.
+     */
+    public function getFailedRecords(): int;
+
     public function getCommandName(): string;
 }

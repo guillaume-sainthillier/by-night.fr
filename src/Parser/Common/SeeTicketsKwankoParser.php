@@ -25,7 +25,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Throwable;
 
 final class SeeTicketsKwankoParser extends AbstractParser
 {
@@ -118,15 +117,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
                 $data = array_combine($headers, $row);
 
                 // A malformed row is logged and skipped; a failure to publish stops the run
-                try {
-                    $event = $this->arrayToDto($data);
-                } catch (Throwable $e) {
-                    $this->logException($e, ['data' => $data]);
-
-                    continue;
-                }
-
-                yield $event;
+                yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($data), ['data' => $data]);
             }
         } finally {
             fclose($handle);

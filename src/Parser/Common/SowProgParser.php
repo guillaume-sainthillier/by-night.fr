@@ -70,7 +70,7 @@ final class SowProgParser extends AbstractParser
         $events = $response->toArray();
 
         foreach ($events['eventDescription'] as $eventAsArray) {
-            yield $this->arrayToDto($eventAsArray);
+            yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($eventAsArray), ['id' => $eventAsArray['id'] ?? null]);
         }
     }
 

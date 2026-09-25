@@ -15,6 +15,7 @@ use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Import\EventPublicationGuard;
 use BackedEnum;
+use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
@@ -32,6 +33,8 @@ abstract class AbstractParser implements ParserInterface
     private int $parsedEvents = 0;
 
     private int $skippedEvents = 0;
+
+    private int $failedRecords = 0;
 
     private EventPublicationGuard $publicationGuard;
 
@@ -93,6 +96,27 @@ abstract class AbstractParser implements ParserInterface
      * @return iterable<EventDto|null>
      */
     abstract protected function fetchEvents(?DateTimeImmutable $since): iterable;
+
+    /**
+     * Maps one record of the source. A record that cannot be mapped (a malformed date, a
+     * missing field) is logged and left out rather than ending the run: one bad record kept a
+     * whole source out, night after night, since a failed run does not move the watermark.
+     * EventsImportCommand still fails a run whose records mostly failed (a mapping bug).
+     *
+     * @param Closure(): (EventDto|null) $map
+     * @param array<string, mixed>       $context what identifies the record in the log
+     */
+    protected function mapRecord(Closure $map, array $context = []): ?EventDto
+    {
+        try {
+            return $map();
+        } catch (Throwable $exception) {
+            ++$this->failedRecords;
+            $this->logException($exception, $context);
+
+            return null;
+        }
+    }
 
     private function publish(EventDto $eventDto): void
     {
@@ -181,6 +205,14 @@ abstract class AbstractParser implements ParserInterface
     public function getSkippedEvents(): int
     {
         return $this->skippedEvents;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFailedRecords(): int
+    {
+        return $this->failedRecords;
     }
 
     /**

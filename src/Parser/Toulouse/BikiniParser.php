@@ -45,7 +45,7 @@ final class BikiniParser extends AbstractParser
         $data = json_decode(file_get_contents(self::EVENTS_URL), true, 512, \JSON_THROW_ON_ERROR);
 
         foreach ($data['events'] as $eventAsArray) {
-            yield $this->arrayToDto($eventAsArray);
+            yield $this->mapRecord(fn (): EventDto => $this->arrayToDto($eventAsArray), ['data' => $eventAsArray]);
         }
     }
 

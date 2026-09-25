@@ -67,7 +67,7 @@ final class OpenAgendaParser extends AbstractParser
     {
         foreach ($this->getAgendasUidAndSlugs() as [$agendaId, $agendaSlug]) {
             foreach ($this->getAgendaEvents($since, $agendaId) as $event) {
-                yield $this->arrayToDto($event, $agendaSlug);
+                yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($event, $agendaSlug), ['uid' => $event['uid'] ?? null, 'agenda' => $agendaSlug]);
             }
         }
     }

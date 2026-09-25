@@ -42,7 +42,7 @@ abstract class AbstractAwinParser extends AbstractParser
     protected function fetchEvents(?DateTimeImmutable $since): iterable
     {
         foreach ($this->parseCsvFile($this->downloadFeed()) as $data) {
-            yield $this->arrayToDto($data);
+            yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($data), ['data' => $data]);
         }
     }
 
