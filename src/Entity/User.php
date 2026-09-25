@@ -88,12 +88,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    #[Groups(['elasticsearch:user:details'])]
     private ?string $firstname = null;
 
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    #[Groups(['elasticsearch:user:details'])]
     private ?string $lastname = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -164,7 +162,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     /**
      * Only send to Elasticsearch when indexed fields change.
      *
-     * @see fos_elastica.yaml user index mapping (username, firstname, lastname)
+     * @see fos_elastica.yaml user index mapping (username)
      */
     public function shouldBeUpdated(): bool
     {
@@ -382,10 +380,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setFirstname(?string $firstname): self
     {
-        if ($this->firstname !== $firstname) {
-            $this->sendToElasticsearch = true;
-        }
-
         $this->firstname = $firstname;
 
         return $this;
@@ -398,10 +392,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function setLastname(?string $lastname): self
     {
-        if ($this->lastname !== $lastname) {
-            $this->sendToElasticsearch = true;
-        }
-
         $this->lastname = $lastname;
 
         return $this;

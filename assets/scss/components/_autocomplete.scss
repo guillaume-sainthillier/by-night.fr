@@ -187,3 +187,54 @@
         }
     }
 }
+
+// The categories or the cities the empty panel suggests, as chips. The panel lives in the detached container the
+// autocomplete appends to <body>, outside #autocomplete.
+.aa-DetachedContainer .aa-Source[data-autocomplete-source-id^='chips-'] {
+    .aa-List {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.25rem var(--aa-spacing-half) var(--aa-spacing-half);
+    }
+
+    .aa-Item {
+        display: block;
+        min-height: 0;
+        padding: 0;
+        background: none;
+    }
+
+    .aa-Chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.3125rem 0.75rem;
+        border: 1px solid rgba(var(--aa-panel-border-color-rgb), var(--aa-panel-border-color-alpha));
+        border-radius: var(--bs-border-radius-pill);
+        color: inherit;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition:
+            background-color 0.15s,
+            border-color 0.15s,
+            color 0.15s;
+    }
+
+    .aa-ChipCount {
+        min-width: 1.25rem;
+        margin-right: -0.25rem;
+        padding: 0 0.375rem;
+        background-color: var(--bs-secondary-bg);
+        border-radius: var(--bs-border-radius-pill);
+        color: var(--bs-secondary-color);
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+    .aa-Item[aria-selected='true'] .aa-Chip {
+        background-color: rgba(var(--aa-selected-color-rgb), var(--aa-selected-color-alpha));
+        border-color: rgba(var(--aa-primary-color-rgb), 1);
+        color: rgba(var(--aa-primary-color-rgb), 1);
+    }
+}

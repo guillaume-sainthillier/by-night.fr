@@ -17,6 +17,7 @@ use App\EventSubscriber\SitemapSuscriber;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppKernelTestCase;
@@ -96,6 +97,22 @@ final class SitemapSuscriberTest extends AppKernelTestCase
         UserEventFactory::createOne(['user' => $retired, 'event' => $this->createEvent($place, -60)]);
 
         self::assertSame([\sprintf('/membres/active--%d', $active->getId())], $this->collectSection('users'));
+    }
+
+    public function testTagsSectionOnlyListsTagsOfPublishedUpcomingEvents(): void
+    {
+        $place = $this->createPlace(CityFactory::toulouse()->create(), 'Le Bikini');
+        $jazz = TagFactory::createOne(['name' => 'Jazz']);
+        $published = EventFactory::createOne(['place' => $place, 'category' => $jazz, 'themes' => []] + $this->dates(10));
+        // Each left-out event carries its tag both ways: as its category and as a theme
+        $draft = TagFactory::createOne(['name' => 'Brouillon']);
+        EventFactory::createOne(['place' => $place, 'category' => $draft, 'themes' => [$draft], 'draft' => true] + $this->dates(10));
+        $duplicate = TagFactory::createOne(['name' => 'Doublon']);
+        EventFactory::createOne(['place' => $place, 'category' => $duplicate, 'themes' => [$duplicate], 'duplicateOf' => $published] + $this->dates(10));
+        $past = TagFactory::createOne(['name' => 'Passé']);
+        EventFactory::createOne(['place' => $place, 'category' => $past, 'themes' => [$past]] + $this->dates(-60));
+
+        self::assertSame([\sprintf('/toulouse/agenda/tag/jazz--%d', $jazz->getId())], $this->collectSection('tags'));
     }
 
     private function createPlace(City $city, string $name): Place

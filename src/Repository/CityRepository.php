@@ -229,6 +229,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->join(Event::class, 'e', 'WITH', 'e.place = p')
             ->join('e.category', 'cat')
             ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', date('Y-m-d'))
             ->groupBy('c.slug, cat.id, cat.slug')
             ->getQuery()
@@ -241,6 +243,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->join(Event::class, 'e', 'WITH', 'e.place = p')
             ->join('e.themes', 't')
             ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', date('Y-m-d'))
             ->groupBy('c.slug, t.id, t.slug')
             ->getQuery()
@@ -273,6 +277,26 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         shuffle($results);
 
         return \array_slice($results, 0, $limit);
+    }
+
+    /**
+     * The most populated cities of a country: the shortcuts of the search panel before a city is known.
+     *
+     * @return City[]
+     */
+    public function findBiggestOfCountry(string $countrySlug, int $limit): array
+    {
+        // createQueryBuilder() joins the country as "country"
+        return $this->createQueryBuilder('c')
+            ->where('country.slug = :country')
+            ->setParameter('country', $countrySlug)
+            ->orderBy('c.population', 'DESC')
+            ->addOrderBy('c.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            // Sorting the ~44k cities of France takes ~150 ms, and they only change with a GeoNames import
+            ->enableResultCache(86400) // 1 day
+            ->getResult();
     }
 
     public function findOneBySlug(string $slug): ?City

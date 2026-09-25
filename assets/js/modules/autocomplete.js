@@ -28,6 +28,7 @@ export default () => {
 
     const result = initAutocomplete({
         autocompleteSelector: '#autocomplete',
+        suggestionsUrl: $autocomplete.data('suggestionsUrl'),
         searchPlaceholder: 'Recherche',
         inputPlaceholder: 'Rechercher des événements, villes, membres…',
         globalSearchUrl,

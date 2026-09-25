@@ -400,6 +400,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->join('p.country', 'c')
             ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('events', 'DESC')
             ->groupBy('c.id')
@@ -625,6 +627,34 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
                 ->andWhere('p.city = :city')
                 ->setParameter('city', $location->getCity()->getId());
         }
+    }
+
+    /**
+     * The categories of the events to come in a city, the most frequent first: the shortcuts of the search panel.
+     *
+     * @return list<array{0: Tag, events: int|string}> each category, and its number of events to come
+     */
+    public function findUpcomingCategoriesOfCity(City $city, int $limit): array
+    {
+        return $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('t', 'COUNT(e.id) AS events')
+            ->from(Tag::class, 't')
+            ->join(Event::class, 'e', 'WITH', 'e.category = t.id')
+            ->join('e.place', 'p')
+            ->where('p.city = :city')
+            ->andWhere('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->setParameter('city', $city->getId())
+            ->setParameter('from', new DateTimeImmutable()->format('Y-m-d'))
+            ->groupBy('t.id')
+            ->orderBy('events', 'DESC')
+            ->addOrderBy('t.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

@@ -21,11 +21,13 @@ use App\Entity\Tag;
 use App\Entity\User;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
+use App\Factory\UserFactory;
 use App\SearchRepository\CityElasticaRepository;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use App\Tests\AppKernelTestCase;
+use DateTimeImmutable;
 use Elastica\Result;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use FOS\ElasticaBundle\HybridResult;
@@ -77,6 +79,27 @@ final class SearchProviderTest extends AppKernelTestCase
         $results = $this->search(page: 1, events: 10, cities: 1);
 
         self::assertSame(3.0, $results->getLastPage());
+    }
+
+    /**
+     * The first and last names are private: a member is shown as on their public profile.
+     */
+    public function testAMemberIsListedWithoutTheirPrivateName(): void
+    {
+        $user = UserFactory::createOne(['username' => 'jazzfan', 'firstname' => 'Jeanne', 'lastname' => 'Dupont']);
+        $user->setCreatedAt(new DateTimeImmutable('2019-03-14'));
+
+        $results = iterator_to_array($this->createProvider([User::class => [self::hit($user)]])->provide(
+            new GetCollection(paginationItemsPerPage: self::ITEMS_PER_PAGE),
+            context: ['filters' => ['q' => 'jazzfan']],
+        ));
+
+        self::assertSame('Jazzfan', $results[0]->label);
+        self::assertSame('Membre depuis 2019', $results[0]->shortDescription);
+
+        $json = json_encode($results, \JSON_THROW_ON_ERROR);
+        self::assertStringNotContainsString('Jeanne', $json);
+        self::assertStringNotContainsString('Dupont', $json);
     }
 
     public function testAnEmptyQueryFindsNothing(): void
