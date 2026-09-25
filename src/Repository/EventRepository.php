@@ -400,6 +400,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->join('p.country', 'c')
             ->where('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('events', 'DESC')
             ->groupBy('c.id')
