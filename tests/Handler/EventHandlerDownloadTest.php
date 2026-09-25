@@ -20,10 +20,14 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Vich\UploaderBundle\Handler\UploadHandler;
 
 final class EventHandlerDownloadTest extends AppKernelTestCase
 {
+    private const string GIF = "GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x01D\x00;";
+
     /**
      * Each image URL must be fetched with a single GET — no preflight HEAD.
      */
@@ -165,6 +169,84 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
 
         $this->assertNull($event->getImageSystemFile());
         $this->assertNull($event->getImageSystemHash());
+    }
+
+    public function testAnImageAnnouncedTooLargeIsNotDownloaded(): void
+    {
+        $client = new MockHttpClient(new MockResponse(self::largeGif(), [
+            'http_code' => 200,
+            'response_headers' => ['Content-Length' => (string) self::largeGifSize()],
+        ]));
+        $event = EventFactory::createOne(['url' => 'https://example.test/huge.gif']);
+
+        $this->download($client, $event);
+
+        $this->assertNull($event->getImageSystemFile());
+    }
+
+    public function testAnImageGrowingPastTheLimitIsGivenUp(): void
+    {
+        // No Content-Length: the size is only known once the bytes come
+        $client = new MockHttpClient(new MockResponse(self::largeGif(), ['http_code' => 200]));
+        $event = EventFactory::createOne(['url' => 'https://example.test/endless.gif']);
+
+        $this->download($client, $event);
+
+        $this->assertNull($event->getImageSystemFile());
+    }
+
+    /**
+     * A GIF past the limit: its header makes the whole file pass for a GIF.
+     *
+     * @return iterable<string>
+     */
+    private static function largeGif(): iterable
+    {
+        yield self::GIF;
+        for ($i = 0; $i <= EventHandler::MAX_IMAGE_BYTES / 1_000_000; ++$i) {
+            yield str_repeat("\0", 1_000_000);
+        }
+    }
+
+    private static function largeGifSize(): int
+    {
+        return \strlen(self::GIF) + (intdiv(EventHandler::MAX_IMAGE_BYTES, 1_000_000) + 1) * 1_000_000;
+    }
+
+    public function testADownloadIsBoundedInTime(): void
+    {
+        $options = [];
+        $client = new MockHttpClient(static function (string $method, string $url, array $requestOptions) use (&$options): MockResponse {
+            $options = $requestOptions;
+
+            return new MockResponse('', ['http_code' => 200]);
+        });
+        $event = new Event();
+        $event->setUrl('https://example.test/a.jpg');
+
+        $this->download($client, $event);
+
+        $this->assertGreaterThan(0, $options['max_duration'] ?? 0);
+    }
+
+    public function testImagesAreNeverDownloadedFromThePrivateNetwork(): void
+    {
+        $client = self::getContainer()->get('app.image_download_client');
+        $this->assertInstanceOf(HttpClientInterface::class, $client);
+
+        $this->expectException(TransportExceptionInterface::class);
+        $client->request('GET', 'http://169.254.169.254/latest/meta-data/')->getStatusCode();
+    }
+
+    private function download(MockHttpClient $client, Event $event): void
+    {
+        $handler = $this->makeHandler($client);
+
+        try {
+            $handler->handleDownloads([$event]);
+        } finally {
+            $handler->reset();
+        }
     }
 
     private function makeHandler(MockHttpClient $client): EventHandler
