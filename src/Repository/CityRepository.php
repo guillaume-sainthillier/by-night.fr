@@ -128,9 +128,9 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         }
 
         $wheres = [];
-        $queryBuilder = parent::createQueryBuilder('c')
-            ->addSelect('country')
-            ->join('c.country', 'country');
+        // With its parent: an association to the root of the admin_zone inheritance cannot be
+        // proxied, so Doctrine would otherwise load each city's parent with a query of its own
+        $queryBuilder = $this->createQueryBuilder('c');
 
         $i = 1;
         foreach ($cityNameWheres as $countryId => $cityNames) {
@@ -166,9 +166,9 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         }
 
         $wheres = [];
-        $queryBuilder = parent::createQueryBuilder('c')
-            ->addSelect('country')
-            ->join('c.country', 'country')
+        // With its parent, see findByNames()
+        $queryBuilder = $this
+            ->createQueryBuilder('c')
             ->join('c.zipCities', 'z');
 
         $i = 1;

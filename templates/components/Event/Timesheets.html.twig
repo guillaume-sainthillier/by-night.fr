@@ -1,0 +1,58 @@
+{#
+    An event's sessions, the next ones first. A long list (an exhibition open every day for
+    months) shows its next `visible` sessions only: the past ones fold before them and the
+    later ones after, in <details> that need no JavaScript and keep every date in the markup.
+#}
+{# @var event \App\Entity\Event #}
+{% props event, visible = 5 %}
+{% set today = 'now'|date('Y-m-d') %}
+{% set sessions = event.timesheets.toArray %}
+{% set past = sessions|filter(timesheet => timesheet.endAt|date('Y-m-d') < today) %}
+{% set coming = sessions|filter(timesheet => timesheet.endAt|date('Y-m-d') >= today) %}
+{% if coming is empty %}
+    {# Over: nothing to come to put first, the list reads from the start #}
+    {% set coming = sessions %}
+    {% set past = [] %}
+{% endif %}
+{% set shown = coming|slice(0, visible) %}
+{% set later = coming|slice(visible) %}
+{# Folding a single date would only swap it for a link #}
+{% if past|length < 2 %}
+    {% set shown = past|merge(shown) %}
+    {% set past = [] %}
+{% endif %}
+{% if later|length < 2 %}
+    {% set shown = shown|merge(later) %}
+    {% set later = [] %}
+{% endif %}
+<div {{ attributes.defaults({class: 'timesheets'}) }}>
+    {% if past is not empty %}
+        <details class="timesheets-fold">
+            <summary class="btn btn-sm btn-outline-secondary">
+                <twig:Icon name="lucide:chevron-right" />
+                <span class="timesheets-fold-show">{{ '{count, plural, one {Voir la date passée} other {Voir les # dates passées}}'|trans({count: past|length}, 'messages+intl-icu') }}</span>
+                <span class="timesheets-fold-hide">{{ '{count, plural, one {Masquer la date passée} other {Masquer les # dates passées}}'|trans({count: past|length}, 'messages+intl-icu') }}</span>
+            </summary>
+            {% for timesheet in past %}
+                <twig:Event:Timesheets:Entry timesheet="{{ timesheet }}" past="{{ true }}" />
+            {% endfor %}
+        </details>
+    {% endif %}
+
+    {% for timesheet in shown %}
+        <twig:Event:Timesheets:Entry timesheet="{{ timesheet }}" past="{{ timesheet.endAt|date('Y-m-d') < today }}" />
+    {% endfor %}
+
+    {% if later is not empty %}
+        <details class="timesheets-fold">
+            <summary class="btn btn-sm btn-outline-secondary">
+                <twig:Icon name="lucide:chevron-right" />
+                <span class="timesheets-fold-show">{{ '{count, plural, one {Voir la date suivante} other {Voir les # dates suivantes}}'|trans({count: later|length}, 'messages+intl-icu') }}</span>
+                <span class="timesheets-fold-hide">{{ '{count, plural, one {Masquer la date suivante} other {Masquer les # dates suivantes}}'|trans({count: later|length}, 'messages+intl-icu') }}</span>
+            </summary>
+            {% for timesheet in later %}
+                <twig:Event:Timesheets:Entry timesheet="{{ timesheet }}" />
+            {% endfor %}
+        </details>
+    {% endif %}
+</div>

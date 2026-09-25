@@ -294,20 +294,26 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * User in types.event.persistence.provider.query_builder_method (fos_elastice.yaml)
+     * The events of the search index, paged by id by App\Elasticsearch\Pager\EventPagerProvider.
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
     {
         return $this
             ->createQueryBuilder('e')
             ->where('e.duplicateOf IS NULL')
-            ->andWhere('e.draft = false')
-            // The populate pages through this query with LIMIT/OFFSET: an import batch shares its
-            // createdAt second, and without a unique tie-breaker MySQL may order those rows
-            // differently from one page to the next, indexing some twice and skipping others
-            ->addOrderBy('e.createdAt', 'DESC')
-            ->addOrderBy('e.id', 'DESC')
-        ;
+            ->andWhere('e.draft = false');
+    }
+
+    /**
+     * Highest id of the table, drafts and duplicates included.
+     */
+    public function findMaxId(): int
+    {
+        return (int) $this
+            ->createQueryBuilder('e')
+            ->select('MAX(e.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function countActiveEvents(): int

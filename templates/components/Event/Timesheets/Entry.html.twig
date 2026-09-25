@@ -1,0 +1,22 @@
+{# @var timesheet \App\Entity\EventTimesheet #}
+{% props timesheet, past = false %}
+<div {{ attributes.defaults({class: 'timesheet-entry' ~ (past ? ' timesheet-entry-past' : '')}) }}>
+    {% if timesheet.startAt|date('Y-m-d') == timesheet.endAt|date('Y-m-d') %}
+        Le
+        <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
+            {{ timesheet.startAt|format_date('full') }}
+        </time>
+    {% else %}
+        Du
+        <time datetime="{{ timesheet.startAt|date('Y-m-d\\TH:i:sO') }}">
+            {{ timesheet.startAt|format_date('full') }}
+        </time>
+        au
+        <time datetime="{{ timesheet.endAt|date('Y-m-d\\TH:i:sO') }}">
+            {{ timesheet.endAt|format_date('full') }}
+        </time>
+    {% endif %}
+    {% if timesheet.hours %}
+        <span class="text-muted">({{ timesheet.hours }})</span>
+    {% endif %}
+</div>

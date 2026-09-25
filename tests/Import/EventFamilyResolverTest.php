@@ -22,8 +22,9 @@ use App\Factory\UserFactory;
 use App\Import\EventFamilyResolver;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use Override;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * Integration tests for the family resolution: rows describing the same event under
@@ -35,8 +36,6 @@ final class EventFamilyResolverTest extends AppKernelTestCase
 
     private EventFamilyResolver $resolver;
 
-    private EntityManagerInterface $entityManager;
-
     private Place $place;
 
     private User $user;
@@ -46,7 +45,6 @@ final class EventFamilyResolverTest extends AppKernelTestCase
     {
         parent::setUp();
         $this->resolver = self::getContainer()->get(EventFamilyResolver::class);
-        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
 
         // One venue and one user for every row, so Country's app-assigned PK is created once
         $country = CountryFactory::createOne(['id' => 'FR']);
@@ -90,7 +88,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
             $duplicate->removeTimesheet($timesheet);
         }
 
-        $this->entityManager->flush();
+        save($duplicate);
         EventTimesheetFactory::new()->on('2026-10-11', 'À 20h30')->create(['event' => $duplicate]);
 
         $this->resolve([$secondId]);
@@ -108,8 +106,9 @@ final class EventFamilyResolverTest extends AppKernelTestCase
     {
         $firstId = $this->sibling('oa-1', '2026-10-03');
         $secondId = $this->sibling('oa-2', '2026-10-10');
-        $this->reload($firstId)->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
-        $this->entityManager->flush();
+        $canonical = $this->reload($firstId);
+        $canonical->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
+        save($canonical);
 
         $this->resolve([$secondId]);
 
@@ -126,8 +125,9 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         $inheritedId = $this->inheritedTimesheetId($firstId);
         self::assertNotNull($inheritedId);
 
-        $this->reload($firstId)->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
-        $this->entityManager->flush();
+        $canonical = $this->reload($firstId);
+        $canonical->setUpdatedAt(new DateTimeImmutable('2020-01-01'));
+        save($canonical);
 
         $this->resolve([$firstId, $secondId]);
         $this->resolve([$firstId]);
@@ -145,8 +145,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         $this->resolve([$secondId]);
 
         // The organizer rewrote the second event: it describes something else now
-        $this->reload($secondId)->setIdentityHash(sha1('something else'));
-        $this->entityManager->flush();
+        save($this->reload($secondId)->setIdentityHash(sha1('something else')));
 
         $this->resolve([$secondId]);
 
@@ -164,8 +163,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         // Linked the other way round than the id order, as links made before the identity hash may be
         $olderId = $this->sibling('oa-1', '2026-10-03');
         $newerId = $this->sibling('oa-2', '2026-10-10');
-        $this->reload($olderId)->setDuplicateOf($this->reload($newerId));
-        $this->entityManager->flush();
+        save($this->reload($olderId)->setDuplicateOf($this->reload($newerId)));
 
         $this->resolve([$olderId]);
 
@@ -260,17 +258,16 @@ final class EventFamilyResolverTest extends AppKernelTestCase
     }
 
     /**
-     * Run the resolver the way the import does: on a cleared manager, then forget everything.
-     *
      * @param int[] $ids
      */
     private function resolve(array $ids): void
     {
-        $this->entityManager->clear();
         $this->resolver->resolveForEvents($ids);
-        $this->entityManager->clear();
     }
 
+    /**
+     * Read back from the database: Foundry refreshes what it finds.
+     */
     private function reload(int $id): Event
     {
         return EventFactory::find(['id' => $id]);

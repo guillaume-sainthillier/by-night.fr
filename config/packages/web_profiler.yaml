@@ -1,9 +1,12 @@
 when@dev:
+    # Only in debug mode: the Messenger workers run with --no-debug, and the profiler's collectors
+    # (the serializer's keeps every object it serializes) are never reset in a long-running process
     web_profiler:
-        toolbar: true
+        toolbar: '%kernel.debug%'
 
     framework:
-        profiler: true
+        profiler:
+            enabled: '%kernel.debug%'
 
 when@test:
     framework:

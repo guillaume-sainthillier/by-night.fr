@@ -11,8 +11,9 @@
 namespace App\EventSubscriber;
 
 use App\Elasticsearch\ElasticaMode;
+use App\Elasticsearch\Handler\RefreshElasticaIndexHandler;
 use App\Elasticsearch\Message\RefreshElasticaIndex;
-use Elastica\Index\Settings;
+use App\Elasticsearch\Pager\IdRangeCeilings;
 use FOS\ElasticaBundle\Event\AbstractIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PostIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PreIndexPopulateEvent;
@@ -26,6 +27,8 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
         private IndexManager $indexManager,
         private ElasticaMode $elasticaMode,
         private MessageBusInterface $messageBus,
+        private IdRangeCeilings $idRangeCeilings,
+        private RefreshElasticaIndexHandler $refreshElasticaIndexHandler,
     ) {
     }
 
@@ -33,6 +36,10 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $index->getSettings()->setRefreshInterval('-1');
+
+        // Each populate counts its pages down from the highest id at its start (see IdRangePager):
+        // the pager provider, called right after this event, reads it again for the workers
+        $this->idRangeCeilings->forget($event->getIndex());
 
         if (!$this->isAsync($event)) {
             $this->elasticaMode->setSynchronous(true);
@@ -49,9 +56,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
 
         $this->elasticaMode->setSynchronous(false);
 
-        $index = $this->indexManager->getIndex($event->getIndex());
-        $index->forcemerge(['max_num_segments' => 5]);
-        $index->getSettings()->setRefreshInterval(Settings::DEFAULT_REFRESH_INTERVAL);
+        ($this->refreshElasticaIndexHandler)(new RefreshElasticaIndex($event->getIndex()));
     }
 
     private function isAsync(AbstractIndexPopulateEvent $event): bool

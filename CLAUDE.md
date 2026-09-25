@@ -90,27 +90,45 @@ npx eslint --fix "assets/**/*.{js,jsx}"            # ESLint for JavaScript
 
 ### Test Fixtures — Foundry
 
-Tests build their fixtures with **Zenstruck Foundry** factories (`src/Factory/`), **never by hand through the `EntityManager`**. Factories extend `PersistentProxyObjectFactory`, so each created object is a proxy exposing an Active-Record-like API.
+Tests build, change, query and delete their fixtures with **Zenstruck Foundry** (`src/Factory/`), **never through the `EntityManager`**: no `persist()`, `flush()`, `remove()`, `clear()` or `refresh()` in a test. Passing the `EntityManager` to a service the test builds by hand (or stubbing it to build a `QueryBuilder`) is fine: that is wiring, not fixtures.
+
+Factories extend `PersistentObjectFactory` with `enable_auto_refresh_with_lazy_objects` (PHP 8.4 lazy objects): created objects are plain entities, and the persistence helpers are functions, not proxy methods (`_save()`, `_refresh()`, `_delete()` do not exist here).
 
 ```php
 use App\Factory\EventFactory;
+use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\flush_after;
+use function Zenstruck\Foundry\Persistence\refresh;
+use function Zenstruck\Foundry\Persistence\save;
 
-$event = EventFactory::createOne(['name' => 'Test']);    // persisted proxy
-$event->_delete();                                        // remove + flush
-$event->_refresh();                                       // reload from the DB
+$event = EventFactory::createOne(['name' => 'Test']);    // persisted + flushed
+$event->setName('Renamed');
+save($event);                                             // persist + flush a change
+refresh($event);                                          // reload from the DB
+delete($event);                                           // remove + flush
 
-EventFactory::find(['externalId' => 'x']);                // single result (throws if missing)
+EventFactory::find(['externalId' => 'x']);                // single result, read from the DB (throws if missing)
 EventFactory::findBy(['email' => 'a@b.c']);               // list
 EventFactory::count(['duplicateOf' => null]);             // fresh COUNT(*), ignores the unit of work
 ```
 
+Instead of the `EntityManager`:
+
+| Instead of                                                                                                                | Use                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `new Entity()` + `persist()` + `flush()`                                                                                  | `XFactory::createOne([...])` (add the factory in `src/Factory/` if missing)                                                                            |
+| changing an entity then `$em->flush()`                                                                                    | `save($entity)`                                                                                                                                        |
+| `$em->remove()` + `flush()`                                                                                               | `delete($entity)`; several in one flush: `flush_after(fn () => …)`                                                                                     |
+| `$em->refresh()`, or `clear()` to read back what was written                                                              | `refresh($entity)`, or `XFactory::find([...])`, which already returns the DB state                                                                     |
+| `$em->getRepository(X::class)->count()/findBy()`                                                                          | `XFactory::count()/findBy()/all()`                                                                                                                     |
+| `$em->clear()` to start from an empty identity map (a query-count test, code that runs after the import loops' `clear()`) | `self::bootKernel()`: a fresh kernel has a fresh entity manager. DAMA keeps the same connection and transaction, and Foundry follows the new container |
+
 Conventions:
 
-- **Add a factory** in `src/Factory/` for any entity a test needs — don't `new` + `persist()`/`flush()` in the test, and don't pull the `EntityManager` to create, query, or delete fixtures.
-- **Deleting several entities in one flush** (e.g. to exercise an `onFlush`/`postFlush` listener's de-duplication): wrap the `_delete()` calls in `flush_after(fn () => …)` so they share a single flush instead of one flush each.
-- **Asserting "nothing was persisted"** after code that leaves unflushed in-memory changes (e.g. a `--dry-run` command): use `Factory::count(...)`, which runs a fresh `SELECT COUNT(*)` and ignores the dirty unit of work. Don't use `find()` here — the proxy's auto-refresh throws `ObjectHasUnsavedChanges` on dirty entities.
-- Use the `ResetDatabase` + `Factories` traits (see `tests/AppKernelTestCase.php`).
+- **Deleting several entities in one flush** (e.g. to exercise an `onFlush`/`postFlush` listener's de-duplication): wrap the `delete()` calls in `flush_after(fn () => …)` so they share a single flush instead of one flush each.
+- **Asserting "nothing was persisted"** after code that leaves unflushed in-memory changes (e.g. a `--dry-run` command): use `Factory::count(...)`, which runs a fresh `SELECT COUNT(*)` and ignores the dirty unit of work. Don't use `find()` here: Foundry's auto-refresh throws `ObjectHasUnsavedChanges` on dirty entities.
+- **Testing detached entities**: a persisting factory swaps any detached object it is given for its managed instance, which hides "A new entity was found through the relationship" errors. Build the object with `XFactory::new()->withoutPersisting()->create([...])`, then `save()` it: `save()` persists it as is (see `CountryImporterTest`).
+- No trait to add: the `FoundryExtension` and DAMA `PHPUnitExtension` (`phpunit.xml.dist`) boot Foundry and wrap each test in a rolled-back transaction; `AppKernelTestCase` only boots the kernel.
 - Fetch up-to-date Foundry usage from context7 (`/zenstruck/foundry`) rather than guessing the 2.x API.
 
 ### Email Tests (MJML)

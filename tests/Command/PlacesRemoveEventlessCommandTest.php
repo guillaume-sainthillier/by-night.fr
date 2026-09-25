@@ -18,7 +18,6 @@ use App\Factory\PlaceMetadataFactory;
 use App\Factory\PlaceNameSlugFactory;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use Override;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -54,8 +53,6 @@ final class PlacesRemoveEventlessCommandTest extends AppKernelTestCase
 
         // Just created: its events may still be on their way
         PlaceFactory::createOne(['name' => 'Salle toute neuve', 'createdAt' => new DateTimeImmutable(), ...$location]);
-
-        self::getContainer()->get(EntityManagerInterface::class)->clear();
     }
 
     public function testPreviewListsWithoutDeleting(): void

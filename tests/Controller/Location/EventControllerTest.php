@@ -13,9 +13,11 @@ namespace App\Tests\Controller\Location;
 use App\Entity\Event;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use DateTimeImmutable;
+use IntlDateFormatter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class EventControllerTest extends WebTestCase
@@ -94,6 +96,78 @@ final class EventControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('meta[name="robots"]');
         self::assertSelectorNotExists('#event-ended');
+    }
+
+    public function testALongListShowsTheNextSessionsAndFoldsThePastAndLaterOnes(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEventWithSessions([-3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(5, '.timesheets > .timesheet-entry');
+        self::assertSelectorTextContains('.timesheets > .timesheet-entry', $this->day(1), 'The next session comes first');
+        self::assertSelectorCount(2, '.timesheets > details');
+        self::assertSelectorTextContains('.timesheets > details:first-child summary', 'Voir les 3 dates passées');
+        self::assertSelectorCount(3, '.timesheets > details:first-child .timesheet-entry-past');
+        self::assertSelectorTextContains('.timesheets > details:last-child summary', 'Voir les 4 dates suivantes');
+        self::assertSelectorCount(12, '.timesheets .timesheet-entry', 'Every date stays in the page');
+    }
+
+    public function testAFoldOfASingleDateIsNotWorthALink(): void
+    {
+        $client = self::createClient();
+        // One past session and six to come: five shown, one left over
+        $event = $this->createEventWithSessions([-1, 1, 2, 3, 4, 5, 6]);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('.timesheets details');
+        self::assertSelectorCount(7, '.timesheets > .timesheet-entry');
+        self::assertSelectorCount(1, '.timesheets > .timesheet-entry-past');
+    }
+
+    public function testAnEventThatIsOverListsItsSessionsFromTheStart(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEventWithSessions([-20, -19, -18, -17, -16, -15, -14, -13]);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(5, '.timesheets > .timesheet-entry');
+        self::assertSelectorTextContains('.timesheets > .timesheet-entry', $this->day(-20));
+        self::assertSelectorCount(1, '.timesheets > details');
+        self::assertSelectorTextContains('.timesheets > details summary', 'Voir les 3 dates suivantes');
+    }
+
+    /**
+     * @param list<int> $days sessions, in days from today
+     */
+    private function createEventWithSessions(array $days): Event
+    {
+        $city = CityFactory::toulouse()->create();
+
+        return EventFactory::createOne([
+            'name' => 'Exposition',
+            'place' => PlaceFactory::createOne(['city' => $city, 'country' => $city->getCountry()]),
+            'startDate' => new DateTimeImmutable(\sprintf('%+d days', min($days))),
+            'endDate' => new DateTimeImmutable(\sprintf('%+d days', max($days))),
+            'timesheets' => array_map(
+                static fn (int $day) => EventTimesheetFactory::new()->on(\sprintf('%+d days', $day)),
+                $days,
+            ),
+        ]);
+    }
+
+    /**
+     * A session's day as the page writes it, e.g. "samedi 26 septembre 2026".
+     */
+    private function day(int $offset): string
+    {
+        return new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE)->format(new DateTimeImmutable(\sprintf('%+d days', $offset)));
     }
 
     private function createEvent(?DateTimeImmutable $date = null, bool $draft = false): Event

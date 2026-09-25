@@ -14,7 +14,6 @@ use App\Dto\EventDto;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * The Fnac feed lists one CSV row per ticket product, so a single show appears as
@@ -105,6 +104,13 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         self::assertCount(2, $events, 'Same name at different places are different shows.');
     }
 
+    public function testThePosterIsKeptAsServed(): void
+    {
+        $events = $this->groupEvents([$this->row('60000001', 'Affiche', '10', '2026-10-01', '20:00')]);
+
+        self::assertSame('https://www.fnacspectacles.com/obj/poster_547641_4260525_222x222.jpg', $events[0]->imageUrl);
+    }
+
     /**
      * @param list<array<string, string>> $rows
      *
@@ -114,30 +120,14 @@ final class FnacSpectaclesAwinParserTest extends TestCase
     {
         $ref = new ReflectionClass(FnacSpectaclesAwinParser::class);
 
-        // Build the parser without its container dependencies and stub the cache so
-        // image-url resolution never touches the network.
+        // Built without its container dependencies: no HTTP client, so grouping a feed
+        // cannot send a request.
         $parser = $ref->newInstanceWithoutConstructor();
-        $ref->getProperty('cache')->setValue($parser, $this->stubCache());
 
         /** @var list<EventDto> $events */
         $events = $ref->getMethod('groupEvents')->invoke($parser, $rows);
 
         return $events;
-    }
-
-    private function stubCache(): CacheInterface
-    {
-        return new class implements CacheInterface {
-            public function get(string $key, callable $callback, ?float $beta = null, ?array &$metadata = null): mixed
-            {
-                return 'https://image.example/poster.jpg';
-            }
-
-            public function delete(string $key): bool
-            {
-                return true;
-            }
-        };
     }
 
     /**

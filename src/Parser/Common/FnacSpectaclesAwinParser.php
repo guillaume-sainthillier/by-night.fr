@@ -22,8 +22,6 @@ use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class FnacSpectaclesAwinParser extends AbstractAwinParser
@@ -39,7 +37,6 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         string $tempPath,
         #[Autowire(env: 'AWIN_API_KEY')]
         string $awinApiKey,
-        private readonly CacheInterface $cache,
     ) {
         parent::__construct($logger, $messageBus, $eventHandler, $httpClient, $tempPath, $awinApiKey);
     }
@@ -172,7 +169,9 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));
-        $event->imageUrl = $this->getImageUrl($data['merchant_image_url'] ?? '');
+        // As served: the feed links 222x222 thumbnails with no larger variant, so there is
+        // nothing to look up (a "grand/" to "600/" rewrite once checked each poster with a HEAD)
+        $event->imageUrl = $data['merchant_image_url'] ?? null;
         $event->prices = \sprintf('%s€', $data['search_price']);
         $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
         $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
@@ -281,22 +280,5 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
     private function formatPrice(float $price): string
     {
         return rtrim(rtrim(number_format($price, 2, '.', ''), '0'), '.');
-    }
-
-    private function getImageUrl(string $url): string
-    {
-        return $this->cache->get('fnac.urls.' . md5($url), function () use ($url) {
-            $imageUrl = str_replace('grand/', '600/', $url);
-            try {
-                $response = $this->httpClient->request('HEAD', $imageUrl);
-
-                if (200 === $response->getStatusCode()) {
-                    return $imageUrl;
-                }
-            } catch (TransportExceptionInterface) {
-            }
-
-            return $url;
-        });
     }
 }
