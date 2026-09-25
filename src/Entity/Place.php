@@ -16,6 +16,7 @@ use App\Contracts\ExternalIdentifiablesInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Reject\Reject;
+use App\Repository\PlaceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -28,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'place_name_idx', columns: ['name'])]
 #[ORM\Index(name: 'place_slug_idx', columns: ['slug'])]
 #[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PlaceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {

@@ -138,6 +138,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadTimesheets();
             $loadThemes();
         }
+
+        if ('admin:index' === $view) {
+            $loadPlaces();
+            $loadUsers();
+        }
     }
 
     /**

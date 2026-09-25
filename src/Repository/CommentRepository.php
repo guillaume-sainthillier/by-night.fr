@@ -42,6 +42,13 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
 
     public function loadAllEager(array $entities, array $context = []): void
     {
+        if ('admin:index' === ($context['view'] ?? null)) {
+            $this->preloadManager->preloadEntities(Event::class, array_map(static fn (Comment $entity) => $entity->getEvent()?->getId(), $entities));
+            $this->preloadManager->preloadEntities(User::class, array_map(static fn (Comment $entity) => $entity->getUser()?->getId(), $entities));
+
+            return;
+        }
+
         $comments = $entities;
         foreach ($entities as $entity) {
             // Replies fetched along with their comment (findAllByEventQueryBuilder) are rendered with it

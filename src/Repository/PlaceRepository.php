@@ -11,10 +11,14 @@
 namespace App\Repository;
 
 use App\Contracts\DtoFindableRepositoryInterface;
+use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\PlaceDto;
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\PlaceMetadata;
+use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -24,19 +28,33 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<Place>
  *
  * @implements DtoFindableRepositoryInterface<PlaceDto, Place>
+ * @implements MultipleEagerLoaderInterface<Place>
  *
  * @method Place|null find($id, $lockMode = null, $lockVersion = null)
  * @method Place|null findOneBy(array $criteria, array $orderBy = null)
  * @method Place[]    findAll()
  * @method Place[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-final class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
+final class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface, MultipleEagerLoaderInterface
 {
     use DtoFindableTrait;
 
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PreloadManager $preloadManager,
+    ) {
         parent::__construct($registry, Place::class);
+    }
+
+    public function loadAllEager(array $entities, array $context = []): void
+    {
+        if ('admin:index' !== ($context['view'] ?? null)) {
+            return;
+        }
+
+        // A city is named after its region (City::getFullName()), which CityRepository joins
+        $this->preloadManager->preloadEntities(City::class, array_map(static fn (Place $entity) => $entity->getCity()?->getId(), $entities));
+        $this->preloadManager->preloadEntities(Country::class, array_map(static fn (Place $entity) => $entity->getCountry()?->getId(), $entities));
     }
 
     /**

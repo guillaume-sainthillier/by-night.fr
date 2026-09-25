@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Repository\EventTimesheetRepository;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -19,7 +20,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: EventTimesheetRepository::class)]
 #[ORM\Index(name: 'event_timesheet_event_idx', columns: ['event_id'])]
 #[ORM\Index(name: 'event_timesheet_start_idx', columns: ['start_at'])]
 #[ORM\Index(name: 'event_timesheet_end_idx', columns: ['end_at'])]
