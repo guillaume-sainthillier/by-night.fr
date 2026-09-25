@@ -21,7 +21,6 @@ use App\Repository\CityRepository;
 use App\Tests\AppKernelTestCase;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\ORM\EntityManagerInterface;
 
 final class CityRepositoryTest extends AppKernelTestCase
 {
@@ -86,8 +85,8 @@ final class CityRepositoryTest extends AppKernelTestCase
         $toulouse = CityFactory::createOne(['name' => 'Toulouse', 'country' => $france, 'parent' => $occitanie]);
         $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $france, 'parent' => $occitanie]);
         ZipCityFactory::createOne(['name' => 'Albi', 'postalCode' => '81000', 'country' => $france, 'parent' => $albi]);
-        // Nothing from the identity map: every row is hydrated from the lookup
-        self::getContainer()->get(EntityManagerInterface::class)->clear();
+        // A fresh kernel, so nothing comes from the identity map: every row is hydrated from the lookup
+        self::bootKernel();
 
         $queries = self::getContainer()->get('doctrine.debug_data_holder');
         self::assertInstanceOf(BacktraceDebugDataHolder::class, $queries);

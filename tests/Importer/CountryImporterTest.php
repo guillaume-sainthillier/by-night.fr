@@ -10,13 +10,13 @@
 
 namespace App\Tests\Importer;
 
-use App\Entity\ZipCity;
 use App\Factory\CountryFactory;
 use App\Factory\ZipCityFactory;
 use App\Importer\CountryImporter;
 use App\Tests\AppKernelTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use ReflectionMethod;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * The import itself downloads the GeoNames files: its queries are checked on their own.
@@ -37,22 +37,15 @@ final class CountryImporterTest extends AppKernelTestCase
     public function testRowsKeepTheirCountryAfterTheEntityManagerIsCleared(): void
     {
         $france = CountryFactory::france()->create();
-        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
-        // What the import loops do every few hundred rows
-        $entityManager->clear();
+        // A fresh kernel, whose entity manager does not know $france: what the import loops'
+        // clear() does every few hundred rows
+        self::bootKernel();
 
         $country = new ReflectionMethod(CountryImporter::class, 'managedCountry')
             ->invoke(self::getContainer()->get(CountryImporter::class), $france);
-        $zipCity = new ZipCity()
-            ->setPostalCode('31000')
-            ->setName('Toulouse')
-            ->setAdmin1Code('76')
-            ->setAdmin2Code('31')
-            ->setLatitude(43.6)
-            ->setLongitude(1.44)
-            ->setCountry($country);
-        $entityManager->persist($zipCity);
-        $entityManager->flush();
+        // Built unsaved then saved as is: persisting through the factory would swap a detached
+        // country for its managed instance itself, hiding the failure
+        save(ZipCityFactory::new()->withoutPersisting()->create(['postalCode' => '31000', 'country' => $country, 'parent' => null]));
 
         self::assertSame(1, ZipCityFactory::count(['postalCode' => '31000', 'country' => 'FR']));
     }
