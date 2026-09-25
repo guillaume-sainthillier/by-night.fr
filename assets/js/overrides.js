@@ -43,24 +43,3 @@ Modal.prototype.setSmallError = function (msg) {
     element.find('.modal-body').prepend(flashMessage)
     flashMessage.slideDown('normal')
 }
-
-$.ajaxSetup({
-    error: (error, textStatus) => {
-        if (textStatus === 404 || textStatus === 500) {
-            let message = error.statusText
-            try {
-                const errors = JSON.parse(error.responseText)
-
-                message = ''
-                $.each(errors, (_k, err) => {
-                    message = `${err.message}<br />`
-                })
-            } catch (_e) {
-                /* eslint no-unused-vars: "off" */
-            }
-
-            const dialog = $('#dialog_details')
-            dialog.modal('setError', message).modal('show')
-        }
-    },
-})

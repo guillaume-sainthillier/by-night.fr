@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { loadIntoDialog } from '@/js/utils/dialog'
 
 /**
  * Open the register dialog and handle its AJAX form submission.
@@ -46,12 +47,10 @@ export default {
             e.preventDefault()
 
             const $dialog = $('#dialog_details')
-            $dialog
-                .modal('show')
-                .modal('loading')
-                .load($(this).attr('href'), () => {
-                    handleRegister($dialog)
-                })
+            $dialog.modal('show').modal('loading')
+            loadIntoDialog($dialog, $(this).attr('href'), () => {
+                handleRegister($dialog)
+            })
         })
 
         return () => $element.off('.register')
