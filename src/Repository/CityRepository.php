@@ -294,6 +294,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->addOrderBy('c.name', 'ASC')
             ->setMaxResults($limit)
             ->getQuery()
+            // Sorting the ~44k cities of France takes ~150 ms, and they only change with a GeoNames import
+            ->enableResultCache(86400) // 1 day
             ->getResult();
     }
 
