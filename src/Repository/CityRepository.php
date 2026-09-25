@@ -262,10 +262,12 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
                 ->setParameter('country', $country->getId());
         }
 
+        // Rendered in the footer of every page: the 50 biggest cities only change with a GeoNames import
         $results = $qb
             ->orderBy('c.population', 'DESC')
             ->setMaxResults(50)
             ->getQuery()
+            ->enableResultCache(86400) // 1 day
             ->getScalarResult();
 
         shuffle($results);
