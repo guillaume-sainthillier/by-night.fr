@@ -160,6 +160,25 @@ final class HtmlFormatterTest extends TestCase
         self::assertSame($html, $this->formatter->linkifyUrls($html));
     }
 
+    /**
+     * A link put inside the value broke the tag: the picture disappeared and the rest of its
+     * markup showed up as text in the description.
+     */
+    public function testLinkifyUrlsLeavesUrlsInsideAttributeValuesAlone(): void
+    {
+        $html = '<img alt="Affiche https://example.org" src="https://example.org/affiche.jpg" /> <abbr title="Voir https://example.org">BN</abbr>';
+
+        self::assertSame($html, $this->formatter->linkifyUrls($html));
+    }
+
+    public function testFormatKeepsAFrameWhoseSourceStartsWithSpaces(): void
+    {
+        self::assertSame(
+            '<iframe src="https://www.dailymotion.com/embed/video/x1"></iframe>',
+            $this->formatter->format('<iframe src="  https://www.dailymotion.com/embed/video/x1"></iframe>')
+        );
+    }
+
     public function testSanitizeLeavesFormattingUntouched(): void
     {
         $html = '<h3>Programme</h3><p>Concert <strong>gratuit</strong>, <em>dès 20h</em></p><ul><li>Bar</li></ul><blockquote>Venez !</blockquote>';

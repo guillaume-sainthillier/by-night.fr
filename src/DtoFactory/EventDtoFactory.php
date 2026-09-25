@@ -19,6 +19,10 @@ use App\Dto\TagDto;
 use App\Dto\UserDto;
 use App\Entity\Event;
 
+/**
+ * The edit page of the personal space binds its form to this DTO, then EventEntityFactory writes
+ * every field of it back onto the event: a field left out here is erased by any edit.
+ */
 final class EventDtoFactory
 {
     public function create(Event $entity): EventDto
@@ -37,7 +41,9 @@ final class EventDtoFactory
         $event->imageFile = $entity->getImageFile();
         $event->image = $entity->getImage();
         $event->imageUrl = $entity->getUrl();
-        $event->fromData = $entity->getFromData();
+        // No parser version: the Firewall then judges the edit again instead of skipping it as
+        // unchanged, which the content hash alone would do for a new picture. The next import
+        // of the event puts the version back.
         $event->address = $entity->getAddress();
         if (null !== $entity->getCategory()) {
             $event->category = TagDto::fromEntity($entity->getCategory());
@@ -48,6 +54,7 @@ final class EventDtoFactory
         }
 
         $event->name = $entity->getName();
+        $event->type = $entity->getType();
         $event->description = $entity->getDescription();
         $event->hours = $entity->getHours();
         $event->prices = $entity->getPrices();

@@ -15,6 +15,7 @@ use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\User;
+use App\Utils\ObjectKey;
 
 /**
  * @implements DtoEntityIdentifierResolvableInterface<User>
@@ -25,18 +26,12 @@ final class UserDto implements DependencyObjectInterface, DtoEntityIdentifierRes
 
     public function getKeyPrefix(): string
     {
-        return 'user';
+        return User::KEY_PREFIX;
     }
 
     public function getUniqueKey(): string
     {
-        return
-            $this->getInternalId()
-            ?? \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+        return $this->getInternalId() ?? ObjectKey::transient($this->getKeyPrefix(), $this);
     }
 
     public function setIdentifierFromEntity(object $entity): void
@@ -50,10 +45,6 @@ final class UserDto implements DependencyObjectInterface, DtoEntityIdentifierRes
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%s',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 }

@@ -12,5 +12,8 @@ namespace App\Contracts;
 
 interface InternalIdentifiableInterface
 {
+    /**
+     * ObjectKey::internal() of the database id, null until there is one.
+     */
     public function getInternalId(): ?string;
 }

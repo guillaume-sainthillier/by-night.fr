@@ -15,6 +15,7 @@ use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\Country;
+use App\Utils\ObjectKey;
 
 /**
  * @implements DtoEntityIdentifierResolvableInterface<Country>
@@ -29,7 +30,7 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
 
     public function getKeyPrefix(): string
     {
-        return 'country';
+        return Country::KEY_PREFIX;
     }
 
     /**
@@ -50,19 +51,20 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
 
     public function getUniqueKey(): string
     {
-        if (null === $this->code && null === $this->name) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+        // The normalized code, so that "fr" and " FR " are one dependency of the batch, as
+        // they are one row for the provider
+        $code = $this->getNormalizedCode();
+        if (null !== $code) {
+            return ObjectKey::data($this->getKeyPrefix(), 'code', $code);
         }
 
-        return \sprintf(
-            '%s-data-%s',
-            $this->getKeyPrefix(),
-            mb_strtolower((string) ($this->code ?? $this->name))
-        );
+        // Or the name, for the feeds that send one (DataTourisme, SowProg)
+        $name = mb_strtolower(trim((string) $this->name));
+        if ('' !== $name) {
+            return ObjectKey::data($this->getKeyPrefix(), 'name', $name);
+        }
+
+        return ObjectKey::transient($this->getKeyPrefix(), $this);
     }
 
     public function setIdentifierFromEntity(object $entity): void
@@ -76,10 +78,6 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%s',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 }

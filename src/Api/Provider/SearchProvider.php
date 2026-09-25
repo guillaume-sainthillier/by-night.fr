@@ -76,18 +76,20 @@ final readonly class SearchProvider implements ProviderInterface
             ...$this->transformTagResults($tagsPaginator),
         ];
 
-        // Calculate total items across all types
-        $totalItems = $eventsPaginator->getNbResults()
-            + $citiesPaginator->getNbResults()
-            + $usersPaginator->getNbResults()
-            + $tagsPaginator->getNbResults();
+        $paginators = [$eventsPaginator, $citiesPaginator, $usersPaginator, $tagsPaginator];
 
         /* @var ArrayPaginator<SearchResult> */
         return new ArrayPaginator(
             items: $results,
-            totalItems: $totalItems,
+            totalItems: array_sum(array_map(static fn (PagerfantaInterface $paginator): int => $paginator->getNbResults(), $paginators)),
             currentPage: $page,
             itemsPerPage: $limit,
+            // A page lists $itemsPerType hits of each type: the pages last as long as the type
+            // with the most hits, within the window Elasticsearch serves
+            lastPage: min(
+                max(array_map(static fn (PagerfantaInterface $paginator): int => $paginator->getNbPages(), $paginators)),
+                ResultWindow::getMaxPages($itemsPerType),
+            ),
         );
     }
 
@@ -98,11 +100,8 @@ final readonly class SearchProvider implements ProviderInterface
     {
         /** @var EventElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(Event::class);
-        $paginator = $repo->findWithHighlightsPaginated($query);
-        $paginator->setMaxPerPage($itemsPerType);
-        $paginator->setCurrentPage($page);
 
-        return $paginator;
+        return $this->atPage($repo->findWithHighlightsPaginated($query), $page, $itemsPerType);
     }
 
     /**
@@ -112,11 +111,8 @@ final readonly class SearchProvider implements ProviderInterface
     {
         /** @var CityElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(City::class);
-        $paginator = $repo->findWithHighlightsPaginated($query);
-        $paginator->setMaxPerPage($itemsPerType);
-        $paginator->setCurrentPage($page);
 
-        return $paginator;
+        return $this->atPage($repo->findWithHighlightsPaginated($query), $page, $itemsPerType);
     }
 
     /**
@@ -126,11 +122,8 @@ final readonly class SearchProvider implements ProviderInterface
     {
         /** @var UserElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(User::class);
-        $paginator = $repo->findWithHighlightsPaginated($query);
-        $paginator->setMaxPerPage($itemsPerType);
-        $paginator->setCurrentPage($page);
 
-        return $paginator;
+        return $this->atPage($repo->findWithHighlightsPaginated($query), $page, $itemsPerType);
     }
 
     /**
@@ -140,8 +133,24 @@ final readonly class SearchProvider implements ProviderInterface
     {
         /** @var TagElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(Tag::class);
-        $paginator = $repo->findWithHighlightsPaginated($query);
+
+        return $this->atPage($repo->findWithHighlightsPaginated($query), $page, $itemsPerType);
+    }
+
+    /**
+     * The types run out at different pages: past its last one, a type has no hits instead of
+     * failing the page of the others.
+     *
+     * @template T
+     *
+     * @param PagerfantaInterface<T> $paginator
+     *
+     * @return PagerfantaInterface<T>
+     */
+    private function atPage(PagerfantaInterface $paginator, int $page, int $itemsPerType): PagerfantaInterface
+    {
         $paginator->setMaxPerPage($itemsPerType);
+        $paginator->setAllowOutOfRangePages(true);
         $paginator->setCurrentPage($page);
 
         return $paginator;

@@ -15,6 +15,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Picture\ImageFormats;
 use App\Repository\UserRepository;
+use App\Utils\ObjectKey;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,6 +45,9 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;
+
+    /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
+    final public const string KEY_PREFIX = 'user';
 
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
@@ -173,16 +177,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%s',
-            $this->getKeyPrefix(),
-            $this->getId()
-        );
+        return ObjectKey::internal(self::KEY_PREFIX, $this->getId());
     }
 
     public function getKeyPrefix(): string
     {
-        return 'user';
+        return self::KEY_PREFIX;
     }
 
     public function hasImage(): bool

@@ -12,5 +12,8 @@ namespace App\Contracts;
 
 interface DependencyObjectInterface
 {
+    /**
+     * The key a DependencyCatalogue merges the DTOs of a batch by, built with ObjectKey.
+     */
     public function getUniqueKey(): string;
 }

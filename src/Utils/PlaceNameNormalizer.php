@@ -19,9 +19,11 @@ use App\Contracts\BatchResetInterface;
  *  - PlaceComparator (fuzzy name matching), and
  *  - the indexed PlaceNameSlug (exact-match fast path).
  *
- * The city name is stripped first (a place name often repeats its city), then
- * the remainder is sanitized: stop words removed, accents folded, non-alphanumeric
- * characters dropped, lower-cased and whitespace-collapsed.
+ * The name is sanitized (stop words removed, accents folded, non-alphanumeric
+ * characters dropped, lower-cased and whitespace-collapsed), then loses its city,
+ * sanitized the same way: a place name often repeats it ("Zénith de Toulouse",
+ * "Salle d'Albi"). The city goes as a whole word, with the "de", "à" or "d'" that
+ * ties it to the name.
  */
 final class PlaceNameNormalizer implements BatchResetInterface
 {
@@ -64,18 +66,28 @@ final class PlaceNameNormalizer implements BatchResetInterface
 
     private function doNormalize(string $name, ?string $cityName): ?string
     {
-        if (null !== $cityName && '' !== trim($cityName)) {
-            $name = str_ireplace($cityName, '', $name);
+        $normalized = self::sanitize($name);
+
+        $city = null === $cityName ? '' : self::sanitize($cityName);
+        if ('' !== $city) {
+            // "d'" is glued to the city once the apostrophe is dropped ("salle dalbi"), and
+            // only stands before a vowel, where French elides "de"
+            $preposition = 1 === preg_match('/^[aeiouyh]/', $city) ? '(?:de |a |d ?)?' : '(?:de |a )?';
+            $normalized = trim((string) preg_replace('/\b' . $preposition . preg_quote($city, '/') . '\b/', ' ', $normalized));
+            $normalized = (string) preg_replace('/ {2,}/', ' ', $normalized);
         }
 
-        $normalized = trim(new StringManipulator($name)
+        return '' === $normalized ? null : $normalized;
+    }
+
+    private static function sanitize(string $text): string
+    {
+        return trim(new StringManipulator($text)
             ->deleteStopWords()
             ->replaceAccents()
             ->nonAlphanumericChars()
             ->lowerCase()
             ->deleteMultipleSpaces()
             ->toString());
-
-        return '' === $normalized ? null : $normalized;
     }
 }

@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\CityRepository;
+use App\Utils\ObjectKey;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,6 +24,9 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
+    /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
+    final public const string KEY_PREFIX = 'city';
+
     #[ORM\ManyToOne(targetEntity: AdminZone::class)]
     #[Groups(['elasticsearch:city:details'])]
     protected ?AdminZone $parent = null;
@@ -52,7 +56,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
 
     public function getKeyPrefix(): string
     {
-        return 'city';
+        return self::KEY_PREFIX;
     }
 
     public function getInternalId(): ?string
@@ -61,11 +65,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->getId()
-        );
+        return ObjectKey::internal(self::KEY_PREFIX, $this->getId());
     }
 
     public function getFullName(): string

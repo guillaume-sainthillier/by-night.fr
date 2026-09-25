@@ -42,8 +42,16 @@ final class PlaceNameNormalizerTest extends TestCase
         yield 'case-insensitive' => ['LE BIKINI', 'toulouse', 'bikini'];
         yield 'accents folded' => ['Zénith', 'Paris', 'zenith'];
 
-        // The city name is stripped out of the place name first.
+        // The city name is stripped out of the place name.
         yield 'strips city name' => ['Zénith Paris', 'Paris', 'zenith'];
+        // With the word tying it to the name: 935 places of the dev base only differed by it
+        yield 'strips city name after "de"' => ['Médiathèque de Cugnaux', 'Cugnaux', 'mediatheque'];
+        yield 'strips city name after "à"' => ['Théâtre à Toulouse', 'Toulouse', 'theatre'];
+        yield "strips city name after \"d'\"" => ["Salle d'Albi", 'Albi', 'salle'];
+        yield 'strips city name whatever its case and accents' => ['ZÉNITH DE EVREUX', 'Évreux', 'zenith'];
+        yield 'strips city name holding a stop word' => ['Salle de La Rochelle', 'La Rochelle', 'salle'];
+        // Only as a whole word: the city of Pau is not in "Paul"
+        yield 'keeps a word holding the city name' => ['Salle Paul Éluard', 'Pau', 'salle paul eluard'];
 
         // Two surface forms of the same venue normalize identically.
         yield 'variant A' => ['Le Bikini', 'Toulouse', 'bikini'];

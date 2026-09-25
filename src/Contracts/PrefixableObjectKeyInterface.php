@@ -13,7 +13,8 @@ namespace App\Contracts;
 interface PrefixableObjectKeyInterface
 {
     /**
-     * @return string the key prefix for object key
+     * The prefix of the object's keys (see ObjectKey): the entity's KEY_PREFIX, for the
+     * entity and its DTO alike.
      */
     public function getKeyPrefix(): string;
 }

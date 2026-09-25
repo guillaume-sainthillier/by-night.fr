@@ -16,6 +16,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\Tag;
 use App\Utils\CollationKey;
+use App\Utils\ObjectKey;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -48,25 +49,18 @@ final class TagDto implements DependencyObjectInterface, InternalIdentifiableInt
 
     public function getKeyPrefix(): string
     {
-        return 'tag';
+        return Tag::KEY_PREFIX;
     }
 
     public function getUniqueKey(): string
     {
         if (null === $this->name || '' === trim($this->name)) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+            return ObjectKey::transient($this->getKeyPrefix(), $this);
         }
 
-        // Equal for the names the unique index on tag.name holds equal, see CollationKey
-        return \sprintf(
-            '%s-data-%s',
-            $this->getKeyPrefix(),
-            CollationKey::of(trim($this->name))
-        );
+        // The key of Tag::getUniqueKey(), which the provider files tags under: equal for the
+        // names the unique index on tag.name holds equal, see CollationKey
+        return ObjectKey::data($this->getKeyPrefix(), CollationKey::of(trim($this->name)));
     }
 
     public function getInternalId(): ?string
@@ -75,11 +69,7 @@ final class TagDto implements DependencyObjectInterface, InternalIdentifiableInt
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 
     public function setIdentifierFromEntity(object $entity): void

@@ -19,6 +19,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\City;
+use App\Utils\ObjectKey;
 
 /**
  * @implements DtoEntityIdentifierResolvableInterface<City>
@@ -48,38 +49,21 @@ final class CityDto implements DependencyRequirableInterface, DependencyObjectIn
 
     public function getKeyPrefix(): string
     {
-        return 'city';
+        return City::KEY_PREFIX;
     }
 
     public function getUniqueKey(): string
     {
         if (null === $this->name) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+            return ObjectKey::transient($this->getKeyPrefix(), $this);
         }
 
         // With the postal code: namesakes in two départements are two cities (see CityComparator)
-        $cityKey = mb_strtolower($this->name);
-        if (null !== $this->postalCode && '' !== $this->postalCode) {
-            $cityKey .= '-' . $this->postalCode;
-        }
-
-        if (null === $this->country) {
-            return \sprintf(
-                '%s-data-%s',
-                $this->getKeyPrefix(),
-                $cityKey
-            );
-        }
-
-        return \sprintf(
-            '%s-data-%s-%s',
+        return ObjectKey::data(
             $this->getKeyPrefix(),
-            $cityKey,
-            $this->country->getUniqueKey()
+            mb_strtolower($this->name),
+            $this->postalCode ?? '',
+            $this->country?->getUniqueKey() ?? '',
         );
     }
 
@@ -94,10 +78,6 @@ final class CityDto implements DependencyRequirableInterface, DependencyObjectIn
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 }

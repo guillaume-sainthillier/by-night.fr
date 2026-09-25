@@ -24,6 +24,7 @@ use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
 use App\Picture\ImageFormats;
 use App\Reject\Reject;
+use App\Utils\ObjectKey;
 use App\Validator\Constraints\EventConstraint;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -182,25 +183,16 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public function getKeyPrefix(): string
     {
-        return 'event';
+        return Event::KEY_PREFIX;
     }
 
     public function getUniqueKey(): string
     {
         if (null === $this->externalId || null === $this->externalOrigin) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+            return ObjectKey::transient($this->getKeyPrefix(), $this);
         }
 
-        return \sprintf(
-            '%s-external-%s-%s',
-            $this->getKeyPrefix(),
-            $this->externalId,
-            $this->externalOrigin
-        );
+        return ObjectKey::external($this->getKeyPrefix(), $this->externalOrigin, $this->externalId);
     }
 
     public function setIdentifierFromEntity(object $entity): void
@@ -214,10 +206,6 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 }

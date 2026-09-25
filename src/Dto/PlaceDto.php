@@ -21,6 +21,7 @@ use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Place;
 use App\Reject\Reject;
+use App\Utils\ObjectKey;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -66,60 +67,24 @@ final class PlaceDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public function getKeyPrefix(): string
     {
-        return 'place';
+        return Place::KEY_PREFIX;
     }
 
     public function getUniqueKey(): string
     {
-        if (
-            (null === $this->externalId || null === $this->externalOrigin)
-            && null === $this->name
-            && null === $this->street
-        ) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
-        }
-
         if (null !== $this->externalId && null !== $this->externalOrigin) {
-            return \sprintf(
-                '%s-external-%s-%s',
-                $this->getKeyPrefix(),
-                $this->externalId,
-                $this->externalOrigin
-            );
+            return ObjectKey::external($this->getKeyPrefix(), $this->externalOrigin, $this->externalId);
         }
 
-        $placeKey = mb_strtolower(\sprintf(
-            '%s-%s',
-            $this->name,
-            $this->street
-        ));
-
-        if (null !== $this->city) {
-            return \sprintf(
-                '%s-data-%s-%s',
-                $this->getKeyPrefix(),
-                $placeKey,
-                $this->city->getUniqueKey()
-            );
+        if (null === $this->name && null === $this->street) {
+            return ObjectKey::transient($this->getKeyPrefix(), $this);
         }
 
-        if (null !== $this->country) {
-            return \sprintf(
-                '%s-data-%s-%s',
-                $this->getKeyPrefix(),
-                $placeKey,
-                $this->country->getUniqueKey()
-            );
-        }
-
-        return \sprintf(
-            '%s-data-%s',
+        return ObjectKey::data(
             $this->getKeyPrefix(),
-            $placeKey
+            mb_strtolower($this->name ?? ''),
+            mb_strtolower($this->street ?? ''),
+            $this->city?->getUniqueKey() ?? $this->country?->getUniqueKey() ?? '',
         );
     }
 
@@ -134,10 +99,6 @@ final class PlaceDto implements ExternalIdentifiableInterface, DependencyRequira
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 }
