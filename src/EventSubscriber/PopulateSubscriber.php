@@ -12,6 +12,7 @@ namespace App\EventSubscriber;
 
 use App\Elasticsearch\ElasticaMode;
 use App\Elasticsearch\Message\RefreshElasticaIndex;
+use App\Elasticsearch\Pager\IdRangeCeilings;
 use Elastica\Index\Settings;
 use FOS\ElasticaBundle\Event\AbstractIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PostIndexPopulateEvent;
@@ -26,6 +27,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
         private IndexManager $indexManager,
         private ElasticaMode $elasticaMode,
         private MessageBusInterface $messageBus,
+        private IdRangeCeilings $idRangeCeilings,
     ) {
     }
 
@@ -33,6 +35,10 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $index->getSettings()->setRefreshInterval('-1');
+
+        // Each populate counts its pages down from the highest id at its start (see IdRangePager):
+        // the pager provider, called right after this event, reads it again for the workers
+        $this->idRangeCeilings->forget($event->getIndex());
 
         if (!$this->isAsync($event)) {
             $this->elasticaMode->setSynchronous(true);

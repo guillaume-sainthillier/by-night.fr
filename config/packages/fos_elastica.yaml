@@ -61,9 +61,9 @@ fos_elastica:
                     insert: true
                     update: true
                     delete: true
+                # Pages by blocks of ids, newest first (App\Elasticsearch\Pager\IdRangePager)
                 provider:
-                    query_builder_method: createIsActiveQueryBuilder
-                    batch_size: 500
+                    service: App\Elasticsearch\Pager\EventPagerProvider
             serializer:
                 groups:
                     - 'elasticsearch:event:details'
