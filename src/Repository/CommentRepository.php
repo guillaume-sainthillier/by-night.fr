@@ -14,8 +14,10 @@ use App\Contracts\MultipleEagerLoaderInterface;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
+use App\Entity\UserOAuth;
 use App\Manager\PreloadManager;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,9 +42,26 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
 
     public function loadAllEager(array $entities, array $context = []): void
     {
+        $comments = $entities;
+        foreach ($entities as $entity) {
+            // Replies fetched along with their comment (findAllByEventQueryBuilder) are rendered with it
+            $children = $entity->getChildren();
+            if (!$children instanceof PersistentCollection || $children->isInitialized()) {
+                foreach ($children as $child) {
+                    $comments[] = $child;
+                }
+            }
+        }
+
         $this->preloadManager->preloadEntities(
             User::class,
-            array_map(static fn (Comment $entity) => $entity->getUser()?->getId(), $entities)
+            array_map(static fn (Comment $entity) => $entity->getUser()?->getId(), $comments)
+        );
+
+        // Each author's picture falls back to their social account's
+        $this->preloadManager->preloadEntities(
+            UserOAuth::class,
+            array_map(static fn (Comment $entity) => $entity->getUser()?->getOAuth()?->getId(), $comments)
         );
     }
 

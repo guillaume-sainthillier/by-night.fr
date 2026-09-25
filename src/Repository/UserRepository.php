@@ -119,9 +119,13 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
 
     public function findAllTopUsersQueryBuilder(): QueryBuilder
     {
+        // Rows are [0 => User, 'nb_events' => int], out of loadAllEager()'s reach: the social account
+        // each member's picture falls back to is fetched here
         return $this
             ->createQueryBuilder('u')
+            ->addSelect('o')
             ->addSelect('COUNT(u.id) AS nb_events')
+            ->leftJoin('u.oAuth', 'o')
             ->join('u.userEvents', 'c')
             ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id');
