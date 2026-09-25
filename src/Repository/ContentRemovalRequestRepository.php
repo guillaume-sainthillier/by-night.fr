@@ -13,6 +13,8 @@ namespace App\Repository;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Entity\ContentRemovalRequest;
 use App\Entity\Event;
+use App\Enum\ContentRemovalRequestStatus;
+use App\Enum\ContentRemovalType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -54,6 +56,27 @@ final class ContentRemovalRequestRepository extends ServiceEntityRepository impl
     /**
      * @return ContentRemovalRequest[]
      */
+    /**
+     * The request still pending that this one would repeat: same requester, same content, same
+     * event.
+     */
+    public function findPendingDuplicate(string $email, ContentRemovalType $type, Event $event): ?ContentRemovalRequest
+    {
+        return $this->createQueryBuilder('cr')
+            ->innerJoin('cr.events', 'e')
+            ->where('e = :event')
+            ->andWhere('LOWER(cr.email) = :email')
+            ->andWhere('cr.type = :type')
+            ->andWhere('cr.status = :pending')
+            ->setParameter('event', $event)
+            ->setParameter('email', mb_strtolower($email))
+            ->setParameter('type', $type)
+            ->setParameter('pending', ContentRemovalRequestStatus::Pending)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findByEvent(Event $event): array
     {
         return $this->createQueryBuilder('cr')

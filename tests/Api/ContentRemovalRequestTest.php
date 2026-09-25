@@ -29,7 +29,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne(['name' => 'Test Event']);
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -50,7 +50,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne(['name' => 'Test Event for Email']);
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'copyright-owner@example.com',
                 'type' => ContentRemovalType::Event->value,
@@ -74,7 +74,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'photographer@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -94,7 +94,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => '',
                 'type' => ContentRemovalType::Image->value,
@@ -117,7 +117,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'not-an-email',
                 'type' => ContentRemovalType::Image->value,
@@ -140,7 +140,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -163,7 +163,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -186,7 +186,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'message' => 'Please remove this content from your website.',
@@ -206,7 +206,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
     public function testRemovalRequestForNonExistentEventFails(): void
     {
         self::createClient()->request('POST', '/api/events/999999/removal-request', [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -222,7 +222,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne(['name' => 'Test Event with URLs']);
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -247,7 +247,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne();
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'requester@example.com',
                 'type' => ContentRemovalType::Image->value,
@@ -271,7 +271,7 @@ final class ContentRemovalRequestTest extends ApiTestCase
         $event = EventFactory::createOne(['name' => 'Test Event for Persistence']);
 
         self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
-            'headers' => ['Accept' => 'application/json'],
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
             'json' => [
                 'email' => 'persist-test@example.com',
                 'type' => ContentRemovalType::Event->value,
@@ -295,5 +295,81 @@ final class ContentRemovalRequestTest extends ApiTestCase
         self::assertSame(ContentRemovalRequestStatus::Pending, $request->getStatus());
         self::assertNull($request->getProcessedAt());
         self::assertNull($request->getProcessedBy());
+    }
+
+    public function testARequestSentTwiceIsRecordedAndMailedOnce(): void
+    {
+        $event = EventFactory::createOne();
+        $address = self::anAddressOfItsOwn();
+
+        foreach ([1, 2] as $attempt) {
+            self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
+                'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => $address],
+                'json' => [
+                    'email' => 'Twice@Example.com',
+                    'type' => ContentRemovalType::Event->value,
+                    'message' => 'Please remove this event, it is mine.',
+                ],
+            ]);
+
+            self::assertResponseIsSuccessful();
+            self::assertJsonContains(['success' => true]);
+            self::assertEmailCount(1 === $attempt ? 1 : 0);
+        }
+
+        self::assertSame(1, ContentRemovalRequestFactory::count(['email' => 'Twice@Example.com']));
+    }
+
+    public function testAnAddressSendingTooManyRequestsIsHeldBack(): void
+    {
+        $event = EventFactory::createOne();
+        $address = self::anAddressOfItsOwn();
+
+        for ($i = 0; $i <= 10; ++$i) {
+            self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
+                'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => $address],
+                'json' => [
+                    'email' => \sprintf('flood%d@example.com', $i),
+                    'type' => ContentRemovalType::Event->value,
+                    'message' => 'Please remove this event, it is mine.',
+                ],
+            ]);
+        }
+
+        self::assertResponseStatusCodeSame(429);
+        self::assertJsonContains(['detail' => 'Vous avez envoyé trop de demandes, veuillez réessayer plus tard.']);
+        self::assertSame(10, ContentRemovalRequestFactory::count());
+    }
+
+    /**
+     * The API took events by id too: one click on "Supprimer les événements" deleted whatever
+     * events an anonymous requester had listed.
+     */
+    public function testARequestConcernsTheEventOfItsPageOnly(): void
+    {
+        $event = EventFactory::createOne();
+        $other = EventFactory::createOne();
+
+        self::createClient()->request('POST', \sprintf('/api/events/%d/removal-request', $event->getId()), [
+            'headers' => ['Accept' => 'application/json', 'REMOTE_ADDR' => self::anAddressOfItsOwn()],
+            'json' => [
+                'email' => 'requester@example.com',
+                'type' => ContentRemovalType::Event->value,
+                'message' => 'Please remove these events, they are mine.',
+                'additionalEventIds' => [$other->getId()],
+            ],
+        ]);
+
+        self::assertResponseIsSuccessful();
+        $request = ContentRemovalRequestFactory::find(['email' => 'requester@example.com']);
+        self::assertSame([$event->getId()], $request->getEvents()->map(static fn ($linked) => $linked->getId())->getValues());
+    }
+
+    /**
+     * The requests are counted per IP address, in a pool that outlives the test.
+     */
+    private static function anAddressOfItsOwn(): string
+    {
+        return \sprintf('10.%d.%d.%d', random_int(0, 255), random_int(0, 255), random_int(1, 254));
     }
 }

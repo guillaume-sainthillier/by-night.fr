@@ -11,6 +11,13 @@ framework:
             limit: 5
             interval: '1 minute'
             cache_pool: 'cache.rate_limiter'
+        # Content removal requests per IP address (App\Api\Processor\ContentRemovalRequestProcessor):
+        # each e-mails the moderators. Production receives a few a month
+        content_removal_request:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 hour'
+            cache_pool: 'cache.rate_limiter'
         messenger_parser:
             policy: 'token_bucket'
             limit: '%env(int:MESSENGER_PARSER_RATE_LIMIT)%'

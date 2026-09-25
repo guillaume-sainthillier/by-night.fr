@@ -127,8 +127,9 @@ export default {
                     let errorMessage = "Une erreur s'est produite"
                     if (xhr.responseJSON?.violations) {
                         errorMessage = xhr.responseJSON.violations.map((v) => v.message).join('<br>')
-                    } else if (xhr.responseJSON?.message) {
-                        errorMessage = xhr.responseJSON.message
+                    } else if (xhr.responseJSON?.message || xhr.responseJSON?.detail) {
+                        // "detail": the message of an HTTP error, such as too many requests
+                        errorMessage = xhr.responseJSON.message || xhr.responseJSON.detail
                     }
                     showError(errorMessage)
                 })
