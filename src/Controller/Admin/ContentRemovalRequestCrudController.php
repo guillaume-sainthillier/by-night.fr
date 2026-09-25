@@ -11,10 +11,10 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ContentRemovalRequest;
-use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
+use App\Manager\EventImageRemover;
 use App\Manager\MailerManager;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,6 +48,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly MailerManager $mailerManager,
+        private readonly EventImageRemover $eventImageRemover,
     ) {
     }
 
@@ -190,7 +191,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $request = $context->getEntity()->getInstance();
 
         foreach ($request->getEvents() as $event) {
-            $this->removeEventImage($event);
+            $this->eventImageRemover->remove($event);
         }
 
         $this->markRequestAsProcessed($request);
@@ -313,7 +314,7 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
                 && ContentRemovalType::Image === $request->getType()
             ) {
                 foreach ($request->getEvents() as $event) {
-                    $this->removeEventImage($event);
+                    $this->eventImageRemover->remove($event);
                 }
 
                 $this->markRequestAsProcessed($request, false);
@@ -357,14 +358,6 @@ final class ContentRemovalRequestCrudController extends AbstractCrudController
         $this->addFlash('success', $this->countMessage('{count, plural, one {# événement supprimé} other {# événements supprimés}}.', $count));
 
         return $this->redirectToRoute('admin_content_removal_request_index');
-    }
-
-    private function removeEventImage(Event $event): void
-    {
-        $event->setImageFile();
-        $event->setImageHash(null);
-        $event->setImageSystemFile();
-        $event->setImageSystemHash(null);
     }
 
     private function markRequestAsProcessed(ContentRemovalRequest $request, bool $flush = true): void

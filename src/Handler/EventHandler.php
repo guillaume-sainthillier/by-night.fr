@@ -68,7 +68,8 @@ final readonly class EventHandler
     {
         $eventsPerUrl = [];
         foreach ($events as $event) {
-            if (!$event->getUrl()) {
+            // An image taken down on request is not downloaded again (EventImageRemover)
+            if (!$event->getUrl() || null !== $event->getImageRemovedAt()) {
                 continue;
             }
 

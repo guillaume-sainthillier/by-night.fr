@@ -184,6 +184,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $imageHash = null;
 
+    /**
+     * When its images were removed on request (content removal): the image of its source is
+     * never downloaded again, whatever the next imports say.
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $imageRemovedAt = null;
+
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M', mimeTypes: ImageFormats::MIME_TYPES)]
@@ -1227,6 +1234,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setImageHash(?string $imageHash): self
     {
         $this->imageHash = $imageHash;
+
+        return $this;
+    }
+
+    public function getImageRemovedAt(): ?DateTimeImmutable
+    {
+        return $this->imageRemovedAt;
+    }
+
+    public function setImageRemovedAt(?DateTimeImmutable $imageRemovedAt): self
+    {
+        $this->imageRemovedAt = $imageRemovedAt;
 
         return $this;
     }

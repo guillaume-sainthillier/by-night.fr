@@ -16,6 +16,7 @@ use App\Handler\EventHandler;
 use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
 use App\Tests\AppKernelTestCase;
+use DateTimeImmutable;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -236,6 +237,23 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
 
         $this->expectException(TransportExceptionInterface::class);
         $client->request('GET', 'http://169.254.169.254/latest/meta-data/')->getStatusCode();
+    }
+
+    public function testAnImageTakenDownIsNotDownloadedAgain(): void
+    {
+        $requests = 0;
+        $client = new MockHttpClient(static function () use (&$requests): MockResponse {
+            ++$requests;
+
+            return new MockResponse(self::GIF, ['http_code' => 200]);
+        });
+        $event = new Event();
+        $event->setUrl('https://example.test/affiche.gif');
+        $event->setImageRemovedAt(new DateTimeImmutable());
+
+        $this->download($client, $event);
+
+        $this->assertSame(0, $requests);
     }
 
     private function download(MockHttpClient $client, Event $event): void

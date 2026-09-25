@@ -57,6 +57,8 @@ final class EventsDownloadImagesCommand extends Command
             ->createQueryBuilder('e')
             ->where('e.url IS NOT NULL')
             ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
+            // Taken down on request (EventImageRemover): not to be downloaded again
+            ->andWhere('e.imageRemovedAt IS NULL')
         ;
 
         // Keyset pagination on the id: a downloaded image takes its event out of the filter, so
