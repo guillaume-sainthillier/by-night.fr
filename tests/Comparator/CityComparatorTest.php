@@ -91,6 +91,23 @@ final class CityComparatorTest extends AppKernelTestCase
         self::assertNull($this->resolve([$this->city('Toulouse', '31', 471_941)], 'Tournefeuille', '31170'));
     }
 
+    public function testThePostalCodeOfASingleCityLocatesATownNoCityIsNamed(): void
+    {
+        $paris = $this->city('Paris', '75', 2_138_551, ['75018']);
+        $other = $this->city('Montmartre', '75', 0);
+
+        self::assertSame($paris->getId(), $this->resolve([$other, $paris], 'PARIS 18EME', '75018'));
+    }
+
+    public function testAPostalCodeSharedByTwoCitiesLocatesNothing(): void
+    {
+        $doue = $this->city('Doué-en-Anjou', '49', 11_000, ['49700']);
+        $gennes = $this->city('Gennes-Val-de-Loire', '49', 7_000, ['49700']);
+
+        self::assertNull($this->resolve([$doue, $gennes], 'Tuffalun', '49700'));
+        self::assertNull($this->resolve([$doue], 'Tuffalun', null), 'Nor does a missing one');
+    }
+
     public function testNamesakesInTwoDepartmentsAreTwoCitiesOfABatch(): void
     {
         self::assertNotSame($this->dto('Pau', '64000')->getUniqueKey(), $this->dto('Pau', '73100')->getUniqueKey());

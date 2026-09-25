@@ -23,7 +23,7 @@ final class CityComparator extends AbstractComparator
     private const int SAME_POSTAL_CODE = 3;
 
     /** The postal code is of the city's département (area, outside France) */
-    private const int SAME_AREA = 2;
+    public const int SAME_AREA = 2;
 
     /** Nothing tells */
     private const int UNKNOWN = 1;
@@ -70,7 +70,7 @@ final class CityComparator extends AbstractComparator
         }
 
         if ([] === $namesakes) {
-            return null;
+            return $this->getCityOfPostalCode($entities, $dto);
         }
 
         if (\count($namesakes) > 1) {
@@ -83,6 +83,31 @@ final class CityComparator extends AbstractComparator
         }
 
         return new Matching($namesakes[0], 100.0);
+    }
+
+    /**
+     * No city bears the name the source wrote ("PARIS 18EME", a commune nouvelle GeoNames
+     * does not know): the postal code still locates the place when it is the code of a single
+     * city. The lookup (CityRepository::findAllByDtos()) loads every city of the code.
+     *
+     * @param iterable<object> $entities
+     */
+    private function getCityOfPostalCode(iterable $entities, CityDto $dto): ?MatchingInterface
+    {
+        if (null === $dto->postalCode || '' === $dto->postalCode) {
+            return null;
+        }
+
+        $cities = [];
+        foreach ($entities as $entity) {
+            \assert($entity instanceof City);
+            if ($dto->country?->entityId === $entity->getCountry()?->getId()
+                && self::SAME_POSTAL_CODE === $this->getPostalCodeAgreement($entity, $dto->postalCode)) {
+                $cities[(int) $entity->getId()] = $entity;
+            }
+        }
+
+        return 1 === \count($cities) ? new Matching(reset($cities), 100.0) : null;
     }
 
     /**
