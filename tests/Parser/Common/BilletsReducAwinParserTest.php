@@ -83,6 +83,11 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
         self::assertSame('2027-04-06', $event->endDate?->format('Y-m-d'));
     }
 
+    public function testAWholePriceLosesItsDecimals(): void
+    {
+        self::assertSame('22€', $this->map(self::row(['search_price' => '22.0000']))->prices);
+    }
+
     public function testRowsThatCannotBeListedAreLeftOut(): void
     {
         self::assertNull($this->invoke(self::row(['is_for_sale' => '0'])), 'Not for sale');
@@ -123,7 +128,7 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
             'description' => 'Une pièce.',
             'merchant_image_url' => 'https://images.billetreduc.com/n200/987654.jpeg',
             'valid_to' => '4/7/2027 12:00:00 AM',
-            'search_price' => '25.5',
+            'search_price' => '25.5000', // as served: four decimals
             'is_for_sale' => '1',
             'custom_1' => '75005',
             'custom_3' => json_encode([

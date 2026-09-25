@@ -92,7 +92,7 @@ final class CDiscountAwinParser extends AbstractAwinParser
         $event->name = $data['product_name'];
         $event->description = $data['description'] ?? '';
         $event->imageUrl = $data['aw_image_url'] ?? '';
-        $event->prices = \sprintf('%s€', $data['search_price']);
+        $event->prices = \sprintf('%s€', self::formatPrice($data['search_price']));
 
         // CSV mapping:
         // - custom_6 = venue name

@@ -225,6 +225,15 @@ abstract class AbstractParser implements ParserInterface
         return $since->modify('-1 hour');
     }
 
+    /**
+     * A price as the feeds serve it ("27.5000", "39.00", "15.0"), without its trailing zeros:
+     * "27.5", "39", "15".
+     */
+    protected static function formatPrice(float|string $price): string
+    {
+        return rtrim(rtrim(number_format((float) $price, 2, '.', ''), '0'), '.');
+    }
+
     protected function logException(Throwable $exception, array $context = []): void
     {
         $this->logger->error($exception->getMessage(), [
