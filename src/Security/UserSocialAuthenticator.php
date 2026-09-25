@@ -31,6 +31,12 @@ use Symfony\Component\Security\Http\SecurityRequestAttributes;
 
 final class UserSocialAuthenticator extends OAuth2Authenticator
 {
+    /**
+     * The name of a newcomer the network gives no name of: the username is public (profile
+     * URL, comments, search), the e-mail never stands in for it.
+     */
+    private const string DEFAULT_USERNAME = 'Membre';
+
     public function __construct(
         private readonly Security $security,
         private readonly ClientRegistry $clientRegistry,
@@ -89,22 +95,11 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                 if (null === $existingUser) {
                     $existingUser = new User();
                     $existingUser
-                        ->setUsername(($datas['realname'] ?: $datas['email']) ?: $datas['id'])
+                        ->setUsername($this->getFreeUsername($datas['realname'] ?: ($datas['nickname'] ?? null) ?: self::DEFAULT_USERNAME))
                         ->setPassword('notused')
                         ->setFromLogin(false)
                         ->setVerified(true)
                         ->setEmail($datas['email']);
-
-                    // Avoir duplicate exception
-                    $initialUsername = $existingUser->getUserIdentifier();
-                    for ($i = 1;; ++$i) {
-                        $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUserIdentifier()]);
-                        if (null === $persistedUser) {
-                            break;
-                        }
-
-                        $existingUser->setUsername(\sprintf('%s-%d', $initialUsername, $i));
-                    }
 
                     $this->entityManager->persist($existingUser);
                 }
@@ -123,6 +118,20 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                 return $existingUser;
             })
         );
+    }
+
+    /**
+     * The name, or the name followed by the first free number ("Camille Martin-2"): the
+     * username is unique. getUserIdentifier() is the e-mail, not the username.
+     */
+    private function getFreeUsername(string $name): string
+    {
+        $username = $name;
+        for ($i = 1; null !== $this->userRepository->findOneBy(['username' => $username]); ++$i) {
+            $username = \sprintf('%s-%d', $name, $i);
+        }
+
+        return $username;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
