@@ -786,6 +786,56 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame(2, $placeRepository->count([]), 'Different venues in the same city must stay separate');
     }
 
+    /**
+     * A source may number an event and a venue alike (OpenAgenda does): each keeps an
+     * exploration of its own, so neither verdict overwrites the other.
+     */
+    public function testAnEventAndAVenueSharingAnIdKeepTheirOwnExploration(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('4242', 'Le Bikini', '4242', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => '4242']));
+        $this->assertSame(1, ParserDataFactory::count(['externalId' => '4242', 'externalOrigin' => 'slug-test-parser']));
+        $this->assertSame(1, ParserDataFactory::count(['externalId' => '4242', 'externalOrigin' => 'slug-test-parser:place']));
+    }
+
+    public function testARejectedVenueDoesNotRejectTheEventNumberedLikeIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // Venue 77 has a name too short to be kept, which rejects the events held there
+        $this->handler->handleOne($this->makeEventWithPlace('evt-at-77', 'X', '77', 'slug-test-parser'));
+        $this->assertSame(0, EventFactory::count(['externalId' => 'evt-at-77']));
+
+        // Event 77 is another event, held in a valid venue
+        $this->handler->handleOne($this->makeEventWithPlace('77', 'Le Bikini', '88', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => '77']), 'The venue numbered 77 has nothing to do with event 77');
+        $venue = ParserDataFactory::find(['externalId' => '77', 'externalOrigin' => 'slug-test-parser:place']);
+        $this->assertSame(Reject::BAD_PLACE_NAME | Reject::VALID, $venue->getReason(), 'The venue keeps its own verdict');
+    }
+
+    public function testARejectedEventDoesNotRejectTheVenueNumberedLikeIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // Event 91 has no valid date, it is rejected
+        $rejected = $this->makeEventWithPlace('91', 'Le Bikini', '12', 'slug-test-parser');
+        $rejected->endDate = new DateTime('-1 year');
+        $this->handler->handleOne($rejected);
+        $this->assertSame(0, EventFactory::count(['externalId' => '91']));
+
+        // Venue 91 hosts another, valid event
+        $this->handler->handleOne($this->makeEventWithPlace('evt-at-91', 'Le Zénith', '91', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'evt-at-91']), 'Event 91 has nothing to do with venue 91');
+    }
+
     private function makeEventWithPlace(
         string $eventExternalId,
         string $placeName,

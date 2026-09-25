@@ -116,8 +116,8 @@ final readonly class DoctrineEventHandler
         // Drop any leftover from a previously failed batch
         $this->imageDownloadScheduler->batchReset();
 
-        // Retrieve all existing explorations for these events
-        $this->loadExternalIdsData($dtos);
+        // Retrieve all existing explorations for these events and their places
+        $this->firewall->loadExplorations($dtos);
 
         // With this, we can already filter a good portion of events
         $this->filterEvents($dtos);
@@ -139,39 +139,6 @@ final readonly class DoctrineEventHandler
         // their content is in place. Same transaction: a family is never half-wired.
         $this->familyResolver->resolveForEvents($this->getEntityIds($allowedEvents));
         $this->entityManager->clear();
-    }
-
-    /**
-     * @param EventDto[] $dtos
-     */
-    private function loadExternalIdsData(array $dtos): void
-    {
-        $ids = $this->getAllExternalIds($dtos);
-
-        if ([] !== $ids) {
-            $this->firewall->loadExternalIdsData($ids);
-        }
-    }
-
-    /**
-     * @param EventDto[] $dtos
-     *
-     * @return (int|string)[]
-     */
-    private function getAllExternalIds(array $dtos): array
-    {
-        $ids = [];
-        foreach ($dtos as $dto) {
-            if (null !== $dto->getExternalId()) {
-                $ids[$dto->getExternalId()] = true;
-            }
-
-            if (null !== $dto->place && null !== $dto->place->getExternalId()) {
-                $ids[$dto->place->getExternalId()] = true;
-            }
-        }
-
-        return array_keys($ids);
     }
 
     /**
@@ -216,7 +183,7 @@ final readonly class DoctrineEventHandler
             }
 
             if (null !== $dto->getExternalId()) {
-                $exploration = $this->firewall->getExploration($dto->getExternalId());
+                $exploration = $this->firewall->getEventExploration($dto);
 
                 // An exploration has already taken place
                 if (null !== $exploration) {
@@ -235,7 +202,7 @@ final readonly class DoctrineEventHandler
 
             // Same algorithm for the place
             if (null !== $dto->place && null !== $dto->place->getExternalId()) {
-                $exploration = $this->firewall->getExploration($dto->place->getExternalId());
+                $exploration = $this->firewall->getPlaceExploration($dto->place);
 
                 if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration, $dto) && !$exploration->getReject()->isValid()) {
                     $dto->reject->addReason($exploration->getReject()->getReason());

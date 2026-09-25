@@ -171,7 +171,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        $exploration = $this->firewall->getExploration('evt-hash-new');
+        $exploration = $this->firewall->getEventExploration($dto);
         self::assertNotNull($exploration);
         self::assertSame(
             new EventContentHasher()->hash($dto),

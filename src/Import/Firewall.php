@@ -12,6 +12,7 @@ namespace App\Import;
 
 use App\Contracts\BatchResetInterface;
 use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
@@ -22,7 +23,7 @@ final class Firewall implements BatchResetInterface
 {
     public const string VERSION = '1.2';
 
-    /** @var ParserData[] */
+    /** @var array<string, ParserData> by origin and external id, see getKey() */
     private array $parserDatas = [];
 
     public function __construct(
@@ -33,23 +34,55 @@ final class Firewall implements BatchResetInterface
     ) {
     }
 
-    public function loadExternalIdsData(array $ids): void
+    /**
+     * Explorations are stored by source and external id, and a source may number its events
+     * and its venues alike (OpenAgenda does: thousands of event uids equal a location uid).
+     * A venue's exploration is therefore kept under an origin of its own, or the event and
+     * the venue would share one row and each verdict would overwrite the other.
+     */
+    public static function getPlaceExplorationOrigin(string $externalOrigin): string
     {
-        $parserDatas = $this->parserDataRepository->findBy([
-            'externalId' => $ids,
-        ]);
+        return $externalOrigin . ':place';
+    }
 
-        foreach ($parserDatas as $parserData) {
-            $this->addParserData($parserData);
+    /**
+     * Loads the explorations of these events and of their venues.
+     *
+     * @param EventDto[] $dtos
+     */
+    public function loadExplorations(array $dtos): void
+    {
+        $idsByOrigin = [];
+        foreach ($dtos as $dto) {
+            if (null !== $dto->getExternalId() && null !== $dto->getExternalOrigin()) {
+                $idsByOrigin[$dto->getExternalOrigin()][$dto->getExternalId()] = true;
+            }
+
+            $place = $dto->place;
+            if (null !== $place?->getExternalId() && null !== $place->getExternalOrigin()) {
+                $idsByOrigin[self::getPlaceExplorationOrigin($place->getExternalOrigin())][$place->getExternalId()] = true;
+            }
+        }
+
+        foreach ($idsByOrigin as $origin => $ids) {
+            // Numeric ids became integer keys
+            foreach ($this->parserDataRepository->findByExternalIds((string) $origin, array_map(strval(...), array_keys($ids))) as $parserData) {
+                $this->addParserData($parserData);
+            }
         }
     }
 
-    public function addParserData(ParserData $parserData): void
+    private function addParserData(ParserData $parserData): void
     {
         $reject = new Reject();
         $reject->setReason($parserData->getReason());
 
-        $this->parserDatas[$parserData->getExternalId()] = $parserData->setReject($reject);
+        $this->parserDatas[self::getKey((string) $parserData->getExternalOrigin(), (string) $parserData->getExternalId())] = $parserData->setReject($reject);
+    }
+
+    private static function getKey(string $externalOrigin, string $externalId): string
+    {
+        return $externalOrigin . "\n" . $externalId;
     }
 
     public function hasPlaceToBeUpdated(ParserData $parserData, EventDto $dto): bool
@@ -126,8 +159,8 @@ final class Firewall implements BatchResetInterface
         }
 
         // Event observation
-        if ($dto->getExternalId()) {
-            $parserData = $this->getExploration($dto->getExternalId());
+        if (null !== $dto->getExternalId() && null !== $dto->getExternalOrigin()) {
+            $parserData = $this->getEventExploration($dto);
             if (null === $parserData) {
                 $parserData = new ParserData()
                     ->setExternalId($dto->getExternalId())
@@ -187,13 +220,22 @@ final class Firewall implements BatchResetInterface
         return array_any($black_list, static fn ($black_word) => mb_strstr($content, (string) $black_word));
     }
 
-    public function getExploration(?string $externalId): ?ParserData
+    public function getEventExploration(EventDto $dto): ?ParserData
     {
-        if (!isset($this->parserDatas[$externalId])) {
+        if (null === $dto->getExternalId() || null === $dto->getExternalOrigin()) {
             return null;
         }
 
-        return $this->parserDatas[$externalId];
+        return $this->parserDatas[self::getKey($dto->getExternalOrigin(), $dto->getExternalId())] ?? null;
+    }
+
+    public function getPlaceExploration(PlaceDto $dto): ?ParserData
+    {
+        if (null === $dto->getExternalId() || null === $dto->getExternalOrigin()) {
+            return null;
+        }
+
+        return $this->parserDatas[self::getKey(self::getPlaceExplorationOrigin($dto->getExternalOrigin()), $dto->getExternalId())] ?? null;
     }
 
     private function filterEventPlace(EventDto $dto): void
@@ -216,12 +258,12 @@ final class Firewall implements BatchResetInterface
         }
 
         // Observation du lieu
-        if (null !== $dto->place->getExternalId()) {
-            $parserData = $this->getExploration($dto->place->getExternalId());
+        if (null !== $dto->place->getExternalId() && null !== $dto->place->getExternalOrigin()) {
+            $parserData = $this->getPlaceExploration($dto->place);
             if (null === $parserData) {
                 $parserData = new ParserData()
                     ->setExternalId($dto->place->getExternalId())
-                    ->setExternalOrigin($dto->place->getExternalOrigin())
+                    ->setExternalOrigin(self::getPlaceExplorationOrigin($dto->place->getExternalOrigin()))
                     ->setReject($dto->place->reject)
                     ->setReason($dto->place->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
@@ -297,7 +339,7 @@ final class Firewall implements BatchResetInterface
     }
 
     /**
-     * @return ParserData[]
+     * @return array<string, ParserData>
      */
     public function getExplorations(): array
     {
