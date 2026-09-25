@@ -19,6 +19,7 @@ use App\Tests\AppKernelTestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Vich\UploaderBundle\Handler\UploadHandler;
 
 final class EventHandlerDownloadTest extends AppKernelTestCase
@@ -119,6 +120,51 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
         $this->assertNotNull($event->getImageSystemFile());
         $this->assertSame(md5($gif), $event->getImageSystemHash());
         $this->assertSame('user-image-hash', $event->getImageHash());
+    }
+
+    /**
+     * Many sources serve their posters as WebP: they were refused as an unknown format, and
+     * the event went without its image.
+     */
+    public function testAWebpPosterIsKept(): void
+    {
+        $image = imagecreatetruecolor(2, 2);
+        ob_start();
+        imagewebp($image);
+        $webp = (string) ob_get_clean();
+        $client = new MockHttpClient(new MockResponse($webp, ['http_code' => 200]));
+        $event = EventFactory::createOne(['url' => 'https://example.test/affiche.webp']);
+
+        $handler = $this->makeHandler($client);
+
+        try {
+            $handler->handleDownloads([$event]);
+        } finally {
+            $handler->reset();
+        }
+
+        $this->assertSame(md5($webp), $event->getImageSystemHash());
+        $file = $event->getImageSystemFile();
+        $this->assertInstanceOf(UploadedFile::class, $file);
+        $this->assertSame('image/webp', $file->getClientMimeType());
+    }
+
+    public function testAnSvgPosterIsNotKept(): void
+    {
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>';
+        $client = new MockHttpClient(new MockResponse($svg, ['http_code' => 200]));
+        $event = EventFactory::createOne(['url' => 'https://example.test/affiche.svg']);
+
+        $handler = $this->makeHandler($client);
+
+        try {
+            $handler->handleDownloads([$event]);
+        } finally {
+            $handler->reset();
+        }
+
+        $this->assertNull($event->getImageSystemFile());
+        $this->assertNull($event->getImageSystemHash());
     }
 
     private function makeHandler(MockHttpClient $client): EventHandler

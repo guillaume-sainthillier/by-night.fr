@@ -15,6 +15,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
+use App\Picture\ImageFormats;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\UnitOfWorkOptimizer;
@@ -174,7 +175,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
     #[Assert\File(maxSize: '6M')]
-    #[Assert\Image]
+    #[Assert\Image(mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $imageFile = null;
 
     #[ORM\Embedded(class: EmbeddedFile::class)]
@@ -185,7 +186,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
-    #[Assert\Image(maxSize: '6M')]
+    #[Assert\Image(maxSize: '6M', mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $imageSystemFile = null;
 
     #[ORM\Embedded(class: EmbeddedFile::class)]

@@ -15,6 +15,7 @@ use App\Entity\Event;
 use App\Exception\UnsupportedFileException;
 use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
+use App\Picture\ImageFormats;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Mime\MimeTypes;
@@ -155,13 +156,8 @@ final readonly class EventHandler
 
         $mimeTypes = new MimeTypes();
         $contentType = $mimeTypes->guessMimeType($tempFilePath);
-        $ext = match ($contentType) {
-            'image/gif' => 'gif',
-            'image/png' => 'png',
-            'image/jpg',
-            'image/jpeg' => 'jpeg',
-            default => throw new UnsupportedFileException(\sprintf('Unable to find extension for mime type %s', $contentType)),
-        };
+        $ext = ImageFormats::getExtension($contentType)
+            ?? throw new UnsupportedFileException(\sprintf('Unable to find extension for mime type %s', $contentType));
 
         $tempFileBasename = ($event->getId() ?? uniqid());
         $pathUrl = parse_url((string) $event->getUrl(), \PHP_URL_PATH);

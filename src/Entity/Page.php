@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Picture\ImageFormats;
 use App\Repository\PageRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -64,7 +65,7 @@ class Page implements Stringable
     #[Vich\UploadableField(mapping: 'page_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
     #[Assert\File(maxSize: '6M')]
-    #[Assert\Image]
+    #[Assert\Image(mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $imageFile = null;
 
     #[ORM\Embedded(class: EmbeddedFile::class)]

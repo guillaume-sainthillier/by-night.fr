@@ -12,6 +12,7 @@ namespace App\Handler;
 
 use App\Entity\User;
 use App\Manager\TemporaryFilesManager;
+use App\Picture\ImageFormats;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Mime\MimeTypes;
@@ -57,12 +58,8 @@ final readonly class UserHandler
 
         $mimeTypes = new MimeTypes();
         $contentType = $mimeTypes->guessMimeType($tempFilePath);
-        $ext = match ($contentType) {
-            'image/gif' => 'gif',
-            'image/png' => 'png',
-            'image/jpg', 'image/jpeg' => 'jpeg',
-            default => throw new RuntimeException(\sprintf('Unable to find extension for mime type %s', $contentType)),
-        };
+        $ext = ImageFormats::getExtension($contentType)
+            ?? throw new RuntimeException(\sprintf('Unable to find extension for mime type %s', $contentType));
 
         $filename = $user->getId() . '.' . $ext;
 
