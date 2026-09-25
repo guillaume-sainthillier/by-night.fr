@@ -85,13 +85,6 @@ final class Firewall implements BatchResetInterface
         return $externalOrigin . "\n" . $externalId;
     }
 
-    public function hasPlaceToBeUpdated(ParserData $parserData, EventDto $dto): bool
-    {
-        // Place explorations carry no content fingerprint, so a version delta is all we
-        // have to decide whether to re-observe them.
-        return $this->changeDetector->hasVersionChanged($dto, $parserData->getFirewallVersion(), $parserData->getParserVersion());
-    }
-
     public function isEventDtoValid(EventDto $eventDto): bool
     {
         // Place-level rejects are folded into the event reject by mapPlaceRejectToEvent,
@@ -272,7 +265,9 @@ final class Firewall implements BatchResetInterface
             } else {
                 $parserData
                     ->setReject($dto->place->reject)
-                    ->setReason($dto->place->reject->getReason());
+                    ->setReason($dto->place->reject->getReason())
+                    ->setFirewallVersion(self::VERSION)
+                    ->setParserVersion($dto->parserVersion);
             }
         }
     }
@@ -318,12 +313,15 @@ final class Firewall implements BatchResetInterface
             return;
         }
 
-        // L'évémenement n'a pas changé -> non valide
-        if (!$hasChanged && !$reject->hasNoNeedToUpdate()) {
+        if (!$hasChanged) {
+            // Nothing new since the previous verdict, which stands
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        // L'événement a changé -> valide
-        } elseif ($hasChanged && $reject->hasNoNeedToUpdate()) {
-            $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
+        } else {
+            // New content or new rules: the previous verdict no longer holds, filterEvent()
+            // judges the event again. Only lifting NO_NEED_TO_UPDATE kept an event rejected
+            // once (a description too short, a bad date) out for good, whatever the source
+            // fixed since.
+            $reject->setValid();
         }
 
         // L'exploration est ancienne -> maj de la version
@@ -331,10 +329,6 @@ final class Firewall implements BatchResetInterface
             $parserData
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($eventDto->parserVersion);
-
-            if (!$reject->hasNoNeedToUpdate()) {
-                $reject->setValid();
-            }
         }
     }
 

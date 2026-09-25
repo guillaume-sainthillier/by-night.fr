@@ -200,18 +200,9 @@ final readonly class DoctrineEventHandler
                 }
             }
 
-            // Same algorithm for the place
-            if (null !== $dto->place && null !== $dto->place->getExternalId()) {
-                $exploration = $this->firewall->getPlaceExploration($dto->place);
-
-                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration, $dto) && !$exploration->getReject()->isValid()) {
-                    $dto->reject->addReason($exploration->getReject()->getReason());
-                    $dto->place->reject->setReason($exploration->getReject()->getReason());
-
-                    continue;
-                }
-            }
-
+            // The place is judged again each time, from what the source says of it now: its
+            // checks are cheap, and a verdict kept from a previous run went on rejecting the
+            // events of a venue the source had fixed since.
             $this->firewall->filterEvent($dto);
         }
     }

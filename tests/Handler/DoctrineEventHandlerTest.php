@@ -836,6 +836,56 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame(1, EventFactory::count(['externalId' => 'evt-at-91']), 'Event 91 has nothing to do with venue 91');
     }
 
+    public function testAnEventRejectedOnceIsImportedWhenTheSourceFixesIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $dto = $this->makeEventWithPlace('fixed-later', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $dto->description = 'Soon';
+        $this->handler->handleOne($dto);
+        $this->assertSame(0, EventFactory::count(['externalId' => 'fixed-later']));
+
+        $dto = $this->makeEventWithPlace('fixed-later', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'fixed-later']));
+    }
+
+    public function testAVenueFixedAtTheSourceNoLongerRejectsItsEvents(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('first-at-venue', 'X', 'venue-fixed-later', 'slug-test-parser'));
+        $this->assertSame(0, EventFactory::count(['externalId' => 'first-at-venue']));
+
+        // The source has named the venue properly since
+        $this->handler->handleOne($this->makeEventWithPlace('next-at-venue', 'Le Bikini', 'venue-fixed-later', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'next-at-venue']));
+        $venue = ParserDataFactory::find(['externalId' => 'venue-fixed-later', 'externalOrigin' => 'slug-test-parser:place']);
+        $this->assertSame(Reject::VALID, $venue->getReason());
+    }
+
+    public function testAnUnchangedRejectedEventStaysOut(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $dto = $this->makeEventWithPlace('still-bad', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $dto->description = 'Soon';
+        $this->handler->handleOne($dto);
+
+        $dto = $this->makeEventWithPlace('still-bad', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $dto->description = 'Soon';
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(0, EventFactory::count(['externalId' => 'still-bad']));
+        $exploration = ParserDataFactory::find(['externalId' => 'still-bad', 'externalOrigin' => 'slug-test-parser']);
+        $this->assertSame(Reject::VALID | Reject::BAD_EVENT_DESCRIPTION | Reject::NO_NEED_TO_UPDATE, $exploration->getReason());
+    }
+
     private function makeEventWithPlace(
         string $eventExternalId,
         string $placeName,

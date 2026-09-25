@@ -58,9 +58,8 @@ final readonly class EventChangeDetector
     /**
      * Whether the firewall or parser logic version differs from what we stored.
      *
-     * Kept separate because place explorations carry no content fingerprint, and the
-     * firewall still needs the version delta on its own to know when to re-validate a
-     * previously rejected event.
+     * Kept separate because the firewall records the new versions on an exploration only
+     * when they changed.
      */
     public function hasVersionChanged(
         EventDto $dto,
