@@ -15,6 +15,7 @@ use App\Controller\AbstractController as BaseController;
 use App\Form\Type\SimpleEventSearchType;
 use App\Repository\EventRepository;
 use DateTimeImmutable;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -29,8 +30,13 @@ final class DefaultController extends BaseController
             'from' => new DateTimeImmutable('now'),
         ];
         $form = $this->createForm(SimpleEventSearchType::class, $data);
-        $events = $this->createMultipleEagerLoadingPaginator(
-            $eventRepository->findUpcomingEvents($location),
+        // Tree walkers: the default output walkers wrap the query in derived tables that
+        // MySQL materializes (every column of every upcoming event) instead of reading
+        // event_upcoming_idx; with them, the Paris page took ~1.5 s instead of ~0.25 s.
+        // fetchJoinCollection stays on although no collection is joined: sorting the ids
+        // from the index, then loading 8 rows, beats sorting the full rows (~0.3 s vs 0.6 s).
+        $events = $this->createMultipleEagerLoadingPaginatorFromAdapter(
+            new QueryAdapter($eventRepository->findUpcomingEvents($location), useOutputWalkers: false),
             $eventRepository,
             1,
             8,
