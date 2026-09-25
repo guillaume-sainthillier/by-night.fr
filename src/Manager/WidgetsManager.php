@@ -150,7 +150,6 @@ final readonly class WidgetsManager
             event: $event,
             participate: $participate,
             interest: $interest,
-            trends: $this->eventRepository->findAllTrends($event),
             count: $event->getParticipations() + $event->getFbParticipations() + $event->getInterests() + $event->getFbInterests(),
             shares: [
                 'facebook' => $page->facebook, // @phpstan-ignore property.notFound
