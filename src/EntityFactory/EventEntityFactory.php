@@ -21,6 +21,7 @@ use App\EntityProvider\TagEntityProvider;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
 use App\Import\EventContentHasher;
+use App\Utils\ObjectKey;
 use DateTimeImmutable;
 
 /**
@@ -198,7 +199,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         /** @var array<string, true> $existingKeys */
         $existingKeys = [];
         foreach ($existingTimesheets as $existing) {
-            $existingKeys[$this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())] = true;
+            $existingKeys[ObjectKey::timesheet($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())] = true;
         }
 
         /** @var array<string, true> $wantedKeys */
@@ -206,7 +207,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         foreach ($dto->timesheets as $timesheetDto) {
             $startAt = null === $timesheetDto->startAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->startAt);
             $endAt = null === $timesheetDto->endAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->endAt);
-            $key = $this->getTimesheetKey($startAt, $endAt, $timesheetDto->hours);
+            $key = ObjectKey::timesheet($startAt, $endAt, $timesheetDto->hours);
             $wantedKeys[$key] = true;
 
             if (isset($existingKeys[$key])) {
@@ -223,7 +224,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         foreach ($existingTimesheets as $existing) {
-            if (isset($wantedKeys[$this->getTimesheetKey($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())])) {
+            if (isset($wantedKeys[ObjectKey::timesheet($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())])) {
                 continue;
             }
 
@@ -232,21 +233,5 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         return $changed;
-    }
-
-    /**
-     * A timesheet is stored as a pair of dates and an hours label, so that is its
-     * identity. The time of day a source sends is dropped: two sessions on the same
-     * day only differ by their label, and an unchanged session keeps its row across
-     * imports instead of being deleted and recreated.
-     */
-    private function getTimesheetKey(?DateTimeImmutable $startAt, ?DateTimeImmutable $endAt, ?string $hours): string
-    {
-        return \sprintf(
-            '%s|%s|%s',
-            $startAt?->format('Y-m-d') ?? 'null',
-            $endAt?->format('Y-m-d') ?? 'null',
-            $hours ?? '',
-        );
     }
 }

@@ -13,6 +13,7 @@ namespace App\Import;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Repository\EventRepository;
+use App\Utils\ObjectKey;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -222,7 +223,7 @@ final readonly class EventFamilyResolver
                 continue;
             }
 
-            $own[$this->key($timesheet->getStartAt(), $timesheet->getEndAt() ?? $timesheet->getStartAt(), $timesheet->getHours())] = true;
+            $own[ObjectKey::timesheet($timesheet->getStartAt(), $timesheet->getEndAt(), $timesheet->getHours())] = true;
         }
 
         // A canonical without timesheets (imported before that model, or by a parser
@@ -232,7 +233,7 @@ final readonly class EventFamilyResolver
             $startAt = $canonical->getStartDate();
             $endAt = $canonical->getEndDate() ?? $startAt;
             $canonical->addTimesheet($this->timesheet($startAt, $endAt, $canonical->getHours(), null));
-            $own[$this->key($startAt, $endAt, $canonical->getHours())] = true;
+            $own[ObjectKey::timesheet($startAt, $endAt, $canonical->getHours())] = true;
             $changed = true;
         }
 
@@ -240,7 +241,7 @@ final readonly class EventFamilyResolver
         $desired = [];
         foreach ($lenders as $lender) {
             foreach ($this->tuples($lender) as [$startAt, $endAt, $hours]) {
-                $key = $this->key($startAt, $endAt, $hours);
+                $key = ObjectKey::timesheet($startAt, $endAt, $hours);
                 if (isset($own[$key]) || isset($desired[$key])) {
                     continue;
                 }
@@ -251,10 +252,9 @@ final readonly class EventFamilyResolver
 
         // Keep the inherited rows still wanted from the same lender, drop the others
         foreach ($canonical->getInheritedTimesheets() as $inherited) {
-            $startAt = $inherited->getStartAt();
-            $wanted = null === $startAt ? null : ($desired[$this->key($startAt, $inherited->getEndAt() ?? $startAt, $inherited->getHours())] ?? null);
-            if (null !== $wanted && $wanted[3]->getId() === $inherited->getSourceEvent()?->getId()) {
-                unset($desired[$this->key($wanted[0], $wanted[1], $wanted[2])]);
+            $key = ObjectKey::timesheet($inherited->getStartAt(), $inherited->getEndAt(), $inherited->getHours());
+            if (isset($desired[$key]) && $desired[$key][3]->getId() === $inherited->getSourceEvent()?->getId()) {
+                unset($desired[$key]);
 
                 continue;
             }
@@ -341,14 +341,5 @@ final readonly class EventFamilyResolver
             ->setEndAt($endAt)
             ->setHours($hours)
             ->setSourceEvent($source);
-    }
-
-    /**
-     * Timesheets are stored as dates: two sessions on the same day only differ by
-     * their hours label, which is therefore part of the key.
-     */
-    private function key(DateTimeImmutable $startAt, DateTimeImmutable $endAt, ?string $hours): string
-    {
-        return \sprintf('%s|%s|%s', $startAt->format('Y-m-d'), $endAt->format('Y-m-d'), $hours ?? '');
     }
 }

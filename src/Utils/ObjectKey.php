@@ -10,6 +10,8 @@
 
 namespace App\Utils;
 
+use DateTimeInterface;
+
 /**
  * The keys the import tells its objects apart with, in memory only: a DependencyCatalogue
  * merges the DTOs of a batch sharing one, and an entity provider hands a DTO the entity
@@ -19,9 +21,13 @@ namespace App\Utils;
  * A key is a prefix, a kind and parts. The prefix ("city", "place") keeps the types of a
  * catalogue apart, the kind keeps a database id, a source's id and a set of fields apart,
  * so "city 12" is never "place 12", nor the city a source numbers 12.
+ *
+ * The keys of a type whose rule several services share are built here too (timesheet()).
  */
 final class ObjectKey
 {
+    private const string TIMESHEET_PREFIX = 'timesheet';
+
     /**
      * The database id of an entity, or of the entity a DTO was resolved to.
      */
@@ -53,6 +59,24 @@ final class ObjectKey
     public static function transient(string $prefix, object $object): string
     {
         return self::join($prefix, 'spl', (string) spl_object_id($object));
+    }
+
+    /**
+     * A session of an event, for the import (EventEntityFactory) and the family resolver
+     * alike. Sessions are stored as dates, so the time of day a source sends is dropped: two
+     * sessions on the same day only differ by their hours label, and an unchanged session
+     * keeps its row across imports. A session without end ends the day it starts.
+     */
+    public static function timesheet(?DateTimeInterface $startAt, ?DateTimeInterface $endAt, ?string $hours): string
+    {
+        $endAt ??= $startAt;
+
+        return self::data(
+            self::TIMESHEET_PREFIX,
+            $startAt?->format('Y-m-d') ?? '',
+            $endAt?->format('Y-m-d') ?? '',
+            $hours ?? '',
+        );
     }
 
     /**
