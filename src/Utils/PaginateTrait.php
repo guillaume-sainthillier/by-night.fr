@@ -12,11 +12,11 @@ namespace App\Utils;
 
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Pagination\MultipleEagerLoadingAdapter;
+use App\Pagination\PageFirstPagerfanta;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
-use Pagerfanta\Pagerfanta;
 use Pagerfanta\PagerfantaInterface;
 
 trait PaginateTrait
@@ -75,7 +75,7 @@ trait PaginateTrait
 
     protected function createPaginatorFromAdapter(AdapterInterface $adapter, int $page, int $limit): PagerfantaInterface
     {
-        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta = new PageFirstPagerfanta($adapter);
 
         $this->updatePaginator($pagerfanta, $page, $limit);
 
