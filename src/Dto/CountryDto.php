@@ -51,11 +51,20 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
 
     public function getUniqueKey(): string
     {
-        if (null === $this->code && null === $this->name) {
-            return ObjectKey::transient($this->getKeyPrefix(), $this);
+        // The normalized code, so that "fr" and " FR " are one dependency of the batch, as
+        // they are one row for the provider
+        $code = $this->getNormalizedCode();
+        if (null !== $code) {
+            return ObjectKey::data($this->getKeyPrefix(), 'code', $code);
         }
 
-        return ObjectKey::data($this->getKeyPrefix(), mb_strtolower((string) ($this->code ?? $this->name)));
+        // Or the name, for the feeds that send one (DataTourisme, SowProg)
+        $name = mb_strtolower(trim((string) $this->name));
+        if ('' !== $name) {
+            return ObjectKey::data($this->getKeyPrefix(), 'name', $name);
+        }
+
+        return ObjectKey::transient($this->getKeyPrefix(), $this);
     }
 
     public function setIdentifierFromEntity(object $entity): void

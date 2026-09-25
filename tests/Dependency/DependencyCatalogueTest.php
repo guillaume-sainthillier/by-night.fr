@@ -26,6 +26,29 @@ use PHPUnit\Framework\TestCase;
  */
 final class DependencyCatalogueTest extends TestCase
 {
+    public function testACountryCodeIsOneDependencyWhateverItsCaseOrPadding(): void
+    {
+        $canonical = $this->country('FR');
+        $catalogue = $this->catalogue($canonical, $this->country(' fr '), $this->country('Fr'));
+
+        self::assertCount(1, $catalogue->all());
+        self::assertCount(2, $catalogue->getAliases($canonical));
+    }
+
+    public function testCountriesWithoutCodeAreToldApartByTheirName(): void
+    {
+        $catalogue = $this->catalogue($this->country('', 'Belgique'), $this->country('', 'France'), $this->country(' ', 'france'));
+
+        self::assertCount(2, $catalogue->all());
+    }
+
+    public function testACountryWithNothingUsableStandsAlone(): void
+    {
+        $catalogue = $this->catalogue($this->country(''), $this->country(null));
+
+        self::assertCount(2, $catalogue->all());
+    }
+
     public function testTheFieldsOfAPlaceDoNotRunIntoEachOther(): void
     {
         $catalogue = $this->catalogue($this->place('Salle A-B', 'Rue C'), $this->place('Salle A', 'B-Rue C'));
