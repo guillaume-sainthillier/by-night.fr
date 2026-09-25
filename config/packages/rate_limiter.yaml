@@ -4,6 +4,13 @@
 # `rate` messages/second. Both knobs are env-driven so they can be tuned per host.
 framework:
     rate_limiter:
+        # Login attempts per account (security.yaml, App\Security\LoginRateLimiter): a
+        # successful login starts the count over
+        login:
+            policy: 'fixed_window'
+            limit: 5
+            interval: '1 minute'
+            cache_pool: 'cache.rate_limiter'
         messenger_parser:
             policy: 'token_bucket'
             limit: '%env(int:MESSENGER_PARSER_RATE_LIMIT)%'
