@@ -27,6 +27,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
+/**
+ * Read far more than written (every place and event points to one): DEFERRED_EXPLICIT keeps
+ * flushes from diffing the loaded countries, only an explicit persist() writes one (GeoNames
+ * importer, back-office).
+ */
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]

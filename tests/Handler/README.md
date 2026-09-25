@@ -282,17 +282,12 @@ chmod -R 777 var
 
 This is automatically handled by `.laminas-ci/pre-run.sh` in CI.
 
-### DAMA Bundle with Read-Only Entities
+### Explicit Change Tracking on the Geography
 
-The project has several entities marked as `readOnly: true`:
-
-- `City`, `ZipCity`, `ParserHistory`, `AdminZone*`
-
-To prevent conflicts with DAMA bundle's transaction handling:
-
-- `enable_static_connection: false` is set in `dama_doctrine_test_bundle.yaml`
-- This allows read-only entities to work correctly with transaction rollback
-- Test isolation still works properly through DAMA's transaction wrapping
+`Country` and the `AdminZone` hierarchy (`City`, `AdminZone1`, `AdminZone2`) use the `DEFERRED_EXPLICIT`
+change tracking policy (they are no longer `readOnly`, so the back-office can edit them): a flush only writes
+the ones passed to `persist()`. In a test, change them with Foundry's `save()`, which persists explicitly;
+a modified city that is only reached through a place or an event is not written.
 
 ### Schema Not Found Errors
 
