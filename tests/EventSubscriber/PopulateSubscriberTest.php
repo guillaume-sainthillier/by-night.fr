@@ -11,9 +11,11 @@
 namespace App\Tests\EventSubscriber;
 
 use App\Elasticsearch\ElasticaMode;
+use App\Elasticsearch\Handler\RefreshElasticaIndexHandler;
 use App\Elasticsearch\Pager\IdRangeCeilings;
 use App\EventSubscriber\PopulateSubscriber;
 use Elastica\Index\Settings;
+use FOS\ElasticaBundle\Configuration\ConfigManager;
 use FOS\ElasticaBundle\Elastica\Index;
 use FOS\ElasticaBundle\Event\PreIndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
@@ -49,6 +51,12 @@ final class PopulateSubscriberTest extends TestCase
         $indexManager = $this->createStub(IndexManager::class);
         $indexManager->method('getIndex')->willReturn($index);
 
-        return new PopulateSubscriber($indexManager, new ElasticaMode(), $this->createStub(MessageBusInterface::class), $ceilings);
+        return new PopulateSubscriber(
+            $indexManager,
+            new ElasticaMode(),
+            $this->createStub(MessageBusInterface::class),
+            $ceilings,
+            new RefreshElasticaIndexHandler($indexManager, $this->createStub(ConfigManager::class)),
+        );
     }
 }

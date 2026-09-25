@@ -11,9 +11,9 @@
 namespace App\EventSubscriber;
 
 use App\Elasticsearch\ElasticaMode;
+use App\Elasticsearch\Handler\RefreshElasticaIndexHandler;
 use App\Elasticsearch\Message\RefreshElasticaIndex;
 use App\Elasticsearch\Pager\IdRangeCeilings;
-use Elastica\Index\Settings;
 use FOS\ElasticaBundle\Event\AbstractIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PostIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PreIndexPopulateEvent;
@@ -28,6 +28,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
         private ElasticaMode $elasticaMode,
         private MessageBusInterface $messageBus,
         private IdRangeCeilings $idRangeCeilings,
+        private RefreshElasticaIndexHandler $refreshElasticaIndexHandler,
     ) {
     }
 
@@ -55,9 +56,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
 
         $this->elasticaMode->setSynchronous(false);
 
-        $index = $this->indexManager->getIndex($event->getIndex());
-        $index->forcemerge(['max_num_segments' => 5]);
-        $index->getSettings()->setRefreshInterval(Settings::DEFAULT_REFRESH_INTERVAL);
+        ($this->refreshElasticaIndexHandler)(new RefreshElasticaIndex($event->getIndex()));
     }
 
     private function isAsync(AbstractIndexPopulateEvent $event): bool
