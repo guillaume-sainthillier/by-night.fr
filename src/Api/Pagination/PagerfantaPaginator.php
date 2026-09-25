@@ -69,8 +69,12 @@ final readonly class PagerfantaPaginator implements IteratorAggregate, Paginator
     public function getIterator(): Traversable
     {
         if (null === $this->transformer) {
+            // Not `return`: the yield below makes this method a generator, where `return`
+            // only sets the generator's return value and the page iterates as empty
             /* @var Traversable<TOutput> */
-            return $this->pagerfanta->getIterator();
+            yield from $this->pagerfanta;
+
+            return;
         }
 
         foreach ($this->pagerfanta as $item) {
