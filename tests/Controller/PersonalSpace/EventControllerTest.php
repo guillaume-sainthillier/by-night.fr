@@ -87,6 +87,26 @@ final class EventControllerTest extends WebTestCase
     }
 
     /**
+     * The edit goes through a DTO that EventEntityFactory writes back field by field:
+     * what the DTO leaves out is erased, although the form never showed it.
+     */
+    public function testEditingAnEventKeepsWhatTheFormDoesNotShow(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne(['name' => 'Concert de jazz', 'type' => 'Concert']);
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $form = $crawler->filter('form[name="app_event"]')->form();
+        $form['app_event[name]'] = 'Concert de jazz manouche';
+        $client->submit($form);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $saved = EventFactory::find(['id' => $event->getId()]);
+        self::assertSame('Concert', $saved->getType());
+    }
+
+    /**
      * The event used to be saved while the form was being submitted, before its validation:
      * a forged cross-site submission, without the token, edited the event all the same.
      */
