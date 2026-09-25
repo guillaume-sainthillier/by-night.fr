@@ -59,6 +59,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Event images are downloaded from the URLs the sources give: such a URL (or a redirect)
+    # must not reach into the private network (cloud metadata, internal services)
+    app.image_download_client:
+        class: Symfony\Component\HttpClient\NoPrivateNetworkHttpClient
+        arguments: ['@http_client']
+
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']

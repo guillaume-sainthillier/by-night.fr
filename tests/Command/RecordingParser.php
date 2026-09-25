@@ -28,6 +28,8 @@ final class RecordingParser implements ParserInterface
         private readonly string $commandName,
         private readonly bool $enabled = true,
         private readonly bool $failing = false,
+        private readonly int $parsedEvents = 0,
+        private readonly int $failedRecords = 0,
     ) {
     }
 
@@ -64,7 +66,12 @@ final class RecordingParser implements ParserInterface
 
     public function getParsedEvents(): int
     {
-        return 0;
+        return $this->parsedEvents;
+    }
+
+    public function getFailedRecords(): int
+    {
+        return $this->failedRecords;
     }
 
     public function getSkippedEvents(): int

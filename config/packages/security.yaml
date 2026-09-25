@@ -39,6 +39,11 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
 
+            # Nothing slowed down guessing a member's password: 5 logins a minute per account
+            # (the "login" rate limiter), counted per account only, see LoginRateLimiter
+            login_throttling:
+                limiter: App\Security\LoginRateLimiter
+
             logout:
                 delete_cookies: ['PHPSESSID']
             # https://symfony.com/doc/current/security/impersonating_user.html

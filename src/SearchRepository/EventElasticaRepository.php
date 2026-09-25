@@ -14,6 +14,7 @@ use App\Search\SearchEvent;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\GeoDistance;
+use Elastica\Query\MatchPhrase;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Nested;
 use Elastica\Query\Range;
@@ -118,6 +119,17 @@ final class EventElasticaRepository extends Repository
                 ->setOperator('AND')
                 ->setQuery($search->getTerm())
             ;
+
+            $typeTerms = $search->getTypeTerms();
+            if ([] !== $typeTerms) {
+                // A type page: its synonyms all together, as typed keywords are, found almost
+                // nothing ("soirée, étudiant, bar, discothèque, boîte de nuit, after work" never
+                // is), so an event naming any one of them is listed too
+                $anyTypeTerm = $this->createAnyTermQuery($typeTerms);
+                $anyTypeTerm->addShould($query);
+                $query = $anyTypeTerm;
+            }
+
             $mainQuery->addMust($query);
         }
 
@@ -146,8 +158,17 @@ final class EventElasticaRepository extends Repository
             $query = new MultiMatch();
             $query
                 ->setQuery(implode(' ', $search->getType()))
-                ->setFields(['type', 'category.name', 'themes.name']);
-            $mainQuery->addFilter($query);
+                ->setFields(['type', 'category.name']);
+
+            // Themes are nested documents, which a query on the event itself never reaches
+            $typeFilter = new BoolQuery();
+            $typeFilter->setMinimumShouldMatch(1);
+            $typeFilter->addShould($query);
+            foreach ($search->getType() as $type) {
+                $typeFilter->addShould(new Nested()->setPath('themes')->setQuery(new MatchPhrase('themes.name', $type)));
+            }
+
+            $mainQuery->addFilter($typeFilter);
         }
 
         // Construction de la requête finale
@@ -173,6 +194,28 @@ final class EventElasticaRepository extends Repository
         }
 
         return $finalQuery;
+    }
+
+    /**
+     * Events naming any of these terms, each as a phrase, in their name, category, type or
+     * one of their themes.
+     *
+     * @param list<string> $terms
+     */
+    private function createAnyTermQuery(array $terms): BoolQuery
+    {
+        $query = new BoolQuery();
+        $query->setMinimumShouldMatch(1);
+        foreach ($terms as $term) {
+            $query->addShould(new MultiMatch()
+                ->setQuery($term)
+                ->setType(MultiMatch::TYPE_PHRASE)
+                ->setFields(['name^5', 'name.heavy^5', 'category.name^3', 'type']));
+            // Themes are nested documents, which a query on the event itself never reaches
+            $query->addShould(new Nested()->setPath('themes')->setQuery(new MatchPhrase('themes.name', $term)));
+        }
+
+        return $query;
     }
 
     /**

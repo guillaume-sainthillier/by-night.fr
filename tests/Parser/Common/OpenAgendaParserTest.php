@@ -12,6 +12,7 @@ namespace App\Tests\Parser\Common;
 
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
+use App\Enum\EventStatus;
 use App\Factory\AdminZone1Factory;
 use App\Factory\CountryFactory;
 use App\Handler\EventHandler;
@@ -131,6 +132,30 @@ final class OpenAgendaParserTest extends AppKernelTestCase
 
         self::assertInstanceOf(EventDto::class, $dto);
         self::assertSame('De 20h00 à 22h00', $dto->hours);
+    }
+
+    /**
+     * @return iterable<string, array{mixed, ?EventStatus}>
+     */
+    public static function provideStatuses(): iterable
+    {
+        yield 'scheduled' => [['id' => 1, 'label' => ['fr' => 'Programmé']], null];
+        yield 'rescheduled' => [['id' => 2, 'label' => ['fr' => 'Reprogrammé']], null];
+        yield 'moved online' => [['id' => 3, 'label' => ['fr' => 'Déplacé en ligne']], null];
+        yield 'postponed' => [['id' => 4, 'label' => ['fr' => 'Reporté']], EventStatus::Postponed];
+        yield 'full' => [['id' => 5, 'label' => ['fr' => 'Complet']], EventStatus::SoldOut];
+        yield 'cancelled' => [['id' => 6, 'label' => ['fr' => 'Annulé']], EventStatus::Cancelled];
+        yield 'without labels' => [6, EventStatus::Cancelled];
+        yield 'missing' => [null, null];
+    }
+
+    #[DataProvider('provideStatuses')]
+    public function testTheStatusOfTheEventIsKept(mixed $feedStatus, ?EventStatus $status): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(event: ['status' => $feedStatus]));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertSame($status, $dto->status);
     }
 
     private function arrayToDto(array $data): ?EventDto

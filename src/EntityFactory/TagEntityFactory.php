@@ -32,8 +32,12 @@ final readonly class TagEntityFactory implements EntityFactoryInterface
             throw new UncreatableEntityException('Tag has no name');
         }
 
-        $entity ??= new Tag();
-        $entity->setName($dto->name);
+        // An existing tag keeps its name: the sources spell it their own way ("Théâtre",
+        // "THEATRE"), and each import would otherwise rename it after the last one read
+        if (null === $entity) {
+            $entity = new Tag();
+            $entity->setName($dto->name);
+        }
 
         return $entity;
     }

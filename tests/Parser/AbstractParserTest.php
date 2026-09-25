@@ -16,12 +16,15 @@ use App\Handler\EventHandler;
 use App\Import\EventContentHasher;
 use App\Import\EventPublicationGuard;
 use App\Import\Firewall;
+use App\Parser\AbstractParser;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 final class AbstractParserTest extends AppKernelTestCase
 {
@@ -101,5 +104,47 @@ final class AbstractParserTest extends AppKernelTestCase
         $parser->setPublicationGuard(self::getContainer()->get(EventPublicationGuard::class));
 
         return $parser;
+    }
+
+    public function testAnUnreadableRecordDoesNotStopTheOthers(): void
+    {
+        $container = self::getContainer();
+        $parser = new class(new NullLogger(), $container->get(MessageBusInterface::class), $container->get(EventHandler::class)) extends AbstractParser {
+            public static function getParserName(): string
+            {
+                return 'Unreliable source';
+            }
+
+            public function getCommandName(): string
+            {
+                return 'unreliable';
+            }
+
+            protected function fetchEvents(?DateTimeImmutable $since): iterable
+            {
+                foreach (['first', 'broken', 'last'] as $record) {
+                    yield $this->mapRecord(static function () use ($record): EventDto {
+                        if ('broken' === $record) {
+                            throw new RuntimeException('Malformed date');
+                        }
+
+                        $event = new EventDto();
+                        $event->externalId = $record;
+                        $event->name = $record;
+
+                        return $event;
+                    }, ['record' => $record]);
+                }
+            }
+        };
+        $parser->setPublicationGuard($container->get(EventPublicationGuard::class));
+        $transport = $container->get('messenger.transport.parser');
+        self::assertInstanceOf(InMemoryTransport::class, $transport);
+
+        $parser->parse(null);
+
+        self::assertSame(['first', 'last'], array_map(static fn ($envelope) => $envelope->getMessage()->externalId, $transport->getSent()));
+        self::assertSame(2, $parser->getParsedEvents());
+        self::assertSame(1, $parser->getFailedRecords());
     }
 }

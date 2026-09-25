@@ -56,6 +56,26 @@ final readonly class DoctrineEventHandler
     }
 
     /**
+     * Runs the checks an event must pass to be kept (see Firewall::filterEvent()) and leaves
+     * their verdict on the DTO, without writing anything: the event form shows it as
+     * validation errors (EventConstraintValidator) before the event is saved with handleOne().
+     */
+    public function judge(EventDto $dto): void
+    {
+        $dto->reject = new Reject();
+        if (null !== $dto->place) {
+            $dto->place->reject = new Reject();
+        }
+
+        try {
+            $this->firewall->filterEvent($dto);
+        } finally {
+            // The exploration it noted is handleOne()'s business
+            $this->firewall->batchReset();
+        }
+    }
+
+    /**
      * @param EventDto[] $dtos
      */
     public function handleMany(array $dtos): void
@@ -116,8 +136,8 @@ final readonly class DoctrineEventHandler
         // Drop any leftover from a previously failed batch
         $this->imageDownloadScheduler->batchReset();
 
-        // Retrieve all existing explorations for these events
-        $this->loadExternalIdsData($dtos);
+        // Retrieve all existing explorations for these events and their places
+        $this->firewall->loadExplorations($dtos);
 
         // With this, we can already filter a good portion of events
         $this->filterEvents($dtos);
@@ -139,39 +159,6 @@ final readonly class DoctrineEventHandler
         // their content is in place. Same transaction: a family is never half-wired.
         $this->familyResolver->resolveForEvents($this->getEntityIds($allowedEvents));
         $this->entityManager->clear();
-    }
-
-    /**
-     * @param EventDto[] $dtos
-     */
-    private function loadExternalIdsData(array $dtos): void
-    {
-        $ids = $this->getAllExternalIds($dtos);
-
-        if ([] !== $ids) {
-            $this->firewall->loadExternalIdsData($ids);
-        }
-    }
-
-    /**
-     * @param EventDto[] $dtos
-     *
-     * @return (int|string)[]
-     */
-    private function getAllExternalIds(array $dtos): array
-    {
-        $ids = [];
-        foreach ($dtos as $dto) {
-            if (null !== $dto->getExternalId()) {
-                $ids[$dto->getExternalId()] = true;
-            }
-
-            if (null !== $dto->place && null !== $dto->place->getExternalId()) {
-                $ids[$dto->place->getExternalId()] = true;
-            }
-        }
-
-        return array_keys($ids);
     }
 
     /**
@@ -216,7 +203,7 @@ final readonly class DoctrineEventHandler
             }
 
             if (null !== $dto->getExternalId()) {
-                $exploration = $this->firewall->getExploration($dto->getExternalId());
+                $exploration = $this->firewall->getEventExploration($dto);
 
                 // An exploration has already taken place
                 if (null !== $exploration) {
@@ -233,18 +220,9 @@ final readonly class DoctrineEventHandler
                 }
             }
 
-            // Same algorithm for the place
-            if (null !== $dto->place && null !== $dto->place->getExternalId()) {
-                $exploration = $this->firewall->getExploration($dto->place->getExternalId());
-
-                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration, $dto) && !$exploration->getReject()->isValid()) {
-                    $dto->reject->addReason($exploration->getReject()->getReason());
-                    $dto->place->reject->setReason($exploration->getReject()->getReason());
-
-                    continue;
-                }
-            }
-
+            // The place is judged again each time, from what the source says of it now: its
+            // checks are cheap, and a verdict kept from a previous run went on rejecting the
+            // events of a venue the source had fixed since.
             $this->firewall->filterEvent($dto);
         }
     }

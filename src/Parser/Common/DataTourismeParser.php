@@ -139,7 +139,7 @@ final class DataTourismeParser extends AbstractParser
             $data = $this->datatourismeClient->request('GET', $url, ['query' => $query])->toArray();
 
             foreach ($data['objects'] ?? [] as $object) {
-                yield $this->arrayToDto($object);
+                yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($object), ['uuid' => $object['uuid'] ?? null]);
             }
 
             $url = $data['meta']['next'] ?? null;

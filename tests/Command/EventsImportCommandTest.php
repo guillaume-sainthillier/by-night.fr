@@ -93,6 +93,34 @@ final class EventsImportCommandTest extends AppKernelTestCase
         self::assertSame([$previousRun->format('U')], [$this->parserStates->findLastParsedAt('fake')?->format('U')], 'The next run re-fetches from the previous one');
     }
 
+    public function testAFewUnreadableRecordsStillMoveTheWatermark(): void
+    {
+        $previousRun = new DateTimeImmutable('2026-09-21 02:00:00');
+        $this->parserStates->markParsed('fake', $previousRun);
+        $parser = new RecordingParser('fake', parsedEvents: 95, failedRecords: 5);
+
+        $tester = new CommandTester(new EventsImportCommand([$parser], $this->parserStates, new NullLogger()));
+
+        self::assertSame(Command::SUCCESS, $tester->execute(['parser' => 'fake']));
+        self::assertGreaterThan($previousRun, $this->parserStates->findLastParsedAt('fake'), 'The bad records come back with their next change');
+    }
+
+    public function testARunWhoseRecordsMostlyFailedKeepsTheWatermark(): void
+    {
+        $previousRun = new DateTimeImmutable('2026-09-21 02:00:00');
+        $this->parserStates->markParsed('fake', $previousRun);
+        $parser = new RecordingParser('fake', parsedEvents: 5, failedRecords: 5);
+
+        try {
+            $this->import([$parser], 'fake');
+            self::fail('A mapping bug must surface');
+        } catch (RuntimeException $exception) {
+            self::assertSame('Recording fake could not read 5 of its 10 records', $exception->getMessage());
+        }
+
+        self::assertSame([$previousRun->format('U')], [$this->parserStates->findLastParsedAt('fake')?->format('U')], 'The window is imported again once fixed');
+    }
+
     public function testAFailingParserDoesNotStopTheOthersOfAFullRun(): void
     {
         $failing = new RecordingParser('failing', failing: true);

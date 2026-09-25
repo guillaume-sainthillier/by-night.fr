@@ -110,6 +110,37 @@ final class FirewallTest extends AppKernelTestCase
         self::assertEquals('old version', $exploration->getFirewallVersion());
     }
 
+    public function testARejectedEventWhoseContentChangedIsJudgedAgain(): void
+    {
+        $hasher = new EventContentHasher();
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::BAD_EVENT_DESCRIPTION))
+            ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
+        $event->description = 'The source has written a real description since';
+
+        $this->firewall->filterEventExploration($exploration, $event);
+
+        self::assertSame(Reject::VALID, $exploration->getReject()?->getReason());
+    }
+
+    public function testARejectedEventThatDidNotChangeStaysRejected(): void
+    {
+        $hasher = new EventContentHasher();
+        $event = $this->explorationEvent();
+        $exploration = new ParserData()
+            ->setReject(new Reject()->addReason(Reject::BAD_EVENT_DESCRIPTION))
+            ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($event->parserVersion)
+            ->setContentHash($hasher->hash($event));
+
+        $this->firewall->filterEventExploration($exploration, $event);
+
+        self::assertSame(Reject::VALID | Reject::BAD_EVENT_DESCRIPTION | Reject::NO_NEED_TO_UPDATE, $exploration->getReject()?->getReason());
+    }
+
     public function testIsEventDtoValid(): void
     {
         // Valid event with a valid place
@@ -171,7 +202,7 @@ final class FirewallTest extends AppKernelTestCase
 
         $this->firewall->filterEvent($dto);
 
-        $exploration = $this->firewall->getExploration('evt-hash-new');
+        $exploration = $this->firewall->getEventExploration($dto);
         self::assertNotNull($exploration);
         self::assertSame(
             new EventContentHasher()->hash($dto),

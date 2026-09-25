@@ -22,6 +22,7 @@ use App\Dependency\DependencyCatalogue;
 use App\Entity\Event;
 use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
+use App\Picture\ImageFormats;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTimeImmutable;
@@ -55,7 +56,7 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
     // When used by users
     #[Assert\Valid]
     #[Assert\File(maxSize: '6M')]
-    #[Assert\Image]
+    #[Assert\Image(mimeTypes: ImageFormats::MIME_TYPES)]
     #[UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     public ?File $imageFile = null;
 

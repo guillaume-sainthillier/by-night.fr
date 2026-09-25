@@ -39,6 +39,9 @@ final class SearchEvent
 
     private ?string $term = null;
 
+    /** The synonyms an agenda type page searches with ("concert, musique, artiste") */
+    private ?string $typeTerms = null;
+
     private ?Location $location = null;
 
     public function __construct()
@@ -66,6 +69,33 @@ final class SearchEvent
         $this->term = $term;
 
         return $this;
+    }
+
+    /**
+     * The synonyms of an agenda type page, which are also its keywords (the search form shows
+     * them as such).
+     */
+    public function setTypeTerms(?string $typeTerms): self
+    {
+        $this->typeTerms = $typeTerms;
+        $this->term = $typeTerms;
+
+        return $this;
+    }
+
+    /**
+     * The synonyms of the agenda type page, unless the visitor searched keywords of their own
+     * in their place.
+     *
+     * @return list<string>
+     */
+    public function getTypeTerms(): array
+    {
+        if (null === $this->typeTerms || $this->term !== $this->typeTerms) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(trim(...), explode(',', $this->typeTerms)), static fn (string $term): bool => '' !== $term));
     }
 
     public function getFrom(): ?DateTimeInterface

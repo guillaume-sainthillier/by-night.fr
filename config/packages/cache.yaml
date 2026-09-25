@@ -23,3 +23,12 @@ framework:
             # Redis adapter connects lazily, so booting without Redis (e.g. tests) is fine.
             cache.rate_limiter:
                 adapter: cache.app
+
+when@test:
+    framework:
+        cache:
+            pools:
+                # The login throttling counts every attempt: no Redis needed to run the tests, and
+                # unlike an array pool, the count outlives the request
+                cache.rate_limiter:
+                    adapter: cache.adapter.filesystem

@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { loadIntoDialog } from '@/js/utils/dialog'
 import { popup } from '@/js/utils/utils'
 
 export default class SocialLogin {
@@ -53,7 +54,7 @@ export default class SocialLogin {
     launchSocialDisconnect(checkbox) {
         const dialog = $('#dialog_details').modal('loading').modal('show')
 
-        dialog.load($(checkbox).data('href-disconnect'), () => {
+        loadIntoDialog(dialog, $(checkbox).data('href-disconnect'), () => {
             this.initModalCheckbox(dialog.modal('getBody').find('input:checkbox'))
             dialog
                 .find('form')

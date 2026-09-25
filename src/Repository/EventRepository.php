@@ -138,6 +138,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadTimesheets();
             $loadThemes();
         }
+
+        if ('admin:index' === $view) {
+            $loadPlaces();
+            $loadUsers();
+        }
     }
 
     /**
@@ -302,6 +307,26 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false');
+    }
+
+    /**
+     * The event with the place, city and country its URL and page are built from, in one query.
+     * The city's parent is joined too: it targets the AdminZone inheritance root, which Doctrine
+     * cannot proxy, so hydrating a city without it loads it with a query of its own.
+     */
+    public function findOneWithPlace(int $id): ?Event
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->addSelect('p', 'city', 'cityParent', 'country')
+            ->leftJoin('e.place', 'p')
+            ->leftJoin('p.city', 'city')
+            ->leftJoin('city.parent', 'cityParent')
+            ->leftJoin('p.country', 'country')
+            ->where('e.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
@@ -496,26 +521,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->setParameter('event', $event->getId())
             ->getQuery()
             ->getSingleScalarResult();
-    }
-
-    public function findAllTrends(Event $event, int $page = 1, int $limit = 7): array
-    {
-        return $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->select('u')
-            ->addSelect('ue')
-            ->addSelect('COUNT(u.id) AS nb_events')
-            ->from(User::class, 'u')
-            ->join('u.userEvents', 'ue')
-            ->where('ue.event = :event')
-            ->orderBy('nb_events', 'DESC')
-            ->groupBy('u.id')
-            ->setParameter('event', $event->getId())
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
     }
 
     public function findAllSimilarsQueryBuilder(Event $event): QueryBuilder

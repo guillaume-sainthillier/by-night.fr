@@ -15,7 +15,9 @@ use App\Entity\Event;
 use App\Exception\UnsupportedFileException;
 use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
+use App\Picture\ImageFormats;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
@@ -27,9 +29,21 @@ final readonly class EventHandler
 {
     private const int MAX_CONCURRENT_REQUESTS = 50;
 
+    /**
+     * Beyond this, a download is given up: a poster never needs it (8 stored images of
+     * 1.5 million exceed it), and nothing else bounded what a source's URL could fill the
+     * disk with.
+     */
+    public const int MAX_IMAGE_BYTES = 50_000_000;
+
+    /** Seconds a download may take, however slowly its bytes keep coming */
+    private const int MAX_DURATION = 120;
+
     public function __construct(
         private Cleaner $cleaner,
         private LoggerInterface $logger,
+        // Never into the private network, see services.yaml
+        #[Autowire(service: 'app.image_download_client')]
         private HttpClientInterface $client,
         private TemporaryFilesManager $temporaryFilesManager,
         private UploadHandler $uploadHandler,
@@ -54,7 +68,8 @@ final readonly class EventHandler
     {
         $eventsPerUrl = [];
         foreach ($events as $event) {
-            if (!$event->getUrl()) {
+            // An image taken down on request is not downloaded again (EventImageRemover)
+            if (!$event->getUrl() || null !== $event->getImageRemovedAt()) {
                 continue;
             }
 
@@ -77,6 +92,7 @@ final readonly class EventHandler
                 $response = $this->client->request('GET', $imageUrl, [
                     'user_data' => $imageUrl,
                     'max_redirects' => 10,
+                    'max_duration' => self::MAX_DURATION,
                 ]);
                 $responses[] = $response;
             }
@@ -92,6 +108,9 @@ final readonly class EventHandler
                     } elseif ($chunk->isFirst()) {
                         if (200 !== $response->getStatusCode()) {
                             $response->cancel();
+                        } elseif ((int) ($response->getHeaders()['content-length'][0] ?? 0) > self::MAX_IMAGE_BYTES) {
+                            $this->logger->info(\sprintf('Image %s is too large to be downloaded', $imageUrl));
+                            $response->cancel();
                         } else {
                             // Create temporary file for streaming
                             $tempFilePaths[$imageUrl] = $this->temporaryFilesManager->create();
@@ -99,6 +118,16 @@ final readonly class EventHandler
                     } elseif (isset($tempFilePaths[$imageUrl])) {
                         // Write chunk to temporary file
                         file_put_contents($tempFilePaths[$imageUrl], $chunk->getContent(), \FILE_APPEND);
+
+                        // Without a Content-Length, or with a false one
+                        clearstatcache(true, $tempFilePaths[$imageUrl]);
+                        if (filesize($tempFilePaths[$imageUrl]) > self::MAX_IMAGE_BYTES) {
+                            $this->logger->info(\sprintf('Image %s is too large to be downloaded', $imageUrl));
+                            $response->cancel();
+                            unset($tempFilePaths[$imageUrl]);
+
+                            continue;
+                        }
 
                         if ($chunk->isLast()) {
                             foreach ($currentEvents as $event) {
@@ -155,13 +184,8 @@ final readonly class EventHandler
 
         $mimeTypes = new MimeTypes();
         $contentType = $mimeTypes->guessMimeType($tempFilePath);
-        $ext = match ($contentType) {
-            'image/gif' => 'gif',
-            'image/png' => 'png',
-            'image/jpg',
-            'image/jpeg' => 'jpeg',
-            default => throw new UnsupportedFileException(\sprintf('Unable to find extension for mime type %s', $contentType)),
-        };
+        $ext = ImageFormats::getExtension($contentType)
+            ?? throw new UnsupportedFileException(\sprintf('Unable to find extension for mime type %s', $contentType));
 
         $tempFileBasename = ($event->getId() ?? uniqid());
         $pathUrl = parse_url((string) $event->getUrl(), \PHP_URL_PATH);

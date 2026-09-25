@@ -66,78 +66,86 @@ final class ToulouseParser extends AbstractParser
         fgetcsv($fic, 0, ';', '"', '"'); // Ouverture de la première ligne
 
         while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = array_map(Encoding::toUTF8(...), $cursor);
-
-            if (!$tab[1] && !$tab[2]) {
-                continue;
-            }
-
-            $nom = $tab[1] ?: $tab[2];
-
-            $startDate = new DateTimeImmutable($tab[5]);
-            $endDate = new DateTimeImmutable($tab[6]);
-
-            $event = new EventDto();
-            $event->externalId = $tab[0];
-
-            $event->name = $nom;
-            $event->fromData = self::getParserName();
-            $event->description = $tab[4];
-            $event->startDate = $startDate;
-            $event->endDate = $endDate;
-            $event->hours = implode('.', array_unique(explode('.', (string) $tab[7])));
-            $event->status = EventStatus::fromStatusMessage($tab[9]);
-            $event->latitude = (float) $tab[20];
-            $event->longitude = (float) $tab[21];
-            $event->type = $tab[16];
-            $categoryLabel = $tab[17] ?? null;
-            if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
-                $event->category = TagDto::fromString($categoryLabel);
-            }
-
-            $themeStr = $tab[18] ?? null;
-            if (null !== $themeStr && '' !== trim($themeStr)) {
-                $themeNames = array_filter(array_map(trim(...), explode(',', $themeStr)));
-                foreach ($themeNames as $themeName) {
-                    $event->themes[] = TagDto::fromString($themeName);
-                }
-            }
-
-            $event->phoneContacts = [$tab[22]];
-            $event->emailContacts = [$tab[23]];
-            $event->websiteContacts = [$tab[24]];
-            $event->prices = $tab[26];
-            $event->source = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/';
-
-            $place = new PlaceDto();
-            $place->externalId = sha1(mb_strtolower(\sprintf(
-                '%s %s %s %s',
-                $tab[10],
-                $tab[12],
-                $tab[14],
-                $tab[15],
-            )));
-            $place->name = $tab[10];
-            $place->street = $tab[12];
-
-            $city = new CityDto();
-            $city->postalCode = $tab[14];
-            $city->name = $tab[15];
-
-            $country = new CountryDto();
-            $country->code = 'FR';
-
-            $city->country = $country;
-
-            $place->city = $city;
-            $place->country = $country;
-
-            $event->place = $place;
-
-            yield $event;
+            yield $this->mapRecord(fn (): ?EventDto => $this->rowToDto($cursor), ['id' => $cursor[0] ?? null]);
         }
 
         fclose($fic);
+    }
+
+    /**
+     * @param array<int, string|null> $cursor a row of the CSV file
+     */
+    private function rowToDto(array $cursor): ?EventDto
+    {
+        $tab = array_map(Encoding::toUTF8(...), $cursor);
+
+        if (!$tab[1] && !$tab[2]) {
+            return null;
+        }
+
+        $nom = $tab[1] ?: $tab[2];
+
+        $startDate = new DateTimeImmutable($tab[5]);
+        $endDate = new DateTimeImmutable($tab[6]);
+
+        $event = new EventDto();
+        $event->externalId = $tab[0];
+
+        $event->name = $nom;
+        $event->fromData = self::getParserName();
+        $event->description = $tab[4];
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
+        $event->hours = implode('.', array_unique(explode('.', (string) $tab[7])));
+        $event->status = EventStatus::fromStatusMessage($tab[9]);
+        $event->latitude = (float) $tab[20];
+        $event->longitude = (float) $tab[21];
+        $event->type = $tab[16];
+        $categoryLabel = $tab[17] ?? null;
+        if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
+            $event->category = TagDto::fromString($categoryLabel);
+        }
+
+        $themeStr = $tab[18] ?? null;
+        if (null !== $themeStr && '' !== trim($themeStr)) {
+            $themeNames = array_filter(array_map(trim(...), explode(',', $themeStr)));
+            foreach ($themeNames as $themeName) {
+                $event->themes[] = TagDto::fromString($themeName);
+            }
+        }
+
+        $event->phoneContacts = [$tab[22]];
+        $event->emailContacts = [$tab[23]];
+        $event->websiteContacts = [$tab[24]];
+        $event->prices = $tab[26];
+        $event->source = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/';
+
+        $place = new PlaceDto();
+        $place->externalId = sha1(mb_strtolower(\sprintf(
+            '%s %s %s %s',
+            $tab[10],
+            $tab[12],
+            $tab[14],
+            $tab[15],
+        )));
+        $place->name = $tab[10];
+        $place->street = $tab[12];
+
+        $city = new CityDto();
+        $city->postalCode = $tab[14];
+        $city->name = $tab[15];
+
+        $country = new CountryDto();
+        $country->code = 'FR';
+
+        $city->country = $country;
+
+        $place->city = $city;
+        $place->country = $country;
+
+        $event->place = $place;
+
+        return $event;
     }
 
     /**

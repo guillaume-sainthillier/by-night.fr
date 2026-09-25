@@ -247,7 +247,7 @@ final class AgendaController extends BaseController
         }
 
         $search->setLocation($location);
-        $search->setTerm($term);
+        $search->setTypeTerms($term);
 
         return $formAction;
     }

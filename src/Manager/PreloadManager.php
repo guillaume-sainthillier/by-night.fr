@@ -34,8 +34,10 @@ final readonly class PreloadManager
 
         $em = $this->doctrineManager->getEntityManagerForClass($entityClass);
         $uow = $em->getUnitOfWork();
+        // The identity map is keyed by the root of an inheritance: a City is stored as an AdminZone
+        $rootEntityClass = $em->getClassMetadata($entityClass)->rootEntityName;
         foreach ($entityIds as $i => $entityId) {
-            $entity = $uow->tryGetById($entityId, $entityClass);
+            $entity = $uow->tryGetById($entityId, $rootEntityClass);
             if (
                 false !== $entity
                 && $this->isEntityLoaded($entity)
@@ -48,19 +50,14 @@ final readonly class PreloadManager
             return;
         }
 
-        $entityIds = array_values($entityIds);
-        $repository = $em->getRepository($entityClass);
-        if (1 === \count($entityIds)) {
-            // optimization for single entity preload
-            $repository->find($entityIds[0]);
-        } else {
-            $repository
-                ->createQueryBuilder('entity')
-                ->where('entity.id IN (:ids)')
-                ->setParameter('ids', $entityIds)
-                ->getQuery()
-                ->execute();
-        }
+        // Even for a single id: find() hands back the uninitialized proxy it finds in the identity map
+        // without loading it, and skips the joins a repository adds (CityRepository fetches the parent)
+        $em->getRepository($entityClass)
+            ->createQueryBuilder('entity')
+            ->where('entity.id IN (:ids)')
+            ->setParameter('ids', array_values($entityIds))
+            ->getQuery()
+            ->execute();
     }
 
     private function isEntityLoaded(object $entity): bool

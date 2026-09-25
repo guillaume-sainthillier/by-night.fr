@@ -42,6 +42,7 @@ framework:
             App\Elasticsearch\Message\InsertManyDocuments: async
             App\Elasticsearch\Message\ReplaceManyDocuments: async
             App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers: async
+            App\Elasticsearch\Message\RefreshEventDocuments: async
 
 when@test:
     framework:

@@ -36,6 +36,7 @@ final class PlaceComparator extends AbstractComparator
         if (
             $entity->getCountry()?->getId() !== $dto->country?->entityId
             || $entity->getCity()?->getId() !== $dto->city?->entityId
+            || (null === $entity->getCity() && !$this->isSameUnresolvedTown($entity, $dto))
         ) {
             return null;
         }
@@ -56,6 +57,31 @@ final class PlaceComparator extends AbstractComparator
 
         // ~ Même nom
         return new Matching($entity, 90.0);
+    }
+
+    /**
+     * Without a city, what the sources wrote of the town is all that locates a place: two
+     * "Salle des fêtes" of the country are one only when their postal codes and town names,
+     * where both are known, agree. Compared by name alone, one place gathered the events
+     * of 41 départements and took the address of the last one imported.
+     */
+    private function isSameUnresolvedTown(Place $entity, PlaceDto $dto): bool
+    {
+        $entityPostalCode = $entity->getCityPostalCode();
+        $dtoPostalCode = $dto->city?->postalCode;
+        if (null !== $entityPostalCode && '' !== $entityPostalCode && null !== $dtoPostalCode && '' !== $dtoPostalCode
+            && $entityPostalCode !== $dtoPostalCode) {
+            return false;
+        }
+
+        $entityTown = $entity->getCityName();
+        $dtoTown = $dto->city?->name;
+        if (null !== $entityTown && '' !== trim($entityTown) && null !== $dtoTown && '' !== trim($dtoTown)
+            && SluggerUtils::generateSlug($entityTown) !== SluggerUtils::generateSlug($dtoTown)) {
+            return false;
+        }
+
+        return true;
     }
 
     private function getNameMatchingConfidence(Place $entity, PlaceDto $dto): float

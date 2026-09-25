@@ -80,4 +80,56 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertArrayNotHasKey('sort', $query);
         self::assertArrayHasKey('must', $query['query']['bool']);
     }
+
+    /**
+     * All the synonyms of a type page together matched almost nothing ("étudiant": 0 of
+     * 4,266 upcoming events in Toulouse): an event naming any one of them is listed too,
+     * on top of what the keywords query finds.
+     */
+    public function testATypePageAlsoListsTheEventsNamingAnyOfItsTerms(): void
+    {
+        $search = new SearchEvent()->setTypeTerms('soirée, boîte de nuit');
+
+        $must = $this->repository->createSearchQuery($search)->toArray()['query']['bool']['must'];
+
+        self::assertCount(1, $must);
+        $anyTerm = $must[0]['bool'];
+        self::assertSame(1, $anyTerm['minimum_should_match']);
+        self::assertContains(['multi_match' => [
+            'query' => 'boîte de nuit',
+            'type' => 'phrase',
+            'fields' => ['name^5', 'name.heavy^5', 'category.name^3', 'type'],
+        ]], $anyTerm['should']);
+        self::assertContains(
+            ['nested' => ['path' => 'themes', 'query' => ['match_phrase' => ['themes.name' => 'soirée']]]],
+            $anyTerm['should'],
+        );
+        self::assertContains('soirée, boîte de nuit', array_map(static fn (array $clause) => $clause['multi_match']['query'] ?? null, $anyTerm['should']), 'What the keywords query found stays listed');
+    }
+
+    public function testKeywordsTypedOnATypePageAreSearchedAsKeywordsOnly(): void
+    {
+        $search = new SearchEvent()->setTypeTerms('concert, musique, artiste')->setTerm('jazz');
+
+        $must = $this->repository->createSearchQuery($search)->toArray()['query']['bool']['must'];
+
+        self::assertSame([], $search->getTypeTerms());
+        self::assertSame('jazz', $must[0]['multi_match']['query']);
+    }
+
+    public function testTheCategoryFilterReachesTheThemes(): void
+    {
+        $search = new SearchEvent()->setType(['Concert']);
+
+        $filters = $this->repository->createSearchQuery($search)->toArray()['query']['bool']['filter'];
+
+        $typeFilter = end($filters)['bool'];
+        self::assertSame(1, $typeFilter['minimum_should_match']);
+        self::assertContains(['multi_match' => ['query' => 'Concert', 'fields' => ['type', 'category.name']]], $typeFilter['should']);
+        self::assertContains(
+            ['nested' => ['path' => 'themes', 'query' => ['match_phrase' => ['themes.name' => 'Concert']]]],
+            $typeFilter['should'],
+            'Themes are nested documents: only a nested query reaches them',
+        );
+    }
 }

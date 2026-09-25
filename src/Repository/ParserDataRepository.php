@@ -64,4 +64,26 @@ final class ParserDataRepository extends ServiceEntityRepository
 
         return $signatures;
     }
+
+    /**
+     * @param list<string> $externalIds
+     *
+     * @return ParserData[]
+     */
+    public function findByExternalIds(string $externalOrigin, array $externalIds): array
+    {
+        if ([] === $externalIds) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('p')
+            ->where('p.externalOrigin = :externalOrigin')
+            ->andWhere('p.externalId IN (:externalIds)')
+            ->setParameter('externalOrigin', $externalOrigin)
+            // Numeric ids must stay strings, see DtoFindableTrait
+            ->setParameter('externalIds', $externalIds, ArrayParameterType::STRING)
+            ->getQuery()
+            ->getResult();
+    }
 }

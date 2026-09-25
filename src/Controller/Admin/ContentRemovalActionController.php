@@ -11,9 +11,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ContentRemovalRequest;
-use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\ContentRemovalRequestStatus;
+use App\Manager\EventImageRemover;
 use App\Manager\MailerManager;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +28,7 @@ final class ContentRemovalActionController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly MailerManager $mailerManager,
+        private readonly EventImageRemover $eventImageRemover,
     ) {
     }
 
@@ -55,7 +56,7 @@ final class ContentRemovalActionController extends AbstractController
         $this->ensurePending($contentRemovalRequest);
 
         foreach ($contentRemovalRequest->getEvents() as $event) {
-            $this->removeEventImage($event);
+            $this->eventImageRemover->remove($event);
         }
 
         $this->markAsProcessed($contentRemovalRequest);
@@ -103,14 +104,6 @@ final class ContentRemovalActionController extends AbstractController
         if (ContentRemovalRequestStatus::Pending !== $contentRemovalRequest->getStatus()) {
             throw new BadRequestHttpException('Cette demande a déjà été traitée.');
         }
-    }
-
-    private function removeEventImage(Event $event): void
-    {
-        $event->setImageFile();
-        $event->setImageHash(null);
-        $event->setImageSystemFile();
-        $event->setImageSystemHash(null);
     }
 
     private function markAsProcessed(ContentRemovalRequest $contentRemovalRequest): void

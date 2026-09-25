@@ -26,6 +26,7 @@ use App\Factory\ParserHistoryFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
+use App\Factory\ZipCityFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
@@ -784,6 +785,216 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $placeRepository = self::getContainer()->get(PlaceRepository::class);
         $this->assertSame(2, $placeRepository->count([]), 'Different venues in the same city must stay separate');
+    }
+
+    /**
+     * A source may number an event and a venue alike (OpenAgenda does): each keeps an
+     * exploration of its own, so neither verdict overwrites the other.
+     */
+    public function testAnEventAndAVenueSharingAnIdKeepTheirOwnExploration(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('4242', 'Le Bikini', '4242', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => '4242']));
+        $this->assertSame(1, ParserDataFactory::count(['externalId' => '4242', 'externalOrigin' => 'slug-test-parser']));
+        $this->assertSame(1, ParserDataFactory::count(['externalId' => '4242', 'externalOrigin' => 'slug-test-parser:place']));
+    }
+
+    public function testARejectedVenueDoesNotRejectTheEventNumberedLikeIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // Venue 77 has a name too short to be kept, which rejects the events held there
+        $this->handler->handleOne($this->makeEventWithPlace('evt-at-77', 'X', '77', 'slug-test-parser'));
+        $this->assertSame(0, EventFactory::count(['externalId' => 'evt-at-77']));
+
+        // Event 77 is another event, held in a valid venue
+        $this->handler->handleOne($this->makeEventWithPlace('77', 'Le Bikini', '88', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => '77']), 'The venue numbered 77 has nothing to do with event 77');
+        $venue = ParserDataFactory::find(['externalId' => '77', 'externalOrigin' => 'slug-test-parser:place']);
+        $this->assertSame(Reject::BAD_PLACE_NAME | Reject::VALID, $venue->getReason(), 'The venue keeps its own verdict');
+    }
+
+    public function testARejectedEventDoesNotRejectTheVenueNumberedLikeIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        // Event 91 has no valid date, it is rejected
+        $rejected = $this->makeEventWithPlace('91', 'Le Bikini', '12', 'slug-test-parser');
+        $rejected->endDate = new DateTime('-1 year');
+        $this->handler->handleOne($rejected);
+        $this->assertSame(0, EventFactory::count(['externalId' => '91']));
+
+        // Venue 91 hosts another, valid event
+        $this->handler->handleOne($this->makeEventWithPlace('evt-at-91', 'Le Zénith', '91', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'evt-at-91']), 'Event 91 has nothing to do with venue 91');
+    }
+
+    public function testAnEventRejectedOnceIsImportedWhenTheSourceFixesIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $dto = $this->makeEventWithPlace('fixed-later', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $dto->description = 'Soon';
+        $this->handler->handleOne($dto);
+        $this->assertSame(0, EventFactory::count(['externalId' => 'fixed-later']));
+
+        $dto = $this->makeEventWithPlace('fixed-later', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'fixed-later']));
+    }
+
+    public function testAVenueFixedAtTheSourceNoLongerRejectsItsEvents(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('first-at-venue', 'X', 'venue-fixed-later', 'slug-test-parser'));
+        $this->assertSame(0, EventFactory::count(['externalId' => 'first-at-venue']));
+
+        // The source has named the venue properly since
+        $this->handler->handleOne($this->makeEventWithPlace('next-at-venue', 'Le Bikini', 'venue-fixed-later', 'slug-test-parser'));
+
+        $this->assertSame(1, EventFactory::count(['externalId' => 'next-at-venue']));
+        $venue = ParserDataFactory::find(['externalId' => 'venue-fixed-later', 'externalOrigin' => 'slug-test-parser:place']);
+        $this->assertSame(Reject::VALID, $venue->getReason());
+    }
+
+    public function testAnUnchangedRejectedEventStaysOut(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $dto = $this->makeEventWithPlace('still-bad', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $dto->description = 'Soon';
+        $this->handler->handleOne($dto);
+
+        $dto = $this->makeEventWithPlace('still-bad', 'Le Bikini', 'bikini', 'slug-test-parser');
+        $dto->description = 'Soon';
+        $this->handler->handleOne($dto);
+
+        $this->assertSame(0, EventFactory::count(['externalId' => 'still-bad']));
+        $exploration = ParserDataFactory::find(['externalId' => 'still-bad', 'externalOrigin' => 'slug-test-parser']);
+        $this->assertSame(Reject::VALID | Reject::BAD_EVENT_DESCRIPTION | Reject::NO_NEED_TO_UPDATE, $exploration->getReason());
+    }
+
+    /**
+     * The unique key on tag.name ignores case and accents: a source spelling an existing
+     * tag its own way must get that tag, not a second one the index refuses (which rolled
+     * the whole batch back, on every run).
+     */
+    public function testAnExistingTagIsFoundWhateverItsAccentsAndCase(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+        $theatre = TagFactory::createOne(['name' => 'Théâtre']);
+
+        $dto = $this->makeEventWithPlace('tag-accents', 'Le Bikini');
+        $dto->category = TagDto::fromString('THEATRE');
+        $dto->themes = [TagDto::fromString('theatre')];
+        $this->handler->handleOne($dto);
+
+        $event = EventFactory::find(['externalId' => 'tag-accents']);
+        $this->assertSame($theatre->getId(), $event->getCategory()?->getId());
+        $this->assertSame([$theatre->getId()], $event->getThemes()->map(static fn ($tag) => $tag->getId())->getValues());
+        $this->assertSame(1, TagFactory::count());
+        $this->assertSame('Théâtre', TagFactory::find(['id' => $theatre->getId()])->getName(), 'The tag keeps its own spelling');
+    }
+
+    public function testSpellingsOfOneNewTagInABatchMakeOneTag(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $first = $this->makeEventWithPlace('tag-spelling-1', 'Le Bikini');
+        $first->category = TagDto::fromString('Café-concert');
+        $second = $this->makeEventWithPlace('tag-spelling-2', 'Le Zénith');
+        $second->category = TagDto::fromString('CAFE-CONCERT');
+        $this->handler->handleMany([$first, $second]);
+
+        $this->assertSame(2, EventFactory::count(['externalId' => ['tag-spelling-1', 'tag-spelling-2']]));
+        $this->assertSame(1, TagFactory::count());
+        $this->assertSame('Café-concert', TagFactory::first()->getName());
+    }
+
+    /**
+     * Pau is the prefecture of the Pyrénées-Atlantiques and a hamlet of Savoie: each venue
+     * lands in the Pau of its postal code, even when both come in the same batch.
+     */
+    public function testVenuesGoToTheNamesakeOfTheirPostalCode(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $hamlet = CityFactory::createOne(['name' => 'Pau', 'admin2Code' => '73', 'population' => 0, 'country' => $country]);
+        $prefecture = CityFactory::createOne(['name' => 'Pau', 'admin2Code' => '64', 'population' => 82_697, 'country' => $country]);
+        ZipCityFactory::createOne(['parent' => $prefecture, 'postalCode' => '64000', 'country' => $country]);
+
+        $inPrefecture = $this->makeEventWithPlace('pau-64', 'Zénith de Pau', 'zenith-pau', 'slug-test-parser');
+        \assert(null !== $inPrefecture->place?->city);
+        $inPrefecture->place->city->name = 'Pau';
+        $inPrefecture->place->city->postalCode = '64000';
+        $inHamlet = $this->makeEventWithPlace('pau-73', 'Salle du hameau', 'salle-hameau', 'slug-test-parser');
+        \assert(null !== $inHamlet->place?->city);
+        $inHamlet->place->city->name = 'Pau';
+        $inHamlet->place->city->postalCode = '73100';
+        $this->handler->handleMany([$inHamlet, $inPrefecture]);
+
+        $this->assertSame($prefecture->getId(), EventFactory::find(['externalId' => 'pau-64'])->getPlace()?->getCity()?->getId());
+        $this->assertSame($hamlet->getId(), EventFactory::find(['externalId' => 'pau-73'])->getPlace()?->getCity()?->getId());
+    }
+
+    /**
+     * A town the import cannot resolve leaves the place without a city: its postal code
+     * and town name are then all that locate it, and two places of one name in two
+     * départements stay two places.
+     */
+    public function testPlacesWithoutACityAreNotMergedAcrossTowns(): void
+    {
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-vendee', 'Salle des fêtes', 'Saint-Jean-de-Beugné', '85210'));
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-gard', 'Salle des fêtes', 'Saint-Jean-de-Serres', '30350'));
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-same-code', 'Salle des fêtes', 'Tuffalun', '85210'));
+
+        $vendee = EventFactory::find(['externalId' => 'sdf-vendee'])->getPlace();
+        $gard = EventFactory::find(['externalId' => 'sdf-gard'])->getPlace();
+        $sameCode = EventFactory::find(['externalId' => 'sdf-same-code'])->getPlace();
+        $this->assertNotNull($vendee);
+        $this->assertNull($vendee->getCity(), 'The town is unknown to the city table');
+        $this->assertNotSame($vendee->getId(), $gard?->getId(), 'Two départements, two places');
+        $this->assertNotSame($vendee->getId(), $sameCode?->getId(), 'One postal code, two towns, two places');
+        $this->assertSame('85210', PlaceFactory::find(['id' => $vendee->getId()])->getCityPostalCode(), 'The first place keeps its own address');
+    }
+
+    public function testAPlaceWithoutACityIsFoundAgainInItsTown(): void
+    {
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-1', 'Salle des fêtes', 'Tuffalun', '49700'));
+        $this->handler->handleOne($this->makeEventInUnknownTown('sdf-2', 'Salle des Fêtes', 'TUFFALUN', '49700'));
+
+        $this->assertSame(
+            EventFactory::find(['externalId' => 'sdf-1'])->getPlace()?->getId(),
+            EventFactory::find(['externalId' => 'sdf-2'])->getPlace()?->getId(),
+        );
+    }
+
+    private function makeEventInUnknownTown(string $eventExternalId, string $placeName, string $town, string $postalCode): EventDto
+    {
+        $dto = $this->makeEventWithPlace($eventExternalId, $placeName);
+        \assert(null !== $dto->place?->city);
+        $dto->place->city->name = $town;
+        $dto->place->city->postalCode = $postalCode;
+
+        return $dto;
     }
 
     private function makeEventWithPlace(

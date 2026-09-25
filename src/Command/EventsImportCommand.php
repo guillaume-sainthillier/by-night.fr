@@ -15,6 +15,7 @@ use App\Repository\ParserStateRepository;
 use App\Utils\Monitor;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -101,14 +102,34 @@ final class EventsImportCommand extends Command
                 continue;
             }
 
+            // A few records the parser could not map are logged and left out (AbstractParser::
+            // mapRecord()), and come back with their next change at the source. Most of them
+            // failing is a mapping bug instead: the run fails and keeps the watermark, so that the
+            // window is imported again once the parser is fixed.
+            $failedRecords = $parser->getFailedRecords();
+            $records = $parser->getParsedEvents() + $parser->getSkippedEvents() + $failedRecords;
+            if (10 * $failedRecords > $records) {
+                $message = \sprintf('%s could not read %d of its %d records', $parser->getName(), $failedRecords, $records);
+                if ('all' !== $parserName) {
+                    throw new RuntimeException($message);
+                }
+
+                $failed = true;
+                $this->logger->error($message);
+                Monitor::writeln(\sprintf('<error>%s</error>', $message));
+
+                continue;
+            }
+
             // Only a run that completed moves the watermark: after a failure the next run
             // re-fetches from the previous one, and the dedup gate absorbs the overlap.
             $this->parserStates->markParsed($parser->getCommandName(), $startedAt);
 
             Monitor::writeln(\sprintf(
-                '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged)',
+                '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged), <info>%d</info> unreadable',
                 $parser->getParsedEvents(),
-                $parser->getSkippedEvents()
+                $parser->getSkippedEvents(),
+                $failedRecords,
             ));
         }
 
