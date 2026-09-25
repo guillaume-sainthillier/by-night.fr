@@ -17,6 +17,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Reject\Reject;
 use App\Repository\PlaceRepository;
+use App\Utils\ObjectKey;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -34,6 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
+
+    /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
+    final public const string KEY_PREFIX = 'place';
 
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
@@ -123,7 +127,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     public function getKeyPrefix(): string
     {
-        return 'place';
+        return self::KEY_PREFIX;
     }
 
     public function getInternalId(): ?string
@@ -132,11 +136,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->getId()
-        );
+        return ObjectKey::internal(self::KEY_PREFIX, $this->getId());
     }
 
     /**

@@ -20,6 +20,7 @@ use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\TagRepository;
 use App\Utils\CollationKey;
+use App\Utils\ObjectKey;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
@@ -61,6 +62,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DependencyObjectInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;
+
+    /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
+    final public const string KEY_PREFIX = 'tag';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -120,7 +124,7 @@ class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObject
 
     public function getKeyPrefix(): string
     {
-        return 'tag';
+        return self::KEY_PREFIX;
     }
 
     public function getInternalId(): ?string
@@ -129,28 +133,17 @@ class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObject
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->id
-        );
+        return ObjectKey::internal(self::KEY_PREFIX, $this->id);
     }
 
     public function getUniqueKey(): string
     {
         if (null === $this->name || '' === trim($this->name)) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+            return ObjectKey::transient(self::KEY_PREFIX, $this);
         }
 
-        // Equal for the names the unique index on tag.name holds equal, see CollationKey
-        return \sprintf(
-            '%s-data-%s',
-            $this->getKeyPrefix(),
-            CollationKey::of(trim($this->name))
-        );
+        // The key of TagDto::getUniqueKey(): equal for the names the unique index on
+        // tag.name holds equal, see CollationKey
+        return ObjectKey::data(self::KEY_PREFIX, CollationKey::of(trim($this->name)));
     }
 }

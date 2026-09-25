@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\CountryRepository;
+use App\Utils\ObjectKey;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -24,6 +25,9 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Country implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
+    /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
+    final public const string KEY_PREFIX = 'country';
+
     #[ORM\Column(type: Types::STRING, length: 2)]
     #[ORM\Id]
     #[Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
@@ -63,7 +67,7 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
 
     public function getKeyPrefix(): string
     {
-        return 'country';
+        return self::KEY_PREFIX;
     }
 
     public function getInternalId(): ?string
@@ -72,11 +76,7 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%s',
-            $this->getKeyPrefix(),
-            $this->getId()
-        );
+        return ObjectKey::internal(self::KEY_PREFIX, $this->getId());
     }
 
     public function getId(): ?string

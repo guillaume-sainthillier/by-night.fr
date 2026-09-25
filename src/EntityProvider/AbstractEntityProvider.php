@@ -19,6 +19,7 @@ use App\Contracts\ExternalIdentifiablesInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Utils\ChunkUtils;
+use App\Utils\ObjectKey;
 
 /**
  * @template TDto of object
@@ -130,14 +131,18 @@ abstract class AbstractEntityProvider implements EntityProviderInterface, BatchR
     }
 
     /**
-     * @return string[]
+     * Every key the object is known under, see ObjectKey: a DTO finds the entity filed
+     * under any of its own keys.
+     *
+     * @return list<string>
      */
     public function getObjectKeys(object $object): array
     {
+        $prefix = $object instanceof PrefixableObjectKeyInterface ? $object->getKeyPrefix() : '';
         $keys = [];
 
-        if ($object instanceof InternalIdentifiableInterface && $object->getInternalId()) {
-            $keys[] = $object->getInternalId();
+        if ($object instanceof InternalIdentifiableInterface && null !== $internalId = $object->getInternalId()) {
+            $keys[] = $internalId;
         }
 
         if ($object instanceof ExternalIdentifiablesInterface || $object instanceof ExternalIdentifiableInterface) {
@@ -147,25 +152,11 @@ abstract class AbstractEntityProvider implements EntityProviderInterface, BatchR
                 : [$object];
 
             foreach ($externalIdentifiables as $externalIdentifiable) {
-                if (null === $externalIdentifiable->getExternalOrigin() || null === $externalIdentifiable->getExternalId()) {
-                    continue;
+                $origin = $externalIdentifiable->getExternalOrigin();
+                $id = $externalIdentifiable->getExternalId();
+                if (null !== $origin && null !== $id) {
+                    $keys[] = ObjectKey::external($prefix, $origin, $id);
                 }
-
-                $key = \sprintf(
-                    'external-%s-%s',
-                    $externalIdentifiable->getExternalId(),
-                    $externalIdentifiable->getExternalOrigin()
-                );
-
-                if ($object instanceof PrefixableObjectKeyInterface) {
-                    $key = \sprintf(
-                        '%s-%s',
-                        $object->getKeyPrefix(),
-                        $key,
-                    );
-                }
-
-                $keys[] = $key;
             }
         }
 
@@ -174,18 +165,9 @@ abstract class AbstractEntityProvider implements EntityProviderInterface, BatchR
         }
 
         if ([] === $keys) {
-            $key = \sprintf('spl-%s', spl_object_id($object));
-            if ($object instanceof PrefixableObjectKeyInterface) {
-                $key = \sprintf(
-                    '%s-%s',
-                    $object->getKeyPrefix(),
-                    $key,
-                );
-            }
-
-            $keys[] = $key;
+            $keys[] = ObjectKey::transient($prefix, $object);
         }
 
-        return array_unique($keys);
+        return array_values(array_unique($keys));
     }
 }

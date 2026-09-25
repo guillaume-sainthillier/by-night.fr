@@ -18,6 +18,7 @@ use App\Parser\AffiliateParsers;
 use App\Picture\ImageFormats;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
+use App\Utils\ObjectKey;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -56,6 +57,9 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 class Event implements Stringable, ExternalIdentifiableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
 {
     use EntityTimestampableTrait;
+
+    /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
+    final public const string KEY_PREFIX = 'event';
 
     final public const string INDEX_FROM = '-6 months';
 
@@ -363,7 +367,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function getKeyPrefix(): string
     {
-        return 'event';
+        return self::KEY_PREFIX;
     }
 
     public function getInternalId(): ?string
@@ -372,11 +376,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%d',
-            $this->getKeyPrefix(),
-            $this->getId()
-        );
+        return ObjectKey::internal(self::KEY_PREFIX, $this->getId());
     }
 
     public function hasImage(): bool

@@ -16,12 +16,15 @@ use App\Dto\PlaceDto;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
+use App\Utils\ObjectKey;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 final class Firewall implements BatchResetInterface
 {
     public const string VERSION = '1.2';
+
+    private const string PARSER_DATA_KEY_PREFIX = 'parser_data';
 
     /** @var array<string, ParserData> by origin and external id, see getKey() */
     private array $parserDatas = [];
@@ -82,7 +85,7 @@ final class Firewall implements BatchResetInterface
 
     private static function getKey(string $externalOrigin, string $externalId): string
     {
-        return $externalOrigin . "\n" . $externalId;
+        return ObjectKey::external(self::PARSER_DATA_KEY_PREFIX, $externalOrigin, $externalId);
     }
 
     public function isEventDtoValid(EventDto $eventDto): bool

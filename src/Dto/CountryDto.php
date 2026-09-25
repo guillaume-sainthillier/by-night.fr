@@ -15,6 +15,7 @@ use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\Country;
+use App\Utils\ObjectKey;
 
 /**
  * @implements DtoEntityIdentifierResolvableInterface<Country>
@@ -29,7 +30,7 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
 
     public function getKeyPrefix(): string
     {
-        return 'country';
+        return Country::KEY_PREFIX;
     }
 
     /**
@@ -51,18 +52,10 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
     public function getUniqueKey(): string
     {
         if (null === $this->code && null === $this->name) {
-            return \sprintf(
-                '%s-spl-%s',
-                $this->getKeyPrefix(),
-                spl_object_id($this)
-            );
+            return ObjectKey::transient($this->getKeyPrefix(), $this);
         }
 
-        return \sprintf(
-            '%s-data-%s',
-            $this->getKeyPrefix(),
-            mb_strtolower((string) ($this->code ?? $this->name))
-        );
+        return ObjectKey::data($this->getKeyPrefix(), mb_strtolower((string) ($this->code ?? $this->name)));
     }
 
     public function setIdentifierFromEntity(object $entity): void
@@ -76,10 +69,6 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
             return null;
         }
 
-        return \sprintf(
-            '%s-id-%s',
-            $this->getKeyPrefix(),
-            $this->entityId
-        );
+        return ObjectKey::internal($this->getKeyPrefix(), $this->entityId);
     }
 }
