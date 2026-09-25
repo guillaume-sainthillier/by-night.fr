@@ -22,6 +22,7 @@ export default function init({
     searchPlaceholder = 'Recherche globale',
     inputPlaceholder = 'Rechercher des événements, villes, membres…',
     globalSearchUrl = null,
+    suggestionsUrl = null,
     searchPageUrl = null,
     enableHotkeys = true,
 }) {
@@ -37,7 +38,8 @@ export default function init({
             return {
                 ...source,
                 getItems(params) {
-                    return source.getItems(params)
+                    // The plugin also saves the query submitted without a hit ({ id, label }): nothing to open
+                    return source.getItems(params).filter((item) => item.url)
                 },
                 getItemUrl({ item }) {
                     return item.url
@@ -66,6 +68,78 @@ export default function init({
     })
 
     const { addItem: addRecentSearchItem } = recentSearchesPlugin.data
+
+    /**
+     * One source per type of hit, in the order of the API. Among the suggestions of the empty panel, the categories
+     * and the cities are chips: shortcuts, not searches to come back to.
+     *
+     * @param {Object[]} results
+     * @param {boolean} suggestions
+     */
+    const toSources = (results, suggestions = false) => {
+        const sources = []
+        for (const [type, items] of Object.entries(groupBy(results, 'type'))) {
+            const asChips = suggestions && CHIP_TYPES.includes(type)
+            sources.push({
+                sourceId: asChips ? `chips-${type}` : type,
+                getItemUrl({ item }) {
+                    return item.url
+                },
+                getItems() {
+                    return items
+                },
+                onSelect({ item }) {
+                    if (!asChips) {
+                        // Without the marks of today's query, which would stay on it
+                        addRecentSearchItem({ ...item, highlightResult: undefined })
+                    }
+                },
+                templates: {
+                    header() {
+                        return (
+                            <Fragment>
+                                <span className="aa-SourceHeaderTitle">{items[0].category}</span>
+                                <div className="aa-SourceHeaderLine" />
+                            </Fragment>
+                        )
+                    },
+                    item({ item }) {
+                        return asChips ? <Chip item={item} /> : <ResultItem item={item} />
+                    },
+                },
+            })
+        }
+
+        return sources
+    }
+
+    // Fetched on the first opening only, and again after a failure
+    let suggestions = null
+    const loadSuggestions = () => {
+        if (!suggestionsUrl) {
+            return Promise.resolve([])
+        }
+
+        suggestions ??= Promise.resolve(
+            $.ajax({
+                url: suggestionsUrl,
+                method: 'GET',
+                headers: {
+                    Accept: 'application/ld+json',
+                },
+                dataType: 'json',
+            })
+        )
+            .then((response) => response.member || [])
+            .catch((error) => {
+                console.error('Search suggestions error:', error)
+                suggestions = null
+
+                return []
+            })
+
+        return suggestions
+    }
 
     const { destroy } = autocomplete({
         container: $autocomplete[0],
@@ -127,7 +201,23 @@ export default function init({
                 )
             }
 
-            if (!state.query || state.status !== 'idle') {
+            // Detached, the panel stays open without a hit: this must render, or it keeps showing what it showed
+            // before (the last recent search just removed)
+            if (!state.query) {
+                return render(
+                    <div className="aa-PanelLayout">
+                        <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
+                            <SearchIcon width="40" height="40" className="text-muted" />
+                            <p className="mt-3 mb-0 text-muted">
+                                Le nom d'un événement, d'une ville ou d'un membre : quelques lettres suffisent.
+                            </p>
+                        </div>
+                    </div>,
+                    root
+                )
+            }
+
+            if (state.status !== 'idle') {
                 return
             }
 
@@ -153,7 +243,9 @@ export default function init({
         },
         getSources({ query, setContext }) {
             if (!query) {
-                return []
+                setContext({ error: null })
+
+                return loadSuggestions().then((results) => toSources(results, true))
             }
 
             const request = $.ajax({
@@ -181,40 +273,7 @@ export default function init({
             })
 
             return results
-                .then((results) => {
-                    const sources = []
-                    const groupedResults = groupBy(results, 'type')
-                    for (const [type, results] of Object.entries(groupedResults)) {
-                        const firstResult = results[0]
-                        sources.push({
-                            sourceId: type,
-                            getItemUrl({ item }) {
-                                return item.url
-                            },
-                            getItems() {
-                                return results
-                            },
-                            onSelect({ item }) {
-                                addRecentSearchItem(item)
-                            },
-                            templates: {
-                                header() {
-                                    return (
-                                        <Fragment>
-                                            <span className="aa-SourceHeaderTitle">{firstResult.category}</span>
-                                            <div className="aa-SourceHeaderLine" />
-                                        </Fragment>
-                                    )
-                                },
-                                item({ item }) {
-                                    return <ResultItem item={item} />
-                                },
-                            },
-                        })
-                    }
-
-                    return sources
-                })
+                .then((results) => toSources(results))
                 .catch(() => {
                     // Return empty array on error, error state is handled in renderNoResults
                     return []
@@ -267,6 +326,8 @@ export default function init({
     }
 }
 
+const CHIP_TYPES = ['tags', 'cities']
+
 const TYPE_ICONS = {
     events: DramaIcon,
     cities: CrosshairIcon,
@@ -280,7 +341,9 @@ function TypeIcon({ type, className = '' }) {
 }
 
 function HighlightedText({ item, attribute }) {
-    const highlightedValue = item.highlightResult?.[attribute]?.value || item[attribute] || ''
+    // A recent search is marked by the plugin, against the query typed now
+    const highlightedValue =
+        item._highlightResult?.[attribute]?.value || item.highlightResult?.[attribute]?.value || item[attribute] || ''
 
     // Text nodes only: the value is a member's or a feed's name, not HTML
     return (
@@ -295,6 +358,19 @@ function HighlightedText({ item, attribute }) {
                 )
             )}
         </span>
+    )
+}
+
+function Chip({ item }) {
+    return (
+        <a href={item.url} className="aa-ItemLink aa-Chip">
+            {item.label}
+            {item.shortDescription && (
+                <span className="aa-ChipCount" title={`${item.shortDescription} événements à venir`}>
+                    {item.shortDescription}
+                </span>
+            )}
+        </a>
     )
 }
 

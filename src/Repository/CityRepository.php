@@ -275,6 +275,24 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         return \array_slice($results, 0, $limit);
     }
 
+    /**
+     * The most populated cities of a country: the shortcuts of the search panel before a city is known.
+     *
+     * @return City[]
+     */
+    public function findBiggestOfCountry(string $countrySlug, int $limit): array
+    {
+        // createQueryBuilder() joins the country as "country"
+        return $this->createQueryBuilder('c')
+            ->where('country.slug = :country')
+            ->setParameter('country', $countrySlug)
+            ->orderBy('c.population', 'DESC')
+            ->addOrderBy('c.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findOneBySlug(string $slug): ?City
     {
         return $this->createQueryBuilder('c')
