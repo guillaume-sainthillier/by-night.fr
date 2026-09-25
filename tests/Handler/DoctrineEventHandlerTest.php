@@ -927,6 +927,62 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
     }
 
     /**
+     * The event forms save through handleOne(), with the themes a user typed: "humour"
+     * for the existing "Humour" failed on the unique key of tag.name (BY-NIGHTFR-68R).
+     */
+    public function testAThemeTypedInAnotherCaseGetsTheExistingTag(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+        $humour = TagFactory::createOne(['name' => 'Humour']);
+
+        $dto = $this->makeEventWithPlace('tag-form-theme', 'Le Bikini');
+        $dto->category = TagDto::fromString('Spectacle');
+        $dto->themes = [TagDto::fromString('humour')];
+        $this->handler->handleOne($dto);
+
+        $event = EventFactory::find(['externalId' => 'tag-form-theme']);
+        $this->assertSame([$humour->getId()], $event->getThemes()->map(static fn ($tag) => $tag->getId())->getValues());
+        $this->assertSame(2, TagFactory::count());
+    }
+
+    /**
+     * Editing an event, the form sends its category with its id (TagDto::fromEntity()) and
+     * the themes as typed: another spelling of the category is that tag (BY-NIGHTFR-693).
+     */
+    public function testAnEditedEventGetsItsCategoryForAnotherSpellingOfIt(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+        $soiree = TagFactory::createOne(['name' => 'soirée']);
+
+        $dto = $this->makeEventWithPlace('tag-form-edit', 'Le Bikini');
+        $dto->category = TagDto::fromEntity($soiree);
+        $dto->themes = [TagDto::fromString('Soirée'), TagDto::fromString('SOIREE')];
+        $this->handler->handleOne($dto);
+
+        $event = EventFactory::find(['externalId' => 'tag-form-edit']);
+        $this->assertSame($soiree->getId(), $event->getCategory()?->getId());
+        $this->assertSame([$soiree->getId()], $event->getThemes()->map(static fn ($tag) => $tag->getId())->getValues());
+        $this->assertSame(1, TagFactory::count());
+    }
+
+    public function testSpellingsOfOneNewTagInAnEventMakeOneTag(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $dto = $this->makeEventWithPlace('tag-form-spellings', 'Le Bikini');
+        $dto->category = TagDto::fromString('Soirée');
+        $dto->themes = [TagDto::fromString('soiree'), TagDto::fromString('Humour'), TagDto::fromString('humour ')];
+        $this->handler->handleOne($dto);
+
+        $event = EventFactory::find(['externalId' => 'tag-form-spellings']);
+        $this->assertSame(2, TagFactory::count());
+        $this->assertEqualsCanonicalizing(['Humour', 'Soirée'], $event->getThemes()->map(static fn ($tag) => $tag->getName())->getValues());
+    }
+
+    /**
      * Pau is the prefecture of the Pyrénées-Atlantiques and a hamlet of Savoie: each venue
      * lands in the Pau of its postal code, even when both come in the same batch.
      */
