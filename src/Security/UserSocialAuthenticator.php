@@ -104,11 +104,12 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                     $this->entityManager->persist($existingUser);
                 }
 
-                if (!$existingUser->getFirstname() && $datas['firstName']) {
+                // Twitter gives neither
+                if (!$existingUser->getFirstname() && ($datas['firstName'] ?? null)) {
                     $existingUser->setFirstname($datas['firstName']);
                 }
 
-                if (!$existingUser->getLastname() && $datas['lastName']) {
+                if (!$existingUser->getLastname() && ($datas['lastName'] ?? null)) {
                     $existingUser->setLastname($datas['lastName']);
                 }
 

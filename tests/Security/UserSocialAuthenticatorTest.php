@@ -22,7 +22,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use League\OAuth2\Client\Provider\GoogleUser;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use Smolblog\OAuth2\Client\Provider\TwitterUser;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -82,6 +84,24 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
         self::assertSame('Membre-1', $user->getUsername());
     }
 
+    /**
+     * Twitter gives no first and last names: reading them broke the sign-in.
+     */
+    public function testANewcomerFromTwitterGetsAnAccount(): void
+    {
+        $user = $this->signInWith('twitter', new TwitterUser(['data' => [
+            'id' => 'twitter-1',
+            'name' => 'Sacha Petit',
+            'username' => 'sachap',
+            'profile_image_url' => 'https://pbs.twimg.com/profile_images/1/a.jpg',
+            'confirmed_email' => 'sacha@example.com',
+        ]]));
+
+        self::assertSame('Sacha Petit', $user->getUsername());
+        self::assertNull($user->getFirstname());
+        self::assertSame('twitter-1', $user->getOAuth()?->getTwitterId());
+    }
+
     public function testAMemberOfTheSameAddressIsSignedIn(): void
     {
         $member = UserFactory::createOne(['email' => 'lou@example.com', 'verified' => true]);
@@ -97,9 +117,14 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
      */
     private function signIn(array $googleProfile): User
     {
+        return $this->signInWith('google', new GoogleUser($googleProfile));
+    }
+
+    private function signInWith(string $service, ResourceOwnerInterface $networkAccount): User
+    {
         $client = $this->createStub(OAuth2ClientInterface::class);
         $client->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 'token']));
-        $client->method('fetchUserFromToken')->willReturn(new GoogleUser($googleProfile));
+        $client->method('fetchUserFromToken')->willReturn($networkAccount);
 
         $clientRegistry = $this->createStub(ClientRegistry::class);
         $clientRegistry->method('getClient')->willReturn($client);
@@ -117,8 +142,8 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
             $container->get(UnverifiedAccountClaim::class),
         );
 
-        $request = Request::create('/login-social/check/google');
-        $request->attributes->set('service', 'google');
+        $request = Request::create('/login-social/check/' . $service);
+        $request->attributes->set('service', $service);
 
         $user = $authenticator->authenticate($request)->getUser();
         self::assertInstanceOf(User::class, $user);
