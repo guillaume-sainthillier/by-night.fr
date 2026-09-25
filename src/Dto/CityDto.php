@@ -61,7 +61,11 @@ final class CityDto implements DependencyRequirableInterface, DependencyObjectIn
             );
         }
 
+        // With the postal code: namesakes in two départements are two cities (see CityComparator)
         $cityKey = mb_strtolower($this->name);
+        if (null !== $this->postalCode && '' !== $this->postalCode) {
+            $cityKey .= '-' . $this->postalCode;
+        }
 
         if (null === $this->country) {
             return \sprintf(

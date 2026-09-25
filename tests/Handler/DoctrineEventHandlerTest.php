@@ -26,6 +26,7 @@ use App\Factory\ParserHistoryFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
+use App\Factory\ZipCityFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
@@ -923,6 +924,31 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame(2, EventFactory::count(['externalId' => ['tag-spelling-1', 'tag-spelling-2']]));
         $this->assertSame(1, TagFactory::count());
         $this->assertSame('Café-concert', TagFactory::first()->getName());
+    }
+
+    /**
+     * Pau is the prefecture of the Pyrénées-Atlantiques and a hamlet of Savoie: each venue
+     * lands in the Pau of its postal code, even when both come in the same batch.
+     */
+    public function testVenuesGoToTheNamesakeOfTheirPostalCode(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $hamlet = CityFactory::createOne(['name' => 'Pau', 'admin2Code' => '73', 'population' => 0, 'country' => $country]);
+        $prefecture = CityFactory::createOne(['name' => 'Pau', 'admin2Code' => '64', 'population' => 82_697, 'country' => $country]);
+        ZipCityFactory::createOne(['parent' => $prefecture, 'postalCode' => '64000', 'country' => $country]);
+
+        $inPrefecture = $this->makeEventWithPlace('pau-64', 'Zénith de Pau', 'zenith-pau', 'slug-test-parser');
+        \assert(null !== $inPrefecture->place?->city);
+        $inPrefecture->place->city->name = 'Pau';
+        $inPrefecture->place->city->postalCode = '64000';
+        $inHamlet = $this->makeEventWithPlace('pau-73', 'Salle du hameau', 'salle-hameau', 'slug-test-parser');
+        \assert(null !== $inHamlet->place?->city);
+        $inHamlet->place->city->name = 'Pau';
+        $inHamlet->place->city->postalCode = '73100';
+        $this->handler->handleMany([$inHamlet, $inPrefecture]);
+
+        $this->assertSame($prefecture->getId(), EventFactory::find(['externalId' => 'pau-64'])->getPlace()?->getCity()?->getId());
+        $this->assertSame($hamlet->getId(), EventFactory::find(['externalId' => 'pau-73'])->getPlace()?->getCity()?->getId());
     }
 
     private function makeEventWithPlace(
