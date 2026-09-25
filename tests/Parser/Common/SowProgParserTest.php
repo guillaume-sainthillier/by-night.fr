@@ -63,6 +63,26 @@ final class SowProgParserTest extends AppKernelTestCase
         self::assertEqualsWithDelta(43.5465, $event->latitude, 0.0001);
     }
 
+    public function testPricesKeepTheirCents(): void
+    {
+        $event = $this->map(self::record(['eventPrice' => [
+            ['label' => 'Tarif plein', 'price' => 12.5, 'currency' => 'EUR'],
+            ['label' => 'Tarif réduit', 'price' => 8, 'currency' => 'EUR'],
+        ]]));
+
+        self::assertSame('Tarif plein : 12.5€ - Tarif réduit : 8€', $event->prices);
+    }
+
+    public function testALabelEndingWithAColonIsNotFollowedByASecondOne(): void
+    {
+        // As served for a Paris Jazz Club concert: "Tarif concert à 21h : : 12€"
+        $event = $this->map(self::record(['eventPrice' => [
+            ['label' => 'Tarif concert à 21h :', 'price' => 12, 'currency' => 'EUR'],
+        ]]));
+
+        self::assertSame('Tarif concert à 21h : 12€', $event->prices);
+    }
+
     public function testEachScheduledDateIsATimesheet(): void
     {
         $event = $this->map(self::record(['eventSchedule' => ['eventScheduleDate' => [

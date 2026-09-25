@@ -144,7 +144,14 @@ final class SowProgParser extends AbstractParser
 
         $prices = null;
         if (!empty($data['eventPrice'])) {
-            $prices = array_map(static fn (array $price) => \sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
+            $prices = array_map(static fn (array $price) => \sprintf(
+                '%s : %s%s',
+                // Some labels end with their own colon ("Tarif concert à 21h :")
+                preg_replace('/[\s:]+$/u', '', (string) $price['label']),
+                // As the feed gives it, cents included (12.5, not 12)
+                (string) (float) $price['price'],
+                'EUR' === $price['currency'] ? '€' : $price['currency']
+            ), $data['eventPrice']);
             $prices = array_unique($prices);
             $prices = implode(' - ', $prices);
         }
