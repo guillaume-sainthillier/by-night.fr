@@ -19,6 +19,7 @@ use App\Contracts\DependencyObjectInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\TagRepository;
+use App\Utils\CollationKey;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
@@ -145,10 +146,11 @@ class Tag implements Stringable, InternalIdentifiableInterface, PrefixableObject
             );
         }
 
+        // Equal for the names the unique index on tag.name holds equal, see CollationKey
         return \sprintf(
             '%s-data-%s',
             $this->getKeyPrefix(),
-            mb_strtolower(trim($this->name))
+            CollationKey::of(trim($this->name))
         );
     }
 }

@@ -14,7 +14,11 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\TagDto;
 use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\String\Slugger\AsciiSlugger;
+
+use function Symfony\Component\String\u;
 
 /**
  * @extends ServiceEntityRepository<Tag>
@@ -58,19 +62,40 @@ class TagRepository extends ServiceEntityRepository implements DtoFindableReposi
      */
     public function findAllByDtos(array $dtos, bool $eager): array
     {
-        $names = array_filter(array_map(
-            static fn (TagDto $dto) => null !== $dto->name ? mb_strtolower(trim($dto->name)) : null,
-            $dtos
-        ));
+        $names = [];
+        $slugs = [];
+        foreach ($dtos as $dto) {
+            if (null === $dto->name || '' === trim($dto->name)) {
+                continue;
+            }
+
+            $names[mb_strtolower(trim($dto->name))] = true;
+            $slugs[self::slugify(trim($dto->name))] = true;
+        }
 
         if ([] === $names) {
             return [];
         }
 
+        // By slug too: the names the unique key on tag.name holds equal ("Théâtre",
+        // "THEATRE") share their slug, whatever the database compares names with. The
+        // provider then keeps, among these candidates, the tag whose name is the DTO's
+        // (TagDto::getUniqueKey()).
         return $this->createQueryBuilder('t')
             ->where('LOWER(t.name) IN (:names)')
-            ->setParameter('names', array_unique($names))
+            ->orWhere('t.slug IN (:slugs)')
+            ->setParameter('names', array_map(strval(...), array_keys($names)), ArrayParameterType::STRING)
+            ->setParameter('slugs', array_map(strval(...), array_keys($slugs)), ArrayParameterType::STRING)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * The slug Gedmo gives a tag of this name (SluggableListener's default transliterator
+     * and urlizer).
+     */
+    private static function slugify(string $name): string
+    {
+        return new AsciiSlugger()->slug(u($name)->ascii()->toString(), '-')->lower()->toString();
     }
 }

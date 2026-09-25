@@ -886,6 +886,45 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame(Reject::VALID | Reject::BAD_EVENT_DESCRIPTION | Reject::NO_NEED_TO_UPDATE, $exploration->getReason());
     }
 
+    /**
+     * The unique key on tag.name ignores case and accents: a source spelling an existing
+     * tag its own way must get that tag, not a second one the index refuses (which rolled
+     * the whole batch back, on every run).
+     */
+    public function testAnExistingTagIsFoundWhateverItsAccentsAndCase(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+        $theatre = TagFactory::createOne(['name' => 'Théâtre']);
+
+        $dto = $this->makeEventWithPlace('tag-accents', 'Le Bikini');
+        $dto->category = TagDto::fromString('THEATRE');
+        $dto->themes = [TagDto::fromString('theatre')];
+        $this->handler->handleOne($dto);
+
+        $event = EventFactory::find(['externalId' => 'tag-accents']);
+        $this->assertSame($theatre->getId(), $event->getCategory()?->getId());
+        $this->assertSame([$theatre->getId()], $event->getThemes()->map(static fn ($tag) => $tag->getId())->getValues());
+        $this->assertSame(1, TagFactory::count());
+        $this->assertSame('Théâtre', TagFactory::find(['id' => $theatre->getId()])->getName(), 'The tag keeps its own spelling');
+    }
+
+    public function testSpellingsOfOneNewTagInABatchMakeOneTag(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $first = $this->makeEventWithPlace('tag-spelling-1', 'Le Bikini');
+        $first->category = TagDto::fromString('Café-concert');
+        $second = $this->makeEventWithPlace('tag-spelling-2', 'Le Zénith');
+        $second->category = TagDto::fromString('CAFE-CONCERT');
+        $this->handler->handleMany([$first, $second]);
+
+        $this->assertSame(2, EventFactory::count(['externalId' => ['tag-spelling-1', 'tag-spelling-2']]));
+        $this->assertSame(1, TagFactory::count());
+        $this->assertSame('Café-concert', TagFactory::first()->getName());
+    }
+
     private function makeEventWithPlace(
         string $eventExternalId,
         string $placeName,

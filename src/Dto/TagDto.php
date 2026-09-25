@@ -15,6 +15,7 @@ use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Entity\Tag;
+use App\Utils\CollationKey;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -60,10 +61,11 @@ final class TagDto implements DependencyObjectInterface, InternalIdentifiableInt
             );
         }
 
+        // Equal for the names the unique index on tag.name holds equal, see CollationKey
         return \sprintf(
             '%s-data-%s',
             $this->getKeyPrefix(),
-            mb_strtolower(trim($this->name))
+            CollationKey::of(trim($this->name))
         );
     }
 
