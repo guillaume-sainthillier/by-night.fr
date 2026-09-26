@@ -27,20 +27,13 @@ final class ChangePasswordFormType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $constraintsOptions = [
-            'message' => 'Le mot de passe actuel est incorrect.',
-        ];
-
-        if (!empty($options['validation_groups'])) {
-            $constraintsOptions['groups'] = [reset($options['validation_groups'])];
-        }
-
         $builder->add('currentPassword', PasswordType::class, [
             'label' => 'Mot de passe actuel',
             'mapped' => false,
             'constraints' => [
                 new NotBlank(),
-                new UserPassword($constraintsOptions),
+                // Named arguments: since Symfony 8, a constraint ignores an array of options, message included
+                new UserPassword(message: 'Le mot de passe actuel est incorrect.'),
             ],
             'attr' => [
                 'autocomplete' => 'current-password',
