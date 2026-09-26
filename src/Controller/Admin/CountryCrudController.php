@@ -19,7 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
@@ -76,8 +76,9 @@ final class CountryCrudController extends AbstractCrudController
         $portalPanel = FormField::addFieldset('Portail');
         $headline = TextField::new('headline', 'Accroche')
             ->setHelp('Une phrase sous le nom du pays, en tête de son portail.');
-        $description = TextEditorField::new('description', 'Description')
-            ->setHelp('Présentation du pays affichée sur son portail.');
+        $description = TextareaField::new('description', 'Description')
+            ->setNumOfRows(6)
+            ->setHelp("Présentation du pays affichée sur son portail, en Markdown\u{a0}: **gras**, *italique*, [lien](https://…), une ligne vide entre deux paragraphes.");
         $heroImage = VichImageField::new('heroImageFile', 'Image de couverture');
         $heroCaption = TextField::new('heroCaption', "Légende de l'image")
             ->setHelp('Légende ou crédit photo affiché sur l’image de couverture.');

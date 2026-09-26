@@ -38,7 +38,7 @@ final class CountryCrudControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/_administration/country/FR/edit');
         $form = $crawler->selectButton('Sauvegarder les modifications')->form([
             'Country[headline]' => 'Toutes les sorties en France',
-            'Country[description]' => '<div>Concerts, <strong>expos</strong> et festivals.</div>',
+            'Country[description]' => 'Concerts, **expos** et festivals.',
             'Country[heroCaption]' => 'Place du Capitole, Toulouse',
             'Country[displayOrder]' => '2',
         ]);
@@ -50,7 +50,7 @@ final class CountryCrudControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $country = CountryFactory::find(['id' => 'FR']);
         self::assertSame('Toutes les sorties en France', $country->getHeadline());
-        self::assertSame('<div>Concerts, <strong>expos</strong> et festivals.</div>', $country->getDescription());
+        self::assertSame('Concerts, **expos** et festivals.', $country->getDescription());
         self::assertSame('Place du Capitole, Toulouse', $country->getHeroCaption());
         self::assertTrue($country->isFeatured());
         self::assertSame(2, $country->getDisplayOrder());

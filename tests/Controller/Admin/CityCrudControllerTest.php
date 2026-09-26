@@ -27,7 +27,7 @@ final class CityCrudControllerTest extends WebTestCase
         $crawler = $client->request('GET', \sprintf('/_administration/city/%d/edit', $city->getId()));
         $form = $crawler->selectButton('Sauvegarder les modifications')->form([
             'City[headline]' => 'La ville rose by night',
-            'City[description]' => '<div>Du Bikini au Zénith.</div>',
+            'City[description]' => 'Du **Bikini** au Zénith.',
             'City[displayOrder]' => '1',
         ]);
         $metropolis = $form['City[metropolis]'];
@@ -38,7 +38,7 @@ final class CityCrudControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $city = CityFactory::find(['id' => $city->getId()]);
         self::assertSame('La ville rose by night', $city->getHeadline());
-        self::assertSame('<div>Du Bikini au Zénith.</div>', $city->getDescription());
+        self::assertSame('Du **Bikini** au Zénith.', $city->getDescription());
         self::assertTrue($city->isMetropolis());
         self::assertSame(1, $city->getDisplayOrder());
     }

@@ -55,7 +55,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     #[Assert\Length(max: 255)]
     private ?string $headline = null;
 
-    /** Editorial introduction of the city portal (HTML from the back-office editor) */
+    /** Editorial introduction of the city portal, in Markdown (rendered by the |markdown Twig filter) */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Ignore]
     private ?string $description = null;

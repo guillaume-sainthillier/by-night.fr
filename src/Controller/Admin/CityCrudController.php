@@ -18,7 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Override;
 
@@ -67,8 +67,9 @@ final class CityCrudController extends AdminZoneCrudController
             FormField::addFieldset('Portail'),
             TextField::new('headline', 'Accroche')
                 ->setHelp('Une phrase sous le nom de la ville, en tête de son portail.'),
-            TextEditorField::new('description', 'Description')
-                ->setHelp('Présentation de la ville affichée sur son portail.'),
+            TextareaField::new('description', 'Description')
+                ->setNumOfRows(6)
+                ->setHelp("Présentation de la ville affichée sur son portail, en Markdown\u{a0}: **gras**, *italique*, [lien](https://…), une ligne vide entre deux paragraphes."),
             VichImageField::new('heroImageFile', 'Image de couverture'),
             $metropolis,
             $displayOrder,
