@@ -14,6 +14,7 @@ use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
 use App\Manager\EventRedirectManager;
 use App\Manager\WidgetsManager;
+use App\Security\Voter\EventVoter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -24,6 +25,10 @@ final class WidgetsController extends BaseController
     {
         $location = $appContext->getLocation();
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
+        // The events at its venue or on its date would tell where and when a draft takes place
+        if (!$this->isGranted(EventVoter::VIEW, $event)) {
+            throw $this->createNotFoundException();
+        }
         $eventsData = $widgetsManager->getNextEventsData($event, $location, $page);
 
         return $this->renderFragment('location/hinclude/details-events.html.twig', [
@@ -36,22 +41,14 @@ final class WidgetsController extends BaseController
     {
         $location = $appContext->getLocation();
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
+        // The events at its venue or on its date would tell where and when a draft takes place
+        if (!$this->isGranted(EventVoter::VIEW, $event)) {
+            throw $this->createNotFoundException();
+        }
         $eventsData = $widgetsManager->getSimilarEventsData($event, $location, $page);
 
         return $this->renderFragment('location/hinclude/details-events.html.twig', [
             'eventsData' => $eventsData,
-        ]);
-    }
-
-    #[Route(path: '/top/soirees/{page<%patterns.page%>}', name: 'app_widget_top_events', methods: ['GET'])]
-    public function topEvents(AppContext $appContext, WidgetsManager $widgetsManager, int $page = 1): Response
-    {
-        $location = $appContext->getLocation();
-
-        $topEventsData = $widgetsManager->getTopEventsData($location, $page);
-
-        return $this->renderFragment('location/hinclude/events.html.twig', [
-            'topEventsData' => $topEventsData,
         ]);
     }
 }

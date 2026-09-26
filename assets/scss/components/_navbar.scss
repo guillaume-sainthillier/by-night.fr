@@ -8,21 +8,6 @@
     z-index: 1000; //Conflit with z-index 500 on summernote
     white-space: nowrap;
 
-    .nav-link {
-        text-transform: uppercase;
-        font-size: 0.875rem;
-    }
-
-    .offcanvas-lg.show {
-        .offcanvas-header {
-            border-bottom: 1px solid $navbar-dark-color;
-        }
-    }
-
-    .nav-link strong {
-        font-weight: normal;
-    }
-
     .navbar-brand {
         padding-left: $navbar-brand-padding-y;
         padding-right: $navbar-brand-padding-y;
@@ -45,6 +30,56 @@
             .dropdown-menu-arrow.dropdown-menu-end:before {
                 display: none;
             }
+        }
+    }
+}
+
+// Brand: the logo and the "By Night" wordmark, in the header, its offcanvas and the footer
+.site-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: $ink;
+
+    &:hover,
+    &:focus {
+        color: $ink;
+    }
+
+    img {
+        flex-shrink: 0;
+    }
+}
+
+.site-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.site-brand-name {
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.site-brand-tagline {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-secondary;
+}
+
+// The "Créer un événement" button: icon only on large screens, where the header is tightest
+.site-header-cta {
+    @include media-breakpoint-down(lg) {
+        width: 100%;
+    }
+
+    @include media-breakpoint-only(lg) {
+        .icon {
+            margin: 0;
         }
     }
 }

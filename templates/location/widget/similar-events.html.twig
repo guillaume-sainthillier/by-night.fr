@@ -1,5 +1,20 @@
-<twig:Widget:ScrollableHorizontal header="Ces événements pourraient vous plaire">
-    {{ include('location/hinclude/details-events.html.twig', {
-        eventsData: similarEventsData,
-    }) }}
-</twig:Widget:ScrollableHorizontal>
+{# The other events starting the same day in the same city (EventRepository::findAllSimilarsQueryBuilder) #}
+{% set agenda = path('app_agenda_index', {location: event.place.locationSlug}) %}
+<twig:Section class="widget" id="similar-events">
+    <twig:block name="header">
+        <twig:Section:Header eyebrow="Poursuivez vos sorties" icon="lucide:sparkles" title="Le même jour {{ event.place.location.atName }}">
+            <twig:block name="aside">
+                <div class="text-md-end">
+                    <a class="link-primary fw-semibold" href="{{ agenda }}">
+                        Tout l'agenda {{ event.place.location.atName }}
+                        <twig:Icon name="lucide:arrow-right" />
+                    </a>
+                </div>
+            </twig:block>
+        </twig:Section:Header>
+    </twig:block>
+    <div class="row row-cards row-scroll-mobile scroll-area">
+        {{ include('location/hinclude/details-events.html.twig', {eventsData: similarEventsData}) }}
+    </div>
+    <div class="more-container"></div>
+</twig:Section>

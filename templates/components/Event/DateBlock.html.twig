@@ -1,0 +1,10 @@
+{#
+    The day of an event as a small calendar leaf (a Tabler avatar): month, day and weekday.
+    Without a date (a date row of a form not filled yet) it shows a dash, until a script fills its three lines.
+#}
+{% props date = null, tone = 'secondary' %}
+<span {{ attributes.defaults({class: 'avatar avatar-xl flex-column date-leaf bg-' ~ tone ~ '-lt'}) }}>
+    <span class="subheader text-reset">{{ date ? date|format_date(pattern: 'EEEE', locale: 'fr')|ucfirst }}</span>
+    <span class="h2 m-0">{{ date ? date|date('j') : '–' }}</span>
+    <span class="small">{{ date ? date|format_date(pattern: 'MMM', locale: 'fr')|trim('.') }}</span>
+</span>

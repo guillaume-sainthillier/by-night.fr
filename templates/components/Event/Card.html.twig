@@ -1,0 +1,60 @@
+{# @var event \App\Entity\Event #}
+{# @var from \DateTimeInterface|null the first day of the listing (today by default) #}
+{# @var to \DateTimeInterface|null its last day, when a window was searched #}
+{# The picture card of the "À l'affiche" blocks and of the agenda: date and price over the picture, category, title,
+   excerpt and venue. The picture box has a fixed ratio, so nothing moves when the picture loads. #}
+{% props event, tone = 'primary', from = null, to = null %}
+{# The session the visitor is looking for, not the event's overall range #}
+{% set session = event.sessionFor(from, to) %}
+{% set price = event.prices|price_label %}
+<article {{ attributes.defaults({class: 'card card-event card-layout h-100 mb-0'}) }}>
+    {% if event.status or event.statusMessage %}
+        <twig:Event:StatusAlert event="{{ event }}" class="rounded-0 py-2 small" />
+    {% endif %}
+    <div class="card-img-container">
+        <div class="image-container position-relative">
+            <twig:Event:Thumb event="{{ event }}" width="{{ 360 }}" />
+            {% if session or price %}
+                <div class="card-img-overlay d-flex align-items-start justify-content-between gap-2 p-3">
+                    {% if session %}
+                        <span class="badge bg-white text-primary text-truncate min-w-0">
+                            <twig:Icon name="lucide:calendar-days" />
+                            {%- set lastDay = session.endAt ?? session.startAt %}
+                            {%- if session.startAt|date('Y-m-d') < 'now'|date('Y-m-d') %}
+                                Jusqu'au {{ lastDay|format_date(pattern: 'd MMM', locale: 'fr') }}
+                            {%- elseif lastDay|date('Y-m-d') > session.startAt|date('Y-m-d') %}
+                                {{ session.startAt|format_date(pattern: 'd MMM', locale: 'fr') }} – {{ lastDay|format_date(pattern: 'd MMM', locale: 'fr') }}
+                            {%- else %}
+                                {{ session.startAt|format_date(pattern: 'EEE d MMM', locale: 'fr') }}
+                            {%- endif -%}
+                        </span>
+                    {% endif %}
+                    {% if price %}
+                        <span class="badge ms-auto text-truncate {{ price.free ? 'bg-green text-white' : 'bg-white text-body' }}">{{ price.label }}</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="card-body">
+            {% if event.category %}
+                <div class="subheader text-{{ tone }} mb-1">{{ event.category.name }}</div>
+            {% endif %}
+            <h3 class="card-title line-clamp-2 mb-2">
+                <a href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" class="stretched-link" title="Tous les détails de {{ event.name }}">{{ event.name }}</a>
+            </h3>
+            {% if event.description %}
+                <p class="text-secondary small line-clamp-2 mb-0">{{ event.description|excerpt(160) }}</p>
+            {% endif %}
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between gap-2 mt-auto">
+            <span class="text-secondary small text-truncate">
+                {% if event.placeName %}
+                    <twig:Icon name="lucide:map-pin" />
+                    {{ event.placeName }}{% if event.placeCity %}, {{ event.placeCity }}{% endif %}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</article>

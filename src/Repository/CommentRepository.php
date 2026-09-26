@@ -91,6 +91,20 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
     }
 
     /**
+     * @return int the number of a member's comments and answers the moderation let through
+     */
+    public function countApprovedByUser(User $user): int
+    {
+        return (int) $this
+            ->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.user = :user AND c.approved = true')
+            ->setParameter('user', $user->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * @return Comment[]
      */
     public function findAllByUser(User $user): array

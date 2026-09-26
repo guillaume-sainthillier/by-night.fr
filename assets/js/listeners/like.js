@@ -18,10 +18,6 @@ export default {
         $element.on('click.like', function () {
             const btn = $(this)
 
-            if (btn.hasClass('login')) {
-                return false
-            }
-
             btn.attr('disabled', true)
             $.ajax({
                 url: btn.data('href'),

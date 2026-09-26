@@ -11,9 +11,12 @@
 namespace App\Twig;
 
 use App\Dto\EventDto;
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
+use App\Picture\LocationPicture;
 use App\Picture\UserProfilePicture;
 use Twig\Attribute\AsTwigFunction;
 
@@ -22,7 +25,19 @@ final readonly class ImageExtension
     public function __construct(
         private EventProfilePicture $eventProfilePicture,
         private UserProfilePicture $userProfilePicture,
+        private LocationPicture $locationPicture,
     ) {
+    }
+
+    /**
+     * The picture of a city or country portal, null when it has none.
+     *
+     * @return array{loader: string|null, src: string|null, context: array{entity?: City|Country, field?: string}}|null
+     */
+    #[AsTwigFunction(name: 'location_picture')]
+    public function locationPicture(City|Country $location): ?array
+    {
+        return $this->locationPicture->getPicture($location);
     }
 
     /**

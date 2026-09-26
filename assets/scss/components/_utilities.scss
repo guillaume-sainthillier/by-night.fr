@@ -2,6 +2,19 @@
     display: none !important;
 }
 
+// Text cut after two lines
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// Lets a flex child shrink below its content, so that its text can be truncated
+.min-w-0 {
+    min-width: 0;
+}
+
 .one-line {
     overflow: hidden;
     white-space: nowrap;

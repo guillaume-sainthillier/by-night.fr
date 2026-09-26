@@ -299,6 +299,27 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->getResult();
     }
 
+    /**
+     * The cities flagged as metropolises in the back office, ranked by their display order then population.
+     *
+     * @return City[]
+     */
+    public function findMetropolises(int $limit): array
+    {
+        // createQueryBuilder() joins the parent (the department) as "p" and the country as "country"
+        return $this->createQueryBuilder('c')
+            ->addSelect('CASE WHEN c.displayOrder IS NULL THEN 1 ELSE 0 END AS HIDDEN unranked')
+            ->where('c.metropolis = true')
+            ->orderBy('unranked', 'ASC')
+            ->addOrderBy('c.displayOrder', 'ASC')
+            ->addOrderBy('c.population', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            // Scans the ~88k admin zones; a flag set in the back office shows within 10 minutes
+            ->enableResultCache(600)
+            ->getResult();
+    }
+
     public function findOneBySlug(string $slug): ?City
     {
         return $this->createQueryBuilder('c')

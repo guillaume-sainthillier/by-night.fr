@@ -1,0 +1,13 @@
+// The account settings (templates/profile/edit.html.twig): the completion of the profile and the tabs
+.account {
+    .account-completion {
+        width: 8rem;
+    }
+
+    // The deletion tab keeps the colour of its danger once opened
+    .account-tabs .nav-link-danger.active {
+        color: $danger;
+        background-color: rgba($danger, 0.08);
+        border-color: rgba($danger, 0.2);
+    }
+}

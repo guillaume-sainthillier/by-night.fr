@@ -69,7 +69,7 @@
     {% set range_options = {
         icon_prepend: icon_prepend|default(null),
         icon_append: icon_append|default(null),
-    }|merge(label is defined ? {label: label} : {}) %}
+    }|merge(label is defined ? {label: label} : {})|merge(row_class is defined ? {row_class: row_class} : {}) %}
     {{ form_row(form.range, range_options) }}
     {{ form_errors(form.from) }}
     {% if form.to is defined %}
@@ -99,8 +99,8 @@
         </div>
         {% if not disabled and allow_delete %}
             <div class="col-auto">
-                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
-                    <twig:Icon name="lucide:x" />
+                <button class="btn btn-icon btn-ghost-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
+                    <twig:Icon name="lucide:trash-2" />
                 </button>
             </div>
         {% endif %}
@@ -166,7 +166,8 @@
     {%- endif -%}
     {%- set widget_attr = {} -%}
     {%- if help is not empty -%}
-        {%- set widget_attr = {attr: {'aria-describedby': id ~ '_help'}} -%}
+        {#- Merged: passing a bare "attr" would drop the field's own (autocomplete, placeholder…) -#}
+        {%- set widget_attr = {attr: attr|merge({'aria-describedby': id ~ '_help'})} -%}
     {%- endif -%}
     {%- set row_class = row_class|default(row_attr.class|default('form-group')|trim) -%}
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
@@ -187,3 +188,64 @@
     {{- form_errors(form) -}}
     </{{ element|default('div') }}>
 {%- endblock form_row %}
+
+{# NewPasswordType: the password with its show/hide button and the strength meter (listeners/password-meter.js,
+   which checks the same password_rules as the server), then the confirmation #}
+{%- block new_password_row -%}
+    {%- set first = form.first -%}
+    {%- set rules_id = first.vars.id ~ '_rules' -%}
+    <div class="form-group">
+        {{- form_label(first) -}}
+        <twig:PasswordInput>
+            {{- form_widget(first, {attr: first.vars.attr|merge({'aria-describedby': rules_id})}) -}}
+        </twig:PasswordInput>
+        {{- form_errors(first) -}}
+        <div class="mt-2" data-password-meter="{{ first.vars.id }}">
+            <div class="progress progress-sm mb-2" role="progressbar" aria-label="Sécurité du mot de passe" aria-valuemin="0" aria-valuemax="{{ password_rules|length }}" aria-valuenow="0">
+                <div class="progress-bar" style="width: 0"></div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 small">
+                <span class="subheader">Sécurité du mot de passe</span>
+                <ul class="list-inline mb-0 text-secondary" id="{{ rules_id }}">
+                    {%- for rule in password_rules %}
+                        <li class="list-inline-item me-2" data-password-meter-rule="{{ rule.pattern }}">
+                            <span class="text-secondary" data-password-meter-rule-icon="unmet"><twig:Icon name="lucide:circle" class="icon-inline" /></span>
+                            <span class="text-success d-none" data-password-meter-rule-icon="met"><twig:Icon name="lucide:circle-check" class="icon-inline" /></span>
+                            {{ rule.label }}
+                        </li>
+                    {%- endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        {{- form_label(form.second) -}}
+        <twig:PasswordInput icon="lucide:lock-keyhole" toggle="{{ false }}">
+            {{- form_widget(form.second) -}}
+        </twig:PasswordInput>
+        {{- form_errors(form.second) -}}
+    </div>
+    {{- form_errors(form) -}}
+{%- endblock new_password_row %}
+
+{# CityPickerType: the name typed in the autocomplete of the cities (pages/profile.js reads data-city-picker), and the
+   slug of the city chosen in the list. The label and the error state go to the name, the only field the member sees #}
+{%- block city_picker_row -%}
+    {%- set name = form.name -%}
+    {%- set name_attr = name.vars.attr -%}
+    {%- if help is not empty -%}
+        {%- set name_attr = name_attr|merge({'aria-describedby': id ~ '_help'}) -%}
+    {%- endif -%}
+    {%- if not valid -%}
+        {%- set name_attr = name_attr|merge({class: (name_attr.class|default('') ~ ' is-invalid')|trim}) -%}
+    {%- endif -%}
+    <div class="form-group" data-city-picker="{{ path('api_cities', {q: '__QUERY__'}) }}">
+        {{- form_label(name, label) -}}
+        <twig:InputIcon iconPrepend="lucide:map-pin">
+            {{- form_widget(name, {attr: name_attr}) -}}
+        </twig:InputIcon>
+        {{- form_widget(form.slug) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock city_picker_row %}

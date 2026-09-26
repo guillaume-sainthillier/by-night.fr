@@ -15,6 +15,7 @@ import Trash2Icon from '@/js/icons/lucide/Trash2'
 import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 import UserIcon from '@/js/icons/lucide/User'
 import { splitHighlights } from '@/js/utils/highlight'
+import { plural } from '@/js/utils/plural'
 
 export default function init({
     autocompleteSelector = '#autocomplete',
@@ -161,7 +162,7 @@ export default function init({
                                 href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`}
                                 className="aa-ViewAllLink"
                             >
-                                Voir tous les résultats pour "<strong>{state.query}</strong>"
+                                Voir tous les résultats pour «&nbsp;<strong>{state.query}</strong>&nbsp;»
                             </a>
                         </div>
                     )}
@@ -209,7 +210,7 @@ export default function init({
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
                             <SearchIcon width="40" height="40" className="text-muted" />
                             <p className="mt-3 mb-0 text-muted">
-                                Le nom d'un événement, d'une ville ou d'un membre : quelques lettres suffisent.
+                                Le nom d'un événement, d'une ville ou d'un membre&nbsp;: quelques lettres suffisent.
                             </p>
                         </div>
                     </div>,
@@ -226,7 +227,7 @@ export default function init({
                     <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
                         <SearchIcon width="40" height="40" className="text-muted" />
                         <h2 className="mt-4 display-4">
-                            Aucun résultat pour <strong>"{state.query}"</strong>.
+                            Aucun résultat pour <strong>«&nbsp;{state.query}&nbsp;»</strong>.
                         </h2>
                         {searchPageUrl && (
                             <a
@@ -366,7 +367,13 @@ function Chip({ item }) {
         <a href={item.url} className="aa-ItemLink aa-Chip">
             {item.label}
             {item.shortDescription && (
-                <span className="aa-ChipCount" title={`${item.shortDescription} événements à venir`}>
+                <span
+                    className="aa-ChipCount"
+                    title={plural(Number(item.shortDescription), {
+                        one: '# sortie à venir',
+                        other: '# sorties à venir',
+                    })}
+                >
                     {item.shortDescription}
                 </span>
             )}

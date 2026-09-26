@@ -1,0 +1,6 @@
+{# A rounded filter link, a small pill button: <twig:Chip href="…" icon="lucide:music" active="{{ true }}">Concerts</twig:Chip> #}
+{% props href, icon = null, active = false %}
+<a href="{{ href }}" {{ attributes.defaults({class: 'btn btn-pill btn-chip' ~ (active ? ' active' : '')}) }}{% if active %} aria-current="page"{% endif %}>
+    {% if icon %}<twig:Icon name="{{ icon }}" />{% endif %}
+    {% block content %}{% endblock %}
+</a>

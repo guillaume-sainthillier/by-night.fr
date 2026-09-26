@@ -19,13 +19,4 @@
             margin-bottom: 0;
         }
     }
-
-    &.scroll-area-vertical {
-        flex-direction: column;
-        overflow-y: auto;
-
-        @include media-breakpoint-up(md) {
-            max-height: 500px;
-        }
-    }
 }

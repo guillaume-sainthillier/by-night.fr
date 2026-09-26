@@ -44,7 +44,7 @@ final class EventTimesheetCrudController extends AbstractCrudController
         $event = AssociationField::new('event')->autocomplete();
         $sourceEvent = AssociationField::new('sourceEvent', 'Hérité de')
             ->autocomplete()
-            ->setHelp('Renseigné sur les dates qu\'un événement principal hérite d\'un doublon de sa famille : elles suivent ce doublon et disparaissent avec lui.');
+            ->setHelp("Renseigné sur les dates qu'un événement principal hérite d'un doublon de sa famille\u{a0}: elles suivent ce doublon et disparaissent avec lui.");
         $startAt = DateTimeField::new('startAt', 'Début');
         $endAt = DateTimeField::new('endAt', 'Fin');
         $hours = TextField::new('hours', 'Horaires affichés');

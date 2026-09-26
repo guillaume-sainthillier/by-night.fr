@@ -95,7 +95,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                 if (null === $existingUser) {
                     $existingUser = new User();
                     $existingUser
-                        ->setUsername($this->getFreeUsername($datas['realname'] ?: ($datas['nickname'] ?? null) ?: self::DEFAULT_USERNAME))
+                        ->setUsername($this->userRepository->getFreeUsername($datas['realname'] ?: ($datas['nickname'] ?? null) ?: self::DEFAULT_USERNAME))
                         ->setPassword('notused')
                         ->setFromLogin(false)
                         ->setVerified(true)
@@ -119,20 +119,6 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                 return $existingUser;
             })
         );
-    }
-
-    /**
-     * The name, or the name followed by the first free number ("Camille Martin-2"): the
-     * username is unique. getUserIdentifier() is the e-mail, not the username.
-     */
-    private function getFreeUsername(string $name): string
-    {
-        $username = $name;
-        for ($i = 1; null !== $this->userRepository->findOneBy(['username' => $username]); ++$i) {
-            $username = \sprintf('%s-%d', $name, $i);
-        }
-
-        return $username;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response

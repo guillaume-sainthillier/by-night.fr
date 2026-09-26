@@ -17,27 +17,54 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Form\FormFactoryInterface;
 
 /**
- * A new account asks for a password of 6 characters or more, as a password reset does.
+ * A new member gives their first and last names, a username of 2 characters or more and a valid address; the
+ * password rules are NewPasswordTypeTest's.
  */
 final class RegistrationFormTypeTest extends AppKernelTestCase
 {
     /**
-     * @return iterable<string, array{string, bool}>
+     * @return iterable<string, array{string, string, string}>
      */
-    public static function providePasswords(): iterable
+    public static function provideMissingFields(): iterable
     {
-        yield 'one character' => ['a', false];
-        yield 'five characters' => ['abcde', false];
-        yield 'six characters' => ['abcdef', true];
+        yield 'no first name' => ['firstname', '', 'Veuillez saisir votre prénom.'];
+        yield 'no last name' => ['lastname', '', 'Veuillez saisir votre nom.'];
+        yield 'no username' => ['username', '', "Veuillez choisir un nom d'utilisateur."];
+        yield 'a one-character username' => ['username', 'c', "Votre nom d'utilisateur doit comporter au moins 2 caractères."];
+        yield 'no address' => ['email', '', 'Veuillez saisir votre adresse e-mail.'];
+        yield 'not an address' => ['email', 'camille', 'Veuillez saisir une adresse e-mail valide.'];
     }
 
-    #[DataProvider('providePasswords')]
-    public function testThePasswordHasSixCharactersOrMore(string $password, bool $accepted): void
+    #[DataProvider('provideMissingFields')]
+    public function testTheFieldIsRequired(string $field, string $value, string $error): void
+    {
+        $data = [
+            'firstname' => 'Camille',
+            'lastname' => 'Martin',
+            'username' => 'camille_m',
+            'email' => 'camille@example.com',
+            'plainPassword' => ['first' => 'Motdepasse1', 'second' => 'Motdepasse1'],
+            $field => $value,
+        ];
+        $form = self::getContainer()->get(FormFactoryInterface::class)->create(RegistrationFormType::class, new User(), ['csrf_protection' => false]);
+
+        $form->submit($data);
+
+        self::assertStringContainsString($error, (string) $form->get($field)->getErrors());
+    }
+
+    public function testACompleteFormIsValid(): void
     {
         $form = self::getContainer()->get(FormFactoryInterface::class)->create(RegistrationFormType::class, new User(), ['csrf_protection' => false]);
 
-        $form->submit(['plainPassword' => ['first' => $password, 'second' => $password]], false);
+        $form->submit([
+            'firstname' => 'Camille',
+            'lastname' => 'Martin',
+            'username' => 'camille_m',
+            'email' => 'camille@example.com',
+            'plainPassword' => ['first' => 'Motdepasse1', 'second' => 'Motdepasse1'],
+        ]);
 
-        self::assertSame($accepted, 0 === $form->get('plainPassword')->getErrors(true)->count());
+        self::assertTrue($form->isValid(), (string) $form->getErrors(true));
     }
 }

@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Populates AppContext with location from URL parameter or cookie fallback.
+ * Populates AppContext with the location of the URL parameter; the pages without one take the member's city (AppContext).
  * Runs early in the request lifecycle to ensure location context is always available.
  *
  * Uses PHP 8.4 LazyObject to defer database loading of City/Country entities
@@ -54,9 +54,6 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
         // Check if route has a {location} parameter
         if ($request->attributes->has('location')) {
             $this->resolveLocationFromUrl($request);
-        } else {
-            // Non-location route: try cookie fallback
-            $this->resolveLocationFromCookie($request);
         }
     }
 
@@ -93,23 +90,6 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
             $this->appContext->setLocation($location);
         } catch (RuntimeException $e) {
             throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug), $e);
-        }
-    }
-
-    /**
-     * Fallback to cookie city when no location in URL. The city is loaded right away: a cookie
-     * naming a city renamed or merged since is ignored instead of breaking every page reading it.
-     */
-    private function resolveLocationFromCookie(Request $request): void
-    {
-        $citySlug = $request->cookies->getString('app_city');
-        if ('' === $citySlug) {
-            return;
-        }
-
-        $location = $this->lazyLocationFactory->createWithCity($citySlug);
-        if (null !== $location) {
-            $this->appContext->setLocation($location);
         }
     }
 }

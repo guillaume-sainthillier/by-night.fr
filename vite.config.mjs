@@ -8,7 +8,6 @@ const moment = fileURLToPath(new URL('./node_modules/moment/moment.js', import.m
 const pages = [
     'index',
     'admin_infos',
-    'event_index',
     'event_details',
     'agenda',
     'profile',
@@ -35,6 +34,12 @@ export default defineConfig(({ mode }) => {
                         // sites/originals/ sources: only the resized sites/<slug>.jpg are referenced
                         // (templates/location/index.html.twig), the originals would add 40 MB to the build.
                         pattern: /^(?!(?:.*\/)?\.)(?!sites\/originals\/)/,
+                    },
+                    // Country flags of the portals (components/Flag.html.twig): emoji flags render as two
+                    // letters on Windows
+                    {
+                        from: 'node_modules/@tabler/core/dist/img/flags',
+                        to: 'images/flags',
                     },
                 ],
             }),

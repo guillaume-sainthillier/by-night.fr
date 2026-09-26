@@ -25,6 +25,11 @@
     }
 }
 
+// A tinted panel inside a card: the date generator of the event form, the blocks of the account settings
+.form-panel {
+    background-color: $surface-low;
+}
+
 .card-header-border-top {
     border-top: 1px solid $card-border-color;
 }
@@ -43,7 +48,8 @@
     border: 1px solid rgba($card-border-color, 0.6);
     transition:
         border-color 0.3s ease,
-        box-shadow 0.3s ease;
+        box-shadow 0.3s ease,
+        transform 0.3s ease-out;
 
     &:hover {
         border-color: rgba($primary, 0.3);
@@ -83,12 +89,21 @@
         flex-direction: column;
         flex: 1;
         min-width: 0;
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
     }
+}
+
+// Cards that are links share the agenda cards' hover (.card-layout above); their title takes the primary colour,
+// except over a photo. Same for the title links stretched over a card or a list item.
+a.card-layout h3,
+.card-layout .stretched-link,
+.list-group-item .stretched-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a.card-layout:not(.text-white):hover h3,
+.card-layout:hover .stretched-link,
+.list-group-item:hover .stretched-link {
+    color: $primary;
 }

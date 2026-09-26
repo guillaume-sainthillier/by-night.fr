@@ -18,6 +18,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use App\Enum\PersonalEventFilter;
 use App\Form\Type\EventType;
 use App\Handler\DoctrineEventHandler;
 use App\Repository\EventRepository;
@@ -25,6 +26,8 @@ use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\ClickableInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -40,8 +43,10 @@ final class EventController extends BaseController
         $user = $this->getAppUser();
         $page = $request->query->getInt('page', 1);
         $q = $request->query->getString('q');
+        // An unknown value (an old link, a hand-edited URL) lists every event rather than failing
+        $filter = PersonalEventFilter::tryFrom($request->query->getString('status'));
         $events = $this->createMultipleEagerLoadingPaginator(
-            $eventRepository->findAllByUserQueryBuilder($user, $q ?: null),
+            $eventRepository->findAllByUserQueryBuilder($user, $q ?: null, $filter),
             $eventRepository,
             $page,
             self::EVENT_PER_PAGE,
@@ -51,6 +56,8 @@ final class EventController extends BaseController
         return $this->render('personal-space/index.html.twig', [
             'events' => $events,
             'q' => $q,
+            'filter' => $filter,
+            'counts' => $eventRepository->countByUserAndFilter($user),
         ]);
     }
 
@@ -75,6 +82,7 @@ final class EventController extends BaseController
             $user = $entityManager->getReference(User::class, $eventDto->user->entityId);
             $event = $entityManager->getReference(Event::class, $eventDto->entityId);
             $event->setParticipations(1);
+            $event->setDraft($this->isSavedAsDraft($form));
 
             $userEvent = new UserEvent()
                 ->setUser($user)
@@ -95,7 +103,9 @@ final class EventController extends BaseController
             $em->flush();
             $this->addFlash(
                 'success',
-                "Votre événement a bien été créé. Merci\u{a0}!"
+                $event->isDraft()
+                    ? "Votre brouillon a bien été enregistré\u{a0}: il n'est pas visible sur le site."
+                    : "Votre événement a bien été créé. Merci\u{a0}!"
             );
 
             return $this->redirectToRoute('app_event_list');
@@ -120,8 +130,14 @@ final class EventController extends BaseController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $doctrineEventHandler->handleOne($dto);
+            // handleOne() clears the entity manager, which detaches the event of the route. The publish button puts a
+            // draft online, the draft button takes the event off the site.
+            $event = $this->getEntityManager()->getReference(Event::class, $event->getId());
+            $event->setDraft($this->isSavedAsDraft($form));
             $this->getEntityManager()->flush();
-            $this->addFlash('success', 'Votre événement a bien été modifié');
+            $this->addFlash('success', $event->isDraft()
+                ? "Votre brouillon a bien été enregistré\u{a0}: il n'est pas visible sur le site."
+                : 'Votre événement a bien été modifié.');
 
             return $this->redirectToRoute('app_event_list');
         }
@@ -146,9 +162,20 @@ final class EventController extends BaseController
         $em->flush();
         $this->addFlash(
             'success',
-            'Votre événement a bien été supprimé'
+            'Votre événement a bien été supprimé.'
         );
 
         return $this->redirectToRoute('app_event_list');
+    }
+
+    /**
+     * Whether the event form was sent with its "Enregistrer en brouillon" button. Any other submission, the publish
+     * button or Enter in a field (the browser then uses the form's first submit button, the publish one), publishes it.
+     */
+    private function isSavedAsDraft(FormInterface $form): bool
+    {
+        $saveDraft = $form->get('saveDraft');
+
+        return $saveDraft instanceof ClickableInterface && $saveDraft->isClicked();
     }
 }

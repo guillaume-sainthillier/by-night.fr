@@ -1,0 +1,26 @@
+{%- extends '@BabDevPagerfanta/twitter_bootstrap5.html.twig' -%}
+
+{# Phones only get the chevrons: with the labels, "Précédent 1 … 6 7 8 … 15 Suivant" is wider than the screen #}
+{%- block previous_page_link -%}
+    <li class="page-item"><a class="page-link" href="{{- path -}}" rel="prev" aria-label="{{ 'Précédent'|trans }}">{{- block('previous_page_message') -}}</a></li>
+{%- endblock previous_page_link -%}
+
+{%- block previous_page_link_disabled -%}
+    <li class="page-item disabled"><span class="page-link" aria-label="{{ 'Précédent'|trans }}">{{- block('previous_page_message') -}}</span></li>
+{%- endblock previous_page_link_disabled -%}
+
+{%- block previous_page_message -%}
+    <twig:Icon name="lucide:chevron-left" /><span class="d-none d-sm-inline ms-1">{{ 'Précédent'|trans }}</span>
+{%- endblock previous_page_message -%}
+
+{%- block next_page_link -%}
+    <li class="page-item"><a class="page-link" href="{{- path -}}" rel="next" aria-label="{{ 'Suivant'|trans }}">{{- block('next_page_message') -}}</a></li>
+{%- endblock next_page_link -%}
+
+{%- block next_page_link_disabled -%}
+    <li class="page-item disabled"><span class="page-link" aria-label="{{ 'Suivant'|trans }}">{{- block('next_page_message') -}}</span></li>
+{%- endblock next_page_link_disabled -%}
+
+{%- block next_page_message -%}
+    <span class="d-none d-sm-inline me-1">{{ 'Suivant'|trans }}</span><twig:Icon name="lucide:chevron-right" />
+{%- endblock next_page_message -%}

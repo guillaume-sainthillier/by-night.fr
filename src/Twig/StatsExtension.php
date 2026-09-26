@@ -33,14 +33,21 @@ final readonly class StatsExtension
     #[AsTwigFunction(name: 'events_count_label')]
     public function eventsCountLabel(): string
     {
+        return self::formatEventsCount($this->eventsCount());
+    }
+
+    /**
+     * Total of referenced events, for the templates that format it their own way (e.g. "2,1 M" on a stat card).
+     */
+    #[AsTwigFunction(name: 'events_count')]
+    public function eventsCount(): int
+    {
         // Cache the raw count (not the label) so wording changes never need a cache flush.
-        $count = $this->memoryCache->get('stats.events_count', function (ItemInterface $item): int {
+        return $this->memoryCache->get('stats.events_count', function (ItemInterface $item): int {
             $item->expiresAfter(self::EVENTS_COUNT_TTL);
 
             return $this->eventRepository->countActiveEvents();
         });
-
-        return self::formatEventsCount($count);
     }
 
     /**

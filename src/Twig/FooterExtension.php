@@ -12,12 +12,14 @@ namespace App\Twig;
 
 use App\Entity\Country;
 use App\Repository\CityRepository;
+use App\Repository\EventRepository;
 use Twig\Attribute\AsTwigFunction;
 
 final readonly class FooterExtension
 {
     public function __construct(
         private CityRepository $cityRepository,
+        private EventRepository $eventRepository,
     ) {
     }
 
@@ -28,5 +30,16 @@ final readonly class FooterExtension
     public function randomCities(?Country $country = null): array
     {
         return $this->cityRepository->findAllRandomNames($country);
+    }
+
+    /**
+     * The countries with events to come, the busiest first: the "Pays & territoires" links of every page.
+     *
+     * @return list<array{id: string, displayName: string, atDisplayName: string, slug: string, events: int|string}>
+     */
+    #[AsTwigFunction(name: 'footer_countries')]
+    public function footerCountries(): array
+    {
+        return $this->eventRepository->getCountryEvents();
     }
 }

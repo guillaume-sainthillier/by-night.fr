@@ -1,6 +1,23 @@
 // Autocomplete custom styles
-:root {
+
+// The classic theme's palette (a blue-violet primary, bluish greys) in the site's colours. Set on <body>, not :root:
+// the theme's stylesheet comes with the autocomplete chunk, after this one, and sets its own on :root; the nearest
+// ancestor wins whatever the order. The detached search opens in a container appended to <body>.
+body {
     --aa-base-z-index: calc(#{$zindex-offcanvas} + 50);
+    --aa-primary-color-rgb: #{to-rgb($primary)};
+    --aa-selected-color-rgb: #{to-rgb($primary)};
+    --aa-selected-color-alpha: 0.08;
+    --aa-text-color-rgb: #{to-rgb($ink)};
+    --aa-muted-color-rgb: #{to-rgb($text-secondary)};
+    --aa-icon-color-rgb: #{to-rgb($text-secondary)};
+    --aa-input-border-color-rgb: #{to-rgb($outline-soft)};
+    --aa-panel-border-color-rgb: #{to-rgb($outline-soft)};
+}
+
+// Small text takes the darker primary, as the eyebrows do ("Villes", "Cette semaine en France")
+.aa-Source .aa-SourceHeaderTitle {
+    color: $primary-strong;
 }
 
 #autocomplete {
@@ -14,38 +31,39 @@
         width: 100%;
     }
 
+    // Light field on the white header
     .aa-Form {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 0.25rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: $surface-low;
+        border-radius: $border-radius-pill;
+        border: 1px solid $border-color;
         transition: all 0.3s ease;
         overflow: hidden;
 
         &:focus-within {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            background-color: $white;
+            border-color: rgba($primary, 0.5);
         }
     }
 
     .aa-Input {
         background: transparent;
-        color: #fff;
+        color: $ink;
         border: none;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
 
         &::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: $text-secondary;
         }
     }
 
     .aa-DetachedSearchButton {
-        background: rgba(241, 243, 244, 0.24);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 0.25rem;
-        padding: 0.375rem 0.75rem;
+        background: $surface-low;
+        color: $ink;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-pill;
+        padding: 0.375rem 0.875rem;
         width: 100%;
         text-align: left;
         display: flex;
@@ -56,20 +74,20 @@
         white-space: normal;
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
+            background-color: $white;
+            border-color: rgba($primary, 0.4);
         }
 
         // Icon: fixed width, no shrinking
         .aa-DetachedSearchButtonIcon {
-            color: rgba(255, 255, 255, 0.7);
+            color: $primary;
             flex: 0 0 auto;
             margin-right: 0.5rem;
         }
 
-        // Placeholder: muted white, constrained width
+        // Placeholder: muted, constrained width
         .aa-DetachedSearchButtonPlaceholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: $text-secondary;
             flex: 1 1 0;
             min-width: 0;
             max-width: 100%;
@@ -77,9 +95,9 @@
             overflow: hidden;
         }
 
-        // Query: full white, constrained width
+        // Query: constrained width
         .aa-DetachedSearchButtonQuery {
-            color: #fff;
+            color: $ink;
             flex-grow: 0;
             flex-shrink: 0;
             min-width: 0;
@@ -90,12 +108,13 @@
 
         // Keyboard shortcut: fixed width, no shrinking
         kbd {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            background-color: $white;
+            color: $text-secondary;
             padding: 0.125rem 0.375rem;
             border-radius: 0.2rem;
             font-size: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid $border-color;
+            box-shadow: none;
             flex: 0 0 auto;
         }
     }

@@ -13,9 +13,11 @@ namespace App\Manager;
 use App\Entity\Event;
 use App\Exception\RedirectException;
 use App\Repository\EventRepository;
+use App\Security\Voter\EventVoter;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final readonly class EventRedirectManager
 {
@@ -23,11 +25,17 @@ final readonly class EventRedirectManager
         private RequestStack $requestStack,
         private UrlGeneratorInterface $router,
         private EventRepository $eventRepository,
+        private AuthorizationCheckerInterface $authorizationChecker,
     ) {
     }
 
     /**
      * Get event entity, throwing RedirectException if URL needs correction.
+     *
+     * A draft the visitor cannot see (EventVoter::VIEW) is never redirected: the URL of the redirect holds its slug,
+     * so its name, and ids are sequential, so trying them one by one would list every draft. Only its exact URL
+     * answers, as someone who was given it asks for it; any other one is not found, as for an event that does not
+     * exist.
      *
      * @throws RedirectException     when URL needs to be redirected (SEO)
      * @throws NotFoundHttpException when event is not found
@@ -47,11 +55,13 @@ final readonly class EventRedirectManager
         }
 
         if (null === $event) {
-            throw new NotFoundHttpException(null === $eventId ? \sprintf('Event with slug "%s" not found', $eventSlug) : \sprintf('Event with id "%d" not found', $eventId));
+            throw $this->createNotFoundException($eventId, $eventSlug);
         }
 
+        $isHiddenDraft = !$this->authorizationChecker->isGranted(EventVoter::VIEW, $event);
+
         // Redirect duplicates to canonical event (301 for SEO)
-        if ($event->isDuplicate()) {
+        if (!$isHiddenDraft && $event->isDuplicate()) {
             $canonical = $event->getCanonicalEvent();
 
             throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $canonical->getId(), 'slug' => $canonical->getSlug(), 'location' => $canonical->getLocationSlug()], $routeParams)));
@@ -63,9 +73,18 @@ final readonly class EventRedirectManager
             || $event->getSlug() !== $eventSlug
             || $event->getLocationSlug() !== $locationSlug
         )) {
+            if ($isHiddenDraft) {
+                throw $this->createNotFoundException($eventId, $eventSlug);
+            }
+
             throw new RedirectException($this->router->generate($routeName, array_merge(['id' => $event->getId(), 'slug' => $event->getSlug(), 'location' => $event->getLocationSlug()], $routeParams)));
         }
 
         return $event;
+    }
+
+    private function createNotFoundException(?int $eventId, string $eventSlug): NotFoundHttpException
+    {
+        return new NotFoundHttpException(null === $eventId ? \sprintf('Event with slug "%s" not found', $eventSlug) : \sprintf('Event with id "%d" not found', $eventId));
     }
 }

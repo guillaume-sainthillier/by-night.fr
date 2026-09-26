@@ -29,7 +29,7 @@ final class CityType extends AbstractType
                 'required' => false,
             ])
             ->add('postalCode', TextType::class, [
-                'label' => 'Code Postal',
+                'label' => 'Code postal',
                 'required' => false,
             ]);
     }

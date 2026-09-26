@@ -1,0 +1,21 @@
+{#
+    The social networks a member signs in or up with, one button each (LoginSocialController).
+    "title" starts the tooltip of each button: "Connectez-vous avec" → "Connectez-vous avec Google".
+
+    <twig:Auth:SocialButtons title="Inscrivez-vous avec" />
+
+    Composed, e.g. to offer a single network:
+    <twig:Auth:SocialButtons>
+        <div class="col"><twig:Auth:SocialButtons:Button service="google" /></div>
+    </twig:Auth:SocialButtons>
+#}
+{% props title = 'Connectez-vous avec' %}
+<div {{ attributes.defaults({class: 'row g-2'}) }}>
+    {% block content %}
+        {% for service in ['google', 'facebook', 'twitter'] %}
+            <div class="col-4">
+                <twig:Auth:SocialButtons:Button service="{{ service }}" title="{{ title }}" />
+            </div>
+        {% endfor %}
+    {% endblock %}
+</div>

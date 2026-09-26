@@ -4,8 +4,8 @@ import $ from 'jquery'
  * Expose jQuery as window.$ / window.jQuery before any legacy plugin is evaluated.
  *
  * Several dependencies read jQuery as a free global at evaluation time rather than
- * importing it: fancybox (`}(window, document, jQuery))`), morris.js (`$ = jQuery`) and
- * summernote's language packs (`})(jQuery)`). Bootstrap 5 also only registers its jQuery
+ * importing it: fancybox (`}(window, document, jQuery))`) and summernote's language packs
+ * (`})(jQuery)`). Bootstrap 5 also only registers its jQuery
  * plugins ($.fn.tooltip, $.fn.modal…) when it finds window.jQuery. Encore's
  * autoProvideVariables() rewrote those references at build time; Vite has no equivalent.
  *

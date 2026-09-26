@@ -13,6 +13,7 @@ namespace App\Tests\Controller\Location;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class WidgetsControllerTest extends WebTestCase
@@ -29,8 +30,6 @@ final class WidgetsControllerTest extends WebTestCase
         $fragments = [
             $eventPath . '/prochaines-soirees/1',
             $eventPath . '/autres-soirees/1',
-            '/toulouse/top/soirees/1',
-            '/top/membres/1',
         ];
 
         foreach ($fragments as $fragment) {
@@ -38,6 +37,33 @@ final class WidgetsControllerTest extends WebTestCase
 
             self::assertResponseIsSuccessful($fragment);
             self::assertResponseHeaderSame('X-Robots-Tag', 'noindex', $fragment);
+        }
+    }
+
+    public function testTheWidgetsOfADraftAreOnlyForThoseWhoCanSeeIt(): void
+    {
+        $client = self::createClient();
+        $city = CityFactory::toulouse()->create();
+        $author = UserFactory::createOne();
+        $draft = EventFactory::createOne([
+            'place' => PlaceFactory::createOne(['city' => $city, 'country' => $city->getCountry()]),
+            'user' => $author,
+            'draft' => true,
+        ]);
+        $draftPath = \sprintf('/%s/soiree/%s--%d', $draft->getLocationSlug(), $draft->getSlug(), $draft->getId());
+        $fragments = [$draftPath . '/prochaines-soirees/1', $draftPath . '/autres-soirees/1'];
+
+        foreach ($fragments as $fragment) {
+            $client->request('GET', $fragment);
+
+            self::assertResponseStatusCodeSame(404, $fragment);
+        }
+
+        $client->loginUser($author);
+        foreach ($fragments as $fragment) {
+            $client->request('GET', $fragment);
+
+            self::assertResponseIsSuccessful($fragment);
         }
     }
 }

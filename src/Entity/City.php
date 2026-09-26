@@ -80,6 +80,11 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     #[Assert\PositiveOrZero]
     private ?int $displayOrder = null;
 
+    /** Published events to come, recounted by app:events:count-upcoming (see UpcomingEventCounter) */
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    #[Ignore]
+    private int $upcomingEvents = 0;
+
     /**
      * Also what makes VichUploader store a new hero image: its listeners only run when a mapped
      * column changes, and the file property is not one (see setHeroImageFile()).
@@ -278,6 +283,11 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
         $this->displayOrder = $displayOrder;
 
         return $this;
+    }
+
+    public function getUpcomingEvents(): int
+    {
+        return $this->upcomingEvents;
     }
 
     public function getUpdatedAt(): ?DateTimeImmutable

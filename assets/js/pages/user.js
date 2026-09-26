@@ -1,19 +1,12 @@
-import Raphael from 'raphael/raphael'
-import $ from '@/js/jquery-global'
-import 'morris.js/morris.css'
-import 'morris.js/morris'
+import $ from 'jquery'
 import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
 
-// morris.js resolves Raphael as a global when it draws a chart
-window.Raphael = Raphael
-
 /** @type {Page} */
-function initialize({ app, datas }) {
+function initialize({ app }) {
     init()
 
     function init() {
-        initCharts()
         initLoadMoreEvents()
     }
 
@@ -58,81 +51,6 @@ function initialize({ app, datas }) {
                     btn.prop('disabled', false)
                 })
             })
-    }
-
-    function initCharts() {
-        initLieux()
-        initActivite()
-    }
-
-    function initActivite() {
-        chartActivite('year', ['#67C2EF'])
-        $('#month-tab').on('shown.bs.tab', function () {
-            if (!$(this).hasClass('loaded')) {
-                $(this).addClass('loaded')
-                chartActivite('month', ['#BDEA74'])
-            }
-        })
-
-        $('#week-tab').on('shown.bs.tab', function () {
-            if (!$(this).hasClass('loaded')) {
-                $(this).addClass('loaded')
-                chartActivite('week', ['#fabb3d'])
-            }
-        })
-    }
-
-    function initLieux() {
-        const data = []
-
-        $.each(datas, (_i, datum) => {
-            data.push({ label: datum.name || '', value: datum.eventsCount })
-        })
-
-        window.Morris.Donut({
-            element: 'hero-donut',
-            data,
-            colors: ['#36A9E1', '#bdea74', '#67c2ef', '#fabb3d', '#ff5454'],
-            formatter(y) {
-                return y
-            },
-            resize: true,
-        })
-    }
-
-    function prepareActivite(datas) {
-        return datas.data.map((events, index) => ({
-            period: datas.categories[index],
-            events,
-            full_period: datas.full_categories[index],
-        }))
-    }
-
-    function chartActivite(type, colors) {
-        const element = `chart-${type}`
-        const chart = $(`#${element}`)
-        $.get(chart.data('url')).done((datas) => {
-            chart.children().remove()
-            window.Morris.Area({
-                element,
-                lineColors: colors,
-                data: prepareActivite(datas),
-                xkey: 'period',
-                ykeys: ['events'],
-                labels: ['Événements'],
-                pointSize: 2,
-                hideHover: 'auto',
-                parseTime: false,
-                resize: true,
-                hoverCallback(_index, _options, content, row) {
-                    const customContent = $(`<div>${content}</div>`)
-                    $(customContent).find('.morris-hover-row-label').html(row.full_period)
-                    return $(customContent).html()
-                },
-                gridTextFamily: 'Roboto',
-                gridTextSize: '14',
-            })
-        })
     }
 }
 

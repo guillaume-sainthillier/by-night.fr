@@ -36,12 +36,6 @@ app.comments:
     prefix: /commentaire
     type: attribute
 
-app.private:
-    resource:
-        path: ../src/Controller/Fragments
-        namespace: App\Controller\Fragments
-    type: attribute
-
 #La location est définie à partir d'ici
 app.location:
     resource:

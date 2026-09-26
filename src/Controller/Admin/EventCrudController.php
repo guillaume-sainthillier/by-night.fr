@@ -165,7 +165,7 @@ final class EventCrudController extends AbstractCrudController
         $adresse = TextField::new('address');
         $systemImagePanel = FormField::addFieldset('Image système');
         $imageSystem = VichImageField::new('imageSystemFile', 'Image')
-            ->setHelp('Récupérée à l\'import : un nouvel import peut la remplacer. Pour imposer une image, utilisez l\'image utilisateur.');
+            ->setHelp("Récupérée à l'import\u{a0}: un nouvel import peut la remplacer. Pour imposer une image, utilisez l'image utilisateur.");
         $url = TextField::new('url', 'URL source')
             ->setHelp('Image téléchargée à l\'import.');
         $userImagePanel = FormField::addFieldset('Image utilisateur');

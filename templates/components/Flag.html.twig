@@ -1,0 +1,3 @@
+{# @var code string ISO 3166 code of the country, e.g. "FR" #}
+{% props code, size = 24 %}
+<img {{ attributes.defaults({class: 'flag'}) }} src="{{ asset('build/images/flags/' ~ code|lower ~ '.svg') }}" width="{{ size }}" height="{{ (size * 3 / 4)|round }}" alt="" loading="lazy">

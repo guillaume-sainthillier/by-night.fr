@@ -22,7 +22,7 @@ final class ResetPasswordControllerTest extends WebTestCase
         $client = self::createClient();
 
         $client->request('GET', '/mot-de-passe-perdu');
-        $client->submitForm('Réinitialiser le mot de passe', [
+        $client->submitForm('Envoyer le lien de réinitialisation', [
             'reset_password_request_form[email]' => '',
         ]);
 
@@ -47,7 +47,7 @@ final class ResetPasswordControllerTest extends WebTestCase
         UserFactory::createOne(['email' => 'forgetful@example.com']);
 
         $client->request('GET', '/mot-de-passe-perdu');
-        $client->submitForm('Réinitialiser le mot de passe', [
+        $client->submitForm('Envoyer le lien de réinitialisation', [
             'reset_password_request_form[email]' => 'forgetful@example.com',
         ]);
 

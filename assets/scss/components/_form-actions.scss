@@ -2,7 +2,7 @@
 // It is out of the flow, so the page reserves its height: the footer still scrolls above it,
 // fields focused with Tab stop short of it, and the scroll-to-top button moves above it.
 // That space is its min-height: keep its content on one line, a taller bar would cover the page.
-$form-actions-fixed-height: 4rem;
+$form-actions-fixed-height: 5rem;
 
 .form-actions-fixed {
     position: fixed;
@@ -17,8 +17,8 @@ $form-actions-fixed-height: 4rem;
     border-top: 1px solid $card-border-color;
     box-shadow: 0 -0.25rem 0.75rem rgba($black, 0.08);
 
-    // Phones: the three labelled buttons of the edit page need 417px where a 375px screen offers 359px
-    // (304px at 320px), so the secondary buttons keep only their icon. Screen readers still read the label.
+    // Phones: the large buttons do not fit a 375px screen with their labels (304px of room at 320px), so the
+    // secondary ones keep only their icon. Screen readers still read the label.
     @include media-breakpoint-down(sm) {
         .form-actions-label {
             @include visually-hidden;

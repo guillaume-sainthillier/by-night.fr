@@ -4,12 +4,21 @@
     {% do menu.addItem('Étape 2/3', url('app_check_email')) %}
 {% endblock %}
 
-{% block body %}
-    <div class="alert alert-success">
-        <twig:Icon name="lucide:check" />
-        Un e-mail a été envoyé. Il contient un lien sur lequel il vous faudra cliquer pour réinitialiser votre mot de passe.
-        <br />
-        <br />
-        Si vous ne recevez pas d'e-mail, vérifiez votre dossier spam ou essayez à nouveau.
-    </div>
+{% block reset_icon 'lucide:mail-check' %}
+{% block reset_title 'Vérifiez vos e-mails' %}
+{# The same message whether or not an account uses the address: the page must not tell who is a member #}
+{% block reset_intro %}Si un compte correspond à cette adresse, un e-mail vient de lui être envoyé avec un lien pour réinitialiser votre mot de passe.{% endblock %}
+
+{% block reset_body %}
+    <p class="small text-secondary d-flex gap-2">
+        <twig:Icon name="lucide:info" class="flex-shrink-0 mt-1" />
+        <span>
+            Ce lien est valable {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+            Rien reçu&nbsp;? Regardez dans vos courriers indésirables, puis demandez un nouveau lien.
+        </span>
+    </p>
+    <a class="btn w-100" href="{{ path('app_forgot_password_request') }}">
+        <twig:Icon name="lucide:send" />
+        Recevoir un nouveau lien
+    </a>
 {% endblock %}

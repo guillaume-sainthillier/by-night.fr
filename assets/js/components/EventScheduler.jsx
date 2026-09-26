@@ -13,6 +13,7 @@ export default function EventScheduler({
     startDateFieldId,
     endDateFieldId,
     timesheetsCollectionId,
+    generateButtonId,
     collectionManager,
     detectExisting,
 }) {
@@ -109,7 +110,7 @@ export default function EventScheduler({
         }
     }, [startDateFieldId, endDateFieldId])
 
-    // Validate and generate (no useCallback needed - only used in onClick)
+    // Validate and generate
     const handleGenerate = (e) => {
         e.preventDefault()
 
@@ -159,6 +160,16 @@ export default function EventScheduler({
         }
     }
 
+    // The "Générer les dates" button sits next to the period field, outside this component: re-bound on every render
+    // so that it always generates from the current state
+    useEffect(() => {
+        const button = dom(`#${generateButtonId}`)
+        if (!button) return
+
+        button.addEventListener('click', handleGenerate)
+        return () => button.removeEventListener('click', handleGenerate)
+    })
+
     // Toggle weekday - functional setState (rule 5.5)
     const toggleWeekday = (day) => {
         setSelectedWeekdays((prev) => {
@@ -174,12 +185,11 @@ export default function EventScheduler({
 
     return (
         <div className="event-scheduler">
-            {errors.dates ? <div className="alert alert-danger">{errors.dates}</div> : null}
+            {errors.dates ? <div className="alert alert-danger mt-3 mb-0">{errors.dates}</div> : null}
 
             {isMultiDay ? (
-                <div className="form-group">
-                    <label className="form-label">Jours</label>
-                    <div className="form-selectgroup form-selectgroup-full">
+                <div className="mt-3">
+                    <div className="form-selectgroup form-selectgroup-pills">
                         <label className="form-selectgroup-item">
                             <input
                                 type="radio"
@@ -200,47 +210,40 @@ export default function EventScheduler({
                                 checked={pattern === 'weekdays'}
                                 onChange={(e) => setPattern(e.target.value)}
                             />
-                            <span className="form-selectgroup-label">Jours spécifiques</span>
+                            <span className="form-selectgroup-label">Certains jours</span>
                         </label>
                     </div>
-                </div>
-            ) : null}
 
-            {isMultiDay && pattern === 'weekdays' ? (
-                <div className="form-group">
-                    <label className="form-label">Jours de la semaine</label>
-                    <div className="form-selectgroup form-selectgroup-boxes form-selectgroup-full">
-                        {weekdayNames.map((name, index) => {
-                            const day = index + 1
-                            return (
-                                <label key={day} className="form-selectgroup-item">
-                                    <input
-                                        type="checkbox"
-                                        name="weekdays"
-                                        value={day}
-                                        className="form-selectgroup-input"
-                                        checked={selectedWeekdays.has(day)}
-                                        onChange={() => toggleWeekday(day)}
-                                    />
-                                    <div className="form-selectgroup-label text-center">{name}</div>
-                                </label>
-                            )
-                        })}
-                    </div>
-                    {errors.weekdays ? <div className="alert alert-danger mt-2">{errors.weekdays}</div> : null}
+                    {pattern === 'weekdays' ? (
+                        <div className="form-selectgroup form-selectgroup-boxes form-selectgroup-full mt-2">
+                            {weekdayNames.map((name, index) => {
+                                const day = index + 1
+                                return (
+                                    <label key={day} className="form-selectgroup-item">
+                                        <input
+                                            type="checkbox"
+                                            name="weekdays"
+                                            value={day}
+                                            className="form-selectgroup-input"
+                                            checked={selectedWeekdays.has(day)}
+                                            onChange={() => toggleWeekday(day)}
+                                        />
+                                        <div className="form-selectgroup-label text-center">{name}</div>
+                                    </label>
+                                )
+                            })}
+                        </div>
+                    ) : null}
+                    {errors.weekdays ? <div className="alert alert-danger mt-2 mb-0">{errors.weekdays}</div> : null}
                 </div>
             ) : null}
 
             {previewCount > 0 ? (
-                <div className="preview">
-                    <span className="preview-count">{previewCount}</span>{' '}
+                <p className="text-secondary small mt-2 mb-0">
+                    <strong className="text-body">{previewCount}</strong>{' '}
                     {plural(previewCount, { one: 'date sera générée', other: 'dates seront générées' })}
-                </div>
+                </p>
             ) : null}
-
-            <button type="button" className="btn btn-primary btn-generate" onClick={handleGenerate}>
-                Générer les dates
-            </button>
         </div>
     )
 }

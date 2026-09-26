@@ -25,6 +25,9 @@ final class EventVoter extends Voter
 {
     public const string CREATE = 'event.create';
 
+    /** A published event is public; a draft is only seen by those who can edit it */
+    public const string VIEW = 'event.view';
+
     public const string EDIT = 'event.edit';
 
     public const string DELETE = 'event.delete';
@@ -38,6 +41,10 @@ final class EventVoter extends Voter
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
+        if (self::VIEW === $attribute && !$subject->isDraft()) {
+            return true;
+        }
+
         $user = $token->getUser();
 
         if (!$user instanceof User) {
@@ -50,7 +57,7 @@ final class EventVoter extends Voter
 
         return match ($attribute) {
             self::CREATE => $this->canCreate($user),
-            self::EDIT => $this->canEdit($subject, $user),
+            self::VIEW, self::EDIT => $this->canEdit($subject, $user),
             self::DELETE => $this->canDelete($subject, $user),
             default => throw new LogicException('This code should not be reached!'),
         };
@@ -78,6 +85,7 @@ final class EventVoter extends Voter
     {
         return \in_array($attribute, [
             self::CREATE,
+            self::VIEW,
             self::EDIT,
             self::DELETE,
         ], true);

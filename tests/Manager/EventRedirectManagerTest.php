@@ -18,9 +18,11 @@ use App\Factory\PlaceFactory;
 use App\Manager\EventRedirectManager;
 use App\Tests\AppKernelTestCase;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
  * An event has one URL: /{city}/soiree/{slug}--{id}. Any other way to reach it is sent there
@@ -92,6 +94,50 @@ final class EventRedirectManagerTest extends AppKernelTestCase
         self::getContainer()->get(RequestStack::class)->push(Request::create('/_fragment'));
 
         self::assertSame($event, $this->manager->getEvent($event->getId(), 'old-name', 'paris', 'app_event_details'));
+    }
+
+    /**
+     * @return iterable<string, array{string|null, string, bool}> the slug (null: the draft's own), the city, whether
+     *                                                            the URL has the id
+     */
+    public static function provideWrongUrlsOfADraft(): iterable
+    {
+        yield 'a wrong slug' => ['old-name', 'toulouse', true];
+        yield 'a wrong city' => [null, 'paris', true];
+        yield 'the old URL without id' => [null, 'toulouse', false];
+    }
+
+    /**
+     * The redirect would give the draft's slug, so its name, to whoever tries ids one by one.
+     */
+    #[DataProvider('provideWrongUrlsOfADraft')]
+    public function testAWrongUrlOfADraftIsNotFoundByThoseWhoCannotSeeIt(?string $slug, string $location, bool $withId): void
+    {
+        $draft = $this->createEvent('Soirée surprise', ['draft' => true]);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->manager->getEvent($withId ? $draft->getId() : null, $slug ?? $draft->getSlug(), $location, 'app_event_details');
+    }
+
+    #[DataProvider('provideWrongUrlsOfADraft')]
+    public function testTheAuthorOfADraftIsRedirectedFromAWrongUrl(?string $slug, string $location, bool $withId): void
+    {
+        $draft = $this->createEvent('Soirée surprise', ['draft' => true]);
+        $author = $draft->getUser();
+        self::getContainer()->get('security.token_storage')->setToken(new UsernamePasswordToken($author, 'main', $author->getRoles()));
+
+        self::assertSame(
+            \sprintf('/toulouse/soiree/%s--%d', $draft->getSlug(), $draft->getId()),
+            $this->redirectOf(fn () => $this->manager->getEvent($withId ? $draft->getId() : null, $slug ?? $draft->getSlug(), $location, 'app_event_details')),
+        );
+    }
+
+    public function testADraftAnswersAtItsUrlForThoseWhoCannotSeeIt(): void
+    {
+        $draft = $this->createEvent('Soirée surprise', ['draft' => true]);
+
+        self::assertSame($draft, $this->manager->getEvent($draft->getId(), $draft->getSlug(), 'toulouse', 'app_event_details'));
     }
 
     public function testAnUnknownEventIsNotFound(): void

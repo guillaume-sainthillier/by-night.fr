@@ -1,0 +1,25 @@
+{#
+    A card that is a link: an icon on a tinted avatar, a title, a text and a footer (a count and an arrow).
+    "tone" is a Tabler colour: primary, teal, blue, purple, pink, green, yellow, secondary.
+
+    <twig:Tile href="…" icon="lucide:music" tone="pink" title="Concerts" description="…" meta="120 sorties" />
+
+    Composed:
+    <twig:Tile href="…" tone="pink">
+        <twig:Tile:Icon icon="lucide:music" />
+        <twig:Tile:Title>Concerts</twig:Tile:Title>
+        <p class="text-secondary small">…</p>
+        <twig:Tile:Footer>120 sorties</twig:Tile:Footer>
+    </twig:Tile>
+#}
+{% props href, tone = 'primary', icon = null, title = null, description = null, meta = null %}
+<a href="{{ href }}" {{ attributes.defaults({class: 'card card-layout card-link-pop text-reset h-100 mb-0'}) }}>
+    <div class="card-body d-flex flex-column">
+        {% block content %}
+            {% if icon %}<twig:Tile:Icon icon="{{ icon }}" tone="{{ tone }}" />{% endif %}
+            <twig:Tile:Title>{{ title }}</twig:Tile:Title>
+            {% if description %}<p class="text-secondary small mb-0">{{ description }}</p>{% endif %}
+            <twig:Tile:Footer tone="{{ tone }}">{{ meta }}</twig:Tile:Footer>
+        {% endblock %}
+    </div>
+</a>

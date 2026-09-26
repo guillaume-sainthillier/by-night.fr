@@ -1,0 +1,22 @@
+{#
+    A compact card for a city: an eyebrow and the name, its number of events to come in the footer.
+
+    <twig:Location:PlaceCard href="…" name="Blagnac" eyebrow="Haute-Garonne (31)" events="{{ 142 }}" title="Sortir à Blagnac" />
+#}
+{% props href, name, eyebrow = null, events = null, tone = 'primary' %}
+<a href="{{ href }}" {{ attributes.defaults({class: 'card card-layout card-link-pop text-reset h-100 mb-0'}) }}>
+    <div class="card-body">
+        {% if eyebrow %}<div class="subheader text-truncate">{{ eyebrow }}</div>{% endif %}
+        <h3 class="card-title mb-0">{{ name }}</h3>
+    </div>
+    <div class="card-footer d-flex align-items-center justify-content-between gap-2 small fw-bold text-{{ tone }}">
+        <span class="text-truncate">
+            {%- if events is not null -%}
+                {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: events}, 'messages+intl-icu') }}
+            {%- else -%}
+                Voir l'agenda
+            {%- endif -%}
+        </span>
+        <twig:Icon name="lucide:arrow-right" />
+    </div>
+</a>

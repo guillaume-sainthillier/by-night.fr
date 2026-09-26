@@ -10,10 +10,21 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\ContentController;
+use App\Factory\CityFactory;
+use App\Factory\CountryFactory;
+use App\Factory\EventFactory;
+use App\Factory\PlaceFactory;
+use App\Factory\UserFactory;
+use App\Tests\Stats\CountsUpcomingEvents;
+use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class ContentControllerTest extends WebTestCase
 {
+    use CountsUpcomingEvents;
+
     public function testTheLegalNoticeNamesTheHostAndTheContact(): void
     {
         $client = self::createClient();
@@ -85,8 +96,71 @@ final class ContentControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Politique de cookies');
         self::assertSelectorExists('main a.btn[data-cookie-consent], .card a.btn[data-cookie-consent]');
-        foreach (['app_city', 'PHPSESSID', 'REMEMBERME', 'FCCDCF', '_ga'] as $cookie) {
+        foreach (['PHPSESSID', 'REMEMBERME', 'FCCDCF', '_ga'] as $cookie) {
             self::assertAnySelectorTextSame('code', $cookie);
         }
+    }
+
+    public function testTheAboutPageCountsTheCountriesWithEventsToCome(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $belgium = CountryFactory::createOne(['id' => 'BE', 'name' => 'Belgique', 'displayName' => 'Belgique']);
+        $switzerland = CountryFactory::createOne(['id' => 'CH', 'name' => 'Suisse', 'displayName' => 'Suisse']);
+        $tomorrow = new DateTimeImmutable('tomorrow');
+        EventFactory::new()->withDates($tomorrow)->create(['place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()])]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => PlaceFactory::createOne(['city' => CityFactory::createOne(['country' => $belgium]), 'country' => $belgium])]);
+        // Only past events: not a country the agenda covers today
+        EventFactory::new()->withDates(new DateTimeImmutable('-10 days'))->create(['place' => PlaceFactory::createOne(['city' => CityFactory::createOne(['country' => $switzerland]), 'country' => $switzerland])]);
+        self::counter()->refresh();
+
+        $client->request('GET', '/a-propos');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextSame('#stats .col-md-4:nth-child(3) .display-5', '2');
+        self::assertSelectorTextContains('#stats .col-md-4:nth-child(3) p', 'France');
+        self::assertSelectorTextContains('#stats .col-md-4:nth-child(3) p', 'Belgique');
+        self::assertSelectorTextNotContains('#stats .col-md-4:nth-child(3) p', 'Suisse');
+    }
+
+    /**
+     * @param array<string, string> $countries
+     */
+    #[DataProvider('provideCountries')]
+    public function testTheCountriesCaptionLeadsWithFranceAndGroupsTheOverseasTerritories(array $countries, string $expected): void
+    {
+        self::assertSame($expected, ContentController::summarizeCountries($countries));
+    }
+
+    /**
+     * @return iterable<string, array{array<string, string>, string}>
+     */
+    public static function provideCountries(): iterable
+    {
+        yield 'France first, the others in their order, the territories counted' => [
+            ['CH' => 'Suisse', 'RE' => 'La Réunion', 'FR' => 'France', 'MQ' => 'Martinique', 'BE' => 'Belgique'],
+            "France, Suisse, Belgique et 2 territoires d'Outre-Mer",
+        ];
+        yield 'a single territory keeps its name' => [['FR' => 'France', 'YT' => 'Mayotte'], 'France et Mayotte'];
+        yield 'no territory' => [['FR' => 'France'], 'France'];
+        yield 'no France' => [['BE' => 'Belgique', 'GP' => 'Guadeloupe', 'GF' => 'Guyane'], "Belgique et 2 territoires d'Outre-Mer"];
+    }
+
+    public function testTheHowItWorksPageCountsWhatTheMembersPublished(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        EventFactory::createMany(2, ['user' => $member]);
+        $published = EventFactory::createOne();
+        // Drafts, duplicates and imported events are not the members' publications
+        EventFactory::createOne(['user' => $member, 'draft' => true]);
+        EventFactory::createOne(['user' => $member, 'duplicateOf' => $published]);
+        EventFactory::createOne(['user' => null]);
+
+        $client->request('GET', '/en-savoir-plus');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#member-totals', '3 événements publiés');
+        self::assertSelectorTextContains('#member-totals', 'par 2 membres');
     }
 }

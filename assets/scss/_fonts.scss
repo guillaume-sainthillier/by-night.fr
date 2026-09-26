@@ -1,0 +1,55 @@
+// Epilogue, self-hosted from @fontsource-variable/epilogue (instead of fonts.googleapis.com, which would send every
+// visitor's IP address to Google before any consent): one variable font covers every weight, and unicode-range keeps
+// the unused subset from being downloaded.
+//
+// Declared here rather than through the package's CSS for the metric overrides: Epilogue's own ascent (0.79em) is
+// barely above its capitals and its descent (0.24em) deep, so its text sits ~0.09em high in its line box and every icon
+// flex-centred beside a label (buttons, badges, nav links) looks low. Arial-like metrics centre the capitals.
+$epilogue-files: '../../node_modules/@fontsource-variable/epilogue/files';
+
+@mixin epilogue-face($subset, $unicode-range) {
+    @font-face {
+        font-family: 'Epilogue Variable';
+        font-style: normal;
+        font-display: swap;
+        font-weight: 100 900;
+        src: url('#{$epilogue-files}/epilogue-#{$subset}-wght-normal.woff2') format('woff2-variations');
+        unicode-range: unquote($unicode-range);
+        ascent-override: 90%;
+        descent-override: 20%;
+        line-gap-override: 0%;
+    }
+}
+
+@include epilogue-face(
+    'latin-ext',
+    'U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF'
+);
+
+@include epilogue-face(
+    'latin',
+    'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
+);
+
+// Until Epilogue has loaded (font-display: swap), text is drawn in Arial scaled to Epilogue's width and line metrics,
+// so the swap changes the glyphs without moving the layout (it was a 0.1 layout shift on the home page). The ratios
+// are Epilogue's average width over Arial's, measured on French text; the overrides are Epilogue's divided by them.
+@font-face {
+    font-family: 'Epilogue Fallback';
+    font-weight: 100 500;
+    src: local('Arial'), local('ArialMT');
+    size-adjust: 109.8%;
+    ascent-override: 82%;
+    descent-override: 18.2%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Epilogue Fallback';
+    font-weight: 600 900;
+    src: local('Arial Bold'), local('Arial-BoldMT');
+    size-adjust: 106.5%;
+    ascent-override: 84.5%;
+    descent-override: 18.8%;
+    line-gap-override: 0%;
+}

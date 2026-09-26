@@ -5,54 +5,118 @@
 {% block breadcrumb_widget '' %}
 
 {% block body %}
-    <section class="full_wrapper" style="background-image: url({{ asset('build/images/landing.jpg') }})" {{ load_page('index', {apiCityURL: url('api_cities', {q: '__QUERY__'})}) }}>
-        <div class="icon fade-black-transp"></div>
-        <div class="wrapper">
-            <h1>Trouvez votre prochaine sortie</h1>
-            <div class="card no-margin-form search_container">
-                <div class="card-body">
-                    {{ form_start(autocomplete_form, {attr: {class: 'form-city-picker m-0'}}) }}
-                    {{ form_errors(autocomplete_form) }}
-
-                    {{ form_row(autocomplete_form.dateRange, {
-                        label: 'Je veux sortir',
-                        icon_prepend: 'lucide:calendar-days',
-                    }) }}
-                    {{ form_row(autocomplete_form.name, {label: 'À', icon_prepend: 'lucide:map-pin'}) }}
-                    <div class="text-center">
-                        <button class="btn btn-primary choose-city-action" type="submit" disabled>
-                            C'est parti
-                        </button>
-                    </div>
-                    {{ form_rest(autocomplete_form) }}
-                    {{ form_end(autocomplete_form) }}
+    <section class="hero-home py-5" {{ load_page('index', {apiCityURL: url('api_cities', {q: '__QUERY__'}), agendaURL: path('app_agenda_index', {location: '__LOCATION__'})}) }}>
+        <div class="container-lg">
+            <div class="row justify-content-center text-center mb-5">
+                <div class="col-lg-9">
+                    <twig:Section:Eyebrow icon="lucide:sparkles" badge="{{ true }}">L'agenda des sorties culturelles et festives</twig:Section:Eyebrow>
+                    <h1 class="display-5 fw-bold">Trouvez votre prochaine sortie <span class="text-primary">près de chez vous</span></h1>
+                    <p class="lead text-secondary mt-3 mb-0">
+                        Concerts, spectacles, expos, marchés, festivals et soirées&nbsp;: plus de {{ events_count_label() }} référencés depuis 2013 en France, en Suisse, en Belgique, à Monaco et en Outre-Mer.
+                    </p>
                 </div>
             </div>
-        </div>
-        <div class="footer_wrapper">
-            <h2 class="text-primary h4">Plus de {{ events_count_label() }} référencés depuis 2013</h2>
-        </div>
-    </section>
-    <section class="py-4">
-        <div class="{{ block('container_class') }}">
-            <h2>Explorez les événements par pays</h2>
-            <div class="row">
-                {% for stat in stats %}
-                    <div class="col-sm-6 col-lg-4">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h2 class="card-title">{{ stat.displayName }}</h2>
-                                <h5 class="card-subtitle text-muted">{{ '{count, plural, one {# événement} other {# événements}} à découvrir'|trans({count: stat.events}, 'messages+intl-icu') }}</h5>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    {{ form_start(search_form, {attr: {class: 'card card-lg shadow form-city-picker', role: 'search'}}) }}
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                {{ form_label(search_form.term) }}
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><twig:Icon name="lucide:search" /></span>
+                                    {{ form_widget(search_form.term, {attr: {class: 'form-control-lg'}}) }}
+                                </div>
                             </div>
-                            <div class="card-footer text-center py-2">
-                                <a class="btn btn-outline-primary" href="{{ path('app_agenda_index', {location: stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">
-                                    Voir l'agenda {{ stat.atDisplayName }}
-                                </a>
+                            <div class="col-md-4">
+                                <label class="form-label required" for="home-city">Où sortir&nbsp;?</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><twig:Icon name="lucide:map-pin" /></span>
+                                    {# No name: the city goes in the path of the agenda (pages/index.js sets the form action), not in its query #}
+                                    <input type="text" id="home-city" class="form-control form-control-lg" placeholder="Toulouse, Lyon, Genève…" value="{{ memberCity.name ?? '' }}" required data-city-name>
+                                    <input type="hidden" value="{{ memberCity.slug ?? '' }}" data-city-slug>
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-grid">
+                                <button class="btn btn-primary btn-lg choose-city-action" type="submit" disabled>
+                                    Explorer
+                                    <twig:Icon name="lucide:arrow-right" class="icon-end" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-top" role="radiogroup" aria-labelledby="home-when">
+                            <div class="form-label" id="home-when">{{ search_form.when.vars.label }}</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for choice in search_form.when %}
+                                    {{ form_widget(choice, {attr: {class: 'btn-check'}, label_attr: {class: 'btn btn-pill btn-chip'}}) }}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                    {{ form_end(search_form) }}
+                </div>
             </div>
+
+            <div class="row g-4 text-center mt-4 pt-4 border-top">
+                <div class="col-6 col-md-3">
+                    <div class="h1 mb-0">{{ totals.events|format_number(locale: 'fr') }}</div>
+                    <div class="subheader">sorties à venir</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="h1 mb-0 text-primary">{{ totals.cities|format_number(locale: 'fr') }}</div>
+                    <div class="subheader">villes animées</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="h1 mb-0">{{ totals.places|format_number(locale: 'fr') }}</div>
+                    <div class="subheader">lieux et salles</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="h1 mb-0 text-primary">100&nbsp;%</div>
+                    <div class="subheader">gratuit, sans inscription</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if countries %}
+        <twig:Section id="countries" eyebrow="Pays & territoires" icon="lucide:globe" title="Explorez les événements par pays & régions" description="Les agendas des métropoles, des régions frontalières et des territoires d'Outre-Mer.">
+            <twig:Location:CountryGrid countries="{{ countries }}" />
+        </twig:Section>
+    {% endif %}
+
+    {% if metropolises %}
+        {% set photos = metropolises|slice(0, 3) %}
+        {% set compact = metropolises|slice(3) %}
+        <twig:Section id="metropolises" eyebrow="Les métropoles" icon="lucide:building-2" title="Sortir par métropole" description="Les grandes villes et leurs agendas." muted="{{ true }}">
+            <div class="row row-cards row-scroll-mobile">
+                {% for city in photos %}
+                    <div class="col-10 col-sm-7 col-md-6 col-lg-3">
+                        <twig:Location:CityCard city="{{ city }}" events="{{ city.upcomingEvents }}" subtitle="{{ city.headline ?? null }}" />
+                    </div>
+                {% endfor %}
+                {% if compact %}
+                    <div class="col-10 col-sm-7 col-md-6 col-lg-3 space-y-3">
+                        {% for city in compact %}
+                            <twig:Location:PlaceCard
+                                class="flex-fill"
+                                href="{{ path('app_location_index', {location: city.slug}) }}"
+                                name="{{ city.name }}"
+                                eyebrow="{{ city|department }}"
+                                events="{{ city.upcomingEvents }}"
+                                title="Sortir {{ city.name|at_place }}"
+                                tone="{{ loop.index is odd ? 'primary' : 'teal' }}"
+                            />
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </twig:Section>
+    {% endif %}
+
+    <section class="py-5">
+        <div class="container-lg">
+            <twig:OrganizerCta />
         </div>
     </section>
 {% endblock %}

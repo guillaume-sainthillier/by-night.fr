@@ -1,0 +1,20 @@
+// The "À propos" and "Comment ça marche" pages (2026 redesign): their blocks are cards, avatars and badges; only the
+// two gradients have no Bootstrap or Tabler equivalent.
+
+// A night-blue card (data-bs-theme="dark" gives its text and nested cards the dark colours), warmed by an orange glow
+// in its bottom-right corner
+.card-night {
+    background: radial-gradient(circle at 100% 100%, rgba($primary, 0.35), transparent 45%), $ink;
+
+    .card {
+        background-color: rgba($white, 0.06);
+        border: 1px solid rgba($white, 0.08);
+    }
+}
+
+// The orange call to action: the brand colour, lit at the top right and darkened towards the bottom right
+.card-sunset {
+    background:
+        radial-gradient(circle at 85% 20%, rgba($white, 0.16), transparent 35%),
+        linear-gradient(135deg, $primary, $primary-strong);
+}

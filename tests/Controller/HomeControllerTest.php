@@ -13,22 +13,42 @@ namespace App\Tests\Controller;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\UserFactory;
+use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 final class HomeControllerTest extends WebTestCase
 {
-    public function testTheCityPickerRedirectsToTheCityAgenda(): void
+    use CountsUpcomingEvents;
+
+    public function testTheSearchStartsFromTheMembersCityAndGoesByGetToItsAgenda(): void
     {
         $client = self::createClient();
-        CityFactory::toulouse()->create();
+        $client->loginUser(UserFactory::createOne(['city' => CityFactory::toulouse()]));
 
-        $client->request('POST', '/', ['name' => 'Toulouse', 'city' => 'toulouse']);
+        $crawler = $client->request('GET', '/');
 
-        self::assertResponseRedirects();
-        self::assertStringStartsWith('/toulouse/agenda', (string) $client->getResponse()->headers->get('Location'));
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('[data-city-name][value="Toulouse"]');
+        self::assertSelectorExists('[data-city-slug][value="toulouse"]');
+        self::assertSelectorExists('input[name="when"][value="anytime"]:checked');
+        // The city is in the path: its inputs have no name, the query holds the filters of the agenda only
+        $form = $crawler->selectButton('Explorer')->form(['term' => 'jazz', 'when' => 'this_weekend']);
+        self::assertSame('GET', $form->getMethod());
+        self::assertSame('http://localhost/toulouse/agenda?term=jazz&when=this_weekend', $form->getUri());
+    }
+
+    public function testWithoutACityTheSearchWaitsForThePicker(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        // pages/index.js points the form at the agenda of the picked city and enables the button
+        self::assertSelectorExists('form.form-city-picker[method="get"]:not([action])');
+        self::assertSelectorExists('.choose-city-action[disabled]');
     }
 
     public function testTheCountriesCountOnlyTheirPublishedUpcomingEvents(): void
@@ -41,31 +61,41 @@ final class HomeControllerTest extends WebTestCase
         EventFactory::new()->withDates($tomorrow)->create(['place' => $place, 'draft' => true]);
         EventFactory::new()->withDates($tomorrow)->create(['place' => $place, 'duplicateOf' => $published]);
         EventFactory::new()->withDates(new DateTimeImmutable('-10 days'))->create(['place' => $place]);
+        self::counter()->refresh();
 
         $client->request('GET', '/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextSame('.card-subtitle', '1 événement à découvrir');
+        // The busiest country is featured until the back office features some
+        self::assertSelectorTextSame('#countries .card-lg .h2', '1');
     }
 
-    /**
-     * @return iterable<string, array{string}>
-     */
-    public static function provideForeignCities(): iterable
-    {
-        yield 'leading slash' => ['/evil.example'];
-        yield 'leading backslash' => ['\evil.example'];
-        yield 'absolute url' => ['https://evil.example'];
-    }
-
-    #[DataProvider('provideForeignCities')]
-    public function testTheCityPickerNeverRedirectsOffSite(string $city): void
+    public function testTheMetropolisesFallBackOnTheBiggestCitiesOfTheFirstCountry(): void
     {
         $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        CityFactory::createOne(['name' => 'Lyon', 'population' => 500_000, 'country' => $toulouse->getCountry()]);
+        $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['place' => $place]);
+        self::counter()->refresh();
 
-        $client->request('POST', '/', ['name' => 'Toulouse', 'city' => $city]);
+        $crawler = $client->request('GET', '/');
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertFalse($client->getResponse()->headers->has('Location'));
+        self::assertResponseIsSuccessful();
+        self::assertSame(['Lyon', 'Toulouse'], $crawler->filter('#metropolises h3')->each(static fn ($title): string => trim($title->text())));
+    }
+
+    public function testAMemberReachesTheirEventsFromTheUserMenu(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne());
+        $events = self::getContainer()->get('router')->generate('app_event_list');
+
+        $crawler = $client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        // In the user menu of phones and of desktops, not in the main navigation any more
+        self::assertCount(2, $crawler->filter(\sprintf('.nav-avatar .dropdown-menu a[href="%s"]', $events)));
+        self::assertCount(0, $crawler->filter(\sprintf('.navbar-nav .nav-link[href="%s"]', $events)));
     }
 }

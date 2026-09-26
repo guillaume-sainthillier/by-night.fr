@@ -1,7 +1,7 @@
 {# @var user \App\Entity\User #}
 {% props user %}
 
-<div class="card card-user card-layout">
+<div class="card card-user card-layout mb-0">
     <div class="card-img-container">
         <div class="image-container">
             <twig:User:Thumb user="{{ user }}" width="{{ 360 }}" />
@@ -9,7 +9,7 @@
     </div>
     <div class="card-content">
         <div class="card-body">
-            <h3 class="h5">
+            <h3 class="h4">
                 <a href="{{ path('app_user_index', {id: user.id, slug: user.slug}) }}">
                     {{ user.username }}
                 </a>

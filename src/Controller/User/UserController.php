@@ -11,13 +11,13 @@
 namespace App\Controller\User;
 
 use App\Controller\AbstractController as BaseController;
-use App\Entity\User;
+use App\Enum\MemberDistinction;
+use App\Enum\PersonalEventFilter;
 use App\Manager\UserRedirectManager;
+use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
-use DateTimeImmutable;
-use IntlDateFormatter;
-use Locale;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Stats\MemberActivity;
+use App\Stats\MemberStats;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -26,9 +26,15 @@ final class UserController extends BaseController
 {
     public const int EVENTS_PER_PAGE = 6;
 
+    private const int TOP_CITIES = 3;
+
+    private const int TOP_PLACES = 5;
+
+    private const int TOP_CATEGORIES = 5;
+
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
-    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
+    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, CommentRepository $commentRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_index');
 
@@ -49,12 +55,41 @@ final class UserController extends BaseController
             ['view' => 'events:user:list'],
         );
 
+        $activity = new MemberActivity($eventRepository->countUserEventsByDay($user));
+        $publishedEventsCount = $eventRepository->countByUserAndFilter($user)[PersonalEventFilter::Visible->value];
+        $cities = $eventRepository->findUserCities($user);
+        $places = $eventRepository->findUserPlaces($user, self::TOP_PLACES);
+        $categories = $eventRepository->findUserCategories($user);
+        $topCategories = \array_slice($categories, 0, self::TOP_CATEGORIES);
+        $habits = $eventRepository->countUserCalendarHabits($user, MemberDistinction::PLANNER_DAYS);
+
+        $stats = new MemberStats(
+            activity: $activity,
+            publishedEvents: $publishedEventsCount,
+            comments: $commentRepository->countApprovedByUser($user),
+            cities: \count($cities),
+            busiestPlaceEvents: $places[0]['events'] ?? 0,
+            eventsAddedAhead: $habits['addedAhead'],
+            freeEvents: $habits['free'],
+        );
+
         return $this->render('user/index.html.twig', [
             'user' => $user,
             'nextEvents' => $nextEvents,
             'previousEvents' => $previousEvents,
-            'places' => $eventRepository->findAllUserPlaces($user),
             'favoriteEventsCount' => $eventRepository->getUserFavoriteEventsCount($user),
+            'publishedEventsCount' => $publishedEventsCount,
+            'activity' => $activity,
+            'distinctions' => MemberDistinction::earnedBy($user, $stats),
+            'cities' => \array_slice($cities, 0, self::TOP_CITIES),
+            'citiesCount' => \count($cities),
+            'cityEventsCount' => array_sum(array_column($cities, 'events')),
+            'places' => $places,
+            'placesCount' => $eventRepository->countUserPlaces($user),
+            'categories' => $topCategories,
+            'categoriesCount' => \count($categories),
+            'categoryEventsCount' => array_sum(array_column($categories, 'events')),
+            'categoryThemes' => $eventRepository->findUserThemesByCategory($user, array_column($topCategories, 'id')),
         ]);
     }
 
@@ -96,141 +131,5 @@ final class UserController extends BaseController
             'user' => $user,
             'isNext' => false,
         ]);
-    }
-
-    #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}', name: 'app_user_stats', requirements: ['type' => 'semaine|mois|annee'], methods: ['GET'])]
-    #[Route(path: '/{username<%patterns.slug%>}/stats/{type}', name: 'app_user_stats_old', requirements: ['type' => 'semaine|mois|annee'], methods: ['GET'])]
-    public function stats(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
-    {
-        $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_stats', ['type' => $type]);
-
-        $datas = match ($type) {
-            'semaine' => $this->getDataOfWeek($eventRepository, $user),
-            'mois' => $this->getDataOfMonth($eventRepository, $user),
-            'annee' => $this->getDataOfYear($eventRepository, $user),
-            default => null,
-        };
-
-        return new JsonResponse($datas);
-    }
-
-    /**
-     * @return array[]
-     *
-     * @psalm-return array<array>
-     */
-    private function getDataOfWeek(EventRepository $repo, User $user): array
-    {
-        return $this->getWeekChart($repo->getStatsUser($user, 'DAYOFWEEK'));
-    }
-
-    /**
-     * @param array<int, int> $datas event counts keyed by MySQL's DAYOFWEEK(), from 1 (Sunday) to 7 (Saturday)
-     *
-     * @return array[]
-     */
-    private function getWeekChart(array $datas): array
-    {
-        $final_datas = [
-            'categories' => [],
-            'data' => [],
-            'full_categories' => [],
-        ];
-
-        foreach (range(1, 7) as $day) {
-            $date = new DateTimeImmutable('0' . $day . '-01-' . date('Y'));
-            // PHP numbers the days from 0 (Sunday), DAYOFWEEK() from 1
-            $dayNumber = (int) $date->format('w') + 1;
-            $dateFormatter = IntlDateFormatter::create(
-                Locale::getDefault(),
-                IntlDateFormatter::NONE,
-                IntlDateFormatter::NONE
-            );
-
-            $dateFormatter->setPattern('EEE');
-            $final_datas['categories'][$dayNumber] = $dateFormatter->format($date);
-            $dateFormatter->setPattern('EEEE');
-            $final_datas['full_categories'][$dayNumber] = $dateFormatter->format($date);
-        }
-
-        ksort($final_datas['categories']);
-        ksort($final_datas['full_categories']);
-
-        return $this->fillDatas($final_datas, $datas);
-    }
-
-    /**
-     * @return array[]
-     */
-    private function fillDatas(array $final_datas, array $datas): array
-    {
-        foreach (array_keys($final_datas['categories']) as $key) {
-            $final_datas['data'][$key] = $datas[$key] ?? 0;
-        }
-
-        return array_map(array_values(...), $final_datas);
-    }
-
-    /**
-     * @return array[]
-     *
-     * @psalm-return array<array>
-     */
-    private function getDataOfMonth(EventRepository $repo, User $user): array
-    {
-        $datas = $repo->getStatsUser($user, 'MONTH');
-
-        $final_datas = [
-            'categories' => [],
-            'data' => [],
-            'full_categories' => [],
-        ];
-
-        foreach (range(1, 12) as $month) {
-            $date = new DateTimeImmutable('01-' . $month . '-' . date('Y'));
-            $dateFormatter = IntlDateFormatter::create(
-                Locale::getDefault(),
-                IntlDateFormatter::NONE,
-                IntlDateFormatter::NONE
-            );
-
-            $dateFormatter->setPattern('MMM');
-            $final_datas['categories'][$month] = $dateFormatter->format($date);
-            $dateFormatter->setPattern('MMMM');
-            $final_datas['full_categories'][$month] = $dateFormatter->format($date);
-        }
-
-        return $this->fillDatas($final_datas, $datas);
-    }
-
-    /**
-     * @return array[]
-     *
-     * @psalm-return array<array>
-     */
-    private function getDataOfYear(EventRepository $repo, User $user): array
-    {
-        $datas = $repo->getStatsUser($user, 'YEAR');
-
-        $final_datas = [
-            'categories' => [],
-            'data' => [],
-            'full_categories' => [],
-        ];
-
-        if ([] !== $datas) {
-            $minYear = min(array_keys($datas));
-            $maxYear = max(array_keys($datas));
-        } else {
-            $minYear = (int) $user->getCreatedAt()->format('Y');
-            $maxYear = (int) date('Y');
-        }
-
-        foreach (range($minYear, $maxYear) as $year) {
-            $final_datas['categories'][$year] = $year;
-            $final_datas['full_categories'][$year] = $year;
-        }
-
-        return $this->fillDatas($final_datas, $datas);
     }
 }

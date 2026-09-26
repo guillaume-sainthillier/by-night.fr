@@ -1,0 +1,23 @@
+{#
+    Header of a <twig:FormCard>: the tinted icon, the title and its description, then the badge (or the "aside" block).
+    The badge only annotates the title: phones drop it, where it would squeeze the description into a narrow column.
+#}
+{% props icon = null, tone = 'primary', title = null, description = null, badge = null, badgeTone = 'secondary' %}
+<div {{ attributes.defaults({class: 'd-flex align-items-start gap-3 mb-4'}) }}>
+    {% if icon %}
+        <span class="avatar avatar-sm bg-{{ tone }}-lt flex-shrink-0">
+            <twig:Icon name="{{ icon }}" />
+        </span>
+    {% endif %}
+    <div class="flex-fill min-w-0">
+        <h2 class="card-title text-start mb-0">{% block title %}{{ title }}{% endblock %}</h2>
+        {% if description %}
+            <p class="text-secondary small mb-0">{{ description }}</p>
+        {% endif %}
+    </div>
+    {% block aside %}
+        {% if badge %}
+            <span class="badge bg-{{ badgeTone }}-lt flex-shrink-0 d-none d-sm-inline-block">{{ badge }}</span>
+        {% endif %}
+    {% endblock %}
+</div>

@@ -2,7 +2,6 @@ import { Modal } from '@tabler/core/dist/js/tabler.esm'
 import $ from 'jquery'
 import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
-import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 
 Modal.prototype.loading = function () {
     this.setTitle('By Night')
@@ -30,16 +29,4 @@ Modal.prototype.setError = function (msg) {
     this.setTitle('Une erreur est survenue')
     this.setBody(msg)
     this.hideButtons()
-}
-
-Modal.prototype.setSmallError = function (msg) {
-    const element = $(this._element)
-
-    element.find('.alert_little').remove()
-
-    const flashMessage = $(`<div class="alert alert-danger">${iconHtml(TriangleAlertIcon)} </div>`)
-        .append(msg)
-        .hide()
-    element.find('.modal-body').prepend(flashMessage)
-    flashMessage.slideDown('normal')
 }

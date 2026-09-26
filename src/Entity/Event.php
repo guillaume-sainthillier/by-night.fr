@@ -119,6 +119,17 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Groups(['elasticsearch:event:details'])]
     private ?string $type = null;
 
+    /**
+     * The agenda type pages (AgendaType values) the event is listed on, as last found by the nightly
+     * app:events:classify-agenda-types: the counts of the agenda's type links read them instead of running every
+     * type's full-text search on each page.
+     *
+     * @var list<string>
+     */
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, length: 63, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private array $agendaTypes = [];
+
     /** @deprecated Use $category (Tag) instead */
     #[ORM\Column(name: 'category', type: Types::STRING, length: 128, nullable: true)]
     #[Ignore]
@@ -671,6 +682,24 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setType(?string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getAgendaTypes(): array
+    {
+        return $this->agendaTypes;
+    }
+
+    /**
+     * @param list<string> $agendaTypes
+     */
+    public function setAgendaTypes(array $agendaTypes): self
+    {
+        $this->agendaTypes = $agendaTypes;
 
         return $this;
     }

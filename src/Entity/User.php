@@ -37,7 +37,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[Vich\Uploadable]
 #[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cette adresse e-mail')]
-#[UniqueEntity(fields: ['username'], message: 'Un utilisateur existe déjà pour ce nom')]
+#[UniqueEntity(fields: ['username'], message: "Ce nom d'utilisateur est déjà pris.")]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: '`user`')]
@@ -107,8 +107,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
     private Collection $userEvents;
 
+    /** The city the member goes out in, chosen on their profile: the location of the pages whose URL has none */
     #[ORM\ManyToOne(targetEntity: City::class)]
-    #[ORM\JoinColumn]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?City $city = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
@@ -265,7 +266,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function getUsername(): string
     {
-        return ucfirst($this->username ?? '');
+        // As the member typed it: they choose it at sign-up
+        return $this->username ?? '';
     }
 
     public function getUserIdentifier(): string

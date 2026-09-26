@@ -1,15 +1,48 @@
+// A member's public profile (templates/user/index.html.twig). The blocks are Tabler cards, badges and progress bars;
+// only the charts they have no equivalent for live here.
 #page-user {
-    @include media-breakpoint-up(sm) {
-        .align-nav {
-            margin-top: 0.75rem;
-            margin-bottom: 1.75rem;
-        }
+    // The stroke under the member's name
+    .member-title-accent {
+        width: 6rem;
+        height: 0.375rem;
+        border-radius: $border-radius-pill;
+        background-color: rgba($primary, 0.8);
     }
 
-    .fiche_profil {
-        h2 {
-            overflow-x: auto;
-            overflow-y: hidden;
+    // One bar per month, as tall as its share of the busiest month
+    .member-months {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.375rem;
+        height: 8rem;
+    }
+
+    .member-month {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.25rem;
+        height: 100%;
+    }
+
+    .member-month-bar {
+        width: 100%;
+        // A month without any outing keeps a stub, so the axis reads as twelve months
+        min-height: 2px;
+        border-radius: $border-radius-sm $border-radius-sm 0 0;
+        background-color: $border-color;
+    }
+
+    // The seven days of the week side by side, down to phones
+    .member-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.375rem;
+
+        .card-body {
+            padding: 0.5rem 0.25rem;
         }
     }
 }

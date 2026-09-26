@@ -196,6 +196,30 @@ final class EventActionTest extends ApiTestCase
         self::assertJsonContains(['success' => true, 'like' => false]);
     }
 
+    public function testNoOneTakesPartInADraftTheyCannotSee(): void
+    {
+        $event = EventFactory::createOne(['draft' => true, 'participations' => 0]);
+
+        $this->createAuthenticatedClient(UserFactory::createOne())->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
+            'json' => ['like' => true],
+        ]);
+
+        self::assertResponseStatusCodeSame(404);
+        self::assertSame(0, refresh($event)->getParticipations());
+    }
+
+    public function testTheAuthorTakesPartInTheirDraft(): void
+    {
+        $event = EventFactory::createOne(['draft' => true, 'participations' => 0]);
+
+        $this->createAuthenticatedClient($event->getUser())->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
+            'json' => ['like' => true],
+        ]);
+
+        self::assertResponseIsSuccessful();
+        self::assertSame(1, refresh($event)->getParticipations());
+    }
+
     public function testCancelNonExistentEvent(): void
     {
         $user = UserFactory::createOne();

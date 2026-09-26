@@ -73,15 +73,15 @@ final class CountryCrudController extends AbstractCrudController
         $postalCodeRegex = TextField::new('postalCodeRegex');
         $slug = TextField::new('slug');
 
-        $portalPanel = FormField::addFieldset('Portail');
+        $portalPanel = FormField::addFieldset('Page du pays');
         $headline = TextField::new('headline', 'Accroche')
-            ->setHelp('Une phrase sous le nom du pays, en tête de son portail.');
+            ->setHelp('Une phrase sous le nom du pays, en tête de sa page.');
         $description = TextareaField::new('description', 'Description')
             ->setNumOfRows(6)
-            ->setHelp("Présentation du pays affichée sur son portail, en Markdown\u{a0}: **gras**, *italique*, [lien](https://…), une ligne vide entre deux paragraphes.");
+            ->setHelp("Présentation du pays affichée sur sa page, en Markdown\u{a0}: **gras**, *italique*, [lien](https://…), une ligne vide entre deux paragraphes.");
         $heroImage = VichImageField::new('heroImageFile', 'Image de couverture');
         $heroCaption = TextField::new('heroCaption', "Légende de l'image")
-            ->setHelp('Légende ou crédit photo affiché sur l’image de couverture.');
+            ->setHelp("Légende ou crédit photo affiché sur l'image de couverture.");
         $featured = BooleanField::new('featured', 'Mis en avant');
         $displayOrder = IntegerField::new('displayOrder', "Ordre d'affichage")
             ->setHelp('Les plus petits en premier. Laissez vide pour ne pas classer le pays.');

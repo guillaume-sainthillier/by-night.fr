@@ -10,12 +10,11 @@
 
 namespace App\Enum;
 
+use App\Search\DateRange;
 use DateTimeImmutable;
 
 /**
- * @phpstan-type DateRangeType = array{0: DateTimeImmutable, 1: DateTimeImmutable|null}
- * @phpstan-type DateRangePresetType = array<string, DateRangeType>
- * Predefined date range presets for the DateRangeType.
+ * The date shortcuts of the agenda, which its URLs name ("?when=this_weekend"): a link stays true the next week.
  */
 enum DateRangePreset: string
 {
@@ -26,13 +25,10 @@ enum DateRangePreset: string
     case ThisWeek = 'this_week';
     case ThisMonth = 'this_month';
 
-    /**
-     * Get the human-readable label for this preset.
-     */
     public function getLabel(): string
     {
         return match ($this) {
-            self::Anytime => "N'importe quand",
+            self::Anytime => 'Tous les jours',
             self::Today => "Aujourd'hui",
             self::Tomorrow => 'Demain',
             self::ThisWeekend => 'Ce week-end',
@@ -42,37 +38,21 @@ enum DateRangePreset: string
     }
 
     /**
-     * Get the date range [from, to] for this preset.
-     *
-     * @return array{0: DateTimeImmutable, 1: DateTimeImmutable|null}
+     * The days of the shortcut from today on: "Cette semaine" starts on Monday, but the days already gone have nothing
+     * left to show.
      */
-    public function getDateRange(): array
+    public function range(): DateRange
     {
-        return match ($this) {
-            self::Anytime => [new DateTimeImmutable('now'), null],
-            self::Today => [new DateTimeImmutable('now'), new DateTimeImmutable('now')],
+        $today = new DateTimeImmutable('today');
+        [$from, $to] = match ($this) {
+            self::Anytime => [$today, null],
+            self::Today => [$today, $today],
             self::Tomorrow => [new DateTimeImmutable('tomorrow'), new DateTimeImmutable('tomorrow')],
             self::ThisWeekend => [new DateTimeImmutable('friday this week'), new DateTimeImmutable('sunday this week')],
             self::ThisWeek => [new DateTimeImmutable('monday this week'), new DateTimeImmutable('sunday this week')],
             self::ThisMonth => [new DateTimeImmutable('first day of this month'), new DateTimeImmutable('last day of this month')],
         };
-    }
 
-    /**
-     * Build a ranges array from a list of presets.
-     *
-     * @param DateRangePreset[] $presets
-     *
-     * @return array<string, array{0: DateTimeImmutable, 1: DateTimeImmutable|null}>
-     */
-    public static function buildRanges(array $presets): array
-    {
-        $ranges = [];
-        foreach ($presets as $preset) {
-            [$from, $to] = $preset->getDateRange();
-            $ranges[$preset->getLabel()] = [$from, $to];
-        }
-
-        return $ranges;
+        return new DateRange(max($from, $today), $to);
     }
 }

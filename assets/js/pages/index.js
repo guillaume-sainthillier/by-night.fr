@@ -1,30 +1,24 @@
 import $ from 'jquery'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
-import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 
 /** @type {Page} */
-function initialize({ apiCityURL }) {
-    document.querySelectorAll('input.shorcuts_date').forEach((el) => {
-        createDatepicker({
-            element: el,
-            fromInput: document.getElementById(el.dataset.from),
-            toInput: document.getElementById(el.dataset.to),
-            singleDate: el.dataset.singleDate === 'true',
-            ranges: el.dataset.ranges ? JSON.parse(el.dataset.ranges) : {},
-        })
-    })
-
+function initialize({ apiCityURL, agendaURL }) {
     $('.form-city-picker').each(function () {
         const form = $(this)
         const btn = form.find('.choose-city-action')
-        const field = form.find('.city-picker')[0]
-        const cityValue = form.find('.city-value')[0]
+        const field = form.find('[data-city-name]')[0]
+        const cityValue = form.find('[data-city-slug]')[0]
 
-        function updateBtn() {
-            btn.attr('disabled', cityValue.value.length === 0)
+        // The search goes to the agenda of the picked city: its path names the city
+        function update() {
+            const slug = cityValue.value
+            btn.attr('disabled', slug.length === 0)
+            if (slug.length > 0) {
+                form.attr('action', agendaURL.replace('__LOCATION__', encodeURIComponent(slug)))
+            }
         }
 
-        updateBtn()
+        update()
 
         form.submit(() => !btn.attr('disabled'))
 
@@ -33,12 +27,13 @@ function initialize({ apiCityURL }) {
             url: apiCityURL,
             valueInput: cityValue,
             throttle: 0,
+            // No submit on selection: the "Quand ?" chips come after the city
             onSelection: () => {
-                updateBtn()
-                form.submit()
+                update()
+                btn.trigger('focus')
             },
             onInput: () => {
-                updateBtn()
+                update()
             },
         })
     })

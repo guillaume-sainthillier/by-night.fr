@@ -96,7 +96,7 @@ final class UserCrudController extends AbstractCrudController
         $image = VichImageField::new('imageFile', 'Image utilisateur')
             ->setHelp('Photo de profil envoyée par l\'utilisateur, prioritaire sur l\'image système.');
         $imageSystem = VichImageField::new('imageSystemFile', 'Image système')
-            ->setHelp('Photo récupérée depuis le réseau social connecté : une prochaine synchronisation peut la remplacer.');
+            ->setHelp("Photo récupérée depuis le réseau social connecté\u{a0}: une prochaine synchronisation peut la remplacer.");
         $imageName = TextField::new('image.name')->onlyOnDetail();
         $imageSystemName = TextField::new('imageSystem.name')->onlyOnDetail();
         $passwordRequestedAt = DateTimeField::new('passwordRequestedAt');

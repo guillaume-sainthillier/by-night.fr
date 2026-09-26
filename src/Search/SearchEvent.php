@@ -11,19 +11,27 @@
 namespace App\Search;
 
 use App\App\Location;
-use DateTimeImmutable;
+use App\Enum\AgendaType;
+use App\Enum\DateRangePreset;
 use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class SearchEvent
 {
-    #[Assert\NotBlank]
-    private ?DateTimeInterface $from;
+    /** The widest radius around a city, in km: the last stop of the agenda's radius slider */
+    public const int MAX_RANGE = 100;
+
+    /** A date shortcut ("?when=this_weekend"), which the dates picked override */
+    private ?DateRangePreset $when = null;
+
+    /** The dates picked ("?dateRange[from]=…&dateRange[to]=…"), with no end or none at all */
+    private ?DateTimeInterface $from = null;
 
     private ?DateTimeInterface $to = null;
 
     #[Assert\NotBlank]
     #[Assert\GreaterThan(0)]
+    #[Assert\LessThanOrEqual(self::MAX_RANGE)]
     private ?int $range = 25;
 
     /**
@@ -33,21 +41,14 @@ final class SearchEvent
 
     private ?int $tagId = null;
 
-    private array $type = [];
-
     private array $lieux = [];
 
     private ?string $term = null;
 
-    /** The synonyms an agenda type page searches with ("concert, musique, artiste") */
-    private ?string $typeTerms = null;
+    /** The kind of outing of an agenda type page, which the keywords narrow down */
+    private ?AgendaType $type = null;
 
     private ?Location $location = null;
-
-    public function __construct()
-    {
-        $this->from = new DateTimeImmutable();
-    }
 
     /**
      * @return string[]
@@ -71,31 +72,48 @@ final class SearchEvent
         return $this;
     }
 
-    /**
-     * The synonyms of an agenda type page, which are also its keywords (the search form shows
-     * them as such).
-     */
-    public function setTypeTerms(?string $typeTerms): self
+    public function getType(): ?AgendaType
     {
-        $this->typeTerms = $typeTerms;
-        $this->term = $typeTerms;
+        return $this->type;
+    }
+
+    public function setType(?AgendaType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getWhen(): ?DateRangePreset
+    {
+        return $this->when;
+    }
+
+    public function setWhen(?DateRangePreset $when): self
+    {
+        $this->when = $when;
 
         return $this;
     }
 
     /**
-     * The synonyms of the agenda type page, unless the visitor searched keywords of their own
-     * in their place.
-     *
-     * @return list<string>
+     * The date shortcut the search is on: the one asked, else "Tous les jours"; none for dates picked, which win.
      */
-    public function getTypeTerms(): array
+    public function getPreset(): ?DateRangePreset
     {
-        if (null === $this->typeTerms || $this->term !== $this->typeTerms) {
-            return [];
+        return null === $this->from ? $this->when ?? DateRangePreset::Anytime : null;
+    }
+
+    /**
+     * The days searched: those picked, else those of the shortcut.
+     */
+    public function getDateRange(): DateRange
+    {
+        if (null !== $this->from) {
+            return new DateRange($this->from, $this->to);
         }
 
-        return array_values(array_filter(array_map(trim(...), explode(',', $this->typeTerms)), static fn (string $term): bool => '' !== $term));
+        return ($this->when ?? DateRangePreset::Anytime)->range();
     }
 
     public function getFrom(): ?DateTimeInterface
@@ -142,18 +160,6 @@ final class SearchEvent
     public function setTagId(?int $tagId): self
     {
         $this->tagId = $tagId;
-
-        return $this;
-    }
-
-    public function getType(): array
-    {
-        return $this->type;
-    }
-
-    public function setType(array $type): self
-    {
-        $this->type = $type;
 
         return $this;
     }

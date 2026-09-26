@@ -98,6 +98,24 @@ final class EventVoterTest extends AppKernelTestCase
         self::assertFalse($this->isGranted(null, $attribute, EventFactory::createOne()));
     }
 
+    public function testEveryoneSeesAPublishedEvent(): void
+    {
+        $event = EventFactory::createOne();
+
+        self::assertTrue($this->isGranted(null, EventVoter::VIEW, $event));
+        self::assertTrue($this->isGranted(UserFactory::createOne(), EventVoter::VIEW, $event));
+    }
+
+    public function testOnlyThoseWhoCanEditADraftSeeIt(): void
+    {
+        $draft = EventFactory::createOne(['draft' => true]);
+
+        self::assertTrue($this->isGranted($draft->getUser(), EventVoter::VIEW, $draft), 'Its author');
+        self::assertTrue($this->isGranted(UserFactory::createOne(['roles' => ['ROLE_ADMIN']]), EventVoter::VIEW, $draft), 'An administrator');
+        self::assertFalse($this->isGranted(UserFactory::createOne(), EventVoter::VIEW, $draft), 'Another member');
+        self::assertFalse($this->isGranted(null, EventVoter::VIEW, $draft), 'A visitor');
+    }
+
     public function testTheVoterAbstainsOnOtherAttributes(): void
     {
         self::assertFalse($this->isGranted(UserFactory::createOne(), 'event.publish', EventFactory::createOne()));

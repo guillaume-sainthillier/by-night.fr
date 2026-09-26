@@ -4,18 +4,16 @@
     {% do menu.addItem('Étape 3/3', url('app_reset_password')) %}
 {% endblock %}
 
-{% block body %}
-    <div class="card">
-        <div class="card-header">
-            <h2 class="card-title h4 mb-0">Réinitialisez maintenant votre mot de passe</h2>
-        </div>
-        <div class="card-body">
-            {{ form_start(resetForm) }}
-            {{ form_row(resetForm.plainPassword) }}
-            <div class="text-center">
-                <button class="btn btn-primary" type="submit">Réinitialiser le mot de passe</button>
-            </div>
-            {{ form_end(resetForm) }}
-        </div>
-    </div>
+{% block reset_icon 'lucide:key-round' %}
+{% block reset_title 'Choisissez un nouveau mot de passe' %}
+{% block reset_intro 'Il remplacera l\'ancien pour vous connecter à By Night.' %}
+
+{% block reset_body %}
+    {{ form_start(resetForm) }}
+    {{ form_row(resetForm.plainPassword) }}
+    <button class="btn btn-primary btn-lg w-100" type="submit">
+        Enregistrer le mot de passe
+        <twig:Icon name="lucide:check" class="icon-end" />
+    </button>
+    {{ form_end(resetForm) }}
 {% endblock %}

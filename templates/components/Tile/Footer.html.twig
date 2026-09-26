@@ -1,0 +1,7 @@
+{# The footer of a <twig:Tile>, pushed to the bottom: its content on the left, an arrow in the tone on the right (the
+   label stays in the body colour: Tabler's bright tones are too pale for small text on white) #}
+{% props tone = 'primary' %}
+<div {{ attributes.defaults({class: 'd-flex align-items-center justify-content-between mt-auto pt-3 small fw-bold'}) }}>
+    <span>{% block content %}{% endblock %}</span>
+    <twig:Icon name="lucide:arrow-right" class="text-{{ tone }}" />
+</div>

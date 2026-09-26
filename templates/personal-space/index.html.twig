@@ -3,106 +3,239 @@
 {% block title 'Mes événements' %}
 {% block page_title 'Mes événements' %}
 
-{% block title_after %}
-    {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
-        <div class="text-center mt-2">
-            <a class="btn btn-success" href="{{ path('app_event_new') }}">
-                <twig:Icon name="lucide:plus" />
-                Nouvel événement
-            </a>
-        </div>
-    {% endif %}
+{# The page title is the hero at the top of the body #}
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
 {% endblock %}
 
+{# The counters are the list's status filters: each one lists its events, keeping the search typed #}
+{% set tiles = [
+    {label: 'Total créés', count: counts.total, icon: 'lucide:calendar-days', tone: 'secondary', filter: null},
+    {label: 'En ligne', count: counts.visible, icon: 'lucide:eye', tone: 'teal', filter: enum('App\\Enum\\PersonalEventFilter').Visible},
+    {label: 'Masqués', count: counts.hidden, icon: 'lucide:eye-off', tone: 'secondary', filter: enum('App\\Enum\\PersonalEventFilter').Hidden},
+    {label: 'Annulés', count: counts.cancelled, icon: 'lucide:ban', tone: 'danger', filter: enum('App\\Enum\\PersonalEventFilter').Cancelled},
+] %}
+
 {% block body -%}
-    <div class="card" {{ load_page('personal_space_list') }}>
-        <div class="card-header">
-            <form method="GET" action="{{ path('app_event_list') }}" class="w-100">
-                <twig:InputIcon iconPrepend="lucide:search">
-                    <input name="q" type="search" class="form-control" placeholder="{{ 'Rechercher un événement…'|trans }}" value="{{ q }}">
-                </twig:InputIcon>
-            </form>
-        </div>
-        {% if events|length > 0 %}
-            <div class="table-responsive">
-                <table class="table card-table align-middle mb-0">
-                    <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Lieu</th>
-                        <th>Ville</th>
-                        <th>Date</th>
-                        <th>Visible</th>
-                        <th>Annulé</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for event in events %}
-                        <tr>
-                            <td>
-                                <a href="{{ path('app_event_edit', {id: event.id}) }}" title="Accéder à l'événement">{{ event.name }}</a>
-                            </td>
-                            <td>{{ event.placeName }}</td>
-                            <td>{{ event.placeCity }}</td>
-                            <td>
-                                <twig:Dates from="{{ event.startDate }}" to="{{ event.endDate }}" />
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input draft" data-href="{{ path('api_event_draft', {id: event.id}) }}" type="checkbox" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}">
-                                    <label class="form-check-label" for="draft-event-{{ event.id }}">&nbsp;</label>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input cancel" data-href="{{ path('api_event_cancel', {id: event.id}) }}" type="checkbox" {{ event.status and event.status == enum('App\\Enum\\EventStatus').Cancelled ? 'checked' }} id="cancel-event-{{ event.id }}">
-                                    <label class="form-check-label" for="cancel-event-{{ event.id }}">&nbsp;</label>
-                                </div>
-                            </td>
-                            <td class="actions">
-                                <div class="btn-group btn-group-icon-sm">
-                                    <a class="btn btn-icon" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
-                                        <twig:Icon name="lucide:eye" class="text-secondary" />
-                                    </a>
-                                    <a class="btn btn-icon" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
-                                        <twig:Icon name="lucide:pencil" class="text-primary" />
-                                    </a>
-                                    <button type="button" class="btn btn-icon" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement">
-                                        <twig:Icon name="lucide:trash-2" class="text-danger" />
-                                    </button>
-                                </div>
-                                <form class="d-none form-delete-{{ event.id }}"
-                                      method="post"
-                                      action="{{ path('app_event_delete', {id: event.id}) }}"
-                                      data-confirm-title="{{ 'Supprimer cet événement ?'|trans }}"
-                                      data-confirm-message="{{ 'Cette action va supprimer « {name} » ainsi que toutes les données rattachées.'|trans({name: event.name}, 'messages+intl-icu') }}"
-                                      data-confirm-button="{{ 'Supprimer'|trans }}">
-                                    <input name="_method" type="hidden" value="DELETE">
-                                    <input name="_token" type="hidden" value="{{ csrf_token('delete-event-' ~ event.id) }}">
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+    <div {{ load_page('personal_space_list') }}>
+        <section class="row justify-content-center text-center pt-lg-3 mb-5">
+            <div class="col-lg-8">
+                <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold mb-3">{{ block('page_title') }}</h1>
+                <p class="lead text-secondary mb-4">
+                    Retrouvez les événements que vous avez publiés&nbsp;: masquez-les, signalez une annulation ou corrigez leur fiche à tout moment.
+                </p>
+                {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
+                    <a class="btn btn-teal btn-lg" href="{{ path('app_event_new') }}">
+                        <twig:Icon name="lucide:plus" />
+                        Publier un événement
+                    </a>
+                {% endif %}
             </div>
-            {% if events.nbPages > 1 %}
-                <div class="card-footer d-flex align-items-center">
-                    {{ pagerfanta(events) }}
+        </section>
+
+        <nav class="row row-cards mb-4" id="event-counters" aria-label="{{ 'Filtrer par statut'|trans }}">
+            {% for tile in tiles %}
+                <div class="col-6 col-md-3">
+                    <a href="{{ path('app_event_list', {q: q ?: null, status: tile.filter ? tile.filter.value : null}) }}" class="card card-sm card-link text-reset mb-0 {{ tile.filter == filter ? 'card-active' }}" {% if tile.filter == filter %}aria-current="page"{% endif %}>
+                        <div class="card-body d-flex align-items-center justify-content-between gap-3">
+                            <div>
+                                <div class="subheader">{{ tile.label }}</div>
+                                <div class="h1 text-start mb-0 {{ tile.tone == 'teal' ? 'text-teal' }}">{{ tile.count|format_number(locale: 'fr') }}</div>
+                            </div>
+                            <span class="avatar bg-{{ tile.tone }}-lt d-none d-sm-inline-flex">
+                                <twig:Icon name="{{ tile.icon }}" />
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </nav>
+
+        <div class="card">
+            <div class="card-body border-bottom py-3">
+                <form method="GET" action="{{ path('app_event_list') }}" class="row g-2 align-items-center" role="search" id="event-filters">
+                    {# A search keeps the status picked with the counters above #}
+                    {% if filter %}
+                        <input type="hidden" name="status" value="{{ filter.value }}">
+                    {% endif %}
+                    <div class="col">
+                        <twig:InputIcon iconPrepend="lucide:search">
+                            <input name="q" type="search" class="form-control" placeholder="{{ 'Rechercher un événement par nom, lieu ou ville…'|trans }}" aria-label="{{ 'Rechercher un événement'|trans }}" value="{{ q }}">
+                        </twig:InputIcon>
+                    </div>
+                    {% if q or filter %}
+                        <div class="col-auto">
+                            <a href="{{ path('app_event_list') }}" class="btn btn-icon" title="{{ 'Réinitialiser les filtres'|trans }}" aria-label="{{ 'Réinitialiser les filtres'|trans }}" data-bs-toggle="tooltip">
+                                <twig:Icon name="lucide:x" />
+                            </a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+            {% if events|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table card-table table-vcenter table-mobile-md mb-0">
+                        <thead>
+                        <tr>
+                            <th class="w-25">Nom</th>
+                            <th>Lieu</th>
+                            <th>Ville</th>
+                            <th>Date</th>
+                            <th class="w-1 text-center">Visible</th>
+                            <th class="w-1 text-center">Annulé</th>
+                            <th class="w-1 text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for event in events %}
+                            {% set cancelled = event.status == enum('App\\Enum\\EventStatus').Cancelled %}
+                            {# "Annulé" has its own column: the line under the name only tells a postponed or sold-out event #}
+                            {% set meta = [event.category ? event.category.name, event.status and not cancelled ? event.status.label]|filter(v => v) %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="avatar avatar-md img-cover overflow-hidden flex-shrink-0 d-none d-sm-inline-flex">
+                                            <twig:Event:Thumb event="{{ event }}" width="{{ 48 }}" loading="lazy" />
+                                        </span>
+                                        <div class="min-w-0">
+                                            <a href="{{ path('app_event_edit', {id: event.id}) }}" class="link-dark fw-semibold" title="Modifier l'événement">{{ event.name }}</a>
+                                            {% if meta %}
+                                                <div class="subheader mt-1">{{ meta|join(' · ') }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Lieu">{{ event.placeName }}</td>
+                                <td data-label="Ville">
+                                    {% if event.placeCity %}
+                                        <span class="badge bg-secondary-lt text-nowrap">{{ event.placeCity }}</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Date">
+                                    <twig:Dates from="{{ event.startDate }}" to="{{ event.endDate }}" />
+                                </td>
+                                <td class="text-md-center" data-label="Visible">
+                                    <div class="form-check form-switch form-check-single d-inline-block ps-0">
+                                        <input class="form-check-input draft" data-href="{{ path('api_event_draft', {id: event.id}) }}" type="checkbox" role="switch" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}" aria-label="Visible sur l'agenda&nbsp;: {{ event.name }}">
+                                    </div>
+                                </td>
+                                <td class="text-md-center" data-label="Annulé">
+                                    <div class="form-check form-switch form-check-single d-inline-block ps-0">
+                                        <input class="form-check-input cancel" data-href="{{ path('api_event_cancel', {id: event.id}) }}" type="checkbox" role="switch" {{ cancelled ? 'checked' }} id="cancel-event-{{ event.id }}" aria-label="Annulé&nbsp;: {{ event.name }}">
+                                    </div>
+                                </td>
+                                <td class="text-md-end">
+                                    <div class="btn-group">
+                                        <a class="btn btn-icon d-inline-flex" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement" aria-label="Voir l'événement">
+                                            <twig:Icon name="lucide:eye" class="text-secondary" />
+                                        </a>
+                                        <a class="btn btn-icon d-inline-flex" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement" aria-label="Modifier l'événement">
+                                            <twig:Icon name="lucide:pencil" class="text-teal" />
+                                        </a>
+                                        <button type="button" class="btn btn-icon d-inline-flex" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement" aria-label="Supprimer l'événement">
+                                            <twig:Icon name="lucide:trash-2" class="text-danger" />
+                                        </button>
+                                    </div>
+                                    <form class="d-none form-delete-{{ event.id }}"
+                                          method="post"
+                                          action="{{ path('app_event_delete', {id: event.id}) }}"
+                                          data-confirm-title="{{ 'Supprimer cet événement ?'|trans }}"
+                                          data-confirm-message="{{ 'Cette action va supprimer « {name} » ainsi que toutes les données rattachées.'|trans({name: event.name}, 'messages+intl-icu') }}"
+                                          data-confirm-button="{{ 'Supprimer'|trans }}">
+                                        <input name="_method" type="hidden" value="DELETE">
+                                        <input name="_token" type="hidden" value="{{ csrf_token('delete-event-' ~ event.id) }}">
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <p class="text-secondary small mb-0">
+                        {% if events.nbPages > 1 %}
+                            {{ 'Événements {first, number} à {last, number} sur {count, number}'|trans({first: events.currentPageOffsetStart, last: events.currentPageOffsetEnd, count: events.nbResults}, 'messages+intl-icu') }}
+                        {% else %}
+                            {{ '{count, plural, one {# événement} other {# événements}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
+                        {% endif %}
+                    </p>
+                    {% if events.nbPages > 1 %}
+                        {{ pagerfanta(events, {omitFirstPage: true, proximity: 1}) }}
+                    {% endif %}
+                </div>
+            {% elseif q or filter %}
+                <div class="empty">
+                    <div class="empty-icon"><twig:Icon name="lucide:search" /></div>
+                    <p class="empty-title">{{ 'Aucun événement ne correspond à votre recherche'|trans }}</p>
+                    <p class="empty-subtitle text-secondary">{{ 'Modifiez votre recherche ou réinitialisez les filtres pour retrouver tous vos événements.'|trans }}</p>
+                    <div class="empty-action">
+                        <a href="{{ path('app_event_list') }}" class="btn">
+                            <twig:Icon name="lucide:x" />
+                            {{ 'Réinitialiser les filtres'|trans }}
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty">
+                    <div class="empty-icon"><twig:Icon name="lucide:calendar-days" /></div>
+                    <p class="empty-title">{{ "Vous n'avez pas encore créé d'événement"|trans }}</p>
+                    <p class="empty-subtitle text-secondary">{{ "Publiez le vôtre : il rejoindra gratuitement l'agenda de sa ville."|trans }}</p>
+                    {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
+                        <div class="empty-action">
+                            <a href="{{ path('app_event_new') }}" class="btn btn-teal">
+                                <twig:Icon name="lucide:plus" />
+                                Publier un événement
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
-        {% else %}
-            <div class="card-body">
-                <p class="text-secondary mb-0">
-                    {% if q %}
-                        {{ 'Aucun événement trouvé pour votre recherche.'|trans }}
-                    {% else %}
-                        {{ "Vous n'avez pas encore créé d'événement. Publiez le vôtre dès maintenant !"|trans }}
-                    {% endif %}
-                </p>
+        </div>
+
+        <div class="row row-cards row-deck">
+            <div class="col-md-4">
+                <div class="card mb-0">
+                    <div class="card-body d-flex align-items-start gap-3">
+                        <span class="avatar bg-teal-lt flex-shrink-0"><twig:Icon name="lucide:eye-off" /></span>
+                        <div>
+                            <h2 class="card-title text-start mb-1">Visible ou masqué</h2>
+                            <p class="text-secondary small mb-0">
+                                Décochez «&nbsp;Visible&nbsp;» pour retirer un événement de l'agenda le temps de le compléter&nbsp;: il reste ici, prêt à être remis en ligne.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+            <div class="col-md-4">
+                <div class="card mb-0">
+                    <div class="card-body d-flex align-items-start gap-3">
+                        <span class="avatar bg-yellow-lt flex-shrink-0"><twig:Icon name="lucide:ban" /></span>
+                        <div>
+                            <h2 class="card-title text-start mb-1">Annulé, reporté ou complet</h2>
+                            <p class="text-secondary small mb-0">
+                                Cochez «&nbsp;Annulé&nbsp;»&nbsp;: l'événement reste en ligne, avec un bandeau qui prévient vos visiteurs. Reporté ou complet&nbsp;? Choisissez le statut dans sa fiche.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-0">
+                    <div class="card-body d-flex align-items-start gap-3">
+                        <span class="avatar bg-primary-lt flex-shrink-0"><twig:Icon name="lucide:message-circle" /></span>
+                        <div>
+                            <h2 class="card-title text-start mb-1">Une question&nbsp;?</h2>
+                            <p class="text-secondary small mb-0">
+                                <a href="{{ path('app_plus') }}">Comment ça marche</a> détaille la publication d'un événement. Pour le reste, écrivez-nous à
+                                <a href="mailto:support@by-night.fr" class="text-nowrap">support@by-night.fr</a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {%- endblock %}
 

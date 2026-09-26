@@ -1,15 +1,92 @@
 #page-event {
-    #event {
-        overflow: hidden;
+    // On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both rows
+    // beside them; the second row takes what the sidebar needs beyond the poster, so no gap opens under the poster
+    .event-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
 
+        > * {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-width: 0;
+        }
+
+        @include media-breakpoint-up(lg) {
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                'media aside'
+                'main aside';
+            align-items: start;
+
+            .event-layout-media {
+                grid-area: media;
+            }
+
+            .event-layout-aside {
+                grid-area: aside;
+            }
+
+            .event-layout-main {
+                grid-area: main;
+            }
+        }
+    }
+
+    // Icons one step below Tabler's defaults, in scale with the small labels of the cards
+    .event-layout {
+        .btn {
+            --#{$prefix}btn-icon-size: 1rem;
+        }
+
+        .detail-item > .icon {
+            --#{$prefix}icon-size: 1.125rem;
+        }
+
+        .avatar-sm > .icon {
+            width: 1.125rem;
+            height: 1.125rem;
+        }
+
+        // Tabler pulls every stacked avatar over the next one, the last one over the text that follows it
+        .avatar-list-stacked .avatar:last-child {
+            margin-right: 0 !important;
+        }
+    }
+
+    .event-description {
+        overflow-wrap: anywhere;
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+
+    .event-tags .badge {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    // "8 sur 19 sorties affichées" above the button that loads the next ones
+    .more-progress {
+        max-width: 12rem;
+    }
+
+    #googleMap iframe {
+        border-bottom-right-radius: inherit;
+        border-bottom-left-radius: inherit;
+    }
+
+    #event {
         a.image-gallery {
             display: block;
-            border-bottom: 1px solid $card-border-color;
-
-            @include media-breakpoint-up(lg) {
-                border-bottom: none;
-                border-right: 1px solid $card-border-color;
-            }
+            border-top-left-radius: inherit;
+            border-top-right-radius: inherit;
+            overflow: hidden;
         }
 
         // Sources send every size and shape, from 222px squares to 1536x3840 posters: the frame
@@ -21,11 +98,6 @@
             aspect-ratio: 4 / 3;
             overflow: hidden;
             background-color: $gray-200;
-
-            // Beside the details, fill the column when they are the taller: no white band
-            @include media-breakpoint-up(lg) {
-                min-height: 100%;
-            }
 
             .event-poster-backdrop {
                 position: absolute;
@@ -49,12 +121,6 @@
                 height: 100%;
                 // The whole picture, never enlarged: a 222px square keeps its size, a poster fits
                 object-fit: scale-down;
-            }
-        }
-
-        .event-details {
-            h2 {
-                font-size: 1.25rem;
             }
         }
 
@@ -102,21 +168,11 @@
             }
         }
 
-        .detail-item {
+        .event-facts .detail-item {
             margin-bottom: 1rem;
 
-            .tags {
-                display: inline-flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 0.25rem;
-                overflow: hidden;
-
-                a {
-                    max-width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
+            &:last-child {
+                margin-bottom: 0;
             }
         }
     }
@@ -143,6 +199,6 @@
         flex-shrink: 0;
         text-align: center;
         position: relative;
-        top: 0.25rem;
+        top: 0.5rem;
     }
 }

@@ -1,0 +1,118 @@
+// Home and location portals (2026 redesign). The blocks are Bootstrap and Tabler components (cards, avatars, badges,
+// list groups, progress bars); only what they have no equivalent for lives here.
+
+// A section on a white band, between the tinted page background
+.section-muted {
+    background-color: $white;
+    border-top: 1px solid $border-color;
+    border-bottom: 1px solid $border-color;
+}
+
+// Home hero: a warm gradient with two blurred glows behind the search card; .hero-glow is the same band behind the titles
+// of the content pages (À propos, Comment ça marche)
+.hero-home,
+.hero-glow {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid $border-color;
+    background: linear-gradient(to bottom, rgba(#fffbeb, 0.85), rgba($surface-low, 0.5) 55%, $surface);
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(64px);
+        pointer-events: none;
+    }
+
+    &::before {
+        top: -6rem;
+        right: 20%;
+        width: 24rem;
+        height: 24rem;
+        background-color: rgba($primary-soft, 0.45);
+    }
+
+    &::after {
+        top: 45%;
+        left: 2rem;
+        width: 18rem;
+        height: 18rem;
+        background-color: rgba(#fde68a, 0.35);
+    }
+
+    > .container-lg {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.hero-location {
+    background-color: $surface-low;
+    border-bottom: 1px solid $border-color;
+}
+
+// Text over a photo (city cards, hero caption): darkened from the bottom
+.card-img-overlay-dark {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35) 50%, transparent);
+
+    .border-top {
+        border-top-color: rgba($white, 0.2) !important;
+    }
+}
+
+// The calendar leaf of the upcoming dates: an avatar holding the month, the day and the weekday
+.date-leaf {
+    line-height: 1.15;
+
+    .h2 {
+        line-height: 1;
+    }
+
+    .small {
+        font-size: 0.625rem;
+    }
+}
+
+.flag {
+    flex-shrink: 0;
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 1px rgba($ink, 0.08);
+    object-fit: cover;
+}
+
+// A picture filling its box whatever the box's ratio, like the agenda cards' .image-container: Picasso wraps the <img>
+// in a <picture> that has to stretch too
+.img-cover {
+    picture {
+        display: block;
+        height: 100%;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// Below md, a row of cards scrolls sideways (snapping card by card) instead of stacking them one per screen; its columns
+// give the width of a card (e.g. .col-10). Bootstrap has no responsive overflow or scroll-snap utilities.
+.row-scroll-mobile {
+    @include media-breakpoint-down(md) {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        padding-bottom: 0.25rem;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        > * {
+            scroll-snap-align: start;
+        }
+    }
+}

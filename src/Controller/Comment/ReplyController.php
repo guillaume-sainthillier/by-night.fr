@@ -14,12 +14,18 @@ use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
+use App\Security\Voter\EventVoter;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * As the comments: the replies of a draft's comments are only for those who can see the draft.
+ */
+#[IsGranted(EventVoter::VIEW, subject: new Expression('args["comment"].getEvent()'), statusCode: 404)]
 final class ReplyController extends BaseController
 {
     public const int REPLIES_PER_PAGE = 5;

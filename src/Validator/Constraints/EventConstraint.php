@@ -47,7 +47,7 @@ final class EventConstraint extends Constraint
 
     public string $badUser = 'Un [link]événement[/link] similaire au vôtre a déjà été créé sur la plateforme.';
 
-    public string $eventDeleted = "L'événement facebook a été supprimé par son créateur. Il ne peut plus être mis à jour sur la plateforme.";
+    public string $eventDeleted = "L'événement Facebook a été supprimé par son créateur. Il ne peut plus être mis à jour sur la plateforme.";
 
     #[Override]
     public function getTargets(): string

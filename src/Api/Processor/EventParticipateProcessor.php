@@ -19,6 +19,7 @@ use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
+use App\Security\Voter\EventVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -40,7 +41,8 @@ final readonly class EventParticipateProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): EventParticipationOutput
     {
         $event = $context['request']->attributes->get('read_data');
-        if (!$event instanceof Event) {
+        // A draft is only for those who can see it: for anyone else, it does not exist
+        if (!$event instanceof Event || !$this->security->isGranted(EventVoter::VIEW, $event)) {
             throw new NotFoundHttpException('Not Found');
         }
 

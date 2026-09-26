@@ -1,0 +1,146 @@
+{# The filters of the agenda, with the counts of each one (EventElasticaRepository::getFacets()). Below lg, an offcanvas
+   the "Filtres" button of the page header opens. #}
+{% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
+{% set hasFilters = type or place or tag or filters|filter((value, key) => key in ['term', 'when', 'dateRange']) %}
+<div class="offcanvas-lg offcanvas-start" tabindex="-1" id="agenda-filters" aria-labelledby="agenda-filters-title">
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title h3" id="agenda-filters-title">Filtres</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#agenda-filters" aria-label="Fermer"></button>
+    </div>
+    <div class="offcanvas-body d-block p-3 p-lg-0">
+        <div class="card mb-lg-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2">
+                    <twig:Icon name="lucide:sliders-horizontal" class="text-primary" />
+                    Filtres & recherche
+                </h2>
+                {% if hasFilters %}
+                    <div class="card-actions">
+                        <a class="small fw-bold" href="{{ path('app_agenda_index', {location: location.slug}) }}">Réinitialiser</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {attr: {id: 'search-form', role: 'search'}}) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
+                {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    {# The shortcuts of the date picker: "Tous les jours" leaves the period out of the URL #}
+                    {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
+                        {% set count = facets.dates[preset.value] ?? null %}
+                        {% set when = preset.value == 'anytime' ? {} : {when: preset.value} %}
+                        {% set href = path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) %}
+                        <twig:Chip href="{{ href }}" active="{{ search.preset is same as(preset) }}" class="btn-sm" rel="nofollow">
+                            {{ preset.label }}
+                            {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
+                        </twig:Chip>
+                    {% endfor %}
+                </div>
+                {% if location.isCity %}
+                    {{ form_row(form.range) }}
+                {% else %}
+                    {% do form.range.setRendered %}
+                {% endif %}
+                {# The type of a venue or a category page, and the category of a venue page, are query parameters, which a
+                   GET form drops from its action #}
+                {% if (place or tagEntity) and type %}
+                    <input type="hidden" name="type" value="{{ type.value }}">
+                {% endif %}
+                {% if place and tagEntity %}
+                    <input type="hidden" name="tag" value="{{ tagEntity.id }}">
+                {% endif %}
+                <button type="submit" class="btn btn-primary w-100">
+                    <twig:Icon name="lucide:search" />
+                    Rechercher
+                </button>
+                {{ form_end(form) }}
+            </div>
+
+            {% set current = type ? type.value : 'all' %}
+            <div class="card-body border-top">
+                <div class="filter-section-header">
+                    <h3 class="subheader mb-0">Univers & thématiques</h3>
+                    <span class="small fw-bold text-teal">{{ enum_cases('App\\Enum\\AgendaType')|length }} univers</span>
+                </div>
+                {# The links of the type, category and venue lists are SEO pages that keep the dates and the keywords; a
+                   visitor keeps the venue, the category and the type of the page too (data-filtered-href,
+                   assets/js/listeners/filtered-link.js; agenda_path(), AgendaUrlGenerator), which each count keeps
+                   (EventElasticaRepository::getFacets()) #}
+                {% set narrowed = place or tagEntity or type %}
+                {% set groups = [{key: 'all', type: null, label: 'Toutes les sorties', icon: 'lucide:calendar-days', tone: 'secondary', href: agenda, filteredHref: place or tagEntity ? withoutType : null}] %}
+                {% for agendaType in enum_cases('App\\Enum\\AgendaType') %}
+                    {% set groups = groups|merge([{
+                        key: agendaType.value,
+                        type: agendaType,
+                        label: agendaType.label,
+                        icon: agendaType.icon,
+                        tone: tones[loop.index0 % tones|length],
+                        href: path('app_agenda_by_type', filters|merge({typeSlug: agendaType.slug, location: location.slug})),
+                        filteredHref: place or tagEntity ? agenda_path(location.slug, type: agendaType, place: place, tag: tagEntity, filters: filters) : null,
+                    }]) %}
+                {% endfor %}
+
+                <div class="d-flex flex-column gap-2">
+                    {% for group in groups %}
+                        {% set title = group.key == 'all' ? null : group.label ~ ' ' ~ location.atName %}
+                        {# Each type unfolds to its busiest categories within the search; the whole agenda has none #}
+                        <twig:FilterGroup id="univers-{{ group.key }}" href="{{ group.href }}" filteredHref="{{ group.filteredHref }}" icon="{{ group.icon }}" tone="{{ group.tone }}" label="{{ group.label }}" count="{{ facets.types[group.key] ?? null }}" title="{{ title }}" active="{{ current == group.key }}" open="{{ current == group.key }}">
+                            {% if group.key != 'all' %}
+                                {% for row in typeCategories[group.key] ?? [] %}
+                                    <twig:FilterGroup:Item
+                                        href="{{ path('app_agenda_by_tag', filters|merge({location: location.slug, tagSlug: row.tag.slug, tagId: row.tag.id})) }}"
+                                        filteredHref="{{ agenda_path(location.slug, type: group.type, place: place, tag: row.tag, filters: filters) }}"
+                                        tone="{{ group.tone }}"
+                                        count="{{ row.events }}"
+                                        active="{{ tagEntity and tagEntity.id == row.tag.id and current == group.key }}"
+                                        title="{{ row.tag.name }} {{ location.atName }}"
+                                    >{{ row.tag.name }}</twig:FilterGroup:Item>
+                                {% endfor %}
+                            {% endif %}
+                        </twig:FilterGroup>
+                    {% endfor %}
+
+                    {% if categories %}
+                        {# The counts are the stored upcoming ones of the whole location (app:events:count-upcoming), not the
+                           facets of the search: they only show while nothing narrows it #}
+                        {% set searched = narrowed or filters|filter((value, key) => key in ['term', 'when', 'dateRange']) %}
+                        <twig:FilterGroup id="univers-themes" icon="lucide:tag" tone="teal" label="Thèmes du moment" open="{{ tagEntity is not null and type is null }}">
+                            {% for row in categories %}
+                                {% set category = row[0] %}
+                                <twig:FilterGroup:Item
+                                    href="{{ path('app_agenda_by_tag', filters|merge({location: location.slug, tagSlug: category.slug, tagId: category.id})) }}"
+                                    filteredHref="{{ place or type ? agenda_path(location.slug, type: type, place: place, tag: category, filters: filters) : null }}"
+                                    count="{{ searched ? null : row.events }}"
+                                    active="{{ tagEntity and tagEntity.id == category.id and type is null }}"
+                                    title="{{ category.name }} {{ location.atName }}"
+                                >{{ category.name }}</twig:FilterGroup:Item>
+                            {% endfor %}
+                        </twig:FilterGroup>
+                    {% endif %}
+                </div>
+
+                {% if places %}
+                    <div class="filter-section-header mt-4">
+                        <h3 class="subheader mb-0">Lieux les plus actifs</h3>
+                    </div>
+                    <div class="d-flex flex-column gap-1">
+                        {# Its count is the page's own: the one without the venue is not counted #}
+                        <twig:FilterOption href="{{ withoutPlace }}" label="Tous les lieux" count="{{ place ? null : events.nbResults }}" active="{{ place is null }}" />
+                        {% for row in places %}
+                            <twig:FilterOption
+                                href="{{ path('app_agenda_by_place', filters|merge({placeSlug: row.slug, location: row.locationSlug})) }}"
+                                filteredHref="{{ type or tagEntity ? agenda_path(location.slug, type: type, place: row, tag: tagEntity, filters: filters) : null }}"
+                                label="{{ row.name }}"
+                                description="{{ row.cityName }}"
+                                count="{{ facets.places[row.id] }}"
+                                active="{{ place and place.id == row.id }}"
+                                title="Sortir {{ row.name|at_place }}"
+                            />
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

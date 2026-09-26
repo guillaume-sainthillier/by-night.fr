@@ -3,7 +3,7 @@
 {# @var to \DateTimeInterface|null the day the listing ends, when a window was searched #}
 {% props event, from = null, to = null %}
 
-<div class="card card-event card-layout scroll-item">
+<div class="card card-event card-layout scroll-item mb-0">
     {% if event.status or event.statusMessage %}
         <twig:Event:StatusAlert event="{{ event }}" />
     {% endif %}
@@ -17,7 +17,7 @@
     </div>
     <div class="card-content">
         <div class="card-body">
-            <h3 class="h5 line-clamp-2">
+            <h3 class="h4 line-clamp-2">
                 <a title="Tous les détails de {{ event.name }}"
                    href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
                     <span>{{ event.name }}</span>

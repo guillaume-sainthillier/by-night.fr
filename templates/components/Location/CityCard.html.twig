@@ -1,0 +1,28 @@
+{# @var city \App\Entity\City #}
+{# A city as a photo card: department over the photo, name, sub-title and number of events to come #}
+{% props city, events = null, subtitle = null %}
+<a href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?" {{ attributes.defaults({class: 'card card-layout card-link-pop text-white h-100 mb-0 ratio ratio-1x1'}) }}>
+    {# .ratio sizes the card before the photo loads (no layout shift) and stretches its children over it #}
+    <div class="img-cover">
+        <twig:Location:Picture location="{{ city }}" width="{{ 480 }}" height="{{ 480 }}" sizes="(min-width: 992px) 25vw, (min-width: 768px) 50vw, 100vw" />
+    </div>
+    <div class="card-img-overlay card-img-overlay-dark d-flex flex-column justify-content-between">
+        <div>
+            {% if city.parent %}<span class="badge bg-white text-body">{{ city|department }}</span>{% endif %}
+        </div>
+        <div>
+            <h3 class="h2 mb-1">{{ city.name }}</h3>
+            {% if subtitle %}<p class="small mb-0 opacity-75">{{ subtitle }}</p>{% endif %}
+            <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top small fw-bold">
+                <span class="text-yellow">
+                    {%- if events is not null -%}
+                        {{ '{count, plural, =0 {Aucune sortie à venir} one {# sortie à venir} other {# sorties à venir}}'|trans({count: events}, 'messages+intl-icu') }}
+                    {%- else -%}
+                        Voir l'agenda
+                    {%- endif -%}
+                </span>
+                <span class="avatar avatar-sm rounded-circle bg-white text-body"><twig:Icon name="lucide:arrow-up-right" /></span>
+            </div>
+        </div>
+    </div>
+</a>
