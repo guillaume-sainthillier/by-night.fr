@@ -28,13 +28,14 @@ final class EventsCountUpcomingCommandTest extends AppKernelTestCase
     {
         $toulouse = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many(2)->create(['place' => $place, 'category' => TagFactory::createOne()]);
+        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many(2)->create(['place' => $place, 'category' => TagFactory::createOne(), 'agendaTypes' => ['concert']]);
 
         $tester = new CommandTester(new Application(self::$kernel)->find('app:events:count-upcoming'));
         $tester->execute([]);
 
         self::assertSame(Command::SUCCESS, $tester->getStatusCode());
-        self::assertMatchesRegularExpression('/^\s*1\s+1\s+1\s+2\s*$/m', $tester->getDisplay());
+        self::assertMatchesRegularExpression('/^\s*1\s+1\s+1\s+2\s+2\s*$/m', $tester->getDisplay());
         self::assertSame(2, refresh($toulouse)->getUpcomingEvents());
+        self::assertSame(['concert' => 2], refresh($toulouse)->getUpcomingAgendaTypes());
     }
 }
