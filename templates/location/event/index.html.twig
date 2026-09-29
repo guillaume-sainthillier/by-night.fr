@@ -87,6 +87,11 @@
             <div class="alert alert-warning">
                 <twig:Icon name="lucide:triangle-alert" />
                 Cet événement n'est pas encore publié. Il sera bientôt disponible, merci de votre patience.
+                {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    {# Its author, logged out, gets back to their preview; the visitor already has this URL #}
+                    Vous en êtes l'organisateur&nbsp;?
+                    <a href="{{ path('app_login', {_target_path: app.request.pathInfo}) }}">Connectez-vous pour le voir</a>.
+                {% endif %}
             </div>
         </div>
     {% else %}
@@ -94,6 +99,8 @@
         {% set hasEnded = event_seo.hasEnded(event) %}
         {% set placeAgenda = path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) %}
         {% set agenda = path('app_location_index', {location: place.locationSlug}) %}
+        {# The login of "J'y vais" and of the comments leads back here #}
+        {% set login = path('app_login', {_target_path: path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})}) %}
 
         {# The embedded map looks the venue up by name, or by its coordinates when it has no city to name #}
         {% set mapValue = (event.placeName ~ ' ' ~ event.placeCity)|trim %}
@@ -132,6 +139,12 @@
                     {% if is_granted('ROLE_ADMIN') %}
                         <a class="btn btn-icon btn-outline-secondary flex-shrink-0" href="{{ path('admin_event_edit', {entityId: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement">
                             <twig:Icon name="lucide:pencil" />
+                        </a>
+                    {% elseif is_granted(constant('\\App\\Security\\Voter\\EventVoter::EDIT'), event) %}
+                        {# The author corrects their event from their personal space #}
+                        <a class="btn btn-outline-secondary flex-shrink-0" href="{{ path('app_event_edit', {id: event.id}) }}" title="Modifier l'événement">
+                            <twig:Icon name="lucide:pencil" />
+                            <span class="d-none d-sm-inline">Modifier</span>
                         </a>
                     {% endif %}
                 </div>
@@ -179,7 +192,7 @@
                                 </button>
                             {% else %}
                                 {# Going needs an account: the button leads to the login page #}
-                                <a class="btn participate" href="{{ path('app_login') }}" title="Connectez-vous pour indiquer que vous y allez">
+                                <a class="btn participate" href="{{ login }}" title="Connectez-vous pour indiquer que vous y allez">
                                     <twig:Icon name="lucide:heart" />
                                     J'y vais&nbsp;!
                                 </a>
@@ -433,7 +446,7 @@
                             <div class="subheader mb-2">Mots-clés</div>
                             <div class="event-tags d-flex flex-wrap gap-2">
                                 {% if place.country %}
-                                    <a class="badge bg-secondary-lt" title="Sortir {{ place.country.atDisplayName }}" href="{{ agenda }}">
+                                    <a class="badge bg-secondary-lt" title="Sortir {{ place.country.atDisplayName }}" href="{{ path('app_location_index', {location: place.country.slug}) }}">
                                         Événements {{ place.country.atDisplayName }}
                                     </a>
                                 {% endif %}
@@ -485,7 +498,7 @@
                         </div>
                     </div>
 
-                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm}) }}
+                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm, login: login}) }}
                 </div>
             </div>
         </div>

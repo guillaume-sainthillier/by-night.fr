@@ -69,6 +69,60 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorTextContains('.event-header h1', $event->getName());
     }
 
+    public function testTheAuthorSeesALinkToEditTheirEvent(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $event = $this->createEvent(author: $author);
+        $client->loginUser($author);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists(\sprintf('.event-header a[href="/espace-perso/%d"]', $event->getId()));
+    }
+
+    public function testAnotherMemberDoesNotSeeTheLinkToEditTheEvent(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(author: UserFactory::createOne());
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('.event-header a[href^="/espace-perso/"]');
+    }
+
+    public function testTheLoginOfAVisitorLeadsBackToTheEvent(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        $login = '/login?_target_path=' . rawurlencode($this->eventUrl($event));
+        self::assertSelectorExists(\sprintf('a.participate[href="%s"]', $login), "J'y vais");
+        self::assertSelectorExists(\sprintf('#comments a[href="%s"]', $login), 'Se connecter pour commenter');
+    }
+
+    public function testTheCountryKeywordLeadsToTheCountryAgenda(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+        $country = $event->getPlace()?->getCountry();
+        self::assertNotNull($country);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains(
+            \sprintf('.event-tags a[href="/%s"]', $country->getSlug()),
+            'Événements ' . $country->getAtDisplayName(),
+        );
+    }
+
     public function testAnEventThatEndedLongAgoStaysIndexableWithAnEndedNotice(): void
     {
         $client = self::createClient();

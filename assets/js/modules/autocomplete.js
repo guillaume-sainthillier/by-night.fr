@@ -36,7 +36,8 @@ export default () => {
         enableHotkeys: !isTouchDevice(),
     })
 
-    $autocompleteMobileToggler.click(() => {
+    $autocompleteMobileToggler.click((event) => {
+        event.preventDefault()
         result.show()
     })
 

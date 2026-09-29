@@ -39,6 +39,8 @@ final class LoginSocialController extends AbstractController
             'userInformation' => [
                 'name' => $datas['realname'],
             ],
+            // Out of the popup of the social networks page, back to it
+            'targetPath' => $this->generateUrl('app_administration_info_index'),
         ]);
     }
 

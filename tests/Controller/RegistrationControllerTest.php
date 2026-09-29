@@ -58,6 +58,17 @@ final class RegistrationControllerTest extends WebTestCase
         self::assertSame(0, UserFactory::count(['email' => 'camille.martin@example.com']));
     }
 
+    public function testABrokenVerificationLinkLeadsToTheAccountPage(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['verified' => false]));
+
+        $client->request('GET', '/verifier-email', ['signature' => 'not-a-signature', 'expires' => time() + 3600]);
+
+        // Where a new link can be sent, not the sign-up form of someone who already has an account
+        self::assertResponseRedirects('/profile/edit');
+    }
+
     private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1'): void
     {
         $client->request('GET', '/inscription');
