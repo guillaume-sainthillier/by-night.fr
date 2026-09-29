@@ -71,6 +71,10 @@ docker-compose up -d
 vendor/bin/phpunit                                 # All tests
 vendor/bin/phpunit tests/Import/FirewallTest.php   # Single test file
 
+# JavaScript Tests (Vitest, vitest.config.mjs): assets/**/*.test.js next to the code they cover
+yarn test                                          # All tests
+yarn test assets/js/utils/plural.test.js           # Single test file
+
 # Static Analysis
 vendor/bin/phpstan analyse                         # PHPStan (level 6)
 
