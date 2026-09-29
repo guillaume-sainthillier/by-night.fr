@@ -13,6 +13,7 @@ namespace App\Search;
 use App\App\Location;
 use App\Enum\AgendaType;
 use App\Enum\DateRangePreset;
+use App\Enum\PricePreset;
 use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -28,6 +29,9 @@ final class SearchEvent
     private ?DateTimeInterface $from = null;
 
     private ?DateTimeInterface $to = null;
+
+    /** A price shortcut ("?price=under_20"), none for every price, the unknown ones included */
+    private ?PricePreset $price = null;
 
     #[Assert\NotBlank]
     #[Assert\GreaterThan(0)]
@@ -114,6 +118,18 @@ final class SearchEvent
         }
 
         return ($this->when ?? DateRangePreset::Anytime)->range();
+    }
+
+    public function getPrice(): ?PricePreset
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?PricePreset $price): self
+    {
+        $this->price = $price;
+
+        return $this;
     }
 
     public function getFrom(): ?DateTimeInterface

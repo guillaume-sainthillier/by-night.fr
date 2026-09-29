@@ -11,6 +11,7 @@
 namespace App\Form\Type;
 
 use App\Enum\DateRangePreset;
+use App\Enum\PricePreset;
 use App\Search\SearchEvent;
 use Override;
 use Symfony\Component\Form\AbstractType;
@@ -32,6 +33,8 @@ final class SearchType extends AbstractType
             // The date shortcut of the chips (location/agenda/_filters.html.twig), kept when the form is sent again; the
             // dates picked win (SearchEvent::getPreset())
             ->add('when', HiddenType::class, ['required' => false])
+            // The price shortcut of the chips, kept when the form is sent again
+            ->add('price', HiddenType::class, ['required' => false])
             // Custom dates: the shortcuts are the chips below it
             ->add('dateRange', DateRangeType::class, [
                 'label' => "Quand\u{a0}?",
@@ -58,6 +61,12 @@ final class SearchType extends AbstractType
         $builder->get('when')->addModelTransformer(new CallbackTransformer(
             static fn (?DateRangePreset $when): string => $when?->value ?? '',
             static fn (?string $when): ?DateRangePreset => DateRangePreset::tryFrom((string) $when),
+        ));
+
+        // An unknown price shortcut is every price
+        $builder->get('price')->addModelTransformer(new CallbackTransformer(
+            static fn (?PricePreset $price): string => $price?->value ?? '',
+            static fn (?string $price): ?PricePreset => PricePreset::tryFrom((string) $price),
         ));
     }
 

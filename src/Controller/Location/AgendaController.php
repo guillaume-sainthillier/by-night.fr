@@ -180,6 +180,7 @@ final class AgendaController extends BaseController
             'routeParams' => $routeParams,
             'filters' => $filters,
             'undatedFilters' => array_diff_key($filters, ['when' => true, 'dateRange' => true]),
+            'unpricedFilters' => array_diff_key($filters, ['price' => true]),
             'form' => $form,
         ]);
     }
@@ -230,16 +231,16 @@ final class AgendaController extends BaseController
     }
 
     /**
-     * The filters of the query string, which the links of the page keep: the period, the keywords, the radius. The type
+     * The filters of the query string, which the links of the page keep: the period, the price, the keywords, the radius. The type
      * and the category are left out, as the route parameters already hold them (AgendaUrlGenerator::route()). The period is the search's: its
-     * shortcut by name, which stays true the next week, else the dates picked.
+     * shortcut by name, which stays true the next week, else the dates picked. An unknown price shortcut is left out.
      *
      * @return array<string, mixed>
      */
     private function buildFilters(Request $request, SearchEvent $search): array
     {
         $filters = $request->query->all();
-        unset($filters['page'], $filters['type'], $filters['tag'], $filters['when'], $filters['dateRange']);
+        unset($filters['page'], $filters['type'], $filters['tag'], $filters['when'], $filters['dateRange'], $filters['price']);
         if (null === $search->getTerm()) {
             unset($filters['term']);
         }
@@ -249,6 +250,10 @@ final class AgendaController extends BaseController
             $filters['dateRange'] = $search->getDateRange()->toQuery();
         } elseif (DateRangePreset::Anytime !== $preset) {
             $filters['when'] = $preset->value;
+        }
+
+        if (null !== $search->getPrice()) {
+            $filters['price'] = $search->getPrice()->value;
         }
 
         return $filters;

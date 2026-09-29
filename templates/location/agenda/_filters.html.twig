@@ -1,7 +1,7 @@
 {# The filters of the agenda, with the counts of each one (EventElasticaRepository::getFacets()). Below lg, an offcanvas
    the "Filtres" button of the page header opens. #}
 {% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
-{% set hasFilters = type or place or tag or filters|filter((value, key) => key in ['term', 'when', 'dateRange']) %}
+{% set hasFilters = type or place or tag or filters|filter((value, key) => key in ['term', 'when', 'dateRange', 'price']) %}
 <div class="offcanvas-lg offcanvas-start" tabindex="-1" id="agenda-filters" aria-labelledby="agenda-filters-title">
     <div class="offcanvas-header">
         <h2 class="offcanvas-title h3" id="agenda-filters-title">Filtres</h2>
@@ -25,7 +25,7 @@
                 {{ form_errors(form) }}
                 {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
                 {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
-                <div class="d-flex flex-wrap gap-2 mb-3">
+                <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Dates">
                     {# The shortcuts of the date picker: "Tous les jours" leaves the period out of the URL #}
                     {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
                         {% set count = facets.dates[preset.value] ?? null %}
@@ -33,6 +33,22 @@
                         {% set href = path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) %}
                         <twig:Chip href="{{ href }}" active="{{ search.preset is same as(preset) }}" class="btn-sm" rel="nofollow">
                             {{ preset.label }}
+                            {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
+                        </twig:Chip>
+                    {% endfor %}
+                </div>
+                {# The price shortcuts: "Tous les prix" leaves the price out of the URL, and keeps the events without a known
+                   price, which no shortcut lists #}
+                <div class="form-label" aria-hidden="true">Prix</div>
+                <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Prix">
+                    <twig:Chip href="{{ path(app.current_route, routeParams|merge(unpricedFilters)) }}" active="{{ search.price is null }}" class="btn-sm" rel="nofollow">
+                        Tous les prix
+                        {% if facets.prices.any is defined %}<span class="ms-1 opacity-75 fw-normal">{{ facets.prices.any }}</span>{% endif %}
+                    </twig:Chip>
+                    {% for price in enum_cases('App\\Enum\\PricePreset') %}
+                        {% set count = facets.prices[price.value] ?? null %}
+                        <twig:Chip href="{{ path(app.current_route, routeParams|merge(unpricedFilters)|merge({price: price.value})) }}" active="{{ search.price is same as(price) }}" class="btn-sm" rel="nofollow">
+                            {{ price.label }}
                             {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
                         </twig:Chip>
                     {% endfor %}
@@ -104,7 +120,7 @@
                     {% if categories %}
                         {# The counts are the stored upcoming ones of the whole location (app:events:count-upcoming), not the
                            facets of the search: they only show while nothing narrows it #}
-                        {% set searched = narrowed or filters|filter((value, key) => key in ['term', 'when', 'dateRange']) %}
+                        {% set searched = narrowed or filters|filter((value, key) => key in ['term', 'when', 'dateRange', 'price']) %}
                         <twig:FilterGroup id="univers-themes" icon="lucide:tag" tone="teal" label="Thèmes du moment" open="{{ tagEntity is not null and type is null }}">
                             {% for row in categories %}
                                 {% set category = row[0] %}

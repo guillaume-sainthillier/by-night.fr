@@ -53,6 +53,19 @@ final class AgendaFacetsTest extends TestCase
         self::assertSame(['concert' => [60 => 16, 9 => 12]], $facets->typeCategories);
     }
 
+    public function testThePriceCountsAreReadFromTheirBuckets(): void
+    {
+        $facets = AgendaFacets::fromAggregations([
+            'prices' => ['doc_count' => 4266, 'prices' => ['buckets' => [
+                'any' => ['doc_count' => 4266],
+                'free' => ['doc_count' => 312],
+                'under_20' => ['doc_count' => 1240],
+            ]]],
+        ]);
+
+        self::assertSame(['any' => 4266, 'free' => 312, 'under_20' => 1240], $facets->prices);
+    }
+
     public function testNoAggregationsCountNothing(): void
     {
         $facets = AgendaFacets::fromAggregations([]);

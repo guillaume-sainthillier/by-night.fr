@@ -81,6 +81,9 @@
     {% if search.term %}
         {% set active = active|merge([{label: '« ' ~ search.term ~ ' »', href: path(app.current_route, routeParams|merge(filters|filter((value, key) => key != 'term')))}]) %}
     {% endif %}
+    {% if search.price %}
+        {% set active = active|merge([{label: search.price.label, href: path(app.current_route, routeParams|merge(unpricedFilters))}]) %}
+    {% endif %}
     {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours" #}
     {% set preset = search.preset %}
     {% if preset is null or preset.value != 'anytime' %}

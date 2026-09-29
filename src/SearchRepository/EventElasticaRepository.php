@@ -11,6 +11,7 @@
 namespace App\SearchRepository;
 
 use App\Enum\AgendaType;
+use App\Enum\PricePreset;
 use App\Search\AgendaFacets;
 use App\Search\DateRange;
 use App\Search\SearchEvent;
@@ -80,6 +81,11 @@ final class EventElasticaRepository extends Repository
             $mainQuery->addFilter($tagFilter);
         }
 
+        $priceFilter = $this->createPriceFilter($search->getPrice());
+        if (null !== $priceFilter) {
+            $mainQuery->addFilter($priceFilter);
+        }
+
         // Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
         $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
@@ -112,8 +118,9 @@ final class EventElasticaRepository extends Repository
      * The counts of the agenda filters, in one query: how many events each date window, type page and venue lists.
      * Each count keeps the filters its link keeps (AgendaUrlGenerator): a date window those of the page (venue, type,
      * category, keywords), a type the dates, the venue, the category and the keywords, a venue the dates, the type,
-     * the category and the keywords. The busiest categories of each type are counted with the filters of the type
-     * but the category, which their links replace.
+     * the category and the keywords, a price shortcut the dates, the venue, the type, the category and the keywords.
+     * Every count but the price ones keeps the price shortcut of the page. The busiest categories of each type are
+     * counted with the filters of the type but the category, which their links replace.
      *
      * @param array<string, DateRange> $dates      the windows to count, by name
      * @param int                      $places     how many venues, the busiest first
@@ -165,13 +172,22 @@ final class EventElasticaRepository extends Repository
         $type = $this->createTypeFilter($search->getType());
         $keywords = $this->createTextQuery($search);
         $category = $this->createTagFilter($search);
+        $price = $this->createPriceFilter($search->getPrice());
 
-        if ([] !== $dates) {
-            $query->addAggregation($this->createFilterAggregation('dates', [$venue, $type, $keywords, $category], $windows));
+        // "any": every price, the unknown ones included
+        $prices = new Filters('prices');
+        $prices->addFilter(new MatchAll(), 'any');
+        foreach (PricePreset::cases() as $preset) {
+            $prices->addFilter($this->createPriceQuery($preset), $preset->value);
         }
 
-        $query->addAggregation($this->createFilterAggregation('types', [$window, $venue, $keywords, $category], $types));
-        $query->addAggregation($this->createFilterAggregation('places', [$window, $type, $keywords, $category], new TermsAggregation('ids')->setField('place.id')->setSize($places)));
+        if ([] !== $dates) {
+            $query->addAggregation($this->createFilterAggregation('dates', [$venue, $type, $keywords, $category, $price], $windows));
+        }
+
+        $query->addAggregation($this->createFilterAggregation('types', [$window, $venue, $keywords, $category, $price], $types));
+        $query->addAggregation($this->createFilterAggregation('places', [$window, $type, $keywords, $category, $price], new TermsAggregation('ids')->setField('place.id')->setSize($places)));
+        $query->addAggregation($this->createFilterAggregation('prices', [$window, $venue, $type, $keywords, $category], $prices));
 
         if ($categories > 0) {
             $typeCategories = new Filters('types');
@@ -180,7 +196,7 @@ final class EventElasticaRepository extends Repository
             }
 
             $typeCategories->addAggregation(new TermsAggregation('categories')->setField('category.id')->setSize($categories));
-            $query->addAggregation($this->createFilterAggregation('typeCategories', [$window, $venue, $keywords], $typeCategories));
+            $query->addAggregation($this->createFilterAggregation('typeCategories', [$window, $venue, $keywords, $price], $typeCategories));
         }
 
         return $query;
@@ -214,6 +230,19 @@ final class EventElasticaRepository extends Repository
 
         // An empty bool query is sent as "bool": [], which Elasticsearch rejects
         return new Filter($name, [] === $filters ? new MatchAll() : $filter)->addAggregation($counts);
+    }
+
+    private function createPriceFilter(?PricePreset $price): ?Range
+    {
+        return null !== $price ? $this->createPriceQuery($price) : null;
+    }
+
+    /**
+     * The events whose lowest price to get in is at most the shortcut's: an event without a known price is left out.
+     */
+    private function createPriceQuery(PricePreset $price): Range
+    {
+        return new Range('startingPrice', ['lte' => $price->getMaxPrice()]);
     }
 
     /**

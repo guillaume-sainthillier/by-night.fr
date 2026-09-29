@@ -127,7 +127,7 @@ final class AgendaControllerTest extends WebTestCase
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('this_weekend', $query['when'] ?? null);
         self::assertArrayNotHasKey('dateRange', $query);
-        self::assertSame('Ce week-end', trim($crawler->filter('#agenda-filters .btn-chip.active')->text()));
+        self::assertSame('Ce week-end', trim($crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active')->text()));
         self::assertSelectorExists('#search-form input[type="hidden"][name="when"][value="this_weekend"]');
     }
 
@@ -142,7 +142,7 @@ final class AgendaControllerTest extends WebTestCase
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame(['from' => '2026-10-10', 'to' => '2026-10-12'], $query['dateRange'] ?? null);
         self::assertArrayNotHasKey('when', $query);
-        self::assertCount(0, $crawler->filter('#agenda-filters .btn-chip.active'), 'No shortcut is these dates');
+        self::assertCount(0, $crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active'), 'No shortcut is these dates');
     }
 
     public function testAnUnknownShortcutIsTousLesJours(): void
@@ -155,7 +155,7 @@ final class AgendaControllerTest extends WebTestCase
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('when', $query);
-        self::assertSame('Tous les jours', trim($crawler->filter('#agenda-filters .btn-chip.active')->text()));
+        self::assertSame('Tous les jours', trim($crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active')->text()));
     }
 
     public function testAPlaceAgendaKeepsThePlaceNameAsWritten(): void
@@ -390,6 +390,34 @@ final class AgendaControllerTest extends WebTestCase
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini?type=concert&term=jazz');
 
         self::assertResponseRedirects(\sprintf('/%s/agenda/sortir-a/le-bikini?type=concert&term=jazz', $albi->getSlug()));
+    }
+
+    public function testThePriceShortcutIsKeptByTheLinksAndRemovedByItsChip(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', '/toulouse/agenda?price=under_20&term=jazz&range=not-a-number');
+
+        $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
+        self::assertSame('under_20', $query['price'] ?? null, 'A type link keeps the price');
+        self::assertSame(["Jusqu'à 20\u{a0}€"], $crawler->filter('#agenda-filters [aria-label="Prix"] .btn-chip.active')->each(static fn (Crawler $chip): string => trim($chip->text())));
+        self::assertSame(['/toulouse/agenda', ['term' => 'jazz']], $this->chipsOf($crawler)["Jusqu'à 20\u{a0}€"] ?? null, 'Its chip leaves the other filters');
+        self::assertSelectorExists('#search-form input[type="hidden"][name="price"][value="under_20"]');
+    }
+
+    public function testAnUnknownPriceShortcutIsEveryPrice(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', '/toulouse/agenda?price=cheap&range=not-a-number');
+
+        $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
+        self::assertArrayNotHasKey('price', $query);
+        self::assertSame('Tous les prix', trim($crawler->filter('#agenda-filters [aria-label="Prix"] .btn-chip.active')->text()));
     }
 
     public function testAnUnknownTypeIsNotAnAgendaPage(): void

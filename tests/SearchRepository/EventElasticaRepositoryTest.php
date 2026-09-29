@@ -11,6 +11,7 @@
 namespace App\Tests\SearchRepository;
 
 use App\Enum\AgendaType;
+use App\Enum\PricePreset;
 use App\Search\DateRange;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
@@ -277,6 +278,50 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertSame('jazz', $filters[2]['multi_match']['query']);
         self::assertEquals(['term' => ['category.id' => 7]], $filters[3]['bool']['should'][0]);
         self::assertSame(['field' => 'place.id', 'size' => 6], $places['aggs']['ids']['terms']);
+    }
+
+    public function testAPriceShortcutListsTheEventsStartingAtMostAtItsPrice(): void
+    {
+        $filters = $this->repository->createSearchQuery(new SearchEvent()->setPrice(PricePreset::Under20))->toArray()['query']['bool']['filter'];
+
+        self::assertContains(['range' => ['startingPrice' => ['lte' => 20]]], $filters);
+        self::assertContains(
+            ['range' => ['startingPrice' => ['lte' => 0]]],
+            $this->repository->createSearchQuery(new SearchEvent()->setPrice(PricePreset::Free))->toArray()['query']['bool']['filter'],
+            'Free: a starting price of 0',
+        );
+    }
+
+    /**
+     * A price link keeps the dates, the venue, the type, the category and the keywords, but not the price of the page,
+     * which it replaces; every other count keeps it.
+     */
+    public function testThePriceCountsKeepEveryFilterButThePrice(): void
+    {
+        $search = new SearchEvent()
+            ->setFrom(new DateTimeImmutable('2026-10-10'))
+            ->setLieux([12])
+            ->setType(AgendaType::Concert)
+            ->setTagId(7)
+            ->setTerm('jazz')
+            ->setPrice(PricePreset::Under10);
+
+        $aggregations = $this->repository->createFacetsQuery($search, ['anytime' => new DateRange(new DateTimeImmutable('2026-10-10'))], 6, 4)->toArray()['aggs'];
+
+        $filters = $aggregations['prices']['filter']['bool']['filter'];
+        self::assertCount(5, $filters, 'The price of the page is left out');
+        self::assertNotContains(['range' => ['startingPrice' => ['lte' => 10]]], $filters);
+        self::assertEquals(['terms' => ['place.id' => [12]]], $filters[1]);
+        self::assertEquals($this->typeFilterOf(AgendaType::Concert), $filters[2]);
+
+        $counts = $aggregations['prices']['aggs']['prices']['filters']['filters'];
+        self::assertSame(['any', 'free', 'under_10', 'under_20', 'under_50'], array_keys($counts));
+        self::assertEquals(['match_all' => new stdClass()], $counts['any'], 'Every price, the unknown ones included');
+        self::assertSame(['range' => ['startingPrice' => ['lte' => 50]]], $counts['under_50']);
+
+        foreach (['dates', 'types', 'places', 'typeCategories'] as $name) {
+            self::assertContains(['range' => ['startingPrice' => ['lte' => 10]]], $aggregations[$name]['filter']['bool']['filter'], \sprintf('The %s keep the price', $name));
+        }
     }
 
     public function testCountsWithoutFiltersMatchAll(): void

@@ -22,12 +22,15 @@ final readonly class AgendaFacets
      * @param array<int, int>                $places         the events of the busiest venues by place id, the busiest first
      * @param array<string, array<int, int>> $typeCategories the events of the busiest categories of each type by tag
      *                                                       id, the busiest first
+     * @param array<string, int>             $prices         the events of each price shortcut, by PricePreset value, and of
+     *                                                       every price ("any")
      */
     public function __construct(
         public array $dates = [],
         public array $types = [],
         public array $places = [],
         public array $typeCategories = [],
+        public array $prices = [],
     ) {
     }
 
@@ -53,6 +56,7 @@ final readonly class AgendaFacets
             self::countsOf($aggregations['types']['types']['buckets'] ?? []),
             $places,
             $typeCategories,
+            self::countsOf($aggregations['prices']['prices']['buckets'] ?? []),
         );
     }
 
