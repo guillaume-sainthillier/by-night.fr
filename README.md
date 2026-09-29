@@ -10,12 +10,13 @@ https://by-night.fr
 
 ## Stack technique
 
-- PHP 8.5
+- PHP 8.5 (FrankenPHP)
 - Symfony 8.1
 - MySQL 8.0
 - Elasticsearch 9
 - Cloudflare (CDN, cache HTTP)
 - Redis
+- RabbitMQ
 - Vite
 - Sass
 - Bootstrap 5 / Tabler
