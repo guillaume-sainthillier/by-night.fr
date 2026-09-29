@@ -88,7 +88,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
     private ?bool $junk = null;
 
-    /** Published events to come, recounted by app:events:count-upcoming (see UpcomingEventCounter) */
+    /** Published events to come, recounted nightly and after each change on the site (see UpcomingEventCounter) */
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     private int $upcomingEvents = 0;
 

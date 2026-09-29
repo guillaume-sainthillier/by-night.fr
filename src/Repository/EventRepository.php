@@ -1079,9 +1079,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     /**
      * The published events to come of each venue that has some: what UpcomingEventCounter stores on places.
      *
+     * @param list<int>|null $placeIds the venues to count, null for all of them
+     *
      * @return array<int, int> number of events to come, by place id
      */
-    public function countUpcomingByPlace(): array
+    public function countUpcomingByPlace(?array $placeIds = null): array
     {
         // The place is not joined: event_upcoming_idx holds its id, so the index alone answers (70 ms instead of 300)
         $qb = $this
@@ -1089,6 +1091,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('IDENTITY(e.place) AS place', 'COUNT(e.id) AS events')
             ->andWhere('e.place IS NOT NULL')
             ->groupBy('e.place');
+
+        if (null !== $placeIds) {
+            $qb
+                ->andWhere('e.place IN (:places)')
+                ->setParameter('places', $placeIds);
+        }
 
         $rows = $this->whereUpcoming($qb)->getQuery()->getScalarResult();
 
@@ -1146,9 +1154,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      * The published events to come that have a category, counted by the city and the country of their venue: what
      * UpcomingEventCounter stores as UpcomingCategory rows.
      *
+     * @param list<int|string>|null $cityIds    with $countryIds, keeps the venues in these cities or in these countries only
+     * @param list<int|string>|null $countryIds
+     *
      * @return list<array{city: int|string|null, country: string|null, category: int|string, events: int|string}>
      */
-    public function countUpcomingCategoriesByZone(): array
+    public function countUpcomingCategoriesByZone(?array $cityIds = null, ?array $countryIds = null): array
     {
         $qb = $this
             ->createQueryBuilder('e')
@@ -1156,6 +1167,13 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->andWhere('e.category IS NOT NULL')
             ->groupBy('p.city', 'p.country', 'e.category');
+
+        if (null !== $cityIds || null !== $countryIds) {
+            $qb
+                ->andWhere('p.city IN (:cities) OR p.country IN (:countries)')
+                ->setParameter('cities', $cityIds ?? [])
+                ->setParameter('countries', $countryIds ?? []);
+        }
 
         return $this->whereUpcoming($qb)->getQuery()->getScalarResult();
     }

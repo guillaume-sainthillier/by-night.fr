@@ -14,11 +14,14 @@ use App\Enum\EventStatus;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
+use App\Message\RecountUpcomingEvents;
+use App\MessageHandler\RecountUpcomingEventsHandler;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 final class EventControllerTest extends WebTestCase
 {
@@ -315,6 +318,27 @@ final class EventControllerTest extends WebTestCase
         self::assertSame(0, EventFactory::count(['name' => 'Soirée forgée']));
     }
 
+    public function testTheEventsToComeOfTheVenueAreRecountedOnceItsEventIsCreatedOrDeleted(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $client->submit($this->newEventForm($client, 'Soirée swing au Bikini'));
+        $this->handleRecounts();
+
+        $event = EventFactory::find(['name' => 'Soirée swing au Bikini']);
+        self::assertSame(1, $event->getPlace()?->getUpcomingEvents());
+        self::assertSame(1, CountryFactory::find(['id' => 'FR'])->getUpcomingEvents());
+
+        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+        $client->submit($crawler->filter(\sprintf('form.form-delete-%d', $event->getId()))->form());
+        $this->handleRecounts();
+
+        self::assertSame(0, CountryFactory::find(['id' => $france->getId()])->getUpcomingEvents());
+    }
+
     /**
      * @param string|null $button The name of the submit button to send the form with, none by default
      */
@@ -334,5 +358,28 @@ final class EventControllerTest extends WebTestCase
         $form['app_event[place][country]'] = 'FR';
 
         return $form;
+    }
+
+    /**
+     * What the async worker does with the recounts the requests sent.
+     */
+    private function handleRecounts(): void
+    {
+        $transport = self::getContainer()->get('messenger.transport.async');
+        self::assertInstanceOf(InMemoryTransport::class, $transport);
+        $handler = self::getContainer()->get(RecountUpcomingEventsHandler::class);
+        self::assertInstanceOf(RecountUpcomingEventsHandler::class, $handler);
+
+        $recounts = 0;
+        foreach ($transport->getSent() as $envelope) {
+            $message = $envelope->getMessage();
+            if ($message instanceof RecountUpcomingEvents) {
+                $handler($message);
+                ++$recounts;
+            }
+        }
+
+        self::assertGreaterThan(0, $recounts);
+        $transport->reset();
     }
 }
