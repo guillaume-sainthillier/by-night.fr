@@ -14,7 +14,7 @@ https://by-night.fr
 - Symfony 8.1
 - MySQL 8.0
 - Elasticsearch 9
-- Varnish 6
+- Cloudflare (CDN, cache HTTP)
 - Redis
 - Sass
 - Webpack
