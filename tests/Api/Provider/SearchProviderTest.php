@@ -94,7 +94,7 @@ final class SearchProviderTest extends AppKernelTestCase
             context: ['filters' => ['q' => 'jazzfan']],
         ));
 
-        self::assertSame('Jazzfan', $results[0]->label);
+        self::assertSame('jazzfan', $results[0]->label);
         self::assertSame('Membre depuis 2019', $results[0]->shortDescription);
 
         $json = json_encode($results, \JSON_THROW_ON_ERROR);
