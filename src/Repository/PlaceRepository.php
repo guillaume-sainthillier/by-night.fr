@@ -25,6 +25,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<Place>
@@ -238,7 +239,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->where(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
             ->andWhere('p.createdAt <= :createdBefore')
             ->setParameter('createdBefore', $createdBefore)
-            ->orderBy('p.id', 'ASC');
+            ->orderBy('p.id', SortDirection::Ascending);
 
         if (null !== $origin) {
             $qb
@@ -268,7 +269,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->where('p.id IN (:ids)')
             ->andWhere(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
             ->setParameter('ids', $placeIds)
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('p.id', SortDirection::Ascending)
             ->getQuery()
             ->getSingleColumnResult();
 
@@ -326,7 +327,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('p')
             ->join(PlaceLegacySlug::class, 'l', 'WITH', 'l.place = p')
             ->where('l.slug = :slug')
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('p.id', SortDirection::Ascending)
             ->setParameter('slug', $slug)
             ->setMaxResults(1);
 
@@ -375,7 +376,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->select('p.id', 'p.name', 'p.street')
             ->where('p.city = :city')
             ->andWhere("p.street IS NOT NULL AND TRIM(p.street) <> ''")
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('p.id', SortDirection::Ascending)
             ->setParameter('city', $cityId)
             ->getQuery()
             ->getScalarResult();

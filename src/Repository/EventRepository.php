@@ -30,6 +30,7 @@ use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -236,7 +237,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orWhere('e.duplicateOf IN (:eventIds)')
             ->setParameter('ids', array_values(array_unique([...$eventIds, ...array_map(intval(...), $canonicalIds)])))
             ->setParameter('eventIds', $eventIds)
-            ->orderBy('e.id', 'ASC')
+            ->orderBy('e.id', SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -284,7 +285,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.identityHash IN (:hashes)')
             ->setParameter('hashes', $hashes)
-            ->orderBy('e.id', 'ASC')
+            ->orderBy('e.id', SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -310,7 +311,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.id IN (:ids)')
             ->orWhere('e.duplicateOf IN (:ids)')
             ->setParameter('ids', $canonicalIds)
-            ->orderBy('e.id', 'ASC')
+            ->orderBy('e.id', SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -407,7 +408,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.draft = false')
             ->andWhere('e.endDate >= :since')
             ->setParameter('since', $since->format('Y-m-d'))
-            ->orderBy('e.endDate', 'DESC')
+            ->orderBy('e.endDate', SortDirection::Descending)
             ->getQuery()
             ->toIterable();
     }
@@ -418,7 +419,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->where('e.user = :user')
             ->setParameter('user', $user->getId())
-            ->orderBy('e.id', 'DESC');
+            ->orderBy('e.id', SortDirection::Descending);
 
         if ($q) {
             $qb->andWhere('e.name LIKE :q OR e.placeName LIKE :q OR e.placeCity LIKE :q OR e.description LIKE :q')
@@ -487,7 +488,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('c.id, c.displayName, c.atDisplayName, c.slug, c.upcomingEvents AS events')
             ->from(Country::class, 'c')
             ->where('c.upcomingEvents > 0')
-            ->orderBy('c.upcomingEvents', 'DESC')
+            ->orderBy('c.upcomingEvents', SortDirection::Descending)
             ->getQuery()
             ->getScalarResult();
     }
@@ -503,7 +504,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->select('DISTINCT e.fromData')
             ->where('e.fromData IS NOT NULL')
-            ->orderBy('e.fromData', 'ASC')
+            ->orderBy('e.fromData', SortDirection::Ascending)
             ->getQuery()
             ->getSingleColumnResult();
     }
@@ -521,7 +522,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('e.startDate AS day', 'COUNT(e.id) AS events')
             ->andWhere('e.startDate IS NOT NULL')
             ->groupBy('e.startDate')
-            ->orderBy('e.startDate', 'ASC')
+            ->orderBy('e.startDate', SortDirection::Ascending)
             ->getQuery()
             ->getScalarResult();
 
@@ -547,8 +548,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->join('p.city', 'c')
             ->groupBy('c.id')
-            ->orderBy('events', 'DESC')
-            ->addOrderBy('c.name', 'ASC')
+            ->orderBy('events', SortDirection::Descending)
+            ->addOrderBy('c.name', SortDirection::Ascending)
             ->getQuery()
             ->getScalarResult();
 
@@ -576,8 +577,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->leftJoin('p.country', 'co')
             // c and co are one row per venue: grouped by too for MySQL's ONLY_FULL_GROUP_BY
             ->groupBy('p.id, c.id, co.id')
-            ->orderBy('events', 'DESC')
-            ->addOrderBy('p.name', 'ASC')
+            ->orderBy('events', SortDirection::Descending)
+            ->addOrderBy('p.name', SortDirection::Ascending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getScalarResult();
@@ -604,8 +605,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('t.id', 't.name', 'COUNT(e.id) AS events', 'MIN(e.startDate) AS first', 'MAX(e.startDate) AS last')
             ->join('e.category', 't')
             ->groupBy('t.id')
-            ->orderBy('events', 'DESC')
-            ->addOrderBy('t.name', 'ASC')
+            ->orderBy('events', SortDirection::Descending)
+            ->addOrderBy('t.name', SortDirection::Ascending)
             ->getQuery()
             ->getScalarResult();
 
@@ -642,8 +643,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('th.id <> c.id')
             ->groupBy('c.id, th.id')
             ->having('COUNT(e.id) >= 2')
-            ->orderBy('events', 'DESC')
-            ->addOrderBy('th.name', 'ASC')
+            ->orderBy('events', SortDirection::Descending)
+            ->addOrderBy('th.name', SortDirection::Ascending)
             ->setParameter('categories', $categoryIds)
             ->getQuery()
             ->getScalarResult();
@@ -753,7 +754,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('cal.user = :user')
             ->andWhere('e.draft = false')
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
-            ->orderBy('e.endDate', $isNext ? 'ASC' : 'DESC')
+            ->orderBy('e.endDate', $isNext ? SortDirection::Ascending : SortDirection::Descending)
             ->setParameter('user', $user->getId())
             ->setParameter('start_date', date('Y-m-d'));
     }
@@ -803,7 +804,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.draft = false')
             ->setParameter('from', $event->getStartDate()->format('Y-m-d'))
             ->setParameter('id', $event->getId())
-            ->orderBy('e.name', 'ASC');
+            ->orderBy('e.name', SortDirection::Ascending);
 
         if (null !== $event->getPlace()->getCity()) {
             $qb
@@ -827,7 +828,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         return $this
             ->createQueryBuilder('e')
             ->where('e.endDate >= :end_date AND e.id != :id AND e.place = :place AND e.duplicateOf IS NULL AND e.draft = false')
-            ->orderBy('e.endDate', 'ASC')
+            ->orderBy('e.endDate', SortDirection::Ascending)
             ->setParameter('end_date', $from->format('Y-m-d'))
             ->setParameter('id', $event->getId())
             ->setParameter('place', $event->getPlace()->getId());
@@ -843,8 +844,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.endDate BETWEEN :from AND :to')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
-            ->orderBy('e.endDate', 'ASC')
-            ->addOrderBy('e.participations', 'DESC');
+            ->orderBy('e.endDate', SortDirection::Ascending)
+            ->addOrderBy('e.participations', SortDirection::Descending);
 
         if ($location->isCity()) {
             $qb
@@ -874,8 +875,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('e.endDate', 'ASC')
-            ->addOrderBy('e.participations', 'DESC');
+            ->orderBy('e.endDate', SortDirection::Ascending)
+            ->addOrderBy('e.participations', SortDirection::Descending);
 
         $this->buildLocationParameters($qb, $location);
 
@@ -921,8 +922,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('t', 'uc.events AS events')
             ->from(Tag::class, 't')
             ->join(UpcomingCategory::class, 'uc', 'WITH', 'uc.tag = t')
-            ->orderBy('uc.events', 'DESC')
-            ->addOrderBy('t.name', 'ASC')
+            ->orderBy('uc.events', SortDirection::Descending)
+            ->addOrderBy('t.name', SortDirection::Ascending)
             ->setMaxResults($limit);
 
         if (null !== $city = $location->getCity()) {
@@ -957,9 +958,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.startDate <= :to')
             ->andWhere("((e.image.name IS NOT NULL AND e.image.name <> '') OR (e.imageSystem.name IS NOT NULL AND e.imageSystem.name <> ''))")
             ->setParameter('to', $from->modify('+6 days')->format('Y-m-d'))
-            ->orderBy('e.participations', 'DESC')
-            ->addOrderBy('e.endDate', 'ASC')
-            ->addOrderBy('e.id', 'ASC')
+            ->orderBy('e.participations', SortDirection::Descending)
+            ->addOrderBy('e.endDate', SortDirection::Ascending)
+            ->addOrderBy('e.id', SortDirection::Ascending)
             ->setMaxResults($limit);
 
         /** @var Event[] $events */
@@ -987,8 +988,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('p', 'p.upcomingEvents AS events')
             ->from(Place::class, 'p')
             ->where('p.upcomingEvents > 0')
-            ->orderBy('p.upcomingEvents', 'DESC')
-            ->addOrderBy('p.name', 'ASC')
+            ->orderBy('p.upcomingEvents', SortDirection::Descending)
+            ->addOrderBy('p.name', SortDirection::Ascending)
             ->setMaxResults($limit);
 
         return $this
@@ -1027,11 +1028,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->addSelect('CASE WHEN c.displayOrder IS NULL THEN 1 ELSE 0 END AS HIDDEN unranked')
             ->from(Country::class, 'c')
             ->where('c.upcomingEvents > 0')
-            ->orderBy('c.featured', 'DESC')
-            ->addOrderBy('unranked', 'ASC')
-            ->addOrderBy('c.displayOrder', 'ASC')
-            ->addOrderBy('c.upcomingEvents', 'DESC')
-            ->addOrderBy('c.displayName', 'ASC');
+            ->orderBy('c.featured', SortDirection::Descending)
+            ->addOrderBy('unranked', SortDirection::Ascending)
+            ->addOrderBy('c.displayOrder', SortDirection::Ascending)
+            ->addOrderBy('c.upcomingEvents', SortDirection::Descending)
+            ->addOrderBy('c.displayName', SortDirection::Ascending);
 
         if (null !== $except) {
             $qb
@@ -1203,8 +1204,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->from(City::class, 'c')
             ->leftJoin('c.parent', 'department')
             ->where('c.upcomingEvents > 0')
-            ->orderBy('c.upcomingEvents', 'DESC')
-            ->addOrderBy('c.population', 'DESC')
+            ->orderBy('c.upcomingEvents', SortDirection::Descending)
+            ->addOrderBy('c.population', SortDirection::Descending)
             ->setMaxResults($limit);
     }
 

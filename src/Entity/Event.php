@@ -31,6 +31,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
+use SortDirection;
 use Stringable;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Attribute\Context;
@@ -264,14 +265,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
-    #[ORM\OrderBy(['createdAt' => 'DESC'])]
+    #[ORM\OrderBy(['createdAt' => SortDirection::Descending])]
     private Collection $comments;
 
     /**
      * @var Collection<int, EventTimesheet>
      */
     #[ORM\OneToMany(targetEntity: EventTimesheet::class, mappedBy: 'event', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
-    #[ORM\OrderBy(['startAt' => 'ASC'])]
+    #[ORM\OrderBy(['startAt' => SortDirection::Ascending])]
     private Collection $timesheets;
 
     #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]

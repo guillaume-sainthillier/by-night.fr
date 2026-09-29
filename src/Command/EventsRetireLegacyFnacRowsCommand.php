@@ -14,6 +14,7 @@ use App\Entity\Event;
 use App\Import\EventFamilyResolver;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use SortDirection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -155,7 +156,7 @@ final class EventsRetireLegacyFnacRowsCommand extends Command
             ->groupBy('e.identityHash')
             ->having('SUM(CASE WHEN LENGTH(e.externalId) = :length THEN 1 ELSE 0 END) > 0')
             ->andHaving('SUM(CASE WHEN LENGTH(e.externalId) = :length THEN 0 ELSE 1 END) > 0')
-            ->orderBy('e.identityHash', 'ASC')
+            ->orderBy('e.identityHash', SortDirection::Ascending)
             ->setParameter('origin', self::ORIGIN)
             ->setParameter('length', self::CURRENT_ID_LENGTH)
             ->getQuery()

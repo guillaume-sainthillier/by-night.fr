@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use SortDirection;
 use Stringable;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -48,7 +49,7 @@ class Comment implements Stringable
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
-    #[ORM\OrderBy(['createdAt' => 'DESC'])]
+    #[ORM\OrderBy(['createdAt' => SortDirection::Descending])]
     private Collection $children;
 
     public function __construct()
