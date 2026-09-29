@@ -191,9 +191,9 @@ final readonly class UpcomingEventCounter
     }
 
     /**
-     * @param class-string<City|Country>             $class
+     * @param class-string<City|Country>            $class
      * @param array<int|string, array<string, int>> $counts the type counts just computed, by id (the zones without any left out)
-     * @param list<int|string>|null                  $ids    the rows these counts cover, null for all of them
+     * @param list<int|string>|null                 $ids    the rows these counts cover, null for all of them
      *
      * @return int the number of rows written
      */
