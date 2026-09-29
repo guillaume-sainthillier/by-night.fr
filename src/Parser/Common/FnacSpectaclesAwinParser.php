@@ -172,7 +172,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         // As served: the feed links 222x222 thumbnails with no larger variant, so there is
         // nothing to look up (a "grand/" to "600/" rewrite once checked each poster with a HEAD)
         $event->imageUrl = $data['merchant_image_url'] ?? null;
-        $event->prices = \sprintf('%s€', $data['search_price']);
+        $event->prices = \sprintf('%s€', self::formatPrice($data['search_price']));
         $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
         $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
 
@@ -273,12 +273,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         // Reflect the full ticket price range gathered across the duplicate rows.
         $event->prices = $priceRange['min'] === $priceRange['max']
-            ? \sprintf('%s€', $this->formatPrice($priceRange['min']))
-            : \sprintf('De %s€ à %s€', $this->formatPrice($priceRange['min']), $this->formatPrice($priceRange['max']));
-    }
-
-    private function formatPrice(float $price): string
-    {
-        return rtrim(rtrim(number_format($price, 2, '.', ''), '0'), '.');
+            ? \sprintf('%s€', self::formatPrice($priceRange['min']))
+            : \sprintf('De %s€ à %s€', self::formatPrice($priceRange['min']), self::formatPrice($priceRange['max']));
     }
 }

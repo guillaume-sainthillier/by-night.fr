@@ -20,7 +20,10 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
- * OAuth.
+ * GeoNames geography, read far more than written: the import pipeline loads thousands of cities
+ * per batch through places. DEFERRED_EXPLICIT (inherited by City, AdminZone1 and AdminZone2) keeps
+ * every flush from diffing them all and from writing a zone nobody persist()ed: only the
+ * GeoNames importer and the back-office, which both persist() explicitly, can change one.
  */
 #[ORM\Index(name: 'admin_zone_type_name_idx', columns: ['type', 'name'])]
 #[ORM\Index(name: 'admin_zone_type_population_idx', columns: ['type', 'population'])]
@@ -28,6 +31,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string', length: 10)]
 #[ORM\DiscriminatorMap(['PPL' => 'City', 'ADM1' => 'AdminZone1', 'ADM2' => 'AdminZone2'])]
 #[ORM\Entity(repositoryClass: AdminZoneRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 #[ORM\HasLifecycleCallbacks]
 abstract class AdminZone implements Stringable
 {

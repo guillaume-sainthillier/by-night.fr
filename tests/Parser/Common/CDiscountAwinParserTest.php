@@ -87,7 +87,7 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
             'merchant_product_id' => '46008799592',
             'product_name' => 'Nico Moreno',
             'description' => 'Techno.',
-            'search_price' => '39.9',
+            'search_price' => '39.90', // as served: two decimals
             'custom_1' => 'le 14/02/2027 à 20h',
             'custom_2' => 'Toulouse',
             'custom_3' => '31300',

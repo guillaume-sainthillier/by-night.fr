@@ -11,6 +11,7 @@
 namespace App\Twig;
 
 use App\Utils\HtmlFormatter;
+use Parsedown;
 use Twig\Attribute\AsTwigFilter;
 
 final readonly class ParseExtension
@@ -29,5 +30,15 @@ final readonly class ParseExtension
     public function parseTags(?string $html): string
     {
         return $this->htmlFormatter->format($html);
+    }
+
+    /**
+     * Markdown written in the back office (the description of a portal) as HTML. Safe mode escapes the raw HTML
+     * it may contain and neutralises "javascript:" links, so the result is printed as is.
+     */
+    #[AsTwigFilter(name: 'markdown', isSafe: ['html'])]
+    public function markdown(?string $markdown): string
+    {
+        return new Parsedown()->setSafeMode(true)->text((string) $markdown);
     }
 }

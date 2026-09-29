@@ -175,8 +175,8 @@ final class SeeTicketsKwankoParser extends AbstractParser
         $event->status = EventStatus::fromStatusMessage($data['onsale'] ?? null);
 
         // Build prices string
-        $minPrice = $data['min_price'] ?? '';
-        $maxPrice = $data['max_price'] ?? '';
+        $minPrice = '' === ($data['min_price'] ?? '') ? '' : self::formatPrice($data['min_price']);
+        $maxPrice = '' === ($data['max_price'] ?? '') ? '' : self::formatPrice($data['max_price']);
         if ('' !== $minPrice && '' !== $maxPrice && $minPrice !== $maxPrice) {
             $event->prices = \sprintf('De %s€ à %s€', $minPrice, $maxPrice);
         } elseif ('' !== $minPrice) {

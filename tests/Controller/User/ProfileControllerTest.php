@@ -54,4 +54,22 @@ final class ProfileControllerTest extends WebTestCase
         refresh($user);
         self::assertSame($passwordHash, $user->getPassword());
     }
+
+    public function testAWrongCurrentPasswordSaysSo(): void
+    {
+        $client = self::createClient();
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $user = UserFactory::createOne(['password' => $hasher->hashPassword(new User(), 'ancien-mot-de-passe')]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Mettre à jour le mot de passe', [
+            'change_password_form[currentPassword]' => 'mauvais-mot-de-passe',
+            'change_password_form[plainPassword][first]' => 'Nouveau2026',
+            'change_password_form[plainPassword][second]' => 'Nouveau2026',
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSelectorTextContains('#password .invalid-feedback', 'Le mot de passe actuel est incorrect.');
+    }
 }
