@@ -10,10 +10,12 @@
 
 namespace App\Tests\Command;
 
+use App\App\Location;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
+use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -36,6 +38,6 @@ final class EventsCountUpcomingCommandTest extends AppKernelTestCase
         self::assertSame(Command::SUCCESS, $tester->getStatusCode());
         self::assertMatchesRegularExpression('/^\s*1\s+1\s+1\s+2\s+2\s*$/m', $tester->getDisplay());
         self::assertSame(2, refresh($toulouse)->getUpcomingEvents());
-        self::assertSame(['concert' => 2], refresh($toulouse)->getUpcomingAgendaTypes());
+        self::assertSame(['concert' => 2], self::getContainer()->get(EventRepository::class)->findUpcomingAgendaTypes(new Location()->setCity($toulouse)));
     }
 }

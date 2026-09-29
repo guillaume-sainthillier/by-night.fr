@@ -235,16 +235,18 @@ final class EventElasticaRepositoryTest extends TestCase
         ]]]]]], $query['query']['bool']['filter']);
     }
 
-    public function testTheTypesOfTheEventsToComeAreFoundByTheirPagesFullTextSearch(): void
+    public function testTheTypesOfTheEventsToComeAreNamedByTheFullTextSearchOfTheirPage(): void
     {
-        $query = $this->repository->createAgendaTypeQuery(AgendaType::Concert, new DateTimeImmutable('2026-10-10'))->toArray();
+        $query = $this->repository->createAgendaTypesQuery(new DateTimeImmutable('2026-10-10'))->toArray();
 
-        $filters = $query['query']['bool']['filter'];
-        self::assertCount(2, $filters);
-        self::assertEquals(['nested' => ['path' => 'sessions', 'query' => ['bool' => ['filter' => [
-            ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
-        ]]]]], $filters[0]);
-        self::assertContains('concert musique artiste', array_map(self::keywordsOf(...), $filters[1]['bool']['should']));
+        self::assertEquals([
+            ['nested' => ['path' => 'sessions', 'query' => ['bool' => ['filter' => [
+                ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
+            ]]]]],
+        ], $query['query']['bool']['filter']);
+        self::assertSame(['concert', 'show', 'exhibition', 'family', 'student'], array_map(static fn (array $clause): string => $clause['bool']['_name'], $query['query']['bool']['should']));
+        // The full-text search of the concert page, named
+        self::assertContains('concert musique artiste', array_map(self::keywordsOf(...), $query['query']['bool']['should'][0]['bool']['should']));
         self::assertFalse($query['_source']);
     }
 
