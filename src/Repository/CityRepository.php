@@ -21,6 +21,7 @@ use App\Utils\CityManipulator;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Override;
@@ -207,8 +208,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug, COUNT(e.id) AS nb')
-            ->join(Place::class, 'p', 'WITH', 'p.city = c')
-            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join(Place::class, 'p', Join::ON, 'p.city = c')
+            ->join(Event::class, 'e', Join::ON, 'e.place = p')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
@@ -226,8 +227,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         // Tags from category relation
         yield from parent::createQueryBuilder('c')
             ->select('c.slug AS citySlug, cat.id AS tagId, cat.slug AS tagSlug')
-            ->join(Place::class, 'p', 'WITH', 'p.city = c')
-            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join(Place::class, 'p', Join::ON, 'p.city = c')
+            ->join(Event::class, 'e', Join::ON, 'e.place = p')
             ->join('e.category', 'cat')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
@@ -240,8 +241,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         // Tags from themes relation (getResult() because toIterable() forbids ManyToMany joins)
         yield from parent::createQueryBuilder('c')
             ->select('c.slug AS citySlug, t.id AS tagId, t.slug AS tagSlug')
-            ->join(Place::class, 'p', 'WITH', 'p.city = c')
-            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join(Place::class, 'p', Join::ON, 'p.city = c')
+            ->join(Event::class, 'e', Join::ON, 'e.place = p')
             ->join('e.themes', 't')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')

@@ -28,6 +28,7 @@ use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use SortDirection;
@@ -921,7 +922,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder()
             ->select('t', 'uc.events AS events')
             ->from(Tag::class, 't')
-            ->join(UpcomingCategory::class, 'uc', 'WITH', 'uc.tag = t')
+            ->join(UpcomingCategory::class, 'uc', Join::ON, 'uc.tag = t')
             ->orderBy('uc.events', SortDirection::Descending)
             ->addOrderBy('t.name', SortDirection::Ascending)
             ->setMaxResults($limit);

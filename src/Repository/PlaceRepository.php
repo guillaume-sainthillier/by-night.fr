@@ -24,6 +24,7 @@ use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use SortDirection;
 
@@ -325,7 +326,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
 
         $queryBuilder = $this
             ->createQueryBuilder('p')
-            ->join(PlaceLegacySlug::class, 'l', 'WITH', 'l.place = p')
+            ->join(PlaceLegacySlug::class, 'l', Join::ON, 'l.place = p')
             ->where('l.slug = :slug')
             ->orderBy('p.id', SortDirection::Ascending)
             ->setParameter('slug', $slug)
@@ -395,7 +396,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
-            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join(Event::class, 'e', Join::ON, 'e.place = p')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')

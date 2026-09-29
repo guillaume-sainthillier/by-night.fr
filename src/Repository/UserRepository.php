@@ -20,6 +20,7 @@ use App\Entity\UserOAuth;
 use App\Manager\PreloadManager;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use SortDirection;
@@ -95,7 +96,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         return $this
             ->createQueryBuilder('u')
             ->select('u.id, u.slug, u.updatedAt')
-            ->join(UserEvent::class, 'ue', 'WITH', 'ue.user = u')
+            ->join(UserEvent::class, 'ue', Join::ON, 'ue.user = u')
             ->join('ue.event', 'e')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
