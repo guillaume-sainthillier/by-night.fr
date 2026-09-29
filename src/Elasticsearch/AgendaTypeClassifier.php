@@ -43,9 +43,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 final readonly class AgendaTypeClassifier
 {
-    /** The events of a page: read, compared and written together */
-    private const int PAGE_SIZE = 1_000;
-
     /** How long the point in time lives between two pages */
     private const string KEEP_ALIVE = '5m';
 
@@ -60,6 +57,8 @@ final readonly class AgendaTypeClassifier
         private ConfigManager $configManager,
         #[Autowire(service: 'fos_elastica.mapping_builder')]
         private MappingBuilder $mappingBuilder,
+        /** The events of a page: read, compared and written together, what the memory holds */
+        private int $pageSize = 1_000,
     ) {
     }
 
@@ -140,7 +139,7 @@ final readonly class AgendaTypeClassifier
             do {
                 $query = $repository
                     ->createAgendaTypesQuery($today)
-                    ->setSize(self::PAGE_SIZE)
+                    ->setSize($this->pageSize)
                     ->setPointInTime(new PointInTime($pointInTime, self::KEEP_ALIVE))
                     ->setSort(['_shard_doc' => 'asc']);
                 if (null !== $after) {
@@ -159,7 +158,7 @@ final readonly class AgendaTypeClassifier
                 }
 
                 yield $page;
-            } while (self::PAGE_SIZE === \count($page));
+            } while ($this->pageSize === \count($page));
         } finally {
             $client->closePointInTime($pointInTime);
         }
