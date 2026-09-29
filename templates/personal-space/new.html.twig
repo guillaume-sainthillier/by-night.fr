@@ -1,101 +1,189 @@
 {% extends 'personal-space/layout.html.twig' %}
 
-{% block title 'Créer un nouvel événement' %}
-{% block page_title 'Nouvel événement' %}
+{% block title 'Publier un événement' %}
+{% block page_title 'Publier un événement' %}
 
 {% block breadcrumb_personal_space -%}
     {% do menu.addItem('Nouveau', url('app_event_new')) %}
 {%- endblock %}
 
+{# The page title sits in the form's column, above its cards (see body) #}
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
 {% block body -%}
-    <div class="mb-4 my-event" {{ load_page('personal_space_event') }}>
-        {% block body_form %}
-            {{ form_start(form) }}
-            {{ form_errors(form) }}
-            <div class="row">
-                <div class="col-md-6">
-                    {# Part 1 #}
-                    <twig:Card header="Votre événement" icon="lucide:file-text" showFooter="{{ false }}">
-                        {{ form_row(form.name, {icon_prepend: 'lucide:file-edit'}) }}
-                        {{ form_row(form.description) }}
-                        {{ form_row(form.imageFile) }}
-                        {{ form_row(form.category, {icon_prepend: 'lucide:drama'}) }}
-                        {{ form_row(form.themes, {icon_prepend: 'lucide:shield'}) }}
-                        {{ form_row(form.prices, {icon_prepend: 'lucide:ticket'}) }}
-                        {{ form_row(form.status, {icon_prepend: 'lucide:info'}) }}
-                        {{ form_row(form.statusMessage, {icon_prepend: 'lucide:message-square'}) }}
-                    </twig:Card>
-
-                    {# Part 4 #}
-                    <twig:Card header="Communiquez" icon="lucide:megaphone" showFooter="{{ false }}">
-                        {{ form_row(form.websiteContacts) }}
-                        {{ form_row(form.phoneContacts) }}
-                        {{ form_row(form.emailContacts) }}
-
-                        {% if form.comment is defined %}
-                            {{ form_row(form.comment) }}
-                        {% endif %}
-                    </twig:Card>
+    <div class="row justify-content-center my-event" {{ load_page('personal_space_event') }}>
+        <div class="col-lg-10 col-xl-8">
+            <div class="row align-items-end g-3 mb-4">
+                <div class="col-md">
+                    <twig:Section:Eyebrow icon="lucide:megaphone">Espace organisateur</twig:Section:Eyebrow>
+                    <h1 class="text-start mb-1">{{ block('page_title') }}</h1>
+                    <p class="text-secondary mb-0">
+                        {%- block page_description -%}
+                            Dates, lieu, affiche&nbsp;: décrivez votre événement, il rejoindra l'agenda de sa ville.
+                        {%- endblock -%}
+                    </p>
                 </div>
-                <div class="col-md-6">
-                    {# Part 2 #}
-                    <twig:Card header="Dates et horaires" icon="lucide:calendar-days" showFooter="{{ false }}">
-                        {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
-                        {{ form_row(form.hours, {icon_prepend: 'lucide:clock'}) }}
+                {% block page_actions '' %}
+            </div>
 
-                        {# Event Scheduler Component #}
-                        <div id="event-scheduler-root"
-                             class="form-group"
-                             data-start-date-field="{{ form.dateRange.from.vars.id }}"
-                             data-end-date-field="{{ form.dateRange.to.vars.id }}"
-                             data-collection-id="{{ form.timesheets.vars.id }}"
-                             data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}">
-                            <p class="text-muted">Chargement…</p>
-                        </div>
+            {% block body_form %}
+                {% form_theme form 'personal-space/_event_form_theme.html.twig' %}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
 
-                        {{ form_row(form.timesheets) }}
-                    </twig:Card>
+                <twig:FormCard icon="lucide:file-text" title="1. Informations principales">
+                    {{ form_row(form.name) }}
+                    <div class="row">
+                        <div class="col-md-6">{{ form_row(form.category, {icon_prepend: 'lucide:tag'}) }}</div>
+                        <div class="col-md-6">{{ form_row(form.status) }}</div>
+                    </div>
+                    {{ form_row(form.statusMessage) }}
+                    {{ form_row(form.themes) }}
+                </twig:FormCard>
 
-                    {# Part 3 #}
-                    <twig:Card header="Lieu" icon="lucide:map-pinned" showFooter="{{ false }}">
-                        {{ form_errors(form.place) }}
-                        {{ form_row(form.place.name, {icon_prepend: 'lucide:map-pin'}) }}
-                        {{ form_row(form.address, {icon_prepend: 'lucide:crosshair'}) }}
-
-                        {{ form_row(form.place.street) }}
-                        {{ form_errors(form.place.city) }}
-                        <div class="row">
-                            <div class="col-md-4">{{ form_row(form.place.city.postalCode) }}</div>
-                            <div class="col-md-8">{{ form_row(form.place.city.name) }}</div>
-                        </div>
-
-                        {{ form_row(form.place.country) }}
-                        <twig:block name="body_after">
-                            <div class="card-body p-0">
-                                <div id="map" data-map-id="{{ googleMapId }}" data-api-key="{{ googleMapKey }}"></div>
+                <twig:FormCard icon="lucide:calendar-days" tone="teal" title="2. Dates et horaires" description="Générez les dates de votre événement, puis ajustez les horaires de chacune." badge="Plusieurs dates" badgeTone="teal">
+                    {# The date generator: the event's period and default hours, which every date without its own hours shows #}
+                    <div class="card form-panel mb-4">
+                        <div class="card-body">
+                            <div class="subheader d-flex align-items-center gap-1 mb-3">
+                                <twig:Icon name="lucide:calendar-clock" class="text-primary" />
+                                Générateur de dates
                             </div>
-                        </twig:block>
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md">
+                                    {{ form_row(form.dateRange, {label: 'Période', icon_prepend: 'lucide:calendar-days', row_class: 'mb-0'}) }}
+                                </div>
+                                <div class="col-md-auto">
+                                    <button type="button" class="btn btn-primary w-100" id="event-scheduler-generate">
+                                        <twig:Icon name="lucide:zap" />
+                                        Générer les dates
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="event-scheduler-root"
+                                 data-start-date-field="{{ form.dateRange.from.vars.id }}"
+                                 data-end-date-field="{{ form.dateRange.to.vars.id }}"
+                                 data-collection-id="{{ form.timesheets.vars.id }}"
+                                 data-generate-button="event-scheduler-generate"
+                                 data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}"></div>
+                            <hr class="my-3">
+                            {{ form_row(form.hours, {icon_prepend: 'lucide:clock', row_class: 'mb-0', help: "Ils valent pour chaque date qui n'a pas ses propres horaires."}) }}
+                        </div>
+                    </div>
 
-                    </twig:Card>
-                </div>
-            </div>
-            <div class="form-actions-fixed">
-                <div class="{{ block('container_class') }} d-flex gap-2">
-                    <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes événements">
-                        <twig:Icon name="lucide:chevron-left" />
-                        <span class="form-actions-label">Retour</span>
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <twig:Icon name="lucide:save" />
-                        Sauvegarder
-                    </button>
-                    {% block form_actions_end '' %}
-                </div>
-            </div>
+                    {# The dates: the header's button adds one, the collection manager finds it through the wrapper #}
+                    <div class="collection-wrapper">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <h3 class="h4 mb-0">Dates de l'événement</h3>
+                            <span class="badge bg-primary-lt" data-timesheets-count>{{ '{count, plural, one {# date} other {# dates}}'|trans({count: form.timesheets|length}, 'messages+intl-icu') }}</span>
+                            <button type="button" class="add-collection btn btn-sm btn-ghost-teal ms-auto">
+                                <twig:Icon name="lucide:circle-plus" />
+                                {{ form.timesheets.vars.add_entry_label }}
+                            </button>
+                        </div>
+                        {{ form_row(form.timesheets, {allow_add: false, row_class: 'mb-0'}) }}
+                        <p class="timesheets-empty text-secondary small mb-0">Aucune date pour l'instant&nbsp;: générez-les depuis la période, ou ajoutez-les une à une.</p>
+                    </div>
+                    <p class="text-secondary small d-flex align-items-center gap-1 mt-3 mb-0">
+                        <twig:Icon name="lucide:info" />
+                        Chaque date s'affiche dans l'agenda avec ses horaires.
+                    </p>
+                </twig:FormCard>
 
-            {{ form_rest(form) }}
-            {{ form_end(form) }}
-        {% endblock %}
+                <twig:FormCard icon="lucide:map-pin" tone="yellow" title="3. Lieu" badge="Sur la carte">
+                    {{ form_errors(form.place) }}
+                    <div class="row">
+                        <div class="col-md-6">{{ form_row(form.place.name) }}</div>
+                        <div class="col-md-6">{{ form_row(form.address, {icon_prepend: 'lucide:search'}) }}</div>
+                    </div>
+                    {{ form_row(form.place.street) }}
+                    {{ form_errors(form.place.city) }}
+                    <div class="row">
+                        <div class="col-md-3">{{ form_row(form.place.city.postalCode) }}</div>
+                        <div class="col-md-5">{{ form_row(form.place.city.name) }}</div>
+                        <div class="col-md-4">{{ form_row(form.place.country) }}</div>
+                    </div>
+                    <div id="map" class="rounded-3 border" data-map-id="{{ googleMapId }}" data-api-key="{{ googleMapKey }}"></div>
+                    <p class="text-secondary small d-flex align-items-center gap-1 mt-2 mb-0">
+                        <twig:Icon name="lucide:info" />
+                        Déplacez le repère pour ajuster la position du lieu.
+                    </p>
+                </twig:FormCard>
+
+                <twig:FormCard icon="lucide:image" tone="pink" title="4. Affiche" badge="Format 16:9">
+                    {{ form_row(form.imageFile, {label_attr: {class: 'visually-hidden'}, layout: 'horizontal'}) }}
+                    <p class="text-secondary small d-flex align-items-center gap-1 mt-2 mb-0">
+                        <twig:Icon name="lucide:info" />
+                        Pour un meilleur rendu, préférez une image au format 16:9 (ex.&nbsp;: 1920&nbsp;×&nbsp;1080).
+                    </p>
+                </twig:FormCard>
+
+                <twig:FormCard icon="lucide:align-left" tone="secondary" title="5. Description">
+                    {{ form_row(form.description, {label_attr: {class: 'visually-hidden'}, help: 'Astuce : précisez le programme, les intervenants et les transports à proximité.'}) }}
+                    {% if form.comment is defined %}
+                        {{ form_row(form.comment) }}
+                    {% endif %}
+                </twig:FormCard>
+
+                <twig:FormCard icon="lucide:ticket" tone="teal" title="6. Tarifs et contacts" badge="Facultatif">
+                    {{ form_row(form.prices, {icon_prepend: 'lucide:ticket'}) }}
+                    {# Each list's header holds its add button, which the collection manager finds through the wrapper #}
+                    {% set contacts = [
+                        {field: form.websiteContacts, icon: 'lucide:link'},
+                        {field: form.phoneContacts, icon: 'lucide:phone'},
+                        {field: form.emailContacts, icon: 'lucide:mail'},
+                    ] %}
+                    {% for contact in contacts %}
+                        <div class="collection-wrapper border-top pt-3 mt-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <twig:Icon name="{{ contact.icon }}" class="text-teal" />
+                                <h3 class="h4 mb-0 me-auto">{{ contact.field.vars.label }}</h3>
+                                <button type="button" class="add-collection btn btn-sm btn-ghost-teal">
+                                    <twig:Icon name="lucide:plus" />
+                                    {{ contact.field.vars.add_entry_label }}
+                                </button>
+                            </div>
+                            {{ form_row(contact.field, {label: false, allow_add: false, row_class: 'mb-0'}) }}
+                        </div>
+                    {% endfor %}
+                </twig:FormCard>
+
+                <div class="form-actions-fixed">
+                    <div class="{{ block('container_class') }}">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10 col-xl-8 d-flex align-items-center gap-2">
+                                <a class="btn btn-ghost-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes événements">
+                                    <twig:Icon name="lucide:chevron-left" />
+                                    <span class="form-actions-label">Retour</span>
+                                </a>
+                                {# Written right to left (flex-row-reverse): the publish button comes before the draft one,
+                                   as Enter in a field sends the form with its first submit button, which must publish #}
+                                <div class="d-flex flex-row-reverse align-items-center gap-2 ms-auto">
+                                    {% block form_actions_extra '' %}
+                                    {% block form_submit %}
+                                        <button type="submit" class="btn btn-lg btn-primary">
+                                            <twig:Icon name="lucide:rocket" />
+                                            Publier<span class="d-none d-sm-inline ms-1"> l'événement</span>
+                                        </button>
+                                    {% endblock %}
+                                    <button type="submit" name="{{ form.saveDraft.vars.full_name }}" class="btn btn-outline-secondary" title="L'événement ne sera pas visible sur le site">
+                                        <twig:Icon name="lucide:eye-off" />
+                                        <span class="form-actions-label">{{ form.saveDraft.vars.label }}</span>
+                                    </button>
+                                    {% do form.saveDraft.setRendered %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{ form_rest(form) }}
+                {{ form_end(form) }}
+            {% endblock %}
+        </div>
     </div>
 {%- endblock %}
 

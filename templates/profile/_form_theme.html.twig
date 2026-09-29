@@ -1,0 +1,31 @@
+{% use 'form/fields.html.twig' %}
+
+{#
+    Theme of the profile form: the picture is a panel beside the current picture rather than the dropzone of the other
+    forms (assets/js/pages/profile.js previews the chosen file).
+#}
+{%- block _profile_form_imageFile_row -%}
+    <div class="card form-panel mb-4">
+        <div class="card-body d-flex flex-column flex-sm-row align-items-center gap-3 text-center text-sm-start">
+            <span class="avatar avatar-xl avatar-rounded flex-shrink-0" data-avatar-preview>
+                <twig:User:Thumb user="{{ form.parent.vars.data }}" width="{{ 96 }}" height="{{ 96 }}" />
+            </span>
+            <div class="flex-fill min-w-0">
+                <div class="fw-bold mb-1">{{ label }}</div>
+                <p class="text-secondary small mb-3">{{ help }}</p>
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-sm-start gap-3">
+                    <label class="btn btn-sm mb-0" for="{{ form.file.vars.id }}">
+                        <twig:Icon name="lucide:upload" />
+                        Changer la photo
+                    </label>
+                    {{ form_widget(form.file, {attr: {class: 'visually-hidden', accept: 'image/*'}}) }}
+                    {% if form.delete is defined %}
+                        {{ form_widget(form.delete, {row_class: 'mb-0'}) }}
+                    {% endif %}
+                </div>
+                {{ form_errors(form) }}
+                {{ form_errors(form.file) }}
+            </div>
+        </div>
+    </div>
+{%- endblock -%}

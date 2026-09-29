@@ -1,4 +1,5 @@
 @import 'core';
+@import 'fonts';
 
 //Vendors
 @import 'ui/tabler';
@@ -30,6 +31,7 @@
 @import 'components/page';
 @import 'components/pagination';
 @import 'components/placeholder';
+@import 'components/portal';
 @import 'components/print';
 @import 'components/scroll';
 @import 'components/social_icons';
@@ -41,10 +43,10 @@
 @import 'components/widgets';
 
 //Pages
-@import 'pages/learn-more';
+@import 'pages/account';
+@import 'pages/content';
 @import 'pages/erreurs';
 @import 'pages/event_details';
-@import 'pages/event_index';
 @import 'pages/user_details';
 @import 'pages/user_event_crud';
 
@@ -73,18 +75,14 @@ h6,
 .h4,
 .h5,
 .h6 {
-    font-family: 'Roboto Condensed', sans-serif;
-    font-weight: 300;
+    font-weight: $headings-font-weight;
+    letter-spacing: -0.02em;
 }
 
 h1 {
     text-align: center;
-    letter-spacing: -2px;
+    letter-spacing: -0.03em;
     margin: 0;
-
-    strong {
-        font-weight: 300;
-    }
 }
 
 /* To fill the container and nothing else */

@@ -1,9 +1,3 @@
-// Self-hosted instead of fonts.googleapis.com, which would send every visitor's IP address to Google before any
-// consent. Same weights as before; unicode-range keeps unused subsets from being downloaded.
-import '@fontsource/roboto-condensed/300.css'
-import '@fontsource/roboto/300.css'
-import '@fontsource/roboto/400.css'
-import '@fontsource/roboto/500.css'
 import '@/scss/app.scss'
 
 // Symfony UX Stimulus
@@ -20,6 +14,8 @@ import contentRemovalRequest from '@/js/listeners/content-removal-request'
 import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
 import emailVerify from '@/js/listeners/email-verify'
+import eventPublish from '@/js/listeners/event-publish'
+import filteredLink from '@/js/listeners/filtered-link'
 import formCollection from '@/js/listeners/form-collection'
 import formConfirm from '@/js/listeners/form-confirm'
 import formErrors from '@/js/listeners/form-errors'
@@ -28,10 +24,10 @@ import imagePreviews from '@/js/listeners/image-previews'
 import impersonate from '@/js/listeners/impersonate'
 import like from '@/js/listeners/like'
 import loadMore from '@/js/listeners/load-more'
-import login from '@/js/listeners/login'
 import pages from '@/js/listeners/pages'
+import passwordMeter from '@/js/listeners/password-meter'
+import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
-import register from '@/js/listeners/register'
 import tooltip from '@/js/listeners/tooltip'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
@@ -85,6 +81,8 @@ class App {
             cookieSettings,
             dropzone,
             emailVerify,
+            eventPublish,
+            filteredLink,
             formCollection,
             formConfirm,
             formErrors,
@@ -93,9 +91,9 @@ class App {
             impersonate,
             like,
             loadMore,
-            login,
+            passwordMeter,
+            passwordReveal,
             popup,
-            register,
             tooltip,
         ]
 

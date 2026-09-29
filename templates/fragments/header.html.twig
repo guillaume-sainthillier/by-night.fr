@@ -1,84 +1,94 @@
-<header class="navbar navbar-expand-lg text-bg-primary sticky-top" data-bs-theme="dark">
+<header class="navbar navbar-expand-lg sticky-top" data-bs-theme="light">
     <div class="{{ container_class }}">
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbar-main">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
-            </svg>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbar-main" aria-label="Ouvrir le menu">
+            <twig:Icon name="lucide:menu" />
         </button>
-        <a href="{{ path('app_index') }}" title="By Night : agenda des sorties, concerts et spectacles en France" class="navbar-brand flex-shrink-0">
-            <twig:Picasso:Image src="{{ asset('build/images/by-night.png', 'local') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
+        <a href="{{ path('app_index') }}" title="By Night&nbsp;: agenda des sorties, concerts et spectacles en France" class="navbar-brand site-brand flex-shrink-0">
+            <twig:Picasso:Image src="{{ asset('build/images/by-night.png', 'local') }}" width="{{ 40 }}" height="{{ 40 }}" alt="" priority="{{ true }}" />
+            <span class="site-brand-text">
+                <span class="site-brand-name">By Night</span>
+                <span class="site-brand-tagline d-none d-sm-block">L'agenda de vos sorties</span>
+            </span>
         </a>
         <div class="d-flex d-lg-none">
             <ul class="navbar-nav flex-row gap-3 align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" id="autocomplete-mobile-toggler">
+                    <a class="nav-link" href="#" id="autocomplete-mobile-toggler" aria-label="Rechercher">
                         <twig:Icon name="lucide:search" />
                     </a>
                 </li>
                 {{ include('fragments/_header-user-dropdown.html.twig', {show_username: false}) }}
             </ul>
         </div>
-        <div class="offcanvas-lg offcanvas-end text-bg-primary flex-grow-1" id="navbar-main">
+        <div class="offcanvas-lg offcanvas-end flex-grow-1" id="navbar-main">
             <div class="offcanvas-header">
-                <div class="d-flex align-items-center">
-                    <twig:Picasso:Image src="{{ asset('build/images/by-night.png', 'local') }}" width="{{ 36 }}" height="{{ 36 }}" alt="By Night" priority="{{ true }}" />
-                    <h5 class="offcanvas-title ms-2" id="staticBackdropLabel">
-                        By Night
-                    </h5>
+                <div class="site-brand">
+                    <twig:Picasso:Image src="{{ asset('build/images/by-night.png', 'local') }}" width="{{ 36 }}" height="{{ 36 }}" alt="" priority="{{ true }}" />
+                    <span class="site-brand-name">By Night</span>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#navbar-main" aria-label="Fermer"></button>
             </div>
-            <div class="offcanvas-body d-flex flex-column flex-lg-row">
-                <ul class="navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
+            <div class="offcanvas-body d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3">
+                <ul class="navbar-nav align-items-start align-items-lg-center">
                     {% set city = app_context.city %}
                     {% if city %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_location_index', {location: city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
+                            <a class="nav-link" href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?">
+                                <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
+                                <span class="nav-link-title">{{ city.name }}</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties {{ city.name|at_place }}">Agenda</a>
+                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties {{ city.name|at_place }}">
+                                <span class="nav-link-icon"><twig:Icon name="lucide:calendar-days" /></span>
+                                <span class="nav-link-title">Agenda</span>
+                            </a>
                         </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" title="Créez votre événement en 1 clic !" href="{{ path('app_event_new') }}">Créer un événement</a>
-                    </li>
-                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') -%}
-                        <li class="nav-item">
-                            <a class="nav-link" title="Gérer mes événements" href="{{ path('app_event_list') }}">Mes événements</a>
-                        </li>
-                    {%- endif %}
                 </ul>
 
                 <div id="autocomplete" class="mx-lg-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0" data-search-url="{{ path('api_search') }}" data-suggestions-url="{{ path('api_search_suggestions', city ? {city: city.slug} : {}) }}" data-search-page-url="{{ path('app_search_index') }}"></div>
 
                 {% if is_granted('ROLE_ADMIN') %}
-                <ul class="ms-auto navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
+                    <ul class="navbar-nav align-items-start align-items-lg-center">
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                 <a class="dropdown-item" href="{{ path('admin') }}">Administration</a>
-                                <a class="dropdown-item" href="{{ path('app_administration_info_index') }}">Réseaux Sociaux</a>
+                                <a class="dropdown-item" href="{{ path('app_administration_info_index') }}">Réseaux sociaux</a>
                                 <a class="dropdown-item js-impersonate" href="#" data-url="{{ url('api_users_autocomplete', {q: '__QUERY__'}) }}">Impersonation</a>
                             </div>
                         </li>
-                </ul>
+                    </ul>
                 {% endif %}
-                <ul class="ms-auto d-none d-lg-flex navbar-nav align-items-start align-items-lg-center justify-content-lg-center">
+                <ul class="d-none d-lg-flex navbar-nav align-items-center">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                         {{ include('fragments/_header-user-dropdown.html.twig', {show_username: true}) }}
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link register" title="Créez votre compte gratuitement" href="{{ path('app_register') }}">
-                                Inscription
+                            <a class="nav-link" title="Connectez-vous sur By Night" href="{{ path('app_login') }}">
+                                Connexion
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link login" title="Connectez-vous sur By Night" href="{{ path('app_login') }}">
-                                Connexion
+                            <a class="nav-link" title="Créez votre compte gratuitement" href="{{ path('app_register') }}">
+                                Inscription
                             </a>
                         </li>
                     {% endif %}
                 </ul>
+                <div class="vr d-none d-lg-block"></div>
+                <a class="btn btn-primary btn-pill site-header-cta" title="Publiez votre événement gratuitement" aria-label="Publier un événement" href="{{ path('app_event_new') }}">
+                    <twig:Icon name="lucide:circle-plus" />
+                    {# Icon only on large screens, where the header is tightest #}
+                    <span class="d-lg-none d-xl-inline">Publier un événement</span>
+                </a>
+                {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <div class="d-flex d-lg-none gap-2 w-100">
+                        <a class="btn btn-outline-secondary flex-fill" href="{{ path('app_login') }}">Connexion</a>
+                        <a class="btn btn-outline-secondary flex-fill" href="{{ path('app_register') }}">Inscription</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

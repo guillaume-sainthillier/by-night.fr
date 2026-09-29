@@ -1,0 +1,23 @@
+{#
+    A filter link drawn as a radio button of a list where one is picked: a label, a line under it, a count.
+
+    <twig:FilterOption href="…" label="Le Bikini" description="Ramonville" count="{{ 12 }}" active="{{ true }}" />
+
+    Composed:
+    <twig:FilterOption href="…" count="{{ 12 }}">
+        <strong>Le Bikini</strong>
+    </twig:FilterOption>
+#}
+{% props href, filteredHref = null, label = null, description = null, count = null, active = false %}
+<a href="{{ href }}" {{ attributes.defaults({class: 'filter-option' ~ (active ? ' active' : '')}) }}
+   {%- if filteredHref %} data-filtered-href="{{ filteredHref }}"{% endif %}
+   {%- if active %} aria-current="page"{% endif %}>
+    <span class="filter-radio" aria-hidden="true"></span>
+    <span class="flex-fill min-w-0">
+        {% block content %}
+            <span class="d-block">{{ label }}</span>
+            {% if description %}<span class="d-block small text-secondary text-truncate">{{ description }}</span>{% endif %}
+        {% endblock %}
+    </span>
+    {% if count is not null %}<span class="badge bg-secondary-lt">{{ count|format_number(locale: 'fr') }}</span>{% endif %}
+</a>

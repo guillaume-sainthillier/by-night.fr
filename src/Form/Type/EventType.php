@@ -19,6 +19,7 @@ use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -47,10 +48,9 @@ final class EventType extends AbstractType
                 'from_field' => 'startDate',
                 'to_field' => 'endDate',
                 'label' => 'Dates',
-                'ranges' => [],
             ])
             ->add('name', TextType::class, [
-                'label' => 'Titre',
+                'label' => "Titre de l'événement",
                 'attr' => [
                     'placeholder' => 'Choisissez un titre accrocheur…',
                 ],
@@ -67,10 +67,9 @@ final class EventType extends AbstractType
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
-                'help' => "Pour un meilleur rendu, préférez une image au format 16:9 (ex.\u{a0}: 1920\u{a0}×\u{a0}1080).",
             ])
             ->add('hours', TextType::class, [
-                'label' => 'Horaires affichés',
+                'label' => 'Horaires par défaut',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'À 20h, de 21h à minuit',
@@ -86,7 +85,7 @@ final class EventType extends AbstractType
                 ],
             ])
             ->add('prices', TextType::class, [
-                'label' => 'Tarif',
+                'label' => 'Tarifs',
                 'required' => false,
                 'attr' => [
                     'placeholder' => "17\u{a0}€ avec préventes, 20\u{a0}€ sur place",
@@ -130,7 +129,7 @@ final class EventType extends AbstractType
                 'required' => false,
                 'label' => 'Adresse',
                 'attr' => [
-                    'placeholder' => 'Tapez votre adresse ici pour remplir les champs ci-dessous',
+                    'placeholder' => 'Rechercher une adresse…',
                 ],
             ])
             ->add('place', PlaceType::class, [
@@ -179,6 +178,10 @@ final class EventType extends AbstractType
                     ],
                 ],
             ])
+            // Saves the event hidden from the site (a draft); the form's other submit button publishes it
+            ->add('saveDraft', SubmitType::class, [
+                'label' => 'Enregistrer en brouillon',
+            ])
             ->addEventListener(FormEvents::SUBMIT, $this->onSubmit(...));
 
         $builder->get('category')->addModelTransformer(new TagDtoTransformer());
@@ -211,6 +214,12 @@ final class EventType extends AbstractType
 
         if (null !== $data->place?->country && null !== $data->place->city) {
             $data->place->city->country = $data->place->country;
+        }
+
+        // The message details a status: the form hides it while the event is "Programmé" (no status), and the event
+        // page would still show one saved without a status
+        if (null === $data->status) {
+            $data->statusMessage = null;
         }
 
         // Only judged here, for the validation to show the verdict: the controller saves the

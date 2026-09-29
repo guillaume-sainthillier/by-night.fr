@@ -1,7 +1,227 @@
-{% set partial = app.request.xmlHttpRequest %}
+{% extends 'layouts/full.html.twig' %}
 
-{% if partial %}
-    {{ include('location/agenda/_index-content.html.twig') }}
-{% else %}
-    {{ include('location/agenda/_index-full.html.twig') }}
-{% endif %}
+{% block body_id 'page-agenda' %}
+
+{%- block title -%}
+{% if placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}{% if place %}, {{ place.cityName -}}{% endif %}
+{% elseif tag is not null %}{{- tag|ucfirst -}}
+{% else %}{{ type.label ?? 'Événements' }}{% endif %}
+{% if placeName is null %} {{ location.atName }}{% endif %}
+{% if page > 1 %} (Page {{ page }}){% endif %}
+{%- endblock -%}
+
+{%- block page_title -%}
+{% if placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}, {{ place.cityName -}}
+{% elseif tag is not null %}{{- tag|ucfirst -}}
+{% else %}{{ type.label ?? 'Événements' }}{% endif %}
+{% if placeName is null %} {{ location.atName }}{% endif %}
+{%- endblock -%}
+
+{% block breadcrumb %}
+    {% if location.isCountry %}
+        {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
+    {% else %}
+        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
+        {% do menu.addItem('Sortir ' ~ location.atName, url('app_location_index', {location: location.city.slug})) %}
+    {% endif %}
+    {% do menu.addItem('Agenda', url('app_agenda_index', {location: location.slug})) %}
+
+    {% if placeName is not null %}
+        {% do menu.addItem(placeName, url('app_agenda_by_place', {placeSlug: placeSlug, location: location.slug})) %}
+    {% elseif tagEntity is defined and tagEntity is not null %}
+        {% do menu.addItem(tag|ucfirst, url('app_agenda_by_tag', {tagSlug: tagEntity.slug, tagId: tagEntity.id, location: location.slug})) %}
+    {% elseif type is not null %}
+        {% do menu.addItem(type.label, url('app_agenda_by_type', {typeSlug: type.slug, location: location.slug})) %}
+    {% endif %}
+    {% if page > 1 %}
+        {% do menu.addItem('Page ' ~ page, url(app.current_route, routeParams|merge({page: page}))) %}
+    {% endif %}
+{% endblock %}
+
+{% block og_title block('title')|striptags %}
+
+{% block meta_description -%}
+    {{ block('title')|striptags }}.
+    {% if location.isCountry %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.country.atDisplayName }}. Découvrez les événements à ne pas manquer.{% endif %}
+    {% if location.isCity %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.atName }}. Découvrez les événements à ne pas manquer.{% endif %}
+{%- endblock %}
+
+{% block metas %}
+    {% if events.hasPreviousPage() %}
+        <link rel="prev" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getPreviousPage()})) }}" />
+    {% endif %}
+    {% if events.hasNextPage() %}
+        <link rel="next" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getNextPage()})) }}" />
+    {% endif %}
+{% endblock %}
+
+{% block meta_robots %}
+    {% if events.nbResults == 0 %}
+        <meta name="robots" content="noindex, follow">
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {% set agenda = path('app_agenda_index', {location: location.slug}|merge(filters)) %}
+    {# The page without its type, its venue or its category: each keeps the others, and the other filters #}
+    {% set withoutType = agenda_path(location.slug, place: place, tag: tagEntity, filters: filters) %}
+    {% set withoutPlace = agenda_path(location.slug, type: type, tag: tagEntity, filters: filters) %}
+    {% set withoutTag = agenda_path(location.slug, type: type, place: place, filters: filters) %}
+    {# The links that remove one filter each: its label, and the page without it #}
+    {% set active = [] %}
+    {% if type %}
+        {% set active = active|merge([{label: type.label, href: withoutType}]) %}
+    {% endif %}
+    {% if placeName %}
+        {% set active = active|merge([{label: placeName, href: withoutPlace}]) %}
+    {% endif %}
+    {% if tag %}
+        {% set active = active|merge([{label: tag|ucfirst, href: withoutTag}]) %}
+    {% endif %}
+    {% if search.term %}
+        {% set active = active|merge([{label: '« ' ~ search.term ~ ' »', href: path(app.current_route, routeParams|merge(filters|filter((value, key) => key != 'term')))}]) %}
+    {% endif %}
+    {% if search.price %}
+        {% set active = active|merge([{label: search.price.label, href: path(app.current_route, routeParams|merge(unpricedFilters))}]) %}
+    {% endif %}
+    {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours" #}
+    {% set preset = search.preset %}
+    {% if preset is null or preset.value != 'anytime' %}
+        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters))}]) %}
+    {% endif %}
+
+    <div class="container-xl py-4" {{ load_page('agenda') }}>
+        <div class="row g-4">
+            {# Below lg the filters are an offcanvas: the sidebar comes after the events #}
+            <aside class="col-lg-4 order-last order-lg-first">
+                {{ include('location/agenda/_filters.html.twig') }}
+
+                <div class="card bg-primary-lt border-0">
+                    <div class="card-body">
+                        <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Organisateurs</twig:Section:Eyebrow>
+                        <h2 class="h2 text-start text-body mb-2">Vous organisez un événement {{ location.atName }}&nbsp;?</h2>
+                        <p class="text-secondary">Concert, expo, marché ou soirée&nbsp;: publiez-le gratuitement, il rejoint cet agenda.</p>
+                        <a class="btn btn-primary w-100" href="{{ path('app_event_new') }}" title="Publiez votre événement gratuitement">
+                            <twig:Icon name="lucide:circle-plus" />
+                            Publier un événement
+                        </a>
+                    </div>
+                </div>
+
+                {% if social_manager.facebookIdPage %}
+                    {{ include('location/widget/facebook.html.twig') }}
+                {% endif %}
+            </aside>
+
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body p-lg-4">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            {% if location.isCity and location.city.parent %}
+                                <span class="badge bg-teal-lt">
+                                    <twig:Icon name="lucide:map-pin" />
+                                    {{ location.city|department }}
+                                </span>
+                            {% elseif location.isCountry %}
+                                <span class="badge bg-secondary-lt">
+                                    <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
+                                    {{ location.country.displayName }}
+                                </span>
+                            {% endif %}
+                            <span class="badge bg-secondary-lt">
+                                {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
+                            </span>
+                        </div>
+                        <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
+                        <p class="text-secondary mb-0">
+                            Concerts, spectacles, expositions, marchés, festivals et soirées&nbsp;: toutes les sorties
+                            {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
+                        </p>
+
+                        {# Without active filters, only the button of the phone filters: nothing to show on a desktop #}
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4{{ active ? '' : ' d-lg-none' }}">
+                            {% if active %}
+                                <span class="subheader me-1">Filtres actifs&nbsp;:</span>
+                                {% for filter in active %}
+                                    <twig:Chip href="{{ filter.href }}" active="{{ true }}" class="btn-sm" title="Retirer ce filtre">
+                                        {{ filter.label }}
+                                        <twig:Icon name="lucide:x" class="icon-end" />
+                                    </twig:Chip>
+                                {% endfor %}
+                            {% endif %}
+                            <button type="button" class="btn d-lg-none ms-auto" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
+                                <twig:Icon name="lucide:sliders-horizontal" />
+                                Filtres
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {% if events.nbResults == 0 %}
+                    <div class="alert alert-info">
+                        <twig:Icon name="lucide:info" />
+                        Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                    </div>
+                {% endif %}
+
+                {% for section in sections %}
+                    {% set day = section.day|date('Y-m-d') %}
+                    {% set days = ((section.day|date('U') - 'today'|date('U')) / 86400)|round %}
+                    <section class="mb-4">
+                        <div class="card card-sm bg-secondary-lt border-0 mb-3">
+                            <div class="card-body d-flex flex-wrap align-items-center gap-2">
+                                <twig:Icon name="lucide:calendar-days" class="text-primary" />
+                                <h2 class="h3 text-start text-body m-0">
+                                    <time datetime="{{ day }}">{{ section.day|format_date(pattern: 'EEEE d MMMM y', locale: 'fr')|ucfirst }}</time>
+                                </h2>
+                                {% if facets.dates[day] is defined %}
+                                    {% set dayFilters = undatedFilters|merge({dateRange: {from: day, to: day}}) %}
+                                    <a class="small text-secondary" href="{{ path(app.current_route, routeParams|merge(dayFilters)) }}" title="Toutes les sorties de ce jour">
+                                        {{ '{count, plural, one {# sortie ce jour-là} other {# sorties ce jour-là}}'|trans({count: facets.dates[day]}, 'messages+intl-icu') }}
+                                    </a>
+                                {% endif %}
+                                <span class="ms-auto">
+                                    {# Nothing for a day gone by, which only dates searched in the past list #}
+                                    {% if days == 0 %}
+                                        <span class="badge bg-primary text-white">Aujourd'hui</span>
+                                    {% elseif days == 1 %}
+                                        <span class="badge bg-primary-lt">Demain</span>
+                                    {% elseif days > 1 %}
+                                        <span class="badge bg-secondary-lt" title="Dans {{ days }} jours">J-{{ days }}</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row row-cards">
+                            {% for event in section.events %}
+                                <div class="col-md-6 col-xl-4">
+                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endfor %}
+
+                {% if events.haveToPaginate %}
+                    <div class="card">
+                        <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <span class="text-secondary">
+                                Sorties <strong>{{ events.currentPageOffsetStart }} à {{ events.currentPageOffsetEnd }}</strong>
+                                sur <strong>{{ events.nbResults|format_number(locale: 'fr') }}</strong>
+                            </span>
+                            {{ pagerfanta(events, {omitFirstPage: true, proximity: 1}) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+    {{ reprise_entry_link_tags('agenda') }}
+{% endblock %}
+
+{% block js %}
+    {{ reprise_entry_script_tags('agenda') }}
+{% endblock %}

@@ -1,0 +1,3 @@
+{# The title of a <twig:Tile>; "tag" picks the heading level for the outline of the page #}
+{% props tag = 'h3' %}
+<{{ tag }} {{ attributes.defaults({class: 'card-title mb-1'}) }}>{% block content %}{% endblock %}</{{ tag }}>

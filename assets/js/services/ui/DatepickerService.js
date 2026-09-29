@@ -14,45 +14,7 @@ function resolveElement(element) {
     return element
 }
 
-function parseRanges(rangesData) {
-    const ranges = {}
-    if (rangesData) {
-        Object.entries(rangesData).forEach(([label, values]) => {
-            ranges[label] = [moment(values[0]), values[1] === null ? null : moment(values[1])]
-        })
-    }
-    return ranges
-}
-
-function findMatchingRangeLabel(start, end, ranges) {
-    const startStr = start.format('YYYY-MM-DD')
-    const endStr = end?.isValid() ? end.format('YYYY-MM-DD') : null
-
-    for (const [label, [rangeStart, rangeEnd]] of Object.entries(ranges)) {
-        const rangeStartStr = rangeStart?.format('YYYY-MM-DD')
-        const rangeEndStr = rangeEnd?.isValid() ? rangeEnd.format('YYYY-MM-DD') : null
-
-        if (startStr === rangeStartStr && endStr === rangeEndStr) {
-            return label
-        }
-    }
-
-    return null
-}
-
-function formatRangeLabel(start, end, ranges, label) {
-    // Use provided label if it's a valid preset (not custom)
-    if (label && ranges[label]) {
-        return label
-    }
-
-    // Otherwise check if dates match a predefined range
-    const matchingLabel = findMatchingRangeLabel(start, end, ranges)
-    if (matchingLabel) {
-        return matchingLabel
-    }
-
-    // Custom format
+function formatRangeLabel(start, end) {
     if (!end?.isValid()) {
         return `À partir du ${start.format('ll')}`
     }
@@ -67,7 +29,6 @@ export function create({
     fromInput,
     toInput,
     singleDate = false,
-    ranges = {},
     locale = {
         applyLabel: 'OK',
         cancelLabel: 'Annuler',
@@ -81,7 +42,6 @@ export function create({
     const $input = $(inputElement)
     const $fromInput = $(resolveElement(fromInput))
     const $toInput = $(resolveElement(toInput))
-    const parsedRanges = parseRanges(ranges)
 
     // Remove name attribute to prevent double form submission
     $input.removeAttr('name')
@@ -96,8 +56,6 @@ export function create({
             singleDatePicker: singleDate,
             autoApply: singleDate,
             autoUpdateInput: false,
-            ranges: singleDate ? undefined : parsedRanges,
-            alwaysShowCalendars: !singleDate && Object.keys(parsedRanges).length === 0,
             locale,
         },
         (start, end, label) => {
@@ -106,7 +64,7 @@ export function create({
                 $fromInput.val(start.format('YYYY-MM-DD'))
                 $toInput.val(start.format('YYYY-MM-DD'))
             } else {
-                $input.val(formatRangeLabel(start, end, parsedRanges, label))
+                $input.val(formatRangeLabel(start, end))
                 $fromInput.val(start.isValid() ? start.format('YYYY-MM-DD') : '')
                 $toInput.val(end.isValid() ? end.format('YYYY-MM-DD') : '')
             }
@@ -135,7 +93,7 @@ export function create({
         if (singleDate) {
             $input.val(start.format('ll'))
         } else {
-            $input.val(formatRangeLabel(start, end, parsedRanges, $input.val()))
+            $input.val(formatRangeLabel(start, end))
         }
     }
 

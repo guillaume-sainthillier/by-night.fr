@@ -19,6 +19,7 @@ use App\Picture\ImageFormats;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\ObjectKey;
+use App\Utils\StartingPrice;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -119,6 +120,17 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Groups(['elasticsearch:event:details'])]
     private ?string $type = null;
 
+    /**
+     * The agenda type pages (AgendaType values) the event is listed on, as last found by the nightly
+     * app:events:classify-agenda-types: the counts of the agenda's type links read them instead of running every
+     * type's full-text search on each page.
+     *
+     * @var list<string>
+     */
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, length: 63, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private array $agendaTypes = [];
+
     /** @deprecated Use $category (Tag) instead */
     #[ORM\Column(name: 'category', type: Types::STRING, length: 128, nullable: true)]
     #[Ignore]
@@ -166,6 +178,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $prices = null;
+
+    /**
+     * The lowest price to get in, read from $prices when they are set (StartingPrice): 0 for a free entry, null when
+     * the text names none. The agenda filters on it.
+     */
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private ?float $startingPrice = null;
 
     #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $fromData = null;
@@ -675,6 +695,24 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
+    /**
+     * @return list<string>
+     */
+    public function getAgendaTypes(): array
+    {
+        return $this->agendaTypes;
+    }
+
+    /**
+     * @param list<string> $agendaTypes
+     */
+    public function setAgendaTypes(array $agendaTypes): self
+    {
+        $this->agendaTypes = $agendaTypes;
+
+        return $this;
+    }
+
     #[Deprecated(message: 'Use getCategory() instead')]
     public function getCategoryLegacy(): ?string
     {
@@ -790,8 +828,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setPrices(?string $prices): self
     {
         $this->prices = $prices;
+        $this->startingPrice = StartingPrice::fromPrices($prices);
 
         return $this;
+    }
+
+    public function getStartingPrice(): ?float
+    {
+        return $this->startingPrice;
     }
 
     public function getFromData(): ?string

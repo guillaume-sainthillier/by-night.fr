@@ -11,6 +11,8 @@
 namespace App\Tests\Controller\Comment;
 
 use App\Factory\CommentFactory;
+use App\Factory\EventFactory;
+use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class CommentControllerTest extends WebTestCase
@@ -27,5 +29,39 @@ final class CommentControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('body', 'Moi, avec plaisir');
         self::assertSelectorTextNotContains('body', 'Réponse retirée par la modération');
+    }
+
+    public function testTheCommentsOfADraftAreOnlyForThoseWhoCanSeeIt(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $draft = EventFactory::createOne(['user' => $author, 'draft' => true]);
+        $comment = CommentFactory::createOne(['comment' => 'Pensez à réserver', 'event' => $draft, 'user' => $author]);
+        CommentFactory::createOne(['comment' => 'Merci pour le rappel', 'event' => $draft, 'parent' => $comment]);
+        $paths = [
+            \sprintf('/commentaire/%d/1', $draft->getId()),
+            \sprintf('/commentaire/form/%d', $draft->getId()),
+            \sprintf('/commentaire/%d/reponses/1', $comment->getId()),
+        ];
+
+        foreach ($paths as $path) {
+            $client->request('GET', $path);
+
+            self::assertResponseStatusCodeSame(404, $path);
+        }
+
+        // Nor can another member write on it
+        $client->loginUser(UserFactory::createOne());
+        foreach ([...$paths, \sprintf('/commentaire/%d/nouveau', $draft->getId()), \sprintf('/commentaire/%d/repondre', $comment->getId())] as $path) {
+            $client->request('GET', $path);
+
+            self::assertResponseStatusCodeSame(404, $path);
+        }
+
+        $client->loginUser($author);
+        $client->request('GET', $paths[0]);
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'Pensez à réserver');
     }
 }

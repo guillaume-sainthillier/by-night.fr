@@ -120,11 +120,11 @@ export default {
                             submitBtn.classList.remove('d-none')
                         }, 3000)
                     } else {
-                        showError(response.message || "Une erreur s'est produite")
+                        showError(response.message || 'Une erreur est survenue')
                     }
                 })
                 .fail((xhr) => {
-                    let errorMessage = "Une erreur s'est produite"
+                    let errorMessage = 'Une erreur est survenue'
                     if (xhr.responseJSON?.violations) {
                         errorMessage = xhr.responseJSON.violations.map((v) => v.message).join('<br>')
                     } else if (xhr.responseJSON?.message || xhr.responseJSON?.detail) {

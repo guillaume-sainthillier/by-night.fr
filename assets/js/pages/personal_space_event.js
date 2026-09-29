@@ -3,9 +3,11 @@ import $ from 'jquery'
 import TomSelect from 'tom-select'
 import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
+import initTimesheetRows from '@/js/listeners/timesheet-rows'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createTags } from '@/js/services/ui/TagsService'
+import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 
 function initDatepickers(container = document) {
@@ -15,7 +17,6 @@ function initDatepickers(container = document) {
             fromInput: document.getElementById(el.dataset.from),
             toInput: document.getElementById(el.dataset.to),
             singleDate: el.dataset.singleDate === 'true',
-            ranges: el.dataset.ranges ? JSON.parse(el.dataset.ranges) : {},
         })
     })
 }
@@ -53,18 +54,38 @@ function initWysiwygs(container = document) {
     })
 }
 
+// The status message only details a status: hidden while the event is "Programmé" (the empty choice), and disabled so
+// that it is not sent, since the event page would still show a message saved without a status
+function initStatusMessage() {
+    const status = document.getElementById('app_event_status')
+    const message = document.getElementById('app_event_statusMessage')
+    if (!status || !message) return
+
+    const row = message.closest('.form-group')
+    const toggle = () => {
+        const scheduled = status.value === ''
+        row.hidden = scheduled
+        message.disabled = scheduled
+    }
+
+    toggle()
+    status.addEventListener('change', toggle)
+}
+
 /** @type {Page} */
 function initialize({ app }) {
     initDatepickers()
     initTagInputs()
     initCategoryInputs()
     initWysiwygs()
+    initStatusMessage()
 
     // Initialize event scheduler
     initEventScheduler(document.body, app)
 
     // Initialize timesheet hours sync
     initTimesheetHoursSync(document.body)
+    initTimesheetRows(document.body)
 
     // Reinitialize date pickers when new timesheet items are added
     const timesheetsCollection = document.getElementById('app_event_timesheets')
@@ -216,7 +237,7 @@ function initialize({ app }) {
             valueField: 'main_text',
             labelField: 'main_text',
             searchField: 'main_text',
-            plugins: ['remove_button'],
+            plugins: tomSelectFr.plugins,
             maxItems: 1,
             create: true,
             createFilter: () => true,
@@ -250,9 +271,7 @@ function initialize({ app }) {
                 item(data, escape) {
                     return `<div>${escape(data.main_text)}</div>`
                 },
-                no_results() {
-                    return '<div class="no-results">Aucun résultat</div>'
-                },
+                ...tomSelectFr.render,
             },
             async onChange(value) {
                 if (!value) return
@@ -279,7 +298,7 @@ function initialize({ app }) {
             valueField: 'description',
             labelField: 'description',
             searchField: 'description',
-            plugins: ['remove_button'],
+            plugins: tomSelectFr.plugins,
             maxItems: 1,
             create: true,
             createFilter: () => true,
@@ -304,9 +323,7 @@ function initialize({ app }) {
                 item(data, escape) {
                     return `<div>${escape(data.description)}</div>`
                 },
-                no_results() {
-                    return '<div class="no-results">Aucun r\u00e9sultat</div>'
-                },
+                ...tomSelectFr.render,
             },
             async onChange(value) {
                 if (!value) return

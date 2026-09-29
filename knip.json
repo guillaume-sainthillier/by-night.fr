@@ -21,6 +21,7 @@
     },
     "ignoreDependencies": [
         "es6-promise",
-        "glob-all"
+        "glob-all",
+        "@fontsource-variable/epilogue"
     ]
 }

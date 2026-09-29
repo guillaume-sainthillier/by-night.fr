@@ -1,6 +1,5 @@
 #bread {
-    background-color: white;
-    border-bottom: 1px solid #0000001a;
+    background-color: transparent;
 }
 
 .breadcrumb {
@@ -8,18 +7,28 @@
     display: flex;
     flex-wrap: nowrap;
     overflow-y: auto;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $text-secondary;
 
     li {
         white-space: nowrap;
     }
 
     a {
-        color: $primary;
+        color: $text-secondary;
 
         &:hover,
         &:focus {
-            color: #222;
+            color: $primary;
         }
+    }
+
+    // The current page
+    li:last-child {
+        color: $primary-strong;
     }
 }
 
@@ -32,12 +41,6 @@
 }
 
 .breadcrumb > li + li:before {
-    content: '>';
-    color: #222;
-}
-
-@include media-breakpoint-down(md) {
-    .breadcrumb-item {
-        font-size: $font-size-sm;
-    }
+    content: '›';
+    color: $text-secondary;
 }

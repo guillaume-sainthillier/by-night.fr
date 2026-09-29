@@ -1,0 +1,67 @@
+{#
+    A country portal. "featured": the big card (badge, count box, a sentence about its cities, a button); otherwise the
+    side card (flag, name, count, cities, and a footer with its tagline and a link).
+
+    <twig:Location:CountryCard country="{{ france }}" events="{{ 202259 }}" cities="{{ ['Paris', 'Marseille', 'Lyon'] }}" featured="{{ true }}" />
+#}
+{# @var country \App\Entity\Country #}
+{# @var cities list<string> its busiest cities, the busiest first #}
+{% props country, events = 0, cities = [], featured = false %}
+{% set url = path('app_location_index', {location: country.slug}) %}
+{% if featured %}
+    <a href="{{ url }}" title="Que faire {{ country.atDisplayName }}&nbsp;?" {{ attributes.defaults({class: 'card card-lg card-layout text-reset h-100 mb-0'}) }}>
+        <div class="card-body d-flex flex-column justify-content-between gap-4">
+            <div class="d-flex flex-column flex-sm-row align-items-sm-start justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <twig:Flag code="{{ country.id }}" size="{{ 52 }}" />
+                    <h3 class="display-6 fw-bold mb-0">{{ country.displayName }}</h3>
+                </div>
+                <div class="card card-sm bg-light flex-shrink-0 text-sm-end mb-0">
+                    <div class="card-body">
+                        <div class="h2 text-primary mb-0">{{ events|format_number(locale: 'fr') }}</div>
+                        <div class="subheader">{{ '{count, plural, one {sortie à venir} other {sorties à venir}}'|trans({count: events}, 'messages+intl-icu') }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-3">
+                <p class="lead text-secondary mb-0">
+                    {%- if cities|length > 2 -%}
+                        De {{ cities[0] }} à {{ cities[1] }} en passant par {{ cities|slice(2)|join(', ', ' et ') }}&nbsp;:
+                    {%- elseif cities|length == 2 -%}
+                        De {{ cities[0] }} à {{ cities[1] }}&nbsp;:
+                    {%- elseif cities|length == 1 -%}
+                        {{ cities[0]|at_place|ucfirst }}&nbsp;:
+                    {%- endif %}
+                    concerts, spectacles, expos, marchés, festivals et sorties en plein air.
+                </p>
+                <span class="btn btn-primary btn-lg btn-pill flex-shrink-0">
+                    Voir l'agenda {{ country.atDisplayName }}
+                    <twig:Icon name="lucide:arrow-right" class="icon-end" />
+                </span>
+            </div>
+        </div>
+    </a>
+{% else %}
+    <a href="{{ url }}" title="Que faire {{ country.atDisplayName }}&nbsp;?" {{ attributes.defaults({class: 'card card-layout card-link-pop text-reset h-100 mb-0'}) }}>
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3">
+                <twig:Flag code="{{ country.id }}" size="{{ 32 }}" class="mt-1" />
+                <div class="min-w-0 flex-fill">
+                    <div class="d-flex align-items-start justify-content-between gap-1">
+                        <h3 class="h2 mb-0">{{ country.displayName }}</h3>
+                        <span class="badge bg-secondary-lt flex-shrink-0">
+                            {{- '{count, plural, one {# sortie} other {# sorties}}'|trans({count: events}, 'messages+intl-icu') -}}
+                        </span>
+                    </div>
+                    {% if cities %}
+                        <p class="text-secondary mt-2 mb-0">{{ cities|slice(0, 3)|join(', ') }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between gap-3">
+            <span class="text-secondary small text-truncate">{{ country.headline ?? 'Concerts, expos & sorties' }}</span>
+            <span class="small fw-bold text-primary flex-shrink-0"><twig:Icon name="lucide:arrow-right" /></span>
+        </div>
+    </a>
+{% endif %}

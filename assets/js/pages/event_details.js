@@ -8,32 +8,30 @@ function initialize() {
 
     new CommentApp().init()
 
-    const gMap = $('#googleMap').attr('data-bs-toggled', '0')
+    // Google Maps loads on demand: the frame replaces the placeholder of the map card
     $('#loadMap')
         .off('click')
-        .click(function (e) {
-            e.preventDefault()
-            if (!gMap.find('iframe').length) {
-                $('<iframe>')
-                    .attr({
-                        class: 'component',
-                        width: gMap.width(),
-                        height: 450,
-                        frameborder: 0,
-                        src: $(this).data('map'),
-                        allowfullscreen: true,
-                    })
-                    .css({ width: '100%', border: '0' })
-                    .appendTo(gMap)
-            }
+        .on('click', function () {
+            $('<iframe>')
+                .attr({
+                    src: $(this).data('map'),
+                    title: 'Plan',
+                    loading: 'lazy',
+                    referrerpolicy: 'no-referrer-when-downgrade',
+                    allowfullscreen: true,
+                })
+                .css('border', 0)
+                .appendTo($('#googleMap').empty())
+        })
 
-            if (gMap.attr('data-bs-toggled') === '1') {
-                // Masquer
-                gMap.attr('data-bs-toggled', '0').hide('fast')
-            } // Afficher
-            else {
-                gMap.attr('data-bs-toggled', '1').show('fast')
-            }
+    $('[data-copy-url]')
+        .off('click')
+        .on('click', function () {
+            const toastManager = window.App.get('toastManager')
+            navigator.clipboard.writeText($(this).data('copy-url')).then(
+                () => toastManager.createToast('success', 'Lien copié !'),
+                () => toastManager.createToast('error', 'Impossible de copier le lien')
+            )
         })
 }
 

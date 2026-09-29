@@ -64,11 +64,13 @@
             gap: $spacer;
             align-items: stretch;
 
+            // The image on top, its delete checkbox level with the bottom of the dropzone
             .vich-image-existing {
                 flex: 0 0 auto;
                 max-width: 200px;
                 display: flex;
                 flex-direction: column;
+                justify-content: space-between;
             }
 
             .dropzone {

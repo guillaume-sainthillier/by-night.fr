@@ -1,0 +1,29 @@
+{# @var location \App\Entity\City|\App\Entity\Country #}
+{# The picture of a city or country (see LocationPicture), cropped to the size; the landing photo when it has none #}
+{% props location, width, height, sizes = null, priority = false %}
+{% set picture = location_picture(location) %}
+{% if picture %}
+    <twig:Picasso:Image
+        loader="{{ picture.loader }}"
+        src="{{ picture.src }}"
+        context="{{ picture.context }}"
+        width="{{ width }}"
+        height="{{ height }}"
+        fit="crop"
+        sizes="{{ sizes }}"
+        priority="{{ priority }}"
+        alt=""
+        {{ ...attributes }}
+    />
+{% else %}
+    <twig:Picasso:Image
+        src="{{ asset('build/images/landing.jpg', 'local') }}"
+        width="{{ width }}"
+        height="{{ height }}"
+        fit="crop"
+        sizes="{{ sizes }}"
+        priority="{{ priority }}"
+        alt=""
+        {{ ...attributes }}
+    />
+{% endif %}

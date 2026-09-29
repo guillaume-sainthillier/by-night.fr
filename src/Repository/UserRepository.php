@@ -13,6 +13,7 @@ namespace App\Repository;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\UserDto;
+use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
@@ -117,18 +118,54 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->setParameter('from', $from->format('Y-m-d'));
     }
 
-    public function findAllTopUsersQueryBuilder(): QueryBuilder
+    /**
+     * The members who joined last and have a picture (uploaded, or taken from a social network), newest first:
+     * the faces of the sign-up page.
+     *
+     * @return User[]
+     */
+    public function findLatestWithPicture(int $limit): array
     {
-        // Rows are [0 => User, 'nb_events' => int], out of loadAllEager()'s reach: the social account
-        // each member's picture falls back to is fetched here
         return $this
             ->createQueryBuilder('u')
-            ->addSelect('o')
-            ->addSelect('COUNT(u.id) AS nb_events')
-            ->leftJoin('u.oAuth', 'o')
-            ->join('u.userEvents', 'c')
-            ->orderBy('nb_events', 'DESC')
-            ->groupBy('u.id');
+            ->where('u.image.name IS NOT NULL OR u.imageSystem.name IS NOT NULL')
+            ->orderBy('u.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The members who said they go to an event, the last to say so first: the faces beside its "J'y vais" button.
+     *
+     * @return User[]
+     */
+    public function findEventParticipants(Event $event, int $limit): array
+    {
+        return $this
+            ->createQueryBuilder('u')
+            ->join('u.userEvents', 'ue')
+            ->where('ue.event = :event')
+            ->andWhere('ue.going = true')
+            ->setParameter('event', $event->getId())
+            ->orderBy('ue.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The name, or the name followed by the first free number ("Camille Martin-2"): the username is unique.
+     * getUserIdentifier() is the e-mail, not the username.
+     */
+    public function getFreeUsername(string $name): string
+    {
+        $username = $name;
+        for ($i = 1; null !== $this->findOneBy(['username' => $username]); ++$i) {
+            $username = \sprintf('%s-%d', $name, $i);
+        }
+
+        return $username;
     }
 
     public function findOneBySocial(string $email, string $infoPrefix, string $socialId): ?User

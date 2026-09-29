@@ -1,10 +1,63 @@
-{% extends 'layouts/default-stretch.html.twig' %}
+{% extends 'layouts/full.html.twig' %}
+
+{#
+    The steps of a password reset: one centred card (an icon, the title, an introduction, then the step's form or
+    message), a way back to the login, and the support for a member who lost access to their address.
+#}
 
 {% block title -%}
-    Mot de passe oublié ? {% block title_reset %}{% endblock %}
+    Mot de passe oublié&nbsp;? {% block title_reset %}{% endblock %}
 {%- endblock %}
 
 {% block breadcrumb -%}
     {% do menu.addItem('Mot de passe oublié', url('app_forgot_password_request')) %}
     {% block breadcrumb_reset %}{% endblock %}
 {%- endblock %}
+
+{# Read with block() by the card below, never rendered in place #}
+{% block reset_icon 'lucide:rotate-ccw-key' %}
+
+{% block body %}
+    <div class="container-lg py-4 py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+                <div class="card card-lg mb-3">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
+                                <twig:Icon name="{{ block('reset_icon') }}" />
+                            </span>
+                            <h1 class="mb-2">{% block reset_title '' %}</h1>
+                            <p class="text-secondary mb-0">{% block reset_intro '' %}</p>
+                        </div>
+                        {% block reset_body '' %}
+                    </div>
+                    <div class="card-footer text-center">
+                        <a class="fw-bold" href="{{ path('app_login') }}" title="Connectez-vous à votre compte">
+                            <twig:Icon name="lucide:arrow-left" />
+                            Revenir à la page de connexion
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card bg-teal-lt border-0 mb-0">
+                    <div class="card-body d-flex align-items-start gap-3">
+                        <span class="avatar avatar-sm bg-white text-teal flex-shrink-0">
+                            <twig:Icon name="lucide:life-buoy" />
+                        </span>
+                        <div>
+                            <h2 class="card-title text-start mb-1">Besoin d'aide&nbsp;?</h2>
+                            <p class="small mb-2">
+                                Vous n'avez plus accès à l'adresse e-mail de votre compte ou vous ne parvenez pas à vous connecter&nbsp;? Écrivez-nous, nous vous aiderons à le retrouver.
+                            </p>
+                            <a class="small fw-bold" href="mailto:support@by-night.fr" title="Un problème, une question&nbsp;? Contactez-nous">
+                                Contacter le support
+                                <twig:Icon name="lucide:arrow-right" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

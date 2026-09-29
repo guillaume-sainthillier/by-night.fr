@@ -1,4 +1,6 @@
-{% extends 'layouts/stretch.html.twig' %}
+{% extends 'layouts/full.html.twig' %}
+{# isHiddenDraft (from the controller): a draft the viewer cannot edit. It only gets a notice, and nothing of the event
+   may reach the head either (title, description, poster, JSON-LD) or the breadcrumb: that is what scrapers read #}
 {% set eventShortName = event_seo.getEventShortTitle(event) %}
 {% set schedules = event_seo.getEventDateTime(event) %}
 {% set eventDescription = event.description|parse_tags|raw %}
@@ -15,16 +17,7 @@
 {% endfor %}
 
 {% block body_id 'page-event' %}
-{% block title event_seo.eventFullTitle(event) %}
-{% block page_title event_seo.eventFullTitle(event) %}
-
-{% block title_after %}
-    {% if is_granted('ROLE_ADMIN') %}
-        <a class="btn btn-icon btn-outline-secondary" href="{{ path('admin_event_edit', {entityId: event.id}) }}" data-bs-toggle="tooltip" title="Éditer l'événement">
-            <twig:Icon name="lucide:pencil" />
-        </a>
-    {% endif %}
-{% endblock %}
+{% block title isHiddenDraft ? 'Événement bientôt disponible' : event_seo.eventFullTitle(event) %}
 
 {% block breadcrumb %}
     {% if location.isCountry %}
@@ -34,24 +27,28 @@
         {% do menu.addItem('Sortir ' ~ event.placeCity|at_place, url('app_agenda_index', {location: location.city.slug})) %}
     {% endif %}
 
-    {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, placeSlug: place.slug})) %}
-    {% do menu.addItem(event.name, url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})) %}
+    {% if not isHiddenDraft %}
+        {% do menu.addItem(event.placeName, url('app_agenda_by_place', {location: location.slug, placeSlug: place.slug})) %}
+        {% do menu.addItem(event.name, url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})) %}
+    {% endif %}
 {% endblock %}
 
-{% block meta_keywords %}{% if allTags|length > 0 %}{{ allTags|map(t => t.name)|join(',') }},{% endif %}{{ parent() }}{% endblock %}
-{% block meta_description event_seo.eventDescription(event) %}
+{% block meta_keywords %}{% if not isHiddenDraft and allTags|length > 0 %}{{ allTags|map(t => t.name)|join(',') }},{% endif %}{{ parent() }}{% endblock %}
+{% block meta_description isHiddenDraft ? parent() : event_seo.eventDescription(event) %}
 
 {% block metas %}
-    <link rel="image_src" href="{{ original }}" />
-    <meta property="article:published_time" content="{{ event.createdAt.format('Y-m-d') }}" />
-    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
-    {% if event.user %}
-        <meta property="article:author" content="{{ url('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" />
-    {% endif %}
+    {% if not isHiddenDraft %}
+        <link rel="image_src" href="{{ original }}" />
+        <meta property="article:published_time" content="{{ event.createdAt.format('Y-m-d') }}" />
+        <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
+        {% if event.user %}
+            <meta property="article:author" content="{{ url('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" />
+        {% endif %}
 
-    {% for tag in allTags %}
-        <meta property="article:tag" content="{{ tag.name }}" />
-    {% endfor %}
+        {% for tag in allTags %}
+            <meta property="article:tag" content="{{ tag.name }}" />
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block meta_robots %}
@@ -60,302 +57,420 @@
     {% endif %}
 {% endblock %}
 
-{% block og_title eventShortName %}
+{% block og_title isHiddenDraft ? parent() : eventShortName %}
+{# Kept for a hidden draft: the visitor already has this URL, and pointing og:url elsewhere would make the platforms that
+   scraped it now send the shares made once the event is published to that other page #}
 {% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
-{% block og_image original %}
+{% block og_image isHiddenDraft ? parent() : original %}
 
 {% block json_ld %}
-    {{ event_json_ld(event) }}
+    {% if not isHiddenDraft %}
+        {{ event_json_ld(event) }}
+    {% endif %}
 {% endblock %}
 
 {% block body -%}
     <div {{ load_page('event_details') }}></div>
-    {% if event.draft %}
-        <div class="alert alert-warning">
-            <twig:Icon name="lucide:triangle-alert" />
-            Cet événement n'est pas encore publié. Il sera bientôt disponible, merci de votre patience.
+    {% if isHiddenDraft %}
+        <div class="container-lg py-4">
+            <header class="event-header mb-4">
+                <h1 class="display-6 fw-bold text-start">{{ block('title') }}</h1>
+            </header>
+            <div class="alert alert-warning">
+                <twig:Icon name="lucide:triangle-alert" />
+                Cet événement n'est pas encore publié. Il sera bientôt disponible, merci de votre patience.
+            </div>
         </div>
     {% else %}
-        <div class="card" id="event">
-            <div class="row g-0">
-                {% if event_seo.hasEnded(event) %}
-                    <div class="col-12">
-                        <div class="alert alert-secondary mb-0" id="event-ended">
-                            <twig:Icon name="lucide:calendar-clock" />
-                            <span>Cet événement est terminé. Retrouvez les prochaines sorties {{ event.place.location.atName }} dans <a href="{{ path('app_agenda_index', {location: event.place.locationSlug}) }}">l'agenda</a>.</span>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if event.status or event.statusMessage %}
-                    <div class="col-12">
-                        <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
-                    </div>
-                {% endif %}
-                <div class="col-lg-7">
-                    <a class="image-gallery" href="{{ original }}" title="{{ eventShortName }}">
-                        <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" />
+        {% set price = event.prices|price_label %}
+        {% set hasEnded = event_seo.hasEnded(event) %}
+        {% set placeAgenda = path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) %}
+        {% set agenda = path('app_agenda_index', {location: place.locationSlug}) %}
+
+        {# The embedded map looks the venue up by name, or by its coordinates when it has no city to name #}
+        {% set mapValue = (event.placeName ~ ' ' ~ event.placeCity)|trim %}
+        {% if event.latitude and event.longitude and not place.city %}
+            {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
+        {% endif %}
+        {% set directionsTo = event.latitude and event.longitude
+            ? event.latitude ~ ',' ~ event.longitude
+            : [event.placeName, event.placeStreet, event.placePostalCode, event.placeCity]|filter(part => part)|join(' ') %}
+        {% set calendarUrl = hasEnded ? null : google_calendar_url(event, eventUrl) %}
+
+        {% set going = (event.participations ?? 0) + (event.fbParticipations ?? 0) %}
+        {% set interested = (event.interests ?? 0) + (event.fbInterests ?? 0) %}
+
+        <div class="container-lg py-4" id="event">
+            <header class="event-header mb-4">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    {% if event.category %}
+                        <a class="badge bg-primary-lt" href="{{ path('app_agenda_by_tag', {tagSlug: event.category.slug, tagId: event.category.id, location: place.locationSlug}) }}" title="{{ event.category.name }} {{ place.location.atName }}">
+                            {{ event.category.name }}
+                        </a>
+                    {% endif %}
+                    {% if price and price.free %}
+                        <span class="badge bg-teal-lt">
+                            <twig:Icon name="lucide:badge-check" />
+                            Entrée gratuite
+                        </span>
+                    {% endif %}
+                    <a class="badge bg-secondary-lt" href="{{ agenda }}" title="Sortir {{ place.location.atName }}">
+                        <twig:Icon name="lucide:map-pin" />
+                        Sortir {{ place.location.atName }}
                     </a>
                 </div>
-                <div class="col-lg-5 event-details">
-                    <div class="card-body">
-                        <div class="detail-item">
-                            <twig:Icon name="lucide:calendar-days" />
-                            <h2>
-                                {% if event.endDate == null or event.startDate == event.endDate %}
-                                    Le
-                                    <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
-                                {% else %}
-                                    Du
-                                    <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
-                                    au
-                                    <time datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">{{ event.endDate|format_date('full') }}</time>
-                                {% endif %}
-                            </h2>
-                        </div>
-
-                        {% if event.hours %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:clock" />
-                                <p>{{ event.hours }}</p>
-                            </div>
-                        {% endif %}
-
-                        {% if event.timesheets|length > 1 %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:calendar-days" />
-                                <div>
-                                    <div class="mb-1">Détail des dates :</div>
-                                    <twig:Event:Timesheets event="{{ event }}" />
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        <div class="detail-item">
-                            {% if event.placeName %}
-                                <twig:Icon name="lucide:map-pin" />
-                            {% endif %}
-                            <div>
-                                {% set mapParameter = 'place?q=' %}
-                                {% set mapValue = '' %}
-                                {% if event.placeName %}
-                                    {% set mapValue = event.placeName %}
-                                    <h2 class="mb-0">
-                                        <strong class="font-weight-normal">{{ event.placeName }}</strong>
-                                    </h2>
-                                {% endif %}
-
-                                {% if event.placeCity %}
-                                    <div>
-                                        {% if event.placeStreet %}
-                                            <div>{{ event.placeStreet }}</div>
-                                        {% endif %}
-
-                                        {% if event.placeCity or event.placePostalCode %}
-                                            <div>
-                                                {% if event.placePostalCode %}
-                                                    <span>{{ event.placePostalCode }}</span>
-                                                {% endif %}
-
-                                                {% if event.placeCity %}
-                                                    {% set mapValue = mapValue ~ ' ' ~ event.placeCity %}
-                                                    {% if event.place and event.place.city %}
-                                                        <strong class="font-weight-normal">{{ event.placeCity }}</strong>
-                                                    {% endif %}
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-
-                                {% if event.latitude and event.longitude %}
-                                    {% if not place.city %}
-                                        {% set mapParameter = 'place?q=' %}
-                                        {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        {% if event.prices %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:ticket" />
-                                <p>{{ event.prices }}</p>
-                            </div>
-                        {% endif %}
-
-                        {% if event.affiliate %}
-                            <div class="detail-item">
-                                <div>
-                                    <p>
-                                        <a href="{{ event.source }}" class="btn btn-block btn-primary" rel="sponsored">Réserver mes billets</a>
-                                    </p>
-                                    <small class="text-muted mt-2">Avec {{ event.fromData }}</small>
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if event.user %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:user" />
-                                <p>
-                                    Par
-                                    <a href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}"
-                                       title="Les événements de {{ event.user.username }}">
-                                        {{ event.user.username }}
-                                    </a>
-                                </p>
-                            </div>
-                        {% endif %}
-                    </div>
+                <div class="d-flex align-items-start gap-3">
+                    <h1 class="display-6 fw-bold text-start">{{ block('title') }}</h1>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-icon btn-outline-secondary flex-shrink-0" href="{{ path('admin_event_edit', {entityId: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement">
+                            <twig:Icon name="lucide:pencil" />
+                        </a>
+                    {% endif %}
                 </div>
-            </div>
-            <div class="card-body border-top">
-                {{ include('location/hinclude/trends.html.twig', {trendsData: trendsData}) }}
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-sm-8">
-                        {{ eventDescription|raw }}
-                    </div>
-                    <div class="col-sm-4 my-3 my-md-0 event-details">
-                        {% for phoneContact in event.phoneContacts %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:phone" />
-                                <p class="one-line">
-                                    <a href="tel:{{ phoneContact }}">{{ phoneContact }}</a>
-                                </p>
-                            </div>
-                        {% endfor %}
-                        {% for websiteContact in event.websiteContacts %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:globe" />
-                                <p class="one-line">
-                                    {% set websiteUrl = websiteContact|ensure_protocol %}
-                                    {% if websiteUrl %}
-                                        <a rel="nofollow" href="{{ websiteUrl }}">{{ websiteContact }}</a>
-                                    {% else %}
-                                        {{ websiteContact }}
-                                    {% endif %}
-                                </p>
-                            </div>
-                        {% endfor %}
-                        {% for mailContact in event.mailContacts %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:mail" />
-                                <p class="one-line">
-                                    <a href="mailto:{{ mailContact }}">{{ mailContact }}</a>
-                                </p>
-                            </div>
-                        {% endfor %}
-                        {% if event.facebookEventId %}
-                            <div class="detail-item">
-                                <twig:Icon name="fa7-brands:facebook-f" />
-                                <p class="one-line">
-                                    {% set lien = 'https://www.facebook.com/events/' ~ event.facebookEventId %}
-                                    <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
-                                </p>
-                            </div>
-                        {% endif %}
+            </header>
 
-                        <div class="detail-item">
-                            <twig:Icon name="lucide:tags" />
-                            <p class="tags">
-                                {% if event.place.country %}
-                                    <a class="badge text-bg-info"
-                                       title="Sortir {{ event.place.country.atDisplayName }}"
-                                       href="{{ path('app_agenda_index', {location: event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">Événements {{ event.place.country.atDisplayName }}</strong>
-                                    </a>
-                                {% endif %}
-
-                                {% if event.place.location.isCity and event.placeName != event.place.location.name %}
-                                    <a class="badge text-bg-info"
-                                       title="Sortir {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_index', {location: event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">Événements {{ event.place.location.atName }}</strong>
-                                    </a>
-                                {% endif %}
-                                {% if event.placeName %}
-                                    <a class="badge text-bg-info"
-                                       title="Sortir {{ event.placeName|at_place }}"
-                                       href="{{ path('app_agenda_by_place', {placeSlug: event.place.slug, location: event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">Événements {{ event.placeName|at_place }}</strong>
-                                    </a>
-                                {% endif %}
-
-                                {% for tag in allTags %}
-                                    <a class="badge text-bg-info"
-                                       title="{{ tag.name }} {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_by_tag', {tagSlug: tag.slug, tagId: tag.id, location: event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">{{ tag.name }} {{ event.place.location.atName }}</strong>
-                                    </a>
-                                {% endfor %}
-                            </p>
+            {% if event.draft %}
+                <div class="alert alert-info" id="event-draft-notice" role="status">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <twig:Icon name="lucide:eye" class="alert-icon" />
+                        <div class="flex-fill">
+                            <div class="fw-bold">Aperçu&nbsp;: cet événement n'est pas encore publié</div>
+                            Seuls son auteur et les administrateurs le voient. Publiez-le pour qu'il apparaisse dans l'agenda.
                         </div>
-
-                        {% if event.source %}
-                            <div class="detail-item">
-                                <twig:Icon name="lucide:info" />
-                                <p>
-                                    Source : <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
-                                </p>
-                            </div>
-                        {% endif %}
-
-                        <div class="detail-item">
-                            <twig:Icon name="lucide:flag" />
-                            <p>
-                                <button type="button"
-                                        class="btn btn-link p-0"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalContentRemovalRequest"
-                                        data-event-id="{{ event.id }}"
-                                        data-event-url="{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
-                                    Signaler ce contenu
-                                </button>
-                            </p>
-                        </div>
-
-                        {% set maPatisserieDisplayed = false %}
-                        {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'gateau', 'gâteau', 'atelier culinaire'] %}
-                            {% if not maPatisserieDisplayed and (word in event.description|lower or word in event.name|lower) %}
-                                {% set maPatisserieDisplayed = true %}
-                                <div class="detail-item">
-                                    <twig:Icon name="lucide:cake" />
-                                    <p>
-                                        <a href="https://mapatisserie.fr">Blog de pâtisserie</a>
-                                    </p>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% if mapValue %}
-                <div class="card-body p-0 text-center">
-                    <div class="card-body">
-                        <button
-                                class="btn btn-outline-primary"
-                                id="loadMap"
-                                data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16">
-                            Voir sur la carte
+                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_draft', {id: event.id}) }}">
+                            <twig:Icon name="lucide:rocket" />
+                            Publier l'événement
                         </button>
                     </div>
-                    <div id="googleMap"></div>
                 </div>
             {% endif %}
+            {% if hasEnded %}
+                <div class="alert alert-secondary" id="event-ended">
+                    <twig:Icon name="lucide:calendar-clock" />
+                    <span>Cet événement est terminé. Retrouvez les prochaines sorties {{ place.location.atName }} dans <a href="{{ agenda }}">l'agenda</a>.</span>
+                </div>
+            {% endif %}
+            {% if event.status or event.statusMessage %}
+                <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
+            {% endif %}
+
+            {# On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both
+               rows so the description follows the poster right away #}
+            <div class="event-layout">
+                <div class="event-layout-media">
+                    <div class="card card-layout overflow-visible mb-0">
+                        <a class="image-gallery card-img-top d-block overflow-hidden" href="{{ original }}" title="{{ eventShortName }}">
+                            <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" />
+                        </a>
+                        <div class="card-footer d-flex flex-wrap align-items-center gap-2">
+                            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                                <button type="button" class="btn participate btn-like-event {{ trendsData.participate ? 'btn-primary' }}"
+                                        data-href="{{ path('api_event_participer', {id: event.id}) }}">
+                                    <twig:Icon name="lucide:heart" />
+                                    J'y vais&nbsp;!
+                                </button>
+                            {% else %}
+                                {# Going needs an account: the button leads to the login page #}
+                                <a class="btn participate" href="{{ path('app_login') }}" title="Connectez-vous pour indiquer que vous y allez">
+                                    <twig:Icon name="lucide:heart" />
+                                    J'y vais&nbsp;!
+                                </a>
+                            {% endif %}
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <twig:Icon name="lucide:share-2" />
+                                    Partager
+                                </button>
+                                <div class="dropdown-menu">
+                                    {% for name, social in trendsData.shares %}
+                                        <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
+                                            <twig:Icon name="{{ name|social_icon }}" />
+                                            {{ name|social_label }}
+                                        </a>
+                                    {% endfor %}
+                                    <a class="dropdown-item" href="mailto:?subject={{ eventShortName|url_encode }}&amp;body={{ eventUrl|url_encode }}">
+                                        <twig:Icon name="lucide:mail" />
+                                        Par e-mail
+                                    </a>
+                                </div>
+                                <button type="button" class="btn" data-copy-url="{{ eventUrl }}">
+                                    <twig:Icon name="lucide:link" />
+                                    Copier le lien
+                                </button>
+                            </div>
+                            {% if going or interested %}
+                                <div class="d-flex align-items-center gap-2 ms-auto small text-secondary">
+                                    {% if participants %}
+                                        <div class="avatar-list avatar-list-stacked">
+                                            {% for participant in participants %}
+                                                <span class="avatar avatar-xs rounded-circle">
+                                                    <twig:User:Thumb user="{{ participant }}" width="{{ 24 }}" height="{{ 24 }}" />
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <span>
+                                        {%- if going %}<strong class="text-body">{{ '{count, plural, one {# participant} other {# participants}}'|trans({count: going}, 'messages+intl-icu') }}</strong>{% endif -%}
+                                        {%- if going and interested %} · {% endif -%}
+                                        {%- if interested %}{{ '{count, plural, one {# intéressé} other {# intéressés}}'|trans({count: interested}, 'messages+intl-icu') }}{% endif -%}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="event-layout-aside">
+                    <div class="card card-layout mb-0">
+                        <div class="card-header">
+                            <h2 class="subheader mb-0">Informations pratiques</h2>
+                        </div>
+                        <div class="card-body event-facts">
+                            <div class="detail-item">
+                                <twig:Icon name="lucide:calendar-days" class="text-primary" />
+                                <div>
+                                    <div class="subheader">Date</div>
+                                    <div class="fw-semibold">
+                                        {% if event.endDate == null or event.startDate == event.endDate %}
+                                            Le
+                                            <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
+                                        {% else %}
+                                            Du
+                                            <time datetime="{{ event.startDate|date('Y-m-d\\TH:i:sO') }}">{{ event.startDate|format_date('full') }}</time>
+                                            au
+                                            <time datetime="{{ event.endDate|date('Y-m-d\\TH:i:sO') }}">{{ event.endDate|format_date('full') }}</time>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if event.hours %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:clock" class="text-primary" />
+                                    <div>
+                                        <div class="subheader">Horaires</div>
+                                        <div class="fw-semibold">{{ event.hours }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if event.timesheets|length > 1 %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:calendar-range" class="text-primary" />
+                                    <div class="min-w-0">
+                                        <div class="subheader mb-1">Détail des dates</div>
+                                        <twig:Event:Timesheets event="{{ event }}" />
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if event.placeName or event.placeCity %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:map-pin" class="text-primary" />
+                                    <div>
+                                        <div class="subheader">Lieu</div>
+                                        {% if event.placeName %}
+                                            <a class="fw-semibold" href="{{ placeAgenda }}" title="Sortir {{ event.placeName|at_place }}">{{ event.placeName }}</a>
+                                        {% endif %}
+                                        {% if event.placeStreet %}
+                                            <div class="text-secondary">{{ event.placeStreet }}</div>
+                                        {% endif %}
+                                        {% if event.placePostalCode or event.placeCity %}
+                                            <div class="text-secondary">{{ event.placePostalCode }} {{ event.placeCity }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if event.prices %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:ticket" class="text-primary" />
+                                    <div>
+                                        <div class="subheader">Tarifs</div>
+                                        <div>{{ event.prices }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if event.phoneContacts or event.websiteContacts or event.mailContacts or event.facebookEventId %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:contact" class="text-primary" />
+                                    <div class="min-w-0">
+                                        <div class="subheader">Contact</div>
+                                        {% for phoneContact in event.phoneContacts %}
+                                            <div class="text-truncate"><a href="tel:{{ phoneContact }}">{{ phoneContact }}</a></div>
+                                        {% endfor %}
+                                        {% for websiteContact in event.websiteContacts %}
+                                            {% set websiteUrl = websiteContact|ensure_protocol %}
+                                            <div class="text-truncate">
+                                                {% if websiteUrl %}
+                                                    <a rel="nofollow" href="{{ websiteUrl }}">{{ websiteContact }}</a>
+                                                {% else %}
+                                                    {{ websiteContact }}
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                        {% for mailContact in event.mailContacts %}
+                                            <div class="text-truncate"><a href="mailto:{{ mailContact }}">{{ mailContact }}</a></div>
+                                        {% endfor %}
+                                        {% if event.facebookEventId %}
+                                            <div class="text-truncate"><a href="https://www.facebook.com/events/{{ event.facebookEventId }}" rel="nofollow">L'événement sur Facebook</a></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% set maPatisserieDisplayed = false %}
+                            {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'gateau', 'gâteau', 'atelier culinaire'] %}
+                                {% if not maPatisserieDisplayed and (word in event.description|lower or word in event.name|lower) %}
+                                    {% set maPatisserieDisplayed = true %}
+                                    <div class="detail-item">
+                                        <twig:Icon name="lucide:cake" class="text-primary" />
+                                        <div>
+                                            <div class="subheader">Notre partenaire gourmand</div>
+                                            <a href="https://mapatisserie.fr">Blog de pâtisserie</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {# The directions go under the map, or here when there is none #}
+                        {% set directions %}
+                            {% if directionsTo %}
+                                <a class="btn" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ directionsTo|url_encode }}" target="_blank" rel="noopener nofollow">
+                                    <twig:Icon name="lucide:navigation" />
+                                    Itinéraire
+                                </a>
+                            {% endif %}
+                        {% endset %}
+                        {% set directionsHere = directionsTo and not mapValue %}
+                        {% if event.affiliate or directionsHere or calendarUrl %}
+                            <div class="card-body d-grid gap-2">
+                                {% if event.affiliate %}
+                                    <a href="{{ event.source }}" class="btn btn-primary btn-lg" rel="sponsored">
+                                        <twig:Icon name="lucide:ticket" />
+                                        Réserver mes billets
+                                    </a>
+                                {% endif %}
+                                {% if directionsHere %}
+                                    {{ directions }}
+                                {% endif %}
+                                {% if calendarUrl %}
+                                    <a class="btn" href="{{ calendarUrl }}" target="_blank" rel="noopener nofollow" title="Ajouter à Google Agenda">
+                                        <twig:Icon name="lucide:calendar-plus" />
+                                        Ajouter à l'agenda
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if mapValue %}
+                        <div class="card card-layout mb-0">
+                            <div class="card-header">
+                                <h2 class="subheader mb-0">Plan</h2>
+                                {% if event.placeCity %}
+                                    <span class="small text-secondary ms-auto">{{ event.placeCity }}</span>
+                                {% endif %}
+                            </div>
+                            {# Google Maps loads on demand only: no third-party request until the visitor asks for the map #}
+                            <div class="ratio ratio-4x3 bg-light{{ directionsTo ? '' : ' rounded-bottom' }}" id="googleMap">
+                                <div class="d-flex flex-column align-items-center justify-content-center gap-2 text-secondary">
+                                    <twig:Icon name="lucide:map" class="icon-lg" />
+                                    <button type="button" class="btn" id="loadMap"
+                                            data-map="https://www.google.com/maps/embed/v1/place?q={{ mapValue|url_encode }}&key={{ googleMapKey }}&zoom=16">
+                                        Afficher la carte
+                                    </button>
+                                </div>
+                            </div>
+                            {% if directionsTo %}
+                                <div class="card-body border-top d-grid">{{ directions }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </aside>
+
+                <div class="event-layout-main">
+                    <div class="card card-layout mb-0">
+                        {% if event.description %}
+                            <div class="card-body">
+                                <h2 class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="avatar avatar-sm bg-primary-lt"><twig:Icon name="lucide:file-text" /></span>
+                                    Description
+                                </h2>
+                                <div class="event-description">
+                                    {{ eventDescription|raw }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <div class="subheader mb-2">Mots-clés</div>
+                            <div class="event-tags d-flex flex-wrap gap-2">
+                                {% if place.country %}
+                                    <a class="badge bg-secondary-lt" title="Sortir {{ place.country.atDisplayName }}" href="{{ agenda }}">
+                                        Événements {{ place.country.atDisplayName }}
+                                    </a>
+                                {% endif %}
+                                {% if place.location.isCity and event.placeName != place.location.name %}
+                                    <a class="badge bg-secondary-lt" title="Sortir {{ place.location.atName }}" href="{{ agenda }}">
+                                        Événements {{ place.location.atName }}
+                                    </a>
+                                {% endif %}
+                                {% if event.placeName %}
+                                    <a class="badge bg-secondary-lt" title="Sortir {{ event.placeName|at_place }}" href="{{ placeAgenda }}">
+                                        Événements {{ event.placeName|at_place }}
+                                    </a>
+                                {% endif %}
+                                {% for tag in allTags %}
+                                    <a class="badge bg-primary-lt"
+                                       title="{{ tag.name }} {{ place.location.atName }}"
+                                       href="{{ path('app_agenda_by_tag', {tagSlug: tag.slug, tagId: tag.id, location: place.locationSlug}) }}">
+                                        {{ tag.name }} {{ place.location.atName }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex flex-wrap align-items-center gap-3">
+                            {% if event.user %}
+                                <a class="d-flex align-items-center gap-2 text-reset" href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" title="Les événements de {{ event.user.username }}">
+                                    <span class="avatar">
+                                        <twig:User:Thumb user="{{ event.user }}" width="{{ 40 }}" height="{{ 40 }}" />
+                                    </span>
+                                    <span>
+                                        <span class="subheader d-block">Publié par</span>
+                                        <strong>{{ event.user.username }}</strong>
+                                    </span>
+                                </a>
+                            {% endif %}
+                            {% if event.source %}
+                                <div class="small text-secondary">
+                                    Source&nbsp;: <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
+                                </div>
+                            {% endif %}
+                            <button type="button"
+                                    class="btn btn-sm ms-auto"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalContentRemovalRequest"
+                                    data-event-id="{{ event.id }}"
+                                    data-event-url="{{ eventUrl }}">
+                                <twig:Icon name="lucide:flag" />
+                                Signaler ce contenu
+                            </button>
+                        </div>
+                    </div>
+
+                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm}) }}
+                </div>
+            </div>
         </div>
 
-        {# Comments section - separate card outside main event card #}
-        {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm}) }}
-
-        {% if event.placeName and nextEventsData %}
+        {% if event.placeName and nextEventsData and nextEventsData.count > 0 %}
             {{ include('location/widget/next-events.html.twig', {nextEventsData: nextEventsData}) }}
         {% endif %}
 
-        <!-- Événements similaires -->
-        {{ include('location/widget/similar-events.html.twig') }}
-        <!-- ./Événements similaires -->
-
+        {% if similarEventsData.count > 0 %}
+            {{ include('location/widget/similar-events.html.twig') }}
+        {% endif %}
     {% endif %}
 {%- endblock %}
 

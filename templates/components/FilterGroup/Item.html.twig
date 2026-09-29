@@ -1,0 +1,9 @@
+{# A link inside a <twig:FilterGroup>: a dot in the tone of the group, a label and a count #}
+{% props href, filteredHref = null, tone = 'teal', count = null, active = false %}
+<a href="{{ href }}" {{ attributes.defaults({class: 'filter-group-item' ~ (active ? ' active' : '')}) }}
+   {%- if filteredHref %} data-filtered-href="{{ filteredHref }}"{% endif %}
+   {%- if active %} aria-current="page"{% endif %}>
+    <span class="filter-dot bg-{{ tone }}"></span>
+    <span class="flex-fill min-w-0">{% block content %}{% endblock %}</span>
+    {% if count is not null %}<span class="badge bg-secondary-lt">{{ count|format_number(locale: 'fr') }}</span>{% endif %}
+</a>

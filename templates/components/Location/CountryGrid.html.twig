@@ -1,0 +1,29 @@
+{#
+    The country cards of the home and country pages: the first country gets the big card, the next one sits beside it,
+    the others follow (sideways on phones).
+
+    <twig:Location:CountryGrid countries="{{ countries }}" />
+#}
+{# @var countries list<array{0: \App\Entity\Country, events: int|string, cities: list<\App\Entity\City>}> as EventRepository::findUpcomingCountries() returns them #}
+{% props countries %}
+<div class="row row-cards">
+    {% for row in countries|slice(0, 2) %}
+        <div class="{{ loop.first ? 'col-lg-8' : 'col-lg-4' }}">
+            <twig:Location:CountryCard
+                country="{{ row[0] }}"
+                events="{{ row.events }}"
+                cities="{{ row.cities|map(city => city.name) }}"
+                featured="{{ loop.first }}"
+            />
+        </div>
+    {% endfor %}
+</div>
+{% if countries|length > 2 %}
+    <div class="row row-cards row-scroll-mobile mt-0">
+        {% for row in countries|slice(2) %}
+            <div class="col-10 col-sm-7 col-md-6 col-lg-4 col-xl-3">
+                <twig:Location:CountryCard country="{{ row[0] }}" events="{{ row.events }}" cities="{{ row.cities|map(city => city.name) }}" />
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

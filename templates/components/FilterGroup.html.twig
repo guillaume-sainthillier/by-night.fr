@@ -1,0 +1,30 @@
+{#
+    A group of filter links on a tinted block: a header that is a link (an icon, a label, a count) and, when the group
+    has items, a chevron that folds them in or out (Bootstrap collapse). "open" unfolds it on load.
+    "filteredHref" is the link a visitor follows (data-filtered-href, assets/js/listeners/filtered-link.js); crawlers
+    follow "href".
+
+    <twig:FilterGroup id="univers-concert" href="…" icon="lucide:music" tone="primary" label="Concerts" count="{{ 39 }}" open="{{ true }}">
+        <twig:FilterGroup:Item href="…" count="{{ 18 }}">Jazz</twig:FilterGroup:Item>
+    </twig:FilterGroup>
+
+    Composed:
+    <twig:FilterGroup id="univers-concert" open="{{ true }}">
+        <twig:block name="header">
+            <twig:FilterGroup:Header href="…" icon="lucide:music" tone="primary" count="{{ 39 }}" target="univers-concert" open="{{ true }}">Concerts</twig:FilterGroup:Header>
+        </twig:block>
+        <twig:FilterGroup:Item href="…" count="{{ 18 }}">Jazz</twig:FilterGroup:Item>
+    </twig:FilterGroup>
+#}
+{% props id, href = null, filteredHref = null, icon = null, tone = 'primary', label = null, count = null, active = false, open = false, title = null %}
+{% set items %}{% block content %}{% endblock %}{% endset %}
+<div {{ attributes.defaults({class: 'filter-group' ~ (active ? ' active' : '')}) }}>
+    {% block header %}
+        <twig:FilterGroup:Header href="{{ href }}" filteredHref="{{ filteredHref }}" icon="{{ icon }}" tone="{{ tone }}" count="{{ count }}" active="{{ active }}" title="{{ title }}" target="{{ items|trim ? id : null }}" open="{{ open }}">{{ label }}</twig:FilterGroup:Header>
+    {% endblock %}
+    {% if items|trim %}
+        <div class="collapse{{ open ? ' show' : '' }}" id="{{ id }}">
+            <div class="filter-group-items">{{ items }}</div>
+        </div>
+    {% endif %}
+</div>

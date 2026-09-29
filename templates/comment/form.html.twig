@@ -1,13 +1,12 @@
 {% if is_granted('ROLE_USER') %}
     {{ form_start(form) }}
-
-    <div class="comment-form-user">
-        <span class="avatar">
-            <twig:User:Thumb user="{{ app.user }}" width="{{ 75 }}" height="{{ 75 }}"/>
-        </span>
-        <strong>{{ app.user.username }}</strong>
-    </div>
-    <div class="comment-form-input">
+    <div class="comment comment-form">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="avatar avatar-sm">
+                <twig:User:Thumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" />
+            </span>
+            <strong>{{ app.user.username }}</strong>
+        </div>
         {% block form_comment %}
             {{ form_row(form.comment, {
                 attr: {
@@ -16,14 +15,17 @@
                 },
             }) }}
         {% endblock %}
-        <button type="submit" class="btn btn-primary btn-submit">Envoyer</button>
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary btn-submit">Publier mon commentaire</button>
+        </div>
     </div>
-    {{ form_rest(form) }}
+    {{ form_end(form) }}
 {% else %}
     <div class="text-center">
-        <a class="btn btn-outline-secondary login" title="Se connecter pour laisser un commentaire"
+        <a class="btn btn-outline-primary" title="Se connecter pour laisser un commentaire"
            href="{{ path('app_login') }}">
-            Laisser un commentaire
+            <twig:Icon name="lucide:message-square-plus" />
+            Se connecter pour commenter
         </a>
     </div>
 {% endif %}

@@ -1,13 +1,12 @@
+{#
+    A period in short French dates: "Samedi 20 juin 2026", "Du ven. 9 oct. au dim. 18 oct. 2026" (the start's year only
+    when it differs from the end's). A narrow column breaks a period between its two dates, never inside one.
+#}
 {% props from, to = null %}
-{% set startDate = from|date('d/m/Y') %}
-{% set endDate = to|date('d/m/Y') %}
-
-{% if to == null or (to != null and startDate == endDate) %}
-    Le
-    <time datetime="{{ from|date('Y-m-d\TH:i:sO') }}">{{ from|format_date('full') }}</time>
+{% if to == null or from|date('Y-m-d') == to|date('Y-m-d') %}
+    <time datetime="{{ from|date('Y-m-d') }}" class="text-nowrap">{{ from|format_date(pattern: 'EEEE d MMMM y', locale: 'fr')|capitalize }}</time>
 {% else %}
-    Du
-    <time datetime="{{ from|date('Y-m-d\TH:i:sO') }}">{{ from|format_date('full') }}</time>
+    Du&nbsp;<time datetime="{{ from|date('Y-m-d') }}" class="text-nowrap">{{ from|format_date(pattern: from|date('Y') == to|date('Y') ? 'EEE d MMM' : 'EEE d MMM y', locale: 'fr') }}</time>
     au
-    <time datetime="{{ to|date('Y-m-d\TH:i:sO') }}">{{ to|format_date('full') }}</time>
+    <time datetime="{{ to|date('Y-m-d') }}" class="text-nowrap">{{ to|format_date(pattern: 'EEE d MMM y', locale: 'fr') }}</time>
 {% endif %}

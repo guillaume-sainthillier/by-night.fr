@@ -1,6 +1,20 @@
-<twig:Widget:ScrollableHorizontal>
-    <twig:block name="header">{{ event.placeName }} <small class="text-muted">Prochainement</small></twig:block>
-    {{ include('location/hinclude/details-events.html.twig', {
-        eventsData: nextEventsData,
-    }) }}
-</twig:Widget:ScrollableHorizontal>
+{# The venue's next events: the first page, then the next ones through the fragment route (Widgets.js) #}
+{% set placeAgenda = path('app_agenda_by_place', {placeSlug: event.place.slug, location: event.place.locationSlug}) %}
+<twig:Section muted="{{ true }}" class="widget" id="next-events">
+    <twig:block name="header">
+        <twig:Section:Header eyebrow="Au même endroit" icon="lucide:map-pin" title="Prochainement {{ event.placeName|at_place }}">
+            <twig:block name="aside">
+                <div class="text-md-end">
+                    <a class="link-primary fw-semibold" href="{{ placeAgenda }}">
+                        Toute la programmation
+                        <twig:Icon name="lucide:arrow-right" />
+                    </a>
+                </div>
+            </twig:block>
+        </twig:Section:Header>
+    </twig:block>
+    <div class="row row-cards row-scroll-mobile scroll-area">
+        {{ include('location/hinclude/details-events.html.twig', {eventsData: nextEventsData}) }}
+    </div>
+    <div class="more-container"></div>
+</twig:Section>

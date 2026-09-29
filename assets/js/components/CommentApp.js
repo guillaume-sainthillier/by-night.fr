@@ -27,7 +27,7 @@ export default class CommentApp {
             css_block_comment: '.chat-item',
             css_block_poster_comment: '.card-body-form',
             css_block_comments: '.chat-bubbles',
-            css_heading_comments: '.heading',
+            css_comments_count: '.comments-count',
             animation_duration: 400,
         }
     }
@@ -255,21 +255,18 @@ export default class CommentApp {
 
                                     // Update comment counter
                                     if (response.count !== undefined) {
-                                        const heading = mainCommentsContainer.find(self.options.css_heading_comments)
-                                        heading.find('span').text(
+                                        mainCommentsContainer.find(self.options.css_comments_count).text(
                                             plural(response.count, {
-                                                one: '# Commentaire',
-                                                other: '# Commentaires',
+                                                one: '# commentaire',
+                                                other: '# commentaires',
                                             })
                                         )
-                                        // Remove "Soyez le premier à réagir" message if it exists
-                                        heading.find('small').remove()
                                     }
 
                                     // Check if comments body container exists
                                     let commentsBodyContainer = mainCommentsContainer.find('.card-body.scrollable')
 
-                                    // If no comments container exists yet (first comment), create one
+                                    // If no comments container exists yet (first comment), create one above the form
                                     if (!commentsBodyContainer.length) {
                                         commentsBodyContainer = $(
                                             '<div class="card-body scrollable" style="max-height: 600px"></div>'
@@ -278,7 +275,7 @@ export default class CommentApp {
                                         const chatBubblesDiv = $('<div class="chat-bubbles"></div>')
                                         chatDiv.append(chatBubblesDiv)
                                         commentsBodyContainer.append(chatDiv)
-                                        mainCommentsContainer.find('.card').append(commentsBodyContainer)
+                                        postCommentContainer.before(commentsBodyContainer)
                                     }
 
                                     // Get the chat bubbles container

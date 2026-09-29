@@ -1,7 +1,106 @@
-{% set partial = app.request.xmlHttpRequest %}
+{% extends 'layouts/full.html.twig' %}
 
-{% if partial %}
-    {{ include('registration/_register-partial.html.twig') }}
-{% else %}
-    {{ include('registration/_register-full.html.twig') }}
-{% endif %}
+{% block title 'Inscription' %}
+
+{% block breadcrumb -%}
+    {% do menu.addItem('Inscription', url('app_register')) %}
+{%- endblock %}
+
+{% block meta_description 'Rejoignez By Night gratuitement pour découvrir des milliers d\'événements, créer les vôtres et les partager avec votre communauté.' %}
+
+{% block body %}
+    <div class="container-lg py-4 py-lg-5">
+        <div class="row g-4 g-xl-5">
+            <div class="col-lg-5">
+                <twig:Section:Eyebrow icon="lucide:user-plus">Espace membre</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold text-start mb-3">Rejoignez la communauté By Night</h1>
+                <p class="lead text-secondary mb-4">
+                    Créez votre compte en une minute pour publier vos événements, suivre vos sorties et retrouver vos favoris.
+                </p>
+
+                {# The pitch only frames the form: on phones the form follows the title #}
+                <div class="card d-none d-lg-block mb-3">
+                    <div class="list-group list-group-flush">
+                        {% for feature in [
+                            {icon: 'lucide:calendar-plus', tone: 'primary', title: 'Publiez vos événements', text: 'Concert, expo, marché ou soirée : il rejoint l\'agenda de sa ville et reste visible sur Google.'},
+                            {icon: 'lucide:heart', tone: 'pink', title: 'Gardez vos sorties sous la main', text: 'Ajoutez les événements qui vous intéressent à vos favoris et retrouvez-les dans votre profil.'},
+                            {icon: 'lucide:message-circle', tone: 'teal', title: 'Partagez vos avis', text: 'Commentez les événements et échangez avec les autres membres.'},
+                        ] %}
+                            <div class="list-group-item d-flex align-items-start gap-3">
+                                <span class="avatar avatar-sm bg-{{ feature.tone }}-lt flex-shrink-0">
+                                    <twig:Icon name="{{ feature.icon }}" />
+                                </span>
+                                <div>
+                                    <h2 class="card-title text-start mb-1">{{ feature.title }}</h2>
+                                    <p class="small text-secondary mb-0">{{ feature.text }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if membersCount %}
+                    <div class="card bg-dark text-white border-0 d-none d-lg-block mb-0">
+                        <div class="card-body">
+                            {% if latestMembers is not empty %}
+                                <div class="avatar-list avatar-list-stacked mb-3">
+                                    {% for member in latestMembers %}
+                                        <span class="avatar avatar-sm rounded-circle">
+                                            <twig:User:Thumb user="{{ member }}" width="{{ 32 }}" height="{{ 32 }}" placeholder="{{ false }}" />
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <p class="mb-0">
+                                {{ '{count, plural, one {# membre a} other {# membres ont}} déjà rejoint By Night pour publier et suivre leurs sorties partout en France.'|trans({count: membersCount}, 'messages+intl-icu') }}
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-7">
+                {{ form_start(form, {action: path('app_register')}) }}
+                <div class="card card-lg mb-3">
+                    <div class="card-body p-4 p-md-5">
+                        <twig:Auth:SocialButtons title="Inscrivez-vous avec" />
+
+                        <div class="hr-text">ou avec votre adresse e-mail</div>
+
+                        {% if error is defined and error %}
+                            <div class="alert alert-danger">
+                                <twig:Icon name="lucide:triangle-alert" />
+                                {{ error }}
+                            </div>
+                        {% endif %}
+
+                        {{ form_row(form.username, {icon_prepend: 'lucide:user', attr: form.username.vars.attr|merge({placeholder: 'camille_m'})}) }}
+                        {{ form_row(form.email, {icon_prepend: 'lucide:mail', attr: form.email.vars.attr|merge({placeholder: 'vous@exemple.fr'})}) }}
+                        <div class="row">
+                            <div class="col-sm-6">{{ form_row(form.firstname, {attr: form.firstname.vars.attr|merge({placeholder: 'Camille'})}) }}</div>
+                            <div class="col-sm-6">{{ form_row(form.lastname, {attr: form.lastname.vars.attr|merge({placeholder: 'Martin'})}) }}</div>
+                        </div>
+                        {{ form_row(form.plainPassword) }}
+                        {{ form_widget(form.captcha) }}
+
+                        {{ form_rest(form) }}
+                        <button class="btn btn-primary btn-lg w-100 mt-2" type="submit">
+                            Créer mon compte
+                            <twig:Icon name="lucide:arrow-right" class="icon-end" />
+                        </button>
+                        <p class="text-center text-secondary mt-4 mb-0">
+                            Vous avez déjà un compte&nbsp;?
+                            <a class="fw-bold" href="{{ path('app_login') }}" title="Connectez-vous à votre compte">Se connecter</a>
+                        </p>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+                <p class="text-center small text-secondary mb-0">
+                    <twig:Icon name="lucide:circle-check" class="text-teal" /> Gratuit et sans engagement
+                    <span class="mx-2">·</span>
+                    <twig:Icon name="lucide:circle-check" class="text-teal" /> Suppression du compte à tout moment
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -30,14 +30,19 @@ export default class Widgets {
                 containerActions.html(newMoreContentLink)
                 moreContentLink.remove()
 
-                newMoreContentLink.off('click').click(function (e) {
-                    const btn = $(this)
-                    btn.addClass('disabled').prepend(
-                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
-                    )
+                // The block is either the button itself or a wrapper (progress, counter) around it
+                const moreButton = newMoreContentLink.is('button')
+                    ? newMoreContentLink
+                    : newMoreContentLink.find('button')
+                moreButton.off('click').click((e) => {
+                    moreButton
+                        .addClass('disabled')
+                        .prepend(
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
+                        )
                     const scrollAreaLastItem = containerBody.find('.scroll-item').last()
-                    $.get(btn.data('href')).done((content) => {
-                        btn.remove()
+                    $.get(newMoreContentLink.data('href')).done((content) => {
+                        newMoreContentLink.remove()
                         containerBody.append(content)
                         self.initMoreWidgets(container)
                         window.App.mount(container[0])
@@ -55,7 +60,8 @@ export default class Widgets {
 
     scrollTo(elem, container, callback) {
         let options
-        if (container.hasClass('scroll-area-horizontal')) {
+        // A row of cards scrolls sideways on a phone (.row-scroll-mobile) and wraps on wider screens
+        if (container.hasClass('scroll-area-horizontal') || container[0].scrollWidth > container[0].clientWidth) {
             options = {
                 scrollLeft: $(container).scrollLeft() + elem.position().left - $(container).position().left + 1,
             }

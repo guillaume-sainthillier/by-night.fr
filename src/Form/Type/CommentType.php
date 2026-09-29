@@ -27,7 +27,7 @@ final class CommentType extends AbstractType
             ->add('comment', TextareaType::class, [
                 'label' => false,
                 'attr' => [
-                    'placeholder' => 'Laissez un message',
+                    'placeholder' => 'Écrire un commentaire…',
                     'rows' => 4,
                 ],
             ]);

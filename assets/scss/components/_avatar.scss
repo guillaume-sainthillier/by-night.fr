@@ -14,3 +14,19 @@
 .avatar-4xl {
     --#{$prefix}avatar-size: 11rem;
 }
+
+// A badge on the edge of an avatar, e.g. the check of a verified member: the wrapper holds it, since .avatar clips
+// what overflows it
+.avatar-badged {
+    position: relative;
+    display: inline-block;
+}
+
+.avatar-badged-badge {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0.25rem;
+    border-radius: $border-radius-pill;
+    box-shadow: 0 0 0 3px $white;
+}

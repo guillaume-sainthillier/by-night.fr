@@ -1,146 +1,88 @@
-<footer id="footer">
+{% set countries = footer_countries() %}
+{% set footer_location = app_context.slug ?? (countries|first).slug ?? null %}
+<footer id="footer" class="footer">
     <div class="{{ container_class }}">
-        <div class="row">
-            <div class="col-sm-6 col-lg-3">
-                <h3 class="h4 text-info">By Night</h3>
-                <ul class="fa-ul">
-                    <li>
-                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="À propos de By Night" href="{{ path('app_about') }}">
-                            À propos
-                        </a>
-                    </li>
-                    <li>
-                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="Comment publier un événement" href="{{ path('app_plus') }}">
-                            Comment ça marche
-                        </a>
-                    </li>
-                    <li>
-                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="Accéder aux mentions légales" href="{{ path('app_legal_mentions') }}">
-                            Mentions légales
-                        </a>
-                    </li>
-                    <li>
-                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="Accéder à notre politique sur les cookies" href="{{ path('app_main_cookie') }}">
-                            Cookies
-                        </a>
-                    </li>
-                    <li>
-                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="Accepter ou refuser les cookies de mesure d'audience et de publicité" href="{{ path('app_main_cookie') }}" data-cookie-consent>
-                            Gérer mes cookies
-                        </a>
-                    </li>
-                    <li>
-                        <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                        <a title="Un problème, une question ? Contactez-nous" href="mailto:support@by-night.fr">
-                            Contact
-                        </a>
-                    </li>
-                </ul>
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-4">
+                <a href="{{ path('app_index') }}" class="site-brand mb-3" title="By Night&nbsp;: agenda des sorties, concerts et spectacles en France">
+                    <twig:Picasso:Image src="{{ asset('build/images/by-night.png', 'local') }}" width="{{ 36 }}" height="{{ 36 }}" alt="" />
+                    <span class="site-brand-name">By Night</span>
+                </a>
+                <p class="text-secondary">
+                    L'agenda indépendant de vos concerts, spectacles, expos, marchés et soirées.
+                    Plus de {{ events_count_label() }} référencés depuis 2013.
+                </p>
             </div>
-            <div class="col-sm-6 col-lg-3 sites">
-                <h3 class="h4 text-info">Sortir par ville</h3>
-                <ul class="fa-ul">
-                    {% set country = app_context.country %}
-                    {% for city in random_cities(country) %}
-                        <li>
-                            <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                            <a title="Sortir {{ city.name|at_place }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
+            {% if footer_location %}
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h3 class="subheader mb-3">Par univers</h3>
+                    <ul class="list-unstyled">
+                        {% for type in enum_cases('App\\Enum\\AgendaType') %}
+                            <li class="mb-2"><a class="link-secondary" href="{{ path('app_agenda_by_type', {typeSlug: type.slug, location: footer_location}) }}">{{ type.label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="col-6 col-md-3 col-lg-2 sites">
+                <h3 class="subheader mb-3">Sortir par ville</h3>
+                <ul class="list-unstyled">
+                    {% for city in random_cities(app_context.country) %}
+                        <li class="mb-2">
+                            <a class="link-secondary" title="Sortir {{ city.name|at_place }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
                                 {{ city.name }}
                             </a>
                         </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="col-lg-6">
-                <h3 class="h4 text-info">Nos sites partenaires</h3>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <ul class="fa-ul">
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Actualités techniques autour du Web et de PHP" href="https://blog.silarhi.fr">
-                                    Actualités Web & PHP
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage Boursorama {{ 'now'|date('Y') }}" href="https://parrainages-boursorama.fr">
-                                    Parrainage Boursorama
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage Fortuneo {{ 'now'|date('Y') }}"
-                                   href="https://offre-parrainages.fr/offres/offre-parrainage-fortuneo">
-                                    Parrainage Fortuneo
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage ING {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-ing-direct">
-                                    Parrainage ING
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offres de parrainage {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr">
-                                    Offres de parrainage
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-6">
-                        <ul class="fa-ul">
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Développement d'applications Web à Toulouse" href="https://silarhi.fr">
-                                    Développement Web Toulouse
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage Hello Bank {{ 'now'|date('Y') }}"
-                                   href="https://offre-parrainages.fr/offres/offre-parrainage-hello-bank">
-                                    Parrainage Hello Bank
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage Yomoni {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-yomoni">
-                                    Parrainage Yomoni
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Offre de parrainage BforBank {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-bforbank">
-                                    Parrainage BforBank
-                                </a>
-                            </li>
-                            <li>
-                                <twig:Icon name="lucide:chevron-right" class="fa-li" />
-                                <a title="Comparatif banque" href="https://avis-banque.fr">
-                                    Comparatif banque
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <h3 class="subheader mb-3">Pays & territoires</h3>
+                <ul class="list-unstyled">
+                    {% for country in countries %}
+                        <li class="mb-2">
+                            <a class="link-secondary" title="Que faire {{ country.atDisplayName }}&nbsp;?" href="{{ path('app_location_index', {location: country.slug}) }}">
+                                {{ country.displayName }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <h3 class="subheader mb-3">By Night</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a class="link-secondary" title="Publiez votre événement gratuitement" href="{{ path('app_event_new') }}">Publier un événement</a></li>
+                    <li class="mb-2"><a class="link-secondary" title="Comment publier un événement" href="{{ path('app_plus') }}">Comment ça marche</a></li>
+                    <li class="mb-2"><a class="link-secondary" title="À propos de By Night" href="{{ path('app_about') }}">À propos</a></li>
+                    <li class="mb-2"><a class="link-secondary" title="Accéder aux mentions légales" href="{{ path('app_legal_mentions') }}">Mentions légales</a></li>
+                    <li class="mb-2"><a class="link-secondary" title="Accéder à notre politique sur les cookies" href="{{ path('app_main_cookie') }}">Cookies</a></li>
+                    <li class="mb-2"><a class="link-secondary" title="Accepter ou refuser les cookies de mesure d'audience et de publicité" href="{{ path('app_main_cookie') }}" data-cookie-consent>Gérer mes cookies</a></li>
+                    <li class="mb-2"><a class="link-secondary" title="Un problème, une question&nbsp;? Contactez-nous" href="mailto:support@by-night.fr">Contact</a></li>
+                </ul>
             </div>
         </div>
-        <hr/>
-        <div class="d-flex align-items-center justify-content-center justify-content-lg-between flex-wrap gap-2">
-            <p class="text-center text-lg-start">
-                <a href="{{ path('app_index') }}">By Night v{{ app_version }}</a>
-                | © {{ 'now'|date('Y') }} - Tous droits réservés
+        <div class="border-top mt-5 pt-4">
+            <h3 class="subheader mb-2">Nos sites partenaires</h3>
+            <ul class="list-inline mb-0 small">
+                <li class="list-inline-item"><a class="link-secondary" title="Actualités techniques autour du Web et de PHP" href="https://blog.silarhi.fr">Actualités Web & PHP</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Développement d'applications Web à Toulouse" href="https://silarhi.fr">Développement Web Toulouse</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offre de parrainage Boursorama {{ 'now'|date('Y') }}" href="https://parrainages-boursorama.fr">Parrainage Boursorama</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offre de parrainage Fortuneo {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-fortuneo">Parrainage Fortuneo</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offre de parrainage ING {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-ing-direct">Parrainage ING</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offre de parrainage Hello Bank {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-hello-bank">Parrainage Hello Bank</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offre de parrainage Yomoni {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-yomoni">Parrainage Yomoni</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offre de parrainage BforBank {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr/offres/offre-parrainage-bforbank">Parrainage BforBank</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Offres de parrainage {{ 'now'|date('Y') }}" href="https://offre-parrainages.fr">Offres de parrainage</a></li>
+                <li class="list-inline-item"><a class="link-secondary" title="Comparatif banque" href="https://avis-banque.fr">Comparatif banque</a></li>
+            </ul>
+        </div>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top mt-4 pt-4 small text-secondary">
+            <p class="mb-0">
+                <a class="link-secondary" href="{{ path('app_index') }}">By Night v{{ app_version }}</a>
+                · © {{ 'now'|date('Y') }} · Tous droits réservés
             </p>
-            <p class="text-center text-lg-start">
-                Fait avec <span title="passion" class="number text-danger">♥</span> par un
-                <a href="https://sainthillier.fr">développeur Web Freelance à Toulouse</a>
+            <p class="mb-0">
+                Fait avec <span title="passion" class="text-primary">♥</span> par un
+                <a class="link-secondary" href="https://sainthillier.fr">développeur Web Freelance à Toulouse</a>
             </p>
         </div>
     </div>

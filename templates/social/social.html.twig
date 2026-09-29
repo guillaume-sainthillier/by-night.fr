@@ -1,26 +1,41 @@
 {% set isGranted = attribute(oAuth, service ~ 'AccessToken') != null %}
 {% set inputId = 'social-' ~ service %}
 
-<div class="config-block form-group d-flex align-items-center gap-3">
-    <label class="config-block-label d-flex align-items-center gap-2 mb-0" for="{{ inputId }}">
-        <twig:Icon name="{{ service|social_icon }}" />
-        {{ service|social_label }}
-    </label>
-    <div class="form-check form-switch mb-0">
-        <input class="form-check-input"
-               type="checkbox"
-               id="{{ inputId }}"
-                {{ isGranted ? 'checked' }}
-               data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', {service: service}) %}"
-               data-href-connect="{% block url_connect path('login_social_start', {service: service}) %}">
-        <span class="form-check-label username text-muted">
-            {% if attribute(oAuth, service ~ 'Id') %}
-                {% if service == 'twitter' %}
-                    @{{ attribute(oAuth, service ~ 'NickName') }}
-                {% else %}
-                    {{ attribute(oAuth, service ~ 'Realname') }}
-                {% endif %}
-            {% endif %}
+{# A connection to a network. SocialLogin (assets/js/components/SocialLogin.js) flips the switch and writes the account
+   name in .username; the CSS shows the connected or the disconnected texts from the switch's state. #}
+<div class="config-block card form-panel mb-0">
+    <div class="card-body d-flex align-items-center gap-3">
+        <span class="avatar bg-white flex-shrink-0">
+            <twig:Icon name="{{ service|social_icon }}" class="text-body" />
         </span>
+        <div class="flex-fill min-w-0">
+            <label class="fw-bold d-block" for="{{ inputId }}">{{ service|social_label }}</label>
+            <div class="small text-secondary text-truncate">
+                <span class="social-connected">
+                    Connecté en tant que
+                    <strong class="username text-body">
+                        {%- if attribute(oAuth, service ~ 'Id') -%}
+                            {%- if service == 'twitter' -%}
+                                @{{ attribute(oAuth, service ~ 'NickName') }}
+                            {%- else -%}
+                                {{ attribute(oAuth, service ~ 'Realname') }}
+                            {%- endif -%}
+                        {%- endif -%}
+                    </strong>
+                </span>
+                <span class="social-disconnected">Non connecté</span>
+            </div>
+        </div>
+        <span class="social-connected badge bg-teal-lt">Actif</span>
+        <div class="form-check form-switch mb-0">
+            <input class="form-check-input"
+                   type="checkbox"
+                   role="switch"
+                   id="{{ inputId }}"
+                   aria-label="Connecter {{ service|social_label }}"
+                    {{ isGranted ? 'checked' }}
+                   data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', {service: service}) %}"
+                   data-href-connect="{% block url_connect path('login_social_start', {service: service}) %}">
+        </div>
     </div>
 </div>

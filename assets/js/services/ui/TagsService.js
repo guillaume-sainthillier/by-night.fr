@@ -1,4 +1,5 @@
 import TomSelect from 'tom-select'
+import * as fr from '@/js/services/ui/tomSelectFr'
 
 import '@/scss/lazy-components/_selects.scss'
 import '@/scss/lazy-components/_tags.scss'
@@ -17,8 +18,7 @@ export function create({
     maxItems = null,
     separator = ',',
     placeholder = '',
-    plugins = ['remove_button'],
-    noResultsText = 'Aucun résultat',
+    plugins = fr.plugins,
     valueField = 'id',
     labelField = 'text',
     fetchOptions = { headers: { Accept: 'application/ld+json' } },
@@ -33,9 +33,8 @@ export function create({
         maxItems,
         placeholder,
         plugins,
-        render: {
-            no_results: () => `<div class="no-results">${noResultsText}</div>`,
-        },
+        // A new tag can be added: no "no results" under the "Ajouter …" option
+        render: allowNew ? { ...fr.render, no_results: null } : fr.render,
     }
 
     if (url) {
@@ -43,11 +42,26 @@ export function create({
         options.labelField = labelField
         options.searchField = []
         options.sortField = [{ field: '$order' }, { field: '$score' }]
-        options.load = (query, callback) => {
+
+        // The server already filtered the hits, but tom-select keeps every option earlier searches loaded: only
+        // those of the typed text are listed, none while its results are on their way
+        let loadedQuery = null
+        options.score = (query) => () => (query === loadedQuery ? 1 : 0)
+        options.load = function (query, callback) {
             const fetchUrl = url.replace('__QUERY__', encodeURIComponent(query))
             fetch(fetchUrl, fetchOptions)
                 .then((res) => res.json())
-                .then((data) => callback(transformResponse(data)))
+                .then((data) => {
+                    // A slower answer to text typed since
+                    if (query !== this.lastValue) {
+                        callback()
+                        return
+                    }
+                    loadedQuery = query
+                    // Keeps the selected options; addOption() would not update an option loaded before
+                    this.clearOptions()
+                    callback(transformResponse(data))
+                })
                 .catch(() => callback())
         }
     }

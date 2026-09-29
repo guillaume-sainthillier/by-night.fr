@@ -29,6 +29,18 @@ form {
     padding-top: 0;
 }
 
+.delete-image .form-group {
+    margin-bottom: 0;
+}
+
+// Chrome paints autofilled fields light blue (!important, so no background-color can win) over the input only, not
+// its icons. Delaying the change for a week keeps the field's own background and text colours.
+input:-webkit-autofill {
+    transition:
+        background-color 0s 604800s,
+        color 0s 604800s;
+}
+
 .required:after {
     content: '*';
 }
@@ -80,6 +92,19 @@ Icon input
 .input-icon-addon {
     //--#{$prefix}icon-color: #{$input-icon-color};
     z-index: 2;
+}
+
+// A flat input group (components/PasswordInput.html.twig) around an invalid field: its addons take the red border too,
+// and the field drops its error icon, which would sit between the field and the show/hide button
+.input-group-flat:has(.is-invalid) {
+    .input-group-text {
+        border-color: var(--#{$prefix}form-invalid-border-color);
+    }
+
+    .form-control.is-invalid {
+        padding-right: $input-padding-x;
+        background-image: none;
+    }
 }
 
 .table .form-check {

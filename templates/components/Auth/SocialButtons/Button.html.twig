@@ -1,0 +1,12 @@
+{# One network of <twig:Auth:SocialButtons>: its logo in its colours and its name #}
+{% props service, title = 'Connectez-vous avec' %}
+{% set network = {
+    google: {name: 'Google', icon: 'logos:google-icon'},
+    facebook: {name: 'Facebook', icon: 'logos:facebook'},
+    twitter: {name: 'X', icon: 'fa7-brands:x-twitter'},
+}[service] %}
+{# The smallest phones fit only the logos: the label then comes from aria-label #}
+<a href="{{ path('login_social_start', {service: service}) }}" title="{{ title }} {{ network.name }}" aria-label="{{ title }} {{ network.name }}" rel="nofollow" {{ attributes.defaults({class: 'btn w-100'}) }}>
+    <twig:Icon name="{{ network.icon }}" />
+    <span class="d-none d-sm-inline text-truncate">{{ network.name }}</span>
+</a>

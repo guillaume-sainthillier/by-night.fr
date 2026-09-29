@@ -23,6 +23,7 @@ use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Tests\AppKernelTestCase;
+use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
 
 /**
@@ -31,6 +32,8 @@ use DateTimeImmutable;
  */
 final class SearchSuggestionsProviderTest extends AppKernelTestCase
 {
+    use CountsUpcomingEvents;
+
     public function testAroundACityTheCategoriesOfItsEventsToComeThenItsTopEventsOfTheWeek(): void
     {
         $toulouse = CityFactory::toulouse()->create();
@@ -45,6 +48,7 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
         $this->event('Exposition passée', $place, TagFactory::createOne(['name' => 'Exposition']), '-1 month', '-1 month');
         $paris = CityFactory::createOne(['name' => 'Paris', 'country' => $toulouse->getCountry()]);
         $this->event('Opéra à Paris', PlaceFactory::createOne(['city' => $paris, 'country' => $toulouse->getCountry()]), TagFactory::createOne(['name' => 'Opéra']), '+1 day', '+1 day');
+        self::counter()->refresh();
 
         self::assertSame([
             ['tags', 'Catégories', 'Concert', '2', null, \sprintf('/toulouse/agenda/tag/%s--%d', $concert->getSlug(), $concert->getId())],

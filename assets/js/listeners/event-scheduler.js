@@ -16,6 +16,7 @@ export default function initEventScheduler(container, di) {
     const startDateField = schedulerRoot.dataset.startDateField
     const endDateField = schedulerRoot.dataset.endDateField
     const collectionId = schedulerRoot.dataset.collectionId
+    const generateButtonId = schedulerRoot.dataset.generateButton
     const detectExisting = schedulerRoot.dataset.detectExisting === 'true'
 
     schedulerRoot.innerHTML = ''
@@ -24,6 +25,7 @@ export default function initEventScheduler(container, di) {
             startDateFieldId: startDateField,
             endDateFieldId: endDateField,
             timesheetsCollectionId: collectionId,
+            generateButtonId,
             collectionManager,
             detectExisting,
         }),

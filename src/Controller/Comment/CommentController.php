@@ -15,12 +15,17 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
+use App\Security\Voter\EventVoter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * The comments of a draft are only for those who can see it: for anyone else, it does not exist.
+ */
+#[IsGranted(EventVoter::VIEW, subject: 'event', statusCode: 404)]
 final class CommentController extends BaseController
 {
     public const int COMMENTS_PER_PAGE = 10;

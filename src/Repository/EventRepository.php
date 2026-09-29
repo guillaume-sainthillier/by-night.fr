@@ -15,11 +15,15 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\EventDto;
 use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Tag;
+use App\Entity\UpcomingCategory;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use App\Enum\EventStatus;
+use App\Enum\PersonalEventFilter;
 use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -41,6 +45,12 @@ use Doctrine\Persistence\ManagerRegistry;
 final class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface, MultipleEagerLoaderInterface
 {
     use DtoFindableTrait;
+
+    /** How long the counts and highlights of the portals may lag behind the events */
+    private const int PORTAL_CACHE_TTL = 3600;
+
+    /** How the price of a free event starts, lowercased (see countUserCalendarHabits()) */
+    private const array FREE_PRICE_PREFIXES = ['gratuit', 'entrée gratuite', 'entrée libre'];
 
     public function __construct(
         ManagerRegistry $registry,
@@ -95,11 +105,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->preloadEntities(User::class, array_map(static fn (Event $entity) => $entity->getUser()?->getId(), $entities));
 
         if (\in_array($view, [
-            'events:agenda:list',
             'events:widget:next-events',
             'events:widget:similar-events',
-            'events:widget:top-events',
-            'events:location:index',
             'events:user:list',
             'events:personal-space:list',
             'events:search:list',
@@ -109,11 +116,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         }
 
         if (\in_array($view, [
-            'events:agenda:list',
             'events:widget:next-events',
             'events:widget:similar-events',
-            'events:widget:top-events',
-            'events:location:index',
             'events:user:list',
             'events:personal-space:list',
             'events:search:list',
@@ -121,6 +125,19 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         ], true)) {
             $loadPlaces();
             $loadCities();
+        }
+
+        // Cards and rows of the portals and the agenda: dates, venue, city and category, no author
+        if (\in_array($view, ['events:portal:list', 'events:agenda:list'], true)) {
+            $loadTimesheets();
+            $loadPlaces();
+            $loadCities();
+            $loadCategories();
+        }
+
+        // The organizer's list names the category under each event
+        if ('events:personal-space:list' === $view) {
+            $loadCategories();
         }
 
         if ('elasticsearch:document' === $view) {
@@ -353,6 +370,27 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * What the members published themselves, imports aside: their events and how many members they come from.
+     *
+     * @return array{events: int, organizers: int}
+     */
+    public function getMemberTotals(): array
+    {
+        $totals = $this
+            ->createQueryBuilder('e')
+            ->select('COUNT(e.id) AS events', 'COUNT(DISTINCT IDENTITY(e.user)) AS organizers')
+            ->where('e.user IS NOT NULL')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->getQuery()
+            // Reads every member event (~0.4 s): a key figure of the page, one day old at most
+            ->enableResultCache(86400) // 1 day
+            ->getSingleResult();
+
+        return ['events' => (int) $totals['events'], 'organizers' => (int) $totals['organizers']];
+    }
+
+    /**
      * Published events ending on or after $since: the ones whose page is worth indexing.
      *
      * @return iterable<array>
@@ -374,7 +412,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->toIterable();
     }
 
-    public function findAllByUserQueryBuilder(User $user, ?string $q = null): QueryBuilder
+    public function findAllByUserQueryBuilder(User $user, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('e')
@@ -387,28 +425,71 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
                 ->setParameter('q', '%' . $q . '%');
         }
 
+        if (null !== $filter) {
+            $qb->andWhere(self::personalEventCondition($filter));
+        }
+
         return $qb;
     }
 
+    /**
+     * How many events the user created ("total"), and how many of them each filter of their list keeps (keyed by the
+     * filter's value), in one query.
+     *
+     * @return array<string, int>
+     */
+    public function countByUserAndFilter(User $user): array
+    {
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->select('COUNT(e.id) AS total')
+            ->where('e.user = :user')
+            ->setParameter('user', $user->getId());
+
+        foreach (PersonalEventFilter::cases() as $filter) {
+            // Not aliased by the bare value: "hidden" is a DQL keyword
+            $qb->addSelect(\sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS %sCount', self::personalEventCondition($filter), $filter->value));
+        }
+
+        /** @var array<string, int|string|null> $row SUM() is NULL when the user has no event */
+        $row = $qb->getQuery()->getSingleResult();
+
+        $counts = ['total' => (int) $row['total']];
+        foreach (PersonalEventFilter::cases() as $filter) {
+            $counts[$filter->value] = (int) $row[$filter->value . 'Count'];
+        }
+
+        return $counts;
+    }
+
+    /**
+     * The DQL condition of a filter of an organizer's list, shared by the list and its counts so that they agree.
+     */
+    private static function personalEventCondition(PersonalEventFilter $filter): string
+    {
+        return match ($filter) {
+            PersonalEventFilter::Visible => 'e.draft = false',
+            PersonalEventFilter::Hidden => 'e.draft = true',
+            PersonalEventFilter::Cancelled => \sprintf("e.status = '%s'", EventStatus::Cancelled->value),
+        };
+    }
+
+    /**
+     * The countries with published events to come, the busiest first, as last counted by UpcomingEventCounter.
+     *
+     * @return list<array{id: string, displayName: string, atDisplayName: string, slug: string, events: int|string}> id is the ISO 3166 code
+     */
     public function getCountryEvents(): array
     {
-        $from = new DateTimeImmutable();
-
         return $this
-            ->createQueryBuilder('e')
-            ->select('c.displayName, c.atDisplayName, c.slug, COUNT(e.id) AS events')
-            ->join('e.place', 'p')
-            ->join('p.country', 'c')
-            ->where('e.endDate >= :from')
-            ->andWhere('e.duplicateOf IS NULL')
-            ->andWhere('e.draft = false')
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->orderBy('events', 'DESC')
-            ->groupBy('c.id')
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c.id, c.displayName, c.atDisplayName, c.slug, c.upcomingEvents AS events')
+            ->from(Country::class, 'c')
+            ->where('c.upcomingEvents > 0')
+            ->orderBy('c.upcomingEvents', 'DESC')
             ->getQuery()
-            ->enableResultCache(3600) // 1 hour
-            ->getScalarResult()
-        ;
+            ->getScalarResult();
     }
 
     /**
@@ -428,50 +509,240 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * @return int[]
+     * The number of published events of a member's calendar on each day, by the day they start: a night out that ends
+     * after midnight (over a quarter of the calendars' events) belongs to the evening it began.
      *
-     * @psalm-return array<int>
+     * @return array<string, int> keyed by date (Y-m-d), in order
      */
-    public function getStatsUser(User $user, string $groupByFunction): array
+    public function countUserEventsByDay(User $user): array
     {
-        $datas = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select(\sprintf('%s(e.endDate) as group', $groupByFunction))
-            ->addSelect('count(e.id) as events')
-            ->from($this->getEntityName(), 'e')
-            ->join('e.userEvents', 'ue')
-            ->join('ue.user', 'u')
-            ->where('u.id = :user')
-            ->setParameter('user', $user->getId())
-            ->groupBy('group')
+        /** @var list<array{day: DateTimeInterface|string, events: int|string}> $rows */
+        $rows = $this->createUserCalendarQueryBuilder($user)
+            ->select('e.startDate AS day', 'COUNT(e.id) AS events')
+            ->andWhere('e.startDate IS NOT NULL')
+            ->groupBy('e.startDate')
+            ->orderBy('e.startDate', 'ASC')
             ->getQuery()
             ->getScalarResult();
 
-        $ordered = [];
-        foreach ($datas as $data) {
-            $ordered[$data['group']] = (int) $data['events'];
+        $counts = [];
+        foreach ($rows as $row) {
+            $day = $row['day'] instanceof DateTimeInterface ? $row['day']->format('Y-m-d') : $row['day'];
+            $counts[$day] = (int) $row['events'];
         }
 
-        return $ordered;
+        return $counts;
     }
 
-    public function findAllUserPlaces(User $user, int $limit = 5): array
+    /**
+     * The cities of the venues of a member's published events, the busiest first.
+     *
+     * @return list<array{name: string, slug: string, events: int, firstYear: int, lastYear: int}>
+     */
+    public function findUserCities(User $user): array
+    {
+        /** @var list<array{name: string, slug: string, events: int|string, first: string, last: string}> $rows */
+        $rows = $this->createUserCalendarQueryBuilder($user)
+            ->select('c.name', 'c.slug', 'COUNT(e.id) AS events', 'MIN(e.startDate) AS first', 'MAX(e.startDate) AS last')
+            ->join('e.place', 'p')
+            ->join('p.city', 'c')
+            ->groupBy('c.id')
+            ->orderBy('events', 'DESC')
+            ->addOrderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(static fn (array $row): array => [
+            'name' => $row['name'],
+            'slug' => $row['slug'],
+            'events' => (int) $row['events'],
+            'firstYear' => (int) substr($row['first'], 0, 4),
+            'lastYear' => (int) substr($row['last'], 0, 4),
+        ], $rows);
+    }
+
+    /**
+     * The venues of a member's published events, the busiest first.
+     *
+     * @return list<array{name: string, slug: string, locationSlug: string, cityName: string|null, events: int}>
+     */
+    public function findUserPlaces(User $user, int $limit = 5): array
+    {
+        /** @var list<array{name: string, slug: string, cityName: string|null, citySlug: string|null, countrySlug: string|null, events: int|string}> $rows */
+        $rows = $this->createUserCalendarQueryBuilder($user)
+            ->select('p.name', 'p.slug', 'c.name AS cityName', 'c.slug AS citySlug', 'co.slug AS countrySlug', 'COUNT(e.id) AS events')
+            ->join('e.place', 'p')
+            ->leftJoin('p.city', 'c')
+            ->leftJoin('p.country', 'co')
+            // c and co are one row per venue: grouped by too for MySQL's ONLY_FULL_GROUP_BY
+            ->groupBy('p.id, c.id, co.id')
+            ->orderBy('events', 'DESC')
+            ->addOrderBy('p.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(static fn (array $row): array => [
+            'name' => $row['name'],
+            'slug' => $row['slug'],
+            // As Place::getLocationSlug(): the agenda of the venue's city, else of its country
+            'locationSlug' => $row['citySlug'] ?? $row['countrySlug'] ?? 'unknown',
+            'cityName' => $row['cityName'],
+            'events' => (int) $row['events'],
+        ], $rows);
+    }
+
+    /**
+     * The categories of a member's published events, the busiest first.
+     *
+     * @return list<array{id: int, name: string, events: int, firstYear: int, lastYear: int}>
+     */
+    public function findUserCategories(User $user): array
+    {
+        /** @var list<array{id: int|string, name: string, events: int|string, first: string, last: string}> $rows */
+        $rows = $this->createUserCalendarQueryBuilder($user)
+            ->select('t.id', 't.name', 'COUNT(e.id) AS events', 'MIN(e.startDate) AS first', 'MAX(e.startDate) AS last')
+            ->join('e.category', 't')
+            ->groupBy('t.id')
+            ->orderBy('events', 'DESC')
+            ->addOrderBy('t.name', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(static fn (array $row): array => [
+            'id' => (int) $row['id'],
+            'name' => $row['name'],
+            'events' => (int) $row['events'],
+            'firstYear' => (int) substr($row['first'], 0, 4),
+            'lastYear' => (int) substr($row['last'], 0, 4),
+        ], $rows);
+    }
+
+    /**
+     * The themes a member comes back to in some categories of their published events: the ones of at least two of
+     * their events, the busiest first. The themes are free text from the sources, one-offs are often noise.
+     *
+     * @param list<int> $categoryIds
+     *
+     * @return array<int, list<string>> the names of the themes, keyed by category id
+     */
+    public function findUserThemesByCategory(User $user, array $categoryIds, int $limit = 3): array
+    {
+        if ([] === $categoryIds) {
+            return [];
+        }
+
+        /** @var list<array{category: int|string, name: string}> $rows */
+        $rows = $this->createUserCalendarQueryBuilder($user)
+            ->select('c.id AS category', 'th.name', 'COUNT(e.id) AS HIDDEN events')
+            ->join('e.category', 'c')
+            ->join('e.themes', 'th')
+            ->andWhere('c.id IN (:categories)')
+            // A source often repeats the category among the themes
+            ->andWhere('th.id <> c.id')
+            ->groupBy('c.id, th.id')
+            ->having('COUNT(e.id) >= 2')
+            ->orderBy('events', 'DESC')
+            ->addOrderBy('th.name', 'ASC')
+            ->setParameter('categories', $categoryIds)
+            ->getQuery()
+            ->getScalarResult();
+
+        $themes = [];
+        foreach ($rows as $row) {
+            $category = (int) $row['category'];
+            if (\count($themes[$category] ?? []) < $limit) {
+                $themes[$category][] = $row['name'];
+            }
+        }
+
+        return $themes;
+    }
+
+    /**
+     * How a member fills their calendar: the published events they added $aheadDays or more before they started, and
+     * the free ones.
+     *
+     * An event is free when its price text starts with "Gratuit", "Entrée gratuite", "Entrée libre" or is "Free", with
+     * no amount in euros: "4 € - gratuit pour les moins de 18 ans" is not. The price is free text from the sources.
+     *
+     * @return array{addedAhead: int, free: int}
+     */
+    public function countUserCalendarHabits(User $user, int $aheadDays): array
+    {
+        $isFree = \sprintf(
+            "(%s OR LOWER(e.prices) = 'free') AND e.prices NOT LIKE '%%€%%'",
+            implode(' OR ', array_map(static fn (string $prefix): string => \sprintf("LOWER(e.prices) LIKE '%s%%'", $prefix), self::FREE_PRICE_PREFIXES)),
+        );
+
+        /** @var array{addedAhead: int|string|null, free: int|string|null} $row SUM() is NULL without any event */
+        $row = $this->createUserCalendarQueryBuilder($user)
+            ->select(
+                'SUM(CASE WHEN DATE_DIFF(e.startDate, ue.createdAt) >= :aheadDays THEN 1 ELSE 0 END) AS addedAhead',
+                \sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS free', $isFree),
+            )
+            ->andWhere('e.startDate IS NOT NULL')
+            ->setParameter('aheadDays', $aheadDays)
+            ->getQuery()
+            ->getSingleResult();
+
+        return ['addedAhead' => (int) $row['addedAhead'], 'free' => (int) $row['free']];
+    }
+
+    /**
+     * @param list<int> $placeIds
+     *
+     * @return array<int, int> the number of events of each place, keyed by place id; places without any are left out
+     */
+    public function countByPlaces(array $placeIds): array
+    {
+        if ([] === $placeIds) {
+            return [];
+        }
+
+        /** @var list<array{place: int|string, events: int|string}> $rows */
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(e.place) AS place', 'COUNT(e.id) AS events')
+            ->where('e.place IN (:places)')
+            ->groupBy('e.place')
+            ->setParameter('places', $placeIds)
+            ->getQuery()
+            ->getScalarResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[(int) $row['place']] = (int) $row['events'];
+        }
+
+        return $counts;
+    }
+
+    /**
+     * @return int the number of venues of a member's published events
+     */
+    public function countUserPlaces(User $user): int
+    {
+        return (int) $this->createUserCalendarQueryBuilder($user)
+            ->select('COUNT(DISTINCT p.id)')
+            ->join('e.place', 'p')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * The published events of a member's calendar (the events they go to or are interested in), as "e".
+     */
+    private function createUserCalendarQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->getEntityManager()
             ->createQueryBuilder()
-            ->select('COUNT(e) as eventsCount, p.name')
             ->from(UserEvent::class, 'ue')
             ->join('ue.event', 'e')
-            ->join('e.place', 'p')
             ->where('ue.user = :user')
-            ->groupBy('p.name')
-            ->orderBy('eventsCount', 'DESC')
-            ->setParameter('user', $user->getId())
-            ->setFirstResult(0)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+            ->andWhere('e.draft = false')
+            ->setParameter('user', $user->getId());
     }
 
     public function findAllNextEvents(User $user, bool $isNext = true): QueryBuilder
@@ -487,16 +758,13 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->setParameter('start_date', date('Y-m-d'));
     }
 
+    /**
+     * @return int the number of published events of a member's calendar: the ones their profile lists
+     */
     public function getUserFavoriteEventsCount(User $user): int
     {
-        return (int) $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->select('COUNT(u)')
-            ->from(UserEvent::class, 'ue')
-            ->join('ue.user', 'u')
-            ->where('ue.user = :user')
-            ->setParameter('user', $user->getId())
+        return (int) $this->createUserCalendarQueryBuilder($user)
+            ->select('COUNT(ue.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -636,56 +904,339 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function findUpcomingCategoriesOfCity(City $city, int $limit): array
     {
-        return $this
+        return $this->findUpcomingCategories(new Location()->setCity($city), $limit);
+    }
+
+    /**
+     * The categories of the events to come in a city or a country, the most frequent first, as last counted by
+     * UpcomingEventCounter.
+     *
+     * @return list<array{0: Tag, events: int|string}> each category, and its number of events to come
+     */
+    public function findUpcomingCategories(Location $location, int $limit): array
+    {
+        $qb = $this
             ->getEntityManager()
             ->createQueryBuilder()
-            ->select('t', 'COUNT(e.id) AS events')
+            ->select('t', 'uc.events AS events')
             ->from(Tag::class, 't')
-            ->join(Event::class, 'e', 'WITH', 'e.category = t.id')
-            ->join('e.place', 'p')
-            ->where('p.city = :city')
-            ->andWhere('e.endDate >= :from')
-            ->andWhere('e.duplicateOf IS NULL')
-            ->andWhere('e.draft = false')
-            ->setParameter('city', $city->getId())
-            ->setParameter('from', new DateTimeImmutable()->format('Y-m-d'))
-            ->groupBy('t.id')
-            ->orderBy('events', 'DESC')
+            ->join(UpcomingCategory::class, 'uc', 'WITH', 'uc.tag = t')
+            ->orderBy('uc.events', 'DESC')
             ->addOrderBy('t.name', 'ASC')
-            ->setMaxResults($limit)
+            ->setMaxResults($limit);
+
+        if (null !== $city = $location->getCity()) {
+            $qb
+                ->where('uc.city = :city')
+                ->setParameter('city', $city->getId());
+        } elseif (null !== $country = $location->getCountry()) {
+            $qb
+                ->where('uc.country = :country')
+                ->setParameter('country', $country->getId());
+        } else {
+            // Only cities and countries are counted
+            return [];
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * The events of the next seven days that have a picture, the most followed first: the "À l'affiche" cards of the
+     * portals.
+     *
+     * @return Event[]
+     */
+    public function findHighlights(Location $location, int $limit): array
+    {
+        $from = new DateTimeImmutable('today');
+
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->join('e.place', 'p')
+            ->andWhere('e.startDate <= :to')
+            ->andWhere("((e.image.name IS NOT NULL AND e.image.name <> '') OR (e.imageSystem.name IS NOT NULL AND e.imageSystem.name <> ''))")
+            ->setParameter('to', $from->modify('+6 days')->format('Y-m-d'))
+            ->orderBy('e.participations', 'DESC')
+            ->addOrderBy('e.endDate', 'ASC')
+            ->addOrderBy('e.id', 'ASC')
+            ->setMaxResults($limit);
+
+        /** @var Event[] $events */
+        $events = $this
+            ->whereUpcoming($qb, $location)
+            ->getQuery()
+            ->enableResultCache(self::PORTAL_CACHE_TTL)
+            ->getResult();
+
+        $this->loadAllEager($events, ['view' => 'events:portal:list']);
+
+        return $events;
+    }
+
+    /**
+     * The venues of a city or a country with the most events to come, as last counted by UpcomingEventCounter.
+     *
+     * @return list<array{0: Place, events: int|string}> each venue, and its number of events to come
+     */
+    public function findUpcomingPlaces(Location $location, int $limit): array
+    {
+        $qb = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('p', 'p.upcomingEvents AS events')
+            ->from(Place::class, 'p')
+            ->where('p.upcomingEvents > 0')
+            ->orderBy('p.upcomingEvents', 'DESC')
+            ->addOrderBy('p.name', 'ASC')
+            ->setMaxResults($limit);
+
+        return $this
+            ->whereLocation($qb, $location)
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * @return Tag[]
+     * The cities of a country with the most events to come.
+     *
+     * @return list<array{0: City, events: int|string}> each city, and its number of events to come
      */
-    public function getEventTypes(Location $location): array
+    public function findUpcomingCitiesOfCountry(Country $country, int $limit): array
+    {
+        return $this
+            ->createUpcomingCitiesQueryBuilder($limit)
+            ->andWhere('c.country = :country')
+            ->setParameter('country', $country->getId())
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The countries with events to come, as their cards list them on the home and country pages: the featured ones
+     * first, then as ranked in the back office, then the busiest; each with its busiest cities.
+     *
+     * @return list<array{0: Country, events: int|string, cities: list<City>}> each country, its number of events to come, and its busiest cities
+     */
+    public function findUpcomingCountries(int $cities, ?Country $except = null): array
     {
         $qb = $this
             ->getEntityManager()
             ->createQueryBuilder()
-            ->select('c')
-            ->from(Tag::class, 'c')
-            ->join(Event::class, 'e', 'WITH', 'e.category = c.id')
-        ;
+            ->select('c', 'c.upcomingEvents AS events')
+            ->addSelect('CASE WHEN c.displayOrder IS NULL THEN 1 ELSE 0 END AS HIDDEN unranked')
+            ->from(Country::class, 'c')
+            ->where('c.upcomingEvents > 0')
+            ->orderBy('c.featured', 'DESC')
+            ->addOrderBy('unranked', 'ASC')
+            ->addOrderBy('c.displayOrder', 'ASC')
+            ->addOrderBy('c.upcomingEvents', 'DESC')
+            ->addOrderBy('c.displayName', 'ASC');
 
-        if ($location->isCity()) {
+        if (null !== $except) {
             $qb
-                ->join('e.place', 'p')
-                ->andWhere('p.city = :city')
-                ->setParameter('city', $location->getCity()->getId());
-        } elseif ($location->isCountry()) {
-            $qb
-                ->join('e.place', 'p')
-                ->andWhere('p.city IS NULL')
-                ->andWhere('p.country = :country')
-                ->setParameter('country', $location->getCountry()->getId());
+                ->andWhere('c.id <> :except')
+                ->setParameter('except', $except->getId());
         }
 
-        return $qb
-            ->groupBy('c')
+        /** @var list<array{0: Country, events: int|string}> $countries */
+        $countries = $qb->getQuery()->getResult();
+
+        return array_map(fn (array $row): array => $row + [
+            'cities' => array_column($this->findUpcomingCitiesOfCountry($row[0], $cities), 0),
+        ], $countries);
+    }
+
+    /**
+     * The cities around a city (about 100 km) with the most events to come, the city itself left out.
+     *
+     * @return list<array{0: City, events: int|string}> each city, and its number of events to come
+     */
+    public function findUpcomingCitiesAround(City $city, int $limit): array
+    {
+        // A bounding box rather than a distance: it reads the city coordinates as they are, and the ranking
+        // is by events, not by distance
+        $latitude = (float) $city->getLatitude();
+        $longitude = (float) $city->getLongitude();
+        $latitudeDelta = 0.9;
+        $longitudeDelta = $latitudeDelta / max(0.2, cos(deg2rad($latitude)));
+
+        return $this
+            ->createUpcomingCitiesQueryBuilder($limit)
+            ->andWhere('c.id <> :city')
+            ->andWhere('c.latitude BETWEEN :minLatitude AND :maxLatitude')
+            ->andWhere('c.longitude BETWEEN :minLongitude AND :maxLongitude')
+            ->setParameter('city', $city->getId())
+            ->setParameter('minLatitude', $latitude - $latitudeDelta)
+            ->setParameter('maxLatitude', $latitude + $latitudeDelta)
+            ->setParameter('minLongitude', $longitude - $longitudeDelta)
+            ->setParameter('maxLongitude', $longitude + $longitudeDelta)
             ->getQuery()
-            ->execute();
+            ->getResult();
+    }
+
+    /**
+     * The events to come, and the cities and venues that host them: the key figures of the home page.
+     *
+     * @return array{events: int, cities: int, places: int}
+     */
+    public function getUpcomingTotals(): array
+    {
+        $places = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COALESCE(SUM(p.upcomingEvents), 0) AS events', 'COUNT(p.id) AS places')
+            ->from(Place::class, 'p')
+            ->where('p.upcomingEvents > 0')
+            ->getQuery()
+            ->getSingleResult();
+
+        $cities = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(c.id)')
+            ->from(City::class, 'c')
+            ->where('c.upcomingEvents > 0')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return ['events' => (int) $places['events'], 'cities' => (int) $cities, 'places' => (int) $places['places']];
+    }
+
+    /**
+     * The published events to come of each venue that has some: what UpcomingEventCounter stores on places.
+     *
+     * @return array<int, int> number of events to come, by place id
+     */
+    public function countUpcomingByPlace(): array
+    {
+        // The place is not joined: event_upcoming_idx holds its id, so the index alone answers (70 ms instead of 300)
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(e.place) AS place', 'COUNT(e.id) AS events')
+            ->andWhere('e.place IS NOT NULL')
+            ->groupBy('e.place');
+
+        $rows = $this->whereUpcoming($qb)->getQuery()->getScalarResult();
+
+        return array_map(intval(...), array_column($rows, 'events', 'place'));
+    }
+
+    /**
+     * The agenda types stored on the published events that end from a day on: what AgendaTypeClassifier compares its
+     * findings with. The index only holds published events.
+     *
+     * @return array<int, list<string>> the types, by event id (the events without any left out)
+     */
+    public function findAgendaTypesEndingFrom(DateTimeImmutable $from): array
+    {
+        return self::agendaTypes($this
+            ->createIsActiveQueryBuilder()
+            ->andWhere('e.endDate >= :from')
+            ->setParameter('from', $from->format('Y-m-d')));
+    }
+
+    /**
+     * @param list<int> $ids
+     *
+     * @return array<int, list<string>> the types stored on these events, by id (the events without any left out)
+     */
+    public function findAgendaTypesOf(array $ids): array
+    {
+        $types = [];
+        foreach (array_chunk($ids, 1_000) as $chunk) {
+            $types += self::agendaTypes($this
+                ->createQueryBuilder('e')
+                ->where('e.id IN (:ids)')
+                ->setParameter('ids', $chunk));
+        }
+
+        return $types;
+    }
+
+    /**
+     * @return array<int, list<string>>
+     */
+    private static function agendaTypes(QueryBuilder $qb): array
+    {
+        $rows = $qb
+            ->select('e.id', 'e.agendaTypes')
+            ->andWhere('e.agendaTypes IS NOT NULL')
+            ->getQuery()
+            ->getScalarResult();
+
+        // A scalar result leaves the column as stored: "concert,famille"
+        return array_map(static fn (string $types): array => explode(',', $types), array_column($rows, 'agendaTypes', 'id'));
+    }
+
+    /**
+     * The published events to come that have a category, counted by the city and the country of their venue: what
+     * UpcomingEventCounter stores as UpcomingCategory rows.
+     *
+     * @return list<array{city: int|string|null, country: string|null, category: int|string, events: int|string}>
+     */
+    public function countUpcomingCategoriesByZone(): array
+    {
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(p.city) AS city', 'IDENTITY(p.country) AS country', 'IDENTITY(e.category) AS category', 'COUNT(e.id) AS events')
+            ->join('e.place', 'p')
+            ->andWhere('e.category IS NOT NULL')
+            ->groupBy('p.city', 'p.country', 'e.category');
+
+        return $this->whereUpcoming($qb)->getQuery()->getScalarResult();
+    }
+
+    /**
+     * Cities ("c") with their number of published events to come ("events"), the busiest first.
+     *
+     * admin_zone_type_upcoming_idx and admin_zone_type_country_upcoming_idx end with this exact order, so MySQL reads
+     * them backwards and stops at the limit. With any other order it sorts instead, from the type index (every city):
+     * 90 ms instead of 1 ms on a city page.
+     */
+    private function createUpcomingCitiesQueryBuilder(int $limit): QueryBuilder
+    {
+        return $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c', 'department', 'c.upcomingEvents AS events')
+            ->from(City::class, 'c')
+            ->leftJoin('c.parent', 'department')
+            ->where('c.upcomingEvents > 0')
+            ->orderBy('c.upcomingEvents', 'DESC')
+            ->addOrderBy('c.population', 'DESC')
+            ->setMaxResults($limit);
+    }
+
+    /**
+     * Keeps the published events ("e") that end today or later, in the location when given ("p" is their venue).
+     */
+    private function whereUpcoming(QueryBuilder $qb, ?Location $location = null): QueryBuilder
+    {
+        $qb
+            ->andWhere('e.endDate >= :from')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->setParameter('from', new DateTimeImmutable()->format('Y-m-d'));
+
+        return $this->whereLocation($qb, $location);
+    }
+
+    /**
+     * Keeps the venues ("p") of the location when given.
+     */
+    private function whereLocation(QueryBuilder $qb, ?Location $location): QueryBuilder
+    {
+        if (true === $location?->isCity()) {
+            $qb
+                ->andWhere('p.city = :location')
+                ->setParameter('location', $location->getCity()->getId());
+        } elseif (true === $location?->isCountry()) {
+            $qb
+                ->andWhere('p.country = :location')
+                ->setParameter('location', $location->getCountry()->getId());
+        }
+
+        return $qb;
     }
 }

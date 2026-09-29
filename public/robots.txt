@@ -1,7 +1,7 @@
 # www.robotstxt.org/
 # www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
 #
-# Widget fragments (/top/soirees, /prochaines-soirees, /autres-soirees, /top/membres) are no
+# Widget fragments (/prochaines-soirees, /autres-soirees) are no
 # longer blocked here: they answer with "X-Robots-Tag: noindex", which Google can only see when
 # it is allowed to fetch them.
 

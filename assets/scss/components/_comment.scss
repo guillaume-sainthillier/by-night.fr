@@ -1,69 +1,29 @@
-// Comments container using Tabler chat component
+// The comments card of an event page
 .comments-container {
-    max-width: 900px;
-    margin: 2rem auto;
+    .chat-bubbles {
+        gap: 0.75rem;
+    }
 
-    .heading {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: $dark;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    // A comment, a reply, and the form to write one: light boxes inside the card
+    .comment {
+        padding: 1rem;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-lg;
+        background-color: $light;
 
-        small {
-            font-size: 0.875rem;
-            font-weight: 400;
-            margin-left: 0.25rem;
+        &.comment-me {
+            background-color: rgba($primary, 0.04);
+            border-color: rgba($primary, 0.2);
+        }
+
+        &.comment-reply {
+            padding: 0.75rem 1rem;
+            font-size: $font-size-sm;
         }
     }
 
-    // Comment form styles
-    .card-body-form {
-        .comment-form-user {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-
-            img,
-            picture {
-                max-width: 40px;
-            }
-
-            strong {
-                font-size: 0.9375rem;
-                color: $dark;
-            }
-        }
-    }
-
-    // Tabler chat customizations
-    .chat-bubble-author a {
-        color: inherit;
-        text-decoration: none;
-        font-weight: 600;
-
-        &:hover {
-            color: $primary;
-            text-decoration: underline;
-        }
-    }
-
-    // Replies container
-    .replies-container {
-        .chat-bubble-reply {
-            background-color: rgba($primary, 0.05);
-            font-size: 0.875rem;
-        }
-
-        .reply-item {
-            .avatar-sm {
-                width: 32px;
-                height: 32px;
-            }
-        }
+    .comment-body {
+        overflow-wrap: anywhere;
     }
 
     // Reply form container
@@ -97,7 +57,7 @@
     // Load more button
     .load-more {
         text-align: center;
-        margin-top: 1.5rem;
+        margin-top: 1rem;
     }
 }
 
@@ -114,43 +74,5 @@
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
-    }
-}
-
-// Responsive adjustments
-@include media-breakpoint-down(md) {
-    .comments-container {
-        .heading {
-            font-size: 1.125rem;
-        }
-
-        .card-body-form {
-            padding: 1.5rem;
-
-            .comment-form-user img,
-            .comment-form-user picture {
-                max-width: 36px;
-            }
-        }
-    }
-}
-
-@include media-breakpoint-down(sm) {
-    .comments-container {
-        margin: 1.5rem auto;
-
-        .heading {
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .card-body-form {
-            padding: 1.25rem;
-
-            .comment-form-input textarea {
-                font-size: 0.875rem;
-                padding: 0.75rem 1rem;
-            }
-        }
     }
 }

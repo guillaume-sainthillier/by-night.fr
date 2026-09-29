@@ -1,0 +1,5 @@
+{# The icon of a <twig:Tile>: a Tabler avatar tinted with the tone #}
+{% props icon, tone = 'primary' %}
+<span {{ attributes.defaults({class: 'avatar avatar-md mb-3 bg-' ~ tone ~ '-lt'}) }}>
+    <twig:Icon name="{{ icon }}" />
+</span>

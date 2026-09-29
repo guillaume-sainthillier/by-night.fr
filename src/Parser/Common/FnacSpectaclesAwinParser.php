@@ -93,8 +93,8 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
     {
         /** @var array<string, EventDto> $events */
         $events = [];
-        /** @var array<string, array{min: float, max: float}> $priceRanges */
-        $priceRanges = [];
+        /** @var array<string, list<string>> $prices the price of each ticket product of each show */
+        $prices = [];
 
         foreach ($rows as $data) {
             $event = $this->arrayToDto($data);
@@ -105,22 +105,19 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             // arrayToDto() sets externalId to the show identity shared by every
             // duplicate row, so it doubles as the grouping key.
             $key = (string) $event->externalId;
-            $price = (float) ($data['search_price'] ?? 0);
+            $prices[$key][] = $data['search_price'] ?? '';
 
             if (!isset($events[$key])) {
                 $events[$key] = $event;
-                $priceRanges[$key] = ['min' => $price, 'max' => $price];
 
                 continue;
             }
 
             $this->mergeDuplicateRow($events[$key], $event);
-            $priceRanges[$key]['min'] = min($priceRanges[$key]['min'], $price);
-            $priceRanges[$key]['max'] = max($priceRanges[$key]['max'], $price);
         }
 
         foreach ($events as $key => $event) {
-            $this->finalizeEvent($event, $priceRanges[$key]);
+            $this->finalizeEvent($event, $prices[$key]);
         }
 
         return array_values($events);
@@ -172,7 +169,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         // As served: the feed links 222x222 thumbnails with no larger variant, so there is
         // nothing to look up (a "grand/" to "600/" rewrite once checked each poster with a HEAD)
         $event->imageUrl = $data['merchant_image_url'] ?? null;
-        $event->prices = \sprintf('%s€', self::formatPrice($data['search_price']));
+        $event->prices = self::formatPriceRange([$data['search_price']]);
         $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
         $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
 
@@ -255,9 +252,9 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
      * Once every duplicate row has been folded in, derive the aggregate fields:
      * chronological timesheets, a shared hours label and the full price range.
      *
-     * @param array{min: float, max: float} $priceRange
+     * @param list<string> $prices the price of each ticket product of the show, as the feed gives them
      */
-    private function finalizeEvent(EventDto $event, array $priceRange): void
+    private function finalizeEvent(EventDto $event, array $prices): void
     {
         usort(
             $event->timesheets,
@@ -272,8 +269,6 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->hours = 1 === \count($distinctHours) ? $distinctHours[0] : null;
 
         // Reflect the full ticket price range gathered across the duplicate rows.
-        $event->prices = $priceRange['min'] === $priceRange['max']
-            ? \sprintf('%s€', self::formatPrice($priceRange['min']))
-            : \sprintf('De %s€ à %s€', self::formatPrice($priceRange['min']), self::formatPrice($priceRange['max']));
+        $event->prices = self::formatPriceRange($prices);
     }
 }

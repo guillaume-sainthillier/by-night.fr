@@ -2,4 +2,29 @@
     justify-content: flex-end;
     margin-left: auto;
     margin-bottom: 0;
+
+    // The chevrons of "Précédent" and "Suivant" (pagination/bootstrap5.html.twig): centred with their label, instead
+    // of sitting on its baseline and making the link taller than the page numbers
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+
+        .icon {
+            vertical-align: 0;
+        }
+    }
+
+    // Phones: the pager takes its own line, spread over the card, and gives up
+    // the gaps so "‹ 1 … 149 150 151 … 270 ›" still fits a 320px screen
+    @include media-breakpoint-down(sm) {
+        gap: 0;
+        width: 100%;
+        justify-content: space-between;
+
+        .page-link {
+            min-width: 1.75rem;
+        }
+    }
 }

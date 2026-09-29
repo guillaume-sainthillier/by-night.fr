@@ -1,0 +1,31 @@
+{#
+    The header of a <twig:FilterGroup>: an icon, a label and a count pill. With an "href" it is a link, and a chevron
+    folds the items ("target"); without, the whole header folds them.
+#}
+{% props href = null, filteredHref = null, icon = null, tone = 'primary', count = null, active = false, title = null, target = null, open = false %}
+{% set text %}{% block content %}{% endblock %}{% endset %}
+{% set toggle = target ? ' data-bs-toggle="collapse" data-bs-target="#' ~ target ~ '" aria-controls="' ~ target ~ '" aria-expanded="' ~ (open ? 'true' : 'false') ~ '"' : '' %}
+<div {{ attributes.defaults({class: 'filter-group-header'}) }}>
+    {% if href %}
+        <a class="filter-group-link" href="{{ href }}"
+           {%- if filteredHref %} data-filtered-href="{{ filteredHref }}"{% endif %}
+           {%- if title %} title="{{ title }}"{% endif %}
+           {%- if active %} aria-current="page"{% endif %}>
+            {% if icon %}<twig:Icon name="{{ icon }}" class="filter-group-icon text-{{ tone }}" />{% endif %}
+            <span class="flex-fill min-w-0">{{ text }}</span>
+            {% if count is not null %}<span class="badge badge-pill bg-{{ tone }}-lt">{{ count|format_number(locale: 'fr') }}</span>{% endif %}
+        </a>
+        {% if target %}
+            <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary filter-group-toggle{{ open ? '' : ' collapsed' }}"{{ toggle|raw }} aria-label="Afficher ou masquer les catégories">
+                <twig:Icon name="lucide:chevron-down" />
+            </button>
+        {% endif %}
+    {% else %}
+        <button type="button" class="filter-group-link filter-group-toggle{{ open ? '' : ' collapsed' }}"{{ toggle|raw }}>
+            {% if icon %}<twig:Icon name="{{ icon }}" class="filter-group-icon text-{{ tone }}" />{% endif %}
+            <span class="flex-fill min-w-0">{{ text }}</span>
+            {% if count is not null %}<span class="badge badge-pill bg-{{ tone }}-lt">{{ count|format_number(locale: 'fr') }}</span>{% endif %}
+            <twig:Icon name="lucide:chevron-down" class="filter-group-chevron" />
+        </button>
+    {% endif %}
+</div>

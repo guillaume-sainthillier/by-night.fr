@@ -10,7 +10,7 @@
     {% set pageTitle = 'Rechercher des événements' %}
     {% set title = 'Rechercher des événements' %}
     {% set description = 'Trouvez des concerts, spectacles, expos et sorties près de chez vous.' %}
-    {% set result = {count: events.nbResults, message: '{count, plural, =0 {Aucun événement trouvé} one {# événement trouvé} other {# événements trouvés}}'} %}
+    {% set result = {count: events.nbResults, message: '{count, plural, =0 {Aucune sortie trouvée} one {# sortie trouvée} other {# sorties trouvées}}'} %}
     {% set name = 'Événements' %}
 {% elseif type == 'membres' %}
     {% set pageTitle = 'Rechercher des membres' %}

@@ -14,12 +14,18 @@
         </div>
     {% endif %}
     <div class="alert alert-dismissible fade show alert-info" id="feedback-banner">
-        <div class="{{ block('container_class') }}">
-            <twig:Icon name="lucide:message-circle" />
-            <strong>Nouveau !</strong> Nous avons amélioré la gestion de vos événements.
-            <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-                Donnez-nous votre avis !
-            </a>
+        <div class="{{ block('container_class') }} d-flex align-items-center gap-3">
+            <span class="avatar avatar-sm rounded-circle bg-yellow text-white flex-shrink-0">
+                <twig:Icon name="lucide:message-circle" />
+            </span>
+            <div>
+                <strong>Nouveau !</strong> Nous avons amélioré la gestion de vos événements.
+                {# The body's link colour, not the alert's: the amber of .alert-info's links is unreadable on its background #}
+                <a href="#" class="text-nowrap" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                    Donnez-nous votre avis !
+                    <twig:Icon name="lucide:arrow-right" />
+                </a>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
         </div>
     </div>

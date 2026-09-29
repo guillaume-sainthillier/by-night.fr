@@ -1,18 +1,20 @@
+// Event form of the personal space: numbered <twig:FormCard> steps built from Tabler cards, badges and avatars
 .my-event {
     #map {
         min-height: 300px;
     }
 
-    h2 {
-        margin-bottom: 40px;
-
-        .badge {
-            margin-right: 10px;
+    // A date row: its badge says whether it shows the event's hours (its placeholder) or its own
+    .timesheet-item {
+        &:has(.timesheet-hours:placeholder-shown) .timesheet-hours-own,
+        &:has(.timesheet-hours:not(:placeholder-shown)) .timesheet-hours-default {
+            display: none;
         }
+    }
 
-        .underline {
-            border-bottom: 1px dotted $primary;
-        }
+    // The message of the empty date list
+    .collection-wrapper:has(.collection-item) .timesheets-empty {
+        display: none;
     }
 }
 

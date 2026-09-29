@@ -1,84 +1,228 @@
-{% extends 'layouts/default.html.twig' %}
+{% extends 'layouts/full.html.twig' %}
 
 {% block breadcrumb %}
     {% do menu.addItem('Comment ça marche', url('app_plus')) %}
 {% endblock %}
 
 {% block title 'Comment publier un événement sur By Night' %}
-{% block page_title 'Comment ça marche ?' %}
-{% block meta_description 'Publiez votre événement gratuitement sur By Night en 4 étapes simples : configurez, communiquez, contrôlez et analysez vos résultats.' %}
+{% block meta_description 'Publiez votre événement gratuitement sur By Night en 4 étapes simples : configurez, communiquez, contrôlez et suivez vos événements.' %}
 
 {% block body %}
-    <div class="card">
-        <h2 class="card-header">Publiez vos événements en 4 étapes</h2>
-        <div class="learn-more">
-            <div class="card-body">
-                <div class="row block align-items-center">
-                    <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper even"><twig:Icon name="lucide:settings" class="icon-5x" /></span>
-                    </div>
-                    <div class="col-sm-8">
-                        <h3 class="badge even">Configurez</h3>
-                        <p>
-                            Créez gratuitement votre événement en quelques minutes,
-                            sans aucune connaissance technique. Définissez vos tarifs,
-                            choisissez entre un événement public et un événement privé, préparez vos brouillons…
-                            By Night met à votre disposition tous les outils nécessaires
-                            pour garantir le succès de vos événements.
-                        </p>
-                    </div>
+    <section class="hero-glow py-5">
+        <div class="container-lg">
+            <div class="row g-4 align-items-end">
+                <div class="col-lg-8">
+                    <twig:Section:Eyebrow icon="lucide:sparkles" badge="{{ true }}">Guide des organisateurs</twig:Section:Eyebrow>
+                    <h1 class="display-5 fw-bold text-start mb-3">Comment ça marche&nbsp;?</h1>
+                    <p class="lead fw-semibold mb-0">
+                        Publiez vos événements en <span class="text-primary">4 étapes simples</span> et 100&nbsp;% gratuites, de jour comme de nuit.
+                    </p>
                 </div>
             </div>
-            <hr />
-            <div class="card-body">
-                <div class="row block align-items-center">
-                    <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper odd"><twig:Icon name="lucide:megaphone" class="icon-5x" /></span>
-                    </div>
-                    <div class="col-sm-8">
-                        <h3 class="badge odd">Communiquez</h3>
-                        <p>
-                            Boostez votre auditoire grâce à nos outils de communication !
-                            Personnalisez vos événements à votre image, et la plateforme
-                            s'occupe pour vous de les diffuser sur les réseaux sociaux !
-                            Créez une communauté autour de vos événements et développez votre audience
-                            grâce aux membres de By Night !
-                        </p>
-                    </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container-lg">
+            <div class="row row-cards">
+                <div class="col-md-6">
+                    <article class="card card-lg h-100 mb-0">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="avatar bg-primary-lt fw-bold">01</span>
+                                <h2 class="h1 text-start flex-fill mb-0">Configurez</h2>
+                                <span class="avatar bg-primary-lt"><twig:Icon name="lucide:sliders-horizontal" /></span>
+                            </div>
+                            <p class="text-secondary">
+                                Créez gratuitement votre événement en quelques minutes, sans aucune connaissance technique&nbsp;: dates et
+                                horaires, tarifs, affiche, lieu, liens de réservation… Pas encore prêt&nbsp;? Enregistrez-le en brouillon et
+                                publiez-le quand vous voulez.
+                            </p>
+                            <div class="form-panel rounded-3 p-3 mt-auto">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="subheader">Dans le formulaire</span>
+                                    <span class="subheader text-teal"><span class="status-dot bg-teal me-1"></span>Publication immédiate</span>
+                                </div>
+                                <div class="row g-2 text-center small">
+                                    {% for field in [
+                                        {icon: 'lucide:calendar-plus', label: 'Plusieurs dates'},
+                                        {icon: 'lucide:ticket', label: 'Tarifs'},
+                                        {icon: 'lucide:file-pen', label: 'Brouillon'},
+                                    ] %}
+                                        <div class="col-4">
+                                            <div class="card card-sm mb-0">
+                                                <div class="card-body py-2 px-1">
+                                                    <twig:Icon name="{{ field.icon }}" class="text-primary d-block mx-auto mb-1" />
+                                                    {{ field.label }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-md-6">
+                    <article class="card card-lg card-night border-0 h-100 mb-0" data-bs-theme="dark">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="avatar bg-primary text-white fw-bold">02</span>
+                                <h2 class="h1 text-start flex-fill mb-0">Communiquez</h2>
+                                <span class="avatar bg-primary text-white"><twig:Icon name="lucide:megaphone" /></span>
+                            </div>
+                            <p class="text-secondary">
+                                Votre événement a sa propre page, avec son affiche et ses liens de réservation. Il rejoint l'agenda de sa
+                                ville et la recherche, et sa page est balisée pour que Google la reconnaisse comme un événement. Vos visiteurs
+                                la partagent en un clic sur les réseaux sociaux, et les membres de By Night l'ajoutent à leurs favoris.
+                            </p>
+                            <div class="card card-sm mb-0 mt-auto">
+                                <div class="card-body d-flex align-items-center gap-3">
+                                    <twig:Icon name="lucide:share-2" class="icon-lg text-primary" />
+                                    <div class="flex-fill">
+                                        <div class="fw-semibold">Diffusion automatique</div>
+                                        <div class="text-secondary small">Agenda de la ville, recherche & Google</div>
+                                    </div>
+                                    <twig:Icon name="lucide:circle-check" class="icon-lg text-teal" />
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-md-6">
+                    <article class="card card-lg h-100 mb-0">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="avatar bg-teal-lt fw-bold">03</span>
+                                <h2 class="h1 text-start flex-fill mb-0">Contrôlez</h2>
+                                <span class="avatar bg-teal-lt"><twig:Icon name="lucide:layout-dashboard" /></span>
+                            </div>
+                            <p class="text-secondary">
+                                Gardez la main sur vos événements à tout moment&nbsp;: corrigez leur fiche, masquez-les le temps de les
+                                compléter, signalez un report, une annulation ou une date complète, et répondez aux commentaires de votre
+                                communauté.
+                            </p>
+                            <div class="d-flex flex-wrap gap-2 mt-auto">
+                                <span class="badge bg-secondary-lt"><twig:Icon name="lucide:pencil" /> Modification à tout moment</span>
+                                <span class="badge bg-secondary-lt"><twig:Icon name="lucide:eye-off" /> Visible ou masqué</span>
+                                <span class="badge bg-secondary-lt"><twig:Icon name="lucide:calendar-x" /> Reporté, annulé ou complet</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-md-6">
+                    <article class="card card-lg h-100 mb-0">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="avatar bg-yellow-lt fw-bold">04</span>
+                                <h2 class="h1 text-start flex-fill mb-0">Suivez</h2>
+                                <span class="avatar bg-yellow-lt"><twig:Icon name="lucide:chart-line" /></span>
+                            </div>
+                            <p class="text-secondary">
+                                Votre espace «&nbsp;Mes événements&nbsp;» rassemble tout ce que vous avez publié, en ligne ou masqué, et la
+                                page de chaque événement affiche le nombre de membres qui l'ont ajouté à leurs favoris.
+                            </p>
+                            <a class="card card-sm card-link-pop text-reset form-panel border-0 mb-0 mt-auto" href="{{ path('app_event_list') }}">
+                                <div class="card-body d-flex align-items-center gap-3">
+                                    <span class="avatar bg-white text-primary"><twig:Icon name="lucide:calendar-check" /></span>
+                                    <div class="flex-fill">
+                                        <div class="subheader">Votre espace</div>
+                                        <div class="fw-semibold">Mes événements</div>
+                                    </div>
+                                    <twig:Icon name="lucide:arrow-right" class="text-primary" />
+                                </div>
+                            </a>
+                        </div>
+                    </article>
                 </div>
             </div>
-            <hr />
-            <div class="card-body">
-                <div class="row block align-items-center">
-                    <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper even"><twig:Icon name="lucide:eye" class="icon-5x" /></span>
-                    </div>
-                    <div class="col-sm-8">
-                        <h3 class="badge even">Contrôlez</h3>
-                        <p>
-                            Gardez la main sur vos événements à tout moment.
-                            Modifiez les informations, gérez la visibilité et suivez
-                            les interactions de votre communauté depuis votre espace personnel.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <hr />
-            <div class="card-body">
-                <div class="row block align-items-center">
-                    <div class="col-sm-4 text-center">
-                        <span class="icon-wrapper odd"><twig:Icon name="lucide:bar-chart" class="icon-5x" /></span>
-                    </div>
-                    <div class="col-sm-8">
-                        <h3 class="badge odd">Analysez</h3>
-                        <p>
-                            Un tableau de bord vous permet de piloter vos événements et
-                            votre communication en temps réel. Menez des actions de
-                            communication, analysez leurs impacts et touchez plus de personnes !
-                        </p>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <div class="card card-lg form-panel border-0 mb-0">
+                <div class="card-body">
+                    <div class="row g-4 g-lg-5 align-items-center">
+                        <div class="col-lg-6">
+                            <twig:Section:Eyebrow icon="lucide:badge-check">Une solution pensée pour tous les organisateurs</twig:Section:Eyebrow>
+                            <h2 class="display-6 fw-bold text-start mb-3">Du café associatif aux plus grands festivals.</h2>
+                            <p>
+                                Que vous organisiez un concert intimiste, une brocante dominicale, une conférence littéraire ou une soirée
+                                électro jusqu'à l'aube, By Night centralise vos besoins, sans abonnement ni barrière d'entrée.
+                            </p>
+                            <ul class="list-unstyled d-grid gap-2 mb-0">
+                                {% for feature in [
+                                    'Référencé dans l\'agenda de votre ville (Toulouse, Bordeaux, Lyon…)',
+                                    'Des liens directs vers votre billetterie ou votre site de réservation',
+                                    'Plusieurs dates et horaires pour un même événement',
+                                ] %}
+                                    <li class="d-flex align-items-center gap-2">
+                                        <span class="avatar avatar-xs rounded-circle bg-teal-lt flex-shrink-0"><twig:Icon name="lucide:check" /></span>
+                                        {{ feature }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-lg-6">
+                            {# Real events of the week instead of the mockup's stock photo: what members and venues publish #}
+                            <div class="row g-2">
+                                {% for event in posters %}
+                                    <div class="col-6">
+                                        <a class="d-block ratio ratio-4x3 img-cover rounded-3 overflow-hidden shadow-sm" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
+                                            <twig:Event:Thumb event="{{ event }}" width="{{ 320 }}" />
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                                <div class="col-12">
+                                    <div class="card card-sm shadow-sm mb-0" id="member-totals">
+                                        <div class="card-body d-flex align-items-center gap-3">
+                                            <span class="avatar rounded-circle bg-primary text-white fw-bold">BN</span>
+                                            <div class="flex-fill">
+                                                <div class="fw-semibold">{{ '{count, plural, one {# événement publié} other {# événements publiés}}'|trans({count: members.events}, 'messages+intl-icu') }}</div>
+                                                <div class="text-secondary small">{{ '{count, plural, one {par # membre} other {par # membres}}'|trans({count: members.organizers}, 'messages+intl-icu') }}, en plus des agendas importés</div>
+                                            </div>
+                                            <twig:Icon name="lucide:party-popper" class="icon-lg text-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <div class="card card-lg card-sunset border-0 text-white mb-0">
+                <div class="card-body py-lg-6">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <span class="badge bg-white text-primary mb-3"><twig:Icon name="lucide:party-popper" /> C'est gratuit et sans engagement</span>
+                            <h2 class="display-5 fw-bold text-start text-white mb-3">Prêt à donner vie à votre prochain événement&nbsp;?</h2>
+                            <p class="lead mb-4">
+                                Rejoignez les {{ '{count, plural, one {# membre} other {# membres}}'|trans({count: members.organizers}, 'messages+intl-icu') }}
+                                (organisateurs, salles, associations et collectifs) qui ont déjà publié leurs événements sur By Night.
+                            </p>
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <a class="btn btn-lg bg-white text-primary" href="{{ path('app_event_new') }}">
+                                    <twig:Icon name="lucide:circle-plus" />
+                                    Publier un événement gratuitement
+                                </a>
+                                <a class="link-light fw-semibold" href="mailto:support@by-night.fr">
+                                    <twig:Icon name="lucide:circle-help" />
+                                    Une question&nbsp;? Écrivez-nous
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

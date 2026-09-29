@@ -11,6 +11,7 @@
 namespace App\EventSubscriber;
 
 use App\Controller\Location\AgendaController;
+use App\Enum\AgendaType;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use App\Repository\PageRepository;
@@ -39,8 +40,6 @@ final class SitemapSuscriber implements EventSubscriberInterface
      * submitted: with fewer, most of those five pages would be empty listings.
      */
     public const int CATEGORY_PAGES_MIN_EVENTS = AgendaController::EVENT_PER_PAGE;
-
-    private const array AGENDA_TYPES = ['concert', 'etudiant', 'famille', 'spectacle', 'exposition'];
 
     private UrlContainerInterface $urlContainer;
 
@@ -127,8 +126,8 @@ final class SitemapSuscriber implements EventSubscriberInterface
                 continue;
             }
 
-            foreach (self::AGENDA_TYPES as $type) {
-                $this->addUrl($section, 'app_agenda_by_type', ['type' => $type, 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            foreach (AgendaType::cases() as $type) {
+                $this->addUrl($section, 'app_agenda_by_type', ['typeSlug' => $type->getSlug(), 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
             }
         }
     }

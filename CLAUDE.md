@@ -205,7 +205,7 @@ Entity providers (`src/EntityProvider/`) find existing entities matching DTOs.
 
 ### Routing
 
-Routes are location-prefixed (e.g., `/toulouse/agenda`). `AppContextSubscriber` (`src/EventSubscriber/AppContextSubscriber.php`, on `kernel.request`) resolves the `{location}` parameter to a `Location` value object containing City/Country context and stores it in `App\App\AppContext`. Routes without a `{location}` parameter fall back to the `app_city` cookie.
+Routes are location-prefixed (e.g., `/toulouse/agenda`). `AppContextSubscriber` (`src/EventSubscriber/AppContextSubscriber.php`, on `kernel.request`) resolves the `{location}` parameter to a `Location` value object containing City/Country context and stores it in `App\App\AppContext`. Routes without a `{location}` parameter take the city a logged-in member chose on their profile (`User::$city`, looked up by `AppContext` only when a page reads the location), else have none.
 
 ### Caching
 
@@ -253,7 +253,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/modules/image-previews.js`)
     - `DatepickerService.js` - Date range picker (moment.js, daterangepicker)
-    - `SelectService.js` / `TagsService.js` - Enhanced select boxes and tag inputs (tom-select)
+    - `TagsService.js` - Tag inputs (tom-select)
     - `WysiwygService.js` - Rich text editor (summernote)
     - `AutocompleteService.js` - Autocomplete inputs (@tarekraafat/autocomplete.js)
     - `FancyboxService.js` - Image lightbox (fancybox)

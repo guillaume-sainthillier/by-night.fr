@@ -1,10 +1,9 @@
 {% extends 'layouts/default.html.twig' %}
 
-{% set username = user.username|capitalize %}
+{% set username = user.username %}
 
 {% block body_id 'page-user' %}
 {% block title username %}
-{% block page_title username %}
 
 {% block breadcrumb %}
     {% do menu.addItem('Membres', url('app_search_index', {type: 'membres'})) %}
@@ -12,7 +11,7 @@
 {% endblock %}
 
 {% block meta_description -%}
-    Découvrez le profil de {{ username }} sur By Night : {{ '{count, plural, one {# événement} other {# événements}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }} en favoris. Membre depuis {{ user.createdAt.format('Y') }}.
+    Découvrez le profil de {{ username }} sur By Night&nbsp;: {{ '{count, plural, one {# sortie en favori} other {# sorties en favoris}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }}. Membre depuis {{ user.createdAt.format('Y') }}.
 {%- endblock %}
 
 {% block meta_robots %}
@@ -21,139 +20,326 @@
     {% endif %}
 {% endblock %}
 
+{# The member's name opens the page, above the two columns (see body) #}
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+{% endblock %}
+
 {% block body -%}
-    <div class="row" {{ load_page('user', {datas: places}) }}>
-        <div class="col-md-3">
-            <div class="card fiche_profil">
+    {% set websiteUrl = user.website|ensure_protocol %}
+
+    <header class="text-center my-4">
+        <h1 class="display-5 fw-bold mb-0">{{ username }}</h1>
+        <div class="member-title-accent mx-auto mt-2"></div>
+        {% if user.description %}
+            <div class="row justify-content-center mt-3">
+                <p class="col-md-8 col-lg-6 text-secondary mb-0">{{ user.description }}</p>
+            </div>
+        {% endif %}
+    </header>
+
+    <div class="row" {{ load_page('user') }}>
+        {# The member: picture, contributions, favourites, seniority #}
+        <aside class="col-lg-4">
+            <div class="card">
                 <div class="card-body text-center">
-                    <div class="avatar avatar-4xl mw-100">
-                        <twig:User:Thumb user="{{ user }}" width="{{ 200 }}" height="{{ 200 }}" class="mx-auto" />
+                    <div class="avatar-badged mb-3">
+                        <span class="avatar avatar-4xl rounded-3">
+                            <twig:User:Thumb user="{{ user }}" width="{{ 176 }}" height="{{ 176 }}" priority="{{ true }}" />
+                        </span>
+                        {% if user.verified %}
+                            <span class="avatar-badged-badge badge bg-teal text-white" title="Membre vérifié">
+                                <twig:Icon name="lucide:check" />
+                            </span>
+                        {% endif %}
                     </div>
-                    <h2 class="mt-2">{{ username }}</h2>
+                    <div class="h2 mb-0">{{ username }}</div>
+                    {% if publishedEventsCount > 0 %}
+                        <span class="badge bg-primary-lt text-uppercase mt-2" title="{{ '{count, plural, one {# événement publié} other {# événements publiés}}'|trans({count: publishedEventsCount}, 'messages+intl-icu') }}">
+                            Contributeur Pro
+                        </span>
+                    {% endif %}
                 </div>
-                {% if user.description %}
-                    <div class="card-body text-center">
-                        <p class="text-muted">
-                            {{ user.description }}
-                        </p>
+                {% if websiteUrl %}
+                    <div class="card-body d-flex align-items-center justify-content-center gap-2 text-secondary">
+                        <twig:Icon name="lucide:globe" class="text-primary flex-shrink-0" />
+                        <a class="text-truncate" href="{{ websiteUrl }}" rel="nofollow ugc noopener" target="_blank">
+                            {{- user.website|u.trimPrefix(['https://', 'http://']).trimPrefix('www.').trimSuffix('/') -}}
+                        </a>
                     </div>
                 {% endif %}
-                <div class="card-body text-center">
-                    <div>
-                        <span class="text-primary h5 mb-0">{{ favoriteEventsCount }}</span>
-                        <span class="d-block">{{ '{count, plural, one {favori} other {favoris}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }}</span>
+                <div class="card-body">
+                    <div class="form-panel rounded text-center p-3">
+                        <div class="display-6 fw-bold text-primary">{{ favoriteEventsCount }}</div>
+                        <div class="subheader mt-2">{{ '{count, plural, one {sortie en favori} other {sorties en favoris}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }}</div>
                     </div>
                 </div>
-                <div class="card-body text-center">
-                    <div>
+                <div class="card-body d-flex align-items-center justify-content-between gap-2">
+                    <span class="text-secondary">
+                        <twig:Icon name="lucide:calendar-days" />
                         Membre depuis le
-                        <span class="text-primary h5 mb-0">{{ user.createdAt.format('d/m/Y') }}</span>
+                    </span>
+                    <span class="badge bg-secondary-lt">{{ user.createdAt|date('d/m/Y') }}</span>
+                </div>
+                <twig:User:Socials user="{{ user }}" />
+            </div>
+
+            {% if distinctions %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="subheader mb-2">Distinctions</div>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for distinction in distinctions %}
+                                <span class="badge bg-{{ distinction.tone }}-lt" title="{{ distinction.description }}">
+                                    <twig:Icon name="{{ distinction.icon }}" />
+                                    <span class="text-body">{{ distinction.label }}</span>
+                                </span>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-                {{ include('social/user.html.twig') }}
-            </div>
-        </div>
-        <div class="col-md-9">
-            <h3>Événements</h3>
-            <ul class="nav nav-pills mb-1">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#a-venir" data-bs-toggle="tab">
-                        À venir
-                        {% if nextEvents.nbResults > 0 %}
-                            <span class="badge text-bg-primary ms-1">{{ nextEvents.nbResults }}</span>
+            {% endif %}
+        </aside>
+
+        <div class="col-lg-8">
+            {# The events of the member's calendar #}
+            <twig:FormCard>
+                <twig:block name="header">
+                    <twig:FormCard:Header class="flex-wrap" icon="lucide:calendar-days" title="Événements" description="Ses sorties favorites">
+                        <twig:block name="aside">
+                            <nav class="nav nav-segmented ms-auto" role="tablist">
+                                <a class="nav-link active" id="a-venir-tab" href="#a-venir" data-bs-toggle="tab" role="tab" aria-controls="a-venir" aria-selected="true">
+                                    À venir
+                                    {% if nextEvents.nbResults > 0 %}
+                                        <span class="badge bg-primary-lt ms-1">{{ nextEvents.nbResults }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link" id="passes-tab" href="#passes" data-bs-toggle="tab" role="tab" aria-controls="passes" aria-selected="false">
+                                    {{ '{count, plural, one {Passé} other {Passés}}'|trans({count: previousEvents.nbResults}, 'messages+intl-icu') }}
+                                    {% if previousEvents.nbResults > 0 %}
+                                        <span class="badge bg-primary-lt ms-1">{{ previousEvents.nbResults }}</span>
+                                    {% endif %}
+                                </a>
+                            </nav>
+                        </twig:block>
+                    </twig:FormCard:Header>
+                </twig:block>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="a-venir" role="tabpanel" aria-labelledby="a-venir-tab">
+                        {% if nextEvents.nbResults == 0 %}
+                            <div class="alert alert-info mb-0" role="status">
+                                <div class="d-flex gap-3">
+                                    <twig:Icon name="lucide:info" class="alert-icon" />
+                                    <div>
+                                        <div class="fw-bold">Aucun événement planifié</div>
+                                        {{ username }} n'a pas encore d'événement à venir.
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="user-events-container" data-type="next">
+                                {{ include('user/events_list.html.twig', {events: nextEvents, user: user, isNext: true}) }}
+                            </div>
                         {% endif %}
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#passes" data-bs-toggle="tab">
-                        {{ '{count, plural, one {Passé} other {Passés}}'|trans({count: previousEvents.nbResults}, 'messages+intl-icu') }}
-                        {% if previousEvents.nbResults > 0 %}
-                            <span class="badge text-bg-primary ms-1">{{ previousEvents.nbResults }}</span>
+                    </div>
+                    <div class="tab-pane" id="passes" role="tabpanel" aria-labelledby="passes-tab">
+                        {% if previousEvents.nbResults == 0 %}
+                            <div class="alert alert-info mb-0" role="status">
+                                <div class="d-flex gap-3">
+                                    <twig:Icon name="lucide:info" class="alert-icon" />
+                                    <div>
+                                        <div class="fw-bold">Aucun événement passé</div>
+                                        {{ username }} n'a pas encore d'événement passé.
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="user-events-container" data-type="previous">
+                                {{ include('user/events_list.html.twig', {events: previousEvents, user: user, isNext: false}) }}
+                            </div>
                         {% endif %}
-                    </a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane active" id="a-venir">
-                    {% if not nextEvents|length > 0 %}
-                        <div class="alert alert-info">
-                            <twig:Icon name="lucide:info" />
-                            {{ username }} n'a pas encore d'événement à venir.
-                        </div>
-                    {% else %}
-                        <div class="user-events-container" data-type="next">
-                            {{ include('user/events_list.html.twig', {events: nextEvents, user: user, isNext: true}) }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="tab-pane" id="passes">
-                    {% if not previousEvents|length > 0 %}
-                        <div class="alert alert-info">
-                            <twig:Icon name="lucide:info" />
-                            {{ username }} n'a pas encore d'événement passé.
-                        </div>
-                    {% else %}
-                        <div class="user-events-container" data-type="previous">
-                            {{ include('user/events_list.html.twig', {events: previousEvents, user: user, isNext: false}) }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4 mb-4">
-                    <h3>Lieux favoris</h3>
-                    <div class="card">
-                        <div id="hero-donut" class="chart"></div>
                     </div>
                 </div>
-                <div class="col-sm-8 mb-4">
-                    <h3>Activité</h3>
-                    <ul class="nav nav-pills mb-1" id="chartsActivite">
-                        <li class="nav-item"><a class="nav-link active" href="#year-panel" id="year-tab" data-bs-toggle="tab">Année</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#month-panel" id="month-tab" data-bs-toggle="tab">Mois</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#week-panel" id="week-tab" data-bs-toggle="tab">Semaine</a></li>
-                    </ul>
-                    <div class="card">
-                        <div class="card-body p-1">
-                            <div class="tab-content">
-                                <div class="tab-pane fade show active" id="year-panel">
-                                    <div id="chart-year"
-                                         class="chart"
-                                         data-url="{{ path('app_user_stats', {type: 'annee', id: user.id, slug: user.slug}) }}">
-                                        <div class="text-center">
-                                            <div class="spinner-border spinner-border-lg text-info" role="status">
-                                                <span class="visually-hidden">Chargement…</span>
+            </twig:FormCard>
+
+            {# Where the member goes out: the cities and venues of their calendar #}
+            {% if placesCount > 0 %}
+                {% set placesSummary %}{{ '{cities, plural, =0 {} one {# ville · } other {# villes · }}{places, plural, one {# lieu} other {# lieux}}'|trans({cities: citiesCount, places: placesCount}, 'messages+intl-icu') }}{% endset %}
+                <twig:FormCard icon="lucide:compass" title="Villes & lieux les plus fréquentés" description="Où se trouvent ses sorties favorites" badge="{{ placesSummary }}">
+                    <div class="row g-3">
+                        {% if cities %}
+                            <div class="col-lg-5">
+                                <div class="form-panel rounded p-3 h-100">
+                                    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                                        <h3 class="h4 mb-0">
+                                            <twig:Icon name="lucide:building-2" class="text-primary" />
+                                            Top villes
+                                        </h3>
+                                        <span class="badge bg-secondary-lt">{{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: cityEventsCount}, 'messages+intl-icu') }}</span>
+                                    </div>
+                                    {% for city in cities %}
+                                        {% set share = (city.events * 100 / cityEventsCount)|round %}
+                                        <div class="card card-sm mb-2">
+                                            <div class="card-body">
+                                                <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 fw-bold">
+                                                    <a class="text-reset" href="{{ path('app_location_index', {location: city.slug}) }}">{{ loop.index }}. {{ city.name }}</a>
+                                                    <span class="text-nowrap">{{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: city.events}, 'messages+intl-icu') }} ({{ share }}&nbsp;%)</span>
+                                                </div>
+                                                <div class="progress progress-sm my-2">
+                                                    <div class="progress-bar {{ ['bg-primary', 'bg-teal', 'bg-yellow'][loop.index0] }}" style="width: {{ share }}%" role="progressbar" aria-valuenow="{{ share }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ share }}&nbsp;% des sorties à {{ city.name }}"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between gap-2 small text-secondary">
+                                                    <span>{% if loop.first %}Ville principale{% endif %}</span>
+                                                    <span>{{ city.firstYear }}{% if city.lastYear != city.firstYear %}&nbsp;–&nbsp;{{ city.lastYear }}{% endif %}</span>
+                                                </div>
                                             </div>
                                         </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="{{ cities ? 'col-lg-7' : 'col-12' }}">
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                                <h3 class="h4 mb-0">
+                                    <twig:Icon name="lucide:landmark" class="text-teal" />
+                                    Top lieux
+                                </h3>
+                                <span class="small text-secondary">Classés par sorties</span>
+                            </div>
+                            {% for place in places %}
+                                <div class="form-panel rounded position-relative d-flex align-items-center gap-3 p-3 mb-2">
+                                    <span class="avatar avatar-sm rounded-circle flex-shrink-0 {{ loop.index0 < 2 ? ['bg-primary', 'bg-teal'][loop.index0] ~ ' text-white' : 'bg-secondary-lt' }}">{{ loop.index }}</span>
+                                    <div class="flex-fill min-w-0">
+                                        <a class="stretched-link text-reset fw-bold d-block text-truncate" href="{{ path('app_agenda_by_place', {location: place.locationSlug, placeSlug: place.slug}) }}">{{ place.name }}</a>
+                                        {% if place.cityName %}
+                                            <div class="small text-secondary text-truncate">{{ place.cityName }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-end flex-shrink-0">
+                                        <div class="h3 mb-0">{{ place.events }}</div>
+                                        <div class="subheader">{{ '{count, plural, one {sortie} other {sorties}}'|trans({count: place.events}, 'messages+intl-icu') }}</div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="month-panel">
-                                    <div id="chart-month"
-                                         class="chart"
-                                         data-url="{{ path('app_user_stats', {type: 'mois', id: user.id, slug: user.slug}) }}">
-                                        <div class="text-center">
-                                            <div class="spinner-border spinner-border-lg text-success" role="status">
-                                                <span class="visually-hidden">Chargement…</span>
-                                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </twig:FormCard>
+            {% endif %}
+
+            {# What the member goes out to: the categories of their calendar, with the themes they come back to #}
+            {% if categories %}
+                {% set categoriesSummary %}{{ '{categories, plural, one {# catégorie} other {# catégories}} · {events, plural, one {# sortie} other {# sorties}}'|trans({categories: categoriesCount, events: categoryEventsCount}, 'messages+intl-icu') }}{% endset %}
+                <twig:FormCard icon="lucide:shapes" title="Top catégories & univers préférés" description="{{ 'Les catégories des sorties de ' ~ username }}" badge="{{ categoriesSummary }}">
+                    <div class="row g-3">
+                        {% for category in categories %}
+                            {% set share = (category.events * 100 / categoryEventsCount)|round %}
+                            {% set themes = categoryThemes[category.id] ?? [] %}
+                            <div class="{{ loop.first ? 'col-12' : 'col-md-6' }}">
+                                <div class="form-panel rounded p-3 h-100">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 fw-bold">
+                                        <span class="avatar avatar-xs rounded-circle {{ loop.index0 < 2 ? ['bg-primary', 'bg-teal'][loop.index0] ~ ' text-white' : 'bg-secondary-lt' }}">{{ loop.index }}</span>
+                                        <span class="me-auto">{{ category.name|capitalize }}</span>
+                                        <span class="text-nowrap">{{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: category.events}, 'messages+intl-icu') }} ({{ share }}&nbsp;%)</span>
+                                    </div>
+                                    <div class="progress progress-sm my-2">
+                                        <div class="progress-bar {{ ['bg-primary', 'bg-teal', 'bg-yellow', 'bg-primary-lt', 'bg-primary-lt'][loop.index0] }}" style="width: {{ share }}%" role="progressbar" aria-valuenow="{{ share }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ share }}&nbsp;% des sorties en {{ category.name|lower }}"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between gap-2 small text-secondary">
+                                        <span class="text-truncate">{% if themes %}{{ themes|length > 1 ? 'Styles favoris' : 'Style favori' }}&nbsp;: {{ themes|join(', ', ' et ') }}{% endif %}</span>
+                                        <span class="text-nowrap">{{ category.firstYear }}{% if category.lastYear != category.firstYear %}&nbsp;–&nbsp;{{ category.lastYear }}{% endif %}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </twig:FormCard>
+            {% endif %}
+
+            {# When the member goes out: months, seasons, days of the week #}
+            {% if activity.total > 0 %}
+                {% set years = activity.years %}
+                <twig:FormCard icon="lucide:activity" title="Activité & rythme des sorties" description="Les mois et les jours de ses sorties" badge="{{ 'Depuis ' ~ years|first }}">
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="form-panel rounded p-3 h-100 d-flex flex-column gap-3">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <h3 class="h4 mb-0">
+                                        <twig:Icon name="lucide:chart-column" class="text-primary" />
+                                        Rythme mensuel
+                                    </h3>
+                                    {% set peakMonths = activity.peakMonths|map(month => ('2024-%02d-01'|format(month))|format_date(pattern: 'LLLL', locale: 'fr')) %}
+                                    <span class="badge bg-primary-lt">Pic en {{ peakMonths|join(', ', ' et ') }}</span>
+                                </div>
+                                {% set busiestMonth = max(activity.byMonth) %}
+                                <div class="member-months" role="list" aria-label="Sorties par mois">
+                                    {% for month, count in activity.byMonth %}
+                                        {% set date = '2024-%02d-01'|format(month) %}
+                                        <div class="member-month" role="listitem" title="{{ date|format_date(pattern: 'LLLL', locale: 'fr')|capitalize }}&nbsp;: {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: count}, 'messages+intl-icu') }}">
+                                            <div class="member-month-bar{{ count == busiestMonth ? ' bg-primary' : (count > 0 ? ' bg-primary-lt') }}" style="height: {{ (count * 100 / busiestMonth)|round }}%"></div>
+                                            <span class="small text-secondary" aria-hidden="true">{{ date|format_date(pattern: 'LLLLL', locale: 'fr') }}</span>
                                         </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
-                                <div class="tab-pane fade" id="week-panel">
-                                    <div id="chart-week"
-                                         class="chart"
-                                         data-url="{{ path('app_user_stats', {type: 'semaine', id: user.id, slug: user.slug}) }}">
-                                        <div class="text-center">
-                                            <div class="spinner-border spinner-border-lg text-info" role="status">
-                                                <span class="visually-hidden">Chargement…</span>
-                                            </div>
+                                <div class="card card-sm mb-0">
+                                    <div class="card-body">
+                                        <div class="subheader mb-2">Répartition par saison</div>
+                                        <div class="row g-2">
+                                            {% for row in activity.bySeason %}
+                                                {% set share = activity.share(row.count) %}
+                                                <div class="col-6">
+                                                    <div class="d-flex justify-content-between gap-2 small fw-bold">
+                                                        <span><twig:Icon name="{{ row.season.icon }}" class="text-primary" /> {{ row.season.label }}</span>
+                                                        <span>{{ share }}&nbsp;%</span>
+                                                    </div>
+                                                    <div class="progress progress-sm mt-1">
+                                                        <div class="progress-bar bg-primary" style="width: {{ share }}%" role="progressbar" aria-valuenow="{{ share }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ share }}&nbsp;% des sorties en {{ row.season.label|lower }}"></div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-lg-6">
+                            <div class="form-panel rounded p-3 h-100 d-flex flex-column gap-3">
+                                <h3 class="h4 mb-0">
+                                    <twig:Icon name="lucide:calendar-range" class="text-primary" />
+                                    Jours de prédilection
+                                </h3>
+                                {% set topWeekdays = activity.topWeekdays %}
+                                <div class="member-weekdays">
+                                    {% for weekday, count in activity.byWeekday %}
+                                        {% set share = activity.share(count) %}
+                                        {% set date = '2024-01-%02d'|format(weekday) %}
+                                        {% set top = weekday in topWeekdays %}
+                                        <div class="card card-sm mb-0 text-center{{ top ? ' border-primary' }}" title="{{ date|format_date(pattern: 'cccc', locale: 'fr')|capitalize }}&nbsp;: {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: count}, 'messages+intl-icu') }}">
+                                            <div class="card-body">
+                                                <div class="subheader{{ top ? ' text-primary' }}">{{ date|format_date(pattern: 'ccc', locale: 'fr')|trim('.') }}</div>
+                                                <div class="progress progress-sm my-2">
+                                                    <div class="progress-bar{{ top ? ' bg-primary' : ' bg-primary-lt' }}" style="width: {{ share }}%"></div>
+                                                </div>
+                                                <div class="small fw-bold">{{ share }}&nbsp;%</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% set topShare = activity.share(topWeekdays|reduce((sum, weekday) => sum + activity.byWeekday[weekday], 0)) %}
+                                <div class="card card-sm mb-0 mt-auto">
+                                    <div class="card-body d-flex align-items-center gap-2">
+                                        <twig:Icon name="lucide:badge-check" class="text-teal flex-shrink-0" />
+                                        <span class="small">
+                                            <strong>{{ topShare }}&nbsp;% des sorties</strong>
+                                            tombent le {{ topWeekdays|map(weekday => ('2024-01-%02d'|format(weekday))|format_date(pattern: 'cccc', locale: 'fr'))|join(' ou le ') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </twig:FormCard>
+            {% endif %}
         </div>
     </div>
 {%- endblock %}

@@ -50,7 +50,7 @@ final class LazyLocationFactoryTest extends AppKernelTestCase
         $city->getName();
     }
 
-    public function testTheCookieCityIsResolvedRightAway(): void
+    public function testACityIsResolvedRightAway(): void
     {
         CityFactory::toulouse()->create();
 

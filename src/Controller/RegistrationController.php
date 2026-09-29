@@ -12,6 +12,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\Type\RegistrationFormType;
+use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\UserFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,7 +31,7 @@ final class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/inscription', name: 'app_register', methods: ['GET', 'POST'])]
-    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserFormAuthenticator $authenticator): Response
+    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserFormAuthenticator $authenticator, UserRepository $userRepository): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -64,6 +65,8 @@ final class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'form' => $form,
+            'membersCount' => $userRepository->count(),
+            'latestMembers' => $userRepository->findLatestWithPicture(4),
         ]);
     }
 

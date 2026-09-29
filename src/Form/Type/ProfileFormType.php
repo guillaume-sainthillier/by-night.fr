@@ -47,7 +47,12 @@ final class ProfileFormType extends AbstractType
             ])
             ->add('website', UrlType::class, [
                 'required' => false,
-                'label' => 'Site Web',
+                'label' => 'Site web',
+            ])
+            ->add('city', CityPickerType::class, [
+                'required' => false,
+                'label' => 'Ma ville',
+                'help' => "La ville de vos sorties\u{a0}: le menu et la page d'accueil vous la proposent.",
             ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,

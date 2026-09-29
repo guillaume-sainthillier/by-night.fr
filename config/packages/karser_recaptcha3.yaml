@@ -6,3 +6,8 @@ karser_recaptcha3:
 when@dev:
     karser_recaptcha3:
         enabled: false
+
+# The functional tests submit the sign-up form: they must not ask Google to score them
+when@test:
+    karser_recaptcha3:
+        enabled: false

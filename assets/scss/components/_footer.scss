@@ -1,35 +1,4 @@
-$tailleFooter: 100px;
-
-// Footer =====================================================================
-#footer {
-    border-top: solid 5px $primary;
-    min-height: (2 * $tailleFooter) + 30px;
-    padding: 1rem 0;
-    background-color: rgb(34, 34, 34);
-    color: $bgColor;
-
-    a {
-        color: $link-footer-color;
-
-        &:hover,
-        &:focus {
-            color: $warning;
-        }
-    }
-
-    .love {
-        font-size: 20px;
-    }
-
-    //Petit Téléphone (< 481px)
-    @include media-breakpoint-down(sm) {
-        .social {
-            display: inline-block;
-            width: 49%;
-        }
-    }
-
-    hr {
-        background-color: rgba(255, 255, 255, 0.25);
-    }
+// Footer: Tabler's .footer, lists and .link-secondary; only the brand needs a colour
+#footer .site-brand {
+    color: $ink;
 }

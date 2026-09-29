@@ -1,0 +1,25 @@
+{#
+    A step of a long form: a card whose header holds an icon on a tinted avatar, the title, a description and a badge.
+    "tone" and "badgeTone" are Tabler colours: primary, teal, blue, purple, pink, green, yellow, secondary.
+
+    <twig:FormCard icon="lucide:map-pin" tone="yellow" title="3. Lieu" description="…" badge="Sur la carte">…</twig:FormCard>
+
+    Composed, e.g. to put a button in the header:
+    <twig:FormCard>
+        <twig:block name="header">
+            <twig:FormCard:Header icon="lucide:map-pin" title="3. Lieu">
+                <twig:block name="aside"><button class="btn btn-sm">…</button></twig:block>
+            </twig:FormCard:Header>
+        </twig:block>
+        …
+    </twig:FormCard>
+#}
+{% props icon = null, tone = 'primary', title = null, description = null, badge = null, badgeTone = 'secondary' %}
+<section {{ attributes.defaults({class: 'card form-card'}) }}>
+    <div class="card-body">
+        {% block header %}
+            <twig:FormCard:Header icon="{{ icon }}" tone="{{ tone }}" title="{{ title }}" description="{{ description }}" badge="{{ badge }}" badgeTone="{{ badgeTone }}" />
+        {% endblock %}
+        {% block content %}{% endblock %}
+    </div>
+</section>

@@ -45,8 +45,8 @@ final readonly class LazyLocationFactory
         /** @var City $lazyCity */
         $lazyCity = $reflector->newLazyProxy(fn (): City => $this->cityRepository->findOneBySlug($slug)
             ?? throw new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug)));
-        // The URL already carries the slug: handing it to the proxy lets whoever only needs it (the
-        // cookie refresh of CitySubscriber, a link back to the city) read it without any query.
+        // The URL already carries the slug: handing it to the proxy lets whoever only needs it (a link
+        // back to the city) read it without any query.
         new ReflectionProperty(AdminZone::class, 'slug')->setRawValueWithoutLazyInitialization($lazyCity, $slug);
 
         $location = new Location();
@@ -57,8 +57,8 @@ final readonly class LazyLocationFactory
 
     /**
      * Create a Location with its City loaded right away, or null when no city has this slug. For a
-     * slug the visitor sends back (the app_city cookie), which may name a city renamed or merged since:
-     * a lazy City would only fail when first read, from a template, as a server error.
+     * slug the visitor sends back (the city of the search suggestions), which may name a city renamed
+     * or merged since: a lazy City would only fail when first read, as a server error.
      */
     public function createWithCity(string $slug): ?Location
     {

@@ -11,6 +11,7 @@
 namespace App\Tests\Controller\Location;
 
 use App\Entity\Event;
+use App\Entity\User;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
@@ -19,6 +20,8 @@ use App\Factory\UserFactory;
 use DateTimeImmutable;
 use IntlDateFormatter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 final class EventControllerTest extends WebTestCase
 {
@@ -34,7 +37,7 @@ final class EventControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists(\sprintf(
-            '.page-header a[href="/_administration/event/%d/edit"]',
+            '.event-header a[href="/_administration/event/%d/edit"]',
             $event->getId()
         ));
     }
@@ -48,7 +51,7 @@ final class EventControllerTest extends WebTestCase
         $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorNotExists('.page-header a[href^="/_administration/"]');
+        self::assertSelectorNotExists('.event-header a[href^="/_administration/"]');
     }
 
     public function testAnonymousDoesNotSeeEditButton(): void
@@ -59,8 +62,8 @@ final class EventControllerTest extends WebTestCase
         $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorNotExists('.page-header a[href^="/_administration/"]');
-        self::assertSelectorTextContains('.page-header h1', $event->getName());
+        self::assertSelectorNotExists('.event-header a[href^="/_administration/"]');
+        self::assertSelectorTextContains('.event-header h1', $event->getName());
     }
 
     public function testAnEventThatEndedLongAgoStaysIndexableWithAnEndedNotice(): void
@@ -84,6 +87,131 @@ final class EventControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
+    }
+
+    public function testAnonymousOnlyGetsANoticeOnADraft(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(draft: true);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.alert-warning', 'pas encore publié');
+        self::assertSelectorNotExists('#event');
+        self::assertSelectorNotExists('#event-draft-notice');
+    }
+
+    public function testAnotherMemberOnlyGetsANoticeOnADraft(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(draft: true);
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#event');
+        self::assertSelectorNotExists('#event-draft-notice');
+    }
+
+    public function testThePageSourceGivesNothingOfADraftAway(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(draft: true, poster: 'draft-poster.jpg');
+
+        $crawler = $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertPageTitleContains('Événement bientôt disponible');
+        self::assertSelectorTextNotContains('title', (string) $event->getName());
+        self::assertSelectorNotExists('meta[property="og:image"][content*="draft-poster.jpg"]');
+        self::assertNotContains('Event', $this->jsonLdTypes($crawler));
+        // Nor anywhere else a scraper reads: description, keywords, breadcrumb
+        self::assertStringNotContainsString((string) $event->getName(), (string) $client->getResponse()->getContent());
+    }
+
+    public function testTryingTheIdOfADraftGivesNothingAway(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(draft: true);
+
+        $client->request('GET', \sprintf('/toulouse/soiree/x--%d', $event->getId()));
+
+        // Not a redirect to its URL: that URL holds its slug, and ids are sequential
+        self::assertResponseStatusCodeSame(404);
+        self::assertFalse($client->getResponse()->headers->has('Location'));
+        self::assertStringNotContainsString((string) $event->getSlug(), (string) $client->getResponse()->getContent());
+    }
+
+    public function testTheAuthorIsRedirectedFromAWrongUrlOfTheirDraft(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $event = $this->createEvent(draft: true, author: $author);
+        $client->loginUser($author);
+
+        $client->request('GET', \sprintf('/toulouse/soiree/x--%d', $event->getId()));
+
+        self::assertResponseRedirects($this->eventUrl($event), 301);
+    }
+
+    public function testTheAuthorsPreviewKeepsTheEventInThePageSource(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $event = $this->createEvent(draft: true, author: $author, poster: 'draft-poster.jpg');
+        $client->loginUser($author);
+
+        $crawler = $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertPageTitleContains((string) $event->getName());
+        self::assertSelectorExists('meta[property="og:image"][content*="draft-poster.jpg"]');
+        self::assertContains('Event', $this->jsonLdTypes($crawler));
+    }
+
+    public function testTheAuthorPreviewsTheirDraft(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $event = $this->createEvent(draft: true, author: $author);
+        $client->loginUser($author);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#event');
+        self::assertSelectorExists('#event-draft-notice');
+        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-publish-href="/api/events/%d/draft"]', $event->getId()));
+        self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]', 'A preview stays out of the index');
+    }
+
+    public function testAnAdminPreviewsADraft(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(draft: true);
+        $client->loginUser(UserFactory::new()->admin()->create());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#event');
+        self::assertSelectorExists('#event-draft-notice');
+    }
+
+    public function testTheAuthorGetsNoDraftNoticeOncePublished(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $event = $this->createEvent(author: $author);
+        $client->loginUser($author);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#event');
+        self::assertSelectorNotExists('#event-draft-notice');
     }
 
     public function testAnUpcomingEventIsIndexable(): void
@@ -170,7 +298,19 @@ final class EventControllerTest extends WebTestCase
         return new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE)->format(new DateTimeImmutable(\sprintf('%+d days', $offset)));
     }
 
-    private function createEvent(?DateTimeImmutable $date = null, bool $draft = false): Event
+    /**
+     * The @var of each JSON-LD block of the page (null for a @graph).
+     *
+     * @return list<string|null>
+     */
+    private function jsonLdTypes(Crawler $crawler): array
+    {
+        return $crawler->filter('script[type="application/ld+json"]')->each(
+            static fn (Crawler $script): ?string => json_decode($script->text(), true, flags: \JSON_THROW_ON_ERROR)['@type'] ?? null,
+        );
+    }
+
+    private function createEvent(?DateTimeImmutable $date = null, bool $draft = false, ?User $author = null, ?string $poster = null): Event
     {
         $city = CityFactory::toulouse()->create();
         $attributes = [
@@ -178,6 +318,14 @@ final class EventControllerTest extends WebTestCase
             'place' => PlaceFactory::createOne(['city' => $city, 'country' => $city->getCountry()]),
             'draft' => $draft,
         ];
+        if (null !== $author) {
+            $attributes['user'] = $author;
+        }
+        if (null !== $poster) {
+            $image = new EmbeddedFile();
+            $image->setName($poster);
+            $attributes['image'] = $image;
+        }
         if (null !== $date) {
             $attributes += ['startDate' => $date, 'endDate' => $date];
         }

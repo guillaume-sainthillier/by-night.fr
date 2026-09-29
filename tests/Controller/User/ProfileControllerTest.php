@@ -10,7 +10,9 @@
 
 namespace App\Tests\Controller\User;
 
+use App\Controller\User\ProfileController;
 use App\Entity\User;
+use App\Factory\CityFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,10 +31,37 @@ final class ProfileControllerTest extends WebTestCase
         // An expired CSRF token makes the deletion form invalid
         $client->request('POST', '/profile/delete', ['form' => ['delete_events' => '1', '_token' => 'expired']]);
 
-        self::assertResponseRedirects('/profile/edit');
+        self::assertResponseRedirects('/profile/edit#delete');
         $client->followRedirect();
         self::assertResponseIsSuccessful();
         self::assertSame(1, UserFactory::count(['id' => $user->getId()]), 'The account is kept');
+    }
+
+    public function testTheDeletionNeedsTheConfirmationWord(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Supprimer mon compte', ['form[confirmation]' => 'supprimer']);
+
+        self::assertResponseRedirects('/profile/edit#delete');
+        self::assertSame(1, UserFactory::count(['id' => $user->getId()]), 'The account is kept');
+    }
+
+    public function testTheConfirmedDeletionRemovesTheAccount(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $userId = $user->getId();
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Supprimer mon compte', ['form[confirmation]' => ProfileController::DELETE_CONFIRMATION]);
+
+        self::assertResponseRedirects('/');
+        self::assertSame(0, UserFactory::count(['id' => $userId]));
     }
 
     public function testAnEmptyNewPasswordIsRejected(): void
@@ -71,5 +100,60 @@ final class ProfileControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertSelectorTextContains('#password .invalid-feedback', 'Le mot de passe actuel est incorrect.');
+    }
+
+    public function testAMemberChoosesTheirCity(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Enregistrer les modifications', [
+            'profile_form[city][name]' => 'Toulouse (France)',
+            'profile_form[city][slug]' => 'toulouse',
+        ]);
+
+        self::assertResponseIsSuccessful();
+        refresh($user);
+        self::assertSame('toulouse', $user->getCity()?->getSlug());
+        self::assertInputValueSame('profile_form[city][name]', 'Toulouse (France)');
+    }
+
+    public function testEmptyingTheCityRemovesIt(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['city' => CityFactory::toulouse()]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Enregistrer les modifications', [
+            'profile_form[city][name]' => '',
+            'profile_form[city][slug]' => '',
+        ]);
+
+        self::assertResponseIsSuccessful();
+        refresh($user);
+        self::assertNull($user->getCity());
+    }
+
+    public function testACityTypedWithoutChoosingInTheListIsRejected(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['city' => CityFactory::toulouse()]);
+        $client->loginUser($user);
+
+        // Typing in the field empties the slug until a city of the list is chosen
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Enregistrer les modifications', [
+            'profile_form[city][name]' => 'Saint-Denis',
+            'profile_form[city][slug]' => '',
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSelectorTextContains('#profile .invalid-feedback', 'Choisissez une ville dans la liste.');
+        refresh($user);
+        self::assertSame('toulouse', $user->getCity()?->getSlug(), 'The city is kept');
     }
 }

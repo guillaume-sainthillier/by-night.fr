@@ -76,6 +76,30 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         self::assertNull($event->hours, 'No single event-level hours when showtimes differ.');
     }
 
+    public function testAZeroPriceIsNoPrice(): void
+    {
+        // The feed says 0 for a ticket it has no price for: fnac.com sells "Grévin - Billet Daté" at 22 € while a
+        // row of it says 0, which made it "De 0€ à 22€" and its badge the dearest price only
+        $rows = [
+            $this->row('70000001', 'Grévin - Billet Daté', '0.0', '2026-10-01', '10:00'),
+            $this->row('70000002', 'Grévin - Billet Daté', '22.0', '2026-10-01', '10:00'),
+            $this->row('70000003', 'Grévin - Billet Daté', '27.5', '2026-10-02', '10:00'),
+        ];
+
+        self::assertSame('De 22€ à 27.5€', $this->groupEvents($rows)[0]->prices);
+    }
+
+    public function testAShowWithoutAnyPriceHasNone(): void
+    {
+        // Not "0€", which the event cards take for a free entry
+        $rows = [
+            $this->row('80000001', 'Le Tour du Monde en 80 Jours', '0.0', '2026-10-30', '20:00'),
+            $this->row('80000002', 'Le Tour du Monde en 80 Jours', '0', '2026-10-31', '20:00'),
+        ];
+
+        self::assertNull($this->groupEvents($rows)[0]->prices);
+    }
+
     public function testSameDateWithDifferentShowtimesCollapsesToOneTimesheet(): void
     {
         // Timesheets are stored per date, so two showtimes on the same day collapse

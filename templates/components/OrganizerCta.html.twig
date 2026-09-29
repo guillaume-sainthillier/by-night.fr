@@ -1,0 +1,32 @@
+{# The call to organizers: publish an event for free. "atName" narrows the pitch to a location ("à Toulouse") #}
+{% props atName = null %}
+<div {{ attributes.defaults({class: 'card card-lg bg-primary-lt border-0'}) }}>
+    <div class="card-body">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+                <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Organisateurs, artistes & lieux</twig:Section:Eyebrow>
+                <h2 class="h1 text-start text-body mb-3">
+                    {% block title %}Vous organisez un concert, une expo, un marché ou une soirée{% if atName %} {{ atName }}{% endif %}&nbsp;?{% endblock %}
+                </h2>
+                <p class="lead text-secondary">
+                    {% block description %}Publiez votre événement gratuitement en quelques clics&nbsp;: il rejoint l'agenda{% if atName %} {{ atName }}{% endif %} et les milliers de curieux qui le consultent chaque jour.{% endblock %}
+                </p>
+                <ul class="list-inline mb-0 small fw-bold text-body">
+                    <li class="list-inline-item me-3"><twig:Icon name="lucide:circle-check" class="text-teal" /> Publication instantanée</li>
+                    <li class="list-inline-item me-3"><twig:Icon name="lucide:circle-check" class="text-teal" /> 100&nbsp;% gratuit, sans engagement</li>
+                    <li class="list-inline-item"><twig:Icon name="lucide:circle-check" class="text-teal" /> Visible sur Google et les réseaux sociaux</li>
+                </ul>
+            </div>
+            <div class="col-lg-4 d-grid gap-3">
+                <a class="btn btn-primary btn-lg" href="{{ path('app_event_new') }}" title="Publiez votre événement gratuitement">
+                    <twig:Icon name="lucide:circle-plus" />
+                    Publier un événement
+                </a>
+                <a class="btn" href="{{ path('app_plus') }}" title="Comment publier un événement">
+                    <twig:Icon name="lucide:info" />
+                    Comment ça marche
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

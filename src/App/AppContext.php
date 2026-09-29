@@ -12,6 +12,8 @@ namespace App\App;
 
 use App\Entity\City;
 use App\Entity\Country;
+use App\Entity\User;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Service\ResetInterface;
 
 /**
@@ -25,17 +27,24 @@ final class AppContext implements ResetInterface
 {
     private ?Location $location = null;
 
+    public function __construct(private readonly Security $security)
+    {
+    }
+
     public function reset(): void
     {
         $this->location = null;
     }
 
     /**
-     * Get the current location (from URL or cookie fallback).
+     * Get the current location: the URL's, else the city the member chose on their profile.
+     *
+     * The member is only looked up when a page reads the location (its header does), not on every
+     * request: an API call or an image would otherwise open the session of a logged-in visitor.
      */
     public function getLocation(): ?Location
     {
-        return $this->location;
+        return $this->location ??= $this->getMemberLocation();
     }
 
     /**
@@ -52,7 +61,7 @@ final class AppContext implements ResetInterface
      */
     public function getCity(): ?City
     {
-        return $this->location?->getCity();
+        return $this->getLocation()?->getCity();
     }
 
     /**
@@ -61,7 +70,7 @@ final class AppContext implements ResetInterface
      */
     public function getCountry(): ?Country
     {
-        return $this->location?->getCountry();
+        return $this->getLocation()?->getCountry();
     }
 
     /**
@@ -70,7 +79,7 @@ final class AppContext implements ResetInterface
      */
     public function getSlug(): ?string
     {
-        return $this->location?->getSlug();
+        return $this->getLocation()?->getSlug();
     }
 
     /**
@@ -79,7 +88,7 @@ final class AppContext implements ResetInterface
      */
     public function isCity(): bool
     {
-        return $this->location?->isCity() ?? false;
+        return $this->getLocation()?->isCity() ?? false;
     }
 
     /**
@@ -88,6 +97,16 @@ final class AppContext implements ResetInterface
      */
     public function isCountry(): bool
     {
-        return $this->location?->isCountry() ?? false;
+        return $this->getLocation()?->isCountry() ?? false;
+    }
+
+    private function getMemberLocation(): ?Location
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User || null === $user->getCity()) {
+            return null;
+        }
+
+        return new Location()->setCity($user->getCity());
     }
 }

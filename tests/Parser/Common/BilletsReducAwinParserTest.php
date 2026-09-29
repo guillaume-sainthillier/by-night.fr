@@ -88,6 +88,12 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
         self::assertSame('22€', $this->map(self::row(['search_price' => '22.0000']))->prices);
     }
 
+    public function testAZeroPriceIsNoPrice(): void
+    {
+        // An affiliate feed says 0 when it has no price, not when the entry is free
+        self::assertNull($this->map(self::row(['search_price' => '0.0000']))->prices);
+    }
+
     public function testRowsThatCannotBeListedAreLeftOut(): void
     {
         self::assertNull($this->invoke(self::row(['is_for_sale' => '0'])), 'Not for sale');

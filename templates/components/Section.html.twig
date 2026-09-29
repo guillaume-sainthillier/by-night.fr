@@ -1,0 +1,26 @@
+{#
+    A block of the portal pages: an optional header (eyebrow, title, description) above its content.
+
+    <twig:Section eyebrow="Sélection" icon="lucide:sparkles" title="À l'affiche" description="…" muted="{{ true }}">…</twig:Section>
+
+    Composed, e.g. to add a link to the header:
+    <twig:Section>
+        <twig:block name="header">
+            <twig:Section:Header eyebrow="…" title="…">
+                <twig:block name="aside"><a class="link-primary" href="…">Tout voir</a></twig:block>
+            </twig:Section:Header>
+        </twig:block>
+        …
+    </twig:Section>
+#}
+{% props eyebrow = null, icon = null, title = null, description = null, muted = false, containerClass = 'container-lg' %}
+<section {{ attributes.defaults({class: 'py-5' ~ (muted ? ' section-muted' : '')}) }}>
+    <div class="{{ containerClass }}">
+        {% block header %}
+            {% if title %}
+                <twig:Section:Header eyebrow="{{ eyebrow }}" icon="{{ icon }}" title="{{ title }}" description="{{ description }}" />
+            {% endif %}
+        {% endblock %}
+        {% block content %}{% endblock %}
+    </div>
+</section>

@@ -80,10 +80,10 @@ final class SitemapSuscriberTest extends AppKernelTestCase
             '/toulouse/',
             '/toulouse/agenda',
             '/toulouse/agenda/sortir/concert',
-            '/toulouse/agenda/sortir/etudiant',
-            '/toulouse/agenda/sortir/famille',
             '/toulouse/agenda/sortir/spectacle',
             '/toulouse/agenda/sortir/exposition',
+            '/toulouse/agenda/sortir/famille',
+            '/toulouse/agenda/sortir/etudiant',
         ], $this->collectSection('agenda'));
     }
 

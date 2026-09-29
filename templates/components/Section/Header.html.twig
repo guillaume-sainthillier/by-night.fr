@@ -1,0 +1,14 @@
+{# Header of a <twig:Section>: eyebrow and title on the left, the description (or the "aside" block) on the right #}
+{% props eyebrow = null, icon = null, title = null, description = null %}
+<div {{ attributes.defaults({class: 'row align-items-md-end g-3 mb-4'}) }}>
+    <div class="col-md">
+        {% if eyebrow %}
+            <twig:Section:Eyebrow icon="{{ icon }}">{{ eyebrow }}</twig:Section:Eyebrow>
+        {% endif %}
+        <h2 class="h1 text-start mb-0">{% block title %}{{ title }}{% endblock %}</h2>
+    </div>
+    {% set aside %}{% block aside %}{% if description %}<p class="text-secondary mb-0 text-end">{{ description }}</p>{% endif %}{% endblock %}{% endset %}
+    {% if aside|trim %}
+        <div class="col-md-5 col-lg-4">{{ aside }}</div>
+    {% endif %}
+</div>

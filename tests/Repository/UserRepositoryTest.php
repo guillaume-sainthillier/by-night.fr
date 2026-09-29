@@ -11,6 +11,8 @@
 namespace App\Tests\Repository;
 
 use App\Entity\User;
+use App\Factory\EventFactory;
+use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Repository\UserRepository;
 use App\Tests\AppKernelTestCase;
@@ -32,6 +34,27 @@ final class UserRepositoryTest extends AppKernelTestCase
         UserFactory::createOne(['username' => 'jeanne@example.org', 'email' => 'squatter@example.org']);
 
         self::assertSame($victim->getId(), $this->loadId('jeanne@example.org'));
+    }
+
+    public function testTheParticipantsOfAnEventAreTheMembersGoingTheLastToSaySoFirst(): void
+    {
+        $event = EventFactory::createOne();
+        $first = UserFactory::createOne();
+        $second = UserFactory::createOne();
+        $third = UserFactory::createOne();
+        UserEventFactory::createOne(['event' => $event, 'user' => $first]);
+        UserEventFactory::createOne(['event' => $event, 'user' => $second]);
+        UserEventFactory::createOne(['event' => $event, 'user' => $third]);
+        // Only interested, and going to another event
+        UserEventFactory::createOne(['event' => $event, 'going' => false, 'wish' => true]);
+        UserEventFactory::createOne(['event' => EventFactory::createOne()]);
+
+        $participants = self::getContainer()->get(UserRepository::class)->findEventParticipants($event, 2);
+
+        self::assertSame(
+            [$third->getId(), $second->getId()],
+            array_map(static fn (User $user): ?int => $user->getId(), $participants),
+        );
     }
 
     private function loadId(string $identifier): ?int

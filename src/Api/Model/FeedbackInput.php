@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class FeedbackInput
 {
     public function __construct(
-        #[Assert\NotBlank(message: 'Veuillez entrer votre message')]
+        #[Assert\NotBlank(message: 'Veuillez saisir votre message.')]
         #[Assert\Length(min: 10, minMessage: 'Votre message doit faire au moins {{ limit }} caractères')]
         public string $message = '',
     ) {

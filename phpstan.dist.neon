@@ -49,8 +49,6 @@ parameters:
               - src/SEO
               - src/Social
               - src/Updater
-        # render(controller()) fragment (has #[Cache], no #[Route])
-        - '#^Unused App\\Controller\\Location\\EventController::share#'
         # referenced by string in config/packages/fos_elastica.yaml (query_builder_method)
         - '#^Unused App\\Repository\\EventRepository::createIsActiveQueryBuilder#'
         - identifier: shipmonk.deadProperty.neverRead

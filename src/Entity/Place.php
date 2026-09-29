@@ -30,6 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'place_name_idx', columns: ['name'])]
 #[ORM\Index(name: 'place_slug_idx', columns: ['slug'])]
 #[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
+#[ORM\Index(name: 'place_upcoming_idx', columns: ['upcoming_events'])]
+#[ORM\Index(name: 'place_city_upcoming_idx', columns: ['city_id', 'upcoming_events'])]
 #[ORM\Entity(repositoryClass: PlaceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
@@ -85,6 +87,10 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
     private ?bool $junk = null;
+
+    /** Published events to come, recounted by app:events:count-upcoming (see UpcomingEventCounter) */
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private int $upcomingEvents = 0;
 
     private ?string $countryName = null;
 
@@ -381,6 +387,11 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         $this->junk = $junk;
 
         return $this;
+    }
+
+    public function getUpcomingEvents(): int
+    {
+        return $this->upcomingEvents;
     }
 
     public function getLatitude(): ?float

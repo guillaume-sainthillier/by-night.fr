@@ -64,12 +64,12 @@ final class CityCrudController extends AdminZoneCrudController
         return [
             FormField::addFieldset('Géographie'),
             ...$geographyFields,
-            FormField::addFieldset('Portail'),
+            FormField::addFieldset('Page de la ville'),
             TextField::new('headline', 'Accroche')
-                ->setHelp('Une phrase sous le nom de la ville, en tête de son portail.'),
+                ->setHelp('Une phrase sous le nom de la ville, en tête de sa page.'),
             TextareaField::new('description', 'Description')
                 ->setNumOfRows(6)
-                ->setHelp("Présentation de la ville affichée sur son portail, en Markdown\u{a0}: **gras**, *italique*, [lien](https://…), une ligne vide entre deux paragraphes."),
+                ->setHelp("Présentation de la ville affichée sur sa page, en Markdown\u{a0}: **gras**, *italique*, [lien](https://…), une ligne vide entre deux paragraphes."),
             VichImageField::new('heroImageFile', 'Image de couverture'),
             $metropolis,
             $displayOrder,

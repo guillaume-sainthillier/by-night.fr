@@ -1,41 +1,270 @@
-{% extends 'layouts/simple.html.twig' %}
+{% extends 'layouts/full.html.twig' %}
 
 {% block breadcrumb %}
     {% do menu.addItem('À propos', url('app_about')) %}
 {% endblock %}
 
-{% block title 'À propos de By Night — Votre guide de sorties en France' %}
-{% block page_title 'À propos de By Night' %}
+{% block title 'À propos de By Night, votre guide de sorties en France' %}
 {% block meta_description 'By Night est votre guide de sorties en France. Depuis 2013, nous référençons concerts, spectacles, expos et événements pour vous aider à trouver votre prochaine sortie.' %}
 
+{% set since = 2013 %}
+{% set agenda = location ? path('app_agenda_index', {location: location.slug}) : path('app_index') %}
+
 {% block body %}
-    <h2 class="mb-4">Qui sommes-nous ?</h2>
-    <p>
-        <strong>By Night</strong> est une plateforme de découverte d'événements
-        en France, née en 2013 d'une idée simple : vous aider à trouver
-        facilement <strong>votre prochaine sortie</strong>.
-    </p>
-    <p>
-        Concerts, spectacles, expositions, soirées, sorties en famille…
-        Nous référençons chaque jour des milliers d'événements pour que
-        vous n'ayez plus qu'à choisir celui qui vous correspond.
-    </p>
-    <p>
-        Notre objectif : centraliser en un seul endroit toutes les
-        <strong>idées de sorties</strong> près de chez vous, que vous
-        soyez à la recherche d'un <strong>concert de jazz à Toulouse</strong>,
-        d'une <strong>exposition à Paris</strong> ou d'un <strong>spectacle
-        pour enfants à Lyon</strong>.
-    </p>
-    <p>
-        By Night est un service <strong>gratuit</strong>, ouvert à tous.
-        Que vous soyez un particulier curieux ou un organisateur
-        d'événements, la plateforme s'adapte à vos besoins avec
-        simplicité et efficacité.
-    </p>
-    <p>
-        Avec plus de <strong>{{ events_count_label() }}</strong> référencés
-        depuis sa création, By Night est devenu un guide incontournable
-        pour vos soirées et sorties partout en France.
-    </p>
+    <section class="hero-glow py-5">
+        <div class="container-lg">
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-8">
+                    <twig:Section:Eyebrow icon="lucide:sparkles" badge="{{ true }}">Plateforme culturelle indépendante</twig:Section:Eyebrow>
+                    <h1 class="display-5 fw-bold text-start mb-3">L'agenda vivant de vos journées et de vos nuits.</h1>
+                    <p class="lead text-secondary mb-0">
+                        L'agenda indépendant de toutes vos sorties en France et au-delà, développé avec passion depuis {{ since }} par un développeur toulousain.
+                    </p>
+                </div>
+                <div class="col-lg-4 d-grid gap-3">
+                    <div class="card card-sm shadow-sm mb-0">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <span class="avatar bg-teal-lt"><twig:Icon name="lucide:history" /></span>
+                            <div>
+                                <div class="subheader">Genèse</div>
+                                <div class="fw-semibold">{{ '{years, plural, one {# an} other {# ans}}'|trans({years: 'now'|date('Y') - since}, 'messages+intl-icu') }} d'exploration des sorties</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-sm shadow-sm mb-0">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <span class="avatar bg-primary-lt"><twig:Icon name="lucide:map-pin" /></span>
+                            <div>
+                                <div class="subheader">Ancrage</div>
+                                <div class="fw-semibold">Conçu & codé à Toulouse, Occitanie</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container-lg">
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-7">
+                    <twig:Section:Eyebrow icon="lucide:compass">Qui sommes-nous&nbsp;?</twig:Section:Eyebrow>
+                    <h2 class="h1 text-start mb-3">Une idée simple&nbsp;: trouver sa prochaine sortie sans effort.</h2>
+                    <p>
+                        <strong>By Night</strong> est une plateforme de découverte d'événements en France, née en {{ since }} à Toulouse.
+                        Son nom vient des soirées, mais elle couvre aujourd'hui toute la journée&nbsp;: du marché de créateurs du samedi
+                        matin au concert de jazz de minuit.
+                    </p>
+                    <p>
+                        Concerts, spectacles, expositions, festivals, soirées ou sorties en famille&nbsp;: nous référençons chaque jour
+                        des milliers d'événements pour que vous n'ayez plus qu'à choisir celui qui vous correspond.
+                    </p>
+                    <div class="d-flex align-items-center gap-3 mt-4">
+                        <span class="avatar bg-teal-lt"><twig:Icon name="lucide:badge-check" /></span>
+                        <div>
+                            <div class="fw-semibold">Ouvert à tous</div>
+                            <div class="text-secondary small">Consultation libre, sans abonnement ni inscription</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card border-0 overflow-hidden mb-0">
+                        <div class="ratio ratio-4x3 img-cover">
+                            <twig:Picasso:Image src="{{ asset('build/images/landing.jpg', 'local') }}" width="{{ 600 }}" height="{{ 450 }}" fit="crop" sizes="(min-width: 992px) 450px, 100vw" alt="" />
+                        </div>
+                        <div class="card-img-overlay card-img-overlay-dark d-flex flex-column justify-content-end text-white">
+                            <div class="subheader text-white opacity-75">De jour comme de nuit</div>
+                            <div class="h2 text-start mb-0">Du marché du samedi matin au concert de minuit.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <twig:Section eyebrow="Rayonnement & utilité" icon="lucide:chart-no-axes-column" title="By Night en quelques chiffres" description="Des chiffres tirés de notre base, mise à jour chaque jour avec les agendas des salles, des villes et des collectifs." muted="{{ true }}">
+        {% set stats = [
+            {icon: 'lucide:calendar-check', tone: 'primary', value: '+' ~ '{count, number, ::compact-short .# rounding-mode-floor}'|trans({count: events_count()}, 'messages+intl-icu'), title: 'Événements référencés', text: 'Concerts, spectacles, vernissages et fêtes de quartier réunis depuis le lancement.'},
+            {icon: 'lucide:hand-heart', tone: 'teal', value: '100 %', title: 'Gratuit, sans abonnement', text: 'Libre d\'accès pour les festivaliers, les curieux du dimanche et les organisateurs, associatifs ou non.'},
+            {icon: 'lucide:globe', tone: 'yellow', value: countries|length, title: '{count, plural, one {Pays ou territoire} other {Pays & territoires}}'|trans({count: countries|length}, 'messages+intl-icu'), text: countriesSummary ~ ' : partout où des sorties sont à venir.'},
+        ] %}
+        <div class="row row-cards row-deck" id="stats">
+            {% for stat in stats %}
+                <div class="col-md-4">
+                    <div class="card card-layout mb-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <twig:Icon name="{{ stat.icon }}" class="icon-lg text-{{ stat.tone }} flex-shrink-0" />
+                                <div class="display-5 fw-bold text-{{ stat.tone }}">{{ stat.value }}</div>
+                            </div>
+                            <h3 class="mb-1">{{ stat.title }}</h3>
+                            <p class="text-secondary small mb-0">{{ stat.text }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </twig:Section>
+
+    <section class="py-5">
+        <div class="container-lg">
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <twig:Section:Eyebrow icon="lucide:waypoints">Notre mission</twig:Section:Eyebrow>
+                    <h2 class="h1 text-start mb-3">Centraliser pour décloisonner la culture vivante.</h2>
+                    <p class="lead text-secondary mb-0">
+                        Que vous cherchiez un quartet de jazz dans une cave toulousaine, une grande rétrospective à Paris ou un spectacle de
+                        marionnettes pour enfants à Lyon, notre vocation est de rassembler cette profusion en un seul endroit, clair,
+                        fiable et chaleureux.
+                    </p>
+                </div>
+            </div>
+            <div class="row row-cards">
+                <div class="col-md-4">
+                    <twig:Tile href="{{ path('app_index') }}#metropolises" icon="lucide:map" tone="primary" title="Hyper-proximité" description="Le café-théâtre de votre rue a sa place à côté des grandes salles : rien n'est trop petit pour mériter son public." meta="Explorer les villes" />
+                </div>
+                <div class="col-md-4">
+                    <twig:Tile href="{{ agenda }}" icon="lucide:sliders-horizontal" tone="teal" title="Simplicité radicale" description="Filtrez par date, par type de sortie ou par lieu : une interface pensée pour vous donner envie d'éteindre l'écran et de sortir." meta="Découvrir l'agenda" />
+                </div>
+                <div class="col-md-4">
+                    <twig:Tile href="{{ path('app_plus') }}" icon="lucide:megaphone" tone="yellow" title="Soutien aux organisateurs" description="Une publication gratuite, plusieurs dates pour un même événement et la même vitrine pour tous, sans enchères." meta="Comment ça marche" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <div class="card card-lg card-night border-0 mb-0" data-bs-theme="dark">
+                <div class="card-body">
+                    <div class="row g-4 g-lg-5 align-items-center">
+                        <div class="col-lg-6">
+                            <span class="badge bg-primary-lt mb-3"><twig:Icon name="lucide:shield" /> Nos engagements</span>
+                            <h2 class="h1 text-start mb-3">Un agenda qui vous renvoie vers le monde réel.</h2>
+                            <p class="lead text-secondary">
+                                Pas de fil sans fin conçu pour retenir votre attention&nbsp;: By Night vous aide à choisir une sortie, puis à
+                                éteindre l'écran.
+                            </p>
+                            <ul class="list-unstyled d-grid gap-3 mb-0">
+                                {% for commitment in [
+                                    {title: 'Aucun classement acheté', text: 'les événements s\'affichent par date et par lieu, et ceux de la semaine selon l\'intérêt des membres. Aucun organisateur ne paie pour passer devant.'},
+                                    {title: 'Vos données restent les vôtres', text: 'elles ne sont ni vendues ni louées, et la mesure d\'audience comme la publicité personnalisée n\'ont lieu qu\'avec votre accord.'},
+                                    {title: 'La même vitrine pour tous', text: 'le bar-concert associatif et la grande salle ont la même page, le même formulaire et la même place dans l\'agenda.'},
+                                ] %}
+                                    <li class="d-flex gap-3">
+                                        <span class="avatar avatar-xs rounded-circle bg-primary text-white flex-shrink-0 mt-1"><twig:Icon name="lucide:check" /></span>
+                                        <p class="mb-0"><strong>{{ commitment.title }}&nbsp;:</strong> {{ commitment.text }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card mb-0">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h3 class="mb-0">Nos principes techniques</h3>
+                                        <span class="subheader text-teal">Sobriété & vitesse</span>
+                                    </div>
+                                    <div class="row row-cards row-deck">
+                                        <div class="col-sm-6">
+                                            <div class="card card-sm mb-0">
+                                                <div class="card-body">
+                                                    <div class="subheader mb-1">Hébergement</div>
+                                                    <div class="fw-semibold">Hébergeur français</div>
+                                                    <p class="text-secondary small mb-0">By Night est hébergé par OVH.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <a class="card card-sm card-link mb-0" href="https://github.com/guillaume-sainthillier/by-night.fr" target="_blank" rel="noopener">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="subheader mb-1">Code source</div>
+                                                        <twig:Icon name="lucide:external-link" class="text-secondary" />
+                                                    </div>
+                                                    <div class="fw-semibold">Open source</div>
+                                                    <p class="text-secondary small mb-0">Code ouvert sous licence MIT, consultable sur GitHub.</p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="col-12">
+                                            <figure class="card card-sm mb-0">
+                                                <div class="card-body d-flex gap-3">
+                                                    <twig:Icon name="lucide:quote" class="icon-lg text-primary flex-shrink-0" />
+                                                    <blockquote class="text-secondary mb-0">
+                                                        «&nbsp;Notre réussite se mesure au moment où vous fermez l'onglet pour rejoindre vos amis en terrasse ou dans une salle de concert.&nbsp;»
+                                                    </blockquote>
+                                                </div>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <div class="card card-lg mb-0">
+                <div class="card-body">
+                    <div class="row g-4 g-lg-5 align-items-center">
+                        <div class="col-lg-4 text-center">
+                            <span class="avatar avatar-4xl rounded-circle shadow mb-3">
+                                <twig:Picasso:Image src="{{ asset('build/images/guillaume-sainthillier.jpg', 'local') }}" width="{{ 176 }}" height="{{ 176 }}" fit="crop" alt="Guillaume Sainthillier" />
+                            </span>
+                            <h3 class="h2 mb-1">Guillaume Sainthillier</h3>
+                            <div class="text-primary fw-semibold">Créateur & développeur web indépendant</div>
+                            <div class="text-secondary small mt-1"><twig:Icon name="lucide:map-pin" /> Toulouse, France</div>
+                            <a class="btn btn-sm btn-pill mt-3" href="https://sainthillier.fr" rel="noopener">
+                                <twig:Icon name="lucide:globe" />
+                                sainthillier.fr
+                            </a>
+                        </div>
+                        <div class="col-lg-8">
+                            <twig:Section:Eyebrow icon="lucide:square-terminal">Un artisanat numérique</twig:Section:Eyebrow>
+                            <h2 class="h1 text-start mb-3">Plus de dix ans d'amour pour le code et la scène locale.</h2>
+                            <p>
+                                By Night n'est pas le produit d'une multinationale, mais le projet, mené avec persévérance, d'un développeur web
+                                indépendant installé à Toulouse. Tout est parti d'un constat&nbsp;: il était difficile de savoir, en un seul
+                                endroit, ce qui se passait le soir même, sans éplucher des pages et des pages de réseaux sociaux.
+                            </p>
+                            <p>
+                                Version après version, le site est arrivé à sa version&nbsp;5&nbsp;: un agenda rapide, qui rassemble les
+                                agendas ouverts des villes, des offices de tourisme et des billetteries, et les événements publiés par ses
+                                membres.
+                            </p>
+                            <div class="row row-cards row-deck">
+                                {% for step in [
+                                    {when: since, title: 'Lancement', text: 'Les premières sorties référencées, à Toulouse.'},
+                                    {when: 2017, title: 'Toute la France', text: 'Le site s\'ouvre à toutes les villes, puis au-delà des frontières.'},
+                                    {when: 'Aujourd\'hui', title: 'Version 5', text: 'Un nouveau design, plus clair et plus rapide, sur mobile comme sur ordinateur.'},
+                                ] %}
+                                    <div class="col-md-4">
+                                        <div class="card card-sm form-panel border-0 mb-0">
+                                            <div class="card-body">
+                                                <div class="subheader text-primary mb-1">{{ step.when }}</div>
+                                                <div class="fw-semibold">{{ step.title }}</div>
+                                                <p class="text-secondary small mb-0">{{ step.text }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <twig:OrganizerCta />
+        </div>
+    </section>
 {% endblock %}

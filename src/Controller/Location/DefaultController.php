@@ -12,41 +12,51 @@ namespace App\Controller\Location;
 
 use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
-use App\Form\Type\SimpleEventSearchType;
+use App\Enum\DateRangePreset;
+use App\Form\Type\QuickSearchType;
 use App\Repository\EventRepository;
-use DateTimeImmutable;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class DefaultController extends BaseController
 {
+    private const int HIGHLIGHTS = 4;
+
+    /** Also the busiest cities on each country card, here and on the home page: they share the query */
+    public const int VENUES = 5;
+
+    /** Below, a country shows its venues instead of its cities */
+    private const int MIN_CITIES = 3;
+
+    private const int NEIGHBOURS = 5;
+
     #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
     public function index(AppContext $appContext, EventRepository $eventRepository): Response
     {
         $location = $appContext->getLocation();
 
-        $data = [
-            'from' => new DateTimeImmutable('now'),
-        ];
-        $form = $this->createForm(SimpleEventSearchType::class, $data);
-        // Tree walkers: the default output walkers wrap the query in derived tables that
-        // MySQL materializes (every column of every upcoming event) instead of reading
-        // event_upcoming_idx; with them, the Paris page took ~1.5 s instead of ~0.25 s.
-        // fetchJoinCollection stays on although no collection is joined: sorting the ids
-        // from the index, then loading 8 rows, beats sorting the full rows (~0.3 s vs 0.6 s).
-        $events = $this->createMultipleEagerLoadingPaginatorFromAdapter(
-            new QueryAdapter($eventRepository->findUpcomingEvents($location), useOutputWalkers: false),
-            $eventRepository,
-            1,
-            8,
-            ['view' => 'events:location:index']
-        );
+        $cities = [];
+        if ($location->isCity()) {
+            // The cities around the city
+            $neighbours = $eventRepository->findUpcomingCitiesAround($location->getCity(), self::NEIGHBOURS);
+        } else {
+            // The busiest cities of the country, and the other countries, as the home page lists them
+            $cities = $eventRepository->findUpcomingCitiesOfCountry($location->getCountry(), self::VENUES);
+            $neighbours = $eventRepository->findUpcomingCountries(self::VENUES, $location->getCountry());
+        }
+
+        // The venues, for a city or a country with too few busy cities to rank (Monaco)
+        $venues = \count($cities) < self::MIN_CITIES ? $eventRepository->findUpcomingPlaces($location, self::VENUES) : [];
 
         return $this->render('location/index.html.twig', [
+            'search_form' => $this->createForm(QuickSearchType::class, ['when' => DateRangePreset::Anytime], [
+                'action' => $this->generateUrl('app_agenda_index', ['location' => $location->getSlug()]),
+            ]),
             'location' => $location,
-            'events' => $events,
-            'form' => $form,
+            'highlights' => $eventRepository->findHighlights($location, self::HIGHLIGHTS),
+            'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
+            'venues' => $venues,
+            'neighbours' => $neighbours,
         ]);
     }
 }
