@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // The "À propos" and "Comment ça marche" pages (2026 redesign): their blocks are cards, avatars and badges; only the
 // two gradients have no Bootstrap or Tabler equivalent.
 

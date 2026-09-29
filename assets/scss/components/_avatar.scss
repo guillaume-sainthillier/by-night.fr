@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 .avatar {
     position: relative;
     overflow: hidden;
@@ -12,7 +14,7 @@
 }
 
 .avatar-4xl {
-    --#{$prefix}avatar-size: 11rem;
+    --avatar-size: 11rem;
 }
 
 // A badge on the edge of an avatar, e.g. the check of a verified member: the wrapper holds it, since .avatar clips

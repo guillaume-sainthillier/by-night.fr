@@ -1,7 +1,7 @@
-@import '../core';
+@use '../core' as *;
 
 // "Create new" option styling
 .ts-dropdown .create {
     font-style: italic;
-    color: var(--bs-secondary);
+    color: var(--secondary);
 }

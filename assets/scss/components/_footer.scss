@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // Footer: Tabler's .footer, lists and .link-secondary; only the brand needs a colour
 #footer .site-brand {
     color: $ink;

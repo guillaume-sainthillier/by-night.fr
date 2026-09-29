@@ -1,5 +1,7 @@
+@use '../core' as *;
+
 .dropzone {
-    border: 2px dashed var(--#{$prefix}border-color);
+    border: 2px dashed var(--border-color);
     border-radius: $border-radius-lg;
     padding: 1.5rem;
     text-align: center;
@@ -7,7 +9,7 @@
     transition:
         border-color 0.2s ease,
         background-color 0.2s ease;
-    background-color: var(--#{$prefix}tertiary-bg);
+    background-color: var(--tertiary-bg);
 
     &:hover,
     &.dropzone-dragover {
@@ -25,7 +27,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    color: var(--#{$prefix}secondary-color);
+    color: var(--secondary-color);
 
     .dropzone-icon {
         font-size: 2.5rem;

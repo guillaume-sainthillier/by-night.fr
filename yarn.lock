@@ -910,13 +910,12 @@
   dependencies:
     unplugin "^3.4.0"
 
-"@tabler/core@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@tabler/core/-/core-1.4.0.tgz#9e011289d92cf6120655793cef6576fd67eb07f3"
-  integrity sha512-5BigzOlbOH9N0Is4u0rYNRCiwtnUXWO57K9zwuscygcicAa8UV9MGaS4zTgQsZEtZ9tsNANhN/YD8gCBGKYCiw==
+"@tabler/core@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@tabler/core/-/core-1.6.1.tgz#eeca2b82f8be5200d97696aaad125a69fe0a57a8"
+  integrity sha512-lgmR9gcxRp5JlLxcmRi9Rz85JrEvH6Bz71KnlcPVSa97wtwQNjgSs3g3fxwbAlulHyRMghhIV04QUuW3pqDsIg==
   dependencies:
     "@popperjs/core" "^2.11.8"
-    bootstrap "5.3.7"
 
 "@tarekraafat/autocomplete.js@^10.2.9":
   version "10.2.10"
@@ -1039,11 +1038,6 @@ boolbase@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==
-
-bootstrap@5.3.7:
-  version "5.3.7"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.7.tgz#8640065036124d961d885d80b5945745e1154d90"
-  integrity sha512-7KgiD8UHjfcPBHEpDNg+zGz8L3LqR3GVwqZiBRFX04a1BCArZOz1r2kjly2HQ0WokqTO0v1nF+QAt8dsW4lKlw==
 
 brace-expansion@^1.1.7:
   version "1.1.18"
@@ -1878,6 +1872,18 @@ picomatch@^4.0.4, picomatch@^4.0.7:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.7.tgz#6313360034ccb36b3dc61ecbdff78121f90fe21f"
   integrity sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==
+
+postcss-prefix-custom-properties@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/postcss-prefix-custom-properties/-/postcss-prefix-custom-properties-0.1.0.tgz#41e7b241f7c2228a2c5c4d145e7b81df7c7ae8d9"
+  integrity sha512-sAKQSRw+KTl9G549Q9awV/ra06fOZNEIVIIRTwiSTbvkV1t8z7WPqNQ5XBbxF1fV2mp0yQFObavc5J/GxP0a6g==
+  dependencies:
+    postcss-value-parser "^4.2.0"
+
+postcss-value-parser@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
+  integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.5.28:
   version "8.5.28"

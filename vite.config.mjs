@@ -1,9 +1,36 @@
 import { fileURLToPath } from 'node:url'
 import Symfony from '@symfony/reprise/vite'
+import prefixCustomProperties from 'postcss-prefix-custom-properties'
 import { defineConfig } from 'vite'
 
 const assets = fileURLToPath(new URL('./assets', import.meta.url))
+const scss = fileURLToPath(new URL('./assets/scss/', import.meta.url))
 const moment = fileURLToPath(new URL('./node_modules/moment/moment.js', import.meta.url))
+
+// Tabler's Sass sources write custom properties bare (--primary, var(--btn-bg)), and so do ours: its own build adds
+// the prefix afterwards, with this plugin. We keep Bootstrap's --bs-, which the Bootstrap themes of Tom Select and
+// summernote read. Only the stylesheets of assets/scss are rewritten: the vendor CSS the JS imports on its own
+// (Algolia autocomplete, fancybox…) reads its variables by their own name.
+const prefixScssCustomProperties = () => {
+    const plugin = prefixCustomProperties({
+        prefix: 'bs-',
+        ignore: [
+            /^--bs-/, // already prefixed
+            /^--ts-/, // Tom Select
+            /^--aa-/, // Algolia autocomplete, themed from components/_autocomplete.scss
+        ],
+    })
+
+    return {
+        postcssPlugin: 'prefix-scss-custom-properties',
+        Once(root, helpers) {
+            if (root.source?.input.file?.startsWith(scss)) {
+                plugin.Once(root, helpers)
+            }
+        },
+    }
+}
+prefixScssCustomProperties.postcss = true
 
 const pages = [
     'index',
@@ -54,6 +81,12 @@ export default defineConfig(({ mode }) => {
             },
         },
 
+        css: {
+            postcss: {
+                plugins: [prefixScssCustomProperties()],
+            },
+        },
+
         resolve: {
             alias: [
                 { find: '@', replacement: assets },
@@ -66,6 +99,11 @@ export default defineConfig(({ mode }) => {
         },
 
         build: {
+            // Tabler's browser baseline (1.5+ relies on light-dark(), color-mix() and :has() with no fallback). Below it,
+            // Lightning CSS polyfills light-dark() with variables resolved once on :root, so the dark islands
+            // (data-bs-theme="dark" inside a light page) would inherit the light colours.
+            cssTarget: ['chrome123', 'edge123', 'firefox128', 'safari17.5'],
+
             // Encore's addEntry() equivalent. Reprise turns each key into an
             // entrypoints.json entry consumed by reprise_entry_*_tags().
             rollupOptions: {

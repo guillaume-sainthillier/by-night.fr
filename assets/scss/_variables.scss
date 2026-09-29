@@ -1,11 +1,14 @@
+// The site's own tokens. Tabler's variables are overridden in _core.scss, which forwards both: a name defined
+// here must not be one of Tabler's (Sass refuses two forwarded modules defining the same member).
+
 $color-primary: #36a9e1;
 $color-success: #bdea74;
 $color-info: #67c2ef;
 $color-warning: #fabb3d;
 $color-danger: #ff5454;
 
-// Palette of the 2026 redesign (Stitch "By Night Redesign" mockups, Material 3 tokens in brackets)
-$primary: #d94826; // [primary-container] buttons, accents. White on it is 4.3:1: small text uses $primary-strong
+// Palette of the 2026 redesign (Stitch "By Night Redesign" mockups, Material 3 tokens in brackets). The brand
+// orange itself, [primary-container] (#d94826), is Tabler's $primary (see _core.scss).
 $primary-strong: #ae2a08; // [primary] small text and eyebrows on white (6.7:1)
 $primary-soft: #ffdad2; // [primary-fixed] badges and icon tiles
 $accent: #006a65; // [secondary] the teal counterpoint
@@ -19,138 +22,4 @@ $outline-soft: #e2bfb6; // [outline-variant] borders, always translucent
 
 $bgColor: $surface;
 
-$info: #fabb3d;
-$warning: $color-warning;
-$success: #198754;
-
-$white: #fff;
-
 $link-footer-color: $ink-muted;
-
-// Configuration
-$enable-dark-mode: true;
-$enable-rounded: true;
-$enable-cssgrid: false; // no .grid / .g-col-* in templates
-
-// Tabler variants no template uses, dropped at the source (see ui/_tabler.scss for the audit):
-// the .btn-*, .bg-*, .text-*, --tblr-* … generated for 16 social and 12 extra colours, the
-// vertical navbar layout, and the negative margin utilities (.m*-n1 … n5).
-$enable-navbar-vertical: false;
-$enable-negative-margins: false;
-$social-colors: ();
-// The tones of the portal cards (.bg-blue-lt, .text-purple…): Tabler's values, teal swapped for the brand's
-$extra-colors: (
-    'blue': #066fd1,
-    'purple': #ae3ec9,
-    'pink': #d6336c,
-    'green': #2fb344,
-    'yellow': #f59f00,
-    'teal': $accent,
-);
-
-//Misc
-$body-bg: $bgColor;
-$input-bg: $white;
-$text-secondary: #6b5b57; // muted text (Tabler's .text-secondary), warm like the palette
-$border-color: rgba($outline-soft, 0.55);
-
-//Typography
-$font-family-sans-serif:
-    'Epilogue Variable',
-    'Epilogue Fallback',
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-
-//Radius
-$border-radius: 0.5rem;
-$border-radius-sm: 0.375rem;
-$border-radius-lg: 0.75rem;
-$border-radius-xl: 1rem;
-$border-radius-xxl: 1.5rem;
-
-//Reboot
-$link-color: $ink;
-$link-hover-color: $primary;
-$link-decoration: none;
-
-//RFS
-$font-size-base: 1rem;
-// Tabler's proportions on a 1rem base: its components size off this scale (.card-title is h3, .subheader and
-// .page-pretitle are h5); bigger titles use Bootstrap's .display-* classes
-$h1-font-size: 2rem;
-$h2-font-size: 1.5rem;
-$h3-font-size: 1.125rem;
-$h4-font-size: 1rem;
-$h5-font-size: 0.75rem;
-$h6-font-size: 0.625rem;
-
-//Navbar
-$navbar-dark-color: rgba($white, 0.84);
-$navbar-dark-hover-color: $white;
-$navbar-dark-active-color: $white;
-
-//Offcancas
-$offcanvas-horizontal-width: 300px;
-
-//Breadcrumb
-$breadcrumb-bg: transparent;
-$breadcrumb-margin-bottom: 0;
-
-//Card
-$card-cap-bg: white;
-$card-cap-padding-y: 0.75rem;
-$card-border-radius: $border-radius-xl;
-$card-border-color: $border-color;
-
-//Shadow
-$box-shadow:
-    0 1px 2px 0 rgba($ink, 0.05),
-    0 1px 3px 0 rgba($ink, 0.04);
-$box-shadow-card: 0 1px 2px 0 rgba($ink, 0.04);
-
-//Modal
-$modal-header-padding-y: 0.5rem;
-
-// Icons
-$icon-size: 1.125em;
-
-//Buttons
-$btn-padding-y-sm: 0.25rem;
-$btn-padding-x-sm: 0.5rem;
-$btn-font-size-sm: 0.875rem;
-$btn-border-radius-sm: 0.25rem;
-
-// Forms
-$form-label-font-size: 1rem;
-
-//Tabler
-$prefix: 'bs-' !default;
-$grid-gutter-width: 1rem;
-$container-padding-x: 2rem; // 1rem on each side: cards no longer touch the edges of a phone
-
-$enable-rfs: true;
-$lead-font-size: 1.25rem;
-
-// Restore Bootstrap 5 sizes (Tabler uses fixed rem line-heights instead of ratios)
-$line-height-base: 1.5;
-$input-btn-line-height: $line-height-base;
-$input-btn-line-height-lg: $line-height-base;
-$input-btn-padding-y-lg: 0.5rem;
-$input-btn-font-size-lg: 1.25rem;
-
-// Restore Bootstrap heading line-heights (Tabler uses fixed rem, breaks badge vertical centering)
-$headings-line-height: 1.2;
-$h1-line-height: $headings-line-height;
-$h2-line-height: $headings-line-height;
-$h3-line-height: $headings-line-height;
-$h4-line-height: $headings-line-height;
-$h5-line-height: $headings-line-height;
-$h6-line-height: $headings-line-height;
-$headings-font-weight: 700;
-$body-color: $ink;
-$navbar-brand-font-size: 1.25rem;

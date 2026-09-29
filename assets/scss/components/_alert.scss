@@ -1,3 +1,14 @@
+@use '../core' as *;
+
+// Tabler 1.4's alert, which the templates are written for: an icon then the text (or a <div>) side by side, directly
+// in .alert, and the text in the colour of the page. Since 1.5 an alert is a block, its icon only placed beside the
+// text as an .alert-icon, and its text takes the variant's colour (yellow on yellow for the warnings).
+.alert {
+    display: flex;
+    gap: 1rem;
+    color: inherit;
+}
+
 .alert a {
     &:hover,
     &:focus {

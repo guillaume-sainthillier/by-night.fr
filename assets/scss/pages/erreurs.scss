@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 body.error-page {
     display: flex;
     padding: 0;

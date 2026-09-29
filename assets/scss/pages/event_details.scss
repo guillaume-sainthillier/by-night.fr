@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 #page-event {
     // On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both rows
     // beside them; the second row takes what the sidebar needs beyond the poster, so no gap opens under the poster
@@ -38,11 +40,11 @@
     // Icons one step below Tabler's defaults, in scale with the small labels of the cards
     .event-layout {
         .btn {
-            --#{$prefix}btn-icon-size: 1rem;
+            --btn-icon-size: 1rem;
         }
 
         .detail-item > .icon {
-            --#{$prefix}icon-size: 1.125rem;
+            --icon-size: 1.125rem;
         }
 
         .avatar-sm > .icon {

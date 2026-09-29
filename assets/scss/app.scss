@@ -1,65 +1,58 @@
-@import 'core';
-@import 'fonts';
+@use 'core' as *;
+@use 'fonts';
 
 //Vendors
-@import 'ui/tabler';
+@use 'ui/tabler';
 
 //Components
-@import 'components/avatar';
-@import 'components/icons';
-@import 'components/alert';
-@import 'components/autocomplete';
-@import 'components/badge';
-@import 'components/breadcrumb';
-@import 'components/buttons';
-@import 'components/card';
-@import 'components/charts';
-@import 'components/collections';
-@import 'components/comment';
-@import 'components/filters';
-@import 'components/dropzone';
-@import 'components/event';
-@import 'components/event-scheduler';
-@import 'components/footer';
-@import 'components/form';
-@import 'components/form-actions';
-@import 'components/image-previews';
-@import 'components/modal';
-@import 'components/nav';
-@import 'components/navbar';
-@import 'components/page';
-@import 'components/pagination';
-@import 'components/placeholder';
-@import 'components/portal';
-@import 'components/print';
-@import 'components/scroll';
-@import 'components/social_icons';
-@import 'components/social_login';
-@import 'components/table';
-@import 'components/typeahead';
-@import 'components/typography';
-@import 'components/utilities';
-@import 'components/widgets';
+@use 'components/avatar';
+@use 'components/icons';
+@use 'components/alert';
+@use 'components/autocomplete';
+@use 'components/badge';
+@use 'components/breadcrumb';
+@use 'components/buttons';
+@use 'components/card';
+@use 'components/charts';
+@use 'components/collections';
+@use 'components/comment';
+@use 'components/filters';
+@use 'components/dropzone';
+@use 'components/event';
+@use 'components/event-scheduler';
+@use 'components/footer';
+@use 'components/form';
+@use 'components/form-actions';
+@use 'components/image-previews';
+@use 'components/modal';
+@use 'components/nav';
+@use 'components/navbar';
+@use 'components/page';
+@use 'components/pagination';
+@use 'components/placeholder';
+@use 'components/portal';
+@use 'components/print';
+@use 'components/scroll';
+@use 'components/social_icons';
+@use 'components/social_login';
+@use 'components/table';
+@use 'components/typeahead';
+@use 'components/typography';
+@use 'components/utilities';
+@use 'components/widgets';
 
 //Pages
-@import 'pages/account';
-@import 'pages/content';
-@import 'pages/erreurs';
-@import 'pages/event_details';
-@import 'pages/user_details';
-@import 'pages/user_event_crud';
-
-:root,
-:host {
-    @include media-breakpoint-up(lg) {
-        margin-left: 0;
-    }
-}
+@use 'pages/account';
+@use 'pages/content';
+@use 'pages/erreurs';
+@use 'pages/event_details';
+@use 'pages/user_details';
+@use 'pages/user_event_crud';
 
 :root,
 :host,
 [data-bs-theme='light'] {
-    --#{$prefix}body-bg: #{$body-bg};
+    --body-bg: #{$body-bg};
 }
 
 h1,
@@ -129,9 +122,42 @@ h1 {
     color: inherit;
 }
 
-// Fix Tabler body-color (uses CSS custom property)
-:root,
-:host,
-[data-bs-theme='light'] {
-    --tbl-body-color: #{$body-color};
+// Cross-module @extend rules (Tabler's _extends.scss). An @extend only reaches the stylesheets its file loads, so
+// these live here, where Tabler's and ours are all upstream: .h1 takes our h1 rules too, as with @import.
+// Only the helpers templates use; the .prose/.markdown tables and the dark-body / navbar-theme rules are left out
+// with their partials and settings.
+.h1 {
+    @extend h1;
+}
+
+.h2 {
+    @extend h2;
+}
+
+.h3 {
+    @extend h3;
+}
+
+.h4 {
+    @extend h4;
+}
+
+.h5 {
+    @extend h5;
+}
+
+.h6 {
+    @extend h6;
+}
+
+.small {
+    @extend small;
+}
+
+.mark {
+    @extend mark;
+}
+
+.hr {
+    @extend hr;
 }

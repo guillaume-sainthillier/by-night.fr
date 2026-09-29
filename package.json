@@ -13,7 +13,7 @@
         "@fontsource-variable/epilogue": "^5.3.0",
         "@googlemaps/js-api-loader": "^2.0.2",
         "@sentry/browser": "^10.38.0",
-        "@tabler/core": "^1.4.0",
+        "@tabler/core": "^1.6.1",
         "@tarekraafat/autocomplete.js": "^10.2.9",
         "daterangepicker": "^3.1.0",
         "fancybox": "^3.0.0",
@@ -29,7 +29,6 @@
         "tom-select": "^2.4.6"
     },
     "resolutions": {
-        "bootstrap": "5.3.7",
         "jquery": "3.7.1"
     },
     "devDependencies": {
@@ -43,6 +42,7 @@
         "husky": "^9.1.6",
         "knip": "^6",
         "lint-staged": ">=16.2.7",
+        "postcss-prefix-custom-properties": "^0.1.0",
         "prettier": "^3.8.1",
         "sass": "1.105.*",
         "vite": "^8.3.0",

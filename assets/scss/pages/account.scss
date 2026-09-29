@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // The account settings (templates/profile/edit.html.twig): the completion of the profile and the tabs
 .account {
     .account-completion {
@@ -6,8 +8,9 @@
 
     // The deletion tab keeps the colour of its danger once opened
     .account-tabs .nav-link-danger.active {
-        color: $danger;
-        background-color: rgba($danger, 0.08);
-        border-color: rgba($danger, 0.2);
+        // Tabler's $danger is an oklch() colour, which Sass' rgba() rejects: mixed at runtime, as Tabler does
+        color: var(--danger);
+        background-color: color-mix(in oklab, var(--danger) 8%, transparent);
+        border-color: color-mix(in oklab, var(--danger) 20%, transparent);
     }
 }

@@ -1,4 +1,4 @@
-import { Modal } from '@tabler/core/dist/js/tabler.esm'
+import { Modal } from '@tabler/core'
 import $ from 'jquery'
 import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'

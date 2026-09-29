@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // Form action bar pinned to the bottom of the viewport (event form of the personal space).
 // It is out of the flow, so the page reserves its height: the footer still scrolls above it,
 // fields focused with Tab stop short of it, and the scroll-to-top button moves above it.
