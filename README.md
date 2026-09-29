@@ -19,7 +19,7 @@ https://by-night.fr
 - Sass
 - Webpack
 - Docker
-- Amazon S3 / Cloudfront
+- OVH Object Storage (S3)
 
 ## Docker
 
