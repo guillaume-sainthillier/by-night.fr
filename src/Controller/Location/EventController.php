@@ -53,11 +53,15 @@ final class EventController extends BaseController
             'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
         $eventProfile = $eventProfilePicture->getOriginalPicture($event);
+        // Every field as a string: Page normalizes each one with preg_replace(), which deprecates null
+        // (the library's own defaults for icon and twitterUser included)
         $page = new Page([
             'url' => $link,
-            'title' => $event->getName(),
-            'text' => $event->getDescription(),
+            'title' => $event->getName() ?? '',
+            'text' => $event->getDescription() ?? '',
             'image' => $eventProfile,
+            'icon' => '',
+            'twitterUser' => '',
         ]);
 
         // Widget data (first page only)
