@@ -1,16 +1,20 @@
-{% for key, messages in app.flashes %}
-    {% for message in messages %}
-        <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
-            <div class="{{ container_class }}">
-                {% if key == 'info' %}
-                    <twig:Icon name="lucide:info" />
-                {% elseif key == 'error' %}
-                    <twig:Icon name="lucide:triangle-alert" />
-                {% elseif key == 'success' %}
-                    <twig:Icon name="lucide:check" />
-                {% endif %}
-                {{ message|trans|raw }}
+{# Reading app.flashes uses the session, which makes Symfony mark the response private: without a session cookie
+   there cannot be any flash message, so a visitor's pages stay cacheable #}
+{% if app.request.hasPreviousSession %}
+    {% for key, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
+                <div class="{{ container_class }}">
+                    {% if key == 'info' %}
+                        <twig:Icon name="lucide:info" />
+                    {% elseif key == 'error' %}
+                        <twig:Icon name="lucide:triangle-alert" />
+                    {% elseif key == 'success' %}
+                        <twig:Icon name="lucide:check" />
+                    {% endif %}
+                    {{ message|trans|raw }}
+                </div>
             </div>
-        </div>
+        {% endfor %}
     {% endfor %}
-{% endfor %}
+{% endif %}
