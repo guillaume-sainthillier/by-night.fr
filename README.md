@@ -16,8 +16,10 @@ https://by-night.fr
 - Elasticsearch 9
 - Cloudflare (CDN, cache HTTP)
 - Redis
+- Vite
 - Sass
-- Webpack
+- Bootstrap 5 / Tabler
+- Preact
 - Docker
 - OVH Object Storage (S3)
 
