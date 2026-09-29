@@ -10,8 +10,8 @@
 
 namespace App\Tests\Api;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use ApiPlatform\Symfony\Bundle\Test\Client;
+use ApiPlatform\Test\ApiTestCase;
+use ApiPlatform\Test\Client;
 use App\Factory\UserFactory;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;

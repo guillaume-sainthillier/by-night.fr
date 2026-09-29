@@ -10,7 +10,7 @@
 
 namespace App\Tests\Api;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use ApiPlatform\Test\ApiTestCase;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
 use App\Factory\ContentRemovalRequestFactory;

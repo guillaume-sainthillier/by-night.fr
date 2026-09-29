@@ -70,6 +70,7 @@ final class PageControllerTest extends WebTestCase
         // updatable: false — renaming must not change the public URL
         $page->setTitle('Mentions légales 2027');
         save($page);
+        /* @phpstan-ignore-next-line */
         self::assertSame('mentions-legales-2026', $page->getSlug());
     }
 }
