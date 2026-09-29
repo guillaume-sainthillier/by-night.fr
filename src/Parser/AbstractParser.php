@@ -234,6 +234,27 @@ abstract class AbstractParser implements ParserInterface
         return rtrim(rtrim(number_format((float) $price, 2, '.', ''), '0'), '.');
     }
 
+    /**
+     * The prices of the tickets of an event as a feed gives them, as one text: "22€", "De 15€ à 25€", or null for none.
+     *
+     * A 0 is no price, not a free entry: the affiliate feeds fill their price columns with it when they have none
+     * (Fnac sells "Grévin - Billet Daté" at 22 € while a row of it says 0), and "0€" shows as "Gratuit" on the cards.
+     *
+     * @param list<float|string> $prices
+     */
+    protected static function formatPriceRange(array $prices): ?string
+    {
+        $prices = array_filter(array_map(floatval(...), $prices), static fn (float $price): bool => $price > 0);
+        if ([] === $prices) {
+            return null;
+        }
+
+        $min = self::formatPrice(min($prices));
+        $max = self::formatPrice(max($prices));
+
+        return $min === $max ? $min . '€' : \sprintf('De %s€ à %s€', $min, $max);
+    }
+
     protected function logException(Throwable $exception, array $context = []): void
     {
         $this->logger->error($exception->getMessage(), [

@@ -174,16 +174,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
         $event->longitude = (float) ($data['longitude'] ?? 0);
         $event->status = EventStatus::fromStatusMessage($data['onsale'] ?? null);
 
-        // Build prices string
-        $minPrice = '' === ($data['min_price'] ?? '') ? '' : self::formatPrice($data['min_price']);
-        $maxPrice = '' === ($data['max_price'] ?? '') ? '' : self::formatPrice($data['max_price']);
-        if ('' !== $minPrice && '' !== $maxPrice && $minPrice !== $maxPrice) {
-            $event->prices = \sprintf('De %s€ à %s€', $minPrice, $maxPrice);
-        } elseif ('' !== $minPrice) {
-            $event->prices = \sprintf('%s€', $minPrice);
-        } elseif ('' !== $maxPrice) {
-            $event->prices = \sprintf('%s€', $maxPrice);
-        }
+        $event->prices = self::formatPriceRange([$data['min_price'] ?? '', $data['max_price'] ?? '']);
 
         // Parse address: extract postal code and street
         $venueAddress = trim($data['venue_address'] ?? '');

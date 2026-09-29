@@ -59,6 +59,15 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
         self::assertSame($first->place->externalId, $second?->place?->externalId);
     }
 
+    public function testAZeroPriceIsNoPrice(): void
+    {
+        // An affiliate feed says 0 when it has no price, not when the entry is free
+        $event = $this->invoke(self::row(['search_price' => '0.00']));
+
+        self::assertInstanceOf(EventDto::class, $event);
+        self::assertNull($event->prices);
+    }
+
     public function testRowsThatCannotBeDatedOrPlacedAreLeftOut(): void
     {
         self::assertNull($this->invoke(self::row(['custom_6' => ''])), 'No venue');

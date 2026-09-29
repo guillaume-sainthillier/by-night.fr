@@ -29,6 +29,17 @@ final class SeeTicketsKwankoParserTest extends TestCase
     private const string GROUPED_HEADER = '"pid","pidSybiex","name","desc","category","merchant_category","imgurl","imgurl_tn","purl","tickets|eventDate","tickets|event_name","tickets|genre","tickets|venue_name","tickets|longitude","tickets|latitude","tickets|venue_address","tickets|venue_region","tickets|venue_department","tickets|max_price","tickets|min_price","tickets|event_location_city","tickets|available_from","tickets|onsale","tickets|primary_artist","tickets|secondary_artist","price|actualp"';
 
     /**
+     * A row of the feed, in the order of GROUPED_HEADER: max_price at 18, min_price at 19.
+     */
+    private const array ROW = [
+        '6761271', '6761271', 'Les 4 Saisons de Vivaldi', 'Un concert.', 'Concert', 'Tickets',
+        'https://statics.digitick.com/vivaldi_300.jpg', 'https://statics.digitick.com/vivaldi_110.jpg',
+        'https://pfd.seetickets.com/?P1', '02/10/2026 20:45', 'Les 4 Saisons de Vivaldi', 'Classique',
+        'Église Saint-Germain', '2.3339', '48.8539', '3 place Saint-Germain 75006 PARIS', 'Île-de-France',
+        '75', '35.00', '25.00', 'PARIS', '01/06/2026 10:00', 'Vente en cours', '', '', '25.00',
+    ];
+
+    /**
      * @return iterable<string, array{string}>
      */
     public static function headerLayouts(): iterable
@@ -40,15 +51,7 @@ final class SeeTicketsKwankoParserTest extends TestCase
     #[DataProvider('headerLayouts')]
     public function testARowBecomesAnEventWhateverTheHeaderLayout(string $headerLine): void
     {
-        $row = [
-            '6761271', '6761271', 'Les 4 Saisons de Vivaldi', 'Un concert.', 'Concert', 'Tickets',
-            'https://statics.digitick.com/vivaldi_300.jpg', 'https://statics.digitick.com/vivaldi_110.jpg',
-            'https://pfd.seetickets.com/?P1', '02/10/2026 20:45', 'Les 4 Saisons de Vivaldi', 'Classique',
-            'Église Saint-Germain', '2.3339', '48.8539', '3 place Saint-Germain 75006 PARIS', 'Île-de-France',
-            '75', '35.00', '25.00', 'PARIS', '01/06/2026 10:00', 'Vente en cours', '', '', '25.00',
-        ];
-
-        $event = $this->parseRow($headerLine, $row);
+        $event = $this->parseRow($headerLine, self::ROW);
 
         self::assertNotNull($event);
         self::assertSame('6761271', $event->externalId);
@@ -62,6 +65,31 @@ final class SeeTicketsKwankoParserTest extends TestCase
         self::assertSame('3 place Saint-Germain', $event->place->street);
         self::assertSame('75006', $event->place->city?->postalCode);
         self::assertSame('PARIS', $event->place->city->name);
+    }
+
+    /**
+     * @return iterable<string, array{string, string, string|null}>
+     */
+    public static function zeroPrices(): iterable
+    {
+        yield 'no lowest price' => ['35.00', '0.00', '35€'];
+        yield 'no price at all' => ['0', '0.00', null];
+    }
+
+    /**
+     * An affiliate feed says 0 when it has no price, not when the entry is free: "De 0€ à 35€" would be one.
+     */
+    #[DataProvider('zeroPrices')]
+    public function testAZeroPriceIsNoPrice(string $maxPrice, string $minPrice, ?string $prices): void
+    {
+        $row = self::ROW;
+        $row[18] = $maxPrice;
+        $row[19] = $minPrice;
+
+        $event = $this->parseRow(self::GROUPED_HEADER, $row);
+
+        self::assertNotNull($event);
+        self::assertSame($prices, $event->prices);
     }
 
     /**

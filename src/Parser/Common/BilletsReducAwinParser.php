@@ -116,7 +116,7 @@ final class BilletsReducAwinParser extends AbstractAwinParser
         $event->name = $data['product_name'];
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));
         $event->imageUrl = $this->getHighResImageUrl($data['merchant_image_url'] ?? '');
-        $event->prices = \sprintf('%s€', self::formatPrice($data['search_price']));
+        $event->prices = self::formatPriceRange([$data['search_price']]);
         $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
         $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
 
