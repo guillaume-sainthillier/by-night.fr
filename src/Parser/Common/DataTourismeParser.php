@@ -18,6 +18,7 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
+use App\Utils\StartingPrice;
 use DateTimeImmutable;
 use DateTimeZone;
 use Override;
@@ -76,6 +77,15 @@ final class DataTourismeParser extends AbstractParser
         'hasContact.homepage',
         'hasBookingContact.telephone',
         'hasBookingContact.homepage',
+        'offers.textPriceSpecification',
+        'offers.priceSpecification.name',
+        'offers.priceSpecification.price',
+        'offers.priceSpecification.minPrice',
+        'offers.priceSpecification.maxPrice',
+        'offers.priceSpecification.priceCurrency',
+        'offers.priceSpecification.additionalInformation',
+        'offers.priceSpecification.hasEligiblePolicy.key',
+        'offers.priceSpecification.hasEligiblePolicy.label',
     ];
 
     /**
@@ -107,11 +117,12 @@ final class DataTourismeParser extends AbstractParser
      * {@inheritDoc}
      *
      * 4.0: the API replaced the Diffuseur flux, so every event is re-read once.
+     * 4.1: the prices are read from the offers.
      */
     #[Override]
     public static function getParserVersion(): string
     {
-        return '4.0';
+        return '4.1';
     }
 
     /**
@@ -224,6 +235,7 @@ final class DataTourismeParser extends AbstractParser
         $event->startDate = min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
         $event->hours = 1 === \count($hours) ? $hours[0] : null;
+        $event->prices = $this->prices((array) ($data['offers'] ?? []));
         $event->timesheets = $timesheets;
 
         $streetLines = array_values(array_filter(array_map($this->string(...), (array) ($address['streetAddress'] ?? []))));
@@ -299,6 +311,98 @@ final class DataTourismeParser extends AbstractParser
         }
 
         return \sprintf('De %s à %s', $startTime, $endTime);
+    }
+
+    /**
+     * The prices as one text, as the other sources give theirs ("Tarif réduit : 10€ - 12€ - Tarif enfant : Gratuit").
+     *
+     * The amounts of the price specifications come first: the producer's own summary (textPriceSpecification) reads
+     * "Plein tarif : de 10 à 28 €", whose 10 no amount pattern can tell from a number (StartingPrice). The summary
+     * stands in when no specification has an amount ("Gratuit", "Payant"), then the specifications that say the
+     * entry is free.
+     *
+     * @param list<array<string, mixed>> $offers
+     */
+    private function prices(array $offers): ?string
+    {
+        $summaries = [];
+        $paying = [];
+        $free = [];
+        foreach ($offers as $offer) {
+            $summary = $this->text($offer['textPriceSpecification'] ?? null);
+            if (null !== $summary) {
+                $summaries[] = trim((string) preg_replace('/\s+/u', ' ', $summary));
+            }
+
+            foreach ((array) ($offer['priceSpecification'] ?? []) as $specification) {
+                [$line, $hasAmount] = $this->priceLine((array) $specification);
+                if (null === $line) {
+                    continue;
+                }
+
+                if ($hasAmount) {
+                    $paying[] = $line;
+                } else {
+                    $free[] = $line;
+                }
+            }
+        }
+
+        return match (true) {
+            [] !== $paying => implode(' - ', array_unique([...$paying, ...$free])),
+            [] !== $summaries => implode(' - ', array_unique($summaries)),
+            [] !== $free => implode(' - ', array_unique($free)),
+            default => null,
+        };
+    }
+
+    /**
+     * A price specification as a line: its name or policy, and its amounts ("Tarif réduit : 10€", "De 5€ à 8€"), or
+     * that it is free ("Gratuit", "Tarif enfant : Gratuit"). None for a specification that says neither.
+     *
+     * Its minPrice and maxPrice lists are not paired (minPrice [40, 10] with maxPrice [35, 40] is seen): every amount
+     * counts.
+     *
+     * @param array<string, mixed> $specification
+     *
+     * @return array{?string, bool} the line, and whether it has an amount
+     */
+    private function priceLine(array $specification): array
+    {
+        $policies = (array) ($specification['hasEligiblePolicy'] ?? []);
+        $label = $this->text($specification['name'] ?? null) ?? $this->text($policies[0]['label'] ?? null);
+
+        $amounts = [];
+        foreach (['price', 'minPrice', 'maxPrice'] as $key) {
+            foreach ((array) ($specification[$key] ?? []) as $amount) {
+                if (is_numeric($amount) && $amount >= 0) {
+                    $amounts[] = (float) $amount;
+                }
+            }
+        }
+
+        // Only zeros say it is free, as a free policy does: "Gratuit", not "Gratuit : 0€"
+        if ([] !== $amounts && max($amounts) > 0) {
+            $currency = mb_strtoupper($this->string($specification['priceCurrency'] ?? null) ?? 'EUR');
+            $unit = 'EUR' === $currency ? '€' : ' ' . $currency;
+            $min = self::formatPrice(min($amounts)) . $unit;
+            $max = self::formatPrice(max($amounts)) . $unit;
+            $amount = $min === $max ? $min : \sprintf('De %s à %s', $min, $max);
+
+            return [null !== $label ? \sprintf('%s : %s', $label, $amount) : $amount, true];
+        }
+
+        // Free in words ("Gratuit", "Entrée libre"), as its name or its note says, or by its policy or its zeros alone
+        $words = $label ?? $this->text($specification['additionalInformation'] ?? null);
+        if (null !== $words && 0.0 === StartingPrice::fromPrices($words)) {
+            return [$words, false];
+        }
+
+        if ([] !== $amounts || array_any($policies, static fn (mixed $policy): bool => \is_array($policy) && 'Free' === ($policy['key'] ?? null))) {
+            return [null !== $label ? \sprintf('%s : Gratuit', $label) : 'Gratuit', false];
+        }
+
+        return [null, false];
     }
 
     /**
