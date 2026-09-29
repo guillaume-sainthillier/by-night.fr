@@ -14,7 +14,7 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ (php-amqplib/rabbitmq-bundle)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
-- **Frontend**: Webpack Encore, Bootstrap 5, jQuery, Sass, Preact (for reactive components)
+- **Frontend**: Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
 - **Error Tracking**: Sentry
 
 ## Backend Development Workflow
@@ -277,13 +277,13 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - `formManager` - Form field visibility/disabled/required state management
 - `collectionManager` - Dynamic form collections (add/remove form fields)
 
-**Webpack Configuration**:
+**Vite Configuration** (`vite.config.mjs`):
 
-- Uses Symfony Webpack Encore
-- Split entry points for each page (code splitting)
-- Babel transforms JSX to Preact (`h` pragma)
-- ESLint runs on build in dev mode with auto-fix
-- PurgeCSS in production removes unused Bootstrap classes
+- `@symfony/reprise` plugin: writes `public/build/entrypoints.json` + `manifest.json`, read by the `reprise_entry_link_tags()` / `reprise_entry_script_tags()` Twig functions; registers the Stimulus controllers (`assets/controllers.json`) and copies `assets/images` to `public/build/images`
+- One entry point per page (`app`, `admin`, and each `assets/js/pages/*.js` listed in `pages`)
+- JSX compiled for Preact with the automatic runtime (`importSource: 'preact'`), no `h` import needed
+- `@` aliases `assets/`
+- `yarn dev` / `yarn watch` build with sourcemaps and without minification; no PurgeCSS
 
 **Code Style**:
 
