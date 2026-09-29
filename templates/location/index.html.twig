@@ -132,7 +132,7 @@
                     {% set meta %}{{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: row.events}, 'messages+intl-icu') }}{% endset %}
                     <div class="col">
                         <twig:Tile
-                            href="{{ path('app_location_index', {location: city.slug}) }}"
+                            href="{{ path('app_agenda_index', {location: city.slug}) }}"
                             title="{{ city.name }}"
                             description="{{ (city|department) ?: (city.headline ?? null) }}"
                             tone="{{ tones[loop.index0 % tones|length] }}"

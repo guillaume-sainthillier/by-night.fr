@@ -100,7 +100,7 @@
                         {% for city in compact %}
                             <twig:Location:PlaceCard
                                 class="flex-fill"
-                                href="{{ path('app_location_index', {location: city.slug}) }}"
+                                href="{{ path('app_agenda_index', {location: city.slug}) }}"
                                 name="{{ city.name }}"
                                 eyebrow="{{ city|department }}"
                                 events="{{ city.upcomingEvents }}"

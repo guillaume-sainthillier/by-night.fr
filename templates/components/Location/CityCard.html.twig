@@ -1,7 +1,8 @@
 {# @var city \App\Entity\City #}
-{# A city as a photo card: department over the photo, name, sub-title and number of events to come #}
+{# A city as a photo card: department over the photo, name, sub-title and number of events to come. It leads to the
+   city's agenda, the page the navigation promotes #}
 {% props city, events = null, subtitle = null %}
-<a href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?" {{ attributes.defaults({class: 'card card-layout card-link-pop text-white h-100 mb-0 ratio ratio-1x1'}) }}>
+<a href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties {{ city.name|at_place }}" {{ attributes.defaults({class: 'card card-layout card-link-pop text-white h-100 mb-0 ratio ratio-1x1'}) }}>
     {# .ratio sizes the card before the photo loads (no layout shift) and stretches its children over it #}
     <div class="img-cover">
         <twig:Location:Picture location="{{ city }}" width="{{ 480 }}" height="{{ 480 }}" sizes="(min-width: 992px) 25vw, (min-width: 768px) 50vw, 100vw" />

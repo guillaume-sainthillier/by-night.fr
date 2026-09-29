@@ -121,7 +121,7 @@ final class EventControllerTest extends WebTestCase
         );
     }
 
-    public function testTheBreadcrumbGoesThroughTheCityPage(): void
+    public function testTheBreadcrumbIsTheTrailOfTheAgenda(): void
     {
         $client = self::createClient();
         $event = $this->createEvent();
@@ -129,9 +129,9 @@ final class EventControllerTest extends WebTestCase
         $crawler = $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
-        $link = $crawler->filter('#bread a')->reduce(static fn (Crawler $a): bool => str_contains($a->text(), 'Sortir à Toulouse'));
-        self::assertCount(1, $link);
-        self::assertSame('http://localhost/toulouse', $link->attr('href'));
+        $hrefs = $crawler->filter('#bread a')->each(static fn (Crawler $a): ?string => $a->attr('href'));
+        self::assertContains('http://localhost/toulouse', $hrefs, 'Sortir à Toulouse');
+        self::assertContains('http://localhost/toulouse/agenda', $hrefs, 'Agenda');
     }
 
     public function testAnEventThatEndedLongAgoStaysIndexableWithAnEndedNotice(): void

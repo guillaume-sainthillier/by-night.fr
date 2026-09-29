@@ -83,6 +83,8 @@ final class HomeControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSame(['Lyon', 'Toulouse'], $crawler->filter('#metropolises h3')->each(static fn ($title): string => trim($title->text())));
+        // The cards lead to the agendas, which the navigation promotes
+        self::assertSelectorExists('#metropolises a[href="/toulouse/agenda"]');
     }
 
     public function testAMemberReachesTheirEventsFromTheUserMenu(): void

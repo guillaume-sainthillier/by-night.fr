@@ -108,7 +108,8 @@ final readonly class SearchSuggestionsProvider implements ProviderInterface
             label: $city->getName(),
             shortDescription: '',
             description: null,
-            url: $this->urlGenerator->generate('app_location_index', ['location' => $city->getSlug()]),
+            // The city's agenda, the page the navigation promotes
+            url: $this->urlGenerator->generate('app_agenda_index', ['location' => $city->getSlug()]),
         ), $this->cityRepository->findBiggestOfCountry(self::DEFAULT_COUNTRY, self::CHIPS));
     }
 

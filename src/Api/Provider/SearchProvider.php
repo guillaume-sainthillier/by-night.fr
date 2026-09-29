@@ -217,7 +217,8 @@ final readonly class SearchProvider implements ProviderInterface
                 description: null !== $city->getPopulation()
                     ? $this->formatCount('{count, plural, one {# habitant} other {# habitants}}', $city->getPopulation())
                     : null,
-                url: $this->urlGenerator->generate('app_location_index', ['location' => $city->getSlug()]),
+                // The city's agenda, the page the navigation promotes
+                url: $this->urlGenerator->generate('app_agenda_index', ['location' => $city->getSlug()]),
                 highlightResult: [
                     'label' => [
                         'value' => $highlights['name'][0] ?? $city->getName(),

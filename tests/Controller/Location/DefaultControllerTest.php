@@ -18,6 +18,7 @@ use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
@@ -127,7 +128,13 @@ final class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/toulouse/');
 
         self::assertResponseIsSuccessful();
-        self::assertSame('http://localhost/toulouse', $crawler->filter('#bread a')->last()->attr('href'));
+        // The breadcrumb's JSON-LD, which gives the URL of every step, the last one included
+        $breadcrumb = $crawler->filter('script[type="application/ld+json"]')
+            ->each(static fn (Crawler $script): array => json_decode($script->text(), true, flags: \JSON_THROW_ON_ERROR));
+        $breadcrumb = array_values(array_filter($breadcrumb, static fn (array $jsonLd): bool => 'BreadcrumbList' === ($jsonLd['@type'] ?? null)));
+        self::assertCount(1, $breadcrumb);
+        $last = end($breadcrumb[0]['itemListElement']);
+        self::assertSame(['Sortir à Toulouse', 'http://localhost/toulouse'], [$last['name'], $last['item']]);
     }
 
     #[DataProvider('provideLocationAgendas')]

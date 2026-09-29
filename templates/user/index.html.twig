@@ -183,7 +183,7 @@
                                         <div class="card card-sm mb-2">
                                             <div class="card-body">
                                                 <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 fw-bold">
-                                                    <a class="text-reset" href="{{ path('app_location_index', {location: city.slug}) }}">{{ loop.index }}. {{ city.name }}</a>
+                                                    <a class="text-reset" href="{{ path('app_agenda_index', {location: city.slug}) }}">{{ loop.index }}. {{ city.name }}</a>
                                                     <span class="text-nowrap">{{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: city.events}, 'messages+intl-icu') }} ({{ share }}&nbsp;%)</span>
                                                 </div>
                                                 <div class="progress progress-sm my-2">
