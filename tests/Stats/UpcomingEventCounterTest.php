@@ -90,12 +90,12 @@ final class UpcomingEventCounterTest extends AppKernelTestCase
         EventFactory::new()->withDates($tomorrow)->create(['place' => $inLyon, 'category' => $concert]);
 
         // The category counts are rewritten each time: Toulouse, Lyon and France
-        self::assertSame(['countries' => 1, 'cities' => 2, 'places' => 2, 'categories' => 3], $this->counter->refresh());
-        self::assertSame(['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 3], $this->counter->refresh());
+        self::assertSame(['countries' => 1, 'cities' => 2, 'places' => 2, 'categories' => 3, 'types' => 0], $this->counter->refresh());
+        self::assertSame(['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 3, 'types' => 0], $this->counter->refresh());
 
         EventFactory::new()->withDates($tomorrow)->create(['place' => $inLyon, 'category' => $concert]);
 
-        self::assertSame(['countries' => 1, 'cities' => 1, 'places' => 1, 'categories' => 3], $this->counter->refresh());
+        self::assertSame(['countries' => 1, 'cities' => 1, 'places' => 1, 'categories' => 3, 'types' => 0], $this->counter->refresh());
         self::assertSame(2, refresh($inLyon)->getUpcomingEvents());
         self::assertSame(1, refresh($inToulouse)->getUpcomingEvents());
     }
@@ -124,7 +124,7 @@ final class UpcomingEventCounterTest extends AppKernelTestCase
         EventFactory::new()->withDates($tomorrow)->create(['place' => $inParis, 'category' => null]);
 
         self::assertSame(
-            ['countries' => 1, 'cities' => 2, 'places' => 2, 'categories' => 3],
+            ['countries' => 1, 'cities' => 2, 'places' => 2, 'categories' => 3, 'types' => 0],
             $this->counter->refreshPlaces([(int) $inToulouse->getId(), (int) $inLyon->getId()]),
         );
         self::assertSame([0, 1, 3, 0], array_map(static fn ($place): int => refresh($place)->getUpcomingEvents(), [$inToulouse, $alsoInToulouse, $inLyon, $inParis]));
@@ -141,6 +141,47 @@ final class UpcomingEventCounterTest extends AppKernelTestCase
 
     public function testRecountingNoVenueWritesNothing(): void
     {
-        self::assertSame(['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0], $this->counter->refreshPlaces([]));
+        self::assertSame(['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0, 'types' => 0], $this->counter->refreshPlaces([]));
+    }
+
+    public function testEachTypeCountsTheEventsToComeItsPageLists(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $france = $toulouse->getCountry();
+        $lyon = CityFactory::createOne(['name' => 'Lyon', 'country' => $france]);
+        $tomorrow = new DateTimeImmutable('tomorrow');
+        $inToulouse = PlaceFactory::createOne(['city' => $toulouse, 'country' => $france]);
+        $inLyon = PlaceFactory::createOne(['city' => $lyon, 'country' => $france]);
+        EventFactory::new()->withDates($tomorrow)->many(2)->create(['place' => $inToulouse, 'agendaTypes' => ['concert']]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inToulouse, 'agendaTypes' => ['concert', 'family']]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inToulouse]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inToulouse, 'agendaTypes' => ['concert'], 'draft' => true]);
+        EventFactory::new()->withDates(new DateTimeImmutable('-10 days'))->create(['place' => $inToulouse, 'agendaTypes' => ['concert']]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inLyon, 'agendaTypes' => ['family']]);
+
+        // Toulouse, Lyon and France
+        self::assertSame(3, $this->counter->refresh()['types']);
+        self::assertSame(0, $this->counter->refresh()['types'], 'Only the counts that changed are written');
+
+        self::assertSame(['concert' => 3, 'family' => 1], refresh($toulouse)->getUpcomingAgendaTypes());
+        self::assertSame(['family' => 1], refresh($lyon)->getUpcomingAgendaTypes());
+        self::assertSame(['concert' => 3, 'family' => 2], refresh($france)->getUpcomingAgendaTypes());
+    }
+
+    public function testTheTypeCountsAreClearedWhenTheirLastEventIsGone(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $france = $toulouse->getCountry();
+        $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $france]);
+        $event = EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['place' => $place, 'agendaTypes' => ['student']]);
+        $this->counter->refresh();
+        self::assertSame(['student' => 1], refresh($toulouse)->getUpcomingAgendaTypes());
+
+        $event->setDraft(true);
+        save($event);
+
+        self::assertSame(2, $this->counter->refreshPlaces([(int) $place->getId()])['types']);
+        self::assertSame([], refresh($toulouse)->getUpcomingAgendaTypes());
+        self::assertSame([], refresh($france)->getUpcomingAgendaTypes());
     }
 }

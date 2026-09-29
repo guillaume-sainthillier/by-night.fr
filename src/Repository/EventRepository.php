@@ -1197,6 +1197,34 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The published events to come that have agenda types, counted by the city and the country of their venue and by
+     * their stored types ("concert,family"): what UpcomingEventCounter adds up by type on cities and countries.
+     *
+     * @param list<int|string>|null $cityIds    with $countryIds, keeps the venues in these cities or in these countries only
+     * @param list<int|string>|null $countryIds
+     *
+     * @return list<array{city: int|string|null, country: string|null, types: string, events: int|string}>
+     */
+    public function countUpcomingAgendaTypesByZone(?array $cityIds = null, ?array $countryIds = null): array
+    {
+        $qb = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(p.city) AS city', 'IDENTITY(p.country) AS country', 'e.agendaTypes AS types', 'COUNT(e.id) AS events')
+            ->join('e.place', 'p')
+            ->andWhere('e.agendaTypes IS NOT NULL')
+            ->groupBy('p.city', 'p.country', 'e.agendaTypes');
+
+        if (null !== $cityIds || null !== $countryIds) {
+            $qb
+                ->andWhere('p.city IN (:cities) OR p.country IN (:countries)')
+                ->setParameter('cities', $cityIds ?? [])
+                ->setParameter('countries', $countryIds ?? []);
+        }
+
+        return $this->whereUpcoming($qb)->getQuery()->getScalarResult();
+    }
+
+    /**
      * Cities ("c") with their number of published events to come ("events"), the busiest first.
      *
      * admin_zone_type_upcoming_idx and admin_zone_type_country_upcoming_idx end with this exact order, so MySQL reads

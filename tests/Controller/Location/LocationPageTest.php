@@ -144,6 +144,31 @@ final class LocationPageTest extends WebTestCase
         );
     }
 
+    #[DataProvider('provideLocationPages')]
+    public function testTheUniversesCountTheEventsToComeOfEachType(string $url, string $atName): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        $tomorrow = new DateTimeImmutable('tomorrow');
+        EventFactory::new()->withDates($tomorrow)->many(2)->create(['place' => $place, 'agendaTypes' => ['concert']]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $place, 'agendaTypes' => ['concert', 'family']]);
+        self::counter()->refresh();
+        // The counter writes the counts by query: the page reads them from the entities already loaded
+        $france = $toulouse->getCountry();
+        refresh($toulouse);
+        refresh($france);
+
+        $crawler = $client->request('GET', $url);
+
+        self::assertResponseIsSuccessful();
+        // A type without any event names its page instead
+        self::assertSame(
+            ['3 sorties', 'Spectacles ' . $atName, 'Les expos ' . $atName, '1 sortie', 'Soirées étudiantes ' . $atName],
+            $crawler->filter('#univers .card-body > div:last-child > span')->each(static fn ($meta): string => trim($meta->text())),
+        );
+    }
+
     /**
      * @return iterable<string, array{string, string}>
      */

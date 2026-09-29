@@ -13,15 +13,18 @@ namespace App\Stats;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
+use App\Enum\AgendaType;
 use App\Repository\EventRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Stores the number of published events to come on every place, city and country, and of each category in every
- * city and country (UpcomingCategory), so the portals rank and count them with an indexed read instead of grouping
- * every event to come on each page.
+ * Stores the number of published events to come on every place, city and country, of each category in every city
+ * and country (UpcomingCategory), and of each agenda type on every city and country (from the types
+ * app:events:classify-agenda-types stored on the events), so the portals rank and count them with an indexed read
+ * instead of grouping every event to come on each page.
  *
  * Run daily just after midnight by app:events:count-upcoming, when yesterday's events stop being "to come"; the
  * events imported during the day show in the counts the next night. An event created, changed or deleted on the site
@@ -44,8 +47,10 @@ final readonly class UpcomingEventCounter
     }
 
     /**
-     * @return array{countries: int, cities: int, places: int, categories: int} the number of rows whose count changed,
-     *                                                                          and of category counts stored
+     * Returns the number of rows whose count changed, of category counts stored, and of cities and countries whose
+     * type counts changed.
+     *
+     * @return array{countries: int, cities: int, places: int, categories: int, types: int}
      */
     public function refresh(): array
     {
@@ -57,22 +62,24 @@ final readonly class UpcomingEventCounter
             'cities' => $this->store(City::class, $this->sumPlacesBy('city')),
             'places' => $places,
             'categories' => $this->storeCategories(),
+            'types' => $this->storeAgendaTypes(),
         ];
     }
 
     /**
-     * Recounts these venues, their cities and countries, and the category counts of those cities and countries: what
-     * a change to the events of these venues can move. The other rows keep the counts they have.
+     * Recounts these venues, their cities and countries, and the category and type counts of those cities and
+     * countries: what a change to the events of these venues can move. The other rows keep the counts they have.
+     * Returns the number of rows whose count changed, of category counts stored, and of cities and countries whose
+     * type counts changed.
      *
      * @param list<int> $placeIds
      *
-     * @return array{countries: int, cities: int, places: int, categories: int} the number of rows whose count changed,
-     *                                                                          and of category counts stored
+     * @return array{countries: int, cities: int, places: int, categories: int, types: int}
      */
     public function refreshPlaces(array $placeIds): array
     {
         if ([] === $placeIds) {
-            return ['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0];
+            return ['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0, 'types' => 0];
         }
 
         $zones = $this
@@ -94,6 +101,7 @@ final readonly class UpcomingEventCounter
             'cities' => [] === $cityIds ? 0 : $this->store(City::class, $this->sumPlacesBy('city', $cityIds), $cityIds),
             'places' => $places,
             'categories' => $this->storeCategories($cityIds, $countryIds),
+            'types' => $this->storeAgendaTypes($cityIds, $countryIds),
         ];
     }
 
@@ -113,21 +121,12 @@ final readonly class UpcomingEventCounter
             return 0;
         }
 
-        // A venue of a recounted country may be in a city that is not recounted, and the other way around
-        $keptCities = null === $cityIds ? null : array_flip($cityIds);
-        $keptCountries = null === $countryIds ? null : array_flip($countryIds);
-        $cities = [];
-        $countries = [];
-        foreach ($this->eventRepository->countUpcomingCategoriesByZone($cityIds, $countryIds) as $row) {
-            $events = (int) $row['events'];
-            if (null !== $row['city'] && (null === $keptCities || isset($keptCities[$row['city']]))) {
-                $cities[$row['city']][$row['category']] = ($cities[$row['city']][$row['category']] ?? 0) + $events;
-            }
-
-            if (null !== $row['country'] && (null === $keptCountries || isset($keptCountries[$row['country']]))) {
-                $countries[$row['country']][$row['category']] = ($countries[$row['country']][$row['category']] ?? 0) + $events;
-            }
-        }
+        [$cities, $countries] = self::addUpByZone(
+            $this->eventRepository->countUpcomingCategoriesByZone($cityIds, $countryIds),
+            static fn (array $row): array => [$row['category']],
+            $cityIds,
+            $countryIds,
+        );
 
         // tag_id, events, city_id, country_id
         $rows = [];
@@ -163,6 +162,147 @@ final readonly class UpcomingEventCounter
         });
 
         return \count($rows);
+    }
+
+    /**
+     * Adds up the agenda types of the events to come by city and by country, and writes the ones whose counts
+     * changed: of every city and country, or of these ones only.
+     *
+     * @param list<int|string>|null $cityIds    the cities to recount, null for all of them
+     * @param list<int|string>|null $countryIds the countries to recount, null for all of them
+     *
+     * @return int the number of cities and countries written
+     */
+    private function storeAgendaTypes(?array $cityIds = null, ?array $countryIds = null): int
+    {
+        if ([] === $cityIds && [] === $countryIds) {
+            return 0;
+        }
+
+        // A row counts the events of a combination of types ("concert,family"): each of them counts them
+        [$cities, $countries] = self::addUpByZone(
+            $this->eventRepository->countUpcomingAgendaTypesByZone($cityIds, $countryIds),
+            static fn (array $row): array => explode(',', (string) $row['types']),
+            $cityIds,
+            $countryIds,
+        );
+
+        return $this->storeTypes(City::class, $cities, $cityIds) + $this->storeTypes(Country::class, $countries, $countryIds);
+    }
+
+    /**
+     * @param class-string<City|Country>             $class
+     * @param array<int|string, array<string, int>> $counts the type counts just computed, by id (the zones without any left out)
+     * @param list<int|string>|null                  $ids    the rows these counts cover, null for all of them
+     *
+     * @return int the number of rows written
+     */
+    private function storeTypes(string $class, array $counts, ?array $ids): int
+    {
+        if ([] === $ids) {
+            return 0;
+        }
+
+        $qb = $this
+            ->entityManager
+            ->createQueryBuilder()
+            ->select('x.id', 'x.upcomingAgendaTypes')
+            ->from($class, 'x')
+            ->where('x.upcomingAgendaTypes IS NOT NULL');
+
+        if (null !== $ids) {
+            $qb
+                ->andWhere('x.id IN (:ids)')
+                ->setParameter('ids', $ids);
+        }
+
+        // A scalar result leaves the column as stored, and MySQL stores the keys of a JSON object in its own order
+        $stored = [];
+        foreach ($qb->getQuery()->getScalarResult() as $row) {
+            $stored[$row['id']] = self::sortedTypes((array) json_decode((string) $row['upcomingAgendaTypes'], true, flags: \JSON_THROW_ON_ERROR));
+        }
+
+        $changes = [];
+        foreach ($counts as $id => $types) {
+            $types = self::sortedTypes($types);
+            if (($stored[$id] ?? []) !== $types) {
+                $changes[json_encode($types, \JSON_THROW_ON_ERROR)][] = $id;
+            }
+        }
+
+        // Had events of a type at the last count, has none left
+        foreach (array_keys(array_diff_key($stored, $counts)) as $id) {
+            $changes[''][] = $id;
+        }
+
+        $written = 0;
+        foreach ($changes as $types => $changed) {
+            foreach (array_chunk($changed, self::BATCH_SIZE) as $chunk) {
+                $written += (int) $this
+                    ->entityManager
+                    ->createQueryBuilder()
+                    ->update($class, 'x')
+                    ->set('x.upcomingAgendaTypes', ':types')
+                    ->where('x.id IN (:ids)')
+                    ->setParameter('types', '' === $types ? null : json_decode($types, true, flags: \JSON_THROW_ON_ERROR), Types::JSON)
+                    ->setParameter('ids', $chunk)
+                    ->getQuery()
+                    ->execute();
+            }
+        }
+
+        return $written;
+    }
+
+    /**
+     * @param array<array-key, mixed> $types counts by AgendaType value
+     *
+     * @return array<string, int> the counts in AgendaType order, those of the types that no longer exist left out
+     */
+    private static function sortedTypes(array $types): array
+    {
+        $sorted = [];
+        foreach (AgendaType::cases() as $type) {
+            if (isset($types[$type->value])) {
+                $sorted[$type->value] = (int) $types[$type->value];
+            }
+        }
+
+        return $sorted;
+    }
+
+    /**
+     * Adds up the counts of the rows by the city and by the country of their venue, for the recounted ones only: a
+     * venue of a recounted country may be in a city that is not recounted, and the other way around. Returns the counts
+     * by key of the cities, then of the countries.
+     *
+     * @param iterable<array{city: int|string|null, country: string|null, events: int|string}> $rows
+     * @param callable(array<string, mixed>): list<int|string>                                 $keys       what each row counts the events of
+     * @param list<int|string>|null                                                            $cityIds    the cities to keep, null for all of them
+     * @param list<int|string>|null                                                            $countryIds the countries to keep, null for all of them
+     *
+     * @return array{array<int|string, array<int|string, int>>, array<int|string, array<int|string, int>>}
+     */
+    private static function addUpByZone(iterable $rows, callable $keys, ?array $cityIds, ?array $countryIds): array
+    {
+        $keptCities = null === $cityIds ? null : array_flip($cityIds);
+        $keptCountries = null === $countryIds ? null : array_flip($countryIds);
+        $cities = [];
+        $countries = [];
+        foreach ($rows as $row) {
+            $events = (int) $row['events'];
+            foreach ($keys($row) as $key) {
+                if (null !== $row['city'] && (null === $keptCities || isset($keptCities[$row['city']]))) {
+                    $cities[$row['city']][$key] = ($cities[$row['city']][$key] ?? 0) + $events;
+                }
+
+                if (null !== $row['country'] && (null === $keptCountries || isset($keptCountries[$row['country']]))) {
+                    $countries[$row['country']][$key] = ($countries[$row['country']][$key] ?? 0) + $events;
+                }
+            }
+        }
+
+        return [$cities, $countries];
     }
 
     /**

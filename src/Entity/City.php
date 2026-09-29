@@ -86,6 +86,16 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     private int $upcomingEvents = 0;
 
     /**
+     * Published events to come of each agenda type page, by AgendaType value (the types without any left out),
+     * recounted with $upcomingEvents from the types app:events:classify-agenda-types stored on the events
+     *
+     * @var array<string, int>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Ignore]
+    private ?array $upcomingAgendaTypes = null;
+
+    /**
      * Also what makes VichUploader store a new hero image: its listeners only run when a mapped
      * column changes, and the file property is not one (see setHeroImageFile()).
      */
@@ -288,6 +298,14 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     public function getUpcomingEvents(): int
     {
         return $this->upcomingEvents;
+    }
+
+    /**
+     * @return array<string, int> by AgendaType value
+     */
+    public function getUpcomingAgendaTypes(): array
+    {
+        return $this->upcomingAgendaTypes ?? [];
     }
 
     public function getUpdatedAt(): ?DateTimeImmutable
