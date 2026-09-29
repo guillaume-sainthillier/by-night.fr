@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6331f97314607a20f11e6f192ea7475",
+    "content-hash": "f46ac5afec3334778da20ca4d24d2b89",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5945,63 +5945,6 @@
                 "source": "https://github.com/smolblog/oauth2-twitter/tree/1.2.0"
             },
             "time": "2025-05-01T15:28:22+00:00"
-        },
-        {
-            "name": "social-links/social-links",
-            "version": "v1.17.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/oscarotero/social-links.git",
-                "reference": "d26bf68c045f9f976019a912670462ae613c44ec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/oscarotero/social-links/zipball/d26bf68c045f9f976019a912670462ae613c44ec",
-                "reference": "d26bf68c045f9f976019a912670462ae613c44ec",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "SocialLinks\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Oscar Otero",
-                    "email": "oom@oscarotero.com",
-                    "homepage": "http://oscarotero.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "PHP library to generate share buttons",
-            "homepage": "https://github.com/oscarotero/social-links",
-            "keywords": [
-                "buttons",
-                "facebook",
-                "links",
-                "opengraph",
-                "share",
-                "social",
-                "twitter",
-                "twittercards"
-            ],
-            "support": {
-                "email": "oom@oscarotero.com",
-                "issues": "https://github.com/oscarotero/social-links/issues",
-                "source": "https://github.com/oscarotero/social-links/tree/v1.17.0"
-            },
-            "time": "2024-11-27T12:39:42+00:00"
         },
         {
             "name": "stof/doctrine-extensions-bundle",

@@ -12,6 +12,7 @@ namespace App\Cdn;
 
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -28,6 +29,7 @@ final readonly class CloudflareCdnPurger
     public const int MAX_FILES_PER_REQUEST = 100;
 
     public function __construct(
+        #[Target('cloudflare.client')]
         private HttpClientInterface $cloudflareClient,
         #[Autowire(env: 'CLOUDFLARE_ZONE_ID')]
         private string $zoneId,

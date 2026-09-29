@@ -4,63 +4,55 @@ flysystem:
     storages:
         # LOCAL
         thumbs.local_storage:
-            adapter: 'local'
-            options:
+            local:
                 directory: '%kernel.project_dir%/var/storage/thumbs'
 
         # S3
         users.storage:
             visibility: public
-            adapter: 'aws'
-            options:
+            aws:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/users'
 
         events.storage:
             visibility: public
-            adapter: 'aws'
-            options:
+            aws:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/documents'
 
         pages.storage:
             visibility: public
-            adapter: 'aws'
-            options:
+            aws:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/pages'
 
         countries.storage:
             visibility: public
-            adapter: 'aws'
-            options:
+            aws:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/countries'
 
         cities.storage:
             visibility: public
-            adapter: 'aws'
-            options:
+            aws:
                 client: 's3_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/cities'
 
         thumbs.s3_storage:
             visibility: public # objects must be readable anonymously: served straight from the bucket (picasso public_cache)
-            adapter: 'aws'
-            options:
+            aws:
                 client: 's3_thumb_client' # The service ID of the Aws\S3\S3Client instance
                 bucket: '%env(APP_THUMB_S3_BUCKET_NAME)%'
                 prefix: 'thumbs'
 
         # LAZY ADAPTERS
         thumbs.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'thumbs.%env(APP_THUMB_STORAGE_SOURCE)%_storage'
 
 when@test:
@@ -70,12 +62,12 @@ when@test:
             # listed here replaces the whole definition above (the bundle does no deep merge
             # per storage).
             users.storage:
-                adapter: 'memory'
+                memory: ~
             events.storage:
-                adapter: 'memory'
+                memory: ~
             pages.storage:
-                adapter: 'memory'
+                memory: ~
             countries.storage:
-                adapter: 'memory'
+                memory: ~
             cities.storage:
-                adapter: 'memory'
+                memory: ~

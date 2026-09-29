@@ -24,7 +24,9 @@ use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<Place>
@@ -238,7 +240,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->where(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
             ->andWhere('p.createdAt <= :createdBefore')
             ->setParameter('createdBefore', $createdBefore)
-            ->orderBy('p.id', 'ASC');
+            ->orderBy('p.id', SortDirection::Ascending);
 
         if (null !== $origin) {
             $qb
@@ -268,7 +270,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->where('p.id IN (:ids)')
             ->andWhere(\sprintf('NOT EXISTS (SELECT e.id FROM %s e WHERE e.place = p)', Event::class))
             ->setParameter('ids', $placeIds)
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('p.id', SortDirection::Ascending)
             ->getQuery()
             ->getSingleColumnResult();
 
@@ -324,9 +326,9 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
 
         $queryBuilder = $this
             ->createQueryBuilder('p')
-            ->join(PlaceLegacySlug::class, 'l', 'WITH', 'l.place = p')
+            ->join(PlaceLegacySlug::class, 'l', Join::ON, 'l.place = p')
             ->where('l.slug = :slug')
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('p.id', SortDirection::Ascending)
             ->setParameter('slug', $slug)
             ->setMaxResults(1);
 
@@ -341,49 +343,6 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The cities where several places with a street share a name (case-insensitively): the ones where
-     * app:places:merge-duplicates looks for places recorded more than once.
-     *
-     * @return list<int>
-     */
-    public function findCityIdsWithNamesakes(): array
-    {
-        /** @var list<array{city: int|string}> $rows */
-        $rows = $this
-            ->createQueryBuilder('p')
-            ->select('IDENTITY(p.city) AS city', 'LOWER(p.name) AS HIDDEN name')
-            ->where('p.city IS NOT NULL')
-            ->andWhere("p.street IS NOT NULL AND TRIM(p.street) <> ''")
-            ->groupBy('p.city, name')
-            ->having('COUNT(p.id) > 1')
-            ->getQuery()
-            ->getScalarResult();
-
-        return array_values(array_unique(array_map(static fn (array $row): int => (int) $row['city'], $rows)));
-    }
-
-    /**
-     * The places of a city that have a street, the oldest first.
-     *
-     * @return list<array{id: int, name: string, street: string}>
-     */
-    public function findAddressedPlacesOfCity(int $cityId): array
-    {
-        /** @var list<array{id: int|string, name: string, street: string}> $rows */
-        $rows = $this
-            ->createQueryBuilder('p')
-            ->select('p.id', 'p.name', 'p.street')
-            ->where('p.city = :city')
-            ->andWhere("p.street IS NOT NULL AND TRIM(p.street) <> ''")
-            ->orderBy('p.id', 'ASC')
-            ->setParameter('city', $cityId)
-            ->getQuery()
-            ->getScalarResult();
-
-        return array_map(static fn (array $row): array => ['id' => (int) $row['id'], 'name' => $row['name'], 'street' => $row['street']], $rows);
-    }
-
-    /**
      * Places hosting at least one published event ending on or after $from.
      *
      * @return iterable<array{slug: string, city_slug: string}>
@@ -394,7 +353,7 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
-            ->join(Event::class, 'e', 'WITH', 'e.place = p')
+            ->join(Event::class, 'e', Join::ON, 'e.place = p')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')

@@ -17,6 +17,7 @@ use App\Api\ApiResource\UserAutocomplete;
 use App\Api\Pagination\ArrayPaginator;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use SortDirection;
 
 /**
  * @implements ProviderInterface<UserAutocomplete>
@@ -46,7 +47,7 @@ final readonly class UserAutocompleteProvider implements ProviderInterface
         $qb = $this->userRepository->createQueryBuilder('u')
             ->where('u.username LIKE :term OR u.email LIKE :term')
             ->setParameter('term', '%' . $term . '%')
-            ->orderBy('u.username', 'ASC')
+            ->orderBy('u.username', SortDirection::Ascending)
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 

@@ -34,6 +34,7 @@ use App\SearchRepository\ResultWindow;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class AgendaController extends BaseController
@@ -49,6 +50,8 @@ final class AgendaController extends BaseController
     /** The busiest categories of the filters under each type */
     private const int TYPE_CATEGORIES = 4;
 
+    // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
+    #[Cache(maxage: 0, smaxage: 600, public: true)]
     #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{typeSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['typeSlug' => new AgendaTypeSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{placeSlug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
@@ -225,7 +228,7 @@ final class AgendaController extends BaseController
         };
 
         return $place
-            // The slug of a place merged into another one of its city (app:places:merge-duplicates)
+            // The slug of a place merged into another one of its city
             ?? $placeRepository->findOneByLegacySlug($slug, $location)
             ?? $placeRepository->findOneBy(['slug' => $slug]);
     }

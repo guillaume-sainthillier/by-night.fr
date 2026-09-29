@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * The agenda page of a place merged into another one (app:places:merge-duplicates) leads to the other one's.
+ * The agenda page of a place merged into another one leads to the other one's.
  */
 final class MergedPlaceRedirectTest extends WebTestCase
 {

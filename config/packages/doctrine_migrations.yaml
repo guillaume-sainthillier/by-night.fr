@@ -8,3 +8,7 @@ doctrine_migrations:
         table_storage:
             table_name: 'migration_versions'
     enable_profiler: false
+    # MySQL commits implicitly on every DDL statement, so a transaction wrapped around a
+    # schema migration is already closed when Migrations tries to commit or roll it back.
+    # A data-only migration that must be atomic overrides isTransactional() to return true.
+    transactional: false

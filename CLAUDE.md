@@ -8,13 +8,13 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 
 ## Tech Stack
 
-- **Backend**: PHP 8.4, Symfony 7.4
+- **Backend**: PHP 8.5, Symfony 8.1
 - **Database**: MySQL 8.0 with Doctrine ORM
-- **Search**: Elasticsearch 7 with FOSElasticaBundle
+- **Search**: Elasticsearch 9 with FOSElasticaBundle
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ (php-amqplib/rabbitmq-bundle)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
-- **Frontend**: Webpack Encore, Bootstrap 5, jQuery, Sass, Preact (for reactive components)
+- **Frontend**: Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
 - **Error Tracking**: Sentry
 
 ## Backend Development Workflow
@@ -71,20 +71,24 @@ docker-compose up -d
 vendor/bin/phpunit                                 # All tests
 vendor/bin/phpunit tests/Import/FirewallTest.php   # Single test file
 
+# JavaScript Tests (Vitest, vitest.config.mjs): assets/**/*.test.js next to the code they cover
+yarn test                                          # All tests
+yarn test assets/js/utils/plural.test.js           # Single test file
+
 # Static Analysis
 vendor/bin/phpstan analyse                         # PHPStan (level 6)
 
 # Code Formatting
 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php  # PHP (Symfony ruleset)
 vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php  # Twig templates
-npx prettier --write "assets/**/*.{scss,md,yaml,yml}"  # Prettier for styles/config
-npx eslint --fix "assets/**/*.{js,jsx}"            # ESLint for JavaScript
+yarn lint                                          # Biome (lint + format) for JavaScript
+yarn prettier                                      # Prettier for SCSS/Markdown
 
 # Pre-commit Hook
 # Husky runs lint-staged on commit, which auto-formats changed files:
 # - PHP: php-cs-fixer
 # - Twig: twig-cs-fixer
-# - JS/JSX: eslint --fix
+# - JS/JSX/TS/JSON: biome check --write
 # - SCSS/MD/YAML: prettier --write
 ```
 
@@ -209,7 +213,7 @@ Routes are location-prefixed (e.g., `/toulouse/agenda`). `AppContextSubscriber` 
 
 ### Caching
 
-- HTTP cache headers via the `Symfony\Component\HttpKernel\Attribute\Cache` attribute on controllers (e.g. `src/Controller/Location/EventController.php`)
+- HTTP cache headers via the `Symfony\Component\HttpKernel\Attribute\Cache` attribute on controllers (e.g. `src/Controller/Location/EventController.php`): public pages use `#[Cache(maxage: 0, smaxage: …, public: true)]`, shared by Cloudflare, never kept by the browser (it would outlive a login). Reading the security token (`app.user`, `getUser()`, `is_granted()`) marks the session as used, which makes Symfony turn the response private; `SharedCacheSubscriber` undoes that for visitors without a session or `REMEMBERME` cookie, so members always get private pages. Cloudflare only caches HTML through a cache rule that must bypass requests carrying either cookie. Never read the session (e.g. `app.flashes`) without checking `app.request.hasPreviousSession` first
 - Built assets ship inside the Docker image (`public/build`, `public/bundles`). Production mounts the external volume `by-nightfr_assets` on `/app/public/build` of `app` and `app-images`; `deploy.sh` fills it from the new image right after the pull (see README), so every release's hashed files accumulate next to the current ones and old tabs or sent emails keep resolving; nothing prunes that volume. Caddy (`docker/Caddyfile`) serves `/build/*` and `/bundles/*` same-origin with one-year `immutable` headers, cached by Cloudflare. There is no separate asset host: `asset()` yields paths, so anything that needs an absolute URL (og:image, JSON-LD, emails) wraps it in `absolute_url()` / `UrlHelper`
 - Redis for application caching (`$memoryCache` in `config/services.yaml`, bound to the `redis.app_cache_pool` pool)
 - CDN purge (`src/Cdn/CloudflareCdnPurger.php`) and thumbnail cleanup on image changes, via the `PurgeCdnCacheUrl` / `RemoveImageThumbnails` messages dispatched by `src/EventSubscriber/ImageSubscriber.php`
@@ -225,34 +229,32 @@ Elasticsearch indexes defined in `config/packages/fos_elastica.yaml`:
 
 ### JavaScript Application Structure
 
-The frontend uses a modular listener-based architecture with dependency injection:
+The frontend uses a modular listener-based architecture with dependency injection. Typedefs (`Listener`, `Module`, `Page`, `Cleanup`) live in `assets/js/types.js`.
 
-**Main App** (`assets/js/app.js`):
+**Main App** (`assets/js/app.js`, exposed as `window.App`):
 
-- Bootstraps the application with configuration from Twig templates
-- Initializes Sentry error tracking
-- Manages a dependency injection container (`Container.js`)
-- Dispatches two types of listeners:
-    - **Global listeners**: Execute once on app initialization (autocomplete, lazyload, scroll-to-top)
-    - **Page listeners**: Execute on page load and after AJAX updates (forms, modals, tooltips, etc.)
-- Provides `window.App.dispatchPageLoadedEvent(container)` to re-initialize listeners on dynamic content
+- `start(parameters)` boots the application with configuration from Twig templates: initializes Sentry, the dependency injection container (`Container.js`) and its services, runs every module once, then mounts the whole document
+- `mount(container)` connects every listener to its matching elements inside `container`; call it after inserting HTML by AJAX. Bookkeeping is per element, so an element already connected is skipped
+- `unmount(container)` runs the cleanups of every connected element the container covers (and of those already removed from the DOM)
+- Stimulus controllers (`assets/controllers/`) are loaded too, through `assets/stimulus_bootstrap.js`
 
-**Listener Types**:
+**Building Blocks**:
 
-1. **Global Listeners** (`assets/js/global-listeners/`): Run once at app startup
-    - `lazyload.js` - Lazy image loading with lazysizes
+1. **Modules** (`assets/js/modules/`): Functions run once at `start()`, bound to `document`/`window`, never to elements inside `body`
     - `autocomplete.js` - Algolia autocomplete search
     - `scroll-to-top.js` - Scroll behavior
 
-2. **Page Listeners** (`assets/js/listeners/`): Run on page load and after AJAX updates
+2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects registered in `app.js`; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
     - `form-collection.js` - Dynamic form field addition/removal
     - `form-errors.js` - Client-side form validation
     - `like.js` - Event favoriting
     - `popup.js` - Modal interactions
+    - `pages.js` - Runs the page initializers declared by `data-page` markers (see below)
     - etc.
 
-3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/modules/image-previews.js`)
+3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/listeners/image-previews.js`)
     - `DatepickerService.js` - Date range picker (moment.js, daterangepicker)
+    - `SliderService.js` - Range sliders (nouislider)
     - `TagsService.js` - Tag inputs (tom-select)
     - `WysiwygService.js` - Rich text editor (summernote)
     - `AutocompleteService.js` - Autocomplete inputs (@tarekraafat/autocomplete.js)
@@ -260,9 +262,9 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 **Page-Specific Scripts** (`assets/js/pages/`):
 
-- Separate entry points for each major page (agenda, event_details, search, etc.)
-- Loaded only on specific routes to reduce bundle size
-- Use `window.App.dispatchPageLoadedEvent()` to reinitialize listeners after AJAX loads
+- Separate entry points for each major page (agenda, event_details, profile, etc.), included only on their routes to reduce bundle size
+- Each registers its initializer with `window.App.registerPage('agenda', initialize)`
+- A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the `pages` listener calls the initializer with `{app, container, ...params}` once the entry has loaded; the initializer may return a cleanup
 
 **Dependency Injection** (`assets/js/services/Container.js`):
 
@@ -277,20 +279,18 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - `formManager` - Form field visibility/disabled/required state management
 - `collectionManager` - Dynamic form collections (add/remove form fields)
 
-**Webpack Configuration**:
+**Vite Configuration** (`vite.config.mjs`):
 
-- Uses Symfony Webpack Encore
-- Split entry points for each page (code splitting)
-- Babel transforms JSX to Preact (`h` pragma)
-- ESLint runs on build in dev mode with auto-fix
-- PurgeCSS in production removes unused Bootstrap classes
+- `@symfony/reprise` plugin: writes `public/build/entrypoints.json` + `manifest.json`, read by the `reprise_entry_link_tags()` / `reprise_entry_script_tags()` Twig functions; registers the Stimulus controllers (`assets/controllers.json`) and copies `assets/images` to `public/build/images`
+- One entry point per page (`app`, `admin`, and each `assets/js/pages/*.js` listed in `pages`)
+- JSX compiled for Preact with the automatic runtime (`importSource: 'preact'`), no `h` import needed
+- `@` aliases `assets/`
+- `yarn dev` / `yarn watch` build with sourcemaps and without minification; no PurgeCSS
 
 **Code Style**:
 
-- ESLint with `@eslint/js` recommended rules
-- Prettier for formatting (120 char width, single quotes, 4 space tabs)
-- No semicolons (enforced by ESLint)
-- Flat config format (`eslint.config.mjs`)
+- Biome (`biome.json`) lints and formats JavaScript: 120 char width, single quotes, 4 space indent, no semicolons
+- Prettier only for non-JS files (SCSS, Markdown, YAML)
 
 ## Key Directories
 
@@ -310,9 +310,10 @@ The frontend uses a modular listener-based architecture with dependency injectio
 ### Frontend
 
 - `assets/js/app.js` - Main application entry point
-- `assets/js/pages/` - Page-specific entry points (agenda, search, etc.)
-- `assets/js/global-listeners/` - One-time initialization listeners
-- `assets/js/listeners/` - Re-runnable page listeners
+- `assets/js/pages/` - Page-specific entry points (agenda, event_details, etc.)
+- `assets/js/modules/` - One-time modules run at boot
+- `assets/js/listeners/` - Per-element listeners, connected on every mount
+- `assets/controllers/` - Stimulus controllers
 - `assets/js/services/` - DI container and service classes
 - `assets/js/services/ui/` - Heavy third-party widgets (datepicker, selects, wysiwyg, ...) loaded only where needed
 - `assets/js/components/` - Reusable UI components (Widgets, CommentApp, etc.)

@@ -20,6 +20,7 @@ use App\Factory\UserFactory;
 use DateTimeImmutable;
 use IntlDateFormatter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DomCrawler\Crawler;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
@@ -269,6 +270,43 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorTextContains('.timesheets > .timesheet-entry', $this->day(-20));
         self::assertSelectorCount(1, '.timesheets > details');
         self::assertSelectorTextContains('.timesheets > details summary', 'Voir les 3 dates suivantes');
+    }
+
+    public function testAVisitorsPageIsSharedByTheCdnButNotKeptByTheBrowser(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=3600');
+        self::assertSame([], $client->getResponse()->headers->getCookies());
+    }
+
+    public function testAMembersPageStaysPrivate(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertTrue($client->getResponse()->headers->hasCacheControlDirective('private'));
+        self::assertFalse($client->getResponse()->headers->hasCacheControlDirective('public'));
+    }
+
+    public function testAVisitorAboutToBeRememberedGetsAPrivatePage(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+        $client->getCookieJar()->set(new Cookie('REMEMBERME', 'not-a-valid-token'));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertTrue($client->getResponse()->headers->hasCacheControlDirective('private'));
     }
 
     /**

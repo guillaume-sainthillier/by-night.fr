@@ -1,7 +1,6 @@
 # By Night
 
 ![Build And Deploy](https://github.com/guillaume-sainthillier/by-night.fr/workflows/Build%20And%20Deploy%20Release/badge.svg)
-[![SymfonyInsight](https://insight.symfony.com/projects/a11fedf7-0560-449b-bbfa-d38fe90a99ee/mini.svg)](https://insight.symfony.com/projects/a11fedf7-0560-449b-bbfa-d38fe90a99ee)
 
 Plateforme de gestion d'événements en France.
 
@@ -11,16 +10,19 @@ https://by-night.fr
 
 ## Stack technique
 
-- PHP 8.4
-- Symfony 7.4
+- PHP 8.5 (FrankenPHP)
+- Symfony 8.1
 - MySQL 8.0
-- Elastic Search 7
-- Varnish 6
-- Redis 5
+- Elasticsearch 9
+- Cloudflare (CDN, cache HTTP)
+- Redis
+- RabbitMQ
+- Vite
 - Sass
-- Webpack
+- Bootstrap 5 / Tabler
+- Preact
 - Docker
-- Amazon S3 / Cloudfront
+- OVH Object Storage (S3)
 
 ## Docker
 

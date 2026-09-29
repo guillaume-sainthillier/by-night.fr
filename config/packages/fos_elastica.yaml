@@ -124,9 +124,8 @@ fos_elastica:
                 # index gets it from app:events:classify-agenda-types, which adds it before writing any
                 agendaTypes:
                     type: keyword
-                # The lowest price to get in, 0 for a free entry, none when unknown (Event::$startingPrice): an existing
-                # index gets it from app:events:backfill-starting-prices, which adds it before writing any. A float, as
-                # the dynamic mapping of a first document with cents would be
+                # The lowest price to get in, 0 for a free entry, none when unknown (Event::$startingPrice). A float, as the
+                # dynamic mapping of a first document with cents would be
                 startingPrice:
                     type: float
                 category:

@@ -160,7 +160,7 @@
                 <div class="event-layout-media">
                     <div class="card card-layout overflow-visible mb-0">
                         <a class="image-gallery card-img-top d-block overflow-hidden" href="{{ original }}" title="{{ eventShortName }}">
-                            <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" />
+                            <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" priority="{{ true }}" />
                         </a>
                         <div class="card-footer d-flex flex-wrap align-items-center gap-2">
                             {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
@@ -183,7 +183,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     {% for name, social in trendsData.shares %}
-                                        <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
+                                        <a href="{{ social }}" class="dropdown-item popup {{ name }}">
                                             <twig:Icon name="{{ name|social_icon }}" />
                                             {{ name|social_label }}
                                         </a>

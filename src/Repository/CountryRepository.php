@@ -17,6 +17,7 @@ use App\Entity\AdminZone2;
 use App\Entity\Country;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -52,14 +53,14 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
 
         if ($region) {
             $qb
-                ->leftJoin(AdminZone1::class, 'admin_zone1', 'WITH', 'admin_zone1.country = c')
+                ->leftJoin(AdminZone1::class, 'admin_zone1', Join::ON, 'admin_zone1.country = c')
                 ->orWhere('admin_zone1.name LIKE :region')
                 ->setParameter('region', '%' . $region . '%');
         }
 
         if ($department) {
             $qb
-                ->leftJoin(AdminZone2::class, 'admin_zone2', 'WITH', 'admin_zone2.country = c')
+                ->leftJoin(AdminZone2::class, 'admin_zone2', Join::ON, 'admin_zone2.country = c')
                 ->orWhere('admin_zone2.name LIKE :department')
                 ->setParameter('department', '%' . $department . '%');
         }

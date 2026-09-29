@@ -12,6 +12,7 @@ namespace App\Elasticsearch\Pager;
 
 use Doctrine\ORM\QueryBuilder;
 use FOS\ElasticaBundle\Provider\PagerInterface;
+use SortDirection;
 
 /**
  * Pages through a query by blocks of ids counted down from a fixed ceiling: page 1 holds the
@@ -88,7 +89,7 @@ final class IdRangePager implements PagerInterface
             ->andWhere(\sprintf('%1$s.id > :idRangeLower AND %1$s.id <= :idRangeUpper', $alias))
             ->setParameter('idRangeLower', $upper - $this->maxPerPage)
             ->setParameter('idRangeUpper', $upper)
-            ->orderBy(\sprintf('%s.id', $alias), 'DESC')
+            ->orderBy(\sprintf('%s.id', $alias), SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }

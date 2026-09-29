@@ -16,6 +16,7 @@ use App\Handler\EventHandler;
 use App\Import\EventPublicationGuard;
 use App\Parser\Common\DataTourismeParser;
 use App\Tests\AppKernelTestCase;
+use App\Utils\StartingPrice;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
@@ -95,6 +96,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame('fr', $query['lang']);
         self::assertSame(\sprintf('takesPlaceAt.endDate[gte]=%s', date('Y-m-d')), $query['filters'], 'A full import takes every event still to come, whenever it changed');
         self::assertStringContainsString('takesPlaceAt', $query['fields']);
+        self::assertStringContainsString('offers.priceSpecification.minPrice', $query['fields'], 'Left out, the API sends no price');
         self::assertSame(['X-API-Key: test-key'], $first['apiKey']);
         self::assertSame(self::SECOND_PAGE, $second['url'], 'The cursor link is followed as is');
         self::assertSame(['X-API-Key: test-key'], $second['apiKey']);
@@ -259,6 +261,56 @@ final class DataTourismeParserTest extends AppKernelTestCase
             ['short' => 'La courte.', 'comment' => 'Le Théâtre Municipal de Sainte-Pazanne vous accueille pour le lancement de sa saison culturelle !', 'label' => 'La folle repart en thèse'],
             array_column(array_map(static fn (EventDto $event): array => ['id' => $event->externalId, 'description' => $event->description], $this->dispatched), 'description', 'id')
         );
+    }
+
+    /**
+     * Offers as the API returned them on 2026-09-29.
+     *
+     * @return iterable<string, array{list<array<string, mixed>>, ?string, ?float}>
+     */
+    public static function provideOffers(): iterable
+    {
+        $specification = static fn (array $specification): array => ['priceCurrency' => 'EUR', ...$specification];
+
+        yield 'one price' => [[['priceSpecification' => [$specification(['minPrice' => [6.5], 'maxPrice' => [6.5]])]]], '6.5€', 6.5];
+        yield 'several fares, the named ones by their policy' => [[['priceSpecification' => [
+            $specification(['minPrice' => [10], 'maxPrice' => [10], 'hasEligiblePolicy' => [['label' => ['@fr' => 'Tarif réduit'], 'key' => 'ReducedRate']]]),
+            $specification(['minPrice' => [12], 'maxPrice' => [12]]),
+            $specification(['minPrice' => [5], 'maxPrice' => [5]]),
+        ]]], 'Tarif réduit : 10€ - 12€ - 5€', 5.0];
+        yield 'unpaired bounds: every amount counts' => [[['priceSpecification' => [$specification(['minPrice' => [40, 10], 'maxPrice' => [35, 40]])]]], 'De 10€ à 40€', 10.0];
+        yield 'free for children, not for all' => [[['priceSpecification' => [
+            $specification(['price' => [12], 'name' => ['@fr' => 'Adulte']]),
+            $specification(['hasEligiblePolicy' => [['label' => ['@fr' => 'Tarif enfant'], 'key' => 'Free']]]),
+        ]]], 'Adulte : 12€ - Tarif enfant : Gratuit', 12.0];
+        yield 'the amounts win over the summary' => [[[
+            'textPriceSpecification' => ['@fr' => 'Plein tarif : de 10 à 28 € (À partir de 12 ans).'],
+            'priceSpecification' => [$specification(['minPrice' => [10], 'maxPrice' => [28]])],
+        ]], 'De 10€ à 28€', 10.0];
+
+        yield 'free by its policy' => [[['priceSpecification' => [$specification(['hasEligiblePolicy' => [['label' => ['@fr' => 'Gratuit'], 'key' => 'Free']]])]]], 'Gratuit', 0.0];
+        yield 'free by its zeros' => [[['priceSpecification' => [$specification(['minPrice' => [0], 'maxPrice' => [0], 'name' => ['@fr' => 'Gratuit']])]]], 'Gratuit', 0.0];
+        yield 'free by its name' => [[['priceSpecification' => [$specification(['name' => ['@fr' => 'Entrée libre']])]]], 'Entrée libre', 0.0];
+        yield 'free by its note' => [[['priceSpecification' => [$specification(['additionalInformation' => ['@fr' => 'gratuit']])]]], 'gratuit', 0.0];
+        yield 'free by the summary' => [[['textPriceSpecification' => ['@fr' => 'Gratuit']]], 'Gratuit', 0.0];
+
+        yield 'paying, but how much is not said' => [[['textPriceSpecification' => ['@fr' => 'Payant']]], 'Payant', null];
+        yield 'a specification that says nothing' => [[['priceSpecification' => [$specification(['hasEligibleAudience' => [['label' => ['@fr' => 'Tout public']]]])]]], null, null];
+        yield 'no offer' => [[], null, null];
+    }
+
+    /**
+     * @param list<array<string, mixed>> $offers
+     */
+    #[DataProvider('provideOffers')]
+    public function testThePricesAreReadFromTheOffers(array $offers, ?string $prices, ?float $startingPrice): void
+    {
+        $this->responses = [self::page([self::apiEvent(['offers' => $offers])], null)];
+
+        $this->parser->parse(null);
+
+        self::assertSame($prices, $this->dispatched[0]->prices);
+        self::assertSame($startingPrice, StartingPrice::fromPrices($this->dispatched[0]->prices), 'What the agenda filters on');
     }
 
     /**

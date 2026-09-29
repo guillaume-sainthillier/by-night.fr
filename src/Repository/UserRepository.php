@@ -20,8 +20,10 @@ use App\Entity\UserOAuth;
 use App\Manager\PreloadManager;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -94,7 +96,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         return $this
             ->createQueryBuilder('u')
             ->select('u.id, u.slug, u.updatedAt')
-            ->join(UserEvent::class, 'ue', 'WITH', 'ue.user = u')
+            ->join(UserEvent::class, 'ue', Join::ON, 'ue.user = u')
             ->join('ue.event', 'e')
             ->where('e.endDate >= :from')
             ->andWhere('e.duplicateOf IS NULL')
@@ -129,7 +131,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         return $this
             ->createQueryBuilder('u')
             ->where('u.image.name IS NOT NULL OR u.imageSystem.name IS NOT NULL')
-            ->orderBy('u.id', 'DESC')
+            ->orderBy('u.id', SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -148,7 +150,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->where('ue.event = :event')
             ->andWhere('ue.going = true')
             ->setParameter('event', $event->getId())
-            ->orderBy('ue.id', 'DESC')
+            ->orderBy('ue.id', SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();

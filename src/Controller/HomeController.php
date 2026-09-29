@@ -17,12 +17,15 @@ use App\Form\Type\QuickSearchType;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
     private const int METROPOLISES = 5;
 
+    // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
+    #[Cache(maxage: 0, smaxage: 600, public: true)]
     #[Route(path: '/', name: 'app_index', methods: ['GET'])]
     public function index(AppContext $appContext, EventRepository $eventRepository, CityRepository $cityRepository): Response
     {
