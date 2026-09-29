@@ -21,6 +21,7 @@ use App\Tests\AppKernelTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
@@ -28,6 +29,7 @@ use Smolblog\OAuth2\Client\Provider\TwitterUser;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 /**
@@ -102,6 +104,17 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
         self::assertSame('twitter-1', $user->getOAuth()?->getTwitterId());
     }
 
+    /**
+     * X refused the profile behind the token it had just issued: the sign-in fails back to
+     * the login page instead of a server error.
+     */
+    public function testANetworkRefusingTheProfileFailsTheSignIn(): void
+    {
+        $this->expectException(CustomUserMessageAuthenticationException::class);
+
+        $this->signInWith('twitter', new IdentityProviderException('', 403, []));
+    }
+
     public function testAMemberOfTheSameAddressIsSignedIn(): void
     {
         $member = UserFactory::createOne(['email' => 'lou@example.com', 'verified' => true]);
@@ -120,11 +133,15 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
         return $this->signInWith('google', new GoogleUser($googleProfile));
     }
 
-    private function signInWith(string $service, ResourceOwnerInterface $networkAccount): User
+    private function signInWith(string $service, ResourceOwnerInterface|IdentityProviderException $networkAccount): User
     {
         $client = $this->createStub(OAuth2ClientInterface::class);
         $client->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 'token']));
-        $client->method('fetchUserFromToken')->willReturn($networkAccount);
+        if ($networkAccount instanceof IdentityProviderException) {
+            $client->method('fetchUserFromToken')->willThrowException($networkAccount);
+        } else {
+            $client->method('fetchUserFromToken')->willReturn($networkAccount);
+        }
 
         $clientRegistry = $this->createStub(ClientRegistry::class);
         $clientRegistry->method('getClient')->willReturn($client);

@@ -16,6 +16,7 @@ use App\Social\SocialProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -76,7 +78,14 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $service) {
                 $social = $this->socialProvider->getSocial($service);
-                $datas = $this->oAuthDataProvider->getDatasFromToken($service, $accessToken);
+
+                // The network may refuse the profile behind a token it has just issued (X did, with
+                // an empty error): a failed sign-in, not a server error
+                try {
+                    $datas = $this->oAuthDataProvider->getDatasFromToken($service, $accessToken);
+                } catch (IdentityProviderException $e) {
+                    throw new CustomUserMessageAuthenticationException('La connexion a échoué, le réseau social n\'a pas transmis votre profil. Réessayez plus tard ou utilisez un autre moyen de connexion.', [], 0, $e);
+                }
 
                 // In case of adding new socials in profile
                 if (null !== $this->security->getUser()) {
