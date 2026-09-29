@@ -77,14 +77,14 @@ vendor/bin/phpstan analyse                         # PHPStan (level 6)
 # Code Formatting
 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php  # PHP (Symfony ruleset)
 vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php  # Twig templates
-npx prettier --write "assets/**/*.{scss,md,yaml,yml}"  # Prettier for styles/config
-npx eslint --fix "assets/**/*.{js,jsx}"            # ESLint for JavaScript
+yarn lint                                          # Biome (lint + format) for JavaScript
+yarn prettier                                      # Prettier for SCSS/Markdown
 
 # Pre-commit Hook
 # Husky runs lint-staged on commit, which auto-formats changed files:
 # - PHP: php-cs-fixer
 # - Twig: twig-cs-fixer
-# - JS/JSX: eslint --fix
+# - JS/JSX/TS/JSON: biome check --write
 # - SCSS/MD/YAML: prettier --write
 ```
 
@@ -287,10 +287,8 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 **Code Style**:
 
-- ESLint with `@eslint/js` recommended rules
-- Prettier for formatting (120 char width, single quotes, 4 space tabs)
-- No semicolons (enforced by ESLint)
-- Flat config format (`eslint.config.mjs`)
+- Biome (`biome.json`) lints and formats JavaScript: 120 char width, single quotes, 4 space indent, no semicolons
+- Prettier only for non-JS files (SCSS, Markdown, YAML)
 
 ## Key Directories
 
