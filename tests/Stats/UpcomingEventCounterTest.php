@@ -168,6 +168,25 @@ final class UpcomingEventCounterTest extends AppKernelTestCase
         self::assertSame(['concert' => 3, 'family' => 2], refresh($france)->getUpcomingAgendaTypes());
     }
 
+    public function testTheTypesStoredAfterTheCountAreRecountedAlone(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $france = $toulouse->getCountry();
+        $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $france]);
+        $event = EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['place' => $place]);
+        $this->counter->refresh();
+        self::assertSame([], refresh($toulouse)->getUpcomingAgendaTypes());
+
+        // What app:events:classify-agenda-types stores after the midnight count
+        $event->setAgendaTypes(['exhibition']);
+        save($event);
+
+        self::assertSame(2, $this->counter->refreshAgendaTypes());
+        self::assertSame(['exhibition' => 1], refresh($toulouse)->getUpcomingAgendaTypes());
+        self::assertSame(['exhibition' => 1], refresh($france)->getUpcomingAgendaTypes());
+        self::assertSame(1, refresh($toulouse)->getUpcomingEvents());
+    }
+
     public function testTheTypeCountsAreClearedWhenTheirLastEventIsGone(): void
     {
         $toulouse = CityFactory::toulouse()->create();
