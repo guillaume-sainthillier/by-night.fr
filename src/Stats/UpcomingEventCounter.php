@@ -29,7 +29,9 @@ use Doctrine\ORM\EntityManagerInterface;
  * Run daily just after midnight by app:events:count-upcoming, when yesterday's events stop being "to come"; the
  * events imported during the day show in the counts the next night. An event created, changed or deleted on the site
  * (personal space, back office) is recounted right away, for its venues only (refreshPlaces(), see
- * UpcomingEventCountListener). The rows are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt
+ * UpcomingEventCountListener). The type counts are also recounted by app:events:classify-agenda-types right after it
+ * stores the types of the night's imports (refreshAgendaTypes()), which it runs after the midnight count. The rows
+ * are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt
  * changes and nothing is reindexed.
  *
  * The counts are read by plain SELECTs, then only the changed rows are written, by id. A single UPDATE joined to the
@@ -64,6 +66,17 @@ final readonly class UpcomingEventCounter
             'categories' => $this->storeCategories(),
             'types' => $this->storeAgendaTypes(),
         ];
+    }
+
+    /**
+     * Recounts the agenda types of every city and country, once app:events:classify-agenda-types changed the types
+     * stored on the events.
+     *
+     * @return int the number of cities and countries whose type counts changed
+     */
+    public function refreshAgendaTypes(): int
+    {
+        return $this->storeAgendaTypes();
     }
 
     /**

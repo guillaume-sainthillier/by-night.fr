@@ -154,7 +154,7 @@ final class DefaultControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         // A type without any event names its page instead
         self::assertSame(
-            ['3 sorties', 'Spectacles ' . $atName, 'Les expos ' . $atName, '1 sortie', 'Soirées étudiantes ' . $atName],
+            ['3 concerts ' . $atName, 'Spectacles ' . $atName, 'Les expos ' . $atName, '1 sortie en famille ' . $atName, 'Soirées étudiantes ' . $atName],
             $crawler->filter('#univers .card-body > div:last-child > span')->each(static fn ($meta): string => trim($meta->text())),
         );
     }
