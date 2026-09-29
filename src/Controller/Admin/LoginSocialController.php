@@ -38,8 +38,9 @@ final class LoginSocialController extends AbstractController
         return $this->render('security/connect-success.html.twig', [
             'userInformation' => [
                 'name' => $datas['realname'],
-                'email' => $datas['email'],
             ],
+            // Out of the popup of the social networks page, back to it
+            'targetPath' => $this->generateUrl('app_administration_info_index'),
         ]);
     }
 
