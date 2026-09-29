@@ -10,17 +10,17 @@
 
 namespace App\Factory;
 
-use App\Entity\UpcomingCategory;
+use App\Entity\UpcomingCount;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentObjectFactory<UpcomingCategory>
+ * @extends PersistentObjectFactory<UpcomingCount>
  */
-final class UpcomingCategoryFactory extends PersistentObjectFactory
+final class UpcomingCountFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {
-        return UpcomingCategory::class;
+        return UpcomingCount::class;
     }
 
     protected function defaults(): array

@@ -20,6 +20,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastica\Index;
 use Elastica\Mapping;
+use Elastica\PointInTime;
+use Elastica\Search;
 use FOS\ElasticaBundle\Configuration\ConfigManager;
 use FOS\ElasticaBundle\Index\MappingBuilder;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -31,14 +33,21 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * counts of the agenda's type links are term lookups instead of every type's full-text search on each page.
  *
  * Run daily by app:events:classify-agenda-types: the types of an event imported or changed during the day are found
- * the next night. Only the events whose types changed are written, by DQL bulk updates (no lifecycle callback, no
+ * the next night. The events with a session to come are read from the index a page at a time, each hit with the
+ * type queries it matches, through a point in time and search_after: a cursor, so memory holds one page whatever the
+ * size of the index, and a page costs what the first one does. Each page is compared with the types stored on its
+ * events, and only the events whose types changed are written, by DQL bulk updates (no lifecycle callback, no
  * updatedAt), then re-indexed through RefreshEventDocuments.
+ *
+ * The types of an event with no session to come are left as they are: no page lists it, and it is counted nowhere.
  */
 final readonly class AgendaTypeClassifier
 {
-    private const int SCROLL_SIZE = 5_000;
+    /** The events of a page: read, compared and written together */
+    private const int PAGE_SIZE = 1_000;
 
-    private const int BATCH_SIZE = 1_000;
+    /** How long the point in time lives between two pages */
+    private const string KEEP_ALIVE = '5m';
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -61,23 +70,29 @@ final readonly class AgendaTypeClassifier
     {
         $this->addMapping();
 
-        return $this->store($this->find($today), $today);
+        $written = 0;
+        foreach ($this->pages($today) as $page) {
+            $written += $this->store($page);
+        }
+
+        return $written;
     }
 
     /**
-     * Writes the types just found on the events that end from today on, and clears those of the events no type page
-     * lists anymore.
+     * Writes the types found on a page of events, and re-indexes the events whose types changed.
      *
-     * @param array<int, list<string>> $found the types of each event, by id (the events without any left out)
+     * @param array<int, list<string>> $found the types of each event of the page, by id, in AgendaType order: none for
+     *                                        an event no type page lists
      *
      * @return int the number of events whose types changed
      */
-    public function store(array $found, DateTimeImmutable $today): int
+    public function store(array $found): int
     {
-        $stored = $this->eventRepository->findAgendaTypesEndingFrom($today);
-        // An event whose sessions go on after its end date (inconsistent data the agenda still lists): read too, or
-        // its types would be written again each night
-        $stored += $this->eventRepository->findAgendaTypesOf(array_keys(array_diff_key($found, $stored)));
+        if ([] === $found) {
+            return 0;
+        }
+
+        $stored = $this->eventRepository->findAgendaTypesOf(array_keys($found));
 
         $changes = [];
         foreach ($found as $id => $types) {
@@ -86,52 +101,81 @@ final readonly class AgendaTypeClassifier
             }
         }
 
-        foreach (array_keys(array_diff_key($stored, $found)) as $id) {
-            $changes[''][] = $id;
-        }
-
         foreach ($changes as $types => $ids) {
-            foreach (array_chunk($ids, self::BATCH_SIZE) as $chunk) {
-                $this
-                    ->entityManager
-                    ->createQueryBuilder()
-                    ->update(Event::class, 'e')
-                    ->set('e.agendaTypes', ':types')
-                    ->where('e.id IN (:ids)')
-                    ->setParameter('types', '' === $types ? [] : explode(',', $types), Types::SIMPLE_ARRAY)
-                    ->setParameter('ids', $chunk)
-                    ->getQuery()
-                    ->execute();
-            }
+            $this
+                ->entityManager
+                ->createQueryBuilder()
+                ->update(Event::class, 'e')
+                ->set('e.agendaTypes', ':types')
+                ->where('e.id IN (:ids)')
+                ->setParameter('types', '' === $types ? [] : explode(',', $types), Types::SIMPLE_ARRAY)
+                ->setParameter('ids', $ids)
+                ->getQuery()
+                ->execute();
         }
 
         $written = array_merge(...array_values($changes));
-        foreach (array_chunk($written, self::BATCH_SIZE) as $chunk) {
-            $this->messageBus->dispatch(new RefreshEventDocuments(eventIds: $chunk));
+        if ([] !== $written) {
+            $this->messageBus->dispatch(new RefreshEventDocuments(eventIds: $written));
         }
 
         return \count($written);
     }
 
     /**
-     * @return array<int, list<string>> the types of each event that ends from today on, by id, in AgendaType order
+     * The events with a session from today on, a page at a time, sorted in index order (_shard_doc) through a point
+     * in time: the documents re-indexed meanwhile neither move nor come twice.
+     *
+     * @return iterable<array<int, list<string>>> the types each page found, by event id, in AgendaType order
      */
-    private function find(DateTimeImmutable $today): array
+    private function pages(DateTimeImmutable $today): iterable
     {
         /** @var EventElasticaRepository $repository */
         $repository = $this->repositoryManager->getRepository(Event::class);
+        $client = $this->eventIndex->getClient();
+        $pointInTime = (string) $this->eventIndex->openPointInTime(self::KEEP_ALIVE)->getData()['id'];
 
-        $found = [];
-        foreach (AgendaType::cases() as $type) {
-            $query = $repository->createAgendaTypeQuery($type, $today)->setSize(self::SCROLL_SIZE);
-            foreach ($this->eventIndex->createSearch($query)->scroll() as $results) {
-                foreach ($results->getResults() as $result) {
-                    $found[(int) $result->getId()][] = $type->value;
+        try {
+            $after = null;
+            do {
+                $query = $repository
+                    ->createAgendaTypesQuery($today)
+                    ->setSize(self::PAGE_SIZE)
+                    ->setPointInTime(new PointInTime($pointInTime, self::KEEP_ALIVE))
+                    ->setSort(['_shard_doc' => 'asc']);
+                if (null !== $after) {
+                    $query->setParam('search_after', $after);
                 }
-            }
-        }
 
-        return $found;
+                // A search with a point in time names no index: the point in time holds it
+                $results = new Search($client)->search($query);
+                $pointInTime = $results->getPointInTimeId() ?? $pointInTime;
+
+                $page = [];
+                foreach ($results->getResults() as $result) {
+                    $hit = $result->getHit();
+                    $page[(int) $result->getId()] = self::types($hit['matched_queries'] ?? []);
+                    $after = $hit['sort'];
+                }
+
+                yield $page;
+            } while (self::PAGE_SIZE === \count($page));
+        } finally {
+            $client->closePointInTime($pointInTime);
+        }
+    }
+
+    /**
+     * @param list<string> $matched the names of the type queries a hit matched
+     *
+     * @return list<string> the types, in AgendaType order
+     */
+    private static function types(array $matched): array
+    {
+        return array_values(array_map(
+            static fn (AgendaType $type): string => $type->value,
+            array_filter(AgendaType::cases(), static fn (AgendaType $type): bool => \in_array($type->value, $matched, true)),
+        ));
     }
 
     /**

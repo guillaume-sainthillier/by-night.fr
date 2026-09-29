@@ -43,7 +43,7 @@ final class EventsClassifyAgendaTypesCommand extends Command
 
         $zones = $written > 0 ? $this->counter->refreshAgendaTypes() : 0;
 
-        $io->success(\sprintf('Agenda types of %d events updated, type counts of %d cities and countries.', $written, $zones));
+        $io->success(\sprintf('Agenda types of %d events updated, %d type counts of cities and countries stored.', $written, $zones));
 
         return Command::SUCCESS;
     }

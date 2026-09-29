@@ -57,6 +57,7 @@ final class DefaultController extends BaseController
             ]),
             'location' => $location,
             'highlights' => $eventRepository->findHighlights($location, self::HIGHLIGHTS),
+            'typeCounts' => $eventRepository->findUpcomingAgendaTypes($location),
             'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
             'venues' => $venues,
             'neighbours' => $neighbours,
