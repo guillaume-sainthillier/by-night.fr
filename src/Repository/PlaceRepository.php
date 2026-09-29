@@ -343,49 +343,6 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The cities where several places with a street share a name (case-insensitively): the ones where
-     * app:places:merge-duplicates looks for places recorded more than once.
-     *
-     * @return list<int>
-     */
-    public function findCityIdsWithNamesakes(): array
-    {
-        /** @var list<array{city: int|string}> $rows */
-        $rows = $this
-            ->createQueryBuilder('p')
-            ->select('IDENTITY(p.city) AS city', 'LOWER(p.name) AS HIDDEN name')
-            ->where('p.city IS NOT NULL')
-            ->andWhere("p.street IS NOT NULL AND TRIM(p.street) <> ''")
-            ->groupBy('p.city, name')
-            ->having('COUNT(p.id) > 1')
-            ->getQuery()
-            ->getScalarResult();
-
-        return array_values(array_unique(array_map(static fn (array $row): int => (int) $row['city'], $rows)));
-    }
-
-    /**
-     * The places of a city that have a street, the oldest first.
-     *
-     * @return list<array{id: int, name: string, street: string}>
-     */
-    public function findAddressedPlacesOfCity(int $cityId): array
-    {
-        /** @var list<array{id: int|string, name: string, street: string}> $rows */
-        $rows = $this
-            ->createQueryBuilder('p')
-            ->select('p.id', 'p.name', 'p.street')
-            ->where('p.city = :city')
-            ->andWhere("p.street IS NOT NULL AND TRIM(p.street) <> ''")
-            ->orderBy('p.id', SortDirection::Ascending)
-            ->setParameter('city', $cityId)
-            ->getQuery()
-            ->getScalarResult();
-
-        return array_map(static fn (array $row): array => ['id' => (int) $row['id'], 'name' => $row['name'], 'street' => $row['street']], $rows);
-    }
-
-    /**
      * Places hosting at least one published event ending on or after $from.
      *
      * @return iterable<array{slug: string, city_slug: string}>

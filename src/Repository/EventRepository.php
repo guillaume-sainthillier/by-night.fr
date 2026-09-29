@@ -692,35 +692,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * @param list<int> $placeIds
-     *
-     * @return array<int, int> the number of events of each place, keyed by place id; places without any are left out
-     */
-    public function countByPlaces(array $placeIds): array
-    {
-        if ([] === $placeIds) {
-            return [];
-        }
-
-        /** @var list<array{place: int|string, events: int|string}> $rows */
-        $rows = $this
-            ->createQueryBuilder('e')
-            ->select('IDENTITY(e.place) AS place', 'COUNT(e.id) AS events')
-            ->where('e.place IN (:places)')
-            ->groupBy('e.place')
-            ->setParameter('places', $placeIds)
-            ->getQuery()
-            ->getScalarResult();
-
-        $counts = [];
-        foreach ($rows as $row) {
-            $counts[(int) $row['place']] = (int) $row['events'];
-        }
-
-        return $counts;
-    }
-
-    /**
      * @return int the number of venues of a member's published events
      */
     public function countUserPlaces(User $user): int

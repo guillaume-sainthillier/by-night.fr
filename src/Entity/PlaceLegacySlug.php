@@ -14,7 +14,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * The slug of a place merged into another one by app:places:merge-duplicates: the agenda page it named
+ * The slug of a place merged into another one of its city: the agenda page it named
  * (/{location}/agenda/sortir-a/{slug}) redirects to the page of the place that took its events.
  */
 #[ORM\Entity]

@@ -228,7 +228,7 @@ final class AgendaController extends BaseController
         };
 
         return $place
-            // The slug of a place merged into another one of its city (app:places:merge-duplicates)
+            // The slug of a place merged into another one of its city
             ?? $placeRepository->findOneByLegacySlug($slug, $location)
             ?? $placeRepository->findOneBy(['slug' => $slug]);
     }
