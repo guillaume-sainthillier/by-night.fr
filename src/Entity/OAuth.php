@@ -30,10 +30,10 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_id = null;
 
-    #[ORM\Column(length: 511, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $facebook_access_token = null;
 
-    #[ORM\Column(length: 511, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $facebook_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -51,10 +51,10 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $google_access_token = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $google_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -72,10 +72,10 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $twitter_access_token = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $twitter_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
