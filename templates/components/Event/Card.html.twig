@@ -3,7 +3,8 @@
 {# @var to \DateTimeInterface|null its last day, when a window was searched #}
 {# The picture card of the "À l'affiche" blocks and of the agenda: date and price over the picture, category, title,
    excerpt and venue. The picture box has a fixed ratio, so nothing moves when the picture loads. #}
-{% props event, tone = 'primary', from = null, to = null %}
+{# @var priority bool the card opens the page: its picture is the LCP, loaded at once with a high fetch priority #}
+{% props event, tone = 'primary', from = null, to = null, priority = false %}
 {# The session the visitor is looking for, not the event's overall range #}
 {% set session = event.sessionFor(from, to) %}
 {% set price = event.prices|price_label %}
@@ -13,7 +14,7 @@
     {% endif %}
     <div class="card-img-container">
         <div class="image-container position-relative">
-            <twig:Event:Thumb event="{{ event }}" width="{{ 360 }}" />
+            <twig:Event:Thumb event="{{ event }}" width="{{ 360 }}" priority="{{ priority }}" />
             {% if session or price %}
                 <div class="card-img-overlay d-flex align-items-start justify-content-between gap-2 p-3">
                     {% if session %}

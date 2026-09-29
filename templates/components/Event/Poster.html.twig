@@ -5,7 +5,8 @@
 #}
 {# @var event \App\Entity\Event #}
 {# @var width int #}
-{% props event, width = 800 %}
+{# @var priority bool the poster opens the page: its picture is the LCP, loaded at once with a high fetch priority #}
+{% props event, width = 800, priority = false %}
 {% set picture = event_picture(event) %}
 <div {{ attributes.defaults({class: 'event-poster'}) }}>
     <span
@@ -13,5 +14,5 @@
         style="background-image: url('{{ picasso_image_url(picture.src ?? '', width: 20, quality: 20, loader: picture.loader, context: picture.context) }}')"
         aria-hidden="true"
     ></span>
-    <twig:Event:Thumb event="{{ event }}" width="{{ width }}" />
+    <twig:Event:Thumb event="{{ event }}" width="{{ width }}" priority="{{ priority }}" />
 </div>

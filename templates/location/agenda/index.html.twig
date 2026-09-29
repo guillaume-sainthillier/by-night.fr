@@ -195,7 +195,8 @@
                         <div class="row row-cards">
                             {% for event in section.events %}
                                 <div class="col-md-6 col-xl-4">
-                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" />
+                                    {# Only the page's first picture is above the fold on a phone #}
+                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" priority="{{ loop.parent.loop.first and loop.first }}" />
                                 </div>
                             {% endfor %}
                         </div>
