@@ -22,6 +22,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Override;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -88,6 +89,7 @@ final class DataTourismeParser extends AbstractParser
         LoggerInterface $logger,
         MessageBusInterface $messageBus,
         EventHandler $eventHandler,
+        #[Target('datatourisme.client')]
         private readonly HttpClientInterface $datatourismeClient,
     ) {
         parent::__construct($logger, $messageBus, $eventHandler);
