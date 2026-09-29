@@ -8,9 +8,9 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 
 ## Tech Stack
 
-- **Backend**: PHP 8.4, Symfony 7.4
+- **Backend**: PHP 8.5, Symfony 8.1
 - **Database**: MySQL 8.0 with Doctrine ORM
-- **Search**: Elasticsearch 7 with FOSElasticaBundle
+- **Search**: Elasticsearch 9 with FOSElasticaBundle
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ (php-amqplib/rabbitmq-bundle)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
