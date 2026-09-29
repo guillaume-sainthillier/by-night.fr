@@ -18,12 +18,6 @@ use NumberFormatter;
  */
 final class PriceLabel
 {
-    /** Free entry, however a source words it */
-    private const string FREE_PATTERN = '/\b(gratuite?|entr[ée]e libre|acc[èe]s libre|free)\b/iu';
-
-    /** An amount in euros: "39€", "22.0000€", "27,50 €", "12 euros" */
-    private const string AMOUNT_PATTERN = '/(\d+(?:[.,]\d+)?)\s*(?:€|euros?\b|eur\b)/iu';
-
     /** Longer, a text without an amount is a sentence rather than a badge */
     private const int MAX_NOTE_LENGTH = 24;
 
@@ -32,32 +26,19 @@ final class PriceLabel
      */
     public static function fromPrices(?string $prices): ?array
     {
+        // "10 € adultes, gratuit pour les enfants" is not a free event, "0€" is (StartingPrice)
+        if (0.0 === StartingPrice::fromPrices($prices)) {
+            return ['label' => 'Gratuit', 'free' => true];
+        }
+
         $prices = trim((string) $prices);
         if ('' === $prices) {
             return null;
         }
 
-        $amounts = self::amounts($prices);
-
-        // "10 € adultes, gratuit pour les enfants" is not a free event, "0€" is
-        $paying = array_filter($amounts, static fn (float $amount): bool => $amount > 0);
-        if ([] === $paying && ([] !== $amounts || 1 === preg_match(self::FREE_PATTERN, $prices))) {
-            return ['label' => 'Gratuit', 'free' => true];
-        }
-
-        $label = self::summarize($prices, array_values($paying));
+        $label = self::summarize($prices, StartingPrice::payingAmounts($prices));
 
         return null === $label ? null : ['label' => $label, 'free' => false];
-    }
-
-    /**
-     * @return list<float> the amounts in euros, in the order the text gives them
-     */
-    private static function amounts(string $prices): array
-    {
-        preg_match_all(self::AMOUNT_PATTERN, $prices, $matches);
-
-        return array_map(static fn (string $amount): float => (float) str_replace(',', '.', $amount), $matches[1]);
     }
 
     /**

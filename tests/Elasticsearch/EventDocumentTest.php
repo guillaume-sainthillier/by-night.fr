@@ -61,6 +61,24 @@ final class EventDocumentTest extends AppKernelTestCase
     }
 
     /**
+     * The agenda filters on the lowest price, read from the prices when they are set: an import, a member's form and the
+     * admin all set them.
+     */
+    public function testTheStartingPriceIsIndexedFromThePrices(): void
+    {
+        $event = new Event();
+        $event->setPrices('Tarif plein : 27€ | Tarif réduit : 24,50 € | Invitation : 0€');
+
+        $document = $this->normalizer()->normalize($event, null, self::GROUPS);
+
+        self::assertIsArray($document);
+        self::assertSame(24.5, $document['startingPrice']);
+
+        $event->setPrices('Sur inscription');
+        self::assertNull($event->getStartingPrice(), 'Unknown, not free');
+    }
+
+    /**
      * An indexed event is sent as an update merged into the stored document, so a field that
      * became null has to be part of the document as null: left out, the merge would keep the
      * value the field had, and a deleted category or a removed place would stay searchable.

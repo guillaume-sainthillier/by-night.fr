@@ -19,6 +19,7 @@ use App\Picture\ImageFormats;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Utils\ObjectKey;
+use App\Utils\StartingPrice;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -177,6 +178,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $prices = null;
+
+    /**
+     * The lowest price to get in, read from $prices when they are set (StartingPrice): 0 for a free entry, null when
+     * the text names none. The agenda filters on it.
+     */
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[Groups(['elasticsearch:event:details'])]
+    private ?float $startingPrice = null;
 
     #[ORM\Column(type: Types::STRING, length: 127, nullable: true)]
     private ?string $fromData = null;
@@ -819,8 +828,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setPrices(?string $prices): self
     {
         $this->prices = $prices;
+        $this->startingPrice = StartingPrice::fromPrices($prices);
 
         return $this;
+    }
+
+    public function getStartingPrice(): ?float
+    {
+        return $this->startingPrice;
     }
 
     public function getFromData(): ?string
