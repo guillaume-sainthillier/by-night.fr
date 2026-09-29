@@ -176,7 +176,9 @@
                                 </h2>
                                 {% if facets.dates[day] is defined %}
                                     {% set dayFilters = undatedFilters|merge({dateRange: {from: day, to: day}}) %}
-                                    <a class="small text-secondary" href="{{ path(app.current_route, routeParams|merge(dayFilters)) }}" title="Toutes les sorties de ce jour">
+                                    {# Not followed, as the date chips: its dates change every day, and the page it leads to
+                                       passes them on to all its links #}
+                                    <a class="small text-secondary" href="{{ path(app.current_route, routeParams|merge(dayFilters)) }}" title="Toutes les sorties de ce jour" rel="nofollow">
                                         {{ '{count, plural, one {# sortie ce jour-là} other {# sorties ce jour-là}}'|trans({count: facets.dates[day]}, 'messages+intl-icu') }}
                                     </a>
                                 {% endif %}
