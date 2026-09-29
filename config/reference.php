@@ -693,7 +693,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         signing_algorithm?: scalar|Param|null, // Default: "sha256"
  *         routing?: array<string, array{ // Default: []
  *             service?: scalar|Param|null,
- *             secret?: scalar|Param|null, // The secret used to verify incoming request signatures. It must be set in production: with an empty value, requests from any sender are accepted. // Default: ""
+ *             secret?: scalar|Param|null, // The secret used to verify incoming request signatures. It must be set in production: with an empty value, depending on the parser, requests from any sender are accepted or every request is rejected. // Default: ""
  *         }>,
  *     },
  *     remote_event?: bool|array{ // RemoteEvent configuration
@@ -1525,9 +1525,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             lifetime?: int|Param, // Default: 31536000
  *             path?: scalar|Param|null, // Default: "/"
  *             domain?: scalar|Param|null, // Default: null
- *             secure?: true|false|"auto"|Param, // Default: "auto"
+ *             secure?: true|false|"auto"|Param, // Defaults to the value of "framework.session.cookie_secure", or to "auto".
  *             httponly?: bool|Param, // Default: true
- *             samesite?: null|"lax"|"strict"|"none"|Param, // Default: "lax"
+ *             samesite?: null|"lax"|"strict"|"none"|Param, // Defaults to the value of "framework.session.cookie_samesite", or to "lax".
  *             always_remember_me?: bool|Param, // Default: false
  *             remember_me_parameter?: scalar|Param|null, // Default: "_remember_me"
  *         },
@@ -2128,7 +2128,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     inflector?: scalar|Param|null, // Specify an inflector to use. // Default: "api_platform.metadata.inflector"
  *     validator?: array{
  *         serialize_payload_fields?: mixed, // Set to null to serialize all payload fields when a validation error is thrown, or set the fields you want to include explicitly. // Default: []
- *         query_parameter_validation?: bool|Param, // Deprecated: Will be removed in API Platform 5.0. // Default: true
+ *         query_parameter_validation?: bool|Param, // Deprecated: The "query_parameter_validation" configuration is deprecated and will be removed in API Platform 5.0. // Default: true
  *     },
  *     jsonapi?: array{
  *         use_iri_as_id?: bool|Param|null, // Set to false to use entity identifiers instead of IRIs as the "id" field in JSON:API responses. Defaults to true; this default will change to false in API Platform 5.0. // Default: null
@@ -2151,7 +2151,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enable_head_request_optimization?: bool|Param, // Skip response body construction on HEAD requests so collections are not iterated. Disable to process HEAD identically to GET. // Default: true
  *     enable_profiler?: bool|Param, // Enable the data collector and the WebProfilerBundle integration. // Default: true
  *     enable_phpdoc_parser?: bool|Param, // Enable resource metadata collector using PHPStan PhpDocParser. // Default: true
- *     enable_link_security?: bool|Param, // Deprecated: This option is always enabled and will be removed in API Platform 5.0. // Enable security for Links (sub resources). // Default: true
+ *     enable_link_security?: bool|Param, // Deprecated: The "enable_link_security" configuration is deprecated, this option is always enabled and will be removed in API Platform 5.0. // Enable security for Links (sub resources). // Default: true
  *     collection?: array{
  *         exists_parameter_name?: scalar|Param|null, // The name of the query parameter to filter on nullable field values. // Default: "exists"
  *         order?: scalar|Param|null, // The default order of results. // Default: "ASC"
