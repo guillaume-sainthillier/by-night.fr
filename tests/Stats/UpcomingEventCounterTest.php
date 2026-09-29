@@ -14,6 +14,7 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
+use App\Factory\UpcomingCategoryFactory;
 use App\Stats\UpcomingEventCounter;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -97,5 +98,49 @@ final class UpcomingEventCounterTest extends AppKernelTestCase
         self::assertSame(['countries' => 1, 'cities' => 1, 'places' => 1, 'categories' => 3], $this->counter->refresh());
         self::assertSame(2, refresh($inLyon)->getUpcomingEvents());
         self::assertSame(1, refresh($inToulouse)->getUpcomingEvents());
+    }
+
+    public function testRecountingVenuesLeavesTheOtherZonesAsTheyWere(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $france = $toulouse->getCountry();
+        $lyon = CityFactory::createOne(['name' => 'Lyon', 'country' => $france]);
+        $tomorrow = new DateTimeImmutable('tomorrow');
+        $inToulouse = PlaceFactory::createOne(['city' => $toulouse, 'country' => $france]);
+        $alsoInToulouse = PlaceFactory::createOne(['city' => $toulouse, 'country' => $france]);
+        $inLyon = PlaceFactory::createOne(['city' => $lyon, 'country' => $france]);
+        $concert = TagFactory::createOne(['name' => 'Concert']);
+        $moved = EventFactory::new()->withDates($tomorrow)->create(['place' => $inToulouse, 'category' => $concert]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $alsoInToulouse, 'category' => $concert]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inLyon, 'category' => $concert]);
+        $paris = CityFactory::createOne(['name' => 'Paris', 'country' => $france]);
+        $inParis = PlaceFactory::createOne(['city' => $paris, 'country' => $france]);
+        $this->counter->refresh();
+
+        // Moved from Toulouse to Lyon, one more in Lyon, and one in Paris whose venue is not recounted
+        $moved->setPlace($inLyon);
+        save($moved);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inLyon, 'category' => $concert]);
+        EventFactory::new()->withDates($tomorrow)->create(['place' => $inParis, 'category' => null]);
+
+        self::assertSame(
+            ['countries' => 1, 'cities' => 2, 'places' => 2, 'categories' => 3],
+            $this->counter->refreshPlaces([(int) $inToulouse->getId(), (int) $inLyon->getId()]),
+        );
+        self::assertSame([0, 1, 3, 0], array_map(static fn ($place): int => refresh($place)->getUpcomingEvents(), [$inToulouse, $alsoInToulouse, $inLyon, $inParis]));
+        self::assertSame([1, 3, 0], array_map(static fn ($city): int => refresh($city)->getUpcomingEvents(), [$toulouse, $lyon, $paris]));
+        self::assertSame(4, refresh($france)->getUpcomingEvents());
+        $categoryCounts = [];
+        foreach (UpcomingCategoryFactory::findBy(['tag' => $concert]) as $row) {
+            $categoryCounts[(string) ($row->getCity() ?? $row->getCountry())?->getName()] = $row->getEvents();
+        }
+
+        ksort($categoryCounts);
+        self::assertSame(['France' => 4, 'Lyon' => 3, 'Toulouse' => 1], $categoryCounts);
+    }
+
+    public function testRecountingNoVenueWritesNothing(): void
+    {
+        self::assertSame(['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0], $this->counter->refreshPlaces([]));
     }
 }

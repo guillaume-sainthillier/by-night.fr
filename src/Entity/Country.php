@@ -109,7 +109,7 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     #[Assert\PositiveOrZero]
     private ?int $displayOrder = null;
 
-    /** Published events to come, recounted by app:events:count-upcoming (see UpcomingEventCounter) */
+    /** Published events to come, recounted nightly and after each change on the site (see UpcomingEventCounter) */
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     #[Ignore]
     private int $upcomingEvents = 0;

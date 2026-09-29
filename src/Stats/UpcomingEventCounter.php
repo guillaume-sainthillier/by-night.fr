@@ -14,6 +14,7 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
 use App\Repository\EventRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -23,8 +24,10 @@ use Doctrine\ORM\EntityManagerInterface;
  * every event to come on each page.
  *
  * Run daily just after midnight by app:events:count-upcoming, when yesterday's events stop being "to come"; the
- * events imported during the day show in the counts the next night. The rows are written by DQL bulk updates: no
- * lifecycle callback runs, so no updatedAt changes and nothing is reindexed.
+ * events imported during the day show in the counts the next night. An event created, changed or deleted on the site
+ * (personal space, back office) is recounted right away, for its venues only (refreshPlaces(), see
+ * UpcomingEventCountListener). The rows are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt
+ * changes and nothing is reindexed.
  *
  * The counts are read by plain SELECTs, then only the changed rows are written, by id. A single UPDATE joined to the
  * counts (a CTE) is no faster: it share-locks every event to come while it runs, and the parser worker then waits on
@@ -58,23 +61,70 @@ final readonly class UpcomingEventCounter
     }
 
     /**
-     * Rewrites the category counts of every city and country in one transaction: the pages read the previous counts
-     * until it commits. A few thousand rows that only the pages read, unlike the place and city rows the parser
-     * worker updates all day, so they are not diffed.
+     * Recounts these venues, their cities and countries, and the category counts of those cities and countries: what
+     * a change to the events of these venues can move. The other rows keep the counts they have.
+     *
+     * @param list<int> $placeIds
+     *
+     * @return array{countries: int, cities: int, places: int, categories: int} the number of rows whose count changed,
+     *                                                                          and of category counts stored
+     */
+    public function refreshPlaces(array $placeIds): array
+    {
+        if ([] === $placeIds) {
+            return ['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0];
+        }
+
+        $zones = $this
+            ->entityManager
+            ->createQueryBuilder()
+            ->select('IDENTITY(p.city) AS city', 'IDENTITY(p.country) AS country')
+            ->from(Place::class, 'p')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $placeIds)
+            ->getQuery()
+            ->getScalarResult();
+        $cityIds = self::ids(array_column($zones, 'city'));
+        $countryIds = self::ids(array_column($zones, 'country'));
+
+        $places = $this->store(Place::class, $this->eventRepository->countUpcomingByPlace($placeIds), $placeIds);
+
+        return [
+            'countries' => [] === $countryIds ? 0 : $this->store(Country::class, $this->sumPlacesBy('country', $countryIds), $countryIds),
+            'cities' => [] === $cityIds ? 0 : $this->store(City::class, $this->sumPlacesBy('city', $cityIds), $cityIds),
+            'places' => $places,
+            'categories' => $this->storeCategories($cityIds, $countryIds),
+        ];
+    }
+
+    /**
+     * Rewrites the category counts of every city and country, or of these ones only, in one transaction: the pages
+     * read the previous counts until it commits. A few thousand rows that only the pages read, unlike the place and
+     * city rows the parser worker updates all day, so they are not diffed.
+     *
+     * @param list<int|string>|null $cityIds    the cities to recount, null for all of them
+     * @param list<int|string>|null $countryIds the countries to recount, null for all of them
      *
      * @return int the number of rows stored
      */
-    private function storeCategories(): int
+    private function storeCategories(?array $cityIds = null, ?array $countryIds = null): int
     {
+        if ([] === $cityIds && [] === $countryIds) {
+            return 0;
+        }
+
+        // A venue of a recounted country may be in a city that is not recounted, and the other way around
+        $keptCities = null === $cityIds ? null : array_flip($cityIds);
+        $keptCountries = null === $countryIds ? null : array_flip($countryIds);
         $cities = [];
         $countries = [];
-        foreach ($this->eventRepository->countUpcomingCategoriesByZone() as $row) {
+        foreach ($this->eventRepository->countUpcomingCategoriesByZone($cityIds, $countryIds) as $row) {
             $events = (int) $row['events'];
-            if (null !== $row['city']) {
+            if (null !== $row['city'] && (null === $keptCities || isset($keptCities[$row['city']]))) {
                 $cities[$row['city']][$row['category']] = ($cities[$row['city']][$row['category']] ?? 0) + $events;
             }
 
-            if (null !== $row['country']) {
+            if (null !== $row['country'] && (null === $keptCountries || isset($keptCountries[$row['country']]))) {
                 $countries[$row['country']][$row['category']] = ($countries[$row['country']][$row['category']] ?? 0) + $events;
             }
         }
@@ -93,8 +143,17 @@ final readonly class UpcomingEventCounter
             }
         }
 
-        $this->entityManager->getConnection()->transactional(static function (Connection $connection) use ($rows): void {
-            $connection->executeStatement('DELETE FROM upcoming_category');
+        $this->entityManager->getConnection()->transactional(static function (Connection $connection) use ($rows, $cityIds, $countryIds): void {
+            if (null === $cityIds && null === $countryIds) {
+                $connection->executeStatement('DELETE FROM upcoming_category');
+            } else {
+                $connection->executeStatement(
+                    'DELETE FROM upcoming_category WHERE city_id IN (?) OR country_id IN (?)',
+                    [$cityIds ?? [], $countryIds ?? []],
+                    [ArrayParameterType::INTEGER, ArrayParameterType::STRING],
+                );
+            }
+
             foreach (array_chunk($rows, self::BATCH_SIZE) as $chunk) {
                 $connection->executeStatement(
                     'INSERT INTO upcoming_category (tag_id, events, city_id, country_id) VALUES ' . implode(', ', array_fill(0, \count($chunk), '(?, ?, ?, ?)')),
@@ -107,22 +166,29 @@ final readonly class UpcomingEventCounter
     }
 
     /**
-     * @param 'city'|'country' $association
+     * @param 'city'|'country'      $association
+     * @param list<int|string>|null $ids         the cities or countries to add up, null for all of them
      *
      * @return array<int|string, int> the stored counts of the venues, added up by city or country id
      */
-    private function sumPlacesBy(string $association): array
+    private function sumPlacesBy(string $association, ?array $ids = null): array
     {
-        $rows = $this
+        $qb = $this
             ->entityManager
             ->createQueryBuilder()
             ->select(\sprintf('IDENTITY(p.%s) AS id', $association), 'SUM(p.upcomingEvents) AS events')
             ->from(Place::class, 'p')
             ->where('p.upcomingEvents > 0')
             ->andWhere(\sprintf('p.%s IS NOT NULL', $association))
-            ->groupBy(\sprintf('p.%s', $association))
-            ->getQuery()
-            ->getScalarResult();
+            ->groupBy(\sprintf('p.%s', $association));
+
+        if (null !== $ids) {
+            $qb
+                ->andWhere(\sprintf('p.%s IN (:ids)', $association))
+                ->setParameter('ids', $ids);
+        }
+
+        $rows = $qb->getQuery()->getScalarResult();
 
         return array_map(intval(...), array_column($rows, 'events', 'id'));
     }
@@ -130,19 +196,26 @@ final readonly class UpcomingEventCounter
     /**
      * @param class-string<Country|City|Place> $class
      * @param array<int|string, int>           $counts the counts just computed, by id (the ones without events left out)
+     * @param list<int|string>|null            $ids    the rows these counts cover, null for all of them
      *
      * @return int the number of rows written
      */
-    private function store(string $class, array $counts): int
+    private function store(string $class, array $counts, ?array $ids = null): int
     {
-        $rows = $this
+        $qb = $this
             ->entityManager
             ->createQueryBuilder()
             ->select('x.id', 'x.upcomingEvents')
             ->from($class, 'x')
-            ->where('x.upcomingEvents > 0')
-            ->getQuery()
-            ->getScalarResult();
+            ->where('x.upcomingEvents > 0');
+
+        if (null !== $ids) {
+            $qb
+                ->andWhere('x.id IN (:ids)')
+                ->setParameter('ids', $ids);
+        }
+
+        $rows = $qb->getQuery()->getScalarResult();
         $stored = array_map(intval(...), array_column($rows, 'upcomingEvents', 'id'));
 
         $written = 0;
@@ -162,6 +235,16 @@ final readonly class UpcomingEventCounter
         }
 
         return $written;
+    }
+
+    /**
+     * @param list<int|string|null> $ids
+     *
+     * @return list<int|string> the ids given, without nulls and duplicates
+     */
+    private static function ids(array $ids): array
+    {
+        return array_values(array_unique(array_filter($ids, static fn (int|string|null $id): bool => null !== $id)));
     }
 
     /**

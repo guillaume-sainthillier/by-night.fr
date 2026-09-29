@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * What the nightly app:events:count-upcoming does, for the tests of the pages that read the stored counts. Built by
- * hand: the container inlines the counter into its only user, the command.
+ * hand: the counter is a private service, only injected into the command and RecountUpcomingEventsHandler.
  */
 trait CountsUpcomingEvents
 {
