@@ -229,34 +229,32 @@ Elasticsearch indexes defined in `config/packages/fos_elastica.yaml`:
 
 ### JavaScript Application Structure
 
-The frontend uses a modular listener-based architecture with dependency injection:
+The frontend uses a modular listener-based architecture with dependency injection. Typedefs (`Listener`, `Module`, `Page`, `Cleanup`) live in `assets/js/types.js`.
 
-**Main App** (`assets/js/app.js`):
+**Main App** (`assets/js/app.js`, exposed as `window.App`):
 
-- Bootstraps the application with configuration from Twig templates
-- Initializes Sentry error tracking
-- Manages a dependency injection container (`Container.js`)
-- Dispatches two types of listeners:
-    - **Global listeners**: Execute once on app initialization (autocomplete, lazyload, scroll-to-top)
-    - **Page listeners**: Execute on page load and after AJAX updates (forms, modals, tooltips, etc.)
-- Provides `window.App.dispatchPageLoadedEvent(container)` to re-initialize listeners on dynamic content
+- `start(parameters)` boots the application with configuration from Twig templates: initializes Sentry, the dependency injection container (`Container.js`) and its services, runs every module once, then mounts the whole document
+- `mount(container)` connects every listener to its matching elements inside `container`; call it after inserting HTML by AJAX. Bookkeeping is per element, so an element already connected is skipped
+- `unmount(container)` runs the cleanups of every connected element the container covers (and of those already removed from the DOM)
+- Stimulus controllers (`assets/controllers/`) are loaded too, through `assets/stimulus_bootstrap.js`
 
-**Listener Types**:
+**Building Blocks**:
 
-1. **Global Listeners** (`assets/js/global-listeners/`): Run once at app startup
-    - `lazyload.js` - Lazy image loading with lazysizes
+1. **Modules** (`assets/js/modules/`): Functions run once at `start()`, bound to `document`/`window`, never to elements inside `body`
     - `autocomplete.js` - Algolia autocomplete search
     - `scroll-to-top.js` - Scroll behavior
 
-2. **Page Listeners** (`assets/js/listeners/`): Run on page load and after AJAX updates
+2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects registered in `app.js`; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
     - `form-collection.js` - Dynamic form field addition/removal
     - `form-errors.js` - Client-side form validation
     - `like.js` - Event favoriting
     - `popup.js` - Modal interactions
+    - `pages.js` - Runs the page initializers declared by `data-page` markers (see below)
     - etc.
 
-3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/modules/image-previews.js`)
+3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/listeners/image-previews.js`)
     - `DatepickerService.js` - Date range picker (moment.js, daterangepicker)
+    - `SliderService.js` - Range sliders (nouislider)
     - `TagsService.js` - Tag inputs (tom-select)
     - `WysiwygService.js` - Rich text editor (summernote)
     - `AutocompleteService.js` - Autocomplete inputs (@tarekraafat/autocomplete.js)
@@ -264,9 +262,9 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 **Page-Specific Scripts** (`assets/js/pages/`):
 
-- Separate entry points for each major page (agenda, event_details, search, etc.)
-- Loaded only on specific routes to reduce bundle size
-- Use `window.App.dispatchPageLoadedEvent()` to reinitialize listeners after AJAX loads
+- Separate entry points for each major page (agenda, event_details, profile, etc.), included only on their routes to reduce bundle size
+- Each registers its initializer with `window.App.registerPage('agenda', initialize)`
+- A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the `pages` listener calls the initializer with `{app, container, ...params}` once the entry has loaded; the initializer may return a cleanup
 
 **Dependency Injection** (`assets/js/services/Container.js`):
 
@@ -312,9 +310,10 @@ The frontend uses a modular listener-based architecture with dependency injectio
 ### Frontend
 
 - `assets/js/app.js` - Main application entry point
-- `assets/js/pages/` - Page-specific entry points (agenda, search, etc.)
-- `assets/js/global-listeners/` - One-time initialization listeners
-- `assets/js/listeners/` - Re-runnable page listeners
+- `assets/js/pages/` - Page-specific entry points (agenda, event_details, etc.)
+- `assets/js/modules/` - One-time modules run at boot
+- `assets/js/listeners/` - Per-element listeners, connected on every mount
+- `assets/controllers/` - Stimulus controllers
 - `assets/js/services/` - DI container and service classes
 - `assets/js/services/ui/` - Heavy third-party widgets (datepicker, selects, wysiwyg, ...) loaded only where needed
 - `assets/js/components/` - Reusable UI components (Widgets, CommentApp, etc.)
