@@ -15,7 +15,7 @@ use App\Entity\Event;
 final readonly class TrendsWidgetData
 {
     /**
-     * @param array{facebook: string, twitter: string} $shares
+     * @param array{facebook: string, twitter: string} $shares share dialog URL by service, see ShareLinks
      */
     public function __construct(
         public Event $event,

@@ -18,11 +18,9 @@ use App\Entity\User;
 use App\Form\Type\CommentType;
 use App\Manager\EventRedirectManager;
 use App\Manager\WidgetsManager;
-use App\Picture\EventProfilePicture;
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
 use App\Security\Voter\EventVoter;
-use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,7 +32,7 @@ final class EventController extends BaseController
     #[Cache(maxage: 0, smaxage: 3600, public: true)]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
-    public function index(AppContext $appContext, EventRedirectManager $eventRedirectManager, EventProfilePicture $eventProfilePicture, CommentRepository $commentRepository, UserRepository $userRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
+    public function index(AppContext $appContext, EventRedirectManager $eventRedirectManager, CommentRepository $commentRepository, UserRepository $userRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
     {
         $location = $appContext->getLocation();
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_event_details');
@@ -49,28 +47,16 @@ final class EventController extends BaseController
             ]);
         }
 
-        // Build Page object for social sharing
+        // Canonical URL, shared by the "Partager" links
         $link = $this->generateUrl('app_event_details', [
             'slug' => $event->getSlug(),
             'id' => $event->getId(),
             'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
-        $eventProfile = $eventProfilePicture->getOriginalPicture($event);
-        // Every field as a string: Page normalizes each one with preg_replace(), which deprecates null
-        // (the library's own defaults for icon and twitterUser included)
-        $page = new Page([
-            'url' => $link,
-            'title' => $event->getName() ?? '',
-            'text' => $event->getDescription() ?? '',
-            'image' => $eventProfile,
-            'icon' => '',
-            'twitterUser' => '',
-        ]);
-
         // Widget data (first page only)
         $user = $this->getUser();
         \assert($user instanceof User || null === $user);
-        $trendsData = $widgetsManager->getTrendsData($event, $user, $page);
+        $trendsData = $widgetsManager->getTrendsData($event, $user, $link);
         $nextEventsData = $widgetsManager->getNextEventsData($event, $location);
         $similarEventsData = $widgetsManager->getSimilarEventsData($event, $location);
 

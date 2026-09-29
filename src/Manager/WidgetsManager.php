@@ -19,7 +19,7 @@ use App\Entity\User;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
 use App\Utils\PaginateTrait;
-use SocialLinks\Page;
+use App\Utils\ShareLinks;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class WidgetsManager
@@ -87,7 +87,7 @@ final readonly class WidgetsManager
         );
     }
 
-    public function getTrendsData(Event $event, ?User $user, Page $page): TrendsWidgetData
+    public function getTrendsData(Event $event, ?User $user, string $eventUrl): TrendsWidgetData
     {
         $participate = false;
         $interest = false;
@@ -105,10 +105,7 @@ final readonly class WidgetsManager
             participate: $participate,
             interest: $interest,
             count: $event->getParticipations() + $event->getFbParticipations() + $event->getInterests() + $event->getFbInterests(),
-            shares: [
-                'facebook' => $page->facebook, // @phpstan-ignore property.notFound
-                'twitter' => $page->twitter, // @phpstan-ignore property.notFound
-            ],
+            shares: ShareLinks::forPage($eventUrl, $event->getName() ?? ''),
         );
     }
 }

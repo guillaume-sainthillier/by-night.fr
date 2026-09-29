@@ -183,7 +183,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     {% for name, social in trendsData.shares %}
-                                        <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
+                                        <a href="{{ social }}" class="dropdown-item popup {{ name }}">
                                             <twig:Icon name="{{ name|social_icon }}" />
                                             {{ name|social_label }}
                                         </a>
