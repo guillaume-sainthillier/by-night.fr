@@ -113,6 +113,21 @@ final class AgendaControllerTest extends WebTestCase
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
     }
 
+    public function testAListingWithoutResultsLeadsToTheWholeAgendaAndToTheSearch(): void
+    {
+        $this->requireRedis();
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        // An invalid filter skips the Elasticsearch query and renders the listing with no result
+        $client->request('GET', '/toulouse/agenda?range=not-a-number&term=jazz');
+
+        self::assertSelectorExists('.alert-info a[href="/toulouse/agenda"]');
+        self::assertSelectorExists('.alert-info a[href="/recherche/?q=jazz"]');
+        // The header's "Agenda" is the page on show
+        self::assertSelectorExists('header a.active[aria-current="page"][href="/toulouse/agenda"]');
+    }
+
     /**
      * The period of a quick search (QuickSearchType) or of a chip is named in the URLs, which stay true the next week.
      */

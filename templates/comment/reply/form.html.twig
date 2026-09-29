@@ -38,7 +38,7 @@
 {% else %}
     <div class="text-center">
         <a class="btn btn-outline-secondary" title="Se connecter pour répondre"
-           href="{{ path('app_login') }}">
+           href="{{ path('app_login', {_target_path: path('app_event_details', {slug: comment.event.slug, id: comment.event.id, location: comment.event.locationSlug})}) }}">
             Se connecter pour répondre
         </a>
     </div>

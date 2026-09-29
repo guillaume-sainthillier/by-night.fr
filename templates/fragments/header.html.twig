@@ -14,7 +14,8 @@
         <div class="d-flex d-lg-none">
             <ul class="navbar-nav flex-row gap-3 align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" id="autocomplete-mobile-toggler" aria-label="Rechercher">
+                    {# Opens the search panel; the search page until the script runs #}
+                    <a class="nav-link" href="{{ path('app_search_index') }}" id="autocomplete-mobile-toggler" aria-label="Rechercher">
                         <twig:Icon name="lucide:search" />
                     </a>
                 </li>
@@ -34,14 +35,18 @@
                 <ul class="navbar-nav align-items-start align-items-lg-center">
                     {% set city = app_context.city %}
                     {% if city %}
+                        {# The link of the page on show, or of its section (the agenda and its filters), is the current one #}
+                        {% set inCity = app.request.attributes.get('location') == city.slug %}
+                        {% set onCityPage = inCity and app.current_route == 'app_location_index' %}
+                        {% set onAgenda = inCity and (app.current_route ?? '') starts with 'app_agenda_' %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?">
+                            <a class="nav-link{{ onCityPage ? ' active' }}" href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?"{% if onCityPage %} aria-current="page"{% endif %}>
                                 <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
                                 <span class="nav-link-title">{{ city.name }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties {{ city.name|at_place }}">
+                            <a class="nav-link{{ onAgenda ? ' active' }}" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties {{ city.name|at_place }}"{% if onAgenda %} aria-current="page"{% endif %}>
                                 <span class="nav-link-icon"><twig:Icon name="lucide:calendar-days" /></span>
                                 <span class="nav-link-title">Agenda</span>
                             </a>

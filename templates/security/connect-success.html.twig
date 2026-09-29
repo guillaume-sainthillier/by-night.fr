@@ -1,29 +1,31 @@
-{% extends 'base.html.twig' %}
+{% extends 'layouts/full.html.twig' %}
 
 {% block title 'Connexion réussie' %}
-{% block page_title 'Connexion réussie' %}
 
 {% set userInfo = {
     username: userInformation.name,
     email: userInformation.email,
 } %}
 
-{% block hwi_oauth_content -%}
-    <div class="alert alert-success">
-        <twig:Icon name="lucide:check" />
-        Bienvenue {{ userInformation.name }}
+{% block body -%}
+    <div class="container-lg py-5 text-center">
+        <div class="alert alert-success d-inline-flex align-items-center gap-2">
+            <twig:Icon name="lucide:check" />
+            Bienvenue {{ userInformation.name }}
+        </div>
+        <p class="text-secondary d-flex align-items-center justify-content-center gap-2 mb-0">
+            <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
+            {# The way on, should the redirection below not run #}
+            <span>Veuillez patienter, vous allez être redirigé… <a href="{{ targetPath }}">Continuer</a></span>
+        </p>
     </div>
-    <br/>
-    <div class="spinner-grow text-primary" role="status">
-        <span class="visually-hidden">Chargement…</span>
-    </div>
-    <span>Veuillez patienter, vous allez être redirigé vers la page d'accueil…</span>
 {%- endblock %}
 
+{# Opened in a popup (a network connected from "Mon compte"), the page tells its opener and closes; otherwise it goes on
+   to the page the member logged in from #}
 {% block head_js %}
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript">
-        if (typeof window.opener !== "undefined" && window.opener !== null && window.opener.parent_elem !== "undefined") {
+        if (typeof window.opener !== "undefined" && window.opener !== null && typeof window.opener.parent_elem !== "undefined") {
             window.opener
                 .$('body')
                 .trigger("hasConnected", {
@@ -32,7 +34,7 @@
                 });
             window.close();
         } else {
-            document.location = "{{ path('app_event_list') }}";
+            document.location = {{ targetPath|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
         }
     </script>
 {% endblock %}

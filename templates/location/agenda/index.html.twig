@@ -158,9 +158,25 @@
                 </div>
 
                 {% if events.nbResults == 0 %}
+                    {# The way out of an empty page: the whole agenda, unless this is it, and the search of the whole site #}
+                    {% set fullAgenda = path('app_agenda_index', {location: location.slug}) %}
                     <div class="alert alert-info">
                         <twig:Icon name="lucide:info" />
-                        Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                        <div>
+                            Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                {% if fullAgenda != app.request.requestUri %}
+                                    <a class="btn btn-sm" href="{{ fullAgenda }}">
+                                        <twig:Icon name="lucide:x" />
+                                        Voir toutes les sorties {{ location.atName }}
+                                    </a>
+                                {% endif %}
+                                <a class="btn btn-sm" href="{{ path('app_search_index', search.term ? {q: search.term} : {}) }}" rel="nofollow">
+                                    <twig:Icon name="lucide:search" />
+                                    Rechercher sur tout le site
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
 

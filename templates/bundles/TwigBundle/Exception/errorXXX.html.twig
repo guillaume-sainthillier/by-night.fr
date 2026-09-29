@@ -43,6 +43,14 @@
                 <input class="btn btn-outline-secondary" type="submit" value="Rechercher"/>
             </div>
         </form>
+
+        {# The page has neither the header nor the footer: the way back to the site #}
+        <div class="text-center mt-4">
+            <a class="btn btn-primary" href="{{ path('app_index') }}">
+                <twig:Icon name="lucide:home" />
+                Retour à l'accueil
+            </a>
+        </div>
     </div>
 </div>
 {{ reprise_entry_script_tags('app') }}

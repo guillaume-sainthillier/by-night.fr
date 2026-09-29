@@ -119,6 +119,17 @@ final class DefaultControllerTest extends WebTestCase
         self::assertSelectorTextContains('#neighbours .card-lg p', 'De Bruxelles à Liège');
     }
 
+    public function testTheLastStepOfTheBreadcrumbIsTheCityPageItself(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', '/toulouse/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSame('http://localhost/toulouse', $crawler->filter('#bread a')->last()->attr('href'));
+    }
+
     #[DataProvider('provideLocationAgendas')]
     public function testTheUniversesLeadToTheAgendasOfTheLocation(string $url, string $agenda): void
     {
