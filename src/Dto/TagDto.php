@@ -42,7 +42,8 @@ final class TagDto implements DependencyObjectInterface, InternalIdentifiableInt
     public static function fromString(string $name): self
     {
         $dto = new self();
-        $dto->name = trim($name);
+        // Unicode spaces too: sources pad names with no-break spaces ("Humour\u{A0}")
+        $dto->name = (string) preg_replace('/^[\s\p{Zs}]+|[\s\p{Zs}]+$/u', '', $name);
 
         return $dto;
     }
