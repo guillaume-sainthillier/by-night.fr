@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43a36a1e7380a929410448f3325a9087",
+    "content-hash": "0f3d88fde2e3157d7d8e87416d7005ba",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5822,16 +5822,16 @@
         },
         {
             "name": "silarhi/picasso-bundle",
-            "version": "v1.3.1",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/picasso-bundle.git",
-                "reference": "7b42ba8233373324b79a6bc03c9c97af3d541577"
+                "reference": "365c1d77c5186c59b5b921875558cd61a5095dcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/7b42ba8233373324b79a6bc03c9c97af3d541577",
-                "reference": "7b42ba8233373324b79a6bc03c9c97af3d541577",
+                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/365c1d77c5186c59b5b921875558cd61a5095dcc",
+                "reference": "365c1d77c5186c59b5b921875558cd61a5095dcc",
                 "shasum": ""
             },
             "require": {
@@ -5840,25 +5840,25 @@
                 "symfony/ux-twig-component": "^2.13 || ^3.0"
             },
             "require-dev": {
-                "ergebnis/composer-normalize": "^2.52",
-                "friendsofphp/php-cs-fixer": "^3.95.7",
+                "ergebnis/composer-normalize": "^2.54.0",
+                "friendsofphp/php-cs-fixer": "^3.95.27",
                 "imagine/imagine": "^1.5.2",
                 "kornrunner/blurhash": "^1.2",
                 "league/flysystem-bundle": "^2.1 || ^3.0",
                 "league/glide": "^2.3 || ^3.0 || ^4.0",
                 "league/glide-symfony": "^2.0",
                 "phpstan/extension-installer": "^1.4.3",
-                "phpstan/phpstan": "^2.2.2",
-                "phpstan/phpstan-strict-rules": "^2.0.11",
-                "phpstan/phpstan-symfony": "^2.0.19",
+                "phpstan/phpstan": "^2.2.16",
+                "phpstan/phpstan-strict-rules": "^2.0.12",
+                "phpstan/phpstan-symfony": "^2.0.20",
                 "phpunit/phpunit": "^11.5.55 || ^12 || ^13",
                 "psr/http-client": "^1.0.3",
                 "psr/http-factory": "^1.1",
-                "rector/rector": "^2.4.5",
+                "rector/rector": "^2.6.7",
                 "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
                 "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0",
                 "vich/uploader-bundle": "^2.9 || ^3.0",
-                "vincentlanglet/twig-cs-fixer": "^4.0"
+                "vincentlanglet/twig-cs-fixer": "^4.1.1"
             },
             "suggest": {
                 "imagine/imagine": "Required for the BlurHash placeholder (supports GD and Imagick)",
@@ -5884,9 +5884,9 @@
             "description": "Responsive image component for Symfony, inspired by next/image",
             "support": {
                 "issues": "https://github.com/silarhi/picasso-bundle/issues",
-                "source": "https://github.com/silarhi/picasso-bundle/tree/v1.3.1"
+                "source": "https://github.com/silarhi/picasso-bundle/tree/v1.3.2"
             },
-            "time": "2026-09-16T14:30:59+00:00"
+            "time": "2026-09-30T15:05:43+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",
