@@ -1,0 +1,11 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Bienvenue sur By Night !{% endblock %}
+
+{% block body %}
+Plus qu'une étape : confirmez votre adresse e-mail pour activer votre compte en ouvrant ce lien :
+
+{{ signedUrl|raw }}
+
+Ce lien est valable {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}. Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet e-mail.
+{% endblock %}

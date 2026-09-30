@@ -1,0 +1,9 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Nouveau feedback{% endblock %}
+
+{% block body %}
+Le {{ 'now'|date('d/m/Y à H:i') }}, {{ user.username }} ({{ user.email }}) a écrit :
+
+{{ message }}
+{% endblock %}

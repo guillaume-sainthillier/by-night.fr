@@ -67,6 +67,12 @@ final class ContentRemovalRequestTest extends ApiTestCase
         self::assertEmailHtmlBodyContains($email, 'copyright-owner@example.com');
         self::assertEmailHtmlBodyContains($email, 'This event contains my copyrighted content');
         self::assertEmailHtmlBodyContains($email, 'Événement complet');
+        self::assertEmailTextBodyContains($email, 'Test Event for Email');
+        self::assertEmailTextBodyContains($email, 'This event contains my copyrighted content');
+        // The admin acts from the text part too: every quick action prints its URL
+        self::assertEmailTextBodyContains($email, '/remove-events');
+        self::assertEmailTextBodyContains($email, '/mark-processed');
+        self::assertEmailTextBodyContains($email, '/reject');
     }
 
     public function testRemovalRequestWithImageType(): void

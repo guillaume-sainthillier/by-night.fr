@@ -1,0 +1,44 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Demande de suppression de contenu{% endblock %}
+
+{% block body %}
+Reçue le : {{ contentRemovalRequest.createdAt|date('d/m/Y à H:i') }}
+De : {{ contentRemovalRequest.email }}
+Type : {{ contentRemovalRequest.type.label }}
+
+{{ contentRemovalRequest.events|length > 1 ? 'Événements concernés' : 'Événement concerné' }} :
+{% for event in contentRemovalRequest.events %}
+- {{ event.name }} #{{ event.id }}
+{%- set details = [
+    event.place ? event.place.name,
+    event.startDate ? event.startDate|date('d/m/Y') ~ (event.endDate and event.endDate != event.startDate ? ' – ' ~ event.endDate|date('d/m/Y')),
+    event.externalOrigin ? 'Source : ' ~ event.externalOrigin,
+]|filter(detail => detail) %}
+{% if details is not empty %}
+
+  {{ details|join(' · ') }}
+{% endif %}
+{% endfor %}
+{% if contentRemovalRequest.eventUrls|default([])|length > 0 %}
+
+URLs concernées :
+{% for url in contentRemovalRequest.eventUrls %}
+- {{ url }}
+{% endfor %}
+{% endif %}
+
+Message :
+
+{{ contentRemovalRequest.message }}
+
+Actions rapides (connexion administrateur requise) :
+{% if removeEventsUrl is defined %}
+- Supprimer {{ contentRemovalRequest.events|length > 1 ? 'les événements' : "l'événement" }} : {{ removeEventsUrl }}
+{% endif %}
+{% if removeImagesUrl is defined %}
+- Supprimer {{ contentRemovalRequest.events|length > 1 ? 'les images' : "l'image" }} : {{ removeImagesUrl }}
+{% endif %}
+- Marquer comme traitée : {{ markProcessedUrl }}
+- Rejeter : {{ rejectUrl }}
+{% endblock %}

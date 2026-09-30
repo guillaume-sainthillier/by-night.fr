@@ -69,6 +69,8 @@ final class FeedbackTest extends ApiTestCase
         self::assertEmailHtmlBodyContains($email, 'testuser');
         self::assertEmailHtmlBodyContains($email, 'testuser@example.com');
         self::assertEmailHtmlBodyContains($email, 'This is my feedback message for email test.');
+        self::assertEmailTextBodyContains($email, 'testuser@example.com');
+        self::assertEmailTextBodyContains($email, 'This is my feedback message for email test.');
     }
 
     public function testFeedbackWithEmptyMessageFails(): void

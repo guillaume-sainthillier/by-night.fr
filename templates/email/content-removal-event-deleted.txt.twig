@@ -1,0 +1,12 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Votre demande a été traitée{% endblock %}
+
+{% block body %}
+Bonjour,
+
+Suite à votre demande de suppression du {{ contentRemovalRequest.createdAt|date('d/m/Y') }}, le contenu que vous nous avez signalé a été supprimé de By Night. Aucune action de votre part n'est nécessaire.
+
+Merci de nous avoir contactés.
+L'équipe By Night
+{% endblock %}
