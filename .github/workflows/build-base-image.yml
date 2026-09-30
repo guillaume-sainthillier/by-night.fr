@@ -1,4 +1,4 @@
-name: Build Base Image
+name: 'Build Base Image'
 
 # The runtime base bakes in the PHP extensions + the MJML extension. It changes rarely.
 # This workflow PUBLISHES it on main / manual dispatch. PR validation is handled by
@@ -20,6 +20,7 @@ on:
 
 jobs:
     build:
+        name: Build and push base image
         runs-on: ubuntu-latest
         permissions:
             contents: read
