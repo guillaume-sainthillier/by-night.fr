@@ -27,8 +27,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
- * Stores on each event to come the agenda type pages that list it (Event::$agendaTypes), so the counts of the agenda's
- * type links are term lookups instead of every type's full-text search on each page.
+ * Stores on each event to come the agenda type pages that list it (Event::$agendaTypes), so the type pages and the
+ * counts of the agenda's type links are term lookups instead of every type's full-text search on each page.
  *
  * Run daily by app:events:classify-agenda-types: the types of an event imported or changed during the day are found
  * the next night. Only the events whose types changed are written, by DQL bulk updates (no lifecycle callback, no
