@@ -59,13 +59,10 @@
                     {% do form.range.setRendered %}
                 {% endif %}
                 {# The type of a venue or a category page, and the category of a venue page, are query parameters, which a
-                   GET form drops from its action #}
-                {% if (place or tagEntity) and type %}
-                    <input type="hidden" name="type" value="{{ type.value }}">
-                {% endif %}
-                {% if place and tagEntity %}
-                    <input type="hidden" name="tag" value="{{ tagEntity.id }}">
-                {% endif %}
+                   GET form drops from its action (AgendaUrlGenerator::formTarget()) #}
+                {% for name, value in formQuery %}
+                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                {% endfor %}
                 <button type="submit" class="btn btn-primary w-100">
                     <twig:Icon name="lucide:search" />
                     Rechercher

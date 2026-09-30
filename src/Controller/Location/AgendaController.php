@@ -106,11 +106,6 @@ final class AgendaController extends BaseController
             if ($location->getSlug() !== $place->getLocationSlug() || $placeSlug !== $place->getSlug()) {
                 return $this->redirectToRoute('app_agenda_by_place', [...$request->query->all(), 'location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
             }
-
-            // Its path names the venue: a type and a category narrowing it down come as "?type=student&tag=40"
-            $type = AgendaType::tryFrom($request->query->getString('type'));
-            $categoryId = $request->query->getInt('tag');
-            $tag = $categoryId > 0 ? $tagRepository->find($categoryId) : null;
         }
 
         // Handle tag filtering (canonical route with ID)
@@ -123,14 +118,12 @@ final class AgendaController extends BaseController
             $tag = $tagRedirectManager->getTag(null, $legacyTag, $location->getSlug(), 'app_agenda_by_tag', ['page' => $page]);
         }
 
-        // Like a venue, a category narrowed down to a type takes it as "?type=student"
-        if (null === $place && null !== $tag) {
-            $type = AgendaType::tryFrom($request->query->getString('type'));
-        }
+        // A venue or a category page narrowed down by the query string: "?type=student&tag=40"
+        [$type, $tag] = $agendaUrlGenerator->resolveQuery($request, $type, $place, $tag);
 
         // Search for events
-        $search = new SearchEvent();
-        $formAction = $this->handleSearch($search, $location, $type, $place, $tag);
+        $search = $this->createSearch($location, $type, $place, $tag);
+        [$formAction, $formQuery] = $agendaUrlGenerator->formTarget($location->getSlug(), $type, $place, $tag);
 
         // Create and submit the form
         $form = $this->createForm(SearchType::class, $search, [
@@ -196,6 +189,7 @@ final class AgendaController extends BaseController
             'dateRange' => $dateRange,
             'isValid' => $isValid,
             'routeParams' => $routeParams,
+            'formQuery' => $formQuery,
             'filters' => $filters,
             'undatedFilters' => array_diff_key($filters, ['when' => true, 'dateRange' => true]),
             'unpricedFilters' => array_diff_key($filters, ['price' => true]),
@@ -298,7 +292,7 @@ final class AgendaController extends BaseController
     private function buildFilters(Request $request, SearchEvent $search): array
     {
         $filters = $request->query->all();
-        unset($filters['page'], $filters['type'], $filters['tag'], $filters['when'], $filters['dateRange'], $filters['price']);
+        unset($filters['page'], $filters[AgendaUrlGenerator::TYPE], $filters[AgendaUrlGenerator::CATEGORY], $filters['when'], $filters['dateRange'], $filters['price']);
         if (null === $search->getTerm()) {
             unset($filters['term']);
         }
@@ -382,8 +376,9 @@ final class AgendaController extends BaseController
         return $typeCategories;
     }
 
-    private function handleSearch(SearchEvent $search, Location $location, ?AgendaType $type, ?Place $place, ?Tag $tag): string
+    private function createSearch(Location $location, ?AgendaType $type, ?Place $place, ?Tag $tag): SearchEvent
     {
+        $search = new SearchEvent();
         if (null !== $place) {
             $search->setLieux([$place->getId()]);
         }
@@ -395,13 +390,6 @@ final class AgendaController extends BaseController
         $search->setLocation($location);
         $search->setType($type);
 
-        // The path of the page: a GET form drops the query string of its action, so the type and the category of a
-        // venue come as hidden fields (location/agenda/_filters.html.twig)
-        return $this->generateUrl(...match (true) {
-            null !== $place => ['app_agenda_by_place', ['placeSlug' => $place->getSlug(), 'location' => $location->getSlug()]],
-            null !== $tag => ['app_agenda_by_tag', ['tagSlug' => $tag->getSlug(), 'tagId' => $tag->getId(), 'location' => $location->getSlug()]],
-            null !== $type => ['app_agenda_by_type', ['typeSlug' => $type->getSlug(), 'location' => $location->getSlug()]],
-            default => ['app_location_index', ['location' => $location->getSlug()]],
-        });
+        return $search;
     }
 }
