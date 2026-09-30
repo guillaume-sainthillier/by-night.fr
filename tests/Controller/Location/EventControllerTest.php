@@ -275,13 +275,25 @@ final class EventControllerTest extends WebTestCase
     public function testAVisitorsPageIsSharedByTheCdnButNotKeptByTheBrowser(): void
     {
         $client = self::createClient();
-        $event = $this->createEvent();
+        $event = $this->createEvent(new DateTimeImmutable('-10 years'));
 
         $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
-        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=3600');
+        // Ended: a week (EventPageCache), served stale while Cloudflare asks again or the origin is down
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=604800, stale-if-error=86400, stale-while-revalidate=86400');
+        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d', $event->getId(), $event->getPlace()?->getId()));
         self::assertSame([], $client->getResponse()->headers->getCookies());
+    }
+
+    public function testAHiddenDraftsNoticeIsTaggedSoPublishingPurgesIt(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(draft: true);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d', $event->getId(), $event->getPlace()?->getId()));
     }
 
     public function testAMembersPageStaysPrivate(): void
