@@ -911,12 +911,11 @@
     unplugin "^3.4.0"
 
 "@tabler/core@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@tabler/core/-/core-1.4.0.tgz#9e011289d92cf6120655793cef6576fd67eb07f3"
-  integrity sha512-5BigzOlbOH9N0Is4u0rYNRCiwtnUXWO57K9zwuscygcicAa8UV9MGaS4zTgQsZEtZ9tsNANhN/YD8gCBGKYCiw==
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@tabler/core/-/core-1.6.1.tgz#eeca2b82f8be5200d97696aaad125a69fe0a57a8"
+  integrity sha512-lgmR9gcxRp5JlLxcmRi9Rz85JrEvH6Bz71KnlcPVSa97wtwQNjgSs3g3fxwbAlulHyRMghhIV04QUuW3pqDsIg==
   dependencies:
     "@popperjs/core" "^2.11.8"
-    bootstrap "5.3.7"
 
 "@tarekraafat/autocomplete.js@^10.2.9":
   version "10.2.10"
