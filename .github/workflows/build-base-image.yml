@@ -1,8 +1,8 @@
 name: 'Build Base Image'
 
 # The runtime base bakes in the PHP extensions + the MJML extension. It changes rarely.
-# This workflow PUBLISHES it on main / manual dispatch. PR validation is handled by
-# validate-image-build.yml (which builds base -> app), so there is no PR trigger here.
+# This workflow PUBLISHES it on main / manual dispatch. PRs build it (base -> app) in the
+# "Build images (no push)" job of continuous-integration.yml, so there is no PR trigger here.
 #
 # The version is the single source of truth in docker/base/VERSION (e.g. php85-v1).
 # Bump it together with any docker/base/ change. Published tags are immutable: when

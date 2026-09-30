@@ -71,9 +71,68 @@ jobs:
             - name: Test
               run: yarn test
 
+    image:
+        # Part of this workflow (not a workflow of its own) so that "CI passed" waits for it: a Renovate bump that
+        # broke the release image (@tabler/core 1.6, #645) was merged while only its image build was red.
+        # Every PR: besides the Dockerfile, docker/ and the dependencies, the build runs `yarn build` over assets/
+        # and templates/, and the prod `cache:warmup` over src/ and config/, which the test env does not.
+        #
+        # Nothing is pushed and no cache is used. The base (docker/base) is stable and slow to build (ext-mjml
+        # compiles from Rust), so it is only rebuilt when the PR changes docker/base/; otherwise the published,
+        # immutable guystlr/by-night-base:<docker/base/VERSION> is pulled. Either way it lands in the local image
+        # store, where the app's `FROM` resolves it, so a PR bumping VERSION to an unpublished tag still validates.
+        name: Build images (no push)
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        env:
+            DOCKER_BUILDKIT: '1'
+            # Secrets can't be tested in `if:`; empty on fork PRs.
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  # HEAD is the PR merge commit and HEAD^1 the base branch tip, so
+                  # `git diff HEAD^1 HEAD` is exactly what the PR changes.
+                  fetch-depth: 2
+
+            # The base image is private. Without credentials (fork PRs) the pull below
+            # fails and the base is built locally instead.
+            - name: Login to Docker Hub
+              if: env.DOCKER_USERNAME != ''
+              uses: docker/login-action@v4
+              with:
+                  username: ${{ env.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Pull or build base image
+              id: base
+              run: |
+                  TAG=$(cat docker/base/VERSION)
+                  if [ -z "$TAG" ]; then echo "::error::docker/base/VERSION is empty"; exit 1; fi
+                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+                  IMAGE="guystlr/by-night-base:$TAG"
+
+                  if git diff --quiet HEAD^1 HEAD -- docker/base/; then
+                      if docker pull --quiet "$IMAGE"; then
+                          echo "::notice::docker/base/ unchanged — reusing published $IMAGE"
+                          exit 0
+                      fi
+                      echo "::warning::$IMAGE could not be pulled (unpublished, or no registry credentials) — building it locally"
+                  elif git diff --quiet HEAD^1 HEAD -- docker/base/VERSION; then
+                      echo "::warning file=docker/base/VERSION::docker/base/ changed without a VERSION bump — published tags are immutable, so this change will never be published"
+                  fi
+
+                  docker build -t "$IMAGE" docker/base
+
+            - name: Build app image
+              run: docker build --build-arg "BASE_IMAGE_TAG=${{ steps.base.outputs.tag }}" -t by-night:pr .
+
     ci-passed:
         name: CI passed
-        needs: [matrix, qa, lint, test]
+        # image is skipped on pushes to main: skipped jobs pass, only a failed or cancelled one fails this check
+        needs: [matrix, qa, lint, test, image]
         if: always()
         runs-on: ubuntu-latest
         steps:
