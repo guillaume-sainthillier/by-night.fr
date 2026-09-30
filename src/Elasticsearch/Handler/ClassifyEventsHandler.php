@@ -17,8 +17,9 @@ use DateTimeImmutable;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Stores the agenda types of the events just indexed, and recounts the type counts of their cities and countries
- * when they changed: an event imported or changed on the site shows on its type links and cards right away.
+ * Stores the agenda types of the events just indexed: an event imported or changed on the site shows on its type
+ * links right away. The type counts of its city and country are recounted when it changed on the site, so its type
+ * card counts it too; those of the imports wait for app:events:classify-agenda-types, run after the parsers.
  */
 #[AsMessageHandler]
 final readonly class ClassifyEventsHandler
@@ -32,7 +33,7 @@ final readonly class ClassifyEventsHandler
     public function __invoke(ClassifyEvents $message): void
     {
         $changed = $this->classifier->classify($message->eventIds, new DateTimeImmutable('today'));
-        if ([] !== $changed) {
+        if ($message->recount && [] !== $changed) {
             $this->counter->refreshAgendaTypesOfEvents($changed);
         }
     }

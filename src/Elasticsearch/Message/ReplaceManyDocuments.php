@@ -20,6 +20,8 @@ final class ReplaceManyDocuments extends DocumentsAction
         string $indexName,
         private readonly string $entityClass,
         private readonly array $entityIds,
+        /** Made by a member or an admin on the site, not by an import or a worker */
+        private readonly bool $changedOnSite = false,
     ) {
         parent::__construct($indexName);
     }
@@ -38,5 +40,10 @@ final class ReplaceManyDocuments extends DocumentsAction
     public function getEntityIds(): array
     {
         return $this->entityIds;
+    }
+
+    public function isChangedOnSite(): bool
+    {
+        return $this->changedOnSite;
     }
 }
