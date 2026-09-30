@@ -71,3 +71,6 @@ when@test:
                 memory: ~
             cities.storage:
                 memory: ~
+            # Rendered thumbnails too (APP_THUMB_STORAGE_SOURCE=local in .env.test): nothing written to var/
+            thumbs.local_storage:
+                memory: ~
