@@ -275,15 +275,15 @@
                                 {% else %}
                                     {% do formDelete.delete_events.setRendered %}
                                 {% endif %}
-                                {% set confirmation_label %}Pour confirmer, tapez <strong class="text-danger">{{ constant('App\\Controller\\User\\ProfileController::DELETE_CONFIRMATION') }}</strong> ci-dessous{% endset %}
+                                {% set confirmation_label %}Pour confirmer, tapez <strong class="text-danger">{{ constant('App\\Form\\Type\\DeleteAccountFormType::CONFIRMATION') }}</strong> ci-dessous{% endset %}
                                 {{ form_row(formDelete.confirmation, {
                                     label: confirmation_label,
                                     label_html: true,
                                     row_class: 'mb-0',
                                     attr: {
-                                        placeholder: constant('App\\Controller\\User\\ProfileController::DELETE_CONFIRMATION'),
+                                        placeholder: constant('App\\Form\\Type\\DeleteAccountFormType::CONFIRMATION'),
                                         autocomplete: 'off',
-                                        'data-delete-confirmation': constant('App\\Controller\\User\\ProfileController::DELETE_CONFIRMATION'),
+                                        'data-delete-confirmation': constant('App\\Form\\Type\\DeleteAccountFormType::CONFIRMATION'),
                                     },
                                 }) }}
                             </div>
