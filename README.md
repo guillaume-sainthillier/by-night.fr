@@ -37,8 +37,9 @@ must be passed explicitly on every build.
 dispatch — since published tags are immutable, it is a no-op when the
 `docker/base/VERSION` tag already exists. The release workflow passes
 `BASE_IMAGE_TAG` from `docker/base/VERSION` automatically and republishes a missing
-base tag itself before building the app, so releases are self-healing. PR validation
-is handled by `validate-image-build.yml` (builds base then app, no push).
+base tag itself before building the app, so releases are self-healing. Every PR builds
+the images (base when `docker/base/` changes, then app, no push) in the "Build images
+(no push)" job of `continuous-integration.yml`, which "CI passed" requires.
 
 For local builds, export the version first, then build/pull:
 
