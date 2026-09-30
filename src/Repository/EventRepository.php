@@ -751,30 +751,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getSingleScalarResult();
     }
 
-    public function getParticipationTrendsCount(Event $event): int
-    {
-        return $this->getTrendsCount($event);
-    }
-
-    public function getInterestTrendsCount(Event $event): int
-    {
-        return $this->getTrendsCount($event, false);
-    }
-
-    protected function getTrendsCount(Event $event, bool $isParticipation = true): int
-    {
-        return (int) $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('COUNT(u)')
-            ->from(UserEvent::class, 'ue')
-            ->join('ue.user', 'u')
-            ->where('ue.event = :event')
-            ->andWhere(($isParticipation ? 'ue.going' : 'ue.wish') . ' = true')
-            ->setParameter('event', $event->getId())
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
     public function findAllSimilarsQueryBuilder(Event $event): QueryBuilder
     {
         $qb = $this

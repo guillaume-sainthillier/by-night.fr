@@ -37,6 +37,39 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
         parent::__construct($registry, UserEvent::class);
     }
 
+    /**
+     * The participations (going) and the interests (wish) of each event, which its counters store
+     * (EventParticipationManager::recount()).
+     *
+     * @param list<int> $eventIds
+     *
+     * @return array<int, array{participations: int, interests: int}> by event id; an event nobody follows is left out
+     */
+    public function countByEvents(array $eventIds): array
+    {
+        $counts = [];
+        foreach (array_chunk($eventIds, 1_000) as $chunk) {
+            /** @var list<array{event: int|string, participations: int|string|null, interests: int|string|null}> $rows */
+            $rows = $this
+                ->createQueryBuilder('ue')
+                ->select('IDENTITY(ue.event) AS event')
+                ->addSelect('SUM(CASE WHEN ue.going = true THEN 1 ELSE 0 END) AS participations')
+                ->addSelect('SUM(CASE WHEN ue.wish = true THEN 1 ELSE 0 END) AS interests')
+                ->join('ue.user', 'u')
+                ->where('ue.event IN (:ids)')
+                ->groupBy('ue.event')
+                ->setParameter('ids', $chunk)
+                ->getQuery()
+                ->getArrayResult();
+
+            foreach ($rows as $row) {
+                $counts[(int) $row['event']] = ['participations' => (int) $row['participations'], 'interests' => (int) $row['interests']];
+            }
+        }
+
+        return $counts;
+    }
+
     public function loadAllEager(array $entities, array $context = []): void
     {
         if ('admin:index' === ($context['view'] ?? null)) {

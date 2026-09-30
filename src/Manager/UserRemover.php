@@ -17,7 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Deletes a member's account, whether they close it from their profile or an admin deletes it: their
- * comments and favourites go with it (the counters of the favourite events drop), their events are
+ * comments and favourites go with it (the counters of the favourite events are recounted), their events are
  * deleted too or stay online without an author. Comments, favourites and events reference the member
  * without any ON DELETE rule, so removing the account alone is refused by the database.
  */
@@ -27,6 +27,7 @@ final readonly class UserRemover
         private EntityManagerInterface $entityManager,
         private EventRepository $eventRepository,
         private CommentRepository $commentRepository,
+        private EventParticipationManager $eventParticipationManager,
     ) {
     }
 
@@ -40,14 +41,9 @@ final readonly class UserRemover
             }
         }
 
+        $followed = [];
         foreach ($user->getUserEvents() as $userEvent) {
-            $event = $userEvent->getEvent();
-            if ($userEvent->getGoing()) {
-                $event->setParticipations($event->getParticipations() - 1);
-            } else {
-                $event->setInterests($event->getInterests() - 1);
-            }
-
+            $followed[] = $userEvent->getEvent();
             $this->entityManager->remove($userEvent);
         }
 
@@ -56,6 +52,7 @@ final readonly class UserRemover
         }
 
         $this->entityManager->flush();
+        $this->eventParticipationManager->recount(array_filter($followed));
 
         // TODO: Optimize flush & check constraints
         $this->entityManager->remove($user);

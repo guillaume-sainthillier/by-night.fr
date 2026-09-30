@@ -17,10 +17,10 @@ use App\DtoFactory\EventDtoFactory;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
-use App\Entity\UserEvent;
 use App\Enum\PersonalEventFilter;
 use App\Form\Type\EventType;
 use App\Handler\DoctrineEventHandler;
+use App\Manager\EventParticipationManager;
 use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
 use App\Validator\Constraints\EventConstraintValidator;
@@ -63,7 +63,7 @@ final class EventController extends BaseController
     }
 
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager, DoctrineEventHandler $doctrineEventHandler): Response
+    public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager, DoctrineEventHandler $doctrineEventHandler, EventParticipationManager $eventParticipationManager): Response
     {
         if (!$this->isGranted(EventVoter::CREATE)) {
             return $this->redirectToRoute('app_event_list');
@@ -82,13 +82,7 @@ final class EventController extends BaseController
             $doctrineEventHandler->handleOne($eventDto);
             $user = $entityManager->getReference(User::class, $eventDto->user->entityId);
             $event = $entityManager->getReference(Event::class, $eventDto->entityId);
-            $event->setParticipations(1);
             $event->setDraft($this->isSavedAsDraft($form));
-
-            $userEvent = new UserEvent()
-                ->setUser($user)
-                ->setGoing(true);
-            $event->addUserEvent($userEvent);
             $em = $this->getEntityManager();
 
             $em->persist($event);
@@ -102,6 +96,9 @@ final class EventController extends BaseController
             }
 
             $em->flush();
+            // Its author goes
+            $eventParticipationManager->participate($user, $event, true);
+
             $this->addFlash(
                 'success',
                 $event->isDraft()
