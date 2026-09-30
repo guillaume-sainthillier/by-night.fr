@@ -69,3 +69,13 @@ jobs:
               run: yarn install --frozen-lockfile
             - name: Run Vitest
               run: yarn test
+
+    ci-passed:
+        name: CI passed
+        needs: [matrix, qa, lint, test-js]
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check that all required jobs succeeded
+              if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+              run: exit 1
