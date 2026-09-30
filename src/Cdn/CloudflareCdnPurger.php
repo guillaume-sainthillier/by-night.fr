@@ -52,19 +52,31 @@ final readonly class CloudflareCdnPurger
         $urls = array_map(fn (string $path): string => rtrim($this->s3Url, '/') . '/' . ltrim($path, '/'), $paths);
 
         foreach (array_chunk($urls, self::MAX_FILES_PER_REQUEST) as $chunk) {
-            $this->purgeUrls($chunk);
+            $this->request(['files' => $chunk]);
         }
     }
 
     /**
-     * @param string[] $urls
+     * Purge every cached response carrying one of these Cache-Tag values (e.g. EventPageCache::TAG).
+     *
+     * Same chunking and quota as purge(): Cloudflare takes up to MAX_FILES_PER_REQUEST tags per request.
+     *
+     * @param string[] $tags
      */
-    private function purgeUrls(array $urls): void
+    public function purgeTags(array $tags): void
+    {
+        foreach (array_chunk(array_values(array_unique($tags)), self::MAX_FILES_PER_REQUEST) as $chunk) {
+            $this->request(['tags' => $chunk]);
+        }
+    }
+
+    /**
+     * @param array{files?: list<string>, tags?: list<string>} $body
+     */
+    private function request(array $body): void
     {
         $response = $this->cloudflareClient->request('POST', \sprintf('zones/%s/purge_cache', $this->zoneId), [
-            'json' => [
-                'files' => $urls,
-            ],
+            'json' => $body,
         ]);
 
         $data = $response->toArray();
