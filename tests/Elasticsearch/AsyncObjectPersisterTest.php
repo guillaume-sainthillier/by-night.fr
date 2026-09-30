@@ -12,6 +12,8 @@ namespace App\Tests\Elasticsearch;
 
 use App\Elasticsearch\AsyncObjectPersister;
 use App\Elasticsearch\ElasticaMode;
+use App\Elasticsearch\Message\InsertManyDocuments;
+use App\Elasticsearch\Message\ReplaceManyDocuments;
 use App\Entity\Event;
 use App\Factory\EventFactory;
 use App\Messenger\TransactionalMessageDispatcher;
@@ -23,6 +25,10 @@ use Elastica\Client;
 use Elastica\Document;
 use Elastica\Index;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 final class AsyncObjectPersisterTest extends AppKernelTestCase
 {
@@ -99,6 +105,7 @@ final class AsyncObjectPersisterTest extends AppKernelTestCase
             new ElasticaMode(),
             self::getContainer()->get(TransactionalMessageDispatcher::class),
             self::getContainer()->get(EntityManagerInterface::class),
+            new RequestStack(),
         );
         $persister->doReplaceMany([$event]);
 
@@ -106,5 +113,34 @@ final class AsyncObjectPersisterTest extends AppKernelTestCase
         // The fields that became null are not left behind: the index serializes them as null
         // (serialize_null in fos_elastica.yaml), and the merge clears what was stored.
         self::assertSame(['replaceMany'], $decorated->calls);
+    }
+
+    public function testAChangeMadeWithinARequestIsMarkedAsMadeOnTheSite(): void
+    {
+        $event = EventFactory::createOne();
+        $requestStack = new RequestStack();
+        $persister = new AsyncObjectPersister(
+            self::createStub(ObjectPersisterInterface::class),
+            new Index(new Client(), 'event'),
+            Event::class,
+            new ElasticaMode(),
+            self::getContainer()->get(TransactionalMessageDispatcher::class),
+            self::getContainer()->get(EntityManagerInterface::class),
+            $requestStack,
+        );
+
+        // An import, or a worker
+        $persister->insertMany([$event]);
+        $requestStack->push(new Request());
+        $persister->replaceMany([$event]);
+
+        /** @var InMemoryTransport $transport */
+        $transport = self::getContainer()->get('messenger.transport.async');
+        $messages = array_map(static fn (Envelope $envelope): object => $envelope->getMessage(), $transport->getSent());
+        self::assertCount(2, $messages);
+        self::assertInstanceOf(InsertManyDocuments::class, $messages[0]);
+        self::assertFalse($messages[0]->isChangedOnSite());
+        self::assertInstanceOf(ReplaceManyDocuments::class, $messages[1]);
+        self::assertTrue($messages[1]->isChangedOnSite());
     }
 }

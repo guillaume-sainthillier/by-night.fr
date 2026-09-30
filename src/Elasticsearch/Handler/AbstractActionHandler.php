@@ -51,7 +51,8 @@ abstract class AbstractActionHandler
     protected function classify(InsertManyDocuments|ReplaceManyDocuments $action): void
     {
         if (Event::class === $action->getEntityClass()) {
-            $this->messageBus->dispatch(new ClassifyEvents(array_values(array_map(intval(...), $action->getEntityIds()))), [new DelayStamp(self::CLASSIFY_DELAY_MS)]);
+            $ids = array_values(array_map(intval(...), $action->getEntityIds()));
+            $this->messageBus->dispatch(new ClassifyEvents($ids, recount: $action->isChangedOnSite()), [new DelayStamp(self::CLASSIFY_DELAY_MS)]);
         }
     }
 

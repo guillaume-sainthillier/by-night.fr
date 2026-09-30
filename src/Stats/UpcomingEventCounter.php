@@ -33,9 +33,10 @@ use Silarhi\CursorPagination\Pagination\CursorPagination;
  * Run daily just after midnight by app:events:count-upcoming, when yesterday's events stop being "to come"; the
  * events imported during the day show in the counts the next night. An event created, changed or deleted on the site
  * (personal space, back office) is recounted right away, for its venues only (refreshPlaces(), see
- * UpcomingEventCountListener). The type counts of the cities and countries of an event are also recounted once its
- * types are found, as soon as it is indexed (refreshAgendaTypesOfEvents(), see ClassifyEventsHandler), imported or
- * not. The rows are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt changes and nothing is
+ * UpcomingEventCountListener), and so are the type counts of its city and country once its types are found, as soon
+ * as it is indexed (refreshAgendaTypesOfEvents(), see ClassifyEventsHandler). The type counts of every city and
+ * country are recounted again by app:events:classify-agenda-types, run after the parsers (refreshAgendaTypes()). The
+ * rows are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt changes and nothing is
  * reindexed.
  *
  * The counts are read by plain SELECTs, then only the changed rows are written, by id. A single UPDATE joined to the
@@ -75,8 +76,7 @@ final readonly class UpcomingEventCounter
     }
 
     /**
-     * Recounts the agenda types of every city and country, once app:events:classify-agenda-types changed the types
-     * stored on the events.
+     * Recounts the agenda types of every city and country: app:events:classify-agenda-types, once the parsers ran.
      *
      * @return int the number of type counts stored
      */
@@ -86,7 +86,7 @@ final readonly class UpcomingEventCounter
     }
 
     /**
-     * Recounts the agenda types of the cities and countries of these events, once their types changed.
+     * Recounts the agenda types of the cities and countries of these events, once their types changed on the site.
      *
      * @param list<int> $eventIds
      *

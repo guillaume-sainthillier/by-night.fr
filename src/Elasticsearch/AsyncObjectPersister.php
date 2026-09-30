@@ -18,6 +18,7 @@ use App\Messenger\TransactionalMessageDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastica\Index;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 final readonly class AsyncObjectPersister implements ObjectPersisterInterface
 {
@@ -31,6 +32,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         private ElasticaMode $elasticaMode,
         private TransactionalMessageDispatcher $messageDispatcher,
         private EntityManagerInterface $entityManager,
+        private RequestStack $requestStack,
     ) {
         $this->indexName = $index->getName();
     }
@@ -69,7 +71,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         }
 
         $entityIds = array_map(static fn (object $object): mixed => $object->getId(), $objects);
-        $this->messageDispatcher->dispatch(new InsertManyDocuments($this->indexName, $this->entityClass, $entityIds));
+        $this->messageDispatcher->dispatch(new InsertManyDocuments($this->indexName, $this->entityClass, $entityIds, $this->isChangedOnSite()));
     }
 
     public function replaceMany(array $objects): void
@@ -81,7 +83,7 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         }
 
         $entityIds = array_map(static fn (object $object): mixed => $object->getId(), $objects);
-        $this->messageDispatcher->dispatch(new ReplaceManyDocuments($this->indexName, $this->entityClass, $entityIds));
+        $this->messageDispatcher->dispatch(new ReplaceManyDocuments($this->indexName, $this->entityClass, $entityIds, $this->isChangedOnSite()));
     }
 
     public function deleteMany(array $objects): void
@@ -105,6 +107,14 @@ final readonly class AsyncObjectPersister implements ObjectPersisterInterface
         }
 
         $this->messageDispatcher->dispatch(new DeleteManyDocumentsByIdentifiers($this->indexName, $identifiers, $routing));
+    }
+
+    /**
+     * Within a request: a change a member or an admin made on the site. Imports and workers run outside any.
+     */
+    private function isChangedOnSite(): bool
+    {
+        return null !== $this->requestStack->getMainRequest();
     }
 
     /**

@@ -20,12 +20,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Finds the agenda type pages that list each event to come, which the counts of the agenda's type links read. Each
- * event is already classified once indexed (ClassifyEventsHandler): run it to fill the types of the events indexed
- * before, or after a change of the type terms (AgendaType::getTerms()). The async worker re-indexes the events it
- * changed, and the type counts of the cities and countries are recounted right after.
+ * Finds the agenda type pages that list each event to come, which the counts of the agenda's type links read, then
+ * recounts the type counts of every city and country. Scheduled on the host after the parsers: the indexing already
+ * classified each event it wrote (ClassifyEventsHandler), but only recounts those changed on the site, so the type
+ * cards count the night's imports from here. It also fills the types of the events indexed before a change of the
+ * type terms (AgendaType::getTerms()); the async worker re-indexes the events it changed.
  */
-#[AsCommand('app:events:classify-agenda-types', 'Store the agenda types of every event to come (a backfill: the indexing classifies each event)')]
+#[AsCommand('app:events:classify-agenda-types', 'Store the agenda types of every event to come and recount the type counts (after the parsers)')]
 final class EventsClassifyAgendaTypesCommand extends Command
 {
     public function __construct(
@@ -41,7 +42,8 @@ final class EventsClassifyAgendaTypesCommand extends Command
 
         $written = $this->classifier->refresh(new DateTimeImmutable('today'));
 
-        $counts = $written > 0 ? $this->counter->refreshAgendaTypes() : 0;
+        // Even when nothing changed here: the indexing classified the imports, without recounting them
+        $counts = $this->counter->refreshAgendaTypes();
 
         $io->success(\sprintf('Agenda types of %d events updated, %d type counts of cities and countries stored.', $written, $counts));
 
