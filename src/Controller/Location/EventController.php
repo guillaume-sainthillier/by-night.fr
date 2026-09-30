@@ -11,6 +11,7 @@
 namespace App\Controller\Location;
 
 use App\App\AppContext;
+use App\Cdn\EventPageCache;
 use App\Controller\AbstractController as BaseController;
 use App\Controller\Comment\CommentController;
 use App\Entity\Comment;
@@ -28,11 +29,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EventController extends BaseController
 {
-    // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
-    #[Cache(maxage: 0, smaxage: 3600, public: true)]
+    // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login.
+    // EventPageCache sets the lifetime of an event page (a day, a week once ended) and the tags that purge it;
+    // Cloudflare serves the cached page while it asks again, or while the origin is down (a deploy)
+    #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
-    public function index(AppContext $appContext, EventRedirectManager $eventRedirectManager, CommentRepository $commentRepository, UserRepository $userRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
+    public function index(AppContext $appContext, EventPageCache $eventPageCache, EventRedirectManager $eventRedirectManager, CommentRepository $commentRepository, UserRepository $userRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
     {
         $location = $appContext->getLocation();
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_event_details');
@@ -40,11 +43,11 @@ final class EventController extends BaseController
         // Those who can edit a draft (its author, an admin) preview it as it will be published; everyone else only
         // gets a notice, so the page needs none of the widgets below
         if (!$this->isGranted(EventVoter::VIEW, $event)) {
-            return $this->render('location/event/index.html.twig', [
+            return $eventPageCache->applyTo($this->render('location/event/index.html.twig', [
                 'location' => $location,
                 'event' => $event,
                 'isHiddenDraft' => true,
-            ]);
+            ]), $event);
         }
 
         // Canonical URL, shared by the "Partager" links
@@ -93,6 +96,6 @@ final class EventController extends BaseController
             'nextEventsData' => $nextEventsData,
         ];
 
-        return $this->render('location/event/index.html.twig', $renderData);
+        return $eventPageCache->applyTo($this->render('location/event/index.html.twig', $renderData), $event);
     }
 }

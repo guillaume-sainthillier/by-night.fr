@@ -3,9 +3,9 @@
 {% block title 'Connexion réussie' %}
 {% block page_title 'Connexion réussie' %}
 
+{# What SocialLogin.js shows of the connected account #}
 {% set userInfo = {
     username: userInformation.name,
-    email: userInformation.email,
 } %}
 
 {% block hwi_oauth_content -%}

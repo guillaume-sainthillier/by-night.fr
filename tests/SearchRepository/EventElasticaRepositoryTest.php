@@ -95,25 +95,12 @@ final class EventElasticaRepositoryTest extends TestCase
     }
 
     /**
-     * All the synonyms of a type page together matched almost nothing ("étudiant": 0 of
-     * 4,266 upcoming events in Toulouse): an event naming any one of them is listed too,
-     * on top of what the keywords query finds.
+     * A type page lists the events classified in its type last night: a term, not its
+     * full-text search (~0.1 s a type).
      */
-    public function testATypePageListsTheEventsNamingAnyOfItsTerms(): void
+    public function testATypePageListsTheEventsStoredInItsType(): void
     {
-        $anyTerm = $this->typeFilterOf(AgendaType::Student)['bool'];
-
-        self::assertSame(1, $anyTerm['minimum_should_match']);
-        self::assertContains(['multi_match' => [
-            'query' => 'boîte de nuit',
-            'type' => 'phrase',
-            'fields' => ['name^5', 'name.heavy^5', 'category.name^3', 'type'],
-        ]], $anyTerm['should']);
-        self::assertContains(
-            ['nested' => ['path' => 'themes', 'query' => ['match_phrase' => ['themes.name' => 'soirée']]]],
-            $anyTerm['should'],
-        );
-        self::assertContains('soirée étudiant bar discothèque boîte de nuit after work', array_map(static fn (array $clause) => $clause['multi_match']['query'] ?? null, $anyTerm['should']), 'What the keywords query found stays listed');
+        self::assertEquals(['term' => ['agendaTypes' => 'concert']], $this->typeFilterOf(AgendaType::Concert));
     }
 
     /**
@@ -244,17 +231,39 @@ final class EventElasticaRepositoryTest extends TestCase
         ]]]]]], $query['query']['bool']['filter']);
     }
 
-    public function testTheTypesOfTheEventsToComeAreFoundWithTheFilterOfTheirPage(): void
+    public function testTheTypesOfTheEventsToComeAreFoundByTheirPagesFullTextSearch(): void
     {
         $query = $this->repository->createAgendaTypeQuery(AgendaType::Concert, new DateTimeImmutable('2026-10-10'))->toArray();
 
-        self::assertEquals([
-            ['nested' => ['path' => 'sessions', 'query' => ['bool' => ['filter' => [
-                ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
-            ]]]]],
-            $this->typeFilterOf(AgendaType::Concert),
-        ], $query['query']['bool']['filter']);
+        $filters = $query['query']['bool']['filter'];
+        self::assertCount(2, $filters);
+        self::assertEquals(['nested' => ['path' => 'sessions', 'query' => ['bool' => ['filter' => [
+            ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
+        ]]]]], $filters[0]);
+        self::assertContains('concert musique artiste', array_map(static fn (array $clause) => $clause['multi_match']['query'] ?? null, $filters[1]['bool']['should']));
         self::assertFalse($query['_source']);
+    }
+
+    /**
+     * All the synonyms of a type page together matched almost nothing ("étudiant": 0 of
+     * 4,266 upcoming events in Toulouse): an event naming any one of them is classified in
+     * the type too, on top of what the keywords query finds.
+     */
+    public function testAnEventNamingAnyTermOfATypeIsClassifiedInIt(): void
+    {
+        $anyTerm = $this->repository->createAgendaTypeQuery(AgendaType::Student, new DateTimeImmutable('2026-10-10'))->toArray()['query']['bool']['filter'][1]['bool'];
+
+        self::assertSame(1, $anyTerm['minimum_should_match']);
+        self::assertContains(['multi_match' => [
+            'query' => 'boîte de nuit',
+            'type' => 'phrase',
+            'fields' => ['name^5', 'name.heavy^5', 'category.name^3', 'type'],
+        ]], $anyTerm['should']);
+        self::assertContains(
+            ['nested' => ['path' => 'themes', 'query' => ['match_phrase' => ['themes.name' => 'soirée']]]],
+            $anyTerm['should'],
+        );
+        self::assertContains('soirée étudiant bar discothèque boîte de nuit after work', array_map(static fn (array $clause) => $clause['multi_match']['query'] ?? null, $anyTerm['should']), 'What the keywords query found stays classified');
     }
 
     /**

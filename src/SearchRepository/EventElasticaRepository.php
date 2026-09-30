@@ -159,13 +159,11 @@ final class EventElasticaRepository extends Repository
             $windows->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter($range)), $name);
         }
 
-        // "all": the agenda without a type. The types found last night, not each type's full-text search: running the
-        // five of them took ~0.5 s on every agenda page, whatever its city (the fuzzy terms expand over the whole
-        // index). An event imported today counts on its type links from the next night; the type page lists it now.
+        // "all": the agenda without a type
         $types = new Filters('types');
         $types->addFilter(new MatchAll(), 'all');
         foreach (AgendaType::cases() as $type) {
-            $types->addFilter(new Term(['agendaTypes' => $type->value]), $type->value);
+            $types->addFilter($this->createTypeFilter($type), $type->value);
         }
 
         $venue = $this->createPlaceFilter($search);
@@ -192,7 +190,7 @@ final class EventElasticaRepository extends Repository
         if ($categories > 0) {
             $typeCategories = new Filters('types');
             foreach (AgendaType::cases() as $agendaType) {
-                $typeCategories->addFilter(new Term(['agendaTypes' => $agendaType->value]), $agendaType->value);
+                $typeCategories->addFilter($this->createTypeFilter($agendaType), $agendaType->value);
             }
 
             $typeCategories->addAggregation(new TermsAggregation('categories')->setField('category.id')->setSize($categories));
@@ -332,15 +330,23 @@ final class EventElasticaRepository extends Repository
         ;
     }
 
-    private function createTypeFilter(?AgendaType $type): ?AbstractQuery
+    /**
+     * The events of a type page, and of its counts: the types stored on the events (Event::$agendaTypes), found by
+     * createTypeQuery() each night. Running that full-text search on each page took ~0.1–0.15 s per type, ~0.5 s for
+     * the five type links of every agenda page (the fuzzy terms expand over the whole index). An event imported or
+     * changed today shows on its type pages once classified again.
+     *
+     * @return ($type is null ? null : Term)
+     */
+    private function createTypeFilter(?AgendaType $type): ?Term
     {
-        return null !== $type ? $this->createTypeQuery($type) : null;
+        return null !== $type ? new Term(['agendaTypes' => $type->value]) : null;
     }
 
     /**
-     * The events of a type page: its synonyms all together, as typed keywords are, found almost nothing ("soirée,
-     * étudiant, bar, discothèque, boîte de nuit, after work" never is), so an event naming any one of them is listed
-     * too.
+     * The events a type page lists, by full text: its synonyms all together, as typed keywords are, found almost
+     * nothing ("soirée, étudiant, bar, discothèque, boîte de nuit, after work" never is), so an event naming any one
+     * of them is listed too.
      */
     private function createTypeQuery(AgendaType $type): BoolQuery
     {

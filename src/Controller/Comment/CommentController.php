@@ -30,31 +30,6 @@ final class CommentController extends BaseController
 {
     public const int COMMENTS_PER_PAGE = 10;
 
-    #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
-    public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response
-    {
-        $comment = new Comment();
-        $form = null;
-        if ($this->isGranted('ROLE_USER')) {
-            $form = $this->createForm(CommentType::class, $comment, [
-                'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-            ]);
-        }
-
-        $comments = $this->createMultipleEagerLoadingPaginator(
-            $commentRepository->findAllByEventQueryBuilder($event),
-            $commentRepository,
-            $page,
-            self::COMMENTS_PER_PAGE,
-        );
-
-        return $this->render('comment/list-and-form.html.twig', [
-            'comments' => $comments,
-            'event' => $event,
-            'form' => $form,
-        ]);
-    }
-
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {

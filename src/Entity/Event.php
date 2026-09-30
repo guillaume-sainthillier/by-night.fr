@@ -123,8 +123,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     /**
      * The agenda type pages (AgendaType values) the event is listed on, as last found by the nightly
-     * app:events:classify-agenda-types: the counts of the agenda's type links read them instead of running every
-     * type's full-text search on each page.
+     * app:events:classify-agenda-types: the type pages and the counts of the agenda's type links read them instead of
+     * running every type's full-text search on each page.
      *
      * @var list<string>
      */
