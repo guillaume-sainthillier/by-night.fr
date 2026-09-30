@@ -24,13 +24,12 @@ use App\Form\Type\SearchType;
 use App\Manager\TagRedirectManager;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
-use App\Repository\TagRepository;
 use App\Routing\AgendaTypeSlugRequirement;
 use App\Routing\AgendaUrlGenerator;
 use App\Search\AgendaFacets;
 use App\Search\AgendaSection;
-use App\Search\DateRange;
 use App\Search\SearchEvent;
+use App\SearchRepository\AgendaFacetsLoader;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\ResultWindow;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -73,9 +72,9 @@ final class AgendaController extends BaseController
         RepositoryManagerInterface $repositoryManager,
         EventRepository $eventRepository,
         PlaceRepository $placeRepository,
-        TagRepository $tagRepository,
         TagRedirectManager $tagRedirectManager,
         AgendaUrlGenerator $agendaUrlGenerator,
+        AgendaFacetsLoader $agendaFacetsLoader,
         int $page = 1,
         ?string $typeSlug = null,
         ?string $placeSlug = null,
@@ -165,10 +164,7 @@ final class AgendaController extends BaseController
         $dateRange = $search->getDateRange();
         $sections = AgendaSection::fromEvents($events->getCurrentPageResults(), $dateRange->from, $dateRange->to);
 
-        $facets = new AgendaFacets();
-        if ($isValid) {
-            $facets = $repository->getFacets($search, $this->getFacetDates($sections), self::PLACES, self::TYPE_CATEGORIES);
-        }
+        $facets = $isValid ? $agendaFacetsLoader->load($search, $sections, self::PLACES, self::TYPE_CATEGORIES) : new AgendaFacets();
 
         return $this->render('location/agenda/index.html.twig', [
             'location' => $location,
@@ -181,9 +177,7 @@ final class AgendaController extends BaseController
             'events' => $events,
             'sections' => $sections,
             'facets' => $facets,
-            'places' => $this->getPlaces($placeRepository, $facets),
             'categories' => $eventRepository->findUpcomingCategories($location, self::CATEGORIES),
-            'typeCategories' => $this->getTypeCategories($tagRepository, $facets),
             'page' => $page,
             'search' => $search,
             'dateRange' => $dateRange,
@@ -309,71 +303,6 @@ final class AgendaController extends BaseController
         }
 
         return $filters;
-    }
-
-    /**
-     * The date windows the filters count: the date shortcuts, and the days the page lists.
-     *
-     * @param list<AgendaSection> $sections
-     *
-     * @return array<string, DateRange>
-     */
-    private function getFacetDates(array $sections): array
-    {
-        $dates = [];
-        foreach (DateRangePreset::cases() as $preset) {
-            $dates[$preset->value] = $preset->range();
-        }
-
-        foreach ($sections as $section) {
-            $dates[$section->day->format('Y-m-d')] = new DateRange($section->day, $section->day);
-        }
-
-        return $dates;
-    }
-
-    /**
-     * @return list<Place> the busiest venues, the busiest first
-     */
-    private function getPlaces(PlaceRepository $placeRepository, AgendaFacets $facets): array
-    {
-        if ([] === $facets->places) {
-            return [];
-        }
-
-        $places = $placeRepository->findBy(['id' => array_keys($facets->places)]);
-        usort($places, static fn (Place $a, Place $b): int => $facets->places[$b->getId()] <=> $facets->places[$a->getId()]);
-
-        return $places;
-    }
-
-    /**
-     * The busiest categories of each type, with their counts, in the order of the facets.
-     *
-     * @return array<string, list<array{tag: Tag, events: int}>> by AgendaType value
-     */
-    private function getTypeCategories(TagRepository $tagRepository, AgendaFacets $facets): array
-    {
-        $ids = array_unique(array_merge(...array_map(array_keys(...), array_values($facets->typeCategories))));
-        if ([] === $ids) {
-            return [];
-        }
-
-        $tags = [];
-        foreach ($tagRepository->findBy(['id' => $ids]) as $tag) {
-            $tags[$tag->getId()] = $tag;
-        }
-
-        $typeCategories = [];
-        foreach ($facets->typeCategories as $type => $categories) {
-            foreach ($categories as $id => $events) {
-                if (isset($tags[$id])) {
-                    $typeCategories[$type][] = ['tag' => $tags[$id], 'events' => $events];
-                }
-            }
-        }
-
-        return $typeCategories;
     }
 
     private function createSearch(Location $location, ?AgendaType $type, ?Place $place, ?Tag $tag): SearchEvent
