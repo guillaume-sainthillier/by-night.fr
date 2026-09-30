@@ -910,6 +910,23 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $this->assertSame('Théâtre', TagFactory::find(['id' => $theatre->getId()])->getName(), 'The tag keeps its own spelling');
     }
 
+    /**
+     * The index also ignores trailing no-break spaces, which 49 production tags end with.
+     */
+    public function testAnExistingTagEndingWithANoBreakSpaceIsFound(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+        $humour = TagFactory::createOne(['name' => "Humour\u{A0}"]);
+
+        $dto = $this->makeEventWithPlace('tag-no-break-space', 'Le Bikini');
+        $dto->category = TagDto::fromString('Humour');
+        $this->handler->handleOne($dto);
+
+        $this->assertSame($humour->getId(), EventFactory::find(['externalId' => 'tag-no-break-space'])->getCategory()?->getId());
+        $this->assertSame(1, TagFactory::count());
+    }
+
     public function testSpellingsOfOneNewTagInABatchMakeOneTag(): void
     {
         $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);

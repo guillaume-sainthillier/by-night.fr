@@ -17,12 +17,28 @@ use App\Factory\EventFactory;
 use App\Messenger\TransactionalMessageDispatcher;
 use App\Tests\AppKernelTestCase;
 use Doctrine\ORM\EntityManagerInterface;
+use Elastica\Bulk;
+use Elastica\Bulk\Action;
 use Elastica\Client;
+use Elastica\Document;
 use Elastica\Index;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 final class AsyncObjectPersisterTest extends AppKernelTestCase
 {
+    /**
+     * The two async consumers can update the same document at once (BY-NIGHTFR-4VD).
+     */
+    public function testAConflictingUpdateIsRetried(): void
+    {
+        $client = self::getContainer()->get('fos_elastica.client.default');
+        self::assertInstanceOf(Client::class, $client);
+
+        $bulk = new Bulk($client)->addDocument(new Document('1', ['name' => 'Concert']), Action::OP_TYPE_UPDATE);
+
+        self::assertSame(3, $bulk->getActions()[0]->getMetadata()['retry_on_conflict'] ?? null);
+    }
+
     public function testAnUpdatedEventIsUpserted(): void
     {
         $event = EventFactory::createOne();

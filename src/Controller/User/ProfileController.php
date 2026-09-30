@@ -12,9 +12,9 @@ namespace App\Controller\User;
 
 use App\Controller\AbstractController;
 use App\Entity\User;
-use App\Entity\UserEvent;
 use App\Form\Type\ChangePasswordFormType;
 use App\Form\Type\ProfileFormType;
+use App\Manager\UserRemover;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
 use App\Security\EmailVerifier;
@@ -36,51 +36,12 @@ final class ProfileController extends AbstractController
     public const string DELETE_CONFIRMATION = 'SUPPRIMER';
 
     #[Route(path: '/delete', name: 'app_user_delete', methods: ['GET', 'POST'])]
-    public function delete(Request $request, EventRepository $eventRepository, CommentRepository $commentRepository, TokenStorageInterface $tokenStorage): Response
+    public function delete(Request $request, UserRemover $userRemover, TokenStorageInterface $tokenStorage): Response
     {
         $form = $this->createDeleteForm();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getEntityManager();
-
-            $deleteEvents = $form->get('delete_events')->getData();
-
-            $user = $this->getAppUser();
-            $events = $eventRepository->findBy([
-                'user' => $user,
-            ]);
-
-            foreach ($events as $event) {
-                if (!$deleteEvents) {
-                    $event->setUser(null);
-                } else {
-                    $em->remove($event);
-                }
-            }
-
-            $userEvents = $user->getUserEvents();
-            foreach ($userEvents as $userEvent) {
-                /** @var UserEvent $userEvent */
-                $event = $userEvent->getEvent();
-                if ($userEvent->getGoing()) {
-                    $event->setParticipations($event->getParticipations() - 1);
-                } else {
-                    $event->setInterests($event->getInterests() - 1);
-                }
-
-                $em->remove($userEvent);
-            }
-
-            $comments = $commentRepository->findAllByUser($user);
-            foreach ($comments as $comment) {
-                $em->remove($comment);
-            }
-
-            $em->flush();
-
-            // TODO: Optimize flush & check constraints
-            $em->remove($user);
-            $em->flush();
+            $userRemover->remove($this->getAppUser(), (bool) $form->get('delete_events')->getData());
 
             $this->addFlash('info', "Votre compte a bien été supprimé. À bientôt sur By Night\u{a0}!");
 

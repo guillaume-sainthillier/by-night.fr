@@ -29,6 +29,11 @@ final class CollationKeyTest extends TestCase
         yield 'sharp s' => ['Straße', 'Strasse', true];
         yield 'ligature' => ['œuvre', 'oeuvre', true];
         yield 'trailing spaces' => ['Concert  ', 'Concert', true];
+        yield 'trailing no-break space' => ["Humour\u{A0}", 'Humour', true];
+        yield 'trailing thin and ideographic spaces' => ["Soirée\u{2009}\u{3000}", 'Soirée', true];
+        yield 'inner no-break space' => ["Son\u{A0}et lumière", 'Son et lumière', true];
+        yield 'trailing tab counts' => ["Concert\t", 'Concert', false];
+        yield 'leading space counts' => ["\u{A0}Concert", 'Concert', false];
         yield 'emoji beyond the BMP' => ['🎸', '🎺', true];
         yield 'another word' => ['Jazz', 'Jaz', false];
         yield 'inner spaces count' => ['a b', 'a  b', false];

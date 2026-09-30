@@ -93,6 +93,11 @@ export function create({
             input: {
                 selection: (event) => {
                     const selection = event.detail.selection.value
+                    // The "no result" and error messages are list items the library selects as an empty result
+                    if (!selection) {
+                        return
+                    }
+
                     ac.input.value = selection[labelField]
 
                     if (valueInputElement) {

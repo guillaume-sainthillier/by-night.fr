@@ -3,6 +3,10 @@ fos_elastica:
     clients:
         default:
             hosts: ['%env(ELASTICSEARCH_URL)%']
+            # The two async consumers can update the same document at once: the losing update is
+            # retried rather than failing the bulk with a version conflict. Safe, as every update
+            # sends the whole current state of its entity.
+            retry_on_conflict: 3
 
     messenger: ~
     serializer:

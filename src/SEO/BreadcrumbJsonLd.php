@@ -46,6 +46,7 @@ final readonly class BreadcrumbJsonLd
             'itemListElement' => $items,
         ];
 
-        return json_encode($schema, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
+        // A label typed by a visitor may not be UTF-8: its invalid bytes become U+FFFD instead of a 500
+        return json_encode($schema, \JSON_THROW_ON_ERROR | \JSON_INVALID_UTF8_SUBSTITUTE | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRETTY_PRINT);
     }
 }

@@ -50,10 +50,9 @@ final class EventConstraintValidator extends ConstraintValidator implements Batc
             return;
         }
 
-        $this->logger->error('Event is rejected', [
-            'event' => (array) $value,
-            'reject' => (array) $reject,
-        ]);
+        // A refused submission is shown to its author as violations: nothing to report to Sentry,
+        // and the event holds its organiser's e-mails and phone numbers
+        $this->logger->info('Event is rejected', ['reason' => $reject->getReason()]);
 
         if ($reject->isBadEventName()) {
             $this->context->buildViolation($constraint->badEventName)->atPath('name')->addViolation();
