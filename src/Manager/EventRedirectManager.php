@@ -83,6 +83,28 @@ final readonly class EventRedirectManager
         return $event;
     }
 
+    /**
+     * As getEvent(), for what shows an event's surroundings (the events at its venue or on its date): a draft the
+     * visitor cannot see is not found at all, as they would tell where and when it takes place.
+     *
+     * @throws RedirectException     when URL needs to be redirected (SEO)
+     * @throws NotFoundHttpException when event is not found, or is a draft the visitor cannot see
+     */
+    public function getVisibleEvent(
+        ?int $eventId,
+        string $eventSlug,
+        string $locationSlug,
+        string $routeName,
+        array $routeParams = [],
+    ): Event {
+        $event = $this->getEvent($eventId, $eventSlug, $locationSlug, $routeName, $routeParams);
+        if (!$this->authorizationChecker->isGranted(EventVoter::VIEW, $event)) {
+            throw $this->createNotFoundException($eventId, $eventSlug);
+        }
+
+        return $event;
+    }
+
     private function createNotFoundException(?int $eventId, string $eventSlug): NotFoundHttpException
     {
         return new NotFoundHttpException(null === $eventId ? \sprintf('Event with slug "%s" not found', $eventSlug) : \sprintf('Event with id "%d" not found', $eventId));
