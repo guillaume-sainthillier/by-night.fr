@@ -230,6 +230,28 @@ final class UpcomingEventCounterTest extends AppKernelTestCase
         self::assertSame(2, UpcomingCountFactory::count(['agendaType' => null]), 'The category counts are left as they are');
     }
 
+    public function testTheTypeCountsOfTheZonesOfClassifiedEventsAreRecounted(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $france = $toulouse->getCountry();
+        $lyon = CityFactory::createOne(['name' => 'Lyon', 'country' => $france]);
+        $tomorrow = new DateTimeImmutable('tomorrow');
+        $classified = EventFactory::new()->withDates($tomorrow)->create(['place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $france])]);
+        $elsewhere = EventFactory::new()->withDates($tomorrow)->create(['place' => PlaceFactory::createOne(['city' => $lyon, 'country' => $france])]);
+        $this->counter->refresh();
+
+        // What the classification of the events just indexed stores
+        $classified->setAgendaTypes(['concert']);
+        $elsewhere->setAgendaTypes(['concert']);
+        save($classified);
+        save($elsewhere);
+
+        self::assertSame(2, $this->counter->refreshAgendaTypesOfEvents([(int) $classified->getId()]));
+        self::assertSame(['concert' => 1], $this->typeCounts($toulouse));
+        self::assertSame(['concert' => 2], $this->typeCounts($france));
+        self::assertSame([], $this->typeCounts($lyon), 'Its events were not classified');
+    }
+
     public function testTheTypeCountsOfARecountedVenueAreRewritten(): void
     {
         $toulouse = CityFactory::toulouse()->create();

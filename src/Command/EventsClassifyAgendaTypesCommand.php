@@ -20,12 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Finds the agenda type pages that list each event to come, which the counts of the agenda's type links read.
- * Scheduled on the host once a day, after the night's imports; the async worker re-indexes the events it changed.
- * The type counts of the cities and countries are recounted right after: the midnight app:events:count-upcoming
- * would only show the night's types the next day.
+ * Finds the agenda type pages that list each event to come, which the counts of the agenda's type links read. Each
+ * event is already classified once indexed (ClassifyEventsHandler): run it to fill the types of the events indexed
+ * before, or after a change of the type terms (AgendaType::getTerms()). The async worker re-indexes the events it
+ * changed, and the type counts of the cities and countries are recounted right after.
  */
-#[AsCommand('app:events:classify-agenda-types', 'Store the agenda types of every event to come (daily)')]
+#[AsCommand('app:events:classify-agenda-types', 'Store the agenda types of every event to come (a backfill: the indexing classifies each event)')]
 final class EventsClassifyAgendaTypesCommand extends Command
 {
     public function __construct(
@@ -41,9 +41,9 @@ final class EventsClassifyAgendaTypesCommand extends Command
 
         $written = $this->classifier->refresh(new DateTimeImmutable('today'));
 
-        $zones = $written > 0 ? $this->counter->refreshAgendaTypes() : 0;
+        $counts = $written > 0 ? $this->counter->refreshAgendaTypes() : 0;
 
-        $io->success(\sprintf('Agenda types of %d events updated, %d type counts of cities and countries stored.', $written, $zones));
+        $io->success(\sprintf('Agenda types of %d events updated, %d type counts of cities and countries stored.', $written, $counts));
 
         return Command::SUCCESS;
     }

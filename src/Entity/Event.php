@@ -124,9 +124,9 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $type = null;
 
     /**
-     * The agenda type pages (AgendaType values) the event is listed on, as last found by the nightly
-     * app:events:classify-agenda-types: the type pages and the counts of the agenda's type links read them instead of
-     * running every type's full-text search on each page.
+     * The agenda type pages (AgendaType values) the event is listed on, as found once its document is indexed
+     * (AgendaTypeClassifier): the type pages and the counts of the agenda's type links read them instead of running
+     * every type's full-text search on each page.
      *
      * @var list<string>
      */

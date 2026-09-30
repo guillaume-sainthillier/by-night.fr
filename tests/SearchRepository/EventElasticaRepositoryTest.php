@@ -250,6 +250,14 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertFalse($query['_source']);
     }
 
+    public function testTheTypesOfTheEventsJustIndexedAreFoundAmongThemOnly(): void
+    {
+        $query = $this->repository->createAgendaTypesQuery(new DateTimeImmutable('2026-10-10'), [12, 34])->toArray();
+
+        self::assertEquals(['ids' => ['values' => [12, 34]]], $query['query']['bool']['filter'][1]);
+        self::assertCount(5, $query['query']['bool']['should']);
+    }
+
     /**
      * All the synonyms of a type page together matched almost nothing ("étudiant": 0 of
      * 4,266 upcoming events in Toulouse): an event naming any one of them is classified in
