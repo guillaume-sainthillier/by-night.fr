@@ -1,4 +1,4 @@
-name: Validate Image Build
+name: 'Validate Image Build'
 
 # On PRs that touch the image build (app Dockerfile or docker/ config), build the final
 # application image to validate it compiles. Nothing is pushed and no cache is used —

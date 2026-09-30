@@ -1,4 +1,4 @@
-name: Build And Deploy Release
+name: 'Build and Deploy Release'
 
 on:
     push:
@@ -11,6 +11,7 @@ jobs:
     # (failed run, deleted tag, ...) so releases never depend on that workflow's state.
     # Published tags are immutable: when the tag exists this is a no-op (~seconds).
     base:
+        name: Ensure base image
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -59,6 +60,7 @@ jobs:
                   cache-to: type=gha,mode=max,scope=base
 
     build:
+        name: Build and push image
         needs: base
         runs-on: ubuntu-latest
         permissions:
@@ -98,6 +100,7 @@ jobs:
                   cache-to: type=gha,mode=max
 
     deploy:
+        name: Deploy to production
         needs: build
         runs-on: ubuntu-latest
         steps:
