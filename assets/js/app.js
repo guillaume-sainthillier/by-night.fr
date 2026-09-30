@@ -15,6 +15,7 @@ import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
 import emailVerify from '@/js/listeners/email-verify'
 import eventPublish from '@/js/listeners/event-publish'
+import feedback from '@/js/listeners/feedback'
 import filteredLink from '@/js/listeners/filtered-link'
 import formCollection from '@/js/listeners/form-collection'
 import formConfirm from '@/js/listeners/form-confirm'
@@ -82,6 +83,7 @@ class App {
             dropzone,
             emailVerify,
             eventPublish,
+            feedback,
             filteredLink,
             formCollection,
             formConfirm,
