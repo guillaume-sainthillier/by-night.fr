@@ -11,13 +11,9 @@
 namespace App\Controller\User;
 
 use App\Controller\AbstractController as BaseController;
-use App\Enum\MemberDistinction;
-use App\Enum\PersonalEventFilter;
 use App\Manager\UserRedirectManager;
-use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
-use App\Stats\MemberActivity;
-use App\Stats\MemberStats;
+use App\Stats\MemberProfileProvider;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -28,13 +24,9 @@ final class UserController extends BaseController
 
     private const int TOP_CITIES = 3;
 
-    private const int TOP_PLACES = 5;
-
-    private const int TOP_CATEGORIES = 5;
-
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
-    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, CommentRepository $commentRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
+    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, MemberProfileProvider $memberProfileProvider, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_index');
 
@@ -55,41 +47,25 @@ final class UserController extends BaseController
             ['view' => 'events:user:list'],
         );
 
-        $activity = new MemberActivity($eventRepository->countUserEventsByDay($user));
-        $publishedEventsCount = $eventRepository->countByUserAndFilter($user)[PersonalEventFilter::Visible->value];
-        $cities = $eventRepository->findUserCities($user);
-        $places = $eventRepository->findUserPlaces($user, self::TOP_PLACES);
-        $categories = $eventRepository->findUserCategories($user);
-        $topCategories = \array_slice($categories, 0, self::TOP_CATEGORIES);
-        $habits = $eventRepository->countUserCalendarHabits($user, MemberDistinction::PLANNER_DAYS);
-
-        $stats = new MemberStats(
-            activity: $activity,
-            publishedEvents: $publishedEventsCount,
-            comments: $commentRepository->countApprovedByUser($user),
-            cities: \count($cities),
-            busiestPlaceEvents: $places[0]['events'] ?? 0,
-            eventsAddedAhead: $habits['addedAhead'],
-            freeEvents: $habits['free'],
-        );
+        $profile = $memberProfileProvider->get($user);
 
         return $this->render('user/index.html.twig', [
             'user' => $user,
             'nextEvents' => $nextEvents,
             'previousEvents' => $previousEvents,
-            'favoriteEventsCount' => $eventRepository->getUserFavoriteEventsCount($user),
-            'publishedEventsCount' => $publishedEventsCount,
-            'activity' => $activity,
-            'distinctions' => MemberDistinction::earnedBy($user, $stats),
-            'cities' => \array_slice($cities, 0, self::TOP_CITIES),
-            'citiesCount' => \count($cities),
-            'cityEventsCount' => array_sum(array_column($cities, 'events')),
-            'places' => $places,
-            'placesCount' => $eventRepository->countUserPlaces($user),
-            'categories' => $topCategories,
-            'categoriesCount' => \count($categories),
-            'categoryEventsCount' => array_sum(array_column($categories, 'events')),
-            'categoryThemes' => $eventRepository->findUserThemesByCategory($user, array_column($topCategories, 'id')),
+            'favoriteEventsCount' => $profile->favoriteEvents,
+            'publishedEventsCount' => $profile->stats->publishedEvents,
+            'activity' => $profile->stats->activity,
+            'distinctions' => $profile->distinctions,
+            'cities' => \array_slice($profile->cities, 0, self::TOP_CITIES),
+            'citiesCount' => \count($profile->cities),
+            'cityEventsCount' => array_sum(array_column($profile->cities, 'events')),
+            'places' => $profile->places,
+            'placesCount' => $profile->placesCount,
+            'categories' => \array_slice($profile->categories, 0, MemberProfileProvider::TOP_CATEGORIES),
+            'categoriesCount' => \count($profile->categories),
+            'categoryEventsCount' => array_sum(array_column($profile->categories, 'events')),
+            'categoryThemes' => $profile->categoryThemes,
         ]);
     }
 
