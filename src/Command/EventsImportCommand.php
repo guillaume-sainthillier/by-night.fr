@@ -11,11 +11,9 @@
 namespace App\Command;
 
 use App\Contracts\ParserInterface;
-use App\Repository\ParserStateRepository;
+use App\Import\ParserRunner;
 use App\Utils\Monitor;
-use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,7 +32,7 @@ final class EventsImportCommand extends Command
     public function __construct(
         #[AutowireIterator(ParserInterface::class)]
         private readonly iterable $parsers,
-        private readonly ParserStateRepository $parserStates,
+        private readonly ParserRunner $parserRunner,
         private readonly LoggerInterface $logger,
     ) {
         parent::__construct();
@@ -78,10 +76,7 @@ final class EventsImportCommand extends Command
                 continue;
             }
 
-            // The watermark is the run *start*: whatever the source changes while we
-            // are fetching is picked up by the next run rather than lost in between.
-            $startedAt = new DateTimeImmutable();
-            $since = $full ? null : $this->parserStates->findLastParsedAt($parser->getCommandName());
+            $since = $this->parserRunner->getSince($parser, $full);
 
             Monitor::writeln(\sprintf(
                 'Starting <info>%s</info> (%s)',
@@ -94,7 +89,7 @@ final class EventsImportCommand extends Command
             ));
 
             try {
-                $parser->parse($since, $whole);
+                $this->parserRunner->run($parser, $since, $whole);
             } catch (Throwable $exception) {
                 // One source failing must not keep the next ones from importing: "all" goes on and
                 // ends as a failure, while a single parser's failure surfaces as it is
@@ -109,34 +104,11 @@ final class EventsImportCommand extends Command
                 continue;
             }
 
-            // A few records the parser could not map are logged and left out (AbstractParser::
-            // mapRecord()), and come back with their next change at the source. Most of them
-            // failing is a mapping bug instead: the run fails and keeps the watermark, so that the
-            // window is imported again once the parser is fixed.
-            $failedRecords = $parser->getFailedRecords();
-            $records = $parser->getParsedEvents() + $parser->getSkippedEvents() + $failedRecords;
-            if (10 * $failedRecords > $records) {
-                $message = \sprintf('%s could not read %d of its %d records', $parser->getName(), $failedRecords, $records);
-                if ('all' !== $parserName) {
-                    throw new RuntimeException($message);
-                }
-
-                $failed = true;
-                $this->logger->error($message);
-                Monitor::writeln(\sprintf('<error>%s</error>', $message));
-
-                continue;
-            }
-
-            // Only a run that completed moves the watermark: after a failure the next run
-            // re-fetches from the previous one, and the dedup gate absorbs the overlap.
-            $this->parserStates->markParsed($parser->getCommandName(), $startedAt);
-
             Monitor::writeln(\sprintf(
                 '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged), <info>%d</info> unreadable',
                 $parser->getParsedEvents(),
                 $parser->getSkippedEvents(),
-                $failedRecords,
+                $parser->getFailedRecords(),
             ));
         }
 
