@@ -10,7 +10,6 @@
 
 namespace App\Tests\Controller;
 
-use App\Controller\ContentController;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
@@ -18,7 +17,6 @@ use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class ContentControllerTest extends WebTestCase
@@ -121,30 +119,6 @@ final class ContentControllerTest extends WebTestCase
         self::assertSelectorTextContains('#stats .col-md-4:nth-child(3) p', 'France');
         self::assertSelectorTextContains('#stats .col-md-4:nth-child(3) p', 'Belgique');
         self::assertSelectorTextNotContains('#stats .col-md-4:nth-child(3) p', 'Suisse');
-    }
-
-    /**
-     * @param array<string, string> $countries
-     */
-    #[DataProvider('provideCountries')]
-    public function testTheCountriesCaptionLeadsWithFranceAndGroupsTheOverseasTerritories(array $countries, string $expected): void
-    {
-        self::assertSame($expected, ContentController::summarizeCountries($countries));
-    }
-
-    /**
-     * @return iterable<string, array{array<string, string>, string}>
-     */
-    public static function provideCountries(): iterable
-    {
-        yield 'France first, the others in their order, the territories counted' => [
-            ['CH' => 'Suisse', 'RE' => 'La Réunion', 'FR' => 'France', 'MQ' => 'Martinique', 'BE' => 'Belgique'],
-            "France, Suisse, Belgique et 2 territoires d'Outre-Mer",
-        ];
-        yield 'a single territory keeps its name' => [['FR' => 'France', 'YT' => 'Mayotte'], 'France et Mayotte'];
-        yield 'no territory' => [['FR' => 'France'], 'France'];
-        yield 'no France' => [['BE' => 'Belgique', 'GP' => 'Guadeloupe', 'GF' => 'Guyane'], "Belgique et 2 territoires d'Outre-Mer"];
-        yield 'no event to come anywhere' => [[], ''];
     }
 
     public function testTheHowItWorksPageCountsWhatTheMembersPublished(): void

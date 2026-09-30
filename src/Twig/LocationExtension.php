@@ -11,6 +11,10 @@
 namespace App\Twig;
 
 use App\Entity\City;
+use App\Entity\Country;
+use IntlListFormatter;
+use MessageFormatter;
+use RuntimeException;
 use Twig\Attribute\AsTwigFilter;
 
 final class LocationExtension
@@ -30,5 +34,37 @@ final class LocationExtension
 
         // French department numbers ("31", "2A", "974"); elsewhere the codes mean nothing to visitors
         return 1 === preg_match('/^\d/', $code) ? \sprintf('%s (%s)', $department, $code) : $department;
+    }
+
+    /**
+     * "France, Suisse, Monaco, Belgique et 5 territoires d'Outre-Mer": countries listed in a sentence. The overseas
+     * territories become one item that still adds up with their count; France leads, the others keep their order.
+     *
+     * @param array<string, string> $countries display names keyed by ISO code (FR, CH, RE…), the busiest first
+     */
+    #[AsTwigFilter(name: 'countries_summary')]
+    public function countriesSummary(array $countries): string
+    {
+        // An empty list formats to "", which the failure check below would take for an error
+        if ([] === $countries) {
+            return '';
+        }
+
+        $overseas = array_intersect_key($countries, array_flip(Country::FRENCH_OVERSEAS));
+        $others = array_diff_key($countries, $overseas);
+        if (isset($others['FR'])) {
+            $others = ['FR' => $others['FR']] + $others;
+        }
+
+        $items = array_values($others);
+        if ([] !== $overseas) {
+            $items[] = MessageFormatter::formatMessage(
+                'fr',
+                "{count, plural, =1 {{name}} other {# territoires d''Outre-Mer}}",
+                ['count' => \count($overseas), 'name' => array_first($overseas)],
+            ) ?: throw new RuntimeException(intl_get_error_message());
+        }
+
+        return new IntlListFormatter('fr')->format($items) ?: throw new RuntimeException(intl_get_error_message());
     }
 }
