@@ -3,12 +3,15 @@
 {% block email_title %}Votre demande a été examinée{% endblock %}
 {% block preheader %}Votre demande de suppression de contenu a été examinée.{% endblock %}
 
+{% block icon 'info' %}
+{% block heading %}Votre demande a été examinée{% endblock %}
+{% block subheading %}Demande de suppression du {{ contentRemovalRequest.createdAt|date('d/m/Y') }}{% endblock %}
+
 {% block body %}
-    <mj-text mj-class="h1">Votre demande de suppression a été examinée</mj-text>
     <mj-text>Bonjour,</mj-text>
     <mj-text>
-        Votre demande de suppression de contenu du {{ contentRemovalRequest.createdAt|date('d/m/Y') }}
-        a été examinée par notre équipe. Après étude, nous n'avons pas donné suite à votre demande.
+        Votre demande de suppression de contenu a été examinée par notre équipe. Après étude, nous
+        n'avons pas donné suite à votre demande.
     </mj-text>
     <mj-text>
         Si vous pensez qu'il s'agit d'une erreur ou si vous souhaitez nous apporter des éléments

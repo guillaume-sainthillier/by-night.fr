@@ -3,91 +3,97 @@
 {% block email_title %}Demande de suppression de contenu{% endblock %}
 {% block preheader %}Nouvelle demande de suppression&nbsp;: {{ contentRemovalRequest.type.label }}.{% endblock %}
 
+{% block icon 'flag' %}
+{% block heading %}Demande de suppression de contenu{% endblock %}
+{% block subheading %}Reçue le {{ contentRemovalRequest.createdAt|date('d/m/Y à H:i') }}{% endblock %}
+
 {% block body %}
-    <mj-text mj-class="h1">Demande de suppression de contenu</mj-text>
-    <mj-text>
-        <strong>De&nbsp;:</strong> {{ contentRemovalRequest.email }}<br />
-        <strong>Date&nbsp;:</strong> {{ contentRemovalRequest.createdAt|date('d/m/Y H:i') }}<br />
-        <strong>Type&nbsp;:</strong> {{ contentRemovalRequest.type.label }}
-    </mj-text>
+    {% set cell = 'padding: 10px 0; border-bottom: 1px solid #e5e6f0;' %}
+    <mj-table>
+        <tr>
+            <td style="{{ cell }} color: #6f727a; width: 90px;">De</td>
+            <td style="{{ cell }}"><a href="mailto:{{ contentRemovalRequest.email }}">{{ contentRemovalRequest.email }}</a></td>
+        </tr>
+        <tr>
+            <td style="{{ cell }} color: #6f727a;">Type</td>
+            <td style="{{ cell }} font-weight: 600;">{{ contentRemovalRequest.type.label }}</td>
+        </tr>
+    </mj-table>
 
-    <mj-divider />
-
-    <mj-text font-weight="700" padding="0 0 8px 0">
+    <mj-text mj-class="label" padding="16px 0 8px 0">
         {{ contentRemovalRequest.events|length > 1 ? 'Événements concernés' : 'Événement concerné' }}
     </mj-text>
     {% for event in contentRemovalRequest.events %}
-        <mj-text padding="0 0 12px 0">
-            <strong>{{ event.name }}</strong> <span style="color: #8a94a6;">#{{ event.id }}</span><br />
-            {% if event.place %}{{ event.place.name }}<br />{% endif %}
-            {% if event.startDate %}
-                {{ event.startDate|date('d/m/Y') }}{% if event.endDate and event.endDate != event.startDate %} – {{ event.endDate|date('d/m/Y') }}{% endif %}<br />
-            {% endif %}
-            {% if event.externalOrigin %}<span style="color: #8a94a6;">Source&nbsp;: {{ event.externalOrigin }}</span>{% endif %}
+        <mj-text padding="0 0 8px 0">
+            <div style="border: 1px solid #e5e6f0; border-radius: 8px; padding: 12px 16px;">
+                <strong style="color: #191c22;">{{ event.name }}</strong>&nbsp;<span style="color: #6f727a;">#{{ event.id }}</span><br />
+                <span style="font-size: 14px; color: #6f727a;">
+                    {%- set details = [
+                        event.place ? event.place.name,
+                        event.startDate ? event.startDate|date('d/m/Y') ~ (event.endDate and event.endDate != event.startDate ? ' – ' ~ event.endDate|date('d/m/Y')),
+                        event.externalOrigin ? 'Source : ' ~ event.externalOrigin,
+                    ]|filter(detail => detail) -%}
+                    {{ details|join(' · ') }}
+                </span>
+            </div>
         </mj-text>
     {% endfor %}
 
     {% if contentRemovalRequest.eventUrls|default([])|length > 0 %}
-        <mj-text font-weight="700" padding="8px 0 8px 0">URLs concernées</mj-text>
-        <mj-text>
+        <mj-text mj-class="label" padding="16px 0 8px 0">URLs concernées</mj-text>
+        <mj-text css-class="break-all" font-size="14px">
             {% for url in contentRemovalRequest.eventUrls %}
                 <a href="{{ url }}">{{ url }}</a><br />
             {% endfor %}
         </mj-text>
     {% endif %}
 
-    <mj-divider />
-
-    <mj-text font-weight="700" padding="0 0 8px 0">Message</mj-text>
-    <mj-text>{{ contentRemovalRequest.message|nl2br }}</mj-text>
-
-    <mj-divider />
-
-    <mj-text font-weight="700" padding="0 0 4px 0">Actions rapides</mj-text>
+    <mj-text mj-class="label" padding="16px 0 8px 0">Message</mj-text>
+    <mj-text padding="0 0 8px 0">
+        <div style="background-color: #f9f9ff; border: 1px solid #e5e6f0; border-radius: 8px; padding: 16px 20px;">
+            {{ contentRemovalRequest.message|nl2br }}
+        </div>
+    </mj-text>
 {% endblock %}
 
 {% block body_sections %}
     {% set isMultiple = contentRemovalRequest.events|length > 1 %}
-    {% set actions = [] %}
-    {% if removeEventsUrl is defined %}
-        {% set actions = actions|merge([{
-            url: removeEventsUrl,
-            color: '#d63939',
-            label: 'Supprimer ' ~ (isMultiple ? 'les événements' : "l'événement"),
-        }]) %}
-    {% endif %}
-    {% if removeImagesUrl is defined %}
-        {% set actions = actions|merge([{
-            url: removeImagesUrl,
-            color: '#f76707',
-            label: 'Supprimer ' ~ (isMultiple ? 'les images' : "l'image"),
-        }]) %}
-    {% endif %}
-    {% set actions = actions|merge([
-        {url: markProcessedUrl, color: '#2fb344', label: 'Marquer comme traitée'},
-        {url: rejectUrl, color: '#667382', label: 'Rejeter'},
-    ]) %}
+    {% set removeUrl = removeEventsUrl ?? removeImagesUrl ?? null %}
 
-    <mj-section background-color="#ffffff" padding="0 16px 0 16px">
-        {% for action in actions %}
-            <mj-column vertical-align="top">
-                <mj-button
-                    href="{{ action.url }}"
-                    background-color="{{ action.color }}"
-                    width="100%"
-                    font-size="14px"
-                    inner-padding="11px 6px"
-                    padding="0 4px 12px 4px"
-                >
-                    {{ action.label }}
+    <mj-section padding="16px 24px 0 24px">
+        <mj-column>
+            <mj-divider padding="0 0 16px 0" />
+            <mj-text mj-class="label">Actions rapides</mj-text>
+            {% if removeUrl %}
+                <mj-button href="{{ removeUrl }}" background-color="#d63939" width="100%" padding="0 0 12px 0">
+                    {% if removeEventsUrl is defined %}
+                        Supprimer {{ isMultiple ? 'les événements' : "l'événement" }}
+                    {% else %}
+                        Supprimer {{ isMultiple ? 'les images' : "l'image" }}
+                    {% endif %}
                 </mj-button>
-            </mj-column>
-        {% endfor %}
+            {% endif %}
+        </mj-column>
     </mj-section>
 
-    <mj-section background-color="#ffffff" padding="6px 28px 24px 28px">
+    <mj-section padding="0 18px">
+        <mj-group>
+            <mj-column>
+                <mj-button href="{{ markProcessedUrl }}" mj-class="outline" color="#2fb344" width="100%" font-size="15px" inner-padding="12px 8px" padding="0 6px 12px 6px">
+                    Marquer comme traitée
+                </mj-button>
+            </mj-column>
+            <mj-column>
+                <mj-button href="{{ rejectUrl }}" mj-class="outline" width="100%" font-size="15px" inner-padding="12px 8px" padding="0 6px 12px 6px">
+                    Rejeter
+                </mj-button>
+            </mj-column>
+        </mj-group>
+    </mj-section>
+
+    <mj-section padding="4px 24px 12px 24px">
         <mj-column>
-            <mj-text css-class="muted">
+            <mj-text mj-class="muted" align="center">
                 Ces liens nécessitent une connexion administrateur.
             </mj-text>
         </mj-column>
