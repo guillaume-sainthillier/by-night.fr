@@ -25,7 +25,7 @@ final class CloudflareCdnPurgerTest extends TestCase
 {
     private const string BASE_URI = 'https://api.cloudflare.com/client/v4/';
 
-    /** @var list<array{method: string, url: string, files: list<string>, tags: list<string>}> */
+    /** @var list<array{method: string, url: string, files: list<string>, tags: list<string>, prefixes: list<string>}> */
     private array $requests = [];
 
     public function testSplitsPathsIntoRequestsOfAtMostHundredFiles(): void
@@ -74,6 +74,17 @@ final class CloudflareCdnPurgerTest extends TestCase
         self::assertSame('event-149', $this->requests[1]['tags'][49]);
     }
 
+    public function testPurgesPrefixesInRequestsOfAtMostHundredPrefixes(): void
+    {
+        $prefixes = array_map(static fn (int $i): string => "by-night.fr/p/image/glide/vich/$i.jpg/", range(0, 100));
+
+        $this->makePurger($this->makeClient())->purgePrefixes($prefixes);
+
+        self::assertSame([100, 1], array_map(static fn (array $request): int => \count($request['prefixes']), $this->requests));
+        self::assertSame([], $this->requests[0]['files']);
+        self::assertSame('by-night.fr/p/image/glide/vich/100.jpg/', $this->requests[1]['prefixes'][0]);
+    }
+
     public function testSendsNothingForAnEmptyPathList(): void
     {
         $this->makePurger($this->makeClient())->purge([]);
@@ -119,6 +130,7 @@ final class CloudflareCdnPurgerTest extends TestCase
                 'url' => $url,
                 'files' => $body['files'] ?? [],
                 'tags' => $body['tags'] ?? [],
+                'prefixes' => $body['prefixes'] ?? [],
             ];
 
             return new MockResponse('{"success":true,"errors":[],"messages":[],"result":{"id":"x"}}');

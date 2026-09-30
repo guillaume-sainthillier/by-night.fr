@@ -71,7 +71,23 @@ final readonly class CloudflareCdnPurger
     }
 
     /**
-     * @param array{files?: list<string>, tags?: list<string>} $body
+     * Purge every cached URL under these prefixes, whatever their query string (e.g. all the thumbnails of an
+     * image, see RemoveImageThumbnailsHandler). A prefix is a host and a path, without scheme:
+     * "by-night.fr/p/image/glide/vich/2026/06/12/a.jpg/".
+     *
+     * Same chunking and quota as purge(): Cloudflare takes up to MAX_FILES_PER_REQUEST prefixes per request.
+     *
+     * @param string[] $prefixes
+     */
+    public function purgePrefixes(array $prefixes): void
+    {
+        foreach (array_chunk(array_values(array_unique($prefixes)), self::MAX_FILES_PER_REQUEST) as $chunk) {
+            $this->request(['prefixes' => $chunk]);
+        }
+    }
+
+    /**
+     * @param array{files?: list<string>, tags?: list<string>, prefixes?: list<string>} $body
      */
     private function request(array $body): void
     {
