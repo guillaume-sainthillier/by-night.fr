@@ -21,9 +21,9 @@ use App\Entity\Tag;
 use App\Enum\AgendaType;
 use App\Enum\DateRangePreset;
 use App\Form\Type\SearchType;
+use App\Manager\PlaceRedirectManager;
 use App\Manager\TagRedirectManager;
 use App\Repository\EventRepository;
-use App\Repository\PlaceRepository;
 use App\Routing\AgendaTypeSlugRequirement;
 use App\Routing\AgendaUrlGenerator;
 use App\Search\AgendaFacets;
@@ -71,7 +71,7 @@ final class AgendaController extends BaseController
         Request $request,
         RepositoryManagerInterface $repositoryManager,
         EventRepository $eventRepository,
-        PlaceRepository $placeRepository,
+        PlaceRedirectManager $placeRedirectManager,
         TagRedirectManager $tagRedirectManager,
         AgendaUrlGenerator $agendaUrlGenerator,
         AgendaFacetsLoader $agendaFacetsLoader,
@@ -90,21 +90,9 @@ final class AgendaController extends BaseController
         $place = null;
         $tag = null;
 
-        if (null === $placeSlug && 'app_agenda_by_place' === $request->attributes->getString('_route')) {
-            return $this->redirectLegacyPlaceUrl($request, $location, $placeRepository);
-        }
-
-        // Handle place filtering
-        if (null !== $placeSlug) {
-            $place = $this->findPlace($placeRepository, $location, $placeSlug);
-            if (null === $place) {
-                return $this->redirectToRoute('app_location_index', ['location' => $location->getSlug()]);
-            }
-
-            // Another location, or the slug of a place merged into this one
-            if ($location->getSlug() !== $place->getLocationSlug() || $placeSlug !== $place->getSlug()) {
-                return $this->redirectToRoute('app_agenda_by_place', [...$request->query->all(), 'location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
-            }
+        // The venue of the URL, else a redirect to its own URL or to the location's page
+        if ('app_agenda_by_place' === $request->attributes->getString('_route')) {
+            $place = $placeRedirectManager->getPlace($placeSlug, $location);
         }
 
         // Handle tag filtering (canonical route with ID)
@@ -229,51 +217,6 @@ final class AgendaController extends BaseController
             'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
             'neighbours' => $neighbours,
         ];
-    }
-
-    /**
-     * "/agenda/sortir-a" without a place is not a page of its own. The sitemap used to link it
-     * with the place as "?slug=…", so that parameter still leads to the place's own URL, in the
-     * place's own city; anything else goes to the city agenda.
-     */
-    private function redirectLegacyPlaceUrl(Request $request, Location $location, PlaceRepository $placeRepository): Response
-    {
-        $legacySlug = $request->query->getString('slug');
-        $place = null;
-        if ('' !== $legacySlug) {
-            $place = $this->findPlace($placeRepository, $location, $legacySlug);
-        }
-
-        if (null === $place) {
-            return $this->redirectToRoute('app_location_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
-        }
-
-        return $this->redirectToRoute('app_agenda_by_place', [
-            'location' => $place->getLocationSlug(),
-            'placeSlug' => $place->getSlug(),
-        ], Response::HTTP_MOVED_PERMANENTLY);
-    }
-
-    /**
-     * Place slugs are not unique ("salle-des-fetes" names hundreds of places): the place in the city
-     * the URL names (or without a city, in its country) comes first; another one is only a fallback,
-     * which the caller redirects to its own URL. The location's city and country are lazy proxies,
-     * hence their ids rather than the objects.
-     */
-    private function findPlace(PlaceRepository $placeRepository, Location $location, string $slug): ?Place
-    {
-        $city = $location->getCity();
-        $country = $location->getCountry();
-        $place = match (true) {
-            null !== $city => $placeRepository->findOneBy(['slug' => $slug, 'city' => $city->getId()]),
-            null !== $country => $placeRepository->findOneBy(['slug' => $slug, 'country' => $country->getId(), 'city' => null]),
-            default => null,
-        };
-
-        return $place
-            // The slug of a place merged into another one of its city
-            ?? $placeRepository->findOneByLegacySlug($slug, $location)
-            ?? $placeRepository->findOneBy(['slug' => $slug]);
     }
 
     /**
