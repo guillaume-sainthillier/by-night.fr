@@ -32,7 +32,8 @@ final class SearchController extends AbstractController
     #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
     public function index(Request $request, RepositoryManagerInterface $rm, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
-        $q = trim($request->query->getString('q'));
+        // Scanners send bytes that are not UTF-8 ("q=e%C0%A7"): they would break the JSON-LD of the page
+        $q = trim(mb_scrub($request->query->getString('q'), 'UTF-8'));
         $type = $request->query->getString('type');
         $page = max($request->query->getInt('page'), 1);
         if (!ResultWindow::contains($page, self::ITEMS_PER_PAGE)) {

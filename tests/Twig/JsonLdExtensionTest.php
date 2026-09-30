@@ -33,6 +33,16 @@ final class JsonLdExtensionTest extends AppKernelTestCase
         self::assertSame('</script><img src=x onerror=alert(1)> & co', $data['itemListElement'][1]['name']);
     }
 
+    public function testALabelThatIsNotUtf8IsRendered(): void
+    {
+        $breadcrumbs = new Breadcrumbs();
+        $breadcrumbs->addItem("Recherche : e\xC0\xA7", 'https://by-night.fr/recherche/?q=e%C0%A7');
+
+        $html = $this->getExtension()->breadcrumbJsonLd($breadcrumbs);
+
+        self::assertStringContainsString("Recherche : e\u{FFFD}\u{FFFD}", $html);
+    }
+
     public function testNoBreadcrumbRendersNothing(): void
     {
         self::assertSame('', $this->getExtension()->breadcrumbJsonLd(new Breadcrumbs()));
