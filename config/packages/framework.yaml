@@ -18,6 +18,13 @@ framework:
     #esi: true
     #fragments: true
 
+    # A refused API input is answered with its violations (422): logged below the "error" level, it
+    # neither reaches Sentry nor triggers the fingers_crossed handler. Other client errors (404, 405,
+    # 400) stay errors, monitored in Sentry.
+    exceptions:
+        ApiPlatform\Validator\Exception\ValidationException:
+            log_level: info
+
 when@test:
     framework:
         test: true
