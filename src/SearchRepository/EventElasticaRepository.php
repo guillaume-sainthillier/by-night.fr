@@ -355,9 +355,9 @@ final class EventElasticaRepository extends Repository
 
     /**
      * The events of a type page, and of its counts: the types stored on the events (Event::$agendaTypes), found by
-     * createTypeQuery() each night. Running that full-text search on each page took ~0.1–0.15 s per type, ~0.5 s for
-     * the five type links of every agenda page (the fuzzy terms expand over the whole index). An event imported or
-     * changed today shows on its type pages once classified again.
+     * createTypeQuery() once each event is indexed (AgendaTypeClassifier). Running that full-text search on each page
+     * took ~0.1–0.15 s per type, ~0.5 s for the five type links of every agenda page (the fuzzy terms expand over the
+     * whole index). An event imported or changed shows on its type pages a few seconds after it is indexed.
      *
      * @return ($type is null ? null : Term)
      */

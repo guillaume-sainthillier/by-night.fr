@@ -265,7 +265,9 @@ final class EventElasticaRepositoryTest extends TestCase
      */
     public function testAnEventNamingAnyTermOfATypeIsClassifiedInIt(): void
     {
-        $anyTerm = $this->repository->createAgendaTypeQuery(AgendaType::Student, new DateTimeImmutable('2026-10-10'))->toArray()['query']['bool']['filter'][1]['bool'];
+        // The named clause of the student page, the last type
+        $anyTerm = $this->repository->createAgendaTypesQuery(new DateTimeImmutable('2026-10-10'))->toArray()['query']['bool']['should'][4]['bool'];
+        self::assertSame(AgendaType::Student->value, $anyTerm['_name']);
 
         self::assertSame(1, $anyTerm['minimum_should_match']);
         self::assertContains(['multi_match' => [
