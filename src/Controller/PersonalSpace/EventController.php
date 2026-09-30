@@ -11,21 +11,13 @@
 namespace App\Controller\PersonalSpace;
 
 use App\Controller\AbstractController as BaseController;
-use App\Dto\EventDto;
-use App\Dto\UserDto;
 use App\DtoFactory\EventDtoFactory;
-use App\Entity\Comment;
 use App\Entity\Event;
-use App\Entity\User;
 use App\Enum\PersonalEventFilter;
 use App\Form\Type\EventType;
-use App\Handler\DoctrineEventHandler;
-use App\Manager\EventParticipationManager;
+use App\Manager\MemberEventPublisher;
 use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
-use App\Validator\Constraints\EventConstraintValidator;
-use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,42 +55,17 @@ final class EventController extends BaseController
     }
 
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager, DoctrineEventHandler $doctrineEventHandler, EventParticipationManager $eventParticipationManager): Response
+    public function new(Request $request, MemberEventPublisher $memberEventPublisher): Response
     {
         if (!$this->isGranted(EventVoter::CREATE)) {
             return $this->redirectToRoute('app_event_list');
         }
 
-        $userDto = new UserDto();
-        $userDto->entityId = $this->getAppUser()->getId();
-
-        $eventDto = new EventDto();
-        $eventDto->user = $userDto;
-
+        $eventDto = $memberEventPublisher->createDto($this->getAppUser());
         $form = $this->createForm(EventType::class, $eventDto);
-        $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $doctrineEventHandler->handleOne($eventDto);
-            $user = $entityManager->getReference(User::class, $eventDto->user->entityId);
-            $event = $entityManager->getReference(Event::class, $eventDto->entityId);
-            $event->setDraft($this->isSavedAsDraft($form));
-            $em = $this->getEntityManager();
-
-            $em->persist($event);
-            if ($form->get('comment')->getData()) {
-                $comment = new Comment();
-                $comment
-                    ->setComment($form->get('comment')->getData())
-                    ->setEvent($event)
-                    ->setUser($user);
-                $em->persist($comment);
-            }
-
-            $em->flush();
-            // Its author goes
-            $eventParticipationManager->participate($user, $event, true);
-
+            $event = $memberEventPublisher->create($eventDto, $this->isSavedAsDraft($form), $form->get('comment')->getData());
             $this->addFlash(
                 'success',
                 $event->isDraft()
@@ -116,23 +83,13 @@ final class EventController extends BaseController
 
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
-    public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory, DoctrineEventHandler $doctrineEventHandler): Response
+    public function edit(Request $request, Event $event, EventDtoFactory $eventDtoFactory, MemberEventPublisher $memberEventPublisher): Response
     {
-        if ($event->getExternalId()) {
-            $event->setExternalUpdatedAt(new DateTimeImmutable());
-        }
-
         $dto = $eventDtoFactory->create($event);
         $form = $this->createForm(EventType::class, $dto);
-        $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $doctrineEventHandler->handleOne($dto);
-            // handleOne() clears the entity manager, which detaches the event of the route. The publish button puts a
-            // draft online, the draft button takes the event off the site.
-            $event = $this->getEntityManager()->getReference(Event::class, $event->getId());
-            $event->setDraft($this->isSavedAsDraft($form));
-            $this->getEntityManager()->flush();
+            $event = $memberEventPublisher->update($dto, $this->isSavedAsDraft($form));
             $this->addFlash('success', $event->isDraft()
                 ? "Votre brouillon a bien été enregistré\u{a0}: il n'est pas visible sur le site."
                 : 'Votre événement a bien été modifié.');
