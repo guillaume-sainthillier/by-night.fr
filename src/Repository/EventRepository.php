@@ -332,6 +332,27 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The events waiting for the image their source gives: never stored, or lost, and not taken down on request
+     * (EventImageRemover), which is not downloaded again.
+     */
+    public function createWaitingForImageQueryBuilder(): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.url IS NOT NULL')
+            ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
+            ->andWhere('e.imageRemovedAt IS NULL');
+    }
+
+    public function countWaitingForImage(): int
+    {
+        return (int) $this->createWaitingForImageQueryBuilder()
+            ->select('COUNT(e.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * The event whose picture, from its member or its source, is stored under that file name.
      */
     public function findOneByImageName(string $name): ?Event
