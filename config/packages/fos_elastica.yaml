@@ -3,6 +3,10 @@ fos_elastica:
     clients:
         default:
             hosts: ['%env(ELASTICSEARCH_URL)%']
+            # A failed request marks the node dead for the life of the process. The default "Simple" strategy never
+            # tries it again, so once Elasticsearch restarted every FrankenPHP worker kept answering 500 until PHP was
+            # restarted (2026-09-30). "RoundRobin" pings a dead node (HEAD /) before giving up on it.
+            connection_strategy: RoundRobin
             # The two async consumers can update the same document at once: the losing update is
             # retried rather than failing the bulk with a version conflict. Safe, as every update
             # sends the whole current state of its entity.
