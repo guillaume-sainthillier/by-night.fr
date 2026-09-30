@@ -1518,9 +1518,9 @@ json5@^2.2.3:
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
 knip@^6:
-  version "6.37.0"
-  resolved "https://registry.yarnpkg.com/knip/-/knip-6.37.0.tgz#6aff69da159c4de2e9ab58c4efdf649358780620"
-  integrity sha512-NKCYuoGKJ+o2AuoCuV1mDvfMYnSSWfDXqxwmzxeHyd8fftjNRl8TBUg3fbSrtJjhm7Vj6sc1PX3WZnZhECs9EQ==
+  version "6.38.0"
+  resolved "https://registry.yarnpkg.com/knip/-/knip-6.38.0.tgz#d1ff703b3e14b5666054db0867ba288f5a45bbed"
+  integrity sha512-umytiMCaZf02MV9SOO1FEDgbDf6h20VZk3ruJE0kh52kkGjYZFRUAXHJWYoLhvhoHGINO/7GXVJmQ2vxTBvl6A==
   dependencies:
     fdir "^6.5.0"
     formatly "^0.7.0"
@@ -1982,9 +1982,9 @@ siginfo@^2.0.0:
   integrity sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==
 
 smol-toml@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/smol-toml/-/smol-toml-1.8.0.tgz#dc5e0936825f1fef37bdf2c569081f709d8a009f"
-  integrity sha512-kCZr2V3ch9i00x8zXRhjUNVcjG9ijES5dDudkXvUVCT5QlJNQWElSJdZqyPemffHoLNUYwOcou0Fy+ojN0uHSQ==
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/smol-toml/-/smol-toml-1.9.0.tgz#f36b8dc7eb621c541c48f9fba6925dab95172817"
+  integrity sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==
 
 snake-case@^3.0.4:
   version "3.0.4"
@@ -2112,9 +2112,9 @@ tslib@^2.0.3, tslib@^2.4.0:
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
 
 unbash@^4.0.11:
-  version "4.0.11"
-  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.11.tgz#694c177e8bf8865c1d570177f10ae538617f1577"
-  integrity sha512-FoSOKV7NEofQSkAefMVHam4ZPKYMxjAydxiV72UFEDNV/YofxjGfiZ2A9pZjdL/lRJzTjcu4PABo1JYJX8N5iQ==
+  version "4.0.12"
+  resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.12.tgz#72b3935285b111b5b3e6c14764db2782e64da4b3"
+  integrity sha512-PnKvRX+Fbxl/usVlTr/31tXIOVAH+8OdC9qaxUQcvurwEnoc3Vk/ipi2Ce8IjMxzK9byfSGdsUBjqqJGc1o5lw==
 
 unplugin@^3.3.0:
   version "3.4.0"
