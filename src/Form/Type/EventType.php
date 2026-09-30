@@ -78,6 +78,8 @@ final class EventType extends AbstractType
             ->add('timesheets', CollectionType::class, [
                 'entry_type' => EventTimesheetType::class,
                 'required' => false,
+                // A row added then left empty comes back as null, which the Firewall can't read
+                'delete_empty' => true,
                 'add_entry_label' => 'Ajouter une date',
                 'label' => false,
                 'entry_options' => [

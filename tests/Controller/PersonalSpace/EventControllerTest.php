@@ -246,6 +246,29 @@ final class EventControllerTest extends WebTestCase
         self::assertFalse($event->isDraft());
     }
 
+    /**
+     * A date row added then left empty comes back as null (BY-NIGHTFR-66Y).
+     */
+    public function testAnEmptyDateRowIsIgnored(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $form = $this->newEventForm($client, 'Soirée swing tous les jeudis');
+        $values = $form->getPhpValues();
+        $day = new DateTimeImmutable('+2 weeks')->format('Y-m-d');
+        $values['app_event']['timesheets'] = [
+            ['dateRange' => ['from' => $day, 'to' => $day], 'hours' => '20h'],
+            ['dateRange' => ['from' => '', 'to' => ''], 'hours' => ''],
+        ];
+        $client->request($form->getMethod(), $form->getUri(), $values);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertCount(1, EventFactory::find(['name' => 'Soirée swing tous les jeudis'])->getTimesheets());
+    }
+
     public function testCreatingADraftSavesItOffTheSite(): void
     {
         $client = self::createClient();
