@@ -38,7 +38,6 @@ final class LoginSocialController extends AbstractController
         return $this->render('security/connect-success.html.twig', [
             'userInformation' => [
                 'name' => $datas['realname'],
-                'email' => $datas['email'],
             ],
         ]);
     }

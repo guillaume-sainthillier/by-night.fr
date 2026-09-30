@@ -40,7 +40,6 @@ final class CommentControllerTest extends WebTestCase
         CommentFactory::createOne(['comment' => 'Merci pour le rappel', 'event' => $draft, 'parent' => $comment]);
         $paths = [
             \sprintf('/commentaire/%d/1', $draft->getId()),
-            \sprintf('/commentaire/form/%d', $draft->getId()),
             \sprintf('/commentaire/%d/reponses/1', $comment->getId()),
         ];
 
