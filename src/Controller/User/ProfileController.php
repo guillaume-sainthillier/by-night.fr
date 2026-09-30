@@ -18,9 +18,9 @@ use App\Manager\UserRemover;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
 use App\Security\EmailVerifier;
+use App\Security\PasswordManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -51,7 +51,7 @@ final class ProfileController extends AbstractController
     }
 
     #[Route(path: '/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, UserPasswordHasherInterface $passwordHasher, EventRepository $eventRepository, CommentRepository $commentRepository): Response
+    public function edit(Request $request, PasswordManager $passwordManager, EventRepository $eventRepository, CommentRepository $commentRepository): Response
     {
         $user = $this->getAppUser();
         $form = $this->createForm(ProfileFormType::class, $user);
@@ -66,12 +66,7 @@ final class ProfileController extends AbstractController
         $formChangePassword = $this->createForm(ChangePasswordFormType::class, $user);
         $formChangePassword->handleRequest($request);
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {
-            $user->setPassword(
-                $passwordHasher->hashPassword(
-                    $user,
-                    $formChangePassword->get('plainPassword')->getData()
-                )
-            );
+            $passwordManager->change($user, $formChangePassword->get('plainPassword')->getData());
             $em = $this->getEntityManager();
             $em->flush();
 

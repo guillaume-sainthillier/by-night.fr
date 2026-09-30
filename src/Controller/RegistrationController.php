@@ -14,11 +14,11 @@ use App\Entity\User;
 use App\Form\Type\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Security\PasswordManager;
 use App\Security\UserFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Translation\TranslatableMessage;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
@@ -31,21 +31,14 @@ final class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/inscription', name: 'app_register', methods: ['GET', 'POST'])]
-    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserFormAuthenticator $authenticator, UserRepository $userRepository): Response
+    public function index(Request $request, PasswordManager $passwordManager, UserFormAuthenticator $authenticator, UserRepository $userRepository): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user
-                ->setFromLogin(true)
-                ->setPassword(
-                    $passwordHasher->hashPassword(
-                        $user,
-                        $form->get('plainPassword')->getData()
-                    )
-                );
+            $user->setFromLogin(true);
+            $passwordManager->change($user, $form->get('plainPassword')->getData());
 
             $entityManager = $this->getEntityManager();
             $entityManager->persist($user);
