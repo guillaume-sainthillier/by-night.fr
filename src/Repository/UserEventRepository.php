@@ -38,6 +38,22 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
     }
 
     /**
+     * @return list<UserEvent> a member's calendar, with its events loaded
+     */
+    public function findByUserWithEvents(User $user): array
+    {
+        /* @var list<UserEvent> */
+        return $this
+            ->createQueryBuilder('ue')
+            ->addSelect('e')
+            ->join('ue.event', 'e')
+            ->where('ue.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * The participations (going) and the interests (wish) of each event, which its counters store
      * (EventParticipationManager::recount()).
      *
