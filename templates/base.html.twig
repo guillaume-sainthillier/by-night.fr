@@ -150,7 +150,7 @@ _______     __  _   _ _____ _____ _    _ _______
     App.start({{ {
         environment: app.environment,
         locale: app.request.locale,
-        release: app_version,
+        release: 'v' ~ app_version,
         dsn: sentry_dsn,
         user: (app.user ? {id: app.user.id} : null),
     }|json_encode|raw }});
