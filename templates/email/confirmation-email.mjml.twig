@@ -3,17 +3,25 @@
 {% block email_title %}Confirmez votre adresse e-mail{% endblock %}
 {% block preheader %}Confirmez votre adresse e-mail pour activer votre compte By Night.{% endblock %}
 
+{% block icon 'mail-check' %}
+{% block heading %}Bienvenue sur By Night&nbsp;!{% endblock %}
+
 {% block body %}
-    <mj-text mj-class="h1">Bonjour 👋</mj-text>
-    <mj-text>
-        Bienvenue sur By Night ! Pour activer votre compte, confirmez votre adresse e-mail
-        en cliquant sur le bouton ci-dessous.
+    <mj-text align="center">
+        Plus qu'une étape&nbsp;: confirmez votre adresse e-mail pour activer votre compte.
     </mj-text>
     <mj-button href="{{ signedUrl|raw }}">
         Confirmer mon adresse e-mail
     </mj-button>
-    <mj-text css-class="muted" padding="20px 0 0 0">
-        Ce lien est valable {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}. Si vous n'êtes pas à
-        l'origine de cette demande, vous pouvez ignorer cet e-mail.
+    <mj-divider />
+    <mj-text mj-class="muted">
+        Ce lien est valable {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}. Si le bouton ne
+        fonctionne pas, copiez ce lien dans votre navigateur&nbsp;:
+    </mj-text>
+    <mj-text mj-class="muted" css-class="break-all">
+        <a href="{{ signedUrl|raw }}">{{ signedUrl }}</a>
+    </mj-text>
+    <mj-text mj-class="muted">
+        Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet e-mail.
     </mj-text>
 {% endblock %}

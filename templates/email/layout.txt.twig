@@ -1,0 +1,22 @@
+{#
+ # Plain-text part of every e-mail (MailerManager sends it next to the MJML one). Blocks:
+ # - heading: first line, underlined
+ # - body
+ # - footer: why the recipient gets this e-mail
+ #}
+{% set heading = block('heading') ?? '' %}
+{% if heading %}
+{{ heading }}
+{{ range(1, heading|length)|map(i => '=')|join }}
+
+{% endif %}
+{% block body %}{% endblock %}
+
+----
+Une question ? Écrivez-nous à support@by-night.fr
+À propos : {{ url('app_about') }}
+Mentions légales : {{ url('app_legal_mentions') }}
+
+{% block footer %}Cet e-mail vous a été envoyé par By Night, l'agenda des sorties en France.{% endblock %}
+
+© {{ 'now'|date('Y') }} By Night

@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 .btn-group,
 .btn-group-vertical {
     margin-bottom: 0;
@@ -8,8 +10,8 @@
 .btn-action {
     //[BUG] btn-sm and btn-xl with an icon looks broken
     //issue #2470 fixed
-    min-width: calc(var(--#{$prefix}btn-icon-size) + (var(--#{$prefix}btn-padding-x) * 2));
-    min-height: calc(var(--#{$prefix}btn-icon-size) + (var(--#{$prefix}btn-padding-y) * 2));
+    min-width: calc(var(--btn-icon-size) + (var(--btn-padding-x) * 2));
+    min-height: calc(var(--btn-icon-size) + (var(--btn-padding-y) * 2));
 }
 
 .btn-with-icon {
@@ -30,8 +32,8 @@
 }
 
 .btn-ghost-light {
-    --#{$prefix}btn-hover-bg: transparent;
-    --#{$prefix}btn-hover-border: transparent;
+    --btn-hover-bg: transparent;
+    --btn-hover-border: transparent;
 }
 
 .btn-icon-circle {
@@ -72,33 +74,33 @@
 .btn-action {
     //[BUG] btn-sm and btn-xl with an icon looks broken
     //issue #2470 fixed
-    min-width: calc(var(--#{$prefix}btn-icon-size) + (var(--#{$prefix}btn-padding-x) * 2));
-    min-height: calc(var(--#{$prefix}btn-icon-size) + (var(--#{$prefix}btn-padding-y) * 2));
+    min-width: calc(var(--btn-icon-size) + (var(--btn-padding-x) * 2));
+    min-height: calc(var(--btn-icon-size) + (var(--btn-padding-y) * 2));
 }
 
 // An icon after the label (Tabler's margins suit an icon before it)
 .btn .icon-end {
-    margin: 0 calc(var(--#{$prefix}btn-padding-x) / -4) 0 calc(var(--#{$prefix}btn-padding-x) / 2);
+    margin: 0 calc(var(--btn-padding-x) / -4) 0 calc(var(--btn-padding-x) / 2);
 }
 
 // A filter chip (with .btn-pill): white, warms up on hover, primary when .active or checked (.btn-check). Tabler
 // empties Bootstrap's button-variant() mixin and drives its buttons with these variables instead.
 .btn-chip {
-    --#{$prefix}btn-color: #{$ink-muted};
-    --#{$prefix}btn-border-color: #{$border-color};
-    --#{$prefix}btn-hover-color: #{$primary-strong};
-    --#{$prefix}btn-hover-bg: #{rgba($primary, 0.08)};
-    --#{$prefix}btn-hover-border-color: #{rgba($primary, 0.45)};
-    --#{$prefix}btn-active-color: #{$white};
-    --#{$prefix}btn-active-bg: #{$primary};
-    --#{$prefix}btn-active-border-color: #{$primary};
+    --btn-color: #{$ink-muted};
+    --btn-border-color: #{$border-color};
+    --btn-hover-color: #{$primary-strong};
+    --btn-hover-bg: #{rgba($primary, 0.08)};
+    --btn-hover-border-color: #{rgba($primary, 0.45)};
+    --btn-active-color: #{$white};
+    --btn-active-bg: #{$primary};
+    --btn-active-border-color: #{$primary};
 }
 
 // A selected chip stays selected under the pointer, a shade darker. Tabler's ".btn-check + .btn:hover" comes after
 // Bootstrap's ".btn-check:checked + .btn" with the same specificity, so the checked chip turned back to the hover look.
 .btn-check:checked + .btn-chip:hover,
 .btn-chip.active:hover {
-    color: var(--#{$prefix}btn-active-color);
+    color: var(--btn-active-color);
     background-color: $primary-strong;
     border-color: $primary-strong;
 }

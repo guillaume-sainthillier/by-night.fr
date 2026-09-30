@@ -287,6 +287,8 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - JSX compiled for Preact with the automatic runtime (`importSource: 'preact'`), no `h` import needed
 - `@` aliases `assets/`
 - `yarn dev` / `yarn watch` build with sourcemaps and without minification; no PurgeCSS
+- Sass uses the module system: every stylesheet starts with `@use '<path>/core' as *;` (`assets/scss/_core.scss` configures Tabler once with `@forward … with (…)` and forwards the site's tokens from `_variables.scss`); `ui/_tabler.scss` is the curated list of Tabler partials. Custom properties are written bare (`var(--primary)`, as in Tabler's sources): a PostCSS step in `vite.config.mjs` prefixes those of `assets/scss` with `--bs-`
+- `build.cssTarget` is Tabler's browser baseline (Chrome 123, Firefox 128, Safari 17.5): below it Lightning CSS would polyfill `light-dark()` and break the `data-bs-theme="dark"` islands
 
 **Code Style**:
 

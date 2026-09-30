@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 .page-wrapper {
     > .page-body:first-child {
         margin-top: 0;

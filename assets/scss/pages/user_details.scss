@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // A member's public profile (templates/user/index.html.twig). The blocks are Tabler cards, badges and progress bars;
 // only the charts they have no equivalent for live here.
 #page-user {

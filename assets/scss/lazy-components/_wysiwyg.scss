@@ -1,6 +1,5 @@
-@import '../core';
-
-@import 'summernote/src/styles/bs5/summernote-bs5.scss';
+@use '../core' as *;
+@use 'summernote/src/styles/bs5/summernote-bs5';
 
 // Summernote gives its toolbar the .card-header class, which Tabler turns into a flex row that never wraps:
 // the button groups overflowed a narrow editor, and on phones widened the whole page.

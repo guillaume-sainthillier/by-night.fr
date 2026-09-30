@@ -3,12 +3,21 @@
 {% block email_title %}Nouveau feedback utilisateur{% endblock %}
 {% block preheader %}{{ user.username }} a laissé un feedback sur By Night.{% endblock %}
 
+{% block icon 'message' %}
+{% block heading %}Nouveau feedback{% endblock %}
+{% block subheading %}{{ 'now'|date('d/m/Y à H:i') }}{% endblock %}
+
 {% block body %}
-    <mj-text mj-class="h1">Nouveau feedback utilisateur</mj-text>
     <mj-text>
-        <strong>De&nbsp;:</strong> {{ user.username }} ({{ user.email }})<br />
-        <strong>Date&nbsp;:</strong> {{ 'now'|date('d/m/Y H:i') }}
+        <strong>{{ user.username }}</strong>
+        (<a href="mailto:{{ user.email }}">{{ user.email }}</a>) a écrit&nbsp;:
     </mj-text>
-    <mj-divider />
-    <mj-text>{{ message|nl2br }}</mj-text>
+    <mj-text padding="0 0 24px 0">
+        <div style="background-color: #f9f9ff; border: 1px solid #e5e6f0; border-radius: 8px; padding: 16px 20px;">
+            {{ message|nl2br }}
+        </div>
+    </mj-text>
+    <mj-button href="mailto:{{ user.email }}">
+        Répondre
+    </mj-button>
 {% endblock %}

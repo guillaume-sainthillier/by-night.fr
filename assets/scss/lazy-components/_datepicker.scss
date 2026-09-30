@@ -1,5 +1,5 @@
-@import '../core';
-@import 'daterangepicker/daterangepicker.css';
+@use '../core' as *;
+@use 'daterangepicker/daterangepicker';
 
 .daterangepicker td.active,
 .daterangepicker td.active:hover {

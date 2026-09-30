@@ -1,4 +1,4 @@
-import { Modal } from '@tabler/core/dist/js/tabler.esm'
+import { Modal } from '@tabler/core'
 import $ from 'jquery'
 
 /**

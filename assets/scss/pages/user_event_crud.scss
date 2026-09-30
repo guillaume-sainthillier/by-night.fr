@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // Event form of the personal space: numbered <twig:FormCard> steps built from Tabler cards, badges and avatars
 .my-event {
     #map {

@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // Icon base styling for SVG icons (symfony/ux-icons)
 .icon {
     display: inline-block;
@@ -17,7 +19,7 @@ h6,
 .h5,
 .h6 {
     .icon {
-        --#{$prefix}icon-size: 1em;
+        --icon-size: 1em;
     }
 }
 

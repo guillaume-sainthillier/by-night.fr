@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 .event-scheduler {
     // The weekdays: seven boxes sharing the width evenly
     .form-selectgroup-full {

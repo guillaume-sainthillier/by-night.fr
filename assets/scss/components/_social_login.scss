@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 // A connection to a social network (templates/social/social.html.twig): its switch says whether it is connected,
 // the texts follow it, including after SocialLogin flips it
 .config-block {

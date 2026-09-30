@@ -1,0 +1,73 @@
+@use 'sass:map';
+@use '../core' as *;
+@use '@tabler/core/scss/mixins/utilities-api' as *;
+
+// Tabler's scss/bootstrap/utilities/_api.scss, loaded by _tabler.scss where Tabler loads it. Utility groups no
+// template uses (same audit as the partials of _tabler.scss) are removed: keys of $utilities, see
+// node_modules/@tabler/core/scss/_utilities.scss.
+// A class from a removed group has no effect in dev either, so a missing one shows up immediately.
+// Keep `background-color-opacity`: it sets the --bg-opacity the `.bg-*` colours of `background-color` read.
+@include utilities-api(
+    map.remove(
+        $utilities,
+        'align-content',
+        'align-self',
+        'column-gap',
+        'row-gap',
+        'padding-end',
+        'object',
+        'link-underline',
+        'link-underline-opacity',
+        'link-opacity',
+        'link-offset',
+        'rounded-top',
+        'rounded-end',
+        'rounded-bottom',
+        'rounded-start',
+        'focus-ring',
+        'float',
+        'columns',
+        'cursor',
+        'subtle-border-color',
+        'subtle-background-color',
+        'text-color',
+        'bg-gradient-direction',
+        'bg-gradient',
+        'bg-blur',
+        'gradient',
+        'bg-pattern',
+        'border-x',
+        'border-y',
+        'border-bottom',
+        'border-start',
+        'border-end',
+        'border-color',
+        'border-color-opacity',
+        'border-opacity',
+        'border-width',
+        'font-size',
+        'font-style',
+        'font-family',
+        'overflow-x',
+        'overflow-y',
+        'text-decoration',
+        'text-opacity',
+        'bg-opacity',
+        'translate-middle',
+        'user-select',
+        'line-height',
+        'z-index',
+        'top',
+        'bottom',
+        'start',
+        'end',
+        'table-layout',
+        'pointer-events',
+        'word-wrap',
+        'min-viewport-height',
+        'min-viewport-width',
+        'max-height',
+        'viewport-height',
+        'viewport-width'
+    )
+);

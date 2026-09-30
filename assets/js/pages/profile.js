@@ -1,4 +1,4 @@
-import { Tab } from '@tabler/core/dist/js/tabler.esm'
+import { Tab } from '@tabler/core'
 import SocialLogin from '@/js/components/SocialLogin'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 

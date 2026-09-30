@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 //$input-icon-color: $primary-border-subtle;
 
 form {
@@ -90,7 +92,7 @@ Icon input
 }
 
 .input-icon-addon {
-    //--#{$prefix}icon-color: #{$input-icon-color};
+    //--icon-color: #{$input-icon-color};
     z-index: 2;
 }
 
@@ -98,7 +100,7 @@ Icon input
 // and the field drops its error icon, which would sit between the field and the show/hide button
 .input-group-flat:has(.is-invalid) {
     .input-group-text {
-        border-color: var(--#{$prefix}form-invalid-border-color);
+        border-color: var(--form-invalid-border-color);
     }
 
     .form-control.is-invalid {

@@ -1,3 +1,5 @@
+@use '../core' as *;
+
 .navbar-nav,
 .navbar-nav .nav-item,
 .navbar-collapse {
@@ -15,9 +17,21 @@
 
     a.dropdown-item {
         .icon {
-            --#{$prefix}icon-size: 1.125em;
+            --icon-size: 1.125em;
             text-align: center;
             margin-right: 0.5rem;
+        }
+    }
+
+    // Below lg, Tabler 1.6 styles the header's lists as its vertical sidebar (see $sidebar-* in _core.scss): its links
+    // start-aligned, their icons dimmed. The icon-only links of the top bar stay centred in their 2.5rem box.
+    @include media-breakpoint-down(lg) {
+        &.navbar-expand-lg .navbar-nav {
+            --nav-link-icon-color: inherit;
+
+            .nav-link {
+                justify-content: center;
+            }
         }
     }
 

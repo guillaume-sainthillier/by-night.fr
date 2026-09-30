@@ -30,10 +30,9 @@ final readonly class MailerManager
 
     public function sendConfirmEmailEmail(User $user, array $context): void
     {
-        $email = new TemplatedEmail()
+        $email = $this->createEmail('email/confirmation-email')
             ->to($user->getEmail())
             ->subject('Confirmez votre adresse e-mail - By Night')
-            ->htmlTemplate('email/confirmation-email.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
@@ -41,10 +40,9 @@ final readonly class MailerManager
 
     public function sendResetPasswordEmail(User $user, ResetPasswordToken $resetPasswordToken): void
     {
-        $email = new TemplatedEmail()
+        $email = $this->createEmail('email/reset-password')
             ->to($user->getEmail())
             ->subject('Réinitialisation de votre mot de passe - By Night')
-            ->htmlTemplate('email/reset-password.mjml.twig')
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
             ]);
@@ -54,10 +52,9 @@ final readonly class MailerManager
 
     public function sendFeedbackEmail(User $user, string $message, string $recipientEmail): void
     {
-        $email = new TemplatedEmail()
+        $email = $this->createEmail('email/feedback')
             ->to($recipientEmail)
             ->subject('Feedback utilisateur - By Night')
-            ->htmlTemplate('email/feedback.mjml.twig')
             ->context([
                 'user' => $user,
                 'message' => $message,
@@ -86,11 +83,10 @@ final readonly class MailerManager
             $context['removeImagesUrl'] = $this->generateUrl('admin_content_removal_action_remove_images', ['id' => $id]);
         }
 
-        $email = new TemplatedEmail()
+        $email = $this->createEmail('email/content-removal-request')
             ->to($recipientEmail)
             ->replyTo($contentRemovalRequest->getEmail())
             ->subject('Demande de suppression de contenu - By Night')
-            ->htmlTemplate('email/content-removal-request.mjml.twig')
             ->context($context);
 
         $this->sendMail($email);
@@ -101,7 +97,7 @@ final readonly class MailerManager
         $this->sendRequesterNotification(
             $contentRemovalRequest,
             'Votre demande de suppression a été traitée - By Night',
-            'email/content-removal-event-deleted.mjml.twig',
+            'email/content-removal-event-deleted',
         );
     }
 
@@ -110,7 +106,7 @@ final readonly class MailerManager
         $this->sendRequesterNotification(
             $contentRemovalRequest,
             'Votre demande de suppression a été traitée - By Night',
-            'email/content-removal-processed.mjml.twig',
+            'email/content-removal-processed',
         );
     }
 
@@ -119,7 +115,7 @@ final readonly class MailerManager
         $this->sendRequesterNotification(
             $contentRemovalRequest,
             'Votre demande de suppression a été examinée - By Night',
-            'email/content-removal-rejected.mjml.twig',
+            'email/content-removal-rejected',
         );
     }
 
@@ -133,13 +129,23 @@ final readonly class MailerManager
             return;
         }
 
-        $email = new TemplatedEmail()
+        $email = $this->createEmail($template)
             ->to($recipientEmail)
             ->subject($subject)
-            ->htmlTemplate($template)
             ->context(['contentRemovalRequest' => $contentRemovalRequest]);
 
         $this->sendMail($email);
+    }
+
+    /**
+     * @param string $template the template name without extension: the HTML part renders <template>.mjml.twig, the
+     *                         text part <template>.txt.twig
+     */
+    private function createEmail(string $template): TemplatedEmail
+    {
+        return new TemplatedEmail()
+            ->htmlTemplate($template . '.mjml.twig')
+            ->textTemplate($template . '.txt.twig');
     }
 
     private function generateUrl(string $route, array $params): string

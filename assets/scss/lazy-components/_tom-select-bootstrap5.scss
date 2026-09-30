@@ -1,0 +1,12 @@
+// Tom Select's Bootstrap 5 theme, compiled against Tabler: its sources read Tabler's variables as globals, which
+// `as *` exposes to the @import below.
+@use '../core' as *;
+
+// Tom Select adjusts these two with Sass colour functions, but Tabler's values are custom properties
+// (var(--gray-800)…), which are not colours to Sass: give it the Sass colours behind them (Tabler's 1.5 upgrade guide)
+$select-color-text: $ink;
+$select-color-item-border: rgba($outline-soft, 0.55);
+
+@import 'tom-select/dist/scss/tom-select.bootstrap5';
+// tom-select.bootstrap5 already includes it: the base rules come a second time, after the theme's, as they always did
+@import 'tom-select/dist/scss/tom-select';

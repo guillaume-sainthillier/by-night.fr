@@ -1,5 +1,13 @@
+@use '../core' as *;
+
 .hidden {
     display: none !important;
+}
+
+// The ink of the palette ($body-color), darker than the gray text around it (--body-color, Tabler's gray-700).
+// Up to Tabler 1.4 the utility read the Sass colour (through --body-color-rgb), 1.6 reads the custom property.
+.text-body {
+    color: $body-color !important;
 }
 
 // Text cut after two lines

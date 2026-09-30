@@ -1,3 +1,3 @@
-@import '../core';
-@import 'nouislider/dist/nouislider.css';
-@import '@tabler/core/scss/vendor/nouislider';
+@use '../core' as *;
+@use 'nouislider/dist/nouislider' as nouislider-base;
+@use '@tabler/core/scss/vendor/nouislider';
