@@ -897,11 +897,11 @@
     svgo "^3.0.2"
 
 "@symfony/reprise@^1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@symfony/reprise/-/reprise-1.1.3.tgz#98404a22563b5a455874e1678010836434001508"
-  integrity sha512-rzWSJDo3Phz/AJHCo/zdpHarqKWOFCqJp6K8ADMpUvvGOCxSr6M+qR/AC/v0mSFkZ7OUJH8Vrz1XcVwyuzcecA==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@symfony/reprise/-/reprise-1.3.0.tgz#50b70d52ea2959024622b26c6937f4c224a32176"
+  integrity sha512-o0+Fh68WDH5EFaLN2HN360TF7ZIkDMT+EGrSmjp2fjkAoD+hCJqSSBs0TNPxnXRdsrbTPm+VEkZBiqdk5js87Q==
   dependencies:
-    unplugin "^3.3.0"
+    unplugin "^3.4.0"
 
 "@tabler/core@^1.4.0":
   version "1.4.0"
@@ -2116,7 +2116,7 @@ unbash@^4.0.11:
   resolved "https://registry.yarnpkg.com/unbash/-/unbash-4.0.11.tgz#694c177e8bf8865c1d570177f10ae538617f1577"
   integrity sha512-FoSOKV7NEofQSkAefMVHam4ZPKYMxjAydxiV72UFEDNV/YofxjGfiZ2A9pZjdL/lRJzTjcu4PABo1JYJX8N5iQ==
 
-unplugin@^3.3.0:
+unplugin@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/unplugin/-/unplugin-3.4.0.tgz#c3e19efdb040222f1e767ec07233410995e29275"
   integrity sha512-9skdIFlCsPdFV7wUfZxNsFInlW+7nJmGu2gkTu0OUhF56aXGsHab9x52/QhdJ4lC7ZDPWTxbiC4ANqVlsuaW3w==
