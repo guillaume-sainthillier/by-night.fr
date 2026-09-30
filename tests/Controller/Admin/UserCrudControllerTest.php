@@ -10,6 +10,9 @@
 
 namespace App\Tests\Controller\Admin;
 
+use App\Factory\CommentFactory;
+use App\Factory\EventFactory;
+use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -64,6 +67,32 @@ final class UserCrudControllerTest extends WebTestCase
         self::assertResponseRedirects();
         refresh($user);
         self::assertTrue($user->isVerified());
+    }
+
+    /**
+     * As from the profile: comments and favourites go with the member, their events stay online
+     * (BY-NIGHTFR-66X: the foreign keys refused a plain remove).
+     */
+    public function testDeletingAMemberKeepsTheirEventsOnline(): void
+    {
+        $client = $this->createAdminClient();
+        $user = UserFactory::createOne();
+        $userId = $user->getId();
+        $event = EventFactory::createOne(['user' => $user]);
+        $favourite = EventFactory::createOne(['participations' => 3]);
+        UserEventFactory::createOne(['user' => $user, 'event' => $favourite, 'going' => true]);
+        CommentFactory::createOne(['user' => $user, 'event' => $favourite]);
+
+        $crawler = $client->request('GET', \sprintf('/_administration/user/%d', $userId));
+        $token = $crawler->filter('#action-confirmation-form input[name="token"]')->attr('value');
+        $client->request('POST', \sprintf('/_administration/user/%d/delete', $userId), ['token' => $token]);
+
+        self::assertResponseRedirects();
+        self::assertSame(0, UserFactory::count(['id' => $userId]));
+        self::assertSame(0, CommentFactory::count());
+        self::assertSame(0, UserEventFactory::count());
+        self::assertNull(EventFactory::find(['id' => $event->getId()])->getUser());
+        self::assertSame(2, EventFactory::find(['id' => $favourite->getId()])->getParticipations());
     }
 
     private function createAdminClient(): KernelBrowser

@@ -12,6 +12,8 @@ namespace App\Controller\Admin;
 
 use App\Admin\Field\VichImageField;
 use App\Entity\User;
+use App\Manager\UserRemover;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -31,6 +33,10 @@ use Override;
 #[AdminRoute(path: '/user', name: 'user')]
 final class UserCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly UserRemover $userRemover)
+    {
+    }
+
     public static function getEntityFqcn(): string
     {
         return User::class;
@@ -41,6 +47,16 @@ final class UserCrudController extends AbstractCrudController
     {
         return parent::configureActions($actions)
             ->disable(Action::NEW);
+    }
+
+    /**
+     * As when the member closes their account from their profile, their events kept online
+     */
+    #[Override]
+    public function deleteEntity(EntityManagerInterface $entityManager, object $entityInstance): void
+    {
+        \assert($entityInstance instanceof User);
+        $this->userRemover->remove($entityInstance, false);
     }
 
     #[Override]
