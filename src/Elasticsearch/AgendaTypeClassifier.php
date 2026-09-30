@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Elastica\Index;
 use Elastica\Mapping;
 use Elastica\PointInTime;
+use Elastica\Result;
 use Elastica\Search;
 use FOS\ElasticaBundle\Configuration\ConfigManager;
 use FOS\ElasticaBundle\Index\MappingBuilder;
@@ -32,14 +33,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * Stores on each event to come the agenda type pages that list it (Event::$agendaTypes), so the type pages and the
  * counts of the agenda's type links are term lookups instead of every type's full-text search on each page.
  *
- * Run daily by app:events:classify-agenda-types: the types of an event imported or changed during the day are found
- * the next night. The events with a session to come are read from the index a page at a time, each hit with the
- * type queries it matches, through a point in time and search_after: a cursor, so memory holds one page whatever the
- * size of the index, and a page costs what the first one does. Each page is compared with the types stored on its
- * events, and only the events whose types changed are written, by DQL bulk updates (no lifecycle callback, no
- * updatedAt), then re-indexed through RefreshEventDocuments.
+ * An event is classified once its document is written (classify(), see ClassifyEventsHandler): the type queries are
+ * run on its document alone, named, and each hit tells the ones it matches. app:events:classify-agenda-types runs
+ * the same search on every event with a session to come (refresh()), a page at a time through a point in time and
+ * search_after, to fill the types of the events indexed before or after a change of the type terms.
  *
- * The types of an event with no session to come are left as they are: no page lists it, and it is counted nowhere.
+ * Only the events whose types changed are written, by DQL bulk updates (no lifecycle callback, no updatedAt), then
+ * re-indexed through RefreshEventDocuments. The types of an event with no session to come are left as they are: no
+ * search finds it, and it is counted nowhere.
  */
 final readonly class AgendaTypeClassifier
 {
@@ -63,6 +64,8 @@ final readonly class AgendaTypeClassifier
     }
 
     /**
+     * Classifies every event with a session to come.
+     *
      * @return int the number of events whose types changed
      */
     public function refresh(DateTimeImmutable $today): int
@@ -71,24 +74,42 @@ final readonly class AgendaTypeClassifier
 
         $written = 0;
         foreach ($this->pages($today) as $page) {
-            $written += $this->store($page);
+            $written += \count($this->store($page));
         }
 
         return $written;
     }
 
     /**
-     * Writes the types found on a page of events, and re-indexes the events whose types changed.
+     * Classifies these events, those with a session to come the index holds: the others are left as they are.
      *
-     * @param array<int, list<string>> $found the types of each event of the page, by id, in AgendaType order: none for
-     *                                        an event no type page lists
+     * @param list<int> $eventIds
      *
-     * @return int the number of events whose types changed
+     * @return list<int> the events whose types changed
      */
-    public function store(array $found): int
+    public function classify(array $eventIds, DateTimeImmutable $today): array
+    {
+        if ([] === $eventIds) {
+            return [];
+        }
+
+        $query = $this->repository()->createAgendaTypesQuery($today, $eventIds)->setSize(\count($eventIds));
+
+        return $this->store(self::typesOf($this->eventIndex->search($query)->getResults()));
+    }
+
+    /**
+     * Writes the types found on these events, and re-indexes the ones whose types changed.
+     *
+     * @param array<int, list<string>> $found the types of each event, by id, in AgendaType order: none for an event no
+     *                                        type page lists
+     *
+     * @return list<int> the events whose types changed
+     */
+    public function store(array $found): array
     {
         if ([] === $found) {
-            return 0;
+            return [];
         }
 
         $stored = $this->eventRepository->findAgendaTypesOf(array_keys($found));
@@ -118,68 +139,80 @@ final readonly class AgendaTypeClassifier
             $this->messageBus->dispatch(new RefreshEventDocuments(eventIds: $written));
         }
 
-        return \count($written);
+        return $written;
     }
 
     /**
-     * The events with a session from today on, a page at a time, sorted in index order (_shard_doc) through a point
-     * in time: the documents re-indexed meanwhile neither move nor come twice.
+     * The events with a session from today on, a page at a time, in index order (_shard_doc) through a point in time:
+     * the documents re-indexed meanwhile neither move nor come twice.
      *
-     * @return iterable<array<int, list<string>>> the types each page found, by event id, in AgendaType order
+     * @return iterable<array<int, list<string>>> the types each page found, by event id
      */
     private function pages(DateTimeImmutable $today): iterable
     {
-        /** @var EventElasticaRepository $repository */
-        $repository = $this->repositoryManager->getRepository(Event::class);
         $client = $this->eventIndex->getClient();
         $pointInTime = (string) $this->eventIndex->openPointInTime(self::KEEP_ALIVE)->getData()['id'];
 
         try {
             $after = null;
             do {
-                $query = $repository
+                $query = $this
+                    ->repository()
                     ->createAgendaTypesQuery($today)
                     ->setSize($this->pageSize)
                     ->setPointInTime(new PointInTime($pointInTime, self::KEEP_ALIVE))
                     ->setSort(['_shard_doc' => 'asc']);
                 if (null !== $after) {
+                    // Elastica 9.0 has no setter for it yet
                     $query->setParam('search_after', $after);
                 }
 
                 // A search with a point in time names no index: the point in time holds it
                 $results = new Search($client)->search($query);
                 $pointInTime = $results->getPointInTimeId() ?? $pointInTime;
-
-                $page = [];
-                foreach ($results->getResults() as $result) {
-                    $hit = $result->getHit();
-                    $page[(int) $result->getId()] = self::types($hit['matched_queries'] ?? []);
-                    $after = $hit['sort'];
+                $hits = $results->getResults();
+                if ([] !== $hits) {
+                    $after = $hits[array_key_last($hits)]->getSort();
                 }
 
-                yield $page;
-            } while ($this->pageSize === \count($page));
+                yield self::typesOf($hits);
+            } while ($this->pageSize === \count($hits));
         } finally {
             $client->closePointInTime($pointInTime);
         }
     }
 
-    /**
-     * @param list<string> $matched the names of the type queries a hit matched
-     *
-     * @return list<string> the types, in AgendaType order
-     */
-    private static function types(array $matched): array
+    private function repository(): EventElasticaRepository
     {
-        return array_values(array_map(
-            static fn (AgendaType $type): string => $type->value,
-            array_filter(AgendaType::cases(), static fn (AgendaType $type): bool => \in_array($type->value, $matched, true)),
-        ));
+        /** @var EventElasticaRepository $repository */
+        $repository = $this->repositoryManager->getRepository(Event::class);
+
+        return $repository;
+    }
+
+    /**
+     * @param Result[] $hits
+     *
+     * @return array<int, list<string>> the types of each hit, by event id, in AgendaType order
+     */
+    private static function typesOf(array $hits): array
+    {
+        $types = [];
+        foreach ($hits as $hit) {
+            // The names of the type queries it matched
+            $matched = $hit->getHit()['matched_queries'] ?? [];
+            $types[(int) $hit->getId()] = array_values(array_map(
+                static fn (AgendaType $type): string => $type->value,
+                array_filter(AgendaType::cases(), static fn (AgendaType $type): bool => \in_array($type->value, $matched, true)),
+            ));
+        }
+
+        return $types;
     }
 
     /**
      * An index created before the field has no mapping for it, and the first document written would map it as text:
-     * the configured mapping of the field is added first (again each night, which changes nothing once there).
+     * the configured mapping of the field is added first (again on each run, which changes nothing once there).
      */
     private function addMapping(): void
     {

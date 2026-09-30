@@ -11,16 +11,26 @@
 namespace App\Elasticsearch\Handler;
 
 use App\Elasticsearch\AsyncObjectPersister;
+use App\Elasticsearch\Message\ClassifyEvents;
 use App\Elasticsearch\Message\DocumentsAction;
+use App\Elasticsearch\Message\InsertManyDocuments;
+use App\Elasticsearch\Message\ReplaceManyDocuments;
+use App\Entity\Event;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\ElasticaBundle\Persister\PersisterRegistry;
 use InvalidArgumentException;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 abstract class AbstractActionHandler
 {
+    /** How long a document takes to show in the searches: the refresh_interval of the event index, and a margin */
+    private const int CLASSIFY_DELAY_MS = 10_000;
+
     public function __construct(
         protected PersisterRegistry $registry,
         protected EntityManagerInterface $entityManager,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -33,6 +43,16 @@ abstract class AbstractActionHandler
         }
 
         return $persister;
+    }
+
+    /**
+     * Finds the agenda types of the events just written, once the searches see their documents.
+     */
+    protected function classify(InsertManyDocuments|ReplaceManyDocuments $action): void
+    {
+        if (Event::class === $action->getEntityClass()) {
+            $this->messageBus->dispatch(new ClassifyEvents(array_values(array_map(intval(...), $action->getEntityIds()))), [new DelayStamp(self::CLASSIFY_DELAY_MS)]);
+        }
     }
 
     /**

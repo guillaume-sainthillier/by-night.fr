@@ -25,6 +25,7 @@ use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\DisMax;
 use Elastica\Query\GeoDistance;
+use Elastica\Query\Ids;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
 use Elastica\Query\MatchQuery;
@@ -204,14 +205,20 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * The events with a session from a day on, whatever their place, each hit naming the type pages that list it in
-     * its "matched_queries": what app:events:classify-agenda-types stores as their agenda types. The type queries are
-     * optional clauses (the filter makes them so): they select nothing, and are only run on the hits of a page to name
-     * them.
+     * The events with a session from a day on, whatever their place, or those of them with these ids, each hit naming
+     * the type pages that list it in its "matched_queries": what AgendaTypeClassifier stores as their agenda types. The
+     * type queries are optional clauses (the filter makes them so): they select nothing, and are only run on the hits
+     * returned to name them.
+     *
+     * @param list<int>|null $ids
      */
-    public function createAgendaTypesQuery(DateTimeImmutable $from): Query
+    public function createAgendaTypesQuery(DateTimeImmutable $from, ?array $ids = null): Query
     {
         $bool = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from, null))));
+        if (null !== $ids) {
+            $bool->addFilter(new Ids($ids));
+        }
+
         foreach (AgendaType::cases() as $type) {
             $bool->addShould($this->createTypeQuery($type)->setParam('_name', $type->value));
         }
