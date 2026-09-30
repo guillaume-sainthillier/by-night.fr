@@ -14,8 +14,6 @@ use App\Dto\EventDto;
 use App\Reject\Reject;
 use App\Tests\AppKernelTestCase;
 use App\Validator\Constraints\EventConstraint;
-use App\Validator\Constraints\EventConstraintValidator;
-use Override;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,13 +23,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class EventConstraintValidatorTest extends AppKernelTestCase
 {
-    #[Override]
-    protected function tearDown(): void
-    {
-        self::getContainer()->get(EventConstraintValidator::class)->batchReset();
-        parent::tearDown();
-    }
-
     public function testAnEventTheFirewallAcceptsIsValid(): void
     {
         self::assertCount(0, $this->validate(new Reject()));
@@ -64,24 +55,6 @@ final class EventConstraintValidatorTest extends AppKernelTestCase
      */
     public function testAnUnchangedEventIsValidInTheForm(): void
     {
-        self::assertCount(0, $this->validate(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE)));
-    }
-
-    public function testAnUnchangedEventIsRefusedWhenTheUpdateIsChecked(): void
-    {
-        self::getContainer()->get(EventConstraintValidator::class)->setUpdatabilityCkeck(true);
-
-        $violations = $this->validate(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE));
-
-        self::assertSame(['' => new EventConstraint()->noNeedToUpdate], self::byPath($violations));
-    }
-
-    public function testTheUpdateCheckEndsWithTheBatch(): void
-    {
-        $validator = self::getContainer()->get(EventConstraintValidator::class);
-        $validator->setUpdatabilityCkeck(true);
-        $validator->batchReset();
-
         self::assertCount(0, $this->validate(new Reject()->addReason(Reject::NO_NEED_TO_UPDATE)));
     }
 

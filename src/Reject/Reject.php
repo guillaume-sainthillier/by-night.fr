@@ -131,11 +131,6 @@ final class Reject
         return $this->hasReason(self::BAD_PLACE_NAME);
     }
 
-    public function hasNoNeedToUpdate(): bool
-    {
-        return $this->hasReason(self::NO_NEED_TO_UPDATE);
-    }
-
     public function isBadEventDescription(): bool
     {
         return $this->hasReason(self::BAD_EVENT_DESCRIPTION);
