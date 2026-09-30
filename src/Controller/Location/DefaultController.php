@@ -32,7 +32,7 @@ final class DefaultController extends BaseController
     private const int NEIGHBOURS = 5;
 
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
-    #[Cache(maxage: 0, smaxage: 600, public: true)]
+    #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
     #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
     public function index(AppContext $appContext, EventRepository $eventRepository): Response
     {
