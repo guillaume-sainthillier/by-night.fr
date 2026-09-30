@@ -31,7 +31,7 @@ final class LoginSocialController extends AbstractController
         $accessToken = $client->getAccessToken();
 
         $datas = $OAuthDataProvider->getDatasFromToken($service, $accessToken);
-        $appOAuth = $socialManager->getAppOAuth();
+        $appOAuth = $socialManager->getOrCreateAppOAuth();
         $social->connectSite($appOAuth, $datas);
         $this->getEntityManager()->flush();
 

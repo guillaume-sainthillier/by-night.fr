@@ -24,14 +24,8 @@ final class InfoController extends AbstractController
     #[Route(path: '/', name: 'app_administration_info_index', methods: ['GET'])]
     public function list(SocialManager $socialManager): Response
     {
-        if (false === $socialManager->hasAppOAuth()) {
-            $info = new AppOAuth();
-            $em = $this->getEntityManager();
-            $em->persist($info);
-            $em->flush();
-        } else {
-            $info = $socialManager->getAppOAuth();
-        }
+        $info = $socialManager->getOrCreateAppOAuth();
+        $this->getEntityManager()->flush();
 
         return $this->redirectToRoute('app_administration_info_edit', [
             'id' => $info->getId(),

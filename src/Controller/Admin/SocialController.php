@@ -25,11 +25,9 @@ final class SocialController extends AbstractController
     #[Route(path: '/deconnexion', name: 'app_administration_disconnect_service', methods: ['POST'])]
     public function disconnect(Social $social, SocialManager $socialManager): Response
     {
-        $appOAuth = $socialManager->getAppOAuth();
+        $appOAuth = $socialManager->getOrCreateAppOAuth();
         $social->disconnectSite($appOAuth);
-        $em = $this->getEntityManager();
-        $em->persist($appOAuth);
-        $em->flush();
+        $this->getEntityManager()->flush();
 
         return new JsonResponse(['success' => true]);
     }
