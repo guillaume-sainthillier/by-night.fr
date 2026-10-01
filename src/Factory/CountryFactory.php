@@ -19,6 +19,12 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class CountryFactory extends PersistentObjectFactory
 {
+    /**
+     * Codes that tests pin: the france(), switzerland() and belgium() states, and the ['id' => …]
+     * overrides of tests/. Add a code here when a test starts pinning a new one.
+     */
+    private const array PINNED_CODES = ['BE', 'CH', 'DE', 'FR', 'LU', 'MC', 'RE'];
+
     public static function class(): string
     {
         return Country::class;
@@ -34,7 +40,16 @@ final class CountryFactory extends PersistentObjectFactory
             // it lazy (Foundry replaces overridden LazyValues without resolving them) so callers
             // pinning an explicit id (e.g. ['id' => 'FR']) bypass it entirely and the bounded
             // ISO-code pool is only drawn from for "don't care" countries.
-            'id' => LazyValue::new(static fn (): string => self::faker()->unique()->countryCode()),
+            // unique() only knows its own draws, not the codes tests pin, so a "don't care" country
+            // (e.g. PlaceFactory's default) could still draw 'FR' next to a pinned France and
+            // collide the same way: the draw skips PINNED_CODES.
+            'id' => LazyValue::new(static function (): string {
+                do {
+                    $code = self::faker()->unique()->countryCode();
+                } while (\in_array($code, self::PINNED_CODES, true));
+
+                return $code;
+            }),
             'name' => self::faker()->country(),
             'displayName' => self::faker()->country(),
             'atDisplayName' => 'à ' . self::faker()->country(),
