@@ -368,16 +368,15 @@ final class EventElasticaRepositoryTest extends TestCase
     }
 
     /**
-     * place.country.id is a keyword holding the code ("FR") once the index is populated with its mapping; an index
-     * built before has it as text, lowercased ("fr"). Either finds the events of the country.
+     * place.country.id is a keyword holding the code as stored ("FR"), not lowercased.
      */
-    public function testACountryPageListsTheEventsOfTheCountryWhateverTheMappingOfItsCode(): void
+    public function testACountryPageListsTheEventsOfTheCountryByItsCode(): void
     {
         $search = new SearchEvent()->setLocation(new Location()->setCountry(new Country()->setId('FR')));
 
         $filters = $this->repository->createSearchQuery($search)->toArray()['query']['bool']['filter'];
 
-        self::assertSame(['terms' => ['place.country.id' => ['FR', 'fr']]], $filters[0]);
+        self::assertSame(['term' => ['place.country.id' => 'FR']], $filters[0]);
     }
 
     /**
