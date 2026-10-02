@@ -1,6 +1,16 @@
 {
 	skip_install_trust
 
+	# ember polls the admin API every second and each call logged a "received request" line,
+	# burying the application logs: the admin API only logs its warnings and errors.
+	log default {
+		exclude admin.api
+	}
+	log admin {
+		include admin.api
+		level WARN
+	}
+
 	{$CADDY_GLOBAL_OPTIONS}
 
 	frankenphp {
