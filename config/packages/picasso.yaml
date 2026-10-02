@@ -4,6 +4,14 @@ picasso:
     default_placeholder: blur
     default_quality: ~
 
+    # Served thumbnails: one year, immutable (the bundle's defaults, spelled out because Caddy sets the same
+    # header on bucket hits, docker/thumbs-proxy.Caddyfile). Signed 404s (deleted images) are kept by Cloudflare
+    # a minute, so a burst of requests for a removed image does not boot the kernel each time.
+    cache_control:
+        max_age: 31536000
+        immutable: true
+        error_max_age: 60
+
     placeholders:
         blur:
             type: transformer
@@ -31,6 +39,13 @@ picasso:
         glide:
             sign_key: '%kernel.secret%'
             cache: 'thumbs.storage'
+            # A miss is rendered to local disk, answered, then uploaded to the bucket on kernel.terminate: the
+            # S3 upload is no longer part of the client's wait.
+            defer_cache_write: true
+            # Concurrent requests for the same missing thumbnail render it once (Redis lock, config/packages/lock.yaml),
+            # held until the deferred upload is done.
+            lock:
+                enabled: true
             # Rendered variants are written to thumbs.storage at a path mirroring the URL
             # (/p/image/glide/<loader>/<path>/<params>.<fmt>) so the web server can serve them
             # straight from the bucket; PHP only handles the first generation (2026-09-09).
