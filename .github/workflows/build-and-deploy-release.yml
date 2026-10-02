@@ -5,6 +5,9 @@ on:
         tags:
             - v*
 
+permissions:
+    contents: read
+
 jobs:
     # The release build needs guystlr/by-night-base:<docker/base/VERSION>. It is normally
     # published from main by build-base-image.yml; this job republishes it when missing
@@ -13,6 +16,7 @@ jobs:
     base:
         name: Ensure base image
         runs-on: ubuntu-latest
+        timeout-minutes: 60
         permissions:
             contents: read
         outputs:
@@ -63,9 +67,9 @@ jobs:
         name: Build and push image
         needs: base
         runs-on: ubuntu-latest
+        timeout-minutes: 30
         permissions:
             contents: read
-            packages: write
         steps:
             - uses: actions/checkout@v7
 
@@ -103,6 +107,11 @@ jobs:
         name: Deploy to production
         needs: build
         runs-on: ubuntu-latest
+        timeout-minutes: 20
+        # Never run two deploy.sh at once; a newer deploy waits for the running one.
+        concurrency:
+            group: deploy-production
+            cancel-in-progress: false
         steps:
             - name: Deploy to production
               uses: appleboy/ssh-action@v1

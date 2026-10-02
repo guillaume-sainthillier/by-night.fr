@@ -18,10 +18,14 @@ on:
             - 'docker/base/**'
             - '.github/workflows/build-base-image.yml'
 
+permissions:
+    contents: read
+
 jobs:
     build:
         name: Build and push base image
         runs-on: ubuntu-latest
+        timeout-minutes: 60
         permissions:
             contents: read
         steps:
