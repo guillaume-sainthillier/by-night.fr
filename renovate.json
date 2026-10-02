@@ -21,6 +21,11 @@
             "matchManagers": ["composer"],
             "matchDepNames": ["php"],
             "enabled": false
+        },
+        {
+            "description": "docker/base is published under the immutable tag in docker/base/VERSION, which must be bumped by hand along with any change, so never automerge it",
+            "matchFileNames": ["docker/base/**"],
+            "automerge": false
         }
     ]
 }
