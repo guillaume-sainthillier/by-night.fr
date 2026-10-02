@@ -5,6 +5,9 @@ on:
         tags:
             - v*
 
+permissions:
+    contents: read
+
 jobs:
     # The release build needs guystlr/by-night-base:<docker/base/VERSION>. It is normally
     # published from main by build-base-image.yml; this job republishes it when missing

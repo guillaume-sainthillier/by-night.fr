@@ -18,6 +18,9 @@ on:
             - 'docker/base/**'
             - '.github/workflows/build-base-image.yml'
 
+permissions:
+    contents: read
+
 jobs:
     build:
         name: Build and push base image
