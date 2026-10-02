@@ -50,6 +50,8 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
 #[ORM\Index(name: 'event_identity_hash_idx', columns: ['identity_hash'])]
+#[ORM\Index(name: 'event_image_name_idx', columns: ['image_name'])]
+#[ORM\Index(name: 'event_image_system_name_idx', columns: ['image_system_name'])]
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: '`event`')]
 #[ORM\HasLifecycleCallbacks]
