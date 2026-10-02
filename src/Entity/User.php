@@ -41,6 +41,8 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: '`user`')]
+#[ORM\Index(name: 'user_image_name_idx', columns: ['image_name'])]
+#[ORM\Index(name: 'user_image_system_name_idx', columns: ['image_system_name'])]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
 {
