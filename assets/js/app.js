@@ -33,6 +33,7 @@ import tooltip from '@/js/listeners/tooltip'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
+import viewTransitions from '@/js/modules/view-transitions'
 import registerServices from '@/js/services'
 import Container from '@/js/services/Container'
 import { findAllSelf } from '@/js/utils/dom'
@@ -74,7 +75,7 @@ class App {
     #pageResolvers = {}
 
     constructor() {
-        this.#modules = [autocomplete, scrollToTop]
+        this.#modules = [autocomplete, scrollToTop, viewTransitions]
 
         this.#listeners = [
             pages,

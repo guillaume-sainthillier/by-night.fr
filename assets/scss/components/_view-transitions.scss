@@ -1,0 +1,24 @@
+@use '../core' as *;
+
+// Cross-document view transitions (Chrome 126+, Safari 18.2+; elsewhere the page just loads): the picture of an event
+// card morphs into the poster of the event's page, and back. js/modules/view-transitions.js names the card of the
+// navigation only.
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+}
+
+// Named here, not by the script: the event page's first render, which the transition captures, comes before the app
+// has started
+#event-poster {
+    view-transition-name: event-picture;
+}
+
+// A 16:10 card picture into a 4:3 poster: both snapshots fill the morphing box, cropped, instead of stretching
+::view-transition-old(event-picture),
+::view-transition-new(event-picture) {
+    height: 100%;
+    object-fit: cover;
+    overflow: clip;
+}
