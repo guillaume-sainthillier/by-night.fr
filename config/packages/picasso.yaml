@@ -51,3 +51,12 @@ picasso:
             # straight from the bucket; PHP only handles the first generation (2026-09-09).
             public_cache:
                 enabled: true
+
+# libvips renders a thumbnail srcset ~1.7x faster than GD (AVIF included), with the same flat memory in a
+# long-lived worker. It ships in the Docker base image only (docker/base/Dockerfile: vips, vips-heif, FFI):
+# dev and test keep GD, which needs no system library.
+when@prod:
+    picasso:
+        transformers:
+            glide:
+                driver: vips

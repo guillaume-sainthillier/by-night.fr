@@ -49,6 +49,7 @@
         "erusev/parsedown": "^1.8.0",
         "friendsofsymfony/elastica-bundle": "^7.2",
         "huluti/breadcrumbs-bundle": "^1.7",
+        "intervention/image-driver-vips": "^4.1",
         "jean85/pretty-package-versions": "^2.1.1",
         "karser/karser-recaptcha3-bundle": "^0.3.0",
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
