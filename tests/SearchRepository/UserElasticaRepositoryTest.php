@@ -52,8 +52,36 @@ final class UserElasticaRepositoryTest extends AppKernelTestCase
         $repository->findWithHighlightsPaginated('dupont');
 
         [$searchPage, $autocomplete] = $queries;
-        self::assertSame(['username'], $searchPage['query']['bool']['filter'][0]['multi_match']['fields']);
+        self::assertSame(['username'], $searchPage['query']['bool']['must'][0]['multi_match']['fields']);
         self::assertSame(['username'], $autocomplete['query']['multi_match']['fields']);
         self::assertSame(['username'], array_keys($autocomplete['highlight']['fields']));
+    }
+
+    /**
+     * /recherche lists the members by relevance: in a filter, the match scored nothing and they came in index order.
+     * The hits are loaded from the database by their _id, without their document.
+     */
+    public function testTheSearchPageListsTheBestMatchingMembersFirst(): void
+    {
+        $queries = [];
+        $finder = $this->createStub(PaginatedFinderInterface::class);
+        $capture = function (Query $query) use (&$queries): PaginatorAdapterInterface {
+            $queries[] = $query->toArray();
+
+            return $this->createStub(PaginatorAdapterInterface::class);
+        };
+        $finder->method('createPaginatorAdapter')->willReturnCallback($capture);
+        $finder->method('createHybridPaginatorAdapter')->willReturnCallback($capture);
+
+        $repository = new UserElasticaRepository($finder);
+        $repository->findWithSearch('jazzfan');
+        $repository->findWithHighlightsPaginated('jazzfan');
+
+        [$searchPage, $autocomplete] = $queries;
+        self::assertArrayNotHasKey('filter', $searchPage['query']['bool']);
+        self::assertSame('jazzfan', $searchPage['query']['bool']['must'][0]['multi_match']['query']);
+        self::assertArrayNotHasKey('sort', $searchPage, 'By score');
+        self::assertFalse($searchPage['_source']);
+        self::assertFalse($autocomplete['_source']);
     }
 }

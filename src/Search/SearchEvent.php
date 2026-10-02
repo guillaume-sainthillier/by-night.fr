@@ -38,11 +38,6 @@ final class SearchEvent
     #[Assert\LessThanOrEqual(self::MAX_RANGE)]
     private ?int $range = 25;
 
-    /**
-     * @deprecated Use tagId instead for new Tag entity filtering
-     */
-    private ?string $tag = null;
-
     private ?int $tagId = null;
 
     private array $lieux = [];
@@ -152,18 +147,6 @@ final class SearchEvent
     public function setTo(?DateTimeInterface $to): self
     {
         $this->to = $to;
-
-        return $this;
-    }
-
-    public function getTag(): ?string
-    {
-        return $this->tag;
-    }
-
-    public function setTag(?string $tag): self
-    {
-        $this->tag = $tag;
 
         return $this;
     }

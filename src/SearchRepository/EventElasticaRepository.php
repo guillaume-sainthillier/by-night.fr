@@ -23,9 +23,11 @@ use Elastica\Aggregation\Terms as TermsAggregation;
 use Elastica\Query;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\DisMax;
 use Elastica\Query\GeoDistance;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Nested;
 use Elastica\Query\Range;
@@ -88,7 +90,8 @@ final class EventElasticaRepository extends Repository
 
         // Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
-        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
+        // The hits are loaded from the database by their _id (FOSElastica's transformer): none of the document is read
+        $finalQuery->setSource(false);
         // The count stops at 10 000 otherwise ("sur 10 000" on /c--france/agenda). The pages still stop at the result
         // window (ResultWindow); counting the rest took no measurable time, the nested sort already visits every hit
         $finalQuery->setTrackTotalHits(true);
@@ -258,7 +261,11 @@ final class EventElasticaRepository extends Repository
     {
         $location = $search->getLocation();
         if (null !== $location && $location->isCountry()) {
-            return new Term(['place.country.id' => mb_strtolower((string) $location->getCountry()->getId())]);
+            $country = (string) $location->getCountry()->getId();
+
+            // A keyword holding the code as stored ("FR"). An index built before place.country.id was mapped has it
+            // as text, lowercased by its analyzer ("fr"): that variant can go once every index has been populated again
+            return new Terms('place.country.id', array_values(array_unique([$country, mb_strtolower($country)])));
         }
 
         if (null !== $location && $location->isCity()) {
@@ -302,32 +309,40 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * Events naming all these words, fuzzily, in one of their fields.
+     * Events naming all these words, fuzzily, in one of their fields or in the name of one of their themes. The best
+     * of the two counts, as the best field of the multi_match does: a theme is one more field.
      */
-    private function createKeywordsQuery(string $keywords): MultiMatch
+    private function createKeywordsQuery(string $keywords): DisMax
     {
-        return new MultiMatch()
-            ->setFields([
-                'name^5',
-                'name.heavy^5',
-                'placeName^3',
-                'place.name^3',
-                'placeCity^2',
-                'place.cityName^2',
-                'place.cityPostalCode^3',
-                'placePostalCode',
-                'placeStreet',
-                'place.street',
-                'description',
-                'description.heavy',
-                'type',
-                'category.name',
-                'themes.name',
-            ])
-            ->setFuzziness('auto')
-            ->setOperator('AND')
-            ->setQuery($keywords)
-        ;
+        return new DisMax()
+            ->addQuery(new MultiMatch()
+                ->setFields([
+                    'name^5',
+                    'name.heavy^5',
+                    'placeName^3',
+                    'place.name^3',
+                    'placeCity^2',
+                    'place.cityName^2',
+                    'place.cityPostalCode^3',
+                    'placePostalCode',
+                    'placeStreet',
+                    'place.street',
+                    'description',
+                    'description.heavy',
+                    'type',
+                    'category.name',
+                ])
+                ->setFuzziness('auto')
+                ->setOperator('AND')
+                ->setQuery($keywords))
+            // Themes are nested documents, which a query on the event itself never reaches
+            ->addQuery(new Nested()
+                ->setPath('themes')
+                ->setScoreMode('max')
+                ->setQuery(new MatchQuery()
+                    ->setFieldQuery('themes.name', $keywords)
+                    ->setFieldFuzziness('themes.name', 'auto')
+                    ->setFieldOperator('themes.name', MatchQuery::OPERATOR_AND)));
     }
 
     /**
@@ -369,16 +384,6 @@ final class EventElasticaRepository extends Repository
             $tagFilter->addShould($nestedQuery);
 
             return $tagFilter;
-        }
-
-        if ($search->getTag()) {
-            // Legacy: filter by tag string (deprecated)
-            $query = new MultiMatch();
-            $query
-                ->setQuery($search->getTag())
-                ->setFields(['type', 'category.name', 'themes.name']);
-
-            return $query;
         }
 
         return null;
@@ -429,6 +434,8 @@ final class EventElasticaRepository extends Repository
             ->setQuery($query);
 
         $finalQuery = Query::create($multiMatch);
+        // Loaded from the database by their _id; the highlights come without the document
+        $finalQuery->setSource(false);
 
         // Add highlighting
         $finalQuery->setHighlight([

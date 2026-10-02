@@ -10,13 +10,17 @@
 
 namespace App\Tests\SearchRepository;
 
+use App\App\Location;
+use App\Entity\Country;
 use App\Enum\AgendaType;
 use App\Enum\PricePreset;
 use App\Search\DateRange;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use DateTimeImmutable;
+use Elastica\Query;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
+use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -121,7 +125,7 @@ final class EventElasticaRepositoryTest extends TestCase
 
         $bool = $this->repository->createSearchQuery($search)->toArray()['query']['bool'];
 
-        self::assertSame('jazz', $bool['must'][0]['multi_match']['query']);
+        self::assertSame('jazz', self::keywordsOf($bool['must'][0]));
         self::assertEquals($this->typeFilterOf(AgendaType::Concert), $bool['filter'][1], 'The keywords used to replace the type');
     }
 
@@ -143,7 +147,7 @@ final class EventElasticaRepositoryTest extends TestCase
         $filters = $dates['filter']['bool']['filter'];
         self::assertContains(['terms' => ['place.id' => [12]]], $filters, 'A venue page counts its own dates');
         self::assertEquals($this->typeFilterOf(AgendaType::Concert), $filters[1]);
-        self::assertSame('jazz', $filters[2]['multi_match']['query']);
+        self::assertSame('jazz', self::keywordsOf($filters[2]));
         self::assertSame(7, $filters[3]['bool']['should'][0]['term']['category.id']);
         self::assertCount(4, $filters, 'The window of the page is left out: each date is its own window');
 
@@ -184,7 +188,7 @@ final class EventElasticaRepositoryTest extends TestCase
             ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
         ]]]]], $filters[0]);
         self::assertEquals(['terms' => ['place.id' => [12]]], $filters[1]);
-        self::assertSame('jazz', $filters[2]['multi_match']['query']);
+        self::assertSame('jazz', self::keywordsOf($filters[2]));
         self::assertEquals(['term' => ['category.id' => 7]], $filters[3]['bool']['should'][0]);
 
         $counts = $types['aggs']['types']['filters']['filters'];
@@ -211,7 +215,7 @@ final class EventElasticaRepositoryTest extends TestCase
         $filters = $categories['filter']['bool']['filter'];
         self::assertCount(3, $filters, 'The category of the page is left out');
         self::assertEquals(['terms' => ['place.id' => [12]]], $filters[1]);
-        self::assertSame('jazz', $filters[2]['multi_match']['query']);
+        self::assertSame('jazz', self::keywordsOf($filters[2]));
         self::assertSame(['concert', 'show', 'exhibition', 'family', 'student'], array_keys($categories['aggs']['types']['filters']['filters']));
         self::assertSame(['terms' => ['field' => 'category.id', 'size' => 4]], $categories['aggs']['types']['aggs']['categories']);
     }
@@ -240,7 +244,7 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertEquals(['nested' => ['path' => 'sessions', 'query' => ['bool' => ['filter' => [
             ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
         ]]]]], $filters[0]);
-        self::assertContains('concert musique artiste', array_map(static fn (array $clause) => $clause['multi_match']['query'] ?? null, $filters[1]['bool']['should']));
+        self::assertContains('concert musique artiste', array_map(self::keywordsOf(...), $filters[1]['bool']['should']));
         self::assertFalse($query['_source']);
     }
 
@@ -263,7 +267,7 @@ final class EventElasticaRepositoryTest extends TestCase
             ['nested' => ['path' => 'themes', 'query' => ['match_phrase' => ['themes.name' => 'soirée']]]],
             $anyTerm['should'],
         );
-        self::assertContains('soirée étudiant bar discothèque boîte de nuit after work', array_map(static fn (array $clause) => $clause['multi_match']['query'] ?? null, $anyTerm['should']), 'What the keywords query found stays classified');
+        self::assertContains('soirée étudiant bar discothèque boîte de nuit after work', array_map(self::keywordsOf(...), $anyTerm['should']), 'What the keywords query found stays classified');
     }
 
     /**
@@ -284,7 +288,7 @@ final class EventElasticaRepositoryTest extends TestCase
         $filters = $places['filter']['bool']['filter'];
         self::assertCount(4, $filters, 'The venue of the page is left out');
         self::assertEquals($this->typeFilterOf(AgendaType::Concert), $filters[1]);
-        self::assertSame('jazz', $filters[2]['multi_match']['query']);
+        self::assertSame('jazz', self::keywordsOf($filters[2]));
         self::assertEquals(['term' => ['category.id' => 7]], $filters[3]['bool']['should'][0]);
         self::assertSame(['field' => 'place.id', 'size' => 6], $places['aggs']['ids']['terms']);
     }
@@ -344,6 +348,61 @@ final class EventElasticaRepositoryTest extends TestCase
     }
 
     /**
+     * Themes are nested documents: a theme name among the fields of the multi_match was never searched. A term found
+     * in a theme name lists the event as one found in its own fields does.
+     */
+    public function testKeywordsAreSearchedInTheNamesOfTheThemesToo(): void
+    {
+        $keywords = $this->repository->createSearchQuery(new SearchEvent()->setTerm('jazz manouche'))->toArray()['query']['bool']['must'][0];
+
+        [$fields, $themes] = $keywords['dis_max']['queries'];
+        self::assertSame('jazz manouche', $fields['multi_match']['query']);
+        self::assertSame('AND', $fields['multi_match']['operator']);
+        self::assertSame('auto', $fields['multi_match']['fuzziness']);
+        self::assertNotContains('themes.name', $fields['multi_match']['fields'], 'A query on the event never reaches its nested themes');
+        self::assertEquals(['nested' => [
+            'path' => 'themes',
+            'score_mode' => 'max',
+            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'fuzziness' => 'auto', 'operator' => 'and']]],
+        ]], $themes);
+    }
+
+    /**
+     * place.country.id is a keyword holding the code ("FR") once the index is populated with its mapping; an index
+     * built before has it as text, lowercased ("fr"). Either finds the events of the country.
+     */
+    public function testACountryPageListsTheEventsOfTheCountryWhateverTheMappingOfItsCode(): void
+    {
+        $search = new SearchEvent()->setLocation(new Location()->setCountry(new Country()->setId('FR')));
+
+        $filters = $this->repository->createSearchQuery($search)->toArray()['query']['bool']['filter'];
+
+        self::assertSame(['terms' => ['place.country.id' => ['FR', 'fr']]], $filters[0]);
+    }
+
+    /**
+     * The hits are loaded from the database by their _id: the document itself is never read, the highlights of the
+     * autocomplete included.
+     */
+    public function testTheHitsComeWithoutTheirDocument(): void
+    {
+        self::assertFalse($this->repository->createSearchQuery(new SearchEvent())->toArray()['_source']);
+        self::assertFalse($this->repository->createSearchQuery(new SearchEvent()->setTerm('jazz'))->toArray()['_source']);
+
+        $queries = [];
+        $finder = $this->createStub(PaginatedFinderInterface::class);
+        $finder->method('createHybridPaginatorAdapter')->willReturnCallback(function (Query $query) use (&$queries): PaginatorAdapterInterface {
+            $queries[] = $query->toArray();
+
+            return $this->createStub(PaginatorAdapterInterface::class);
+        });
+        new EventElasticaRepository($finder)->findWithHighlightsPaginated('jazz');
+
+        self::assertFalse($queries[0]['_source']);
+        self::assertSame(['name', 'place.name'], array_keys($queries[0]['highlight']['fields']));
+    }
+
+    /**
      * The clause the page of a type filters its events with.
      *
      * @return array<string, mixed>
@@ -352,5 +411,15 @@ final class EventElasticaRepositoryTest extends TestCase
     {
         // After the window of the dates, which every search has
         return $this->repository->createSearchQuery(new SearchEvent()->setType($type))->toArray()['query']['bool']['filter'][1];
+    }
+
+    /**
+     * The words a keywords clause (createKeywordsQuery()) searches, null for another clause.
+     *
+     * @param array<string, mixed> $clause
+     */
+    private static function keywordsOf(array $clause): ?string
+    {
+        return $clause['dis_max']['queries'][0]['multi_match']['query'] ?? null;
     }
 }
