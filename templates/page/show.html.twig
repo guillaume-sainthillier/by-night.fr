@@ -19,7 +19,7 @@
     <div class="page-content">
         {% if page.hasImage %}
             <twig:Picasso:Image
-                loader="vich"
+                loader="page_image"
                 src="{{ null }}"
                 context="{{ {entity: page, field: 'imageFile'} }}"
                 width="{{ 1200 }}"

@@ -27,6 +27,7 @@ RUN IPE_GD_WITHOUTAVIF=1 \
         apcu \
         bcmath \
         exif \
+        ffi \
         gd \
         intl \
         opcache \
@@ -56,13 +57,19 @@ RUN --mount=type=cache,target=/root/.cargo/registry \
 FROM php_ext
 
 # Runtime system packages (curl is required by the application image HEALTHCHECK).
+# vips + vips-heif (AVIF): Picasso's Glide "vips" driver in production (config/packages/picasso.yaml),
+# ~1.7x faster than GD on a thumbnail srcset. PHP calls libvips through FFI, which the web SAPI
+# only allows with ffi.enable=true (the default "preload" limits it to the CLI and preloading).
 RUN apk add --no-cache \
         bash \
         ca-certificates \
         curl \
         supervisor \
         tzdata \
-    && echo "Europe/Paris" > /etc/timezone
+        vips \
+        vips-heif \
+    && echo "Europe/Paris" > /etc/timezone \
+    && echo "ffi.enable=true" >> "$PHP_INI_DIR/conf.d/docker-php-ext-ffi.ini"
 
 # Add mjml.so to the (identical) extensions dir — a safe superset, see header note.
 COPY --from=mjml_builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/

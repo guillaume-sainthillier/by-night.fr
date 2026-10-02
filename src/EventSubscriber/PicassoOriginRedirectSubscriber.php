@@ -22,8 +22,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Sends an unservable Picasso image URL to the public URL of its original file.
  *
- * A Picasso URL only validates together with its signature and "_metadata" query
- * parameters. Consumers that drop the query string — crawlers, feed readers, link
+ * A Picasso URL only validates together with its signature query parameter.
+ * Consumers that drop the query string — crawlers, feed readers, link
  * shorteners — end up requesting a path we cannot serve. Redirecting to the origin
  * keeps the image resolving and the link worth something, instead of a 404.
  */

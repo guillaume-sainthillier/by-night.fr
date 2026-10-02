@@ -4,6 +4,14 @@ picasso:
     default_placeholder: blur
     default_quality: ~
 
+    # Served thumbnails: one year, immutable (the bundle's defaults, spelled out because Caddy sets the same
+    # header on bucket hits, docker/thumbs-proxy.Caddyfile). Signed 404s (deleted images) are kept by Cloudflare
+    # a minute, so a burst of requests for a removed image does not boot the kernel each time.
+    cache_control:
+        max_age: 31536000
+        immutable: true
+        error_max_age: 60
+
     placeholders:
         blur:
             type: transformer
@@ -11,18 +19,44 @@ picasso:
             blur: ~ # blur radius
             quality: 20 # JPEG quality (1–100)
 
+    # One loader per VichUploader mapping, named after it: since 2.0 a loader reads one storage, and image URLs
+    # name the loader (/p/image/glide/<loader>/<path>/...). Templates holding only an entity and a field name get
+    # it from upload_loader() (src/Twig/ImageExtension.php), which relies on that naming.
     loaders:
-        vich:
+        # Event images are 99.9% of the uploads (~1.9M), and 1.x put every mapping under "vich": keeping that URL
+        # segment keeps their URLs, and so the thumbnails already in the bucket and in Cloudflare. The other
+        # mappings start a new cache directory, re-rendered on demand.
+        event_image: { type: vich, url_alias: vich }
+        user_image: { type: vich }
+        page_image: { type: vich }
+        city_image: { type: vich }
+        country_image: { type: vich }
+
         filesystem:
-            paths:
-                - '%kernel.project_dir%/public'
+            path: '%kernel.project_dir%/public'
 
     transformers:
         glide:
             sign_key: '%kernel.secret%'
             cache: 'thumbs.storage'
+            # A miss is rendered to local disk, answered, then uploaded to the bucket on kernel.terminate: the
+            # S3 upload is no longer part of the client's wait.
+            defer_cache_write: true
+            # Concurrent requests for the same missing thumbnail render it once (Redis lock, config/packages/lock.yaml),
+            # held until the deferred upload is done.
+            lock:
+                enabled: true
             # Rendered variants are written to thumbs.storage at a path mirroring the URL
-            # (/p/image/glide/vich/<path>/<params>.<fmt>) so the web server can serve them
+            # (/p/image/glide/<loader>/<path>/<params>.<fmt>) so the web server can serve them
             # straight from the bucket; PHP only handles the first generation (2026-09-09).
             public_cache:
                 enabled: true
+
+# libvips renders a thumbnail srcset ~1.7x faster than GD (AVIF included), with the same flat memory in a
+# long-lived worker. It ships in the Docker base image only (docker/base/Dockerfile: vips, vips-heif, FFI):
+# dev and test keep GD, which needs no system library.
+when@prod:
+    picasso:
+        transformers:
+            glide:
+                driver: vips

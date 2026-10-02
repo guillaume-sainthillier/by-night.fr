@@ -63,7 +63,7 @@ final readonly class LocationPicture
     {
         if ($location->hasHeroImage()) {
             return [
-                'loader' => 'vich',
+                'loader' => $location instanceof City ? 'city_image' : 'country_image',
                 'src' => null,
                 'context' => ['entity' => $location, 'field' => 'heroImageFile'],
             ];

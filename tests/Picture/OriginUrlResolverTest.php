@@ -94,6 +94,26 @@ final class OriginUrlResolverTest extends TestCase
         );
     }
 
+    /**
+     * Since Picasso 2, a loader named after its mapping reads one storage: no probing, and no event storage built.
+     */
+    public function testResolvesAMappingLoaderFromItsOwnStorageOnly(): void
+    {
+        $this->users->write(self::USER_IMAGE, 'jpg');
+
+        self::assertSame(
+            'https://data.by-night.fr/uploads/users/' . self::USER_IMAGE,
+            $this->createResolver(events: $this->createUnusableStorage())->resolve('user_image', self::USER_IMAGE),
+        );
+    }
+
+    public function testDoesNotRedirectAMappingLoaderToAnotherStorage(): void
+    {
+        $this->events->write(self::EVENT_IMAGE, 'jpg');
+
+        self::assertNull($this->createResolver()->resolve('page_image', self::EVENT_IMAGE));
+    }
+
     public function testReturnsNullWhenNoStorageHoldsTheFile(): void
     {
         self::assertNull($this->createResolver()->resolve('vich', self::EVENT_IMAGE));

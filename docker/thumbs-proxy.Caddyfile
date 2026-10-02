@@ -23,10 +23,12 @@ handle @thumbs {
 			# can send it to the origin file — so it has to reach PHP.
 			#
 			# Everything else unsigned is scanner noise (/p/image/glide/vich/.env and friends)
-			# and is answered right here, without paying for a kernel boot.
+			# and is answered right here, without paying for a kernel boot. Uploads sit under
+			# dated directories, except city and country images (no directory namer); "vich" is
+			# event images, and every upload in a Picasso 1.x URL (config/packages/picasso.yaml).
 			@noise {
 				not query s=*
-				not path_regexp ^/p/image/glide/(vich/[0-9]{4}/[0-9]{2}/[0-9]{2}/|filesystem/build/)
+				not path_regexp ^/p/image/glide/((vich|user_image|page_image)/[0-9]{4}/[0-9]{2}/[0-9]{2}/|(vich|city_image|country_image)/[^/.][^/]*\.[a-z]+/|filesystem/build/)
 			}
 			header @noise Cache-Control "no-store"
 			respond @noise 404

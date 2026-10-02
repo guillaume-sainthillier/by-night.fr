@@ -104,7 +104,7 @@ final class ImageRemovalTest extends AppKernelTestCase
 
         $sent = $this->sentMessages();
         self::assertEqualsCanonicalizing(
-            array_map(static fn (string $path): RemoveImageThumbnails => new RemoveImageThumbnails($path), $paths),
+            array_map(static fn (string $path): RemoveImageThumbnails => new RemoveImageThumbnails($path, 'event_image'), $paths),
             array_values(array_filter($sent, static fn (object $message): bool => $message instanceof RemoveImageThumbnails)),
         );
         self::assertEqualsCanonicalizing(
@@ -163,7 +163,8 @@ final class ImageRemovalTest extends AppKernelTestCase
     }
 
     /**
-     * Thumbnails the way Picasso's public cache writes them: under glide/vich/<image path>/.
+     * Thumbnails the way Picasso's public cache writes them: under glide/<loader URL segment>/<image path>/, "vich"
+     * for event images (event_image's URL alias, config/packages/picasso.yaml).
      */
     private function renderThumbnails(string $path): void
     {
