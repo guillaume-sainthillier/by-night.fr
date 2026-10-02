@@ -85,7 +85,6 @@ that era still resolve. The same one-liner with any image tag adds that release'
 ## Setup
 
 ```bash
-bin/console rabbitmq:setup-fabric
 bin/console messenger:setup-transports
 ```
 
@@ -93,5 +92,5 @@ bin/console messenger:setup-transports
 
 ```bash
 bin/console app:events:import toulouse.opendata -vv
-bin/console rabbitmq:batch:consumer add_event -vv
+bin/console messenger:consume parser -vv
 ```

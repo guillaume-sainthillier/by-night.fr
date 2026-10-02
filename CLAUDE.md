@@ -12,7 +12,7 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Database**: MySQL 8.0 with Doctrine ORM
 - **Search**: Elasticsearch 9 with FOSElasticaBundle
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
-- **Message Queue**: RabbitMQ (php-amqplib/rabbitmq-bundle)
+- **Message Queue**: RabbitMQ via Symfony Messenger (`symfony/amqp-messenger`, transports in `config/packages/messenger.yaml`)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
 - **Frontend**: Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
 - **Error Tracking**: Sentry
@@ -151,15 +151,14 @@ php -m | grep mjml            # verify
 
 ```bash
 # Setup message queues
-bin/console rabbitmq:setup-fabric
 bin/console messenger:setup-transports
 
 # Import events from a parser
 bin/console app:events:import <parser-name> -vv          # changes since the parser's last run
 bin/console app:events:import <parser-name> --full -vv   # whole catalogue
 
-# Process queued events
-bin/console rabbitmq:batch:consumer add_event -vv
+# Process queued events (the `parser` transport; workers in docker/supervisord-worker.conf)
+bin/console messenger:consume parser -vv
 ```
 
 ### Elasticsearch
@@ -177,11 +176,11 @@ The system imports events through a multi-stage pipeline:
 1. **Parsers** (`src/Parser/`): Fetch and normalize events from external APIs
     - Extend `AbstractParser`, implement `ParserInterface`
     - Each parser has a command name (e.g., `openagenda`, `toulouse.opendata`)
-    - Parsers create `EventDto` objects and publish them via `EventProducer`
+    - Parsers create `EventDto` objects and dispatch them on the Messenger bus (`AbstractParser`), routed to the `parser` transport
     - `parse(?DateTimeImmutable $since)`: `app:events:import` passes the start of the parser's previous successful run (stored in `parser_state`, see `ParserStateRepository`) so incremental sources fetch only what changed since then; `null` (first run, or `--full`) means a full import
     - `DataTourismeParser` reads the DATAtourisme API (`DATATOURISME_API_KEY`) through the `datatourisme.client` scoped HTTP client, throttled to the API quotas by the `datatourisme_api` rate limiter (`config/packages/rate_limiter.yaml`)
 
-2. **Message Queue**: Events are queued in RabbitMQ for async processing
+2. **Message Queue**: Events are queued in RabbitMQ (Messenger `parser` transport) for async processing
 
 3. **Consumers** (`src/MessageHandler/EventBatchHandler.php`): Process batches of events
     - `DoctrineEventHandler` orchestrates entity resolution and persistence
@@ -302,7 +301,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - `src/Parser/` - Event data parsers for external sources
 - `src/Handler/` - Business logic handlers (DoctrineEventHandler, EventHandler)
 - `src/Import/` - Import-pipeline domain services (Firewall, Cleaner, content hashing, dedup)
-- `src/MessageHandler/` - RabbitMQ message handlers (EventBatchHandler consumes the import queue)
+- `src/MessageHandler/` - Messenger handlers (EventBatchHandler consumes the `parser` transport in batches)
 - `src/Dto/` - Data transfer objects for import pipeline
 - `src/EntityFactory/` - DTO to Entity conversion
 - `src/EntityProvider/` - Entity lookup services
