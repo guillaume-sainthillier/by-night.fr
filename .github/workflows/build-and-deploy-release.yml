@@ -106,6 +106,10 @@ jobs:
         name: Deploy to production
         needs: build
         runs-on: ubuntu-latest
+        # Never run two deploy.sh at once; a newer deploy waits for the running one.
+        concurrency:
+            group: deploy-production
+            cancel-in-progress: false
         steps:
             - name: Deploy to production
               uses: appleboy/ssh-action@v1
