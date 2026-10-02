@@ -27,6 +27,17 @@ parameters:
     # events stay online and indexable: they are simply left to Google's own crawl schedule
     # (see App\SEO\EventIndexingPolicy).
     app.seo.event_sitemap_grace_days: 30
+    # Guzzle waits forever by default: when the OVH bucket stalls, a thumbnail request hit PHP's 30 s
+    # max_execution_time inside Guzzle, a fatal error that kills the FrankenPHP worker (27 crashes of the
+    # by-night-images pool in 6 h, 2026-10-02). Bounded, a stall becomes an exception the request survives.
+    # A call takes at most 2 attempts (retries: 1) of 5 s, streamed bodies included: a thumbnail miss makes
+    # several S3 calls in a row, and Picasso shrugs off a failed existence check to go on to the next one,
+    # so two stalled calls must still fit in the 30 s. Healthy calls take well under a second; 5 s still
+    # uploads a 50 MB import image (EventHandler::MAX_IMAGE_BYTES) at 10 MB/s.
+    s3.http_options:
+        connect_timeout: 2
+        timeout: 5
+    s3.retries: 1
 
 services:
     # default configuration for services in *this* file
@@ -121,6 +132,8 @@ services:
               credentials:
                   key: '%env(S3_KEY)%'
                   secret: '%env(S3_SECRET)%'
+              http: '%s3.http_options%'
+              retries: '%s3.retries%'
 
     s3_thumb_client:
         class: Aws\S3\S3Client
@@ -132,6 +145,8 @@ services:
               credentials:
                   key: '%env(APP_THUMB_S3_KEY)%'
                   secret: '%env(APP_THUMB_S3_SECRET)%'
+              http: '%s3.http_options%'
+              retries: '%s3.retries%'
 
     FOS\ElasticaBundle\Persister\AsyncPagerPersister: '@fos_elastica.async_pager_persister'
     FOS\ElasticaBundle\Persister\PersisterRegistry: '@fos_elastica.persister_registry'
