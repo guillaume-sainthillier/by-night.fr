@@ -21,7 +21,7 @@ use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 /**
  * Each VichUploader mapping renders under the Picasso loader of the same name, in a directory named after its URL
  * segment: "vich" for event_image (its URL alias), the loader name otherwise. A removed image leaves its own
- * directory only. Picasso 1.x thumbnails of other mappings are app:images:remove-legacy-thumbnails' job.
+ * directory only.
  */
 final class RemoveImageThumbnailsHandlerTest extends AppKernelTestCase
 {
