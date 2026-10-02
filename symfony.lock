@@ -205,9 +205,6 @@
     "huluti/breadcrumbs-bundle": {
         "version": "1.7.0"
     },
-    "intervention/image": {
-        "version": "2.5.1"
-    },
     "jean85/pretty-package-versions": {
         "version": "1.5.1"
     },
@@ -259,12 +256,6 @@
             "config/packages/flysystem.yaml",
             "var/storage/.gitignore"
         ]
-    },
-    "league/glide": {
-        "version": "1.6.0"
-    },
-    "league/glide-symfony": {
-        "version": "1.0.4"
     },
     "league/mime-type-detection": {
         "version": "1.4.0"

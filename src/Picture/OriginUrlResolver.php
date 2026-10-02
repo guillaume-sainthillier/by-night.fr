@@ -24,10 +24,11 @@ use Symfony\Contracts\Cache\ItemInterface;
 /**
  * Maps a Picasso image path back to the public URL of the original file.
  *
- * A Picasso URL carries the loader path but not the storage holding it — that lives
- * in the encrypted "_metadata" query parameter. Consumers that drop the query string
- * therefore produce a path we cannot serve, and the only thing left to send them to
- * is the origin file, which means working out which storage it sits in.
+ * Consumers that drop the query string of a Picasso URL (its signature) produce a path
+ * we cannot serve, and the only thing left to send them to is the origin file, which
+ * means working out which storage it sits in. Since Picasso 2 each upload mapping has
+ * its own loader, so the URL names the storage, except for the "vich" segment: event
+ * images (event_image's URL alias) and every upload in a 1.x URL.
  */
 final readonly class OriginUrlResolver
 {
@@ -65,6 +66,21 @@ final readonly class OriginUrlResolver
         'uploads/cities',
         'uploads/countries',
     ];
+
+    /**
+     * Upload storage read by each Picasso loader named after its VichUploader mapping
+     * (config/packages/picasso.yaml).
+     *
+     * @var array<string, string>
+     */
+    private const array LOADER_UPLOAD_PREFIXES = [
+        'user_image' => 'uploads/users',
+        'page_image' => 'uploads/pages',
+        'city_image' => 'uploads/cities',
+        'country_image' => 'uploads/countries',
+    ];
+
+    private const string LEGACY_UPLOAD_LOADER = 'vich';
 
     public function __construct(
         private Packages $packages,
@@ -106,9 +122,10 @@ final readonly class OriginUrlResolver
             // from static.by-night.fr to the app host, so entries pointing at the old host expire.
             'picasso_origin.v2.' . hash('xxh128', $loader . "\0" . $path),
             function (ItemInterface $item) use ($loader, $path): ?string {
-                [$url, $degraded] = match ($loader) {
-                    'filesystem' => [$this->resolvePublicFile($path), false],
-                    'vich' => $this->probeUploadStorages($path),
+                [$url, $degraded] = match (true) {
+                    'filesystem' === $loader => [$this->resolvePublicFile($path), false],
+                    self::LEGACY_UPLOAD_LOADER === $loader => $this->probeUploadStorages($path, self::UPLOAD_PREFIXES),
+                    isset(self::LOADER_UPLOAD_PREFIXES[$loader]) => $this->probeUploadStorages($path, [self::LOADER_UPLOAD_PREFIXES[$loader]]),
                     default => [null, false],
                 };
 
@@ -139,19 +156,21 @@ final readonly class OriginUrlResolver
     }
 
     /**
-     * Probe each upload storage in turn, stopping at the first hit.
+     * Probe the given upload storages in turn, stopping at the first hit.
      *
-     * Guessing instead of probing is not an option — the second most requested of
-     * these URLs is a *user* image, so a popularity heuristic would emit a permanent
-     * redirect to a dead object.
+     * Guessing instead of probing is not an option for "vich" URLs — the second most
+     * requested of them is a *user* image (1.x URL), so a popularity heuristic would
+     * emit a permanent redirect to a dead object.
+     *
+     * @param list<string> $prefixes
      *
      * @return array{0: string|null, 1: bool} the URL, and whether a probe errored
      */
-    private function probeUploadStorages(string $path): array
+    private function probeUploadStorages(string $path, array $prefixes): array
     {
         $degraded = false;
 
-        foreach (self::UPLOAD_PREFIXES as $prefix) {
+        foreach ($prefixes as $prefix) {
             try {
                 /** @var FilesystemOperator $storage */
                 $storage = $this->uploadStorages->get($prefix);

@@ -11,18 +11,28 @@ picasso:
             blur: ~ # blur radius
             quality: 20 # JPEG quality (1–100)
 
+    # One loader per VichUploader mapping, named after it: since 2.0 a loader reads one storage, and image URLs
+    # name the loader (/p/image/glide/<loader>/<path>/...). Templates holding only an entity and a field name get
+    # it from upload_loader() (src/Twig/ImageExtension.php), which relies on that naming.
     loaders:
-        vich:
+        # Event images are 99.9% of the uploads (~1.9M), and 1.x put every mapping under "vich": keeping that URL
+        # segment keeps their URLs, and so the thumbnails already in the bucket and in Cloudflare. The other
+        # mappings start a new cache directory, re-rendered on demand.
+        event_image: { type: vich, url_alias: vich }
+        user_image: { type: vich }
+        page_image: { type: vich }
+        city_image: { type: vich }
+        country_image: { type: vich }
+
         filesystem:
-            paths:
-                - '%kernel.project_dir%/public'
+            path: '%kernel.project_dir%/public'
 
     transformers:
         glide:
             sign_key: '%kernel.secret%'
             cache: 'thumbs.storage'
             # Rendered variants are written to thumbs.storage at a path mirroring the URL
-            # (/p/image/glide/vich/<path>/<params>.<fmt>) so the web server can serve them
+            # (/p/image/glide/<loader>/<path>/<params>.<fmt>) so the web server can serve them
             # straight from the bucket; PHP only handles the first generation (2026-09-09).
             public_cache:
                 enabled: true

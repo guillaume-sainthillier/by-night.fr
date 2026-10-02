@@ -37,6 +37,20 @@ final class StorageCleanupCommand extends Command
     private const int DEFAULT_BATCH_SIZE = 1000;
 
     /**
+     * VichUploader mapping of each upload storage (its S3 prefix, config/packages/flysystem.yaml): the thumbnails of a
+     * deleted file are found under the Picasso loader named after it.
+     *
+     * @var array<string, string>
+     */
+    private const array MAPPINGS_BY_PREFIX = [
+        'uploads/documents' => 'event_image',
+        'uploads/users' => 'user_image',
+        'uploads/pages' => 'page_image',
+        'uploads/countries' => 'country_image',
+        'uploads/cities' => 'city_image',
+    ];
+
+    /**
      * Vich writes a file to the bucket during the flush that stores its name: until that
      * transaction commits (an import batch downloads its images one after the other), the file
      * looks unreferenced. Recent files are left for a later run.
@@ -139,14 +153,11 @@ final class StorageCleanupCommand extends Command
                     'Key' => $path,
                 ]);
 
-                $imageCachePath = str_replace([
-                    'uploads/documents',
-                    'uploads/users',
-                    'uploads/pages',
-                    'uploads/countries',
-                    'uploads/cities',
-                ], '', $path);
-                $this->messageBus->dispatch(new RemoveImageThumbnails(ltrim($imageCachePath, '/')));
+                foreach (self::MAPPINGS_BY_PREFIX as $prefix => $mapping) {
+                    if (str_starts_with($path, $prefix . '/')) {
+                        $this->messageBus->dispatch(new RemoveImageThumbnails(substr($path, \strlen($prefix) + 1), $mapping));
+                    }
+                }
                 $this->messageBus->dispatch(new PurgeCdnCacheUrl('/' . ltrim($path, '/')));
             }
         }

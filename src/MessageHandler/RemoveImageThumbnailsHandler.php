@@ -13,6 +13,8 @@ namespace App\MessageHandler;
 use App\Message\PurgeCdnCachePrefix;
 use App\Message\RemoveImageThumbnails;
 use Silarhi\PicassoBundle\Service\ImagePipeline;
+use Silarhi\PicassoBundle\Service\UrlAliases;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -27,10 +29,10 @@ final readonly class RemoveImageThumbnailsHandler
 {
     private const string TRANSFORMER = 'glide';
 
-    private const string LOADER = 'vich';
-
     public function __construct(
         private ImagePipeline $imagePipeline,
+        #[Autowire(service: 'picasso.url_aliases')]
+        private UrlAliases $urlAliases,
         private UrlGeneratorInterface $urlGenerator,
         private MessageBusInterface $messageBus,
     ) {
@@ -38,20 +40,22 @@ final readonly class RemoveImageThumbnailsHandler
 
     public function __invoke(RemoveImageThumbnails $message): void
     {
-        $this->imagePipeline->purge($message->path, self::LOADER, self::TRANSFORMER);
+        // Each VichUploader mapping is served by the Picasso loader of the same name
+        $this->imagePipeline->purge($message->path, $message->mapping, self::TRANSFORMER);
 
-        $this->messageBus->dispatch(new PurgeCdnCachePrefix($this->thumbnailsUrlPrefix($message->path)));
+        $this->messageBus->dispatch(new PurgeCdnCachePrefix($this->thumbnailsUrlPrefix($message->mapping, $message->path)));
     }
 
     /**
-     * "by-night.fr/p/image/glide/vich/2026/06/12/a.jpg/": Cloudflare prefixes carry no scheme.
+     * "by-night.fr/p/image/glide/vich/2026/06/12/a.jpg/": Cloudflare prefixes carry no scheme. URLs name a loader by
+     * its URL alias when it has one ("vich" for event_image).
      */
-    private function thumbnailsUrlPrefix(string $path): string
+    private function thumbnailsUrlPrefix(string $loader, string $path): string
     {
         // "//by-night.fr/p/image/..."
         $url = $this->urlGenerator->generate('picasso_image', [
-            'transformer' => self::TRANSFORMER,
-            'loader' => self::LOADER,
+            'transformer' => $this->urlAliases->transformerSegment(self::TRANSFORMER),
+            'loader' => $this->urlAliases->loaderSegment($loader),
             'path' => trim($path, '/') . '/',
         ], UrlGeneratorInterface::NETWORK_PATH);
 

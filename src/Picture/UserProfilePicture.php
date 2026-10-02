@@ -79,7 +79,7 @@ final readonly class UserProfilePicture
                 'source' => 'upload',
                 'entity' => $user,
                 'field' => 'imageFile',
-                'loader' => 'vich',
+                'loader' => 'user_image',
             ];
         }
 
@@ -89,7 +89,7 @@ final readonly class UserProfilePicture
                 'source' => 'upload',
                 'entity' => $user,
                 'field' => 'imageSystemFile',
-                'loader' => 'vich',
+                'loader' => 'user_image',
             ];
         }
 

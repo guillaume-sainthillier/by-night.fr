@@ -61,7 +61,7 @@ final class ImageTypeExtension extends AbstractTypeExtension
                 $view->vars['has_uploaded_image'] = 'upload' === $pictureData['source'];
                 $view->vars['image_thumb'] = [
                     'loader' => $pictureData['loader'],
-                    'src' => 'vich' !== $pictureData['loader'] ? $pictureData['path'] : null,
+                    'src' => 'upload' !== $pictureData['source'] ? $pictureData['path'] : null,
                     'unoptimized' => null === $pictureData['loader'],
                     'context' => [
                         'entity' => $pictureData['entity'],

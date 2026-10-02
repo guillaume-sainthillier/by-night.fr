@@ -67,7 +67,7 @@ final readonly class EventProfilePicture
                 'source' => 'upload',
                 'entity' => $event,
                 'field' => 'imageFile',
-                'loader' => 'vich',
+                'loader' => 'event_image',
             ];
         }
 
@@ -80,7 +80,7 @@ final readonly class EventProfilePicture
                 'source' => 'upload',
                 'entity' => $event,
                 'field' => 'imageSystemFile',
-                'loader' => 'vich',
+                'loader' => 'event_image',
             ];
         }
 

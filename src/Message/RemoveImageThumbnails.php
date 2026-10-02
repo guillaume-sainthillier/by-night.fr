@@ -12,7 +12,10 @@ namespace App\Message;
 
 final readonly class RemoveImageThumbnails
 {
-    public function __construct(public string $path)
-    {
+    public function __construct(
+        public string $path,
+        /** VichUploader mapping of the image, which is also the name of the Picasso loader serving it */
+        public string $mapping,
+    ) {
     }
 }

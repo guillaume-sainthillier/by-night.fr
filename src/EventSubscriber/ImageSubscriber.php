@@ -27,7 +27,7 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
     /** @var string[] */
     private array $paths = [];
 
-    /** @var string[] */
+    /** @var array<string, string> Image path in its storage => VichUploader mapping */
     private array $imageCachePaths = [];
 
     public function __construct(
@@ -84,14 +84,14 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
         $this->paths[] = $path;
 
         $imageCachePath = $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
-        $this->imageCachePaths[] = $imageCachePath;
+        $this->imageCachePaths[$imageCachePath] = $mapping->getMappingName();
     }
 
     public function onImageDeleted(): void
     {
         // Schedule thumbnails delete
-        foreach ($this->imageCachePaths as $path) {
-            $this->messageBus->dispatch(new RemoveImageThumbnails($path));
+        foreach ($this->imageCachePaths as $path => $mappingName) {
+            $this->messageBus->dispatch(new RemoveImageThumbnails((string) $path, $mappingName));
         }
 
         // Schedule CDN purging of old image path

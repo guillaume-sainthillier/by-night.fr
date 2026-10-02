@@ -18,7 +18,9 @@ use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Picture\LocationPicture;
 use App\Picture\UserProfilePicture;
+use InvalidArgumentException;
 use Twig\Attribute\AsTwigFunction;
+use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 
 final readonly class ImageExtension
 {
@@ -26,7 +28,19 @@ final readonly class ImageExtension
         private EventProfilePicture $eventProfilePicture,
         private UserProfilePicture $userProfilePicture,
         private LocationPicture $locationPicture,
+        private PropertyMappingFactoryInterface $propertyMappingFactory,
     ) {
+    }
+
+    /**
+     * The Picasso loader of an upload field, for templates that only hold an entity and a field name (the admin
+     * image widgets): each VichUploader mapping has a loader named after it (config/packages/picasso.yaml).
+     */
+    #[AsTwigFunction(name: 'upload_loader')]
+    public function uploadLoader(object $entity, string $field): string
+    {
+        return $this->propertyMappingFactory->fromField($entity, $field)?->getMappingName()
+            ?? throw new InvalidArgumentException(\sprintf('"%s::$%s" is not a VichUploader upload field.', $entity::class, $field));
     }
 
     /**
@@ -68,7 +82,7 @@ final readonly class ImageExtension
 
         return [
             'loader' => $data['loader'],
-            'src' => 'vich' !== $data['loader'] ? $data['path'] : null,
+            'src' => 'upload' !== $data['source'] ? $data['path'] : null,
             'unoptimized' => null === $data['loader'],
             'context' => [
                 'entity' => $data['entity'],

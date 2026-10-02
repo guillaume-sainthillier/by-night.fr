@@ -6,7 +6,7 @@
 {% set instance = entity.instance %}
 {% if vich_uploader_asset(instance, field.property) is not null %}
     <twig:Picasso:Image
-        loader="vich"
+        loader="{{ upload_loader(instance, field.property) }}"
         src="{{ null }}"
         context="{{ {entity: instance, field: field.property} }}"
         width="{{ ea.context.crud.currentPage == 'detail' ? 400 : 120 }}"

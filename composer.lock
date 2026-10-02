@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f3d88fde2e3157d7d8e87416d7005ba",
+    "content-hash": "bcf4c790705d4ede87420fcba43c4681",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2704,26 +2704,26 @@
         },
         {
             "name": "intervention/gif",
-            "version": "4.2.4",
+            "version": "5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/gif.git",
-                "reference": "c3598a16ebe7690cd55640c44144a9df383ea73c"
+                "reference": "bb395af960deffe64d70c976b4df9283f68e762d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/gif/zipball/c3598a16ebe7690cd55640c44144a9df383ea73c",
-                "reference": "c3598a16ebe7690cd55640c44144a9df383ea73c",
+                "url": "https://api.github.com/repos/Intervention/gif/zipball/bb395af960deffe64d70c976b4df9283f68e762d",
+                "reference": "bb395af960deffe64d70c976b4df9283f68e762d",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.1"
+                "php": "^8.3"
             },
             "require-dev": {
                 "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^10.0 || ^11.0  || ^12.0",
+                "phpunit/phpunit": "^12.0",
                 "slevomat/coding-standard": "~8.0",
-                "squizlabs/php_codesniffer": "^3.8"
+                "squizlabs/php_codesniffer": "^4"
             },
             "type": "library",
             "autoload": {
@@ -2742,7 +2742,7 @@
                     "homepage": "https://intervention.io/"
                 }
             ],
-            "description": "Native PHP GIF Encoder/Decoder",
+            "description": "PHP GIF Encoder/Decoder",
             "homepage": "https://github.com/intervention/gif",
             "keywords": [
                 "animation",
@@ -2752,7 +2752,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/gif/issues",
-                "source": "https://github.com/Intervention/gif/tree/4.2.4"
+                "source": "https://github.com/Intervention/gif/tree/5.0.1"
             },
             "funding": [
                 {
@@ -2768,33 +2768,32 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-01-04T09:27:23+00:00"
+            "time": "2026-05-03T06:04:47+00:00"
         },
         {
             "name": "intervention/image",
-            "version": "3.11.9",
+            "version": "4.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "43ecd1ae23625a10ce5cb4a7427354b50113f7f1"
+                "reference": "b25085af6275b94173c4ba43cfc34ae42bd9e8d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/43ecd1ae23625a10ce5cb4a7427354b50113f7f1",
-                "reference": "43ecd1ae23625a10ce5cb4a7427354b50113f7f1",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/b25085af6275b94173c4ba43cfc34ae42bd9e8d2",
+                "reference": "b25085af6275b94173c4ba43cfc34ae42bd9e8d2",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "intervention/gif": "^4.2",
-                "php": "^8.1"
+                "intervention/gif": "^5",
+                "php": "^8.3"
             },
             "require-dev": {
+                "intervention/coding-standard": "^1",
                 "mockery/mockery": "^1.6",
                 "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
-                "slevomat/coding-standard": "~8.0",
-                "squizlabs/php_codesniffer": "^4"
+                "phpunit/phpunit": "^12.0"
             },
             "suggest": {
                 "ext-exif": "Recommended to be able to read EXIF data properly."
@@ -2828,7 +2827,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image/issues",
-                "source": "https://github.com/Intervention/image/tree/3.11.9"
+                "source": "https://github.com/Intervention/image/tree/4.3.3"
             },
             "funding": [
                 {
@@ -2844,7 +2843,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-09-26T06:42:25+00:00"
+            "time": "2026-09-26T06:48:23+00:00"
         },
         {
             "name": "ircmaxell/security-lib",
@@ -3469,29 +3468,29 @@
         },
         {
             "name": "league/glide",
-            "version": "3.2.0",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/glide.git",
-                "reference": "555bb802f951246ce454b86075dccb8b27156185"
+                "reference": "54643c4c55ce6dc7f8a11d9c643340051d54c4d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/glide/zipball/555bb802f951246ce454b86075dccb8b27156185",
-                "reference": "555bb802f951246ce454b86075dccb8b27156185",
+                "url": "https://api.github.com/repos/thephpleague/glide/zipball/54643c4c55ce6dc7f8a11d9c643340051d54c4d9",
+                "reference": "54643c4c55ce6dc7f8a11d9c643340051d54c4d9",
                 "shasum": ""
             },
             "require": {
-                "intervention/image": "^3.9.1",
+                "intervention/image": "^4.0",
                 "league/flysystem": "^3.0",
-                "php": "^8.1",
+                "php": "^8.3",
                 "psr/http-message": "^1.0|^2.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.48",
+                "friendsofphp/php-cs-fixer": "^3.95",
                 "mockery/mockery": "^1.6",
-                "phpstan/phpstan": "^2.0",
-                "phpunit/phpunit": "^10.5 || ^11.0 || ^12.5"
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^12.5 || ^13.0"
             },
             "type": "library",
             "autoload": {
@@ -3529,57 +3528,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/glide/issues",
-                "source": "https://github.com/thephpleague/glide/tree/3.2.0"
+                "source": "https://github.com/thephpleague/glide/tree/4.1.0"
             },
-            "time": "2026-02-19T11:57:40+00:00"
-        },
-        {
-            "name": "league/glide-symfony",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thephpleague/glide-symfony.git",
-                "reference": "83e12464eef3af91ada98d0f3c595e2ce3fbfddb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/glide-symfony/zipball/83e12464eef3af91ada98d0f3c595e2ce3fbfddb",
-                "reference": "83e12464eef3af91ada98d0f3c595e2ce3fbfddb",
-                "shasum": ""
-            },
-            "require": {
-                "league/glide": "^2.0|^3.0",
-                "php": "^8.1",
-                "symfony/http-foundation": "^5|^6|^7|^8"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.3.3",
-                "phpunit/phpunit": "^10.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "League\\Glide\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jonathan Reinink",
-                    "email": "jonathan@reinink.ca",
-                    "homepage": "http://reinink.ca"
-                }
-            ],
-            "description": "Glide adapter for Symfony",
-            "homepage": "http://glide.thephpleague.com",
-            "support": {
-                "issues": "https://github.com/thephpleague/glide-symfony/issues",
-                "source": "https://github.com/thephpleague/glide-symfony/tree/2.1.0"
-            },
-            "time": "2026-04-10T16:45:03+00:00"
+            "time": "2026-07-16T13:53:07+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -5822,20 +5773,21 @@
         },
         {
             "name": "silarhi/picasso-bundle",
-            "version": "v1.3.2",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/picasso-bundle.git",
-                "reference": "365c1d77c5186c59b5b921875558cd61a5095dcc"
+                "reference": "586db8d45d72c247440df36cd3b6274c32fc7496"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/365c1d77c5186c59b5b921875558cd61a5095dcc",
-                "reference": "365c1d77c5186c59b5b921875558cd61a5095dcc",
+                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/586db8d45d72c247440df36cd3b6274c32fc7496",
+                "reference": "586db8d45d72c247440df36cd3b6274c32fc7496",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.2",
+                "symfony/deprecation-contracts": "^2.5 || ^3.0",
                 "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
                 "symfony/ux-twig-component": "^2.13 || ^3.0"
             },
@@ -5846,7 +5798,6 @@
                 "kornrunner/blurhash": "^1.2",
                 "league/flysystem-bundle": "^2.1 || ^3.0",
                 "league/glide": "^2.3 || ^3.0 || ^4.0",
-                "league/glide-symfony": "^2.0",
                 "phpstan/extension-installer": "^1.4.3",
                 "phpstan/phpstan": "^2.2.16",
                 "phpstan/phpstan-strict-rules": "^2.0.12",
@@ -5856,19 +5807,21 @@
                 "psr/http-factory": "^1.1",
                 "rector/rector": "^2.6.7",
                 "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
+                "symfony/lock": "^6.4 || ^7.0 || ^8.0",
                 "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0",
                 "vich/uploader-bundle": "^2.9 || ^3.0",
                 "vincentlanglet/twig-cs-fixer": "^4.1.1"
             },
             "suggest": {
                 "imagine/imagine": "Required for the BlurHash placeholder (supports GD and Imagick)",
+                "intervention/image-driver-vips": "Required for the Glide vips driver (league/glide 3 or later, needs libvips and the FFI extension)",
                 "kornrunner/blurhash": "Required for the BlurHash placeholder",
                 "league/flysystem": "Required for the Flysystem loader",
                 "league/glide": "Required for the Glide transformer (local image transformation)",
-                "league/glide-symfony": "Required for the Glide transformer",
                 "psr/http-client": "Required for the URL loader (PSR-18 HTTP client interface)",
                 "psr/http-factory": "Required for the URL loader (PSR-17 HTTP factory interface)",
                 "symfony/http-client": "Provides a PSR-18 HTTP client implementation for the URL loader",
+                "symfony/lock": "Required for the Glide lock option (render each missing variant once)",
                 "vich/uploader-bundle": "Required for the VichUploader loader"
             },
             "type": "symfony-bundle",
@@ -5884,9 +5837,9 @@
             "description": "Responsive image component for Symfony, inspired by next/image",
             "support": {
                 "issues": "https://github.com/silarhi/picasso-bundle/issues",
-                "source": "https://github.com/silarhi/picasso-bundle/tree/v1.3.2"
+                "source": "https://github.com/silarhi/picasso-bundle/tree/v2.0.0"
             },
-            "time": "2026-09-30T15:05:43+00:00"
+            "time": "2026-10-02T08:31:15+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",
@@ -9120,16 +9073,16 @@
         },
         {
             "name": "symfony/polyfill-deepclone",
-            "version": "v1.42.0",
+            "version": "v1.43.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-deepclone.git",
-                "reference": "70ba0627efc68e97ea392843458a2dd9d6dbd156"
+                "reference": "8db92c5508a3f7f82d8688d32f0a4868a26e58ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-deepclone/zipball/70ba0627efc68e97ea392843458a2dd9d6dbd156",
-                "reference": "70ba0627efc68e97ea392843458a2dd9d6dbd156",
+                "url": "https://api.github.com/repos/symfony/polyfill-deepclone/zipball/8db92c5508a3f7f82d8688d32f0a4868a26e58ad",
+                "reference": "8db92c5508a3f7f82d8688d32f0a4868a26e58ad",
                 "shasum": ""
             },
             "require": {
@@ -9183,7 +9136,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-deepclone/tree/v1.42.0"
+                "source": "https://github.com/symfony/polyfill-deepclone/tree/v1.43.0"
             },
             "funding": [
                 {
@@ -9203,7 +9156,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-07T06:33:24+00:00"
+            "time": "2026-09-30T09:07:27+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -9549,16 +9502,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.38.2",
+            "version": "v1.43.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6"
+                "reference": "4d5d331bf731e0aedbc6b2f5e61135b7b7996a72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6",
-                "reference": "d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/4d5d331bf731e0aedbc6b2f5e61135b7b7996a72",
+                "reference": "4d5d331bf731e0aedbc6b2f5e61135b7b7996a72",
                 "shasum": ""
             },
             "require": {
@@ -9610,7 +9563,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.38.2"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.43.0"
             },
             "funding": [
                 {
@@ -9630,7 +9583,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-27T06:59:30+00:00"
+            "time": "2026-09-24T15:19:04+00:00"
         },
         {
             "name": "symfony/polyfill-php86",
