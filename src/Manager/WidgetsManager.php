@@ -47,6 +47,7 @@ final readonly class WidgetsManager
             $page,
             self::WIDGET_ITEM_LIMIT,
             ['view' => 'events:widget:next-events'],
+            fetchJoinCollection: false,
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_next_events', [
@@ -71,6 +72,7 @@ final readonly class WidgetsManager
             $page,
             self::WIDGET_ITEM_LIMIT,
             ['view' => 'events:widget:similar-events'],
+            fetchJoinCollection: false,
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_similar_events', [

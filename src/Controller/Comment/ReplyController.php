@@ -38,6 +38,7 @@ final class ReplyController extends BaseController
             $commentRepository,
             $page,
             self::REPLIES_PER_PAGE,
+            fetchJoinCollection: false,
         );
 
         return $this->render('comment/reply/list.html.twig', [

@@ -47,7 +47,8 @@ final class UserUpdater extends Updater
         $paginator = $this->createQueryBuilderPaginator(
             $this->userRepository->getUsersWithInfoQueryBuilder($from),
             1,
-            self::PAGINATION_SIZE
+            self::PAGINATION_SIZE,
+            fetchJoinCollection: false,
         );
 
         $count = $paginator->getNbResults();

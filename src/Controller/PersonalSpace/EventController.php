@@ -51,6 +51,7 @@ final class EventController extends BaseController
             $page,
             self::EVENT_PER_PAGE,
             ['view' => 'events:personal-space:list'],
+            fetchJoinCollection: false,
         );
 
         return $this->render('personal-space/index.html.twig', [
