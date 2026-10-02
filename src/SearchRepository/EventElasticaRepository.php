@@ -261,11 +261,8 @@ final class EventElasticaRepository extends Repository
     {
         $location = $search->getLocation();
         if (null !== $location && $location->isCountry()) {
-            $country = (string) $location->getCountry()->getId();
-
-            // A keyword holding the code as stored ("FR"). An index built before place.country.id was mapped has it
-            // as text, lowercased by its analyzer ("fr"): that variant can go once every index has been populated again
-            return new Terms('place.country.id', array_values(array_unique([$country, mb_strtolower($country)])));
+            // A keyword holding the code as stored ("FR")
+            return new Term(['place.country.id' => (string) $location->getCountry()->getId()]);
         }
 
         if (null !== $location && $location->isCity()) {
