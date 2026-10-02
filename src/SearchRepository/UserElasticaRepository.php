@@ -37,10 +37,12 @@ final class UserElasticaRepository extends Repository
             ->setOperator('AND')
         ;
 
-        $query->addFilter($match);
+        // Scored: the best matching usernames first, not the index order a filter leaves them in
+        $query->addMust($match);
 
         $finalQuery = Query::create($query);
-        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
+        // The hits are loaded from the database by their _id (FOSElastica's transformer): none of the document is read
+        $finalQuery->setSource(false);
 
         return new FantaPaginatorAdapter($this->createPaginatorAdapter($finalQuery));
     }
@@ -60,6 +62,8 @@ final class UserElasticaRepository extends Repository
             ->setOperator('AND');
 
         $finalQuery = Query::create($multiMatch);
+        // Loaded from the database by their _id; the highlights come without the document
+        $finalQuery->setSource(false);
 
         // Add highlighting
         $finalQuery->setHighlight([

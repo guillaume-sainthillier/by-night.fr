@@ -37,7 +37,8 @@ final class TagElasticaRepository extends Repository
             ->setQuery($q);
 
         $finalQuery = Query::create($query);
-        $finalQuery->setSource(['id']);
+        // The hits are loaded from the database by their _id (FOSElastica's transformer): none of the document is read
+        $finalQuery->setSource(false);
         $finalQuery->addSort(['_score' => 'DESC']);
 
         return $this->findPaginated($finalQuery);
@@ -61,6 +62,8 @@ final class TagElasticaRepository extends Repository
             ->setQuery($query);
 
         $finalQuery = Query::create($multiMatch);
+        // Loaded from the database by their _id; the highlights come without the document
+        $finalQuery->setSource(false);
         $finalQuery->addSort(['_score' => 'DESC']);
 
         // Add highlighting

@@ -10,8 +10,10 @@
 
 namespace App\Tests\Elasticsearch;
 
+use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
+use App\Entity\Place;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use FOS\ElasticaBundle\Serializer\Callback;
@@ -99,6 +101,23 @@ final class EventDocumentTest extends AppKernelTestCase
             self::assertArrayHasKey($field, $document, \sprintf('"%s" must be sent so the update clears it', $field));
             self::assertNull($document[$field]);
         }
+    }
+
+    /**
+     * The country filter of the agenda reads place.country.id, a keyword holding the code as stored: an event has no
+     * country of its own in the document (the index used to map one nothing filled).
+     */
+    public function testTheCountryIsTheOneOfThePlaceAsStored(): void
+    {
+        $event = new Event();
+        $event->setName('Concert');
+        $event->setPlace(new Place()->setName('Zénith')->setCountry(new Country()->setId('FR')));
+
+        $document = $this->normalizer()->normalize($event, null, self::GROUPS);
+
+        self::assertIsArray($document);
+        self::assertSame(['id' => 'FR'], $document['place']['country']);
+        self::assertArrayNotHasKey('country', $document);
     }
 
     private function normalizer(): NormalizerInterface

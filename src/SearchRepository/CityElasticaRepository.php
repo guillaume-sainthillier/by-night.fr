@@ -38,7 +38,8 @@ final class CityElasticaRepository extends Repository
         ;
 
         $finalQuery = Query::create($query);
-        $finalQuery->setSource(['id']); // Grab only id as we don't need other fields
+        // The hits are loaded from the database by their _id (FOSElastica's transformer): none of the document is read
+        $finalQuery->setSource(false);
         $finalQuery->addSort(['_score' => 'DESC']);
         $finalQuery->addSort(['population' => 'DESC']);
 
@@ -67,6 +68,8 @@ final class CityElasticaRepository extends Repository
             ->setQuery($query);
 
         $finalQuery = Query::create($multiMatch);
+        // Loaded from the database by their _id; the highlights come without the document
+        $finalQuery->setSource(false);
         $finalQuery->addSort(['_score' => 'DESC']);
         $finalQuery->addSort(['population' => 'DESC']);
 

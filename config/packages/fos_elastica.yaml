@@ -19,6 +19,9 @@ fos_elastica:
     indexes:
         event:
             indexable_callback: ['@App\Elasticsearch\EventIndexableChecker', 'isIndexable']
+            # Only the fields below are indexed: the rest of a document (its serializer group) is kept in _source but
+            # not mapped. A field a query, a sort, an aggregation or a highlight reads must be declared here
+            dynamic: false
             settings:
                 index: &index_settings
                     number_of_shards: 1
@@ -87,13 +90,19 @@ fos_elastica:
                         heavy:
                             type: text
                             analyzer: french_heavy
+                # No positions (index_options: freqs) on the fields only the keywords multi_match reads
+                # (EventElasticaRepository::createKeywordsQuery()), never a phrase query nor a highlight: the two
+                # description fields were 1.17 GB of the 2.6 GB index, ~40% of it positions. A match_phrase, a
+                # phrase multi_match or a highlight on one of these fields would fail
                 description:
                     type: text
                     analyzer: french_html_light
+                    index_options: freqs
                     fields:
                         heavy:
                             type: text
                             analyzer: french_html_heavy
+                            index_options: freqs
                 startDate:
                     type: date
                     format: yyyy-MM-dd
@@ -119,12 +128,15 @@ fos_elastica:
                 placeStreet:
                     type: text
                     analyzer: french_natural
+                    index_options: freqs
                 placeCity:
                     type: text
                     analyzer: french_natural
+                    index_options: freqs
                 placePostalCode:
                     type: text
                     analyzer: french_natural
+                    index_options: freqs
                 type:
                     type: text
                     analyzer: french_natural
@@ -163,12 +175,15 @@ fos_elastica:
                         street:
                             type: text
                             analyzer: french_natural
+                            index_options: freqs
                         cityName:
                             type: text
                             analyzer: french_natural
+                            index_options: freqs
                         cityPostalCode:
                             type: text
                             analyzer: french_natural
+                            index_options: freqs
                         city:
                             type: object
                             properties:
@@ -176,11 +191,12 @@ fos_elastica:
                                     type: integer
                                 location:
                                     type: geo_point
-                country:
-                    type: object
-                    properties:
-                        id:
-                            type: keyword
+                        # The country filter (EventElasticaRepository::createAreaFilter()), on the code as stored: "FR"
+                        country:
+                            type: object
+                            properties:
+                                id:
+                                    type: keyword
         city:
             settings:
                 index: *index_settings
@@ -205,6 +221,7 @@ fos_elastica:
                                 - icu_folding
                                 - lowercase
                                 - autocomplete_ngram
+            dynamic: false
             serializer:
                 groups:
                     - 'elasticsearch:city:details'
@@ -258,6 +275,7 @@ fos_elastica:
                         french_elision: *french_elision_filter
                     analyzer:
                         text_analyzer: *text_analyzer
+            dynamic: false
             serializer:
                 groups:
                     - 'elasticsearch:user:details'
@@ -286,6 +304,7 @@ fos_elastica:
                     analyzer:
                         text_analyzer: *text_analyzer
                         autocomplete_index: *autocomplete_index_analyzer
+            dynamic: false
             serializer:
                 groups:
                     - 'elasticsearch:tag:details'
@@ -302,8 +321,6 @@ fos_elastica:
                             type: text
                             analyzer: autocomplete_index
                             search_analyzer: text_analyzer
-                slug:
-                    type: keyword
             persistence:
                 model: App\Entity\Tag
                 repository: App\SearchRepository\TagElasticaRepository
