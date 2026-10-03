@@ -180,7 +180,8 @@ final class IndexMappingTest extends AppKernelTestCase
 
                 return [$events->createFacetsQuery($search, ['anytime' => new DateRange($from)], 6, 4)->toArray()];
             case 'agenda types':
-                return array_map(static fn (AgendaType $type): array => $events->createAgendaTypeQuery($type, $from)->toArray(), AgendaType::cases());
+                // Every event to come (app:events:classify-agenda-types), and the events just indexed (ClassifyEvents)
+                return [$events->createAgendaTypesQuery($from)->toArray(), $events->createAgendaTypesQuery($from, [12])->toArray()];
             case 'event autocomplete':
                 $events->findWithHighlightsPaginated('jazz');
 
