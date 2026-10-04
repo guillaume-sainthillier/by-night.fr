@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9710a35dc013526f7f9f446d1fb93697",
+    "content-hash": "1714954518f80ebc4900733934835b8c",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5851,16 +5851,16 @@
         },
         {
             "name": "silarhi/cursor-pagination",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/cursor-pagination.git",
-                "reference": "f291356038fe9471634ad4db3311a424e0dc4b25"
+                "reference": "82d181005a052d97923718c70165316b0ddcdb40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/cursor-pagination/zipball/f291356038fe9471634ad4db3311a424e0dc4b25",
-                "reference": "f291356038fe9471634ad4db3311a424e0dc4b25",
+                "url": "https://api.github.com/repos/silarhi/cursor-pagination/zipball/82d181005a052d97923718c70165316b0ddcdb40",
+                "reference": "82d181005a052d97923718c70165316b0ddcdb40",
                 "shasum": ""
             },
             "require": {
@@ -5868,13 +5868,15 @@
                 "php": ">=8.2"
             },
             "require-dev": {
-                "doctrine/data-fixtures": "^2.0",
-                "friendsofphp/php-cs-fixer": "^3.93",
-                "phpstan/phpstan": "^2",
-                "phpunit/phpunit": "^10.5.20|^11.1.3|^12",
-                "rector/rector": "^2",
-                "symfony/cache": "^7.0|^8.0",
-                "vimeo/psalm": "^5.26|^6"
+                "doctrine/data-fixtures": "^2.2.1",
+                "ergebnis/composer-normalize": "^2.54.0",
+                "friendsofphp/php-cs-fixer": "^3.95.27",
+                "phpstan/phpstan": "^2.2.16",
+                "phpstan/phpstan-strict-rules": "^2.0.12",
+                "phpunit/phpunit": "^11.5.55 || ^12.0 || ^13.0",
+                "rector/rector": "^2.6.7",
+                "symfony/cache": "^7.4.13 || ^8.0",
+                "vimeo/psalm": "^5.26 || ^6.16.1"
             },
             "type": "library",
             "autoload": {
@@ -5902,9 +5904,9 @@
             ],
             "support": {
                 "issues": "https://github.com/silarhi/cursor-pagination/issues",
-                "source": "https://github.com/silarhi/cursor-pagination/tree/2.1.0"
+                "source": "https://github.com/silarhi/cursor-pagination/tree/2.1.1"
             },
-            "time": "2026-01-29T11:43:00+00:00"
+            "time": "2026-10-01T08:37:34+00:00"
         },
         {
             "name": "silarhi/picasso-bundle",
