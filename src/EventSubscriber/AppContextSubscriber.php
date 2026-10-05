@@ -16,6 +16,7 @@ use App\App\LazyLocationFactory;
 use App\App\Location;
 use App\Entity\Country;
 use RuntimeException;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -102,12 +103,23 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
                 $location = $this->lazyLocationFactory->createWithLazyCountry($locationSlug);
             } else {
                 $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
+                // A redirect that would not read the city (the former agenda, the router's trailing slash) reads it
+                // now: a city named by a former slug then takes a single redirect, to its current page
+                if (self::onlyRedirects($request)) {
+                    $location->getCity()?->getId();
+                }
             }
 
             $this->appContext->setLocation($location);
         } catch (RuntimeException $e) {
             throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug), $e);
         }
+    }
+
+    private static function onlyRedirects(Request $request): bool
+    {
+        return 'app_agenda_legacy' === $request->attributes->getString('_route')
+            || str_starts_with((string) $request->attributes->get('_controller'), RedirectController::class);
     }
 
     /**

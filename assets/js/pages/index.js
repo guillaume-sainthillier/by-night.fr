@@ -14,7 +14,9 @@ function initialize({ apiCityURL, agendaURL }) {
             const slug = cityValue.value
             btn.attr('disabled', slug.length === 0)
             if (slug.length > 0) {
-                form.attr('action', agendaURL.replace('__LOCATION__', encodeURIComponent(slug)))
+                // A city under its country keeps the slash of its slug ("suisse/geneve"): each segment is encoded
+                const location = slug.split('/').map(encodeURIComponent).join('/')
+                form.attr('action', agendaURL.replace('__LOCATION__', location))
             }
         }
 

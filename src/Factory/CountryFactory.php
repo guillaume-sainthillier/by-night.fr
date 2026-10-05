@@ -81,6 +81,8 @@ final class CountryFactory extends PersistentObjectFactory
             'capital' => 'Berne',
             'locale' => 'fr',
             'postalCodeRegex' => '^[1-9][0-9]{3}$',
+            // Its cities' URLs start with its own, as in production
+            'prefixesCities' => true,
         ]);
     }
 
@@ -94,6 +96,8 @@ final class CountryFactory extends PersistentObjectFactory
             'capital' => 'Bruxelles',
             'locale' => 'fr',
             'postalCodeRegex' => '^[1-9][0-9]{3}$',
+            // Its cities' URLs start with its own, as in production
+            'prefixesCities' => true,
         ]);
     }
 }

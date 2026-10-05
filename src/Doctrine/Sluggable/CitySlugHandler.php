@@ -11,6 +11,7 @@
 namespace App\Doctrine\Sluggable;
 
 use App\Entity\City;
+use App\Routing\LocationRequirement;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -19,16 +20,29 @@ use Gedmo\Sluggable\Mapping\Event\SluggableAdapter;
 use Gedmo\Sluggable\SluggableListener;
 
 /**
- * A city never takes the slug of a country: both name the first segment of the URLs ("/france", "/toulouse") and the
- * country wins (CountrySlugs). Gedmo only makes a slug unique among the zones; a city whose slug turns out to be a
- * country's takes the next free suffix instead ("suisse" is "suisse-1").
+ * The slug of a city, which names it in the URLs next to the countries ("/france", "/toulouse"):
+ * - a city of a country that prefixes its cities' URLs (Country::$prefixesCities) starts with the country's slug
+ *   ("suisse/geneve"), unique within its country, and never ends with a word of a location's routes
+ *   ("suisse/agenda", see LocationRequirement);
+ * - another city never takes a country's slug, which comes first.
+ *
+ * Gedmo only makes a slug unique among the zones: the slug that breaks a rule takes the next free suffix instead
+ * ("suisse" is "suisse-1").
  */
 final class CitySlugHandler implements SlugHandlerInterface
 {
+    private const string SEPARATOR = '/';
+
     /** @var array<string, true> the slugs this handler gave, maybe not flushed yet */
     private array $given = [];
 
-    public function __construct(SluggableListener $sluggable)
+    /** The country's slug of the city being slugged, when its country prefixes its cities */
+    private ?string $prefix = null;
+
+    /** @var callable|null */
+    private $transliterator;
+
+    public function __construct(private readonly SluggableListener $sluggable)
     {
     }
 
@@ -38,6 +52,24 @@ final class CitySlugHandler implements SlugHandlerInterface
 
     public function postSlugBuild(SluggableAdapter $ea, array &$config, $object, &$slug): void
     {
+        $country = $object instanceof City ? $object->getCountry() : null;
+        $this->prefix = null !== $country && $country->prefixesCities() ? $country->getSlug() : null;
+        if (null === $this->prefix) {
+            return;
+        }
+
+        // Gedmo urlizes the whole slug: the prefix comes in after, along with the urlized name (as RelativeSlugHandler)
+        $this->transliterator = $this->sluggable->getTransliterator();
+        $this->sluggable->setTransliterator($this->transliterate(...));
+    }
+
+    public function transliterate(string $text, string $separator, object $object): string
+    {
+        \assert(null !== $this->transliterator && null !== $this->prefix);
+        $this->sluggable->setTransliterator($this->transliterator);
+        $urlized = \call_user_func($this->sluggable->getUrlizer(), \call_user_func($this->transliterator, $text, $separator, $object), $separator, $object);
+
+        return $this->prefix . self::SEPARATOR . $urlized;
     }
 
     public function onSlugCompletion(SluggableAdapter $ea, array &$config, $object, &$slug): void
@@ -48,7 +80,10 @@ final class CitySlugHandler implements SlugHandlerInterface
         }
 
         $connection = $manager->getConnection();
-        if (false !== $connection->fetchOne('SELECT 1 FROM country WHERE slug = ?', [$slug])) {
+        $breaksARule = null !== $this->prefix
+            ? LocationRequirement::isReserved(substr($slug, \strlen($this->prefix) + 1))
+            : false !== $connection->fetchOne('SELECT 1 FROM country WHERE slug = ?', [$slug]);
+        if ($breaksARule) {
             $slug = self::freeSlug($connection, $slug, $this->given);
             $this->given[$slug] = true;
         }
@@ -56,7 +91,7 @@ final class CitySlugHandler implements SlugHandlerInterface
 
     public function handlesUrlization(): bool
     {
-        return false;
+        return null !== $this->prefix;
     }
 
     public static function validate(array $options, ClassMetadata $meta): void
