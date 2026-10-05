@@ -1,11 +1,29 @@
 @use '../core' as *;
-@use 'daterangepicker/daterangepicker';
 
-.daterangepicker td.active,
-.daterangepicker td.active:hover {
-    background-color: $primary !important;
-}
+// Vanilla Calendar Pro's light theme reads its colours from --vc-* properties: point them at Tabler's tokens
+[data-vc-theme='light'].vc {
+    --vc-bg: var(--bg-surface);
+    --vc-color: var(--body-color);
+    --vc-header-color: var(--body-color);
+    --vc-title-color: var(--body-color);
+    --vc-week-day-color: var(--secondary-color);
+    --vc-focus-outline-color: var(--primary);
+    --vc-date-color: var(--body-color);
+    --vc-date-bg: transparent;
+    --vc-date-hover-bg: var(--primary-lt);
+    --vc-date-bg-hover: var(--primary-lt);
+    --vc-date-hover-edge-bg: color-mix(in oklab, var(--primary) 25%, transparent);
+    --vc-date-today-bg: transparent;
+    --vc-date-today-color: var(--primary);
+    --vc-date-selected-bg: var(--primary);
+    --vc-date-selected-color: var(--primary-fg);
+    --vc-date-range-middle-bg: var(--primary-lt);
+    --vc-date-range-middle-color: var(--body-color);
+    --vc-months-years-bg-selected: var(--primary);
+    --vc-months-years-color-selected: var(--primary-fg);
 
-.daterangepicker .ranges li.active {
-    background-color: tint-color($primary, 10%) !important;
+    z-index: $zindex-dropdown;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    font-family: inherit;
 }

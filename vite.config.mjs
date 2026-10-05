@@ -18,6 +18,7 @@ const prefixScssCustomProperties = () => {
             /^--bs-/, // already prefixed
             /^--ts-/, // Tom Select
             /^--aa-/, // Algolia autocomplete, themed from components/_autocomplete.scss
+            /^--vc-/, // Vanilla Calendar Pro, themed from lazy-components/_datepicker.scss
         ],
     })
 
@@ -91,8 +92,8 @@ export default defineConfig(({ mode }) => {
             alias: [
                 { find: '@', replacement: assets },
                 // Exact match only, like Encore's `moment$`. Vite prefers moment's ESM build
-                // (jsnext:main), but moment/locale/fr and daterangepicker require() the UMD
-                // build: without this they would get a second moment instance, and the French
+                // (jsnext:main), but moment/locale/fr requires the UMD
+                // build: without this it would get a second moment instance, and the French
                 // locale would be registered on the one the app does not use.
                 { find: /^moment$/, replacement: moment },
             ],
