@@ -75,8 +75,16 @@ final readonly class Cleaner
             $this->cleanEventTimesheet($timesheet);
         }
 
+        $this->cleanEventTimes($dto);
+    }
+
+    /**
+     * The times of the event, its timesheets once cleaned: its own slot when it is one session (no timesheets), else
+     * the span of its sessions.
+     */
+    public function cleanEventTimes(EventDto $dto): void
+    {
         if ([] === $dto->timesheets) {
-            // One session: the event's own
             [$dto->startTime, $dto->endTime, $dto->hours] = $this->cleanSlot($dto->startTime, $dto->endTime, $dto->hours);
         } else {
             [$dto->startTime, $dto->endTime] = $this->span($dto->timesheets);
