@@ -150,15 +150,22 @@ final readonly class EventFamilyResolver
 
     /**
      * The current canonical keeps its role, so public URLs stay put and a link made
-     * before the identity hash is respected; otherwise the oldest row wins.
+     * before the identity hash is respected; otherwise the oldest row wins. A row its
+     * source no longer lists only keeps the role when the whole family is gone: its
+     * page would hide the dates the others still have.
      *
      * @param non-empty-list<Event> $members
      */
     private function elect(array $members): Event
     {
-        $pool = array_values(array_filter($members, static fn (Event $member): bool => null === $member->getDuplicateOf()));
+        $live = array_values(array_filter($members, static fn (Event $member): bool => !$member->isRemovedAtSource()));
+        if ([] === $live) {
+            $live = $members;
+        }
+
+        $pool = array_values(array_filter($live, static fn (Event $member): bool => null === $member->getDuplicateOf()));
         if ([] === $pool) {
-            $pool = $members;
+            $pool = $live;
         }
 
         usort($pool, static fn (Event $a, Event $b): int => ($a->getId() ?? 0) <=> ($b->getId() ?? 0));
@@ -201,10 +208,12 @@ final readonly class EventFamilyResolver
     private function materialize(Event $canonical, array $siblings): void
     {
         // Only rows proven to be the same event lend their dates: legacy links stay
-        // redirect-only.
+        // redirect-only. A row its source no longer lists has no date left to lend.
         $lenders = array_filter(
             $siblings,
-            static fn (Event $sibling): bool => null !== $sibling->getIdentityHash() && $sibling->getIdentityHash() === $canonical->getIdentityHash(),
+            static fn (Event $sibling): bool => null !== $sibling->getIdentityHash()
+                && $sibling->getIdentityHash() === $canonical->getIdentityHash()
+                && !$sibling->isRemovedAtSource(),
         );
 
         // A row that just became a duplicate may still carry dates it inherited as a

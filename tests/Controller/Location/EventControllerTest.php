@@ -12,6 +12,7 @@ namespace App\Tests\Controller\Location;
 
 use App\Entity\Event;
 use App\Entity\User;
+use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
@@ -185,6 +186,21 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorTextContains('.alert-warning', 'pas encore publié');
         self::assertSelectorNotExists('#event');
         self::assertSelectorNotExists('#event-draft-notice');
+    }
+
+    public function testEveryoneStillSeesAnEventItsSourceNoLongerLists(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'), draft: true);
+        save($event->setStatus(EventStatus::Removed));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#event');
+        self::assertSelectorTextContains('.alert-secondary', "Retiré de l'agenda de l'organisateur");
+        self::assertSelectorNotExists('#event-draft-notice', 'Nothing to publish');
+        self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
     }
 
     public function testAnotherMemberOnlyGetsANoticeOnADraft(): void

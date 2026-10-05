@@ -742,6 +742,15 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this;
     }
 
+    /**
+     * No longer listed by its source (EventStatus::Removed): hidden from the listings as a draft
+     * would be, while its page stays open to everyone.
+     */
+    public function isRemovedAtSource(): bool
+    {
+        return EventStatus::Removed === $this->status;
+    }
+
     public function getStatusMessage(): ?string
     {
         return $this->statusMessage;

@@ -13,6 +13,7 @@ namespace App\Tests\Import;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
+use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
@@ -177,6 +178,50 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         self::assertSame(['2026-10-10' => null], $this->datesBySource($freed));
         self::assertSame(['2026-10-03' => null], $this->datesBySource($canonical));
         self::assertSame('2026-10-03', $canonical->getEndDate()?->format('Y-m-d'), 'The range shrinks back to the canonical\'s own date.');
+    }
+
+    public function testASiblingRemovedAtTheSourceNoLongerLendsItsDates(): void
+    {
+        $firstId = $this->sibling('oa-1', '2026-10-03');
+        $secondId = $this->sibling('oa-2', '2026-10-10');
+        $this->resolve([$secondId]);
+
+        save($this->reload($secondId)->setStatus(EventStatus::Removed)->setDraft(true));
+        $this->resolve([$secondId]);
+
+        $canonical = $this->reload($firstId);
+        self::assertSame(['2026-10-03' => null], $this->datesBySource($canonical));
+        self::assertSame('2026-10-03', $canonical->getEndDate()?->format('Y-m-d'), 'The range shrinks back to the dates still listed.');
+        self::assertSame($firstId, $this->reload($secondId)->getDuplicateOf()?->getId(), 'Still the same event: it keeps redirecting.');
+    }
+
+    public function testACanonicalRemovedAtTheSourceHandsItsRoleToASiblingStillListed(): void
+    {
+        $firstId = $this->sibling('oa-1', '2026-10-03');
+        $secondId = $this->sibling('oa-2', '2026-10-10');
+        $this->resolve([$secondId]);
+
+        save($this->reload($firstId)->setStatus(EventStatus::Removed)->setDraft(true));
+        $this->resolve([$firstId]);
+
+        $canonical = $this->reload($secondId);
+        self::assertNull($canonical->getDuplicateOf(), 'The family stays listed through the sibling its source still lists.');
+        self::assertSame($secondId, $this->reload($firstId)->getDuplicateOf()?->getId(), 'The removed row redirects to it.');
+        self::assertSame(['2026-10-10' => null], $this->datesBySource($canonical), 'Without the removed date.');
+    }
+
+    public function testAFamilyRemovedAtTheSourceKeepsItsCanonical(): void
+    {
+        $firstId = $this->sibling('oa-1', '2026-10-03');
+        $secondId = $this->sibling('oa-2', '2026-10-10');
+        $this->resolve([$secondId]);
+
+        save($this->reload($firstId)->setStatus(EventStatus::Removed)->setDraft(true));
+        save($this->reload($secondId)->setStatus(EventStatus::Removed)->setDraft(true));
+        $this->resolve([$firstId, $secondId]);
+
+        self::assertNull($this->reload($firstId)->getDuplicateOf(), 'Public URLs stay put.');
+        self::assertSame($firstId, $this->reload($secondId)->getDuplicateOf()?->getId());
     }
 
     public function testTheCurrentCanonicalKeepsItsRoleOverAnOlderDuplicate(): void

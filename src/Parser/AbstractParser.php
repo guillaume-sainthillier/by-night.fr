@@ -12,8 +12,10 @@ namespace App\Parser;
 
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
+use App\Dto\RemovedEventDto;
 use App\Handler\EventHandler;
 use App\Import\EventPublicationGuard;
+use App\Message\RemoveSourceEvents;
 use BackedEnum;
 use Closure;
 use DateTimeImmutable;
@@ -35,6 +37,8 @@ abstract class AbstractParser implements ParserInterface
     private int $skippedEvents = 0;
 
     private int $failedRecords = 0;
+
+    private int $removedEvents = 0;
 
     private EventPublicationGuard $publicationGuard;
 
@@ -89,12 +93,13 @@ abstract class AbstractParser implements ParserInterface
     /**
      * The source's events, best yielded as they are read: the stream is consumed chunk by
      * chunk, so a whole feed never sits in memory. A null entry (a row the parser could not
-     * map) is skipped, which lets a parser yield its arrayToDto() results as they are.
+     * map) is skipped, which lets a parser yield its arrayToDto() results as they are. A source
+     * that says which of its records are gone yields a RemovedEventDto for each.
      *
      * @param DateTimeImmutable|null $since       see {@see ParserInterface::parse()}
      * @param bool                   $includePast see {@see ParserInterface::parse()}
      *
-     * @return iterable<EventDto|null>
+     * @return iterable<EventDto|RemovedEventDto|null>
      */
     abstract protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable;
 
@@ -150,13 +155,26 @@ abstract class AbstractParser implements ParserInterface
      * Publishes the stream chunk by chunk, each chunk checked against the previous run with
      * a single query rather than one per event.
      *
-     * @param iterable<EventDto|null> $eventDtos
+     * @param iterable<EventDto|RemovedEventDto|null> $eventDtos
      */
     private function publishMany(iterable $eventDtos): void
     {
         $chunk = [];
+        /** @var array<string, list<string>> $removed external ids, by source prefix ('' for none) */
+        $removed = [];
         foreach ($eventDtos as $eventDto) {
             if (null === $eventDto) {
+                continue;
+            }
+
+            if ($eventDto instanceof RemovedEventDto) {
+                $prefix = $eventDto->sourcePrefix ?? '';
+                $removed[$prefix][] = $eventDto->externalId;
+                if (\count($removed[$prefix]) >= self::PUBLISH_CHUNK_SIZE) {
+                    $this->publishRemovals($removed[$prefix], $prefix);
+                    unset($removed[$prefix]);
+                }
+
                 continue;
             }
 
@@ -170,6 +188,23 @@ abstract class AbstractParser implements ParserInterface
         if ([] !== $chunk) {
             $this->publishChunk($chunk);
         }
+
+        foreach ($removed as $prefix => $externalIds) {
+            $this->publishRemovals($externalIds, (string) $prefix);
+        }
+    }
+
+    /**
+     * @param list<string> $externalIds
+     */
+    private function publishRemovals(array $externalIds, string $sourcePrefix): void
+    {
+        $this->messageBus->dispatch(new RemoveSourceEvents(
+            $this->getCommandName(),
+            $externalIds,
+            '' === $sourcePrefix ? null : $sourcePrefix,
+        ));
+        $this->removedEvents += \count($externalIds);
     }
 
     /**
@@ -206,6 +241,14 @@ abstract class AbstractParser implements ParserInterface
     public function getSkippedEvents(): int
     {
         return $this->skippedEvents;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRemovedEvents(): int
+    {
+        return $this->removedEvents;
     }
 
     /**

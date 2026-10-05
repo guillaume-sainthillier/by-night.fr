@@ -116,6 +116,11 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setDescription($dto->description);
         $entity->setHours($dto->hours);
         $entity->setPrices($dto->prices);
+        // Listed again by its source: back in the listings (RemoveSourceEventsHandler hid it as a draft)
+        if ($entity->isRemovedAtSource()) {
+            $entity->setDraft(false);
+        }
+
         $entity->setStatus($dto->status);
         $entity->setStatusMessage($dto->statusMessage);
         $entity->setMailContacts($dto->emailContacts);

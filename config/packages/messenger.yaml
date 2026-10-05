@@ -42,6 +42,7 @@ framework:
         routing:
             # Route your messages to the transports
             App\Dto\EventDto: parser
+            App\Message\RemoveSourceEvents: parser
             App\Message\PurgeCdnCacheUrl: cdn
             App\Message\PurgeCdnCacheTags: cdn
             App\Message\PurgeCdnCachePrefix: cdn

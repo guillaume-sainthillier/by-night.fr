@@ -85,6 +85,11 @@ final class RecordingParser implements ParserInterface
         return 0;
     }
 
+    public function getRemovedEvents(): int
+    {
+        return 0;
+    }
+
     public function getCommandName(): string
     {
         return $this->commandName;

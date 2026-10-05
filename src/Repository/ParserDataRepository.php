@@ -66,6 +66,31 @@ final class ParserDataRepository extends ServiceEntityRepository
     }
 
     /**
+     * Forgets the content fingerprint of these records, so that the dedup gate lets the next
+     * listing of each through whatever its content (EventChangeDetector::hasChanged()).
+     *
+     * @param list<string> $externalIds
+     */
+    public function forgetContentHashes(string $externalOrigin, array $externalIds): void
+    {
+        if ([] === $externalIds) {
+            return;
+        }
+
+        $this
+            ->createQueryBuilder('p')
+            ->update()
+            ->set('p.contentHash', 'NULL')
+            ->where('p.externalOrigin = :externalOrigin')
+            ->andWhere('p.externalId IN (:externalIds)')
+            ->setParameter('externalOrigin', $externalOrigin)
+            // Numeric ids must stay strings, see DtoFindableTrait
+            ->setParameter('externalIds', $externalIds, ArrayParameterType::STRING)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
      * @param list<string> $externalIds
      *
      * @return ParserData[]

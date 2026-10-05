@@ -105,9 +105,10 @@ final class EventsImportCommand extends Command
             }
 
             Monitor::writeln(\sprintf(
-                '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged), <info>%d</info> unreadable',
+                '<info>%d</info> enqueued events, <info>%d</info> skipped (unchanged), <info>%d</info> removed at the source, <info>%d</info> unreadable',
                 $parser->getParsedEvents(),
                 $parser->getSkippedEvents(),
+                $parser->getRemovedEvents(),
                 $parser->getFailedRecords(),
             ));
         }
