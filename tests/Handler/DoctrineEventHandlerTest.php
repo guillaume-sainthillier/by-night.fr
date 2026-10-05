@@ -31,15 +31,19 @@ use App\Handler\DoctrineEventHandler;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
 use App\Import\EventContentHasher;
+use App\Import\Firewall;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Tests\AppKernelTestCase;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Override;
 use RuntimeException;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * Integration tests for DoctrineEventHandler.
@@ -1369,6 +1373,31 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $newRowIds = $this->timesheetIdsByHours($event);
         $this->assertSame(['À 15h00', 'À 20h30'], array_keys($newRowIds));
         $this->assertSame($rowIds['À 20h30'], $newRowIds['À 20h30'], 'The untouched session keeps its row');
+    }
+
+    /**
+     * A Firewall or parser version bump sends every event a source still lists through the merge again (the monthly
+     * full import of 2026-10-05 rewrote 76k of them): unchanged content must leave the row alone, or each one is
+     * purged from Cloudflare and re-indexed for nothing.
+     */
+    public function testReimportingUnchangedContentLeavesTheEventUntouched(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+        $this->handler->handleOne($this->createSessionEventDto('oa-1', '2026-10-03'));
+
+        $event = EventFactory::find(['externalId' => 'oa-1']);
+        $event->setUpdatedAt(new DateTimeImmutable('2020-01-01 00:00:00'));
+        save($event);
+        // The Firewall's verdicts are out of date: the event is judged and merged again
+        $exploration = ParserDataFactory::find(['externalId' => 'oa-1', 'externalOrigin' => 'openagenda']);
+        $exploration->setFirewallVersion('0.9');
+        save($exploration);
+
+        $this->handler->handleOne($this->createSessionEventDto('oa-1', '2026-10-03'));
+
+        $this->assertSame(Firewall::VERSION, ParserDataFactory::find(['externalId' => 'oa-1', 'externalOrigin' => 'openagenda'])->getFirewallVersion(), 'judged again');
+        $this->assertEquals(new DateTimeImmutable('2020-01-01 00:00:00'), EventFactory::find(['externalId' => 'oa-1'])->getUpdatedAt());
     }
 
     /**

@@ -43,23 +43,27 @@ final class CloudflareCdnPurgerTest extends TestCase
     }
 
     /**
-     * Mirrors the production wiring: the scoped "cloudflare.client" is decorated by the
-     * ThrottlingHttpClient, so every request (not every path) costs one quota token.
+     * Mirrors the production wiring: "cloudflare.client" and "cloudflare_files.client" are each decorated by a
+     * ThrottlingHttpClient, so every request (not every path) costs one token of its own purge quota.
      */
-    public function testEachRequestCostsOneTokenOfTheThrottledClient(): void
+    public function testEachRequestCostsOneTokenOfItsPurgeQuota(): void
     {
-        $limiter = new RateLimiterFactory([
-            'id' => 'cloudflare_purge_test',
-            'policy' => 'token_bucket',
-            'limit' => 25,
-            'rate' => ['interval' => '1 hour', 'amount' => 1],
-        ], new InMemoryStorage());
-        $purger = $this->makePurger(new ThrottlingHttpClient($this->makeClient(), $limiter->create()));
+        $tagQuota = $this->limiter('cloudflare_purge_test');
+        $fileQuota = $this->limiter('cloudflare_purge_files_test');
+        $purger = new CloudflareCdnPurger(
+            new ThrottlingHttpClient($this->makeClient(), $tagQuota->create()),
+            new ThrottlingHttpClient($this->makeClient(), $fileQuota->create()),
+            'zone-123',
+            'https://cdn.example.test/',
+        );
 
         $purger->purge($this->paths(250));
+        $purger->purgeTags(['event-1']);
+        $purger->purgePrefixes(['by-night.fr/p/image/glide/vich/1.jpg/']);
 
-        self::assertCount(3, $this->requests);
-        self::assertSame(22, $limiter->create()->consume(0)->getRemainingTokens());
+        self::assertCount(5, $this->requests);
+        self::assertSame(22, $fileQuota->create()->consume(0)->getRemainingTokens());
+        self::assertSame(23, $tagQuota->create()->consume(0)->getRemainingTokens(), 'URL purges leave the tag quota alone');
     }
 
     public function testPurgesTagsInRequestsOfAtMostHundredTags(): void
@@ -137,9 +141,19 @@ final class CloudflareCdnPurgerTest extends TestCase
         }, self::BASE_URI);
     }
 
+    private function limiter(string $id): RateLimiterFactory
+    {
+        return new RateLimiterFactory([
+            'id' => $id,
+            'policy' => 'token_bucket',
+            'limit' => 25,
+            'rate' => ['interval' => '1 hour', 'amount' => 1],
+        ], new InMemoryStorage());
+    }
+
     private function makePurger(HttpClientInterface $client): CloudflareCdnPurger
     {
-        return new CloudflareCdnPurger($client, 'zone-123', 'https://cdn.example.test/');
+        return new CloudflareCdnPurger($client, $client, 'zone-123', 'https://cdn.example.test/');
     }
 
     /**

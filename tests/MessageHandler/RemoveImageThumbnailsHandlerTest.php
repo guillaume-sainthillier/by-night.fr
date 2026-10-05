@@ -77,7 +77,7 @@ final class RemoveImageThumbnailsHandlerTest extends AppKernelTestCase
 
     private function transport(): InMemoryTransport
     {
-        $transport = self::getContainer()->get('messenger.transport.async');
+        $transport = self::getContainer()->get('messenger.transport.cdn');
         self::assertInstanceOf(InMemoryTransport::class, $transport);
 
         return $transport;

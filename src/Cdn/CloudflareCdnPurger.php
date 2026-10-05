@@ -16,12 +16,12 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Purges files from the Cloudflare cache within the per-account purge quota.
+ * Purges files from the Cloudflare cache within the per-account purge quotas.
  *
- * The request rate is not throttled here: the "cloudflare.client" scoped HTTP client
- * (config/packages/http_client.yaml) is decorated by Symfony's ThrottlingHttpClient, which
- * waits for a "cloudflare_purge" token (config/packages/rate_limiter.yaml) before every
- * request. This class only makes sure a request never carries more URLs than allowed.
+ * The request rate is not throttled here: the scoped HTTP clients (config/packages/http_client.yaml) are decorated
+ * by Symfony's ThrottlingHttpClient, which waits for a token (config/packages/rate_limiter.yaml) before every
+ * request, "cloudflare_purge" for tags and prefixes, "cloudflare_purge_files" for URLs: Cloudflare counts them
+ * apart. This class only makes sure a request never carries more URLs than allowed.
  */
 final readonly class CloudflareCdnPurger
 {
@@ -31,6 +31,8 @@ final readonly class CloudflareCdnPurger
     public function __construct(
         #[Target('cloudflare.client')]
         private HttpClientInterface $cloudflareClient,
+        #[Target('cloudflare_files.client')]
+        private HttpClientInterface $cloudflareFilesClient,
         #[Autowire(env: 'CLOUDFLARE_ZONE_ID')]
         private string $zoneId,
         #[Autowire(env: 'S3_PUBLIC_URL')]
@@ -52,21 +54,22 @@ final readonly class CloudflareCdnPurger
         $urls = array_map(fn (string $path): string => rtrim($this->s3Url, '/') . '/' . ltrim($path, '/'), $paths);
 
         foreach (array_chunk($urls, self::MAX_FILES_PER_REQUEST) as $chunk) {
-            $this->request(['files' => $chunk]);
+            $this->request($this->cloudflareFilesClient, ['files' => $chunk]);
         }
     }
 
     /**
      * Purge every cached response carrying one of these Cache-Tag values (e.g. EventPageCache::TAG).
      *
-     * Same chunking and quota as purge(): Cloudflare takes up to MAX_FILES_PER_REQUEST tags per request.
+     * Same chunking as purge(): Cloudflare takes up to MAX_FILES_PER_REQUEST tags per request, but their quota is
+     * far smaller (5 requests a minute on the Free plan).
      *
      * @param string[] $tags
      */
     public function purgeTags(array $tags): void
     {
         foreach (array_chunk(array_values(array_unique($tags)), self::MAX_FILES_PER_REQUEST) as $chunk) {
-            $this->request(['tags' => $chunk]);
+            $this->request($this->cloudflareClient, ['tags' => $chunk]);
         }
     }
 
@@ -75,23 +78,23 @@ final readonly class CloudflareCdnPurger
      * image, see RemoveImageThumbnailsHandler). A prefix is a host and a path, without scheme:
      * "by-night.fr/p/image/glide/vich/2026/06/12/a.jpg/".
      *
-     * Same chunking and quota as purge(): Cloudflare takes up to MAX_FILES_PER_REQUEST prefixes per request.
+     * Same chunking and quota as purgeTags(): Cloudflare takes up to MAX_FILES_PER_REQUEST prefixes per request.
      *
      * @param string[] $prefixes
      */
     public function purgePrefixes(array $prefixes): void
     {
         foreach (array_chunk(array_values(array_unique($prefixes)), self::MAX_FILES_PER_REQUEST) as $chunk) {
-            $this->request(['prefixes' => $chunk]);
+            $this->request($this->cloudflareClient, ['prefixes' => $chunk]);
         }
     }
 
     /**
      * @param array{files?: list<string>, tags?: list<string>, prefixes?: list<string>} $body
      */
-    private function request(array $body): void
+    private function request(HttpClientInterface $client, array $body): void
     {
-        $response = $this->cloudflareClient->request('POST', \sprintf('zones/%s/purge_cache', $this->zoneId), [
+        $response = $client->request('POST', \sprintf('zones/%s/purge_cache', $this->zoneId), [
             'json' => $body,
         ]);
 

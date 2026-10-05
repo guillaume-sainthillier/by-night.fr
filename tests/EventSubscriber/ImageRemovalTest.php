@@ -15,7 +15,7 @@ use App\Entity\Event;
 use App\Factory\EventFactory;
 use App\Manager\EventImageRemover;
 use App\Message\PurgeCdnCachePrefix;
-use App\Message\PurgeCdnCacheTag;
+use App\Message\PurgeCdnCacheTags;
 use App\Message\PurgeCdnCacheUrl;
 use App\Message\RemoveImageThumbnails;
 use App\MessageHandler\PurgeCdnCachePrefixHandler;
@@ -82,7 +82,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         $sourcePath = $this->storedPath($event->getImageSystem()->getName());
         $this->renderThumbnails($memberPath);
         $this->renderThumbnails($sourcePath);
-        $this->transport()->reset();
+        $this->resetTransports();
 
         self::getContainer()->get(EventImageRemover::class)->remove($event);
         save($event);
@@ -113,7 +113,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         );
 
         // Thumbnails: deleted from the storage, then a prefix purge queued for Cloudflare
-        $this->transport()->reset();
+        $this->resetTransports();
         $thumbnailsHandler = self::getContainer()->get(RemoveImageThumbnailsHandler::class);
         foreach ($sent as $message) {
             if ($message instanceof RemoveImageThumbnails) {
@@ -126,7 +126,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         self::assertTrue($this->thumbs()->fileExists('glide/vich/2020/01/01/autre.png/fit_contain,w_360.avif'), 'other thumbnails stay');
 
         // Cloudflare: the original on the data host, every thumbnail of the image by prefix
-        $purger = new CloudflareCdnPurger($this->cloudflare(), 'zone-123', 'https://data.example.test');
+        $purger = new CloudflareCdnPurger($this->cloudflare(), $this->cloudflare(), 'zone-123', 'https://data.example.test');
         $urlHandler = new PurgeCdnCacheUrlHandler($purger, new NullLogger());
         $prefixHandler = new PurgeCdnCachePrefixHandler($purger, new NullLogger());
         foreach ($sent as $message) {
@@ -157,7 +157,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         $event = EventFactory::createOne();
         $event->setImageFile($this->png($name));
         save($event);
-        $this->transport()->reset();
+        $this->resetTransports();
 
         return $event;
     }
@@ -230,8 +230,8 @@ final class ImageRemovalTest extends AppKernelTestCase
     {
         $tags = [];
         foreach ($this->sentMessages() as $message) {
-            if ($message instanceof PurgeCdnCacheTag) {
-                $tags[] = $message->tag;
+            if ($message instanceof PurgeCdnCacheTags) {
+                array_push($tags, ...$message->tags);
             }
         }
 
@@ -245,15 +245,38 @@ final class ImageRemovalTest extends AppKernelTestCase
      */
     private function sentMessages(): array
     {
-        return array_values(array_map(static fn ($envelope): object => $envelope->getMessage(), $this->transport()->getSent()));
+        $messages = [];
+        foreach ($this->transports() as $transport) {
+            foreach ($transport->getSent() as $envelope) {
+                $messages[] = $envelope->getMessage();
+            }
+        }
+
+        return $messages;
     }
 
-    private function transport(): InMemoryTransport
+    private function resetTransports(): void
     {
-        $transport = self::getContainer()->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $transport);
+        foreach ($this->transports() as $transport) {
+            $transport->reset();
+        }
+    }
 
-        return $transport;
+    /**
+     * The thumbnail removals go to "async", the Cloudflare purges to "cdn".
+     *
+     * @return list<InMemoryTransport>
+     */
+    private function transports(): array
+    {
+        $transports = [];
+        foreach (['async', 'cdn'] as $name) {
+            $transport = self::getContainer()->get('messenger.transport.' . $name);
+            self::assertInstanceOf(InMemoryTransport::class, $transport);
+            $transports[] = $transport;
+        }
+
+        return $transports;
     }
 
     private function events(): FilesystemOperator
