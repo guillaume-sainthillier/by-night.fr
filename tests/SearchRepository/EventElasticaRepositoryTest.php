@@ -11,12 +11,14 @@
 namespace App\Tests\SearchRepository;
 
 use App\App\Location;
+use App\Entity\City;
 use App\Entity\Country;
 use App\Enum\AgendaType;
 use App\Enum\PricePreset;
 use App\Search\DateRange;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
+use App\SearchRepository\Fuzzy;
 use DateTimeImmutable;
 use Elastica\Query;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
@@ -88,14 +90,19 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertTrue($this->repository->createSearchQuery(new SearchEvent()->setTerm('jazz'))->toArray()['track_total_hits']);
     }
 
-    public function testATermSearchIsSortedByRelevance(): void
+    /**
+     * The ten "Marché de Noël" equally relevant come by date, not in index order.
+     */
+    public function testATermSearchIsSortedByRelevanceThenByDate(): void
     {
         $search = new SearchEvent()->setTerm('jazz');
 
         $query = $this->repository->createSearchQuery($search)->toArray();
 
-        self::assertArrayNotHasKey('sort', $query);
         self::assertArrayHasKey('must', $query['query']['bool']);
+        self::assertSame(['_score' => ['order' => 'desc']], $query['sort'][0]);
+        self::assertSame(['sessions.endAt'], array_keys($query['sort'][1]));
+        self::assertCount(2, $query['sort'], 'No distance: a search page has no location');
     }
 
     /**
@@ -357,18 +364,75 @@ final class EventElasticaRepositoryTest extends TestCase
      */
     public function testKeywordsAreSearchedInTheNamesOfTheThemesToo(): void
     {
-        $keywords = $this->repository->createSearchQuery(new SearchEvent()->setTerm('jazz manouche'))->toArray()['query']['bool']['must'][0];
+        $themes = $this->keywordClauses('jazz manouche')['themes.name'];
 
-        [$fields, $themes] = $keywords['dis_max']['queries'];
-        self::assertSame('jazz manouche', $fields['multi_match']['query']);
-        self::assertSame('AND', $fields['multi_match']['operator']);
-        self::assertSame('auto', $fields['multi_match']['fuzziness']);
-        self::assertNotContains('themes.name', $fields['multi_match']['fields'], 'A query on the event never reaches its nested themes');
         self::assertEquals(['nested' => [
             'path' => 'themes',
             'score_mode' => 'max',
-            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'fuzziness' => 'auto', 'prefix_length' => 1, 'operator' => 'and']]],
+            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'operator' => 'and']]],
+            'boost' => 2,
         ]], $themes);
+    }
+
+    /**
+     * Each word in any of the fields that name the event: "concert toulouse" finds the event named "Concert" in
+     * Toulouse, which needed both words in the same field. One analyzer for all the fields, which read their words alike
+     * under several names: without it, each name is a group the words must all be found in.
+     */
+    public function testTheWordsAreFoundAcrossTheFieldsNamingTheEvent(): void
+    {
+        $clauses = $this->keywordClauses('concert toulouse');
+
+        $asTyped = $clauses['name^5']['multi_match'];
+        self::assertSame('cross_fields', $asTyped['type']);
+        self::assertSame('and', $asTyped['operator']);
+        self::assertSame('french_search', $asTyped['analyzer']);
+        self::assertContains('place.cityName^2', $asTyped['fields']);
+
+        $inflected = $clauses['name.heavy^5']['multi_match'];
+        self::assertSame('cross_fields', $inflected['type']);
+        self::assertSame('french_heavy_search', $inflected['analyzer']);
+        self::assertSame(['name.heavy^5', 'place.cityName.heavy^2'], $inflected['fields'], 'Not the venue: "salsa" found the venue named "Ferme De Salsas"');
+    }
+
+    /**
+     * A rare look-alike outscored the word searched ("toulouse" found the Zénith of Toulon first): a typo is forgiven
+     * in the name only, scored below any other way of holding the words.
+     */
+    public function testATypoNeverOutranksTheWordsAsTyped(): void
+    {
+        $clauses = $this->keywordClauses('concrt');
+
+        $typo = $clauses['name']['multi_match'];
+        self::assertSame(Fuzzy::FUZZINESS, $typo['fuzziness']);
+        self::assertSame(['name'], $typo['fields']);
+        foreach ($clauses as $fields => $clause) {
+            if ('name' !== $fields) {
+                self::assertGreaterThan($typo['boost'], $clause['multi_match']['boost'] ?? $clause['nested']['boost'], $fields);
+            }
+        }
+    }
+
+    /**
+     * A search with the city of the visitor (/recherche from a city page): its events and those around count up to
+     * three times, the others are still found.
+     */
+    public function testTheEventsAroundTheVisitorComeFirst(): void
+    {
+        $toulouse = new City()->setLatitude(43.60426)->setLongitude(1.44367);
+
+        $near = $this->repository->createSearchQuery(new SearchEvent()->setTerm('jazz')->setNear($toulouse))->toArray()['query']['bool']['must'][0];
+        $anywhere = $this->repository->createSearchQuery(new SearchEvent()->setTerm('jazz'))->toArray()['query']['bool']['must'][0];
+
+        self::assertEquals([
+            'gauss' => ['place.city.location' => ['origin' => '43.604260,1.443670', 'scale' => '30km', 'offset' => '10km', 'decay' => 0.5]],
+            'weight' => 2.0,
+            // A missing location scores as the closest
+            'filter' => ['exists' => ['field' => 'place.city.location']],
+        ], $near['function_score']['functions'][1]);
+        self::assertSame(['weight' => 1.0], $near['function_score']['functions'][0]);
+        self::assertSame('multiply', $near['function_score']['boost_mode']);
+        self::assertSame('jazz', self::keywordsOf($anywhere));
     }
 
     /**
@@ -406,9 +470,43 @@ final class EventElasticaRepositoryTest extends TestCase
     }
 
     /**
-     * The header search suggests the events still to come, as the agenda lists them, never those long over.
+     * The header search suggests the events still to come, as the agenda lists them, never those long over, by
+     * relevance then by date.
      */
     public function testTheHeaderSearchSuggestsTheEventsStillToCome(): void
+    {
+        $query = $this->headerQuery('marché de noël');
+
+        self::assertSame('marché de noël', self::keywordsOf($query['query']['bool']['must'][0]));
+        self::assertEquals([['nested' => [
+            'path' => 'sessions',
+            'query' => ['bool' => ['filter' => [['range' => ['sessions.endAt' => ['gte' => new DateTimeImmutable('today')->format('Y-m-d')]]]]]],
+        ]]], $query['query']['bool']['filter']);
+        self::assertSame(['_score' => ['order' => 'desc']], $query['sort'][0]);
+        self::assertSame(['sessions.endAt'], array_keys($query['sort'][1]));
+    }
+
+    /**
+     * The visitor is still typing: the last word may be the beginning of one ("orel" for Orelsan), found in the names
+     * cut into their beginnings. Around the city of the page first, as the search page.
+     */
+    public function testTheHeaderSearchFindsAWordFromItsBeginning(): void
+    {
+        $prefixes = array_values(array_filter(
+            $this->headerQuery('orel')['query']['bool']['must'][0]['dis_max']['queries'],
+            static fn (array $clause): bool => \in_array('name.autocomplete^5', $clause['multi_match']['fields'] ?? [], true),
+        ));
+        self::assertCount(1, $prefixes);
+        self::assertSame(['name.autocomplete^5', 'place.name.autocomplete^3'], $prefixes[0]['multi_match']['fields']);
+
+        $near = $this->headerQuery('orel', new City()->setLatitude(43.60426)->setLongitude(1.44367));
+        self::assertArrayHasKey('function_score', $near['query']['bool']['must'][0]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function headerQuery(string $keywords, ?City $near = null): array
     {
         $queries = [];
         $finder = $this->createStub(PaginatedFinderInterface::class);
@@ -417,14 +515,9 @@ final class EventElasticaRepositoryTest extends TestCase
 
             return $this->createStub(PaginatorAdapterInterface::class);
         });
-        new EventElasticaRepository($finder)->findWithHighlightsPaginated('marché de noël');
+        new EventElasticaRepository($finder)->findWithHighlightsPaginated($keywords, $near);
 
-        $bool = $queries[0]['query']['bool'];
-        self::assertSame('marché de noël', $bool['must'][0]['multi_match']['query']);
-        self::assertEquals([['nested' => [
-            'path' => 'sessions',
-            'query' => ['bool' => ['filter' => [['range' => ['sessions.endAt' => ['gte' => new DateTimeImmutable('today')->format('Y-m-d')]]]]]],
-        ]]], $bool['filter']);
+        return $queries[0];
     }
 
     /**
@@ -436,6 +529,22 @@ final class EventElasticaRepositoryTest extends TestCase
     {
         // After the window of the dates, which every search has
         return $this->repository->createSearchQuery(new SearchEvent()->setType($type))->toArray()['query']['bool']['filter'][1];
+    }
+
+    /**
+     * The clauses of the keywords of a search page (createKeywordsQuery()), by the fields they read.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function keywordClauses(string $keywords): array
+    {
+        $clauses = [];
+        foreach ($this->repository->createSearchQuery(new SearchEvent()->setTerm($keywords))->toArray()['query']['bool']['must'][0]['dis_max']['queries'] as $clause) {
+            $fields = $clause['multi_match']['fields'] ?? ['themes.name'];
+            $clauses[$fields[0]] = $clause;
+        }
+
+        return $clauses;
     }
 
     /**

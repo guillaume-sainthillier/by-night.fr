@@ -56,8 +56,8 @@ final class FuzzyTest extends TestCase
 
         $clauses = self::fuzzyClausesOf($queries);
 
-        // The events' fields and themes on the search page, the autocomplete, and two queries of each other index
-        self::assertCount(9, $clauses);
+        // The events' names on the search page and in the header search, and two queries of each other index
+        self::assertCount(8, $clauses);
         foreach ($clauses as $clause) {
             self::assertSame(Fuzzy::PREFIX_LENGTH, $clause['prefix_length'] ?? null, (string) json_encode($clause));
         }
