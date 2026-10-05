@@ -145,7 +145,7 @@
         --offcanvas-width: 100%;
     }
 
-    .agenda-filters-card {
+    .card.agenda-filters-card {
         border: 0;
         box-shadow: none;
         background-color: transparent;
@@ -163,4 +163,17 @@
     padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom));
     border-top: 1px solid var(--border-color);
     background-color: $white;
+}
+
+// The agenda's head (location/agenda/index.html.twig): a card on a larger screen, part of the page on a phone
+@include media-breakpoint-down(lg) {
+    .card.agenda-header-card {
+        border: 0;
+        box-shadow: none;
+        background-color: transparent;
+
+        > .card-body {
+            padding: 0;
+        }
+    }
 }

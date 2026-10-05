@@ -138,24 +138,28 @@
             </aside>
 
             <div class="col-lg-8">
-                <div class="card mb-4">
+                {# A card on a larger screen only: on a phone, the title and the date shortcuts open the page #}
+                <div class="card agenda-header-card mb-4">
                     <div class="card-body p-lg-4">
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                            {% if location.isCity and location.city.parent %}
-                                <span class="badge bg-teal-lt">
-                                    <twig:Icon name="lucide:map-pin" />
-                                    {{ location.city|department }}
-                                </span>
-                            {% elseif location.isCountry %}
+                        {# The hero of the first page says the department and the count already #}
+                        {% if not intro %}
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                {% if location.isCity and location.city.parent %}
+                                    <span class="badge bg-teal-lt">
+                                        <twig:Icon name="lucide:map-pin" />
+                                        {{ location.city|department }}
+                                    </span>
+                                {% elseif location.isCountry %}
+                                    <span class="badge bg-secondary-lt">
+                                        <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
+                                        {{ location.country.displayName }}
+                                    </span>
+                                {% endif %}
                                 <span class="badge bg-secondary-lt">
-                                    <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
-                                    {{ location.country.displayName }}
+                                    {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
                                 </span>
-                            {% endif %}
-                            <span class="badge bg-secondary-lt">
-                                {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
-                            </span>
-                        </div>
+                            </div>
+                        {% endif %}
                         {% if intro %}
                             <h2 class="h1 fw-bold text-start mb-2">L'agenda des sorties {{ location.atName }}</h2>
                         {% else %}
