@@ -11,6 +11,7 @@
 namespace App\SearchRepository;
 
 use App\Enum\AgendaType;
+use App\Enum\DateRangePreset;
 use App\Enum\PricePreset;
 use App\Search\AgendaFacets;
 use App\Search\DateRange;
@@ -416,7 +417,9 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * Returns a paginated list of hybrid results with highlights.
+     * The events of the header search, with their highlights: those with a session still to come, as the agenda
+     * lists. Over the whole index, the best scores were mostly events long over ("marché de noël" suggested the
+     * markets of 2016 to 2022), and the search took 4 to 6 times longer.
      *
      * @return PagerfantaInterface<HybridResult>
      */
@@ -438,7 +441,8 @@ final class EventElasticaRepository extends Repository
             ->setOperator('AND')
             ->setQuery($query);
 
-        $finalQuery = Query::create($multiMatch);
+        $upcoming = new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(DateRangePreset::Anytime->range()));
+        $finalQuery = Query::create(new BoolQuery()->addMust($multiMatch)->addFilter($upcoming));
         // Loaded from the database by their _id; the highlights come without the document
         $finalQuery->setSource(false);
 

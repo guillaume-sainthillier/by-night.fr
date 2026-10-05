@@ -406,6 +406,28 @@ final class EventElasticaRepositoryTest extends TestCase
     }
 
     /**
+     * The header search suggests the events still to come, as the agenda lists them, never those long over.
+     */
+    public function testTheHeaderSearchSuggestsTheEventsStillToCome(): void
+    {
+        $queries = [];
+        $finder = $this->createStub(PaginatedFinderInterface::class);
+        $finder->method('createHybridPaginatorAdapter')->willReturnCallback(function (Query $query) use (&$queries): PaginatorAdapterInterface {
+            $queries[] = $query->toArray();
+
+            return $this->createStub(PaginatorAdapterInterface::class);
+        });
+        new EventElasticaRepository($finder)->findWithHighlightsPaginated('marché de noël');
+
+        $bool = $queries[0]['query']['bool'];
+        self::assertSame('marché de noël', $bool['must'][0]['multi_match']['query']);
+        self::assertEquals([['nested' => [
+            'path' => 'sessions',
+            'query' => ['bool' => ['filter' => [['range' => ['sessions.endAt' => ['gte' => new DateTimeImmutable('today')->format('Y-m-d')]]]]]],
+        ]]], $bool['filter']);
+    }
+
+    /**
      * The clause the page of a type filters its events with.
      *
      * @return array<string, mixed>
