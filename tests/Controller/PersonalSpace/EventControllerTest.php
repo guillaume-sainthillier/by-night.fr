@@ -19,14 +19,14 @@ use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\RecountUpcomingEvents;
 use App\MessageHandler\RecountUpcomingEventsHandler;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
-final class EventControllerTest extends WebTestCase
+final class EventControllerTest extends AppWebTestCase
 {
     public function testTheDeleteButtonOfTheActionBarDeletesTheEvent(): void
     {

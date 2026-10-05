@@ -13,13 +13,13 @@ namespace App\Tests\EventSubscriber;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Tests\AppWebTestCase;
 use App\Tests\Controller\Location\StubsAgendaSearch;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AppContextSubscriberTest extends WebTestCase
+final class AppContextSubscriberTest extends AppWebTestCase
 {
     use StubsAgendaSearch;
 

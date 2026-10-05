@@ -11,15 +11,15 @@
 namespace App\Tests\Controller\Admin;
 
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The pages managing the site's own social accounts live outside /_administration (their OAuth
  * callback URLs are registered with the networks): the controllers guard themselves.
  */
-final class SocialAdminAccessTest extends WebTestCase
+final class SocialAdminAccessTest extends AppWebTestCase
 {
     /**
      * @return iterable<string, array{string, string}>

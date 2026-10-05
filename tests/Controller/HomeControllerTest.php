@@ -14,11 +14,11 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class HomeControllerTest extends WebTestCase
+final class HomeControllerTest extends AppWebTestCase
 {
     use CountsUpcomingEvents;
 
@@ -36,7 +36,7 @@ final class HomeControllerTest extends WebTestCase
         // The city is in the path: its inputs have no name, the query holds the filters of the agenda only
         $form = $crawler->selectButton('Explorer')->form(['term' => 'jazz', 'when' => 'this_weekend']);
         self::assertSame('GET', $form->getMethod());
-        self::assertSame('http://localhost/toulouse?term=jazz&when=this_weekend', $form->getUri());
+        self::assertSame('https://by-night.test/toulouse?term=jazz&when=this_weekend', $form->getUri());
     }
 
     public function testWithoutACityTheSearchWaitsForThePicker(): void

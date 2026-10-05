@@ -28,5 +28,8 @@ framework:
 when@test:
     framework:
         test: true
+        # The test clients browse APP_URL's host (https://by-night.test, AppWebTestCase): any other fails as in
+        # production
+        trusted_hosts: ['^by-night\.test$']
         session:
             storage_factory_id: session.storage.factory.mock_file

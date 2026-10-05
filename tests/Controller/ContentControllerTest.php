@@ -15,11 +15,11 @@ use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class ContentControllerTest extends WebTestCase
+final class ContentControllerTest extends AppWebTestCase
 {
     use CountsUpcomingEvents;
 

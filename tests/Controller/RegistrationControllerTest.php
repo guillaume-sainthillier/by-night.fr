@@ -11,14 +11,14 @@
 namespace App\Tests\Controller;
 
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * A new member signs up with their names and the username they choose, which no other member may already use.
  */
-final class RegistrationControllerTest extends WebTestCase
+final class RegistrationControllerTest extends AppWebTestCase
 {
     #[RequiresPhpExtension('mjml')]
     public function testANewMemberKeepsTheUsernameTheyChose(): void

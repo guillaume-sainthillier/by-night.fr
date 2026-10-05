@@ -11,11 +11,11 @@
 namespace App\Tests\Controller;
 
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[RequiresPhpExtension('mjml')]
-final class ResetPasswordControllerTest extends WebTestCase
+final class ResetPasswordControllerTest extends AppWebTestCase
 {
     public function testAnEmptyEmailIsRejectedInFrench(): void
     {

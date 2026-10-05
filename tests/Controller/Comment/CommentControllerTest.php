@@ -13,9 +13,9 @@ namespace App\Tests\Controller\Comment;
 use App\Factory\CommentFactory;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 
-final class CommentControllerTest extends WebTestCase
+final class CommentControllerTest extends AppWebTestCase
 {
     public function testAnUnapprovedReplyIsNotListed(): void
     {

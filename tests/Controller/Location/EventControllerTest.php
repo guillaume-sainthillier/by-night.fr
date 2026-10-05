@@ -17,16 +17,16 @@ use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
 use IntlDateFormatter;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DomCrawler\Crawler;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 use function Zenstruck\Foundry\Persistence\save;
 
-final class EventControllerTest extends WebTestCase
+final class EventControllerTest extends AppWebTestCase
 {
     public function testAdminSeesEditButtonNextToTitle(): void
     {

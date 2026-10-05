@@ -11,8 +11,8 @@
 namespace App\Tests\Controller\Security;
 
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use function Zenstruck\Foundry\Persistence\save;
@@ -21,7 +21,7 @@ use function Zenstruck\Foundry\Persistence\save;
  * Five failed logins a minute for an account, from wherever they come, then even the right
  * password waits.
  */
-final class LoginThrottlingTest extends WebTestCase
+final class LoginThrottlingTest extends AppWebTestCase
 {
     public function testTheRightPasswordLogsIn(): void
     {

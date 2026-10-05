@@ -14,10 +14,10 @@ use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Tests\AppWebTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 use function Zenstruck\Foundry\Persistence\refresh;
@@ -25,7 +25,7 @@ use function Zenstruck\Foundry\Persistence\refresh;
 /**
  * The page of a location: its agenda, introduced by its copy, its universes, its busiest cities and its neighbours.
  */
-final class LocationPageTest extends WebTestCase
+final class LocationPageTest extends AppWebTestCase
 {
     use CountsUpcomingEvents;
     use StubsAgendaSearch;
@@ -211,7 +211,7 @@ final class LocationPageTest extends WebTestCase
 
         $client->request('GET', $url . '/?when=this_weekend');
 
-        self::assertResponseRedirects('http://localhost' . $url . '?when=this_weekend', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('https://by-night.test' . $url . '?when=this_weekend', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testThePagesWhosePathEndsWithASlashAreNoLocations(): void
@@ -222,7 +222,7 @@ final class LocationPageTest extends WebTestCase
         // first, and redirects to the one the slash alone sets apart
         $client->request('GET', '/recherche');
 
-        self::assertResponseRedirects('http://localhost/recherche/', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('https://by-night.test/recherche/', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testAFilterLeavesTheIntroductionOutForTheAgenda(): void

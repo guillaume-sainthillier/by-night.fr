@@ -19,16 +19,16 @@ use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Closure;
 use Doctrine\Bundle\DoctrineBundle\DataCollector\DoctrineDataCollector;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * The associations an index lists are loaded for the whole page by the repository's
  * loadAllEager() (App\Admin\EagerLoadingEntityPaginator), not once per row.
  */
-final class IndexEagerLoadingTest extends WebTestCase
+final class IndexEagerLoadingTest extends AppWebTestCase
 {
     /**
      * @param Closure(): object $createRow

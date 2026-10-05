@@ -13,13 +13,13 @@ namespace App\Tests\Controller\PersonalSpace;
 use App\Factory\EventFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * "Mes sorties": the events to come a member goes to, soonest first.
  */
-final class OutingControllerTest extends WebTestCase
+final class OutingControllerTest extends AppWebTestCase
 {
     public function testAMemberSeesTheEventsToComeTheyGoToSoonestFirst(): void
     {

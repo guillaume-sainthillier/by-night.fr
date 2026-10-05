@@ -10,13 +10,13 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 use Symfony\Component\HttpKernel\DataCollector\LoggerDataCollector;
 
 /**
  * Sentry receives every record of the "error" level (framework.exceptions in config/packages/framework.yaml).
  */
-final class ClientErrorLoggingTest extends WebTestCase
+final class ClientErrorLoggingTest extends AppWebTestCase
 {
     public function testARefusedApiInputIsNotLoggedAsAnError(): void
     {

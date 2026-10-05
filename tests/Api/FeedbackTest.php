@@ -10,15 +10,15 @@
 
 namespace App\Tests\Api;
 
-use ApiPlatform\Test\ApiTestCase;
 use ApiPlatform\Test\Client;
 use App\Factory\UserFactory;
+use App\Tests\AppApiTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[RequiresPhpExtension('mjml')]
-final class FeedbackTest extends ApiTestCase
+final class FeedbackTest extends AppApiTestCase
 {
     #[Override]
     protected static ?bool $alwaysBootKernel = true;

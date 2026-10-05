@@ -10,13 +10,13 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Elasticsearch refuses pages past its result window: they are answered without querying it.
  */
-final class SearchControllerTest extends WebTestCase
+final class SearchControllerTest extends AppWebTestCase
 {
     public function testASearchPagePastTheResultWindowIsNotFound(): void
     {

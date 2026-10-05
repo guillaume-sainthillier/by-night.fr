@@ -12,12 +12,12 @@ namespace App\Tests\Controller\Admin;
 
 use App\Factory\CityFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\DomCrawler\Field\FileFormField;
 
-final class CityCrudControllerTest extends WebTestCase
+final class CityCrudControllerTest extends AppWebTestCase
 {
     public function testEditingSavesThePortalFields(): void
     {

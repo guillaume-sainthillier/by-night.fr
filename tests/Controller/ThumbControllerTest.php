@@ -10,11 +10,11 @@
 
 namespace App\Tests\Controller;
 
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ThumbControllerTest extends WebTestCase
+final class ThumbControllerTest extends AppWebTestCase
 {
     public function testALegacyThumbRedirectsToTheOriginalImage(): void
     {

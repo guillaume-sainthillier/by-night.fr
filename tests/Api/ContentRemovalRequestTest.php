@@ -10,16 +10,16 @@
 
 namespace App\Tests\Api;
 
-use ApiPlatform\Test\ApiTestCase;
 use App\Enum\ContentRemovalRequestStatus;
 use App\Enum\ContentRemovalType;
 use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
+use App\Tests\AppApiTestCase;
 use Override;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 
 #[RequiresPhpExtension('mjml')]
-final class ContentRemovalRequestTest extends ApiTestCase
+final class ContentRemovalRequestTest extends AppApiTestCase
 {
     #[Override]
     protected static ?bool $alwaysBootKernel = true;

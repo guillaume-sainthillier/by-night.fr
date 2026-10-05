@@ -17,10 +17,10 @@ use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class UserControllerTest extends WebTestCase
+final class UserControllerTest extends AppWebTestCase
 {
     public function testAMemberWithoutAnyEventIsNotIndexable(): void
     {

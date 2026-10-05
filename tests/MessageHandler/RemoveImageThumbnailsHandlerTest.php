@@ -54,7 +54,7 @@ final class RemoveImageThumbnailsHandlerTest extends AppKernelTestCase
             array_map(static fn ($envelope): object => $envelope->getMessage(), $this->transport()->getSent()),
         );
         self::assertEqualsCanonicalizing(
-            array_map(static fn (string $segment): string => \sprintf('by-night.fr/p/image/glide/%s/%s/', $segment, self::PATH), $segments),
+            array_map(static fn (string $segment): string => \sprintf('by-night.test/p/image/glide/%s/%s/', $segment, self::PATH), $segments),
             $prefixes,
             'one Cloudflare prefix purge, under the URL segment',
         );

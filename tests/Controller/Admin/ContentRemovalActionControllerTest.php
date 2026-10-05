@@ -15,13 +15,13 @@ use App\Enum\ContentRemovalType;
 use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use function Zenstruck\Foundry\Persistence\save;
 
-final class ContentRemovalActionControllerTest extends WebTestCase
+final class ContentRemovalActionControllerTest extends AppWebTestCase
 {
     #[RequiresPhpExtension('mjml')]
     public function testRemovingTheImagesTakesThemDown(): void

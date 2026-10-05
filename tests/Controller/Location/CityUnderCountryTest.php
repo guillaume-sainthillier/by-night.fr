@@ -16,9 +16,9 @@ use App\Factory\CityLegacySlugFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * The cities of a country that prefixes its cities' URLs live under it ("/suisse/geneve"); their former URLs
  * ("/geneve-1/…") reach the new ones in a single redirect.
  */
-final class CityUnderCountryTest extends WebTestCase
+final class CityUnderCountryTest extends AppWebTestCase
 {
     use StubsAgendaSearch;
 

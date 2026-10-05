@@ -14,14 +14,14 @@ use App\Factory\CommentFactory;
 use App\Factory\EventFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
-final class UserCrudControllerTest extends WebTestCase
+final class UserCrudControllerTest extends AppWebTestCase
 {
     public function testEditFormPreviewsOnlyTheUploadedProfilePicture(): void
     {

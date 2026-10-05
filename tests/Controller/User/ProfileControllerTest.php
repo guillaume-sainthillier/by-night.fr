@@ -14,13 +14,13 @@ use App\Entity\User;
 use App\Factory\CityFactory;
 use App\Factory\UserFactory;
 use App\Form\Type\DeleteAccountFormType;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
-final class ProfileControllerTest extends WebTestCase
+final class ProfileControllerTest extends AppWebTestCase
 {
     public function testAnInvalidDeletionShowsItsErrorOnTheProfile(): void
     {

@@ -12,10 +12,10 @@ namespace App\Tests\Controller\Admin;
 
 use App\Factory\ParserHistoryFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class ParserHistoryCrudControllerTest extends WebTestCase
+final class ParserHistoryCrudControllerTest extends AppWebTestCase
 {
     public function testTheIndexListsEveryParserOfABatch(): void
     {

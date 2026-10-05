@@ -12,10 +12,10 @@ namespace App\Tests\Controller;
 
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
-final class OldMediaControllerTest extends WebTestCase
+final class OldMediaControllerTest extends AppWebTestCase
 {
     public function testRedirectsALegacyEventImageUrlToItsOriginAndLetsTheCdnKeepIt(): void
     {
