@@ -46,6 +46,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_slug_idx', columns: ['slug'])]
 #[ORM\Index(name: 'event_start_date_idx', columns: ['start_date'])]
 #[ORM\Index(name: 'event_place_upcoming_idx', columns: ['place_id', 'duplicate_of_id', 'draft', 'end_date'])]
+#[ORM\Index(name: 'event_place_start_date_idx', columns: ['place_id', 'start_date'])]
 #[ORM\Index(name: 'event_upcoming_idx', columns: ['duplicate_of_id', 'draft', 'end_date', 'participations', 'place_id'])]
 #[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
