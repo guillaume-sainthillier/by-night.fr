@@ -144,6 +144,7 @@ final class ContentControllerTest extends WebTestCase
         yield 'a single territory keeps its name' => [['FR' => 'France', 'YT' => 'Mayotte'], 'France et Mayotte'];
         yield 'no territory' => [['FR' => 'France'], 'France'];
         yield 'no France' => [['BE' => 'Belgique', 'GP' => 'Guadeloupe', 'GF' => 'Guyane'], "Belgique et 2 territoires d'Outre-Mer"];
+        yield 'no event to come anywhere' => [[], ''];
     }
 
     public function testTheHowItWorksPageCountsWhatTheMembersPublished(): void

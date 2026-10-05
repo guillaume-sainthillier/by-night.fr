@@ -69,6 +69,11 @@ final class ContentController extends BaseController
      */
     public static function summarizeCountries(array $countries): string
     {
+        // An empty list formats to "", which the failure check below would take for an error
+        if ([] === $countries) {
+            return '';
+        }
+
         // The overseas territories become one item that still adds up with the card's count; France leads, the other
         // countries keep their order
         $overseas = array_intersect_key($countries, array_flip(self::OVERSEAS));
