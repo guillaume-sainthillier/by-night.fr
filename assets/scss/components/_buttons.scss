@@ -96,7 +96,12 @@
     --btn-active-border-color: #{$primary};
 }
 
-// The count a chip ends with ("Demain 339"): smaller than its label, which keeps the chip's height
+// The count a chip ends with ("Demain 339"): smaller than its label, which keeps the chip's height, and on the label's
+// baseline, where the button's centring would lift it
+.btn-chip:has(.chip-count) {
+    align-items: baseline;
+}
+
 .btn-chip .chip-count {
     margin-left: 0.25rem;
     font-size: 0.75rem;
