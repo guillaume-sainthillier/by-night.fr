@@ -1,7 +1,7 @@
 {# The date shortcuts of the agenda, the first way through it ("what's on tonight?"), each with its count of the page's
    other filters (EventElasticaRepository::getFacets()). "Tous les jours" leaves the period out of the URL. Not followed:
-   their dates change every day. One line that scrolls sideways on a phone. #}
-<div class="agenda-dates d-flex flex-nowrap gap-2 overflow-auto" id="agenda-dates" role="group" aria-label="Dates">
+   their dates change every day. One line that scrolls sideways on a phone, wrapped where a mouse cannot swipe it. #}
+<div class="agenda-dates" id="agenda-dates" role="group" aria-label="Dates">
     {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
         {% set count = facets.dates[preset.value] ?? null %}
         {% set when = preset.value == 'anytime' ? {} : {when: preset.value} %}

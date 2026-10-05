@@ -54,7 +54,7 @@
                         {% set inCity = app.request.attributes.get('location') == city.slug %}
                         {% set onCityPage = inCity and app.current_route == 'app_location_index' %}
                         {% set inAgenda = onCityPage or (inCity and (app.current_route ?? '') starts with 'app_agenda_') %}
-                        <li class="nav-item dropdown d-flex align-items-center">
+                        <li class="nav-item dropdown flex-row flex-wrap flex-lg-nowrap align-items-center justify-content-start">
                             <a class="nav-link{{ inAgenda ? ' active' }}" href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?"{% if onCityPage %} aria-current="page"{% endif %}>
                                 <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
                                 <span class="nav-link-title">{{ city.name }}</span>

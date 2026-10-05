@@ -138,12 +138,21 @@
     }
 }
 
-// The date shortcuts heading the agenda (location/agenda/_dates.html.twig): one line, scrolled sideways on a phone
-// without a scrollbar under the chips
+// The date shortcuts heading the agenda (location/agenda/_dates.html.twig): one line that scrolls sideways on a phone,
+// without a scrollbar under the chips; wrapped from lg, where a mouse cannot swipe a line
 .agenda-dates {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    overflow-x: auto;
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
         display: none;
+    }
+
+    @include media-breakpoint-up(lg) {
+        flex-wrap: wrap;
+        overflow-x: visible;
     }
 }

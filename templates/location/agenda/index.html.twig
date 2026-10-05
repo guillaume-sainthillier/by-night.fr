@@ -166,13 +166,19 @@
                             {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
                         </p>
 
-                        <div class="mt-4">
-                            {{ include('location/agenda/_dates.html.twig') }}
+                        {# On a phone, the button of the filters opens the line of the date shortcuts, which scrolls beside it #}
+                        <div class="d-flex align-items-center gap-2 mt-4">
+                            <button type="button" class="btn btn-sm btn-pill d-lg-none flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
+                                <twig:Icon name="lucide:sliders-horizontal" />
+                                Filtres
+                            </button>
+                            <div class="min-w-0 flex-fill">
+                                {{ include('location/agenda/_dates.html.twig') }}
+                            </div>
                         </div>
 
-                        {# Without filters to remove, only the button of the phone filters: nothing to show on a desktop #}
-                        <div class="d-flex flex-wrap align-items-center gap-2 mt-3{{ removable ? '' : ' d-lg-none' }}">
-                            {% if removable %}
+                        {% if removable %}
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
                                 <span class="subheader me-1">Filtres actifs&nbsp;:</span>
                                 {% for filter in removable %}
                                     <twig:Chip href="{{ filter.href }}" active="{{ true }}" class="btn-sm" title="Retirer ce filtre">
@@ -180,12 +186,8 @@
                                         <twig:Icon name="lucide:x" class="icon-end" />
                                     </twig:Chip>
                                 {% endfor %}
-                            {% endif %}
-                            <button type="button" class="btn d-lg-none ms-auto" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
-                                <twig:Icon name="lucide:sliders-horizontal" />
-                                Filtres
-                            </button>
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
