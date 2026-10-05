@@ -367,7 +367,7 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertEquals(['nested' => [
             'path' => 'themes',
             'score_mode' => 'max',
-            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'fuzziness' => 'auto', 'operator' => 'and']]],
+            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'fuzziness' => 'auto', 'prefix_length' => 1, 'operator' => 'and']]],
         ]], $themes);
     }
 

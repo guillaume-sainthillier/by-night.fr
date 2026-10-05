@@ -334,7 +334,8 @@ final class EventElasticaRepository extends Repository
                     'type',
                     'category.name',
                 ])
-                ->setFuzziness('auto')
+                ->setFuzziness(Fuzzy::FUZZINESS)
+                ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
                 ->setOperator('AND')
                 ->setQuery($keywords))
             // Themes are nested documents, which a query on the event itself never reaches
@@ -343,7 +344,8 @@ final class EventElasticaRepository extends Repository
                 ->setScoreMode('max')
                 ->setQuery(new MatchQuery()
                     ->setFieldQuery('themes.name', $keywords)
-                    ->setFieldFuzziness('themes.name', 'auto')
+                    ->setFieldFuzziness('themes.name', Fuzzy::FUZZINESS)
+                    ->setFieldPrefixLength('themes.name', Fuzzy::PREFIX_LENGTH)
                     ->setFieldOperator('themes.name', MatchQuery::OPERATOR_AND)));
     }
 
@@ -431,7 +433,8 @@ final class EventElasticaRepository extends Repository
                 'place.cityName^2',
                 'description',
             ])
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
             ->setQuery($query);
 
