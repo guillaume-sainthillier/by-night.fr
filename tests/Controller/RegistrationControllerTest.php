@@ -58,9 +58,31 @@ final class RegistrationControllerTest extends WebTestCase
         self::assertSame(0, UserFactory::count(['email' => 'camille.martin@example.com']));
     }
 
-    private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1'): void
+    #[RequiresPhpExtension('mjml')]
+    public function testANewMemberGoesBackToThePageTheySignedUpFrom(): void
     {
-        $client->request('GET', '/inscription');
+        $client = self::createClient();
+
+        $this->signUp($client, 'camille.martin@example.com', 'camille_m', url: '/inscription?_target_path=' . rawurlencode('/toulouse/soiree/concert--42#participer'));
+
+        // Logged in at once, back on the event, whose page records the "J'y vais" clicked before signing up
+        self::assertResponseRedirects('/toulouse/soiree/concert--42#participer');
+    }
+
+    public function testABrokenVerificationLinkLeadsToTheAccountPage(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['verified' => false]));
+
+        $client->request('GET', '/verifier-email', ['signature' => 'not-a-signature', 'expires' => time() + 3600]);
+
+        // Where a new link can be sent, not the sign-up form of someone who already has an account
+        self::assertResponseRedirects('/profile/edit');
+    }
+
+    private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1', string $url = '/inscription'): void
+    {
+        $client->request('GET', $url);
         $client->submitForm('Créer mon compte', [
             'registration_form[firstname]' => 'Camille',
             'registration_form[lastname]' => 'Martin',

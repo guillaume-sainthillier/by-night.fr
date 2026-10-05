@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Form\Type\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Security\LoginTargetPath;
 use App\Security\PasswordManager;
 use App\Security\UserFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,8 +32,11 @@ final class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/inscription', name: 'app_register', methods: ['GET', 'POST'])]
-    public function index(Request $request, PasswordManager $passwordManager, UserFormAuthenticator $authenticator, UserRepository $userRepository): Response
+    public function index(Request $request, PasswordManager $passwordManager, UserFormAuthenticator $authenticator, UserRepository $userRepository, LoginTargetPath $loginTargetPath): Response
     {
+        // The login dialog of a page names it: the new member, logged in at once, goes back to it
+        $loginTargetPath->saveFromQuery($request);
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -71,7 +75,8 @@ final class RegistrationController extends AbstractController
         } catch (VerifyEmailExceptionInterface $verifyEmailException) {
             $this->addFlash('error', new TranslatableMessage($verifyEmailException->getReason(), [], 'VerifyEmailBundle'));
 
-            return $this->redirectToRoute('app_register');
+            // The member is logged in (access_control): their account page, which sends a new link, not the sign-up form
+            return $this->redirectToRoute('app_user_edit');
         }
 
         $this->addFlash('success', 'Votre adresse e-mail a bien été vérifiée.');

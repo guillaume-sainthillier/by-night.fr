@@ -1,5 +1,7 @@
-{# The filters of the agenda, with the counts of each one (EventElasticaRepository::getFacets()). Below lg, an offcanvas
-   the "Filtres" button of the page header opens. #}
+{# The filters of the agenda, with the counts of each one (EventElasticaRepository::getFacets()). Below lg, a full-screen
+   panel the "Filtres" button of the page header opens: a choice (date, price, universe, venue) applies as it is tapped,
+   being a link; what is typed (keywords, dates picked, radius) applies from the bar at its bottom, whose button counts
+   the events on show until a field changes (pages/agenda.js). #}
 {% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
 {% set hasFilters = type or place or tag or filters|filter((value, key) => key in ['term', 'when', 'dateRange', 'price']) %}
 <div class="offcanvas-lg offcanvas-start" tabindex="-1" id="agenda-filters" aria-labelledby="agenda-filters-title">
@@ -8,8 +10,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#agenda-filters" aria-label="Fermer"></button>
     </div>
     <div class="offcanvas-body d-block p-3 p-lg-0">
-        <div class="card mb-lg-4">
-            <div class="card-header">
+        <div class="card agenda-filters-card mb-lg-4">
+            {# The panel's own title says it below lg #}
+            <div class="card-header d-none d-lg-flex">
                 <h2 class="card-title d-flex align-items-center gap-2">
                     <twig:Icon name="lucide:sliders-horizontal" class="text-primary" />
                     Filtres & recherche
@@ -25,17 +28,9 @@
                 {{ form_errors(form) }}
                 {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
                 {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
-                <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Dates">
-                    {# The shortcuts of the date picker: "Tous les jours" leaves the period out of the URL #}
-                    {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
-                        {% set count = facets.dates[preset.value] ?? null %}
-                        {% set when = preset.value == 'anytime' ? {} : {when: preset.value} %}
-                        {% set href = path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) %}
-                        <twig:Chip href="{{ href }}" active="{{ search.preset is same as(preset) }}" class="btn-sm" rel="nofollow">
-                            {{ preset.label }}
-                            {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
-                        </twig:Chip>
-                    {% endfor %}
+                {# The date shortcuts, again in the phone's panel: above the events on a larger screen #}
+                <div class="d-lg-none mb-3">
+                    {{ include('location/agenda/_dates.html.twig', {withFilters: false}) }}
                 </div>
                 {# The price shortcuts: "Tous les prix" leaves the price out of the URL, and keeps the events without a known
                    price, which no shortcut lists #}
@@ -43,13 +38,13 @@
                 <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Prix">
                     <twig:Chip href="{{ path(app.current_route, routeParams|merge(unpricedFilters)) }}" active="{{ search.price is null }}" class="btn-sm" rel="nofollow">
                         Tous les prix
-                        {% if facets.prices.any is defined %}<span class="ms-1 opacity-75 fw-normal">{{ facets.prices.any }}</span>{% endif %}
+                        {% if facets.prices.any is defined %}<span class="chip-count">{{ facets.prices.any }}</span>{% endif %}
                     </twig:Chip>
                     {% for price in enum_cases('App\\Enum\\PricePreset') %}
                         {% set count = facets.prices[price.value] ?? null %}
                         <twig:Chip href="{{ path(app.current_route, routeParams|merge(unpricedFilters)|merge({price: price.value})) }}" active="{{ search.price is same as(price) }}" class="btn-sm" rel="nofollow">
                             {{ price.label }}
-                            {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
+                            {% if count is not null %}<span class="chip-count">{{ count }}</span>{% endif %}
                         </twig:Chip>
                     {% endfor %}
                 </div>
@@ -63,7 +58,8 @@
                 {% for name, value in formQuery %}
                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                 {% endfor %}
-                <button type="submit" class="btn btn-primary w-100">
+                {# Below lg, the button of the bottom bar sends the form #}
+                <button type="submit" class="btn btn-primary w-100 d-none d-lg-inline-flex">
                     <twig:Icon name="lucide:search" />
                     Rechercher
                 </button>
@@ -155,5 +151,13 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+    <div class="agenda-filters-bar d-lg-none">
+        {% if hasFilters %}
+            <a class="btn" href="{{ path('app_location_index', {location: location.slug}) }}">Réinitialiser</a>
+        {% endif %}
+        <button type="submit" form="search-form" class="btn btn-primary flex-fill" data-filters-submit data-dirty-label="Rechercher">
+            {{- '{count, plural, =0 {Voir les résultats} one {Voir la sortie} other {Voir les # sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') -}}
+        </button>
     </div>
 </div>

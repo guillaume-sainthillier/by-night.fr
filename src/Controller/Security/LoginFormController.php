@@ -11,6 +11,8 @@
 namespace App\Controller\Security;
 
 use App\Controller\AbstractController;
+use App\Security\LoginTargetPath;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -18,8 +20,11 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 final class LoginFormController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login', methods: ['GET', 'POST'])]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils, LoginTargetPath $loginTargetPath): Response
     {
+        // The page a "log in to…" link comes from ("J'y vais", comments): the login leads back to it
+        $loginTargetPath->saveFromQuery($request);
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user

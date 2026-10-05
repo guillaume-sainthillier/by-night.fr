@@ -69,6 +69,88 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorTextContains('.event-header h1', $event->getName());
     }
 
+    public function testTheAuthorSeesALinkToEditTheirEvent(): void
+    {
+        $client = self::createClient();
+        $author = UserFactory::createOne();
+        $event = $this->createEvent(author: $author);
+        $client->loginUser($author);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists(\sprintf('.event-header a[href="/espace-perso/%d"]', $event->getId()));
+    }
+
+    public function testAnotherMemberDoesNotSeeTheLinkToEditTheEvent(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(author: UserFactory::createOne());
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('.event-header a[href^="/espace-perso/"]');
+    }
+
+    public function testJyVaisOpensALoginDialogThatLeadsBackToTheEventAndRecordsIt(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        // "#participer": the page clicks "J'y vais" for the member once they are back (like.js)
+        $target = $this->eventUrl($event) . '#participer';
+        // The login page without the script, the dialog with it
+        self::assertSelectorExists(\sprintf('a.participate[href="%s"][data-bs-target="#login-dialog"]', $this->withTarget('/login', $target)));
+        // Every way in leads back: the e-mail, a new account, a social network
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="%s"]', $this->withTarget('/login', $target)));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="%s"]', $this->withTarget('/inscription', $target)));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="%s"]', $this->withTarget('/login-social/google', $target)));
+    }
+
+    public function testTheLoginToCommentLeadsBackToTheComments(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorExists(\sprintf('#comments a[href="%s"]', $this->withTarget('/login', $this->eventUrl($event) . '#comments')));
+    }
+
+    public function testAMemberGetsNoLoginDialogButAButtonThatRecordsTheClickMadeBeforeTheLogin(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#login-dialog');
+        self::assertSelectorExists('button.btn-like-event[data-intent="participer"]');
+    }
+
+    public function testTheCountryKeywordLeadsToTheCountryAgenda(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+        $country = $event->getPlace()?->getCountry();
+        self::assertNotNull($country);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains(
+            \sprintf('.event-tags a[href="/%s"]', $country->getSlug()),
+            'Événements ' . $country->getAtDisplayName(),
+        );
+    }
+
     public function testAnEventThatEndedLongAgoStaysIndexableWithAnEndedNotice(): void
     {
         $client = self::createClient();
@@ -419,6 +501,14 @@ final class EventControllerTest extends WebTestCase
         }
 
         return EventFactory::createOne($attributes);
+    }
+
+    /**
+     * A login URL leading back to $target, as the router writes it: the slashes of a query stay as they are.
+     */
+    private function withTarget(string $path, string $target): string
+    {
+        return $path . '?_target_path=' . str_replace('%2F', '/', rawurlencode($target));
     }
 
     private function eventUrl(Event $event): string

@@ -26,6 +26,14 @@
     padding-right: 0.25rem;
 }
 
+// The count pill of a group's header (FilterGroup/Header.html.twig): 12 px figures, with the padding that keeps the height
+// of the 0.857rem badge it was (1.5 × 0.857rem: its line and its 0.25em paddings)
+.badge.filter-group-count {
+    font-size: 0.75rem;
+    padding-top: calc((1.5 * 0.857143rem - 0.75rem) / 2);
+    padding-bottom: calc((1.5 * 0.857143rem - 0.75rem) / 2);
+}
+
 // The link of the header, or the button that folds the group when it has no page
 .filter-group-link {
     display: flex;
@@ -135,5 +143,45 @@
     .filter-option.active & {
         border-color: $primary;
         background: radial-gradient(circle, $primary 0 40%, transparent 45%);
+    }
+}
+
+// The filters' panel on a phone (location/agenda/_filters.html.twig): the whole screen, the filters without the chrome
+// of the sidebar's card, and a bar at the bottom whose button applies them
+@include media-breakpoint-down(lg) {
+    #agenda-filters {
+        --offcanvas-width: 100%;
+    }
+
+    .card.agenda-filters-card {
+        border: 0;
+        box-shadow: none;
+        background-color: transparent;
+
+        > .card-body {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}
+
+.agenda-filters-bar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border-color);
+    background-color: $white;
+}
+
+// The agenda's head (location/agenda/index.html.twig): a card on a larger screen, part of the page on a phone
+@include media-breakpoint-down(lg) {
+    .card.agenda-header-card {
+        border: 0;
+        box-shadow: none;
+        background-color: transparent;
+
+        > .card-body {
+            padding: 0;
+        }
     }
 }

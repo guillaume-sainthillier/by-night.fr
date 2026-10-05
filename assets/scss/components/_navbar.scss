@@ -97,3 +97,15 @@
         }
     }
 }
+
+// The header's city switcher (fragments/header.html.twig): wide enough for "Saint-Martin-d'Hères" and its suggestions.
+// In the phone menu, where the dropdowns stay in the flow, it takes its own line, the menu's whole width
+.city-switcher {
+    width: 18rem;
+    max-width: calc(100vw - 2rem);
+
+    @include media-breakpoint-down(lg) {
+        width: 100%;
+        max-width: none;
+    }
+}

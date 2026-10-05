@@ -1,6 +1,7 @@
 {#
     The social networks a member signs in or up with, one button each (LoginSocialController).
-    "title" starts the tooltip of each button: "Connectez-vous avec" → "Connectez-vous avec Google".
+    "title" starts the tooltip of each button: "Connectez-vous avec" → "Connectez-vous avec Google". "targetPath": the
+    page the login leads back to (LoginTargetPath), none for the default one.
 
     <twig:Auth:SocialButtons title="Inscrivez-vous avec" />
 
@@ -9,12 +10,12 @@
         <div class="col"><twig:Auth:SocialButtons:Button service="google" /></div>
     </twig:Auth:SocialButtons>
 #}
-{% props title = 'Connectez-vous avec' %}
+{% props title = 'Connectez-vous avec', targetPath = null %}
 <div {{ attributes.defaults({class: 'row g-2'}) }}>
     {% block content %}
         {% for service in ['google', 'facebook', 'twitter'] %}
             <div class="col-4">
-                <twig:Auth:SocialButtons:Button service="{{ service }}" title="{{ title }}" />
+                <twig:Auth:SocialButtons:Button service="{{ service }}" title="{{ title }}" targetPath="{{ targetPath }}" />
             </div>
         {% endfor %}
     {% endblock %}

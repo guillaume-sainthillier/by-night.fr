@@ -1,0 +1,23 @@
+{# The date shortcuts of the agenda, the first way through it ("what's on tonight?"), each with its count of the page's
+   other filters (EventElasticaRepository::getFacets()). "Tous les jours" leaves the period out of the URL. Not followed:
+   their dates change every day. Wrapped, all in sight: no line to scroll sideways.
+
+   Twice on a page: above the events, headed on a phone by the button of the filters ({withFilters: true}, the id the
+   tests and the links read), and in the phone's filters panel ({withFilters: false}). #}
+{% set withFilters = withFilters ?? true %}
+<div class="d-flex flex-wrap align-items-center gap-2"{% if withFilters %} id="agenda-dates"{% endif %} role="group" aria-label="Dates">
+    {% if withFilters %}
+        <button type="button" class="btn btn-sm btn-pill d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
+            <twig:Icon name="lucide:sliders-horizontal" />
+            Filtres
+        </button>
+    {% endif %}
+    {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
+        {% set count = facets.dates[preset.value] ?? null %}
+        {% set when = preset.value == 'anytime' ? {} : {when: preset.value} %}
+        <twig:Chip href="{{ path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) }}" active="{{ search.preset is same as(preset) }}" class="btn-sm text-nowrap" rel="nofollow">
+            {{ preset.label }}
+            {% if count is not null %}<span class="chip-count">{{ count }}</span>{% endif %}
+        </twig:Chip>
+    {% endfor %}
+</div>

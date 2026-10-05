@@ -111,6 +111,32 @@ final class AgendaControllerTest extends WebTestCase
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
     }
 
+    public function testAListingWithoutResultsLeadsToTheWholeAgendaAndToTheSearch(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        // An invalid filter skips the Elasticsearch query and renders the listing with no result
+        $client->request('GET', '/toulouse?range=not-a-number&term=jazz');
+
+        self::assertSelectorExists('.alert-info a[href="/toulouse"]');
+        self::assertSelectorExists('.alert-info a[href="/recherche/?q=jazz"]');
+        // The header's city link is the page on show
+        self::assertSelectorExists('header a.active[aria-current="page"][href="/toulouse"]');
+    }
+
+    public function testTheHeaderCityLinkIsCurrentOnTheTypePagesOfItsAgenda(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        // The location of the URL is the header's city
+        $client->request('GET', '/toulouse/agenda/sortir/concert?range=not-a-number');
+
+        self::assertSelectorExists('header a.active[href="/toulouse"]');
+        self::assertSelectorNotExists('header a[aria-current="page"][href="/toulouse"]', 'Only the city page itself is the page on show');
+    }
+
     /**
      * The period of a quick search (QuickSearchType) or of a chip is named in the URLs, which stay true the next week.
      */
@@ -124,7 +150,7 @@ final class AgendaControllerTest extends WebTestCase
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('this_weekend', $query['when'] ?? null);
         self::assertArrayNotHasKey('dateRange', $query);
-        self::assertSame('Ce week-end', trim($crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active')->text()));
+        self::assertSame('Ce week-end', trim($crawler->filter('#agenda-dates .btn-chip.active')->text()));
         self::assertSelectorExists('#search-form input[type="hidden"][name="when"][value="this_weekend"]');
     }
 
@@ -138,7 +164,7 @@ final class AgendaControllerTest extends WebTestCase
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame(['from' => '2026-10-10', 'to' => '2026-10-12'], $query['dateRange'] ?? null);
         self::assertArrayNotHasKey('when', $query);
-        self::assertCount(0, $crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active'), 'No shortcut is these dates');
+        self::assertCount(0, $crawler->filter('#agenda-dates .btn-chip.active'), 'No shortcut is these dates');
     }
 
     public function testAnUnknownShortcutIsTousLesJours(): void
@@ -150,7 +176,7 @@ final class AgendaControllerTest extends WebTestCase
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('when', $query);
-        self::assertSame('Tous les jours', trim($crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active')->text()));
+        self::assertSame('Tous les jours', trim($crawler->filter('#agenda-dates .btn-chip.active')->text()));
     }
 
     public function testAPlaceAgendaKeepsThePlaceNameAsWritten(): void
@@ -246,6 +272,7 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
+        // The location of the URL is the header's city
         $client->request('GET', '/toulouse/agenda/sortir/concert?range=not-a-number');
         self::assertInputValueSame('term', '');
 

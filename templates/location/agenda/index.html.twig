@@ -100,11 +100,13 @@
     {% if search.price %}
         {% set active = active|merge([{label: search.price.label, href: path(app.current_route, routeParams|merge(unpricedFilters))}]) %}
     {% endif %}
-    {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours" #}
+    {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours". A shortcut gets no chip
+       of its own: the date shortcuts that head the agenda show it #}
     {% set preset = search.preset %}
     {% if preset is null or preset.value != 'anytime' %}
-        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters))}]) %}
+        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters)), shortcut: preset is not null}]) %}
     {% endif %}
+    {% set removable = active|filter(filter => not (filter.shortcut ?? false)) %}
 
     {# The first page of the location introduces it, unless a filter narrows it down: the agenda then comes first #}
     {% set intro = portal and not active %}
@@ -136,57 +138,100 @@
             </aside>
 
             <div class="col-lg-8">
-                <div class="card mb-4">
+                {# A card on a larger screen only: on a phone, the title and the date shortcuts open the page #}
+                <div class="card agenda-header-card mb-4">
                     <div class="card-body p-lg-4">
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                            {% if location.isCity and location.city.parent %}
-                                <span class="badge bg-teal-lt">
-                                    <twig:Icon name="lucide:map-pin" />
-                                    {{ location.city|department }}
-                                </span>
-                            {% elseif location.isCountry %}
+                        {# The hero of the first page says the department and the count already #}
+                        {% if not intro %}
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                {% if location.isCity and location.city.parent %}
+                                    <span class="badge bg-teal-lt">
+                                        <twig:Icon name="lucide:map-pin" />
+                                        {{ location.city|department }}
+                                    </span>
+                                {% elseif location.isCountry %}
+                                    <span class="badge bg-secondary-lt">
+                                        <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
+                                        {{ location.country.displayName }}
+                                    </span>
+                                {% endif %}
                                 <span class="badge bg-secondary-lt">
-                                    <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
-                                    {{ location.country.displayName }}
+                                    {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
                                 </span>
-                            {% endif %}
-                            <span class="badge bg-secondary-lt">
-                                {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
-                            </span>
-                        </div>
+                            </div>
+                        {% endif %}
                         {% if intro %}
                             <h2 class="h1 fw-bold text-start mb-2">L'agenda des sorties {{ location.atName }}</h2>
                         {% else %}
                             <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
                         {% endif %}
-                        <p class="text-secondary mb-0">
+                        {# The title says it on a phone, where the date shortcuts must come into sight #}
+                        <p class="text-secondary mb-0 d-none d-md-block">
                             Concerts, spectacles, expositions, marchés, festivals et soirées&nbsp;: toutes les sorties
                             {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
                         </p>
 
-                        {# Without active filters, only the button of the phone filters: nothing to show on a desktop #}
-                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4{{ active ? '' : ' d-lg-none' }}">
-                            {% if active %}
+                        <div class="mt-3 mt-md-4">
+                            {{ include('location/agenda/_dates.html.twig', {withFilters: true}) }}
+                        </div>
+
+                        {% if removable %}
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
                                 <span class="subheader me-1">Filtres actifs&nbsp;:</span>
-                                {% for filter in active %}
+                                {% for filter in removable %}
                                     <twig:Chip href="{{ filter.href }}" active="{{ true }}" class="btn-sm" title="Retirer ce filtre">
                                         {{ filter.label }}
                                         <twig:Icon name="lucide:x" class="icon-end" />
                                     </twig:Chip>
                                 {% endfor %}
-                            {% endif %}
-                            <button type="button" class="btn d-lg-none ms-auto" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
-                                <twig:Icon name="lucide:sliders-horizontal" />
-                                Filtres
-                            </button>
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 {% if events.nbResults == 0 %}
-                    <div class="alert alert-info">
+                    {# The way out of an empty page: the whole agenda, unless this is it, and the search of the whole site #}
+                    {% set fullAgenda = path('app_location_index', {location: location.slug}) %}
+                    {# The other periods that do have events with the page's other filters, the closest first and "Tous les
+                       jours" last: an empty page widens itself instead of only saying so #}
+                    {% set wider = [] %}
+                    {% for other in enum_cases('App\\Enum\\DateRangePreset')|filter(other => other.value != 'anytime')|merge([enum('App\\Enum\\DateRangePreset').Anytime]) %}
+                        {% set count = facets.dates[other.value] ?? 0 %}
+                        {% if count > 0 and other is not same as(search.preset) %}
+                            {% set wider = wider|merge([{preset: other, count: count}]) %}
+                        {% endif %}
+                    {% endfor %}
+                    <div class="alert alert-info" id="agenda-empty">
                         <twig:Icon name="lucide:info" />
-                        Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                        <div>
+                            {% if wider %}
+                                Aucune sortie ne correspond à ces dates. D'autres dates en ont&nbsp;:
+                                <div class="d-flex flex-wrap gap-2 mt-2" id="agenda-wider">
+                                    {% for option in wider %}
+                                        {% set when = option.preset.value == 'anytime' ? {} : {when: option.preset.value} %}
+                                        <twig:Chip href="{{ path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) }}" class="btn-sm" rel="nofollow">
+                                            {{ option.preset.label }}
+                                            <span class="chip-count">{{ option.count }}</span>
+                                        </twig:Chip>
+                                    {% endfor %}
+                                </div>
+                                <div class="mt-3">Ou élargissez votre recherche&nbsp;:</div>
+                            {% else %}
+                                Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                            {% endif %}
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                {% if fullAgenda != app.request.requestUri %}
+                                    <a class="btn btn-sm" href="{{ fullAgenda }}">
+                                        <twig:Icon name="lucide:x" />
+                                        Voir toutes les sorties {{ location.atName }}
+                                    </a>
+                                {% endif %}
+                                <a class="btn btn-sm" href="{{ path('app_search_index', search.term ? {q: search.term} : {}) }}" rel="nofollow">
+                                    <twig:Icon name="lucide:search" />
+                                    Rechercher sur tout le site
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
 

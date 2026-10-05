@@ -22,8 +22,10 @@
     {{ form_end(form) }}
 {% else %}
     <div class="text-center">
+        {# "login": the login that leads back to the event (location/event/index.html.twig, the only page a visitor sees
+           this form on) #}
         <a class="btn btn-outline-primary" title="Se connecter pour laisser un commentaire"
-           href="{{ path('app_login') }}">
+           href="{{ login }}">
             <twig:Icon name="lucide:message-square-plus" />
             Se connecter pour commenter
         </a>

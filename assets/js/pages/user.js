@@ -1,3 +1,4 @@
+import { Tab } from '@tabler/core/dist/js/tabler.esm'
 import $ from 'jquery'
 import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
@@ -7,7 +8,17 @@ function initialize({ app }) {
     init()
 
     function init() {
+        initTabFromHash()
         initLoadMoreEvents()
+    }
+
+    // A link to a tab opens it: "Mes sorties" leads to the past ones as #passes
+    function initTabFromHash() {
+        const { hash } = window.location
+        const trigger = hash && document.querySelector(`[data-bs-toggle="tab"][href="${CSS.escape(hash)}"]`)
+        if (trigger) {
+            Tab.getOrCreateInstance(trigger).show()
+        }
     }
 
     function initLoadMoreEvents() {

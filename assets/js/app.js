@@ -10,6 +10,7 @@ import '@/js/utils/css'
 
 import * as Sentry from '@sentry/browser'
 // Per-element listeners (connected on every mount)
+import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
 import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
@@ -79,6 +80,7 @@ class App {
 
         this.#listeners = [
             pages,
+            citySwitcher,
             contentRemovalRequest,
             cookieSettings,
             dropzone,
