@@ -1,4 +1,4 @@
-# The /llms.txt of the site (https://llmstxt.org), built on the fly: its links come from App\EventSubscriber\LlmsTxtSubscriber
+# The /llms.txt of the site (https://llmstxt.org): its links come from App\EventSubscriber\LlmsTxtSubscriber
 # and from the "llms_txt" option of the static routes
 llms_txt:
     title: 'By Night'
@@ -7,6 +7,14 @@ llms_txt:
         By Night est un agenda de sorties indépendant, né en 2013 à Toulouse. Sa base est mise à jour chaque jour avec les agendas des salles, des villes et des collectifs, et les organisateurs y publient gratuitement leurs événements. La consultation est libre, sans abonnement ni inscription.
 
         Chaque ville et chaque pays a sa page d'agenda, qui liste ses événements à venir. Les plus actifs sont listés ci-dessous, avec leur nombre de sorties à venir, recompté chaque nuit.
+    # Dumped daily by a server cron (bin/console llms-txt:dump) into a Docker volume mounted on var/llms_txt, so the file
+    # outlives the deploys: the controller serves it with an ETag, and builds it on the fly while it does not exist yet
+    dump_directory: '%kernel.project_dir%/var/llms_txt'
     discovery:
         # in the Link header of the pages, through WebLink, next to the <link> tag of base.html.twig
         link_header: true
+
+when@test:
+    llms_txt:
+        # nothing dumps there: the tests always exercise the file as the controller builds it
+        dump_directory: '%kernel.cache_dir%/llms_txt'
