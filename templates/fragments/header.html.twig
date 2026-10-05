@@ -34,17 +34,41 @@
             <div class="offcanvas-body d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3">
                 <ul class="navbar-nav align-items-start align-items-lg-center">
                     {% set city = app_context.city %}
+                    {# The city switcher: its field suggests the cities as one types, and opens the one picked
+                       (city-switcher.js) #}
+                    {% set switcher %}
+                        <div class="dropdown-menu dropdown-menu-arrow city-switcher p-3">
+                            <label class="form-label" for="city-switcher">{{ city ? 'Changer de ville' : 'Où sortir ?' }}</label>
+                            <div class="input-icon">
+                                <span class="input-icon-addon"><twig:Icon name="lucide:search" /></span>
+                                <input type="text" id="city-switcher" class="form-control" placeholder="Toulouse, Lyon, Genève…"
+                                       data-city-switcher
+                                       data-cities-url="{{ url('api_cities', {q: '__QUERY__'}) }}"
+                                       data-location-url="{{ path('app_location_index', {location: '__LOCATION__'}) }}">
+                            </div>
+                        </div>
+                    {% endset %}
                     {% if city %}
                         {# The city's page is its agenda: its link is the current one there, and on the type, venue and category
                            pages of that agenda #}
                         {% set inCity = app.request.attributes.get('location') == city.slug %}
                         {% set onCityPage = inCity and app.current_route == 'app_location_index' %}
                         {% set inAgenda = onCityPage or (inCity and (app.current_route ?? '') starts with 'app_agenda_') %}
-                        <li class="nav-item">
+                        <li class="nav-item dropdown d-flex align-items-center">
                             <a class="nav-link{{ inAgenda ? ' active' }}" href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?"{% if onCityPage %} aria-current="page"{% endif %}>
                                 <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
                                 <span class="nav-link-title">{{ city.name }}</span>
                             </a>
+                            <button type="button" class="nav-link dropdown-toggle dropdown-toggle-split px-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="Changer de ville" title="Changer de ville"></button>
+                            {{ switcher }}
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <button type="button" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
+                                <span class="nav-link-title">Choisir une ville</span>
+                            </button>
+                            {{ switcher }}
                         </li>
                     {% endif %}
                 </ul>

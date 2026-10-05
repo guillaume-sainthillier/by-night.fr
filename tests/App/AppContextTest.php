@@ -56,4 +56,28 @@ final class AppContextTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('#navbar-main a[href="/toulouse"]');
     }
+
+    public function testTheHeaderOffersToChangeTheCity(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['city' => CityFactory::toulouse()]));
+
+        $client->request('GET', '/recherche/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#navbar-main .dropdown-toggle[aria-label="Changer de ville"]');
+        // The field suggests the cities, and opens the page of the one picked (city-switcher.js)
+        self::assertSelectorExists('#navbar-main input[data-city-switcher][data-location-url="/__LOCATION__"]');
+    }
+
+    public function testAVisitorWithoutCityIsOfferedToChooseOne(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/recherche/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#navbar-main .dropdown-toggle', 'Choisir une ville');
+        self::assertSelectorExists('#navbar-main input[data-city-switcher]');
+    }
 }
