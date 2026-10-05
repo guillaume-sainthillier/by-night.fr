@@ -1,7 +1,4 @@
-import moment from 'moment'
-import 'moment/locale/fr'
-
-moment.locale('fr')
+import { addDays, diffDays, isoWeekday, parseDay } from '@/js/utils/days'
 
 /**
  * Detect pattern in existing timesheets
@@ -17,17 +14,11 @@ export function detectPattern(timesheets) {
         }
     }
 
-    // Parse timesheets (handle both date and datetime formats)
-    const parsed = timesheets.map((ts) => ({
-        startAt: moment(ts.startAt).startOf('day'),
-        endAt: moment(ts.endAt).startOf('day'),
-    }))
-
-    // Extract dates
-    const dates = parsed.map((ts) => ts.startAt.clone())
+    // The days the timesheets start on (handle both date and datetime formats)
+    const dates = timesheets.map((ts) => parseDay(ts.startAt)).filter(Boolean)
 
     // Single date - simple mode
-    if (dates.length === 1) {
+    if (dates.length <= 1) {
         return {
             mode: 'simple',
             config: {},
@@ -35,13 +26,13 @@ export function detectPattern(timesheets) {
     }
 
     // Sort dates
-    dates.sort((a, b) => a.diff(b))
+    dates.sort((a, b) => a - b)
 
     // Check if daily (consecutive dates)
     const isDaily = dates.every((date, index) => {
         if (index === 0) return true
         const prevDate = dates[index - 1]
-        return date.diff(prevDate, 'days') === 1
+        return diffDays(date, prevDate) === 1
     })
 
     if (isDaily) {
@@ -54,13 +45,13 @@ export function detectPattern(timesheets) {
     }
 
     // Check if specific weekdays
-    const weekdays = [...new Set(dates.map((date) => date.isoWeekday()))].sort()
+    const weekdays = [...new Set(dates.map((date) => isoWeekday(date)))].sort()
 
     if (weekdays.length > 0 && weekdays.length <= 7) {
         // Count occurrences of each weekday to ensure consistency
         const weekdayCounts = {}
         dates.forEach((date) => {
-            const day = date.isoWeekday()
+            const day = isoWeekday(date)
             weekdayCounts[day] = (weekdayCounts[day] || 0) + 1
         })
 
@@ -69,13 +60,10 @@ export function detectPattern(timesheets) {
         const maxDate = dates[dates.length - 1]
 
         let expectedCount = 0
-        const current = minDate.clone()
-
-        while (current.isSameOrBefore(maxDate)) {
-            if (weekdays.includes(current.isoWeekday())) {
+        for (let current = minDate; current <= maxDate; current = addDays(current, 1)) {
+            if (weekdays.includes(isoWeekday(current))) {
                 expectedCount++
             }
-            current.add(1, 'day')
         }
 
         // Check if pattern is consistent

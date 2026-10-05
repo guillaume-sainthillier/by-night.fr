@@ -19,7 +19,6 @@
         "hotkeys-js": "^4.0.0",
         "jquery": "^3.7.1",
         "lodash": "^4.17.23",
-        "moment": "2.31.0",
         "nouislider": "^15.8.1",
         "preact": "^10.28.3",
         "preact-render-to-string": "^6.6.5",

@@ -5,7 +5,6 @@ import { defineConfig } from 'vite'
 
 const assets = fileURLToPath(new URL('./assets', import.meta.url))
 const scss = fileURLToPath(new URL('./assets/scss/', import.meta.url))
-const moment = fileURLToPath(new URL('./node_modules/moment/moment.js', import.meta.url))
 
 // Tabler's Sass sources write custom properties bare (--primary, var(--btn-bg)), and so do ours: its own build adds
 // the prefix afterwards, with this plugin. We keep Bootstrap's --bs-, which the Bootstrap themes of Tom Select and
@@ -89,14 +88,7 @@ export default defineConfig(({ mode }) => {
         },
 
         resolve: {
-            alias: [
-                { find: '@', replacement: assets },
-                // Exact match only, like Encore's `moment$`. Vite prefers moment's ESM build
-                // (jsnext:main), but moment/locale/fr requires the UMD
-                // build: without this it would get a second moment instance, and the French
-                // locale would be registered on the one the app does not use.
-                { find: /^moment$/, replacement: moment },
-            ],
+            alias: [{ find: '@', replacement: assets }],
         },
 
         build: {
