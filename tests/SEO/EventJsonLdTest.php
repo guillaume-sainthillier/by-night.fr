@@ -33,6 +33,20 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertSame('2026-09-24', $schema['endDate']);
     }
 
+    public function testTheStartTimeGoesWithTheDayWithoutAnOffset(): void
+    {
+        $event = $this->createEvent([
+            'startDate' => new DateTimeImmutable('2026-09-22'),
+            'endDate' => new DateTimeImmutable('2026-09-24'),
+            'startTime' => new DateTimeImmutable('20:30'),
+        ]);
+
+        $schema = $this->schema($event);
+
+        self::assertSame('2026-09-22T20:30', $schema['startDate']);
+        self::assertSame('2026-09-24', $schema['endDate']);
+    }
+
     public function testTheDescriptionIsPlainText(): void
     {
         $event = $this->createEvent(['description' => '<p>Rock &amp; folk</p><p>Second&nbsp;set</p>']);

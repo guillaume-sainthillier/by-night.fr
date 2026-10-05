@@ -104,6 +104,11 @@ final class SeeTicketsKwankoParserTest extends TestCase
         self::assertSame(['Seth', 'SETH', 'THE GREAT OLD ONES'], $event->performers, 'The Cleaner drops the repeats');
     }
 
+    public function testTheTimeOfTheShowIsKept(): void
+    {
+        self::assertSame('20:45', $this->parseRow(self::GROUPED_HEADER, self::ROW)?->startTime?->format('H:i'));
+    }
+
     public function testARowWithoutArtistsHasNone(): void
     {
         self::assertSame([], $this->parseRow(self::GROUPED_HEADER, self::ROW)?->performers);

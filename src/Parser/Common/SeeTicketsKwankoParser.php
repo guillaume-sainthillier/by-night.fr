@@ -170,6 +170,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
         $event->startDate = $dateOnly;
         $event->endDate = $dateOnly;
         $event->hours = $hours;
+        $event->startTime = $startDate;
         $event->latitude = (float) ($data['latitude'] ?? 0);
         $event->longitude = (float) ($data['longitude'] ?? 0);
         $event->status = EventStatus::fromStatusMessage($data['onsale'] ?? null);

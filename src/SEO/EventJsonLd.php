@@ -55,8 +55,10 @@ final readonly class EventJsonLd
         ];
 
         if ($event->getStartDate() instanceof DateTimeImmutable) {
-            // DATE columns: the day alone, a midnight time would read as the actual start or end
-            $schema['startDate'] = $event->getStartDate()->format('Y-m-d');
+            // DATE columns: the day alone, a midnight time would read as the actual start or end. With the time of the
+            // first session when the source gives it, and no offset: Google reads such a time in the time zone of the
+            // event's place, which also holds for the overseas departments
+            $schema['startDate'] = $event->getStartDate()->format('Y-m-d') . ($event->getStartTime()?->format('\\TH:i') ?? '');
         }
 
         $description = $this->htmlExcerpter->excerpt($event->getDescription(), self::DESCRIPTION_LENGTH);

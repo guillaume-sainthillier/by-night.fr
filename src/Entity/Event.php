@@ -101,6 +101,12 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTimeImmutable $endDate = null;
 
+    /**
+     * The time the first session starts, when the source gives one: the dates are days, and $hours is a text.
+     */
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $startTime = null;
+
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
 
@@ -675,6 +681,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setEndDate(?DateTimeImmutable $endDate): self
     {
         $this->endDate = UnitOfWorkOptimizer::getDateValue($this->endDate, $endDate);
+
+        return $this;
+    }
+
+    public function getStartTime(): ?DateTimeImmutable
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(?DateTimeImmutable $startTime): self
+    {
+        $this->startTime = UnitOfWorkOptimizer::getTimeValue($this->startTime, $startTime);
 
         return $this;
     }

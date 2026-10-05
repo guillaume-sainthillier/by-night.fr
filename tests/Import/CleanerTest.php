@@ -130,6 +130,17 @@ final class CleanerTest extends AppKernelTestCase
         self::assertSame(['Seth', 'PETER HOOK & THE LIGHT', 'PLK'], $dto->performers);
     }
 
+    public function testCleanEventReadsMidnightAsNoTime(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startTime = new DateTime('2024-01-15 00:00');
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertNull($dto->startTime);
+    }
+
     public function testCleanPlaceAndCityFitTheirColumns(): void
     {
         $place = new PlaceDto();

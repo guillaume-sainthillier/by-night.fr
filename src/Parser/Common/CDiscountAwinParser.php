@@ -63,9 +63,11 @@ final class CDiscountAwinParser extends AbstractAwinParser
 
         // Extract date and time from "le 14/02/2020 à 20h" format
         $hours = null;
+        $startTime = null;
         if (preg_match('#le (\d{2}/\d{2}/\d{4}) à (\d{1,2})h#', $dateStr, $matches)) {
             $startDate = DateTimeImmutable::createFromFormat('d/m/Y', $matches[1]);
             $hours = \sprintf('À %sh', $matches[2]);
+            $startTime = DateTimeImmutable::createFromFormat('!G', $matches[2]) ?: null;
         } else {
             return null;
         }
@@ -88,6 +90,7 @@ final class CDiscountAwinParser extends AbstractAwinParser
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
+        $event->startTime = $startTime;
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
         $event->description = $data['description'] ?? '';

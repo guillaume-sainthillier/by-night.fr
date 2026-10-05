@@ -69,6 +69,7 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
         ])]));
 
         self::assertNull($event->hours);
+        self::assertSame('15:00', $event->startTime?->format('H:i'), 'The earliest session starts the event');
     }
 
     public function testAPlaceholderStreetIsDropped(): void

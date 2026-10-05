@@ -29,6 +29,10 @@ final readonly class Cleaner
     public function cleanEvent(EventDto $dto): void
     {
         $dto->endDate ??= $dto->startDate;
+        // Midnight is how the feeds write a day without a time
+        if ('00:00' === $dto->startTime?->format('H:i')) {
+            $dto->startTime = null;
+        }
 
         // Every value must fit its column: MySQL refuses a longer one and the whole batch fails with it
         $dto->name = $this->fit($this->clean($dto->name ?? ''), 255);

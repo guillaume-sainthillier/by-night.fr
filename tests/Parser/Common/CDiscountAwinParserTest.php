@@ -42,6 +42,7 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
         self::assertSame('2027-02-14 00:00', $event->startDate?->format('Y-m-d H:i'));
         self::assertSame('2027-02-14 00:00', $event->endDate?->format('Y-m-d H:i'));
         self::assertSame('À 20h', $event->hours);
+        self::assertSame('20:00', $event->startTime?->format('H:i'));
         self::assertSame('39.9€', $event->prices);
         self::assertSame('Zénith', $event->place?->name);
         self::assertSame('11 avenue Raymond Badiou', $event->place->street);

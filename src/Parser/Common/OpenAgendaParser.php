@@ -275,6 +275,8 @@ final class OpenAgendaParser extends AbstractParser
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
+        // The timings carry the time of the event's place: the earliest one is when the event starts
+        $event->startTime = [] === $timesheets ? null : min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->timesheets = $timesheets;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);

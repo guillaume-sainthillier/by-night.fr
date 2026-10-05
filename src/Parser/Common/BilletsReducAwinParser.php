@@ -102,6 +102,9 @@ final class BilletsReducAwinParser extends AbstractAwinParser
             $hours = $seenHours[0];
         }
 
+        // The earliest session's time, before the dates become days
+        $startTime = $startDate;
+
         // Prevents Reject::BAD_EVENT_DATE_INTERVAL
         $endDate = $endDate->setTime(0, 0);
         $startDate = $startDate->setTime(0, 0);
@@ -112,6 +115,7 @@ final class BilletsReducAwinParser extends AbstractAwinParser
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
+        $event->startTime = $startTime;
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));

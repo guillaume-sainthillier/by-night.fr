@@ -113,6 +113,7 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         );
         self::assertSame('2026-09-01', $dto->timesheets[0]->startAt?->format('Y-m-d'));
         self::assertNull($dto->hours, 'Distinct slots: no single summary for the event');
+        self::assertSame('09:00', $dto->startTime?->format('H:i'), 'The earliest timing starts the event');
     }
 
     public function testAnEmptyLongDescriptionFallsBackOnTheDescription(): void

@@ -144,6 +144,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame('2026-10-17', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-10-17', $event->endDate?->format('Y-m-d'));
         self::assertSame('À 20h30', $event->hours, 'An end time equal to the start time is a placeholder');
+        self::assertSame('20:30', $event->startTime?->format('H:i'));
         self::assertCount(1, $event->timesheets);
         self::assertSame(47.10078, $event->latitude);
         self::assertSame(-1.81272, $event->longitude);
@@ -164,6 +165,32 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
         self::assertSame('https://billetterie.pazanne.fr', $this->dispatched[0]->ticketUrl);
         self::assertSame(['https://billetterie.pazanne.fr', 'http://www.sainte-pazanne.fr/listes/theatre-municipal-pazenais'], $this->dispatched[0]->websiteContacts);
+    }
+
+    public function testTheFirstSessionOfTheFirstDayStartsTheEvent(): void
+    {
+        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+            ['startDate' => '2026-10-18', 'endDate' => '2026-10-18', 'startTime' => '10:00:00'],
+            ['startDate' => '2026-10-17', 'endDate' => '2026-10-17', 'startTime' => '20:30:00'],
+            ['startDate' => '2026-10-17', 'endDate' => '2026-10-17'],
+            ['startDate' => '2026-10-17', 'endDate' => '2026-10-17', 'startTime' => '14:00:00'],
+        ]])], null)];
+
+        $this->parser->parse(null);
+
+        self::assertSame('14:00', $this->dispatched[0]->startTime?->format('H:i'));
+    }
+
+    public function testAFirstDayWithoutATimeGivesNone(): void
+    {
+        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+            ['startDate' => '2026-10-18', 'endDate' => '2026-10-18', 'startTime' => '10:00'],
+            ['startDate' => '2026-10-17', 'endDate' => '2026-10-17'],
+        ]])], null)];
+
+        $this->parser->parse(null);
+
+        self::assertNull($this->dispatched[0]->startTime, 'The time of a later day is not the start');
     }
 
     public function testAnEventWithoutABookingContactHasNoTicketing(): void

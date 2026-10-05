@@ -70,6 +70,14 @@ final class EventContentHasherTest extends TestCase
         self::assertNotSame($this->hasher->hash($this->event()), $this->hasher->hash($withTicketing));
     }
 
+    public function testAStartTimeChangesHash(): void
+    {
+        $withTime = $this->event();
+        $withTime->startTime = new DateTimeImmutable('20:30');
+
+        self::assertNotSame($this->hasher->hash($this->event()), $this->hasher->hash($withTime));
+    }
+
     public function testTheArtistsChangeHash(): void
     {
         $withArtists = $this->event();

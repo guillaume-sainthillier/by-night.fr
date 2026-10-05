@@ -239,6 +239,7 @@ final class DataTourismeParser extends AbstractParser
         $event->startDate = min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
         $event->hours = 1 === \count($hours) ? $hours[0] : null;
+        $event->startTime = $this->startTime((array) $data['takesPlaceAt']);
         $event->prices = $this->prices((array) ($data['offers'] ?? []));
         $event->timesheets = $timesheets;
 
@@ -295,6 +296,31 @@ final class DataTourismeParser extends AbstractParser
         }
 
         return $timesheets;
+    }
+
+    /**
+     * The time of the first session: the earliest period, and the earliest time given that day ("20:30" or
+     * "20:30:00"). Null when that day has none.
+     *
+     * @param list<array<string, mixed>> $periods
+     */
+    private function startTime(array $periods): ?DateTimeImmutable
+    {
+        $first = null;
+        foreach ($periods as $period) {
+            $date = $this->string($period['startDate'] ?? null);
+            if (null === $date) {
+                continue;
+            }
+
+            $time = $this->string($period['startTime'] ?? null);
+            $time = null === $time ? null : substr($time, 0, 5);
+            if (null === $first || $date < $first[0] || ($date === $first[0] && null !== $time && (null === $first[1] || $time < $first[1]))) {
+                $first = [$date, $time];
+            }
+        }
+
+        return null === $first || null === $first[1] ? null : (DateTimeImmutable::createFromFormat('!H:i', $first[1]) ?: null);
     }
 
     /**
