@@ -39,6 +39,17 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         self::assertSame(['event-' . $event->getId()], $this->purgedTags());
     }
 
+    public function testAParserVersionBumpPurgesNothing(): void
+    {
+        $event = EventFactory::createOne(['parserVersion' => '1.0']);
+        $this->transport()->reset();
+
+        $event->setParserVersion('1.1');
+        save($event);
+
+        self::assertSame([], $this->purgedTags(), 'the page does not show it');
+    }
+
     public function testADeletedEventPurgesItsPage(): void
     {
         $event = EventFactory::createOne();

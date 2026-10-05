@@ -28,7 +28,8 @@ use Symfony\Contracts\Service\ResetInterface;
  * Purges from Cloudflare the event pages a flush changed, which it otherwise keeps up to a week (EventPageCache):
  * the event row itself (an edit, a cancellation, a deletion), its sessions, comments and participants, and the
  * address of its place. Bulk DQL updates (the nightly agenda classification) bypass the unit of work, so they
- * purge nothing.
+ * purge nothing, and neither does an event row whose change the page does not show (a parser version bump stamps
+ * every event the source still lists).
  */
 #[AsDoctrineListener(event: Events::onFlush)]
 #[AsDoctrineListener(event: Events::postFlush)]
@@ -36,6 +37,9 @@ final class EventPageCachePurgeListener implements ResetInterface
 {
     /** What an event page shows of its place */
     private const array PLACE_FIELDS = ['name', 'street', 'cityName', 'cityPostalCode', 'city', 'country', 'latitude', 'longitude'];
+
+    /** What an event row holds for the import and the back office only */
+    private const array UNSHOWN_EVENT_FIELDS = ['updatedAt', 'parserVersion', 'externalUpdatedAt', 'identityHash'];
 
     /** @var array<string, true> */
     private array $tags = [];
@@ -48,14 +52,17 @@ final class EventPageCachePurgeListener implements ResetInterface
     {
         $unitOfWork = $args->getObjectManager()->getUnitOfWork();
 
-        foreach ([...$unitOfWork->getScheduledEntityUpdates(), ...$unitOfWork->getScheduledEntityDeletions()] as $entity) {
+        foreach ($unitOfWork->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof Event && null !== $entity->getId()) {
                 $this->tags[EventPageCache::eventTag($entity->getId())] = true;
             }
         }
 
         foreach ($unitOfWork->getScheduledEntityUpdates() as $entity) {
-            if ($entity instanceof Place && null !== $entity->getId()
+            if ($entity instanceof Event && null !== $entity->getId()
+                && [] !== array_diff(array_keys($unitOfWork->getEntityChangeSet($entity)), self::UNSHOWN_EVENT_FIELDS)) {
+                $this->tags[EventPageCache::eventTag($entity->getId())] = true;
+            } elseif ($entity instanceof Place && null !== $entity->getId()
                 && [] !== array_intersect(self::PLACE_FIELDS, array_keys($unitOfWork->getEntityChangeSet($entity)))) {
                 $this->tags[EventPageCache::placeTag($entity->getId())] = true;
             }
