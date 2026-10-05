@@ -18,11 +18,15 @@ use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
 use App\Manager\PreloadManager;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Silarhi\CursorPagination\Configuration\OrderConfiguration;
+use Silarhi\CursorPagination\Configuration\OrderConfigurations;
+use Silarhi\CursorPagination\Pagination\CursorPagination;
 use SortDirection;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -89,11 +93,11 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
      * Members whose calendar holds at least one published event ending on or after $from:
      * the profile page lists that calendar, so anyone else has an empty profile.
      *
-     * @return iterable<array>
+     * @return CursorPagination<array{id: int, slug: string, updatedAt: ?DateTimeImmutable}>
      */
-    public function findAllSitemap(DateTimeInterface $from): iterable
+    public function findAllSitemap(DateTimeInterface $from, int $batchSize): CursorPagination
     {
-        return $this
+        $queryBuilder = $this
             ->createQueryBuilder('u')
             ->select('u.id, u.slug, u.updatedAt')
             ->join(UserEvent::class, 'ue', Join::ON, 'ue.user = u')
@@ -103,9 +107,14 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->andWhere('e.draft = false')
             ->andWhere('u.slug IS NOT NULL')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy('u.id, u.slug, u.updatedAt')
-            ->getQuery()
-            ->toIterable();
+            ->groupBy('u.id, u.slug, u.updatedAt');
+
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(new OrderConfiguration('u.id', static fn (array $user): int => $user['id'])),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
     }
 
     public function getUsersWithInfoQueryBuilder(DateTimeInterface $from): QueryBuilder

@@ -31,6 +31,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Silarhi\CursorPagination\Configuration\OrderConfiguration;
+use Silarhi\CursorPagination\Configuration\OrderConfigurations;
+use Silarhi\CursorPagination\Pagination\CursorPagination;
 use SortDirection;
 
 /**
@@ -395,11 +398,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     /**
      * Published events ending on or after $since: the ones whose page is worth indexing.
      *
-     * @return iterable<array>
+     * @return CursorPagination<array{slug: string, id: int, updatedAt: ?DateTimeImmutable, endDate: DateTimeImmutable, city_slug: ?string, country_slug: string}>
      */
-    public function findAllSiteMap(DateTimeInterface $since): iterable
+    public function findAllSiteMap(DateTimeInterface $since, int $batchSize): CursorPagination
     {
-        return $this
+        $queryBuilder = $this
             ->createQueryBuilder('e')
             ->select('e.slug, e.id, e.updatedAt, e.endDate, c.slug AS city_slug, c3.slug AS country_slug')
             ->join('e.place', 'p')
@@ -408,10 +411,16 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->andWhere('e.endDate >= :since')
-            ->setParameter('since', $since->format('Y-m-d'))
-            ->orderBy('e.endDate', SortDirection::Descending)
-            ->getQuery()
-            ->toIterable();
+            ->setParameter('since', $since->format('Y-m-d'));
+
+        // Newest first on the primary key: a cursor on (endDate, id) sorts the whole remaining
+        // date range again on every page, no index serving that order (334 s against 8 s here)
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(new OrderConfiguration('e.id', static fn (array $event): int => $event['id'], orderAscending: false)),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
     }
 
     public function findAllByUserQueryBuilder(User $user, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder

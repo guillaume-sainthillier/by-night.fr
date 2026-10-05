@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\Entity\Page;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Silarhi\CursorPagination\Configuration\OrderConfiguration;
@@ -33,15 +34,20 @@ final class PageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return iterable<array>
+     * @return CursorPagination<array{slug: string, updatedAt: ?DateTimeImmutable}>
      */
-    public function findAllSitemap(): iterable
+    public function findAllSitemap(int $batchSize): CursorPagination
     {
-        return $this
+        $queryBuilder = $this
             ->createQueryBuilder('p')
-            ->select('p.slug, p.updatedAt')
-            ->getQuery()
-            ->toIterable();
+            ->select('p.slug, p.updatedAt');
+
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(new OrderConfiguration('p.slug', static fn (array $page): string => $page['slug'])),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
     }
 
     /**

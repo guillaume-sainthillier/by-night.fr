@@ -41,6 +41,12 @@ final class SitemapSuscriber implements EventSubscriberInterface
      */
     public const int CATEGORY_PAGES_MIN_EVENTS = AgendaController::EVENT_PER_PAGE;
 
+    /**
+     * Rows read per query: the sections are read page by page on a cursor, so that MySQL's
+     * buffered results never hold a whole section (toIterable() buffers it all the same).
+     */
+    private const int BATCH_SIZE = 1000;
+
     private UrlContainerInterface $urlContainer;
 
     public function __construct(
@@ -89,7 +95,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerTagRoutes(?string $section): void
     {
-        $tags = $this->cityRepository->findAllTagsSitemap();
+        $tags = $this->cityRepository->findAllTagsSitemap(self::BATCH_SIZE);
 
         $seen = [];
         foreach ($tags as $tag) {
@@ -116,7 +122,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerAgendaRoutes(?string $section): void
     {
-        $cities = $this->cityRepository->findAllSitemap($this->today());
+        $cities = $this->cityRepository->findAllSitemap($this->today(), self::BATCH_SIZE);
 
         foreach ($cities as $city) {
             $this->addUrl($section, 'app_location_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
@@ -133,7 +139,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerPlacesRoutes(?string $section): void
     {
-        $places = $this->placeRepository->findAllSitemap($this->today());
+        $places = $this->placeRepository->findAllSitemap($this->today(), self::BATCH_SIZE);
 
         foreach ($places as $place) {
             $this->addUrl(
@@ -153,7 +159,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
     private function registerEventRoutes(?string $section): void
     {
         $today = $this->today();
-        $events = $this->eventRepository->findAllSiteMap($this->eventIndexingPolicy->getSitemapSince());
+        $events = $this->eventRepository->findAllSiteMap($this->eventIndexingPolicy->getSitemapSince(), self::BATCH_SIZE);
 
         foreach ($events as $event) {
             $isEventPast = $event['endDate'] < $today;
@@ -174,7 +180,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerUserRoutes(?string $section): void
     {
-        $users = $this->userRepository->findAllSitemap($this->today());
+        $users = $this->userRepository->findAllSitemap($this->today(), self::BATCH_SIZE);
 
         foreach ($users as $user) {
             $this->addUrl(
@@ -193,7 +199,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerPageRoutes(?string $section): void
     {
-        $pages = $this->pageRepository->findAllSitemap();
+        $pages = $this->pageRepository->findAllSitemap(self::BATCH_SIZE);
 
         foreach ($pages as $page) {
             $this->addUrl(
