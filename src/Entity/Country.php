@@ -104,6 +104,14 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     #[Ignore]
     private bool $featured = false;
 
+    /**
+     * Its cities' URLs start with its own ("/suisse/geneve"): the countries whose city names would clash with the French
+     * ones ("/geneve-1"). French and overseas cities stay at the root ("/toulouse"). See CitySlugHandler.
+     */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    #[Ignore]
+    private bool $prefixesCities = false;
+
     /** Rank among the listed countries, lowest first; null leaves the country unranked */
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     #[Ignore]
@@ -314,6 +322,18 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     public function setHeroCaption(?string $heroCaption): self
     {
         $this->heroCaption = $heroCaption;
+
+        return $this;
+    }
+
+    public function prefixesCities(): bool
+    {
+        return $this->prefixesCities;
+    }
+
+    public function setPrefixesCities(bool $prefixesCities): self
+    {
+        $this->prefixesCities = $prefixesCities;
 
         return $this;
     }

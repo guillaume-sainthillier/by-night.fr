@@ -14,6 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\CityDto;
 use App\Entity\City;
+use App\Entity\CityLegacySlug;
 use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
@@ -320,6 +321,21 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             // A flag set in the back office shows within 10 minutes
             ->enableResultCache(600)
             ->getResult();
+    }
+
+    /**
+     * The city that had this slug, its newest owner first.
+     */
+    public function findOneByLegacySlug(string $slug): ?City
+    {
+        return $this->createQueryBuilder('c')
+            ->join(CityLegacySlug::class, 'l', Join::ON, 'l.city = c')
+            ->where('l.slug = :slug')
+            ->orderBy('l.id', SortDirection::Descending)
+            ->setParameter('slug', $slug)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function findOneBySlug(string $slug): ?City

@@ -13,6 +13,7 @@ namespace App\App;
 use App\Entity\AdminZone;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Exception\CityMovedException;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
 use ReflectionClass;
@@ -44,7 +45,7 @@ final readonly class LazyLocationFactory
 
         /** @var City $lazyCity */
         $lazyCity = $reflector->newLazyProxy(fn (): City => $this->cityRepository->findOneBySlug($slug)
-            ?? throw new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug)));
+            ?? throw $this->createMovedOrNotFound($slug));
         // The URL already carries the slug: handing it to the proxy lets whoever only needs it (a link
         // back to the city) read it without any query.
         new ReflectionProperty(AdminZone::class, 'slug')->setRawValueWithoutLazyInitialization($lazyCity, $slug);
@@ -62,7 +63,7 @@ final readonly class LazyLocationFactory
      */
     public function createWithCity(string $slug): ?Location
     {
-        $city = $this->cityRepository->findOneBySlug($slug);
+        $city = $this->cityRepository->findOneBySlug($slug) ?? $this->cityRepository->findOneByLegacySlug($slug);
         if (null === $city) {
             return null;
         }
@@ -90,5 +91,15 @@ final readonly class LazyLocationFactory
         $location->setCountry($lazyCountry);
 
         return $location;
+    }
+
+    /**
+     * A city named by a former slug redirects to its current one (MovedCitySubscriber), else it is not found.
+     */
+    private function createMovedOrNotFound(string $slug): CityMovedException|NotFoundHttpException
+    {
+        $city = $this->cityRepository->findOneByLegacySlug($slug);
+
+        return null !== $city ? new CityMovedException($city) : new NotFoundHttpException(\sprintf('City with slug "%s" not found', $slug));
     }
 }
