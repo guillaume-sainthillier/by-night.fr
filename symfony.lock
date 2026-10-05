@@ -411,6 +411,9 @@
             "config/packages/sentry.yaml"
         ]
     },
+    "silarhi/llms-txt-bundle": {
+        "version": "v1.0.0"
+    },
     "silarhi/picasso-bundle": {
         "version": "v1.3.1"
     },

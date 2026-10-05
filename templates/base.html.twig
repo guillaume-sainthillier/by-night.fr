@@ -76,6 +76,7 @@ _______     __  _   _ _____ _____ _    _ _______
     {% block metas '' %}
     {# Pages not worth indexing (empty listings, drafts, empty profiles) set a "noindex" here #}
     {% block meta_robots '' %}
+    {{ llms_txt_link() }}
 
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 

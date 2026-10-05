@@ -42,4 +42,5 @@ return [
     Karser\Recaptcha3Bundle\KarserRecaptcha3Bundle::class => ['all' => true],
     NotFloran\MjmlBundle\MjmlBundle::class => ['all' => true],
     Symfony\Reprise\RepriseBundle::class => ['all' => true],
+    Silarhi\LlmsTxtBundle\LlmsTxtBundle::class => ['all' => true],
 ];
