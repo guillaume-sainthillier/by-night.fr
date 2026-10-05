@@ -13,8 +13,6 @@ namespace App\Controller\Location;
 use App\App\AppContext;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
-use App\Entity\City;
-use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Tag;
@@ -32,6 +30,7 @@ use App\Search\SearchEvent;
 use App\SearchRepository\AgendaFacetsLoader;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\ResultWindow;
+use App\Stats\LocationPortalProvider;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,14 +50,6 @@ final class AgendaController extends BaseController
     /** The busiest categories of the filters under each type */
     private const int TYPE_CATEGORIES = 4;
 
-    /** Also the busiest cities on each country card, here and on the home page: they share the query */
-    public const int VENUES = 5;
-
-    /** Below, a country has no ranking of its cities */
-    private const int MIN_CITIES = 3;
-
-    private const int NEIGHBOURS = 5;
-
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
     #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', methods: ['GET'])]
@@ -75,6 +66,7 @@ final class AgendaController extends BaseController
         TagRedirectManager $tagRedirectManager,
         AgendaUrlGenerator $agendaUrlGenerator,
         AgendaFacetsLoader $agendaFacetsLoader,
+        LocationPortalProvider $locationPortalProvider,
         int $page = 1,
         ?string $typeSlug = null,
         ?string $placeSlug = null,
@@ -177,7 +169,7 @@ final class AgendaController extends BaseController
             'unpricedFilters' => array_diff_key($filters, ['price' => true]),
             'form' => $form,
             // The first page of the location also introduces it: its busiest cities, and its neighbours
-            'portal' => $isLocationPage && 1 === $page ? $this->getPortal($eventRepository, $location) : null,
+            'portal' => $isLocationPage && 1 === $page ? $locationPortalProvider->getPortal($location) : null,
         ]);
     }
 
@@ -192,31 +184,6 @@ final class AgendaController extends BaseController
             'location' => $location,
             'page' => $page > 1 ? $page : null,
         ], Response::HTTP_MOVED_PERMANENTLY);
-    }
-
-    /**
-     * @return array{
-     *     cities: list<array{0: City, events: int|string}>,
-     *     neighbours: list<array{0: City|Country, events: int|string}>,
-     * }
-     */
-    private function getPortal(EventRepository $eventRepository, Location $location): array
-    {
-        $cities = [];
-        if ($location->isCity()) {
-            // The cities around the city
-            $neighbours = $eventRepository->findUpcomingCitiesAround($location->getCity(), self::NEIGHBOURS);
-        } else {
-            // The busiest cities of the country, and the other countries, as the home page lists them
-            $cities = $eventRepository->findUpcomingCitiesOfCountry($location->getCountry(), self::VENUES);
-            $neighbours = $eventRepository->findUpcomingCountries(self::VENUES, $location->getCountry());
-        }
-
-        return [
-            // A country with too few busy cities to rank (Monaco) has its venues in the filters of its agenda
-            'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
-            'neighbours' => $neighbours,
-        ];
     }
 
     /**
