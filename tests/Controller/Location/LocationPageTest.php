@@ -227,7 +227,7 @@ final class LocationPageTest extends WebTestCase
         self::assertNotContains('/toulouse/agenda', $links);
     }
 
-    public function testTheDateShortcutsHeadTheAgendaWithTheirCounts(): void
+    public function testTheDateShortcutsHeadTheAgendaAndThePhoneFiltersWithTheirCounts(): void
     {
         $client = self::createClient();
         $this->stubAgendaSearch(['anytime' => 9, 'today' => 1, 'tomorrow' => 2, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]);
@@ -236,8 +236,9 @@ final class LocationPageTest extends WebTestCase
         $crawler = $client->request('GET', '/toulouse');
 
         self::assertResponseIsSuccessful();
-        // Above the events, not in the filters, which a phone lists after them
+        // Above the events, which a phone shows before its filters; in the phone's filters panel too
         self::assertSelectorNotExists('#agenda-filters #agenda-dates');
+        self::assertSelectorCount(6, '#agenda-filters [role="group"][aria-label="Dates"] a');
         self::assertSame(
             ['Tous les jours 9', "Aujourd'hui 1", 'Demain 2', 'Ce week-end 5', 'Cette semaine 6', 'Ce mois 8'],
             $crawler->filter('#agenda-dates a')->each(static fn ($chip): string => preg_replace('/\s+/', ' ', trim($chip->text()))),

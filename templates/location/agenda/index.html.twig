@@ -161,20 +161,14 @@
                         {% else %}
                             <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
                         {% endif %}
-                        <p class="text-secondary mb-0">
+                        {# The title says it on a phone, where the date shortcuts must come into sight #}
+                        <p class="text-secondary mb-0 d-none d-md-block">
                             Concerts, spectacles, expositions, marchés, festivals et soirées&nbsp;: toutes les sorties
                             {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
                         </p>
 
-                        {# On a phone, the button of the filters opens the line of the date shortcuts, which scrolls beside it #}
-                        <div class="d-flex align-items-center gap-2 mt-4">
-                            <button type="button" class="btn btn-sm btn-pill d-lg-none flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
-                                <twig:Icon name="lucide:sliders-horizontal" />
-                                Filtres
-                            </button>
-                            <div class="min-w-0 flex-fill">
-                                {{ include('location/agenda/_dates.html.twig') }}
-                            </div>
+                        <div class="mt-3 mt-md-4">
+                            {{ include('location/agenda/_dates.html.twig', {withFilters: true}) }}
                         </div>
 
                         {% if removable %}

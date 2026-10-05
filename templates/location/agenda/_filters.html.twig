@@ -28,7 +28,10 @@
                 {{ form_errors(form) }}
                 {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
                 {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
-                {# The date shortcuts head the agenda itself (_dates.html.twig): the picker is for the other periods #}
+                {# The date shortcuts, again in the phone's panel: above the events on a larger screen #}
+                <div class="d-lg-none mb-3">
+                    {{ include('location/agenda/_dates.html.twig', {withFilters: false}) }}
+                </div>
                 {# The price shortcuts: "Tous les prix" leaves the price out of the URL, and keeps the events without a known
                    price, which no shortcut lists #}
                 <div class="form-label" aria-hidden="true">Prix</div>

@@ -138,25 +138,6 @@
     }
 }
 
-// The date shortcuts heading the agenda (location/agenda/_dates.html.twig): one line that scrolls sideways on a phone,
-// without a scrollbar under the chips; wrapped from lg, where a mouse cannot swipe a line
-.agenda-dates {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
-
-    @include media-breakpoint-up(lg) {
-        flex-wrap: wrap;
-        overflow-x: visible;
-    }
-}
-
 // The filters' panel on a phone (location/agenda/_filters.html.twig): the whole screen, the filters without the chrome
 // of the sidebar's card, and a bar at the bottom whose button applies them
 @include media-breakpoint-down(lg) {
