@@ -54,6 +54,21 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * The member whose picture, their own or their network's, is stored under that file name.
+     */
+    public function findOneByImageName(string $name): ?User
+    {
+        /* @var User|null */
+        return $this
+            ->createQueryBuilder('u')
+            ->where('u.image.name = :name OR u.imageSystem.name = :name')
+            ->setParameter('name', $name)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function loadAllEager(array $entities, array $context = []): void
     {
         $view = $context['view'] ?? null;

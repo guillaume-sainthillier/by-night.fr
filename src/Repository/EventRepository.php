@@ -332,6 +332,21 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The event whose picture, from its member or its source, is stored under that file name.
+     */
+    public function findOneByImageName(string $name): ?Event
+    {
+        /* @var Event|null */
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.image.name = :name OR e.imageSystem.name = :name')
+            ->setParameter('name', $name)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * The event with the place, city and country its URL and page are built from, in one query.
      * The city's parent is joined too: it targets the AdminZone inheritance root, which Doctrine
      * cannot proxy, so hydrating a city without it loads it with a query of its own.
