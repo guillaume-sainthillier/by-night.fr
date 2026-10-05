@@ -11,6 +11,7 @@
 namespace App\EventSubscriber;
 
 use App\App\AppContext;
+use App\App\CountrySlugs;
 use App\App\LazyLocationFactory;
 use App\App\Location;
 use App\Entity\Country;
@@ -33,6 +34,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
     public function __construct(
         private AppContext $appContext,
         private LazyLocationFactory $lazyLocationFactory,
+        private CountrySlugs $countrySlugs,
     ) {
     }
 
@@ -80,11 +82,12 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
         }
 
         try {
-            // Create lazy-loaded location - database query deferred until access
-            if (!str_starts_with($locationSlug, 'c--')) {
-                $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
-            } else {
+            // Create lazy-loaded location - database query deferred until access. Countries and cities share the
+            // slugs of the URLs ("/france", "/toulouse"): a country's comes first
+            if ($this->countrySlugs->has($locationSlug)) {
                 $location = $this->lazyLocationFactory->createWithLazyCountry($locationSlug);
+            } else {
+                $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
             }
 
             $this->appContext->setLocation($location);

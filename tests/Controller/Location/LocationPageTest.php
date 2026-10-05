@@ -35,7 +35,7 @@ final class LocationPageTest extends WebTestCase
      */
     public static function provideLocationPages(): iterable
     {
-        yield 'country' => ['/c--france', 'en France'];
+        yield 'country' => ['/france', 'en France'];
         yield 'city' => ['/toulouse', 'à Toulouse'];
     }
 
@@ -81,7 +81,7 @@ final class LocationPageTest extends WebTestCase
         EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['place' => $place]);
         self::counter()->refresh();
 
-        $client->request('GET', '/c--monaco');
+        $client->request('GET', '/monaco');
 
         self::assertResponseIsSuccessful();
         // Its busiest venues are the ones of the filters of its agenda
@@ -99,7 +99,7 @@ final class LocationPageTest extends WebTestCase
         }
         self::counter()->refresh();
 
-        $crawler = $client->request('GET', '/c--france');
+        $crawler = $client->request('GET', '/france');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#cities h2', 'Les villes les plus animées');
@@ -119,7 +119,7 @@ final class LocationPageTest extends WebTestCase
         }
         self::counter()->refresh();
 
-        $crawler = $client->request('GET', '/c--france');
+        $crawler = $client->request('GET', '/france');
 
         self::assertResponseIsSuccessful();
         self::assertSame(['Belgique', 'Suisse'], $crawler->filter('#neighbours h3')->each(static fn ($title): string => trim($title->text())));
@@ -149,7 +149,7 @@ final class LocationPageTest extends WebTestCase
      */
     public static function provideLocationAgendas(): iterable
     {
-        yield 'country' => ['/c--france', '/c--france/agenda'];
+        yield 'country' => ['/france', '/france/agenda'];
         yield 'city' => ['/toulouse', '/toulouse/agenda'];
     }
 
@@ -172,7 +172,7 @@ final class LocationPageTest extends WebTestCase
      */
     public static function provideLocationUrls(): iterable
     {
-        yield 'country' => ['/c--france'];
+        yield 'country' => ['/france'];
         yield 'city' => ['/toulouse'];
     }
 

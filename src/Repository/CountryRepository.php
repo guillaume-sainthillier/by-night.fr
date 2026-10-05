@@ -44,6 +44,19 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
     }
 
     /**
+     * @return list<string> the slugs of every country
+     */
+    public function findSlugs(): array
+    {
+        /* @var list<string> */
+        return $this
+            ->createQueryBuilder('c')
+            ->select('c.slug')
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+
+    /**
      * @throws NonUniqueResultException
      */
     public function getFromRegionOrDepartment(?string $region, ?string $department): ?Country

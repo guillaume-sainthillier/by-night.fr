@@ -39,7 +39,7 @@ final readonly class SearchSuggestionsProvider implements ProviderInterface
     /**
      * The location of a visitor without a city, as the URLs name it.
      */
-    private const string DEFAULT_COUNTRY = 'c--france';
+    private const string DEFAULT_COUNTRY = 'france';
 
     public function __construct(
         private LazyLocationFactory $lazyLocationFactory,

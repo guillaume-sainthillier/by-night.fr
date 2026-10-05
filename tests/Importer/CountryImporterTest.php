@@ -10,6 +10,7 @@
 
 namespace App\Tests\Importer;
 
+use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\ZipCityFactory;
 use App\Importer\CountryImporter;
@@ -48,5 +49,18 @@ final class CountryImporterTest extends AppKernelTestCase
         save(ZipCityFactory::new()->withoutPersisting()->create(['postalCode' => '31000', 'country' => $country, 'parent' => null]));
 
         self::assertSame(1, ZipCityFactory::count(['postalCode' => '31000', 'country' => 'FR']));
+    }
+
+    public function testANewCountryTakesItsSlugFromTheCityThatHadIt(): void
+    {
+        $city = CityFactory::createOne(['name' => 'Luxembourg', 'country' => CountryFactory::france()]);
+        self::assertSame('luxembourg', $city->getSlug());
+        $luxembourg = CountryFactory::createOne(['id' => 'LU', 'name' => 'Luxembourg', 'displayName' => 'Luxembourg', 'atDisplayName' => 'au Luxembourg']);
+
+        new ReflectionMethod(CountryImporter::class, 'freeCountrySlug')
+            ->invoke(self::getContainer()->get(CountryImporter::class), $luxembourg);
+
+        self::assertSame('luxembourg', $luxembourg->getSlug());
+        self::assertSame('luxembourg-1', CityFactory::find(['id' => $city->getId()])->getSlug());
     }
 }
