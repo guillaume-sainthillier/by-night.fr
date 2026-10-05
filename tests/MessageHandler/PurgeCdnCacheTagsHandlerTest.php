@@ -86,7 +86,7 @@ final class PurgeCdnCacheTagsHandlerTest extends TestCase
 
     private function makeHandler(MockHttpClient $client): PurgeCdnCacheTagsHandler
     {
-        return new PurgeCdnCacheTagsHandler(new CloudflareCdnPurger($client, 'zone-123', 'https://cdn.example.test'), new NullLogger());
+        return new PurgeCdnCacheTagsHandler(new CloudflareCdnPurger($client, $client, 'zone-123', 'https://cdn.example.test'), new NullLogger());
     }
 
     private function makeClient(): MockHttpClient

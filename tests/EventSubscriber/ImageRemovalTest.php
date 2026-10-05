@@ -126,7 +126,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         self::assertTrue($this->thumbs()->fileExists('glide/vich/2020/01/01/autre.png/fit_contain,w_360.avif'), 'other thumbnails stay');
 
         // Cloudflare: the original on the data host, every thumbnail of the image by prefix
-        $purger = new CloudflareCdnPurger($this->cloudflare(), 'zone-123', 'https://data.example.test');
+        $purger = new CloudflareCdnPurger($this->cloudflare(), $this->cloudflare(), 'zone-123', 'https://data.example.test');
         $urlHandler = new PurgeCdnCacheUrlHandler($purger, new NullLogger());
         $prefixHandler = new PurgeCdnCachePrefixHandler($purger, new NullLogger());
         foreach ($sent as $message) {
