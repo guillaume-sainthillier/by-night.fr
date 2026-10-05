@@ -20,6 +20,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastica\Index;
 use Elastica\Mapping;
+use Elastica\Result;
 use FOS\ElasticaBundle\Configuration\ConfigManager;
 use FOS\ElasticaBundle\Index\MappingBuilder;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -31,14 +32,19 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * counts of the agenda's type links are term lookups instead of every type's full-text search on each page.
  *
  * Run daily by app:events:classify-agenda-types: the types of an event imported or changed during the day are found
- * the next night. Only the events whose types changed are written, by DQL bulk updates (no lifecycle callback, no
- * updatedAt), then re-indexed through RefreshEventDocuments.
+ * the next night. One search names the types of every event with a session to come (each hit tells the type queries
+ * it matches), read through a scroll: the fuzzy terms of the type queries expand over the index once, not once a
+ * page, and each page is compared with the types stored on its events and written before the next one is read, so
+ * memory holds one page whatever the size of the index. Only the events whose types changed are written, by DQL bulk
+ * updates (no lifecycle callback, no updatedAt), then re-indexed through RefreshEventDocuments.
+ *
+ * The types of an event with no session to come are left as they are: the search does not find it, and no page or
+ * count reads them.
  */
 final readonly class AgendaTypeClassifier
 {
-    private const int SCROLL_SIZE = 5_000;
-
-    private const int BATCH_SIZE = 1_000;
+    /** The events of a page: read, compared and written together */
+    private const int PAGE_SIZE = 1_000;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -61,23 +67,33 @@ final readonly class AgendaTypeClassifier
     {
         $this->addMapping();
 
-        return $this->store($this->find($today), $today);
+        /** @var EventElasticaRepository $repository */
+        $repository = $this->repositoryManager->getRepository(Event::class);
+        $query = $repository->createAgendaTypesQuery($today)->setSize(self::PAGE_SIZE);
+
+        $written = 0;
+        foreach ($this->eventIndex->createSearch($query)->scroll() as $results) {
+            $written += $this->store(self::typesOf($results->getResults()));
+        }
+
+        return $written;
     }
 
     /**
-     * Writes the types just found on the events that end from today on, and clears those of the events no type page
-     * lists anymore.
+     * Writes the types found on a page of events, and re-indexes the ones whose types changed.
      *
-     * @param array<int, list<string>> $found the types of each event, by id (the events without any left out)
+     * @param array<int, list<string>> $found the types of each event of the page, by id, in AgendaType order: none for
+     *                                        an event no type page lists
      *
      * @return int the number of events whose types changed
      */
-    public function store(array $found, DateTimeImmutable $today): int
+    public function store(array $found): int
     {
-        $stored = $this->eventRepository->findAgendaTypesEndingFrom($today);
-        // An event whose sessions go on after its end date (inconsistent data the agenda still lists): read too, or
-        // its types would be written again each night
-        $stored += $this->eventRepository->findAgendaTypesOf(array_keys(array_diff_key($found, $stored)));
+        if ([] === $found) {
+            return 0;
+        }
+
+        $stored = $this->eventRepository->findAgendaTypesOf(array_keys($found));
 
         $changes = [];
         foreach ($found as $id => $types) {
@@ -86,52 +102,45 @@ final readonly class AgendaTypeClassifier
             }
         }
 
-        foreach (array_keys(array_diff_key($stored, $found)) as $id) {
-            $changes[''][] = $id;
-        }
-
         foreach ($changes as $types => $ids) {
-            foreach (array_chunk($ids, self::BATCH_SIZE) as $chunk) {
-                $this
-                    ->entityManager
-                    ->createQueryBuilder()
-                    ->update(Event::class, 'e')
-                    ->set('e.agendaTypes', ':types')
-                    ->where('e.id IN (:ids)')
-                    ->setParameter('types', '' === $types ? [] : explode(',', $types), Types::SIMPLE_ARRAY)
-                    ->setParameter('ids', $chunk)
-                    ->getQuery()
-                    ->execute();
-            }
+            $this
+                ->entityManager
+                ->createQueryBuilder()
+                ->update(Event::class, 'e')
+                ->set('e.agendaTypes', ':types')
+                ->where('e.id IN (:ids)')
+                ->setParameter('types', '' === $types ? [] : explode(',', $types), Types::SIMPLE_ARRAY)
+                ->setParameter('ids', $ids)
+                ->getQuery()
+                ->execute();
         }
 
         $written = array_merge(...array_values($changes));
-        foreach (array_chunk($written, self::BATCH_SIZE) as $chunk) {
-            $this->messageBus->dispatch(new RefreshEventDocuments(eventIds: $chunk));
+        if ([] !== $written) {
+            $this->messageBus->dispatch(new RefreshEventDocuments(eventIds: $written));
         }
 
         return \count($written);
     }
 
     /**
-     * @return array<int, list<string>> the types of each event that ends from today on, by id, in AgendaType order
+     * @param Result[] $hits
+     *
+     * @return array<int, list<string>> the types of each hit, by event id, in AgendaType order
      */
-    private function find(DateTimeImmutable $today): array
+    private static function typesOf(array $hits): array
     {
-        /** @var EventElasticaRepository $repository */
-        $repository = $this->repositoryManager->getRepository(Event::class);
-
-        $found = [];
-        foreach (AgendaType::cases() as $type) {
-            $query = $repository->createAgendaTypeQuery($type, $today)->setSize(self::SCROLL_SIZE);
-            foreach ($this->eventIndex->createSearch($query)->scroll() as $results) {
-                foreach ($results->getResults() as $result) {
-                    $found[(int) $result->getId()][] = $type->value;
-                }
-            }
+        $types = [];
+        foreach ($hits as $hit) {
+            // The names of the type queries it matched
+            $matched = $hit->getHit()['matched_queries'] ?? [];
+            $types[(int) $hit->getId()] = array_values(array_map(
+                static fn (AgendaType $type): string => $type->value,
+                array_filter(AgendaType::cases(), static fn (AgendaType $type): bool => \in_array($type->value, $matched, true)),
+            ));
         }
 
-        return $found;
+        return $types;
     }
 
     /**

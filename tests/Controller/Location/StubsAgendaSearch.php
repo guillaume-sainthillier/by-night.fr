@@ -18,22 +18,16 @@ use FOS\ElasticaBundle\Paginator\PartialResultsInterface;
 
 /**
  * The page of a location lists its agenda, which Elasticsearch searches: the tests have no index of their own, so the
- * search finds nothing and counts nothing. Call it once the client is created, before the request, and only for one
- * request: the client boots a new kernel for the next one.
+ * search finds nothing and counts nothing, or the aggregations given. Call it once the client is created, before the
+ * request, and only for one request: the client boots a new kernel for the next one.
  */
 trait StubsAgendaSearch
 {
     /**
-     * @param array<string, int> $dateCounts the events of each date window the facets count ("today", "this_weekend"…),
-     *                                       none by default
+     * @param array<string, mixed> $aggregations the "aggregations" of the Elasticsearch response
      */
-    private function stubAgendaSearch(array $dateCounts = []): void
+    private function stubAgendaSearch(array $aggregations = []): void
     {
-        $aggregations = [] === $dateCounts ? [] : ['dates' => ['windows' => ['buckets' => array_map(
-            static fn (int $count): array => ['doc_count' => $count],
-            $dateCounts,
-        )]]];
-
         $empty = new readonly class($aggregations) implements PaginatorAdapterInterface, PartialResultsInterface {
             /**
              * @param array<string, mixed> $aggregations

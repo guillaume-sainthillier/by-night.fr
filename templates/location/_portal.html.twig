@@ -2,16 +2,20 @@
    neighbours. The cities and neighbours come from AgendaController::getPortal(); the busiest venues are in the filters. #}
 {% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
 {% set types = [
-    {slug: 'concert', link: 'Concerts ' ~ location.atName, icon: 'lucide:music', tone: 'pink', title: 'Concerts & musique live', text: 'Scènes rock, jazz clubs, festivals, DJ sets et concerts acoustiques.'},
-    {slug: 'spectacle', link: 'Spectacles ' ~ location.atName, icon: 'lucide:drama', tone: 'purple', title: 'Spectacles & théâtre', text: 'Pièces, humour, danse, cirque et one-man-shows près de chez vous.'},
-    {slug: 'exposition', link: 'Les expos ' ~ location.atName, icon: 'lucide:landmark', tone: 'blue', title: 'Expositions & patrimoine', text: 'Galeries, musées, rétrospectives photo et visites guidées.'},
-    {slug: 'famille', link: 'Sorties en famille ' ~ location.atName, icon: 'lucide:baby', tone: 'green', title: 'Sorties en famille', text: 'Spectacles jeune public, ateliers, parcs et balades pour tous les âges.'},
-    {slug: 'etudiant', link: 'Soirées étudiantes ' ~ location.atName, icon: 'lucide:party-popper', tone: 'yellow', title: 'Soirées & vie étudiante', text: 'Afterworks, soirées étudiantes, bars et nuits en discothèque.'},
+    {slug: 'concert', type: 'concert', one: 'concert', other: 'concerts', link: 'Concerts ' ~ location.atName, icon: 'lucide:music', tone: 'pink', title: 'Concerts & musique live', text: 'Scènes rock, jazz clubs, festivals, DJ sets et concerts acoustiques.'},
+    {slug: 'spectacle', type: 'show', one: 'spectacle', other: 'spectacles', link: 'Spectacles ' ~ location.atName, icon: 'lucide:drama', tone: 'purple', title: 'Spectacles & théâtre', text: 'Pièces, humour, danse, cirque et one-man-shows près de chez vous.'},
+    {slug: 'exposition', type: 'exhibition', one: 'expo', other: 'expos', link: 'Les expos ' ~ location.atName, icon: 'lucide:landmark', tone: 'blue', title: 'Expositions & patrimoine', text: 'Galeries, musées, rétrospectives photo et visites guidées.'},
+    {slug: 'famille', type: 'family', one: 'sortie en famille', other: 'sorties en famille', link: 'Sorties en famille ' ~ location.atName, icon: 'lucide:baby', tone: 'green', title: 'Sorties en famille', text: 'Spectacles jeune public, ateliers, parcs et balades pour tous les âges.'},
+    {slug: 'etudiant', type: 'student', one: 'soirée étudiante', other: 'soirées étudiantes', link: 'Soirées étudiantes ' ~ location.atName, icon: 'lucide:party-popper', tone: 'yellow', title: 'Soirées & vie étudiante', text: 'Afterworks, soirées étudiantes, bars et nuits en discothèque.'},
 ] %}
 
     <twig:Section id="univers" eyebrow="Inspirez vos envies" icon="lucide:compass" title="Explorez par univers" description="Des spectacles jeune public du dimanche aux concerts du samedi soir, trouvez la sortie qui vous ressemble {{ location.atName }}.">
         <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-lg-5">
             {% for type in types %}
+                {# The type counts of the agenda below (its filters' facets): what each type page lists; without any event,
+                   or without the counts (an invalid search), the link names the page alone #}
+                {% set events = facets.types[type.type] ?? 0 %}
+                {% set meta %}{{ events > 0 ? ('{count, plural, one {# ' ~ type.one ~ '} other {# ' ~ type.other ~ '}}')|trans({count: events}, 'messages+intl-icu') ~ ' ' ~ location.atName : type.link }}{% endset %}
                 <div class="col">
                     <twig:Tile
                         href="{{ path('app_agenda_by_type', {typeSlug: type.slug, location: location.slug}) }}"
@@ -19,7 +23,7 @@
                         description="{{ type.text }}"
                         icon="{{ type.icon }}"
                         tone="{{ type.tone }}"
-                        meta="{{ type.link }}"
+                        meta="{{ meta }}"
                     />
                 </div>
             {% endfor %}

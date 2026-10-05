@@ -145,6 +145,33 @@ final class LocationPageTest extends WebTestCase
     }
 
     /**
+     * The counts of the agenda's type filters, which the type pages list: the location's, its area around included.
+     */
+    #[DataProvider('provideLocationPages')]
+    public function testTheUniversesCountTheEventsToComeOfEachType(string $url, string $atName): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch(['types' => ['types' => ['buckets' => [
+            'all' => ['doc_count' => 4],
+            'concert' => ['doc_count' => 3],
+            'show' => ['doc_count' => 0],
+            'exhibition' => ['doc_count' => 0],
+            'family' => ['doc_count' => 1],
+            'student' => ['doc_count' => 0],
+        ]]]]);
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', $url);
+
+        self::assertResponseIsSuccessful();
+        // A type without any event names its page instead
+        self::assertSame(
+            ['3 concerts ' . $atName, 'Spectacles ' . $atName, 'Les expos ' . $atName, '1 sortie en famille ' . $atName, 'Soirées étudiantes ' . $atName],
+            $crawler->filter('#univers .card-body > div:last-child > span')->each(static fn ($meta): string => trim($meta->text())),
+        );
+    }
+
+    /**
      * @return iterable<string, array{string, string}>
      */
     public static function provideLocationAgendas(): iterable
@@ -230,7 +257,7 @@ final class LocationPageTest extends WebTestCase
     public function testTheDateShortcutsHeadTheAgendaAndThePhoneFiltersWithTheirCounts(): void
     {
         $client = self::createClient();
-        $this->stubAgendaSearch(['anytime' => 9, 'today' => 1, 'tomorrow' => 2, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]);
+        $this->stubAgendaSearch($this->dateCounts(['anytime' => 9, 'today' => 1, 'tomorrow' => 2, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]));
         CityFactory::toulouse()->create();
 
         $crawler = $client->request('GET', '/toulouse');
@@ -250,7 +277,7 @@ final class LocationPageTest extends WebTestCase
     public function testAnEmptyPeriodSuggestsTheOtherDatesThatHaveEvents(): void
     {
         $client = self::createClient();
-        $this->stubAgendaSearch(['anytime' => 9, 'today' => 0, 'tomorrow' => 0, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]);
+        $this->stubAgendaSearch($this->dateCounts(['anytime' => 9, 'today' => 0, 'tomorrow' => 0, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]));
         CityFactory::toulouse()->create();
 
         $crawler = $client->request('GET', '/toulouse?when=today&term=jazz');
@@ -302,5 +329,17 @@ final class LocationPageTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('#agenda-filters .agenda-filters-bar [data-filters-submit]');
         self::assertSelectorNotExists('#agenda-filters .agenda-filters-bar a');
+    }
+
+    /**
+     * The "dates" aggregation of the agenda's facets (EventElasticaRepository::getFacets()).
+     *
+     * @param array<string, int> $counts the events of each date window, by its name ("today", "this_weekend"…)
+     *
+     * @return array<string, mixed>
+     */
+    private function dateCounts(array $counts): array
+    {
+        return ['dates' => ['windows' => ['buckets' => array_map(static fn (int $count): array => ['doc_count' => $count], $counts)]]];
     }
 }
