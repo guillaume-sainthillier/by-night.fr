@@ -14,6 +14,7 @@ use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
+use App\Enum\AgendaType;
 use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
 use App\Utils\HtmlExcerpter;
@@ -46,7 +47,7 @@ final readonly class EventJsonLd
     {
         $schema = [
             '@context' => 'https://schema.org',
-            '@type' => 'Event',
+            '@type' => $this->schemaType($event),
             'name' => $event->getName(),
             'url' => $this->generateEventUrl($event),
             'eventStatus' => $this->mapEventStatus($event->getStatus()),
@@ -193,6 +194,30 @@ final readonly class EventJsonLd
                 'slug' => $user->getSlug(),
             ], UrlGeneratorInterface::ABSOLUTE_URL),
         ];
+    }
+
+    /**
+     * The schema.org subtype of the event, from the agenda types the nightly classification found (AgendaType values).
+     * Search engines treat every subtype as an Event: a wrong one costs more than the plain "Event", so only the
+     * combinations whose events are one kind of outing count, as a sample of the production events shows:
+     * - an exhibition is one, from the museum to the trade fair ("salon"), which ExhibitionEvent covers too, even when
+     *   "spectacle" also made it a show; also a concert ("artistes"), it is as often a festival or a fundraiser;
+     * - a concert is music, unless it is also a show (stand-up and plays among the musicals) or an exhibition;
+     * - a show mixes theatre, stand-up, dance and circus, and the family and student types match words ("famille",
+     *   "soirée") more than audiences: they say nothing of the kind of event.
+     */
+    private function schemaType(Event $event): string
+    {
+        $types = array_filter(array_map(AgendaType::tryFrom(...), $event->getAgendaTypes()));
+
+        $concert = \in_array(AgendaType::Concert, $types, true);
+        $exhibition = \in_array(AgendaType::Exhibition, $types, true);
+
+        return match (true) {
+            $exhibition && !$concert => 'ExhibitionEvent',
+            $concert && !$exhibition && !\in_array(AgendaType::Show, $types, true) => 'MusicEvent',
+            default => 'Event',
+        };
     }
 
     private function mapEventStatus(?EventStatus $status): string

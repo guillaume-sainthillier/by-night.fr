@@ -19,6 +19,7 @@ use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\SEO\EventJsonLd;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class EventJsonLdTest extends AppKernelTestCase
 {
@@ -96,6 +97,32 @@ final class EventJsonLdTest extends AppKernelTestCase
 
         self::assertSame('https://schema.org/EventCancelled', $schema['eventStatus']);
         self::assertArrayNotHasKey('offers', $schema);
+    }
+
+    /**
+     * @param list<string> $agendaTypes
+     */
+    #[DataProvider('provideSubtypes')]
+    public function testTheSubtypeComesFromTheAgendaTypesThatNameAKindOfOuting(array $agendaTypes, string $expected): void
+    {
+        self::assertSame($expected, $this->schema($this->createEvent(['agendaTypes' => $agendaTypes]))['@type']);
+    }
+
+    /**
+     * @return iterable<string, array{list<string>, string}>
+     */
+    public static function provideSubtypes(): iterable
+    {
+        yield 'no type' => [[], 'Event'];
+        yield 'a concert' => [['concert'], 'MusicEvent'];
+        yield 'a family concert' => [['concert', 'family'], 'MusicEvent'];
+        yield 'an exhibition' => [['exhibition'], 'ExhibitionEvent'];
+        yield 'an exhibition also read as a show' => [['show', 'exhibition'], 'ExhibitionEvent'];
+        yield 'an exhibition that is also a concert' => [['concert', 'show', 'exhibition'], 'Event'];
+        yield 'a musical show' => [['concert', 'show'], 'Event'];
+        yield 'a show' => [['show'], 'Event'];
+        yield 'a family outing' => [['family'], 'Event'];
+        yield 'a type no longer known' => [['cinema'], 'Event'];
     }
 
     /**
