@@ -25,6 +25,9 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Override;
+use Silarhi\CursorPagination\Configuration\OrderConfiguration;
+use Silarhi\CursorPagination\Configuration\OrderConfigurations;
+use Silarhi\CursorPagination\Pagination\CursorPagination;
 use SortDirection;
 
 /**
@@ -221,23 +224,38 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
 
     /**
      * The cities with at least $minEvents published events to come, as last counted by UpcomingEventCounter, the
-     * busiest first: the agendas /llms.txt lists. admin_zone_type_upcoming_idx ends with this order, so MySQL reads
-     * the range from the index instead of grouping the events to come.
+     * busiest first: the agendas /llms.txt lists. admin_zone_type_upcoming_idx ends with this order (the id, as the
+     * primary key, closes every InnoDB index), so MySQL reads each page from the index instead of grouping the events
+     * to come.
      *
-     * @return iterable<array{name: string, slug: string, department: string|null, country: string, events: int|string}>
+     * Read by pages of 500 with a cursor on (upcoming events, population, id): toIterable() streams the hydration only,
+     * the MySQL driver still buffers the whole result set client-side.
+     *
+     * @return iterable<array{id: int, name: string, slug: string, department: string|null, country: string, events: int, population: int}>
      */
     public function findAllLlmsTxt(int $minEvents): iterable
     {
-        return parent::createQueryBuilder('c')
-            ->select('c.name, c.slug, p.name AS department, co.displayName AS country, c.upcomingEvents AS events')
+        $queryBuilder = parent::createQueryBuilder('c')
+            ->select('c.id, c.name, c.slug, p.name AS department, co.displayName AS country, c.upcomingEvents AS events, c.population')
             ->leftJoin('c.parent', 'p')
             ->join('c.country', 'co')
             ->where('c.upcomingEvents >= :minEvents')
-            ->setParameter('minEvents', $minEvents)
-            ->orderBy('c.upcomingEvents', SortDirection::Descending)
-            ->addOrderBy('c.population', SortDirection::Descending)
-            ->getQuery()
-            ->toIterable();
+            ->setParameter('minEvents', $minEvents);
+
+        /** @var CursorPagination<array{id: int, name: string, slug: string, department: string|null, country: string, events: int, population: int}> $pagination */
+        $pagination = new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(
+                new OrderConfiguration('c.upcomingEvents', static fn (array $city): int => (int) $city['events'], false, false),
+                new OrderConfiguration('c.population', static fn (array $city): int => (int) $city['population'], false, false),
+                new OrderConfiguration('c.id', static fn (array $city): int => (int) $city['id'], true, true),
+            ),
+            500,
+            // scalar rows: no collection to fetch-join, and no root entity for the paginator's id subquery
+            fetchJoinCollection: false,
+        );
+
+        return $pagination->getResults();
     }
 
     /**

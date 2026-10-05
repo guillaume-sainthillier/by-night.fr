@@ -425,7 +425,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         enabled?: bool|Param, // Default: true
  *     },
  *     lock?: Param|bool|string|array{ // Lock configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         resources?: Param|string|array<string, Param|string|list<scalar|Param|null>>,
  *     },
  *     semaphore?: Param|bool|string|array{ // Semaphore configuration
@@ -2444,6 +2444,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_quality?: scalar|Param|null, // Default: 75
  *     default_fit?: scalar|Param|null, // Default fit mode (contain, cover, crop, fill). // Default: "contain"
  *     cache?: scalar|Param|null, // PSR-6 cache pool for metadata guessing and BlurHash generation. true (default) uses cache.app, false disables caching, or pass a service ID string. // Default: true
+ *     cache_control?: array{ // HTTP cache headers of the images served by the bundle controller (local transformers such as Glide).
+ *         max_age?: scalar|Param|null, // Seconds clients and CDNs may cache a served image. Null keeps the headers set by the transformer. // Default: 31536000
+ *         immutable?: bool|Param, // Mark served images immutable: a variant URL never changes meaning, so caches need not revalidate it. // Default: true
+ *         error_max_age?: scalar|Param|null, // Seconds clients and CDNs may cache a 404. Null keeps 404s uncacheable. // Default: null
+ *     },
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
  *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
@@ -2462,13 +2467,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     }>,
  *     loaders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
- *         type?: "filesystem"|"flysystem"|"vich"|"url"|Param, // Loader type. Inferred from name when it matches a known type. // Default: null
- *         paths?: list<scalar|Param|null>,
+ *         type?: "filesystem"|"flysystem"|"vich"|"url"|"chain"|Param, // Loader type. Inferred from name when it matches a known type. // Default: null
+ *         path?: scalar|Param|null, // Directory a filesystem loader reads images from. // Default: null
+ *         paths?: mixed, // Removed in 2.0: declare one filesystem loader per directory, each with its own "path". // Default: null
+ *         loaders?: list<scalar|Param|null>,
+ *         mapping?: scalar|Param|null, // VichUploader mapping a vich loader serves. Defaults to the loader name when it is a mapping, or to the only mapping. // Default: null
  *         storage?: scalar|Param|null, // Flysystem storage service ID. // Default: null
  *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for url loaders. // Default: null
  *         request_factory?: scalar|Param|null, // PSR-17 request factory service ID for url loaders. // Default: null
  *         default_placeholder?: scalar|Param|null, // Default placeholder name for this loader. Overrides the global default_placeholder. // Default: null
  *         default_transformer?: scalar|Param|null, // Default transformer name for this loader. Overrides the global default_transformer. // Default: null
+ *         url_alias?: scalar|Param|null, // Public name of this loader in image URLs and public-cache keys, instead of its name (e.g. "p" for /image/glide/p/…). // Default: null
  *         resolve_metadata?: scalar|Param|null, // Whether to resolve image metadata for this loader. Null inherits from global. Filesystem loaders default to true. // Default: null
  *     }>,
  *     transformers?: array<string, array{ // Default: []
@@ -2478,14 +2487,23 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         cache?: scalar|Param|null, // Glide cache target. Either a local path or a Flysystem storage name (resolved via FlysystemRegistry). // Default: null
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
- *         base_url?: scalar|Param|null, // Base URL for imgix (e.g. https://my-source.imgix.net). // Default: null
+ *         base_url?: scalar|Param|null, // Imgix: source domain (e.g. https://my-source.imgix.net). Glide: optional scheme and host prepended to generated image URLs, e.g. a CDN (https://img.example.com). // Default: null
  *         api_key?: scalar|Param|null, // Imgix API key for cache purge operations. // Default: null
  *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for imgix purge. // Default: null
  *         request_factory?: scalar|Param|null, // PSR-17 request factory service ID for imgix purge. // Default: null
  *         stream_factory?: scalar|Param|null, // PSR-17 stream factory service ID for imgix purge. // Default: null
  *         service?: scalar|Param|null, // Service ID for custom transformers (type: service). // Default: null
+ *         url_alias?: scalar|Param|null, // Public name of this transformer in image URLs and public-cache keys, instead of its name (e.g. "g" for /image/g/…). // Default: null
+ *         defer_cache_write?: bool|Param, // Glide: render a cache miss to local disk and move it to the cache storage after the response has been sent (kernel.terminate). For remote cache storages. // Default: false
+ *         lock?: bool|array{ // Glide: render each missing variant once across processes; concurrent requests for it wait for that render and serve it. Requires symfony/lock.
+ *             enabled?: bool|Param, // Default: false
+ *             factory?: scalar|Param|null, // Symfony LockFactory service ID. "lock.factory" is the one framework.lock configures; use a store shared by every server (e.g. Redis) when several serve images. // Default: "lock.factory"
+ *             ttl?: float|Param, // Seconds a render lock outlives a renderer that crashed. Must exceed the slowest render, plus the upload with defer_cache_write. // Default: 30.0
+ *             wait?: float|Param, // Seconds a request waits for the render in progress of the same variant, after which it renders the variant itself. Keep it well under max_execution_time: running out of it is a fatal error. // Default: 10.0
+ *         },
  *         public_cache?: bool|array{
  *             enabled?: bool|Param, // Default: false
+ *             prefix?: scalar|Param|null, // Path prepended to every cache key, so keys mirror the URL path (e.g. "image" when the bundle routes are served under /image and the cache storage is a bucket served at the site root). // Default: ""
  *         },
  *     }>,
  * }
