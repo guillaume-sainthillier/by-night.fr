@@ -1,0 +1,50 @@
+{# The head of the first page of a location: its name, its copy and its picture, above its agenda #}
+    <section class="hero-location py-4 py-lg-5">
+        <div class="container-lg">
+            <div class="row g-4 g-lg-5 align-items-end">
+                <div class="col-lg-7">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        {% if location.isCity %}
+                            {% if location.city.parent %}
+                                <span class="badge bg-primary-lt">
+                                    <twig:Icon name="lucide:map-pin" />
+                                    {{ location.city|department }}{% if location.city.parent.parent ?? null %} · {{ location.city.parent.parent.name }}{% endif %}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge bg-secondary-lt">
+                                <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
+                                Tout le pays
+                            </span>
+                        {% endif %}
+                        {# The count of the nightly app:events:count-upcoming, not a COUNT of every event to come on each visit;
+                           a zone whose first events came in today counts at least the ones the agenda lists #}
+                        <span class="badge bg-teal-lt" id="upcoming-count">
+                            {{ '{count, plural, one {# sortie à venir} other {# sorties à venir}}'|trans({count: max(zone.upcomingEvents, events.nbResults)}, 'messages+intl-icu') }}
+                        </span>
+                    </div>
+                    <h1 class="display-5 fw-bold text-start mt-3 mb-3">
+                        Que faire {{ location.atName }}&nbsp;?
+                        <span class="d-block text-primary text-start h1 mb-0 mt-1">{{ zone.headline ?? 'Concerts, expos & soirées' }}</span>
+                    </h1>
+                    <div class="lead text-secondary">
+                        {% if zone.description ?? null %}
+                            {{ zone.description|markdown }}
+                        {% else %}
+                            <p>L'agenda de toutes vos sorties {{ location.atName }}&nbsp;: concerts, spectacles, expositions, marchés, festivals, sorties en famille et soirées.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <figure class="card shadow overflow-hidden border-0 m-0">
+                        <div class="img-cover ratio ratio-4x3">
+                            <twig:Location:Picture location="{{ zone }}" width="{{ 720 }}" height="{{ 540 }}" sizes="(min-width: 992px) 40vw, 100vw" priority="{{ true }}" />
+                        </div>
+                        {% if zone.heroCaption ?? null %}
+                            <figcaption class="card-img-overlay card-img-overlay-dark d-flex align-items-end text-white fw-bold">{{ zone.heroCaption }}</figcaption>
+                        {% endif %}
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </section>

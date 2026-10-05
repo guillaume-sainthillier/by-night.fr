@@ -2,19 +2,25 @@
 
 {% block body_id 'page-agenda' %}
 
+{# The page of the location itself ("/toulouse/"), its agenda without a type, a venue or a category #}
+{% set isLocationPage = app.current_route == 'app_location_index' %}
+{% set zone = location.isCity ? location.city : location.country %}
+
 {%- block title -%}
-{% if placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}{% if place %}, {{ place.cityName -}}{% endif %}
+{% if isLocationPage %}Agenda des sorties {{ location.atName }} : concerts, spectacles, expos et soirées
+{% elseif placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}{% if place %}, {{ place.cityName -}}{% endif %}
 {% elseif tag is not null %}{{- tag|ucfirst -}}
 {% else %}{{ type.label ?? 'Événements' }}{% endif %}
-{% if placeName is null %} {{ location.atName }}{% endif %}
+{% if placeName is null and not isLocationPage %} {{ location.atName }}{% endif %}
 {% if page > 1 %} (Page {{ page }}){% endif %}
 {%- endblock -%}
 
 {%- block page_title -%}
-{% if placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}, {{ place.cityName -}}
+{% if isLocationPage %}Que faire {{ location.atName }}&nbsp;?
+{% elseif placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}, {{ place.cityName -}}
 {% elseif tag is not null %}{{- tag|ucfirst -}}
 {% else %}{{ type.label ?? 'Événements' }}{% endif %}
-{% if placeName is null %} {{ location.atName }}{% endif %}
+{% if placeName is null and not isLocationPage %} {{ location.atName }}{% endif %}
 {%- endblock -%}
 
 {% block breadcrumb %}
@@ -24,7 +30,6 @@
         {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
         {% do menu.addItem('Sortir ' ~ location.atName, url('app_location_index', {location: location.city.slug})) %}
     {% endif %}
-    {% do menu.addItem('Agenda', url('app_agenda_index', {location: location.slug})) %}
 
     {% if placeName is not null %}
         {% do menu.addItem(placeName, url('app_agenda_by_place', {placeSlug: placeSlug, location: location.slug})) %}
@@ -41,14 +46,18 @@
 {% block og_title block('title')|striptags %}
 
 {% block meta_description -%}
+    {% if isLocationPage %}
+        Que faire {{ location.atName }}&nbsp;? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
+    {% else %}
     {{ block('title')|striptags }}.
     {% if location.isCountry %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.country.atDisplayName }}. Découvrez les événements à ne pas manquer.{% endif %}
     {% if location.isCity %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.atName }}. Découvrez les événements à ne pas manquer.{% endif %}
+    {% endif %}
 {%- endblock %}
 
 {% block metas %}
     {% if events.hasPreviousPage() %}
-        <link rel="prev" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getPreviousPage()})) }}" />
+        <link rel="prev" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getPreviousPage() > 1 ? events.getPreviousPage() : null})) }}" />
     {% endif %}
     {% if events.hasNextPage() %}
         <link rel="next" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getNextPage()})) }}" />
@@ -62,7 +71,8 @@
 {% endblock %}
 
 {% block body %}
-    {% set agenda = path('app_agenda_index', {location: location.slug}|merge(filters)) %}
+    {# The agenda of the whole location, with the filters of the page #}
+    {% set agenda = path('app_location_index', {location: location.slug}|merge(filters)) %}
     {# The page without its type, its venue or its category: each keeps the others, and the other filters #}
     {% set withoutType = agenda_path(location.slug, place: place, tag: tagEntity, filters: filters) %}
     {% set withoutPlace = agenda_path(location.slug, type: type, tag: tagEntity, filters: filters) %}
@@ -90,7 +100,13 @@
         {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters))}]) %}
     {% endif %}
 
-    <div class="container-xl py-4" {{ load_page('agenda') }}>
+    {# The first page of the location introduces it, unless a filter narrows it down: the agenda then comes first #}
+    {% set intro = portal and not active %}
+    {% if intro %}
+        {{ include('location/_hero.html.twig') }}
+    {% endif %}
+
+    <div class="container-xl py-4" id="agenda" {{ load_page('agenda') }}>
         <div class="row g-4">
             {# Below lg the filters are an offcanvas: the sidebar comes after the events #}
             <aside class="col-lg-4 order-last order-lg-first">
@@ -132,7 +148,11 @@
                                 {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
                             </span>
                         </div>
-                        <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
+                        {% if intro %}
+                            <h2 class="h1 fw-bold text-start mb-2">L'agenda des sorties {{ location.atName }}</h2>
+                        {% else %}
+                            <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
+                        {% endif %}
                         <p class="text-secondary mb-0">
                             Concerts, spectacles, expositions, marchés, festivals et soirées&nbsp;: toutes les sorties
                             {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
@@ -197,8 +217,8 @@
                         <div class="row row-cards">
                             {% for event in section.events %}
                                 <div class="col-md-6 col-xl-4">
-                                    {# Only the page's first picture is above the fold on a phone #}
-                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" priority="{{ loop.parent.loop.first and loop.first }}" />
+                                    {# Only the page's first picture is above the fold on a phone, unless the picture of the location comes first #}
+                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" priority="{{ not intro and loop.parent.loop.first and loop.first }}" />
                                 </div>
                             {% endfor %}
                         </div>
@@ -219,6 +239,10 @@
             </div>
         </div>
     </div>
+
+    {% if intro %}
+        {{ include('location/_portal.html.twig') }}
+    {% endif %}
 {% endblock %}
 
 {% block css %}

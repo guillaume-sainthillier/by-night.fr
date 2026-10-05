@@ -55,7 +55,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAPlaceUrlShowsThePlaceOfTheCityItNames(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $toulouse->getCountry()]);
@@ -87,7 +86,7 @@ final class AgendaControllerTest extends WebTestCase
 
         $client->request('GET', '/toulouse/agenda/sortir-a?slug=nowhere');
 
-        self::assertResponseRedirects('/toulouse/agenda', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('/toulouse', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testTheAgendaByPlaceWithoutAPlaceRedirectsToTheCityAgenda(): void
@@ -97,17 +96,16 @@ final class AgendaControllerTest extends WebTestCase
 
         $client->request('GET', '/toulouse/agenda/sortir-a');
 
-        self::assertResponseRedirects('/toulouse/agenda', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('/toulouse', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testAListingWithoutResultsIsNotIndexable(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
         // An invalid filter skips the Elasticsearch query and renders the listing with no result
-        $client->request('GET', '/toulouse/agenda?range=not-a-number');
+        $client->request('GET', '/toulouse?range=not-a-number');
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
@@ -118,11 +116,10 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheLinksKeepTheShortcutByItsName(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/agenda?term=jazz&when=this_weekend&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?term=jazz&when=this_weekend&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('this_weekend', $query['when'] ?? null);
@@ -133,11 +130,10 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testTheDatesPickedWinOverTheShortcut(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/agenda?when=this_weekend&dateRange[from]=2026-10-10&dateRange[to]=2026-10-12&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?when=this_weekend&dateRange[from]=2026-10-10&dateRange[to]=2026-10-12&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame(['from' => '2026-10-10', 'to' => '2026-10-12'], $query['dateRange'] ?? null);
@@ -147,11 +143,10 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAnUnknownShortcutIsTousLesJours(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/agenda?when=next_year&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?when=next_year&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('when', $query);
@@ -160,7 +155,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAPlaceAgendaKeepsThePlaceNameAsWritten(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Zénith Toulouse Métropole', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -174,7 +168,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAPlaceAgendaContractsThePrepositionWithThePlaceArticle(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -186,18 +179,16 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testACityAgendaContractsThePrepositionWithTheCityArticle(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $city = CityFactory::createOne(['name' => 'Le Mans']);
 
-        $client->request('GET', \sprintf('/%s/agenda?range=not-a-number', $city->getSlug()));
+        $client->request('GET', \sprintf('/%s?range=not-a-number', $city->getSlug()));
 
-        self::assertSelectorTextContains('h1', 'Événements au Mans');
+        self::assertSelectorTextContains('h1', 'Que faire au Mans');
     }
 
     public function testATypeAgendaNamesTheTypeLikeItsHeadingInTheBreadcrumb(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -214,7 +205,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheKeywordsOfATypePageAreTheirOwnAndItsLinksKeepThem(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -233,7 +223,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testATypeLinkOfAVenuePageIsTheTypePageAndKeepsTheVenueForAVisitor(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -241,7 +230,7 @@ final class AgendaControllerTest extends WebTestCase
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number');
 
         self::assertSelectorExists('#agenda-filters a[href="/toulouse/agenda/sortir/concert?term=jazz&range=not-a-number"][data-filtered-href="/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number&type=concert"]');
-        self::assertSelectorExists('#agenda-filters a[href="/toulouse/agenda?term=jazz&range=not-a-number"][data-filtered-href="/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number"]', '"Toutes les sorties"');
+        self::assertSelectorExists('#agenda-filters a[href="/toulouse?term=jazz&range=not-a-number"][data-filtered-href="/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number"]', '"Toutes les sorties"');
     }
 
     /**
@@ -250,7 +239,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheThemesOfTheMomentLeadToTheirAgendaWithTheirCountsWhileNothingNarrowsTheSearch(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -262,7 +250,7 @@ final class AgendaControllerTest extends WebTestCase
         self::counter()->refresh();
         $themes = '#agenda-filters a[href*="/agenda/tag/"]';
 
-        $crawler = $client->request('GET', '/toulouse/agenda?range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?range=not-a-number');
 
         self::assertSame(
             [['Théâtre', '2'], ['Concert', '1']],
@@ -270,7 +258,7 @@ final class AgendaControllerTest extends WebTestCase
         );
         self::assertSame(\sprintf('/toulouse/agenda/tag/theatre--%d?range=not-a-number', $theatre->getId()), $crawler->filter($themes)->first()->attr('href'));
 
-        $crawler = $client->request('GET', '/toulouse/agenda?term=jazz&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?term=jazz&range=not-a-number');
 
         self::assertCount(0, $crawler->filter($themes . ' .badge'));
         self::assertSame('jazz', $this->queryOf($crawler->filter($themes)->first()->attr('href'))['term'] ?? null);
@@ -282,7 +270,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testACategoryPageNarrowedToATypeKeepsBothFilters(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
         $jazz = TagFactory::createOne(['name' => 'Jazz']);
@@ -303,7 +290,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testAVenuePageNarrowedToATypeAndACategoryKeepsThemAll(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -332,7 +318,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheTypeLinksOfACategoryPageKeepTheCategory(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
         $gastronomy = TagFactory::createOne(['name' => 'Gastronomie']);
@@ -352,7 +337,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAVenuePageNarrowedToATypeKeepsBothFilters(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -369,7 +353,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAVenuePageIgnoresAnUnknownType(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -394,26 +377,24 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testThePriceShortcutIsKeptByTheLinksAndRemovedByItsChip(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/agenda?price=under_20&term=jazz&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?price=under_20&term=jazz&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('under_20', $query['price'] ?? null, 'A type link keeps the price');
         self::assertSame(["Jusqu'à 20\u{a0}€"], $crawler->filter('#agenda-filters [aria-label="Prix"] .btn-chip.active')->each(static fn (Crawler $chip): string => trim($chip->text())));
-        self::assertSame(['/toulouse/agenda', ['term' => 'jazz']], $this->chipsOf($crawler)["Jusqu'à 20\u{a0}€"] ?? null, 'Its chip leaves the other filters');
+        self::assertSame(['/toulouse', ['term' => 'jazz']], $this->chipsOf($crawler)["Jusqu'à 20\u{a0}€"] ?? null, 'Its chip leaves the other filters');
         self::assertSelectorExists('#search-form input[type="hidden"][name="price"][value="under_20"]');
     }
 
     public function testAnUnknownPriceShortcutIsEveryPrice(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/agenda?price=cheap&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?price=cheap&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('price', $query);
@@ -428,20 +409,6 @@ final class AgendaControllerTest extends WebTestCase
         $client->request('GET', '/toulouse/agenda/sortir/brocante');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-    }
-
-    /**
-     * The listing page reads the event types through the Redis-backed cache, which CI does not run.
-     */
-    private function requireRedis(): void
-    {
-        $host = $_SERVER['REDIS_HOST'] ?? $_ENV['REDIS_HOST'] ?? 'localhost';
-        $socket = @fsockopen((string) $host, 6379, $errno, $errstr, 1);
-        if (false === $socket) {
-            self::markTestSkipped(\sprintf('Redis is not reachable on %s:6379', $host));
-        }
-
-        fclose($socket);
     }
 
     /**

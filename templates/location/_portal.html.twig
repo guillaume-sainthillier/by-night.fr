@@ -1,0 +1,113 @@
+{# The introduction of a location under the first page of its agenda: its universes, the busiest cities of a country, its
+   neighbours. The cities and neighbours come from AgendaController::getPortal(); the busiest venues are in the filters. #}
+{% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
+{% set types = [
+    {slug: 'concert', link: 'Concerts ' ~ location.atName, icon: 'lucide:music', tone: 'pink', title: 'Concerts & musique live', text: 'Scènes rock, jazz clubs, festivals, DJ sets et concerts acoustiques.'},
+    {slug: 'spectacle', link: 'Spectacles ' ~ location.atName, icon: 'lucide:drama', tone: 'purple', title: 'Spectacles & théâtre', text: 'Pièces, humour, danse, cirque et one-man-shows près de chez vous.'},
+    {slug: 'exposition', link: 'Les expos ' ~ location.atName, icon: 'lucide:landmark', tone: 'blue', title: 'Expositions & patrimoine', text: 'Galeries, musées, rétrospectives photo et visites guidées.'},
+    {slug: 'famille', link: 'Sorties en famille ' ~ location.atName, icon: 'lucide:baby', tone: 'green', title: 'Sorties en famille', text: 'Spectacles jeune public, ateliers, parcs et balades pour tous les âges.'},
+    {slug: 'etudiant', link: 'Soirées étudiantes ' ~ location.atName, icon: 'lucide:party-popper', tone: 'yellow', title: 'Soirées & vie étudiante', text: 'Afterworks, soirées étudiantes, bars et nuits en discothèque.'},
+] %}
+
+    <twig:Section id="univers" eyebrow="Inspirez vos envies" icon="lucide:compass" title="Explorez par univers" description="Des spectacles jeune public du dimanche aux concerts du samedi soir, trouvez la sortie qui vous ressemble {{ location.atName }}.">
+        <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-lg-5">
+            {% for type in types %}
+                <div class="col">
+                    <twig:Tile
+                        href="{{ path('app_agenda_by_type', {typeSlug: type.slug, location: location.slug}) }}"
+                        title="{{ type.title }}"
+                        description="{{ type.text }}"
+                        icon="{{ type.icon }}"
+                        tone="{{ type.tone }}"
+                        meta="{{ type.link }}"
+                    />
+                </div>
+            {% endfor %}
+        </div>
+    </twig:Section>
+
+    {% if portal.cities %}
+        <twig:Section id="cities" eyebrow="Où sortir" icon="lucide:building-2" title="Les villes les plus animées" description="Les villes {{ location.name|of_place }} qui comptent le plus de sorties à venir.">
+            <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-lg-5">
+                {% for row in portal.cities %}
+                    {% set city = row[0] %}
+                    {# ICU messages stay in {{ }}: in a {% %} tag, the <twig:…> pre-lexer would read their "{#" as a comment #}
+                    {% set meta %}{{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: row.events}, 'messages+intl-icu') }}{% endset %}
+                    <div class="col">
+                        <twig:Tile
+                            href="{{ path('app_location_index', {location: city.slug}) }}"
+                            title="{{ city.name }}"
+                            description="{{ (city|department) ?: (city.headline ?? null) }}"
+                            tone="{{ tones[loop.index0 % tones|length] }}"
+                            meta="{{ meta }}"
+                        />
+                    </div>
+                {% endfor %}
+            </div>
+        </twig:Section>
+    {% endif %}
+
+    {% if portal.neighbours %}
+        {% if location.isCity %}
+            <twig:Section id="neighbours" eyebrow="Aux alentours" icon="lucide:compass" title="Sortir autour {{ location.name|of_place }}">
+                <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-xl-6">
+                    {% for row in portal.neighbours %}
+                        {% set city = row[0] %}
+                        <div class="col">
+                            <twig:Location:PlaceCard
+                                href="{{ path('app_location_index', {location: city.slug}) }}"
+                                name="{{ city.name }}"
+                                eyebrow="{{ city|department }}"
+                                events="{{ row.events }}"
+                                title="Que faire {{ city.name|at_place }} ?"
+                            />
+                        </div>
+                    {% endfor %}
+                    <div class="col">
+                        <a class="card card-layout card-link-pop bg-primary text-white h-100 mb-0" href="{{ path('app_location_index', {location: location.city.country.slug}) }}" title="Que faire {{ location.city.country.atDisplayName }}&nbsp;?">
+                            <div class="card-body">
+                                <twig:Flag code="{{ location.city.country.id }}" size="{{ 28 }}" class="mb-2" />
+                                <h3 class="card-title mb-0">{{ location.city.country.displayName }}</h3>
+                            </div>
+                            <div class="card-footer card-footer-transparent text-white d-flex align-items-center justify-content-between small fw-bold">
+                                <span>Tout le pays</span>
+                                <twig:Icon name="lucide:arrow-right" />
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </twig:Section>
+        {% else %}
+            <twig:Section id="neighbours" eyebrow="Pays & territoires" icon="lucide:globe" title="Explorer les autres pays">
+                <twig:Location:CountryGrid countries="{{ portal.neighbours }}" />
+            </twig:Section>
+        {% endif %}
+    {% endif %}
+
+    <section class="py-5">
+        <div class="container-lg">
+            <div class="row">
+                <div class="col-lg-9 text-secondary">
+                    <h2 class="h2 text-body">Que faire {{ location.atName }} aujourd'hui ou ce soir&nbsp;?</h2>
+                    <p>Vous vous demandez <strong>que faire {{ location.atName }}</strong>&nbsp;? Parcourez notre agenda pour trouver un
+                        <strong>concert</strong>, une <strong>expo</strong>, un <strong>spectacle</strong>, un <strong>marché</strong> ou une
+                        <strong>sortie</strong> près de chez vous. Il y en a pour tous les goûts et pour tous les âges&nbsp;: des
+                        <strong>sorties en famille</strong> et <strong>spectacles jeune public</strong> aux <strong>soirées étudiantes</strong>
+                        les plus branchées dans les <strong>bars</strong> et <strong>discothèques</strong> {{ location.name|of_place }}.
+                    </p>
+                    {% if location.isCity %}
+                        <p>{{ location.appName }} centralise pour vous les <strong>événements et bons plans culturels</strong> de la ville {{ location.name|of_place }} et de ses environs.
+                            Notre objectif&nbsp;: rassembler toutes les <strong>choses à faire {{ location.atName }}</strong> sur une seule plateforme pour trouver les meilleures <strong>idées de sorties</strong>.
+                        </p>
+                    {% else %}
+                        <p>{{ location.appName }} centralise pour vous les <strong>événements et bons plans culturels</strong> dans toutes les villes {{ location.name|of_place }}.
+                            Notre objectif&nbsp;: rassembler toutes les <strong>choses à faire {{ location.atName }}</strong> sur une seule plateforme pour trouver les meilleures <strong>idées de sorties</strong>.
+                        </p>
+                    {% endif %}
+                    <p class="mb-0">Vous êtes <strong>organisateur d'événements</strong>, artiste ou <strong>agence de communication</strong> {{ location.atName }}&nbsp;?
+                        <a href="{{ path('app_event_new') }}">Publiez gratuitement votre événement</a> et donnez-lui un maximum de <strong>visibilité</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>

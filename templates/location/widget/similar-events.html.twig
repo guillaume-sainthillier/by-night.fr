@@ -1,5 +1,5 @@
 {# The other events starting the same day in the same city (EventRepository::findAllSimilarsQueryBuilder) #}
-{% set agenda = path('app_agenda_index', {location: event.place.locationSlug}) %}
+{% set agenda = path('app_location_index', {location: event.place.locationSlug}) %}
 <twig:Section class="widget" id="similar-events">
     <twig:block name="header">
         <twig:Section:Header eyebrow="Poursuivez vos sorties" icon="lucide:sparkles" title="Le même jour {{ event.place.location.atName }}">

@@ -93,9 +93,9 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
             $suggestions = $this->summarize($this->suggest($city));
 
             self::assertSame([
-                ['cities', 'Villes', 'Paris', '', null, '/paris/'],
-                ['cities', 'Villes', 'Toulouse', '', null, '/toulouse/'],
-                ['cities', 'Villes', 'Albi', '', null, '/albi/'],
+                ['cities', 'Villes', 'Paris', '', null, '/paris'],
+                ['cities', 'Villes', 'Toulouse', '', null, '/toulouse'],
+                ['cities', 'Villes', 'Albi', '', null, '/albi'],
             ], \array_slice($suggestions, 0, 3));
             self::assertSame(['events', 'Cette semaine en France', 'Soirée électro'], \array_slice($suggestions[3], 0, 3));
         }

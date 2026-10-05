@@ -96,26 +96,6 @@ final class EventRepositoryPortalTest extends AppKernelTestCase
         self::assertSame([], $this->repository->findHighlights(new Location()->setCity($toulouse), 10));
     }
 
-    public function testTheVenuesAreRankedByTheirEventsToCome(): void
-    {
-        $toulouse = CityFactory::toulouse()->create();
-        $tomorrow = new DateTimeImmutable('tomorrow');
-        $zenith = PlaceFactory::createOne(['name' => 'Zénith', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        $bikini = PlaceFactory::createOne(['name' => 'Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        EventFactory::new()->withDates($tomorrow)->many(2)->create(['place' => $zenith]);
-        EventFactory::new()->withDates($tomorrow)->create(['place' => $bikini]);
-        EventFactory::new()->withDates(new DateTimeImmutable('-10 days'))->many(3)->create(['place' => $bikini]);
-
-        self::counter()->refresh();
-
-        $venues = $this->repository->findUpcomingPlaces(new Location()->setCity($toulouse), 5);
-
-        self::assertSame(
-            [['Zénith', 2], ['Bikini', 1]],
-            array_map(static fn (array $row): array => [$row[0]->getName(), (int) $row['events']], $venues),
-        );
-    }
-
     public function testTheCitiesAroundLeaveOutTheCityAndTheFarAwayOnes(): void
     {
         $toulouse = CityFactory::toulouse()->create();

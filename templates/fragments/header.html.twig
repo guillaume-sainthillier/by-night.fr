@@ -40,12 +40,6 @@
                                 <span class="nav-link-title">{{ city.name }}</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_agenda_index', {location: city.slug}) }}" title="Agenda des sorties {{ city.name|at_place }}">
-                                <span class="nav-link-icon"><twig:Icon name="lucide:calendar-days" /></span>
-                                <span class="nav-link-title">Agenda</span>
-                            </a>
-                        </li>
                     {% endif %}
                 </ul>
 

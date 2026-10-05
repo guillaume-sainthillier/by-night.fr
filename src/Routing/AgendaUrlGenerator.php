@@ -68,6 +68,6 @@ final readonly class AgendaUrlGenerator
             return ['app_agenda_by_type', ['location' => $location, 'typeSlug' => $type->getSlug()]];
         }
 
-        return ['app_agenda_index', ['location' => $location]];
+        return ['app_location_index', ['location' => $location]];
     }
 }
