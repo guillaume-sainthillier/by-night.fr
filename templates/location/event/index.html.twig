@@ -9,8 +9,8 @@
 {% set place = event.place %}
 {# The way back after a login: "#participer" records the "J'y vais" clicked before it (like.js), "#comments" opens on the
    comment form #}
-{% set eventPath = path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
-{% set goingAfterLogin = eventPath ~ '#participer' %}
+{% set eventRoute = {slug: event.slug, id: event.id, location: event.locationSlug} %}
+{% set goingAfterLogin = path('app_event_details', eventRoute|merge({_fragment: 'participer'})) %}
 {# Collect all tags (category + themes) for meta tags #}
 {% set allTags = [] %}
 {% if event.category %}
@@ -501,7 +501,7 @@
                         </div>
                     </div>
 
-                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm, login: path('app_login', {_target_path: eventPath ~ '#comments'})}) }}
+                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm, login: path('app_login', {_target_path: path('app_event_details', eventRoute|merge({_fragment: 'comments'}))})}) }}
                 </div>
             </div>
         </div>
