@@ -44,4 +44,24 @@ final class CitySlugHandlerTest extends AppKernelTestCase
 
         self::assertSame('toulouse', CityFactory::toulouse()->create()->getSlug());
     }
+
+    public function testACityOfACountryPrefixingItsCitiesStartsWithTheCountry(): void
+    {
+        $switzerland = CountryFactory::switzerland()->create();
+        $france = CountryFactory::france()->create();
+
+        self::assertSame('suisse/geneve', CityFactory::createOne(['name' => 'Genève', 'country' => $switzerland])->getSlug());
+        // Unique within its country only
+        self::assertSame('suisse/geneve-1', CityFactory::createOne(['name' => 'Genève', 'country' => $switzerland])->getSlug());
+        self::assertSame('geneve', CityFactory::createOne(['name' => 'Genève', 'country' => $france])->getSlug());
+    }
+
+    public function testACityUnderItsCountryNeverEndsWithAWordOfTheRoutes(): void
+    {
+        $switzerland = CountryFactory::switzerland()->create();
+
+        // "/suisse/agenda" and "/suisse/2" are pages of the country
+        self::assertSame('suisse/agenda-1', CityFactory::createOne(['name' => 'Agenda', 'country' => $switzerland])->getSlug());
+        self::assertSame('suisse/2-1', CityFactory::createOne(['name' => '2', 'country' => $switzerland])->getSlug());
+    }
 }

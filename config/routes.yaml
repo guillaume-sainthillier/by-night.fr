@@ -42,4 +42,7 @@ app.location:
         path: ../src/Controller/Location
         namespace: App\Controller\Location
     prefix: /{location}
+    # A city, a country, or a city under its country ("/suisse/geneve")
+    requirements:
+        location: !php/const App\Routing\LocationRequirement::PATTERN
     type: attribute

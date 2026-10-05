@@ -16,9 +16,12 @@ use App\App\LazyLocationFactory;
 use App\App\Location;
 use App\Entity\Country;
 use RuntimeException;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -31,6 +34,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 final readonly class AppContextSubscriber implements EventSubscriberInterface
 {
+    /**
+     * The events filed in no country answered on "/unknown". The ones located since redirect to their city from
+     * these pages; the others are deleted (app:events:remove-countryless), and the listings of "/unknown" are gone.
+     */
+    private const string UNKNOWN_LOCATION = 'unknown';
+
+    private const array UNKNOWN_LOCATION_ROUTES = ['app_event_details', 'app_event_details_old', 'app_widget_next_events', 'app_widget_similar_events', 'app_agenda_by_place'];
+
     public function __construct(
         private AppContext $appContext,
         private LazyLocationFactory $lazyLocationFactory,
@@ -42,6 +53,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => 'onKernelRequest',
+            KernelEvents::EXCEPTION => 'onKernelException',
         ];
     }
 
@@ -67,8 +79,11 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
     {
         $locationSlug = $request->attributes->getString('location');
 
-        // Handle special "unknown" location (no lazy loading needed)
-        if ('unknown' === $locationSlug) {
+        if (self::UNKNOWN_LOCATION === $locationSlug) {
+            if (!\in_array($request->attributes->getString('_route'), self::UNKNOWN_LOCATION_ROUTES, true)) {
+                throw new GoneHttpException('Les événements sans pays ne sont plus en ligne');
+            }
+
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
             $noWhere->setSlug($locationSlug);
@@ -88,11 +103,33 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
                 $location = $this->lazyLocationFactory->createWithLazyCountry($locationSlug);
             } else {
                 $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
+                // A redirect that would not read the city (the former agenda, the router's trailing slash) reads it
+                // now: a city named by a former slug then takes a single redirect, to its current page
+                if (self::onlyRedirects($request)) {
+                    $location->getCity()?->getId();
+                }
             }
 
             $this->appContext->setLocation($location);
         } catch (RuntimeException $e) {
             throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug), $e);
+        }
+    }
+
+    private static function onlyRedirects(Request $request): bool
+    {
+        return 'app_agenda_legacy' === $request->attributes->getString('_route')
+            || str_starts_with((string) $request->attributes->get('_controller'), RedirectController::class);
+    }
+
+    /**
+     * What is not found under "/unknown" was deleted: gone tells search engines to forget it sooner than not found.
+     */
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        if ($event->isMainRequest() && $event->getThrowable() instanceof NotFoundHttpException
+            && self::UNKNOWN_LOCATION === $event->getRequest()->attributes->get('location')) {
+            $event->setThrowable(new GoneHttpException($event->getThrowable()->getMessage(), $event->getThrowable()));
         }
     }
 }

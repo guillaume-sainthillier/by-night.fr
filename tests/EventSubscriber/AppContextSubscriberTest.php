@@ -11,6 +11,8 @@
 namespace App\Tests\EventSubscriber;
 
 use App\Factory\CityFactory;
+use App\Factory\EventFactory;
+use App\Factory\PlaceFactory;
 use App\Tests\Controller\Location\StubsAgendaSearch;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -66,5 +68,57 @@ final class AppContextSubscriberTest extends WebTestCase
         $client->request('GET', '/ville-inconnue');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideListingsOfTheUnknownLocation(): iterable
+    {
+        yield 'its page' => ['/unknown'];
+        yield 'a page of its agenda' => ['/unknown/2'];
+        yield 'a tag' => ['/unknown/agenda/tag/rock'];
+    }
+
+    #[DataProvider('provideListingsOfTheUnknownLocation')]
+    public function testTheListingsOfTheEventsWithoutCountryAreGone(string $url): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', $url);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_GONE);
+    }
+
+    public function testAnEventLocatedSinceRedirectsToItsCity(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $event = EventFactory::createOne(['place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()])]);
+
+        $client->request('GET', \sprintf('/unknown/soiree/%s--%d', $event->getSlug(), $event->getId()));
+
+        self::assertResponseRedirects(\sprintf('/toulouse/soiree/%s--%d', $event->getSlug(), $event->getId()), Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    public function testADeletedEventOfTheUnknownLocationIsGone(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/unknown/soiree/portaventura-halloween--999999');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_GONE);
+    }
+
+    public function testADeletedPlaceOfTheUnknownLocationLeadsToItsGonePage(): void
+    {
+        $client = self::createClient();
+
+        // As for any location, a place not found sends to the location's page
+        $client->request('GET', '/unknown/agenda/sortir-a/portaventura-world');
+        self::assertResponseRedirects('/unknown');
+
+        $client->followRedirect();
+        self::assertResponseStatusCodeSame(Response::HTTP_GONE);
     }
 }
