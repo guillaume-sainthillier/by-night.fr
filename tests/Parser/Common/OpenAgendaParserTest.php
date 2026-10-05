@@ -322,6 +322,28 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertArrayNotHasKey('timings', $eventQueries[0]);
     }
 
+    public function testAnEmojiCutInHalfDoesNotStopTheAgenda(): void
+    {
+        // "\ud83d" without its low half: json_decode() rejects the whole page over it
+        $page = str_replace('Concert au parc', 'Concert au parc \\ud83d', json_encode([
+            'events' => [self::feedEvent()],
+            'after' => null,
+        ], \JSON_THROW_ON_ERROR));
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            new MockHttpClient(new MockResponse($page)),
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $events = iterator_to_array((new ReflectionMethod($parser, 'getAgendaEvents'))->invoke($parser, null, false, 42), false);
+
+        self::assertCount(1, $events);
+        self::assertSame("Concert au parc \u{FFFD}", $events[0]['title']);
+    }
+
     public function testEveryAgendaWithAnEventNotOverYetIsRead(): void
     {
         $readAgendas = [];
