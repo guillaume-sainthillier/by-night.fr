@@ -147,6 +147,22 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertArrayNotHasKey('performer', $this->schema($this->createEvent([])));
     }
 
+    public function testARescheduledEventSaysSo(): void
+    {
+        $schema = $this->schema($this->createEvent(['status' => EventStatus::Rescheduled]));
+
+        self::assertSame('https://schema.org/EventRescheduled', $schema['eventStatus']);
+        self::assertSame('https://schema.org/OfflineEventAttendanceMode', $schema['eventAttendanceMode']);
+    }
+
+    public function testAnEventMovedOnlineIsAttendedOnline(): void
+    {
+        $schema = $this->schema($this->createEvent(['status' => EventStatus::MovedOnline]));
+
+        self::assertSame('https://schema.org/EventMovedOnline', $schema['eventStatus']);
+        self::assertSame('https://schema.org/OnlineEventAttendanceMode', $schema['eventAttendanceMode']);
+    }
+
     /**
      * @param list<string> $agendaTypes
      */

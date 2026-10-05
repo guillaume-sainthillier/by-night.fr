@@ -355,13 +355,15 @@ final class OpenAgendaParser extends AbstractParser
     /**
      * OpenAgenda's status, {id, label} with includeLabels: 1 scheduled, 2 rescheduled, 3 moved
      * online (still taking place), 4 postponed, 5 full, 6 cancelled. It was not read: a
-     * cancelled event was listed as taking place.
+     * cancelled event was listed as taking place. A scheduled event has no status.
      */
     private static function status(mixed $status): ?EventStatus
     {
         $id = \is_array($status) ? ($status['id'] ?? null) : $status;
 
         return match (is_numeric($id) ? (int) $id : null) {
+            2 => EventStatus::Rescheduled,
+            3 => EventStatus::MovedOnline,
             4 => EventStatus::Postponed,
             5 => EventStatus::SoldOut,
             6 => EventStatus::Cancelled,

@@ -51,7 +51,9 @@ final readonly class EventJsonLd
             'name' => $event->getName(),
             'url' => $this->generateEventUrl($event),
             'eventStatus' => $this->mapEventStatus($event->getStatus()),
-            'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+            'eventAttendanceMode' => EventStatus::MovedOnline === $event->getStatus()
+                ? 'https://schema.org/OnlineEventAttendanceMode'
+                : 'https://schema.org/OfflineEventAttendanceMode',
         ];
 
         if ($event->getStartDate() instanceof DateTimeImmutable) {

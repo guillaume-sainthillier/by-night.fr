@@ -161,8 +161,8 @@ final class OpenAgendaParserTest extends AppKernelTestCase
     public static function provideStatuses(): iterable
     {
         yield 'scheduled' => [['id' => 1, 'label' => ['fr' => 'Programmé']], null];
-        yield 'rescheduled' => [['id' => 2, 'label' => ['fr' => 'Reprogrammé']], null];
-        yield 'moved online' => [['id' => 3, 'label' => ['fr' => 'Déplacé en ligne']], null];
+        yield 'rescheduled' => [['id' => 2, 'label' => ['fr' => 'Reprogrammé']], EventStatus::Rescheduled];
+        yield 'moved online' => [['id' => 3, 'label' => ['fr' => 'Déplacé en ligne']], EventStatus::MovedOnline];
         yield 'postponed' => [['id' => 4, 'label' => ['fr' => 'Reporté']], EventStatus::Postponed];
         yield 'full' => [['id' => 5, 'label' => ['fr' => 'Complet']], EventStatus::SoldOut];
         yield 'cancelled' => [['id' => 6, 'label' => ['fr' => 'Annulé']], EventStatus::Cancelled];

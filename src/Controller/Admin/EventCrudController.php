@@ -136,6 +136,8 @@ final class EventCrudController extends AbstractCrudController
                 EventStatus::Postponed->value => 'warning',
                 EventStatus::Cancelled->value => 'danger',
                 EventStatus::SoldOut->value => 'info',
+                EventStatus::Rescheduled->value => 'warning',
+                EventStatus::MovedOnline->value => 'info',
             ]);
         $statusMessage = TextField::new('statusMessage');
         $type = TextField::new('type');
