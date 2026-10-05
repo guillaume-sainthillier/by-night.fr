@@ -16,14 +16,19 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
+use App\Utils\HtmlExcerpter;
 use DateTimeImmutable;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class EventJsonLd
 {
+    /** Long enough for any real description, short enough not to weigh on the page twice */
+    private const int DESCRIPTION_LENGTH = 5000;
+
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private EventProfilePicture $eventProfilePicture,
+        private HtmlExcerpter $htmlExcerpter,
     ) {
     }
 
@@ -53,8 +58,9 @@ final readonly class EventJsonLd
             $schema['startDate'] = $event->getStartDate()->format('Y-m-d');
         }
 
-        if ($event->getDescription()) {
-            $schema['description'] = strip_tags($event->getDescription());
+        $description = $this->htmlExcerpter->excerpt($event->getDescription(), self::DESCRIPTION_LENGTH);
+        if ('' !== $description) {
+            $schema['description'] = $description;
         }
 
         $endDate = $event->getEndDate() ?? $event->getStartDate();
