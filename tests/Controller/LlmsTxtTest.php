@@ -94,7 +94,9 @@ final class LlmsTxtTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('head link[rel="llms-txt"][href="http://localhost/llms.txt"]');
-        self::assertResponseHeaderSame('Link', '<http://localhost/llms.txt>; rel="llms-txt"');
+        // One of the links of the header: with a build in public/build, WebLink also lists the assets to preload there
+        $links = preg_split('/,\s*(?=<)/', (string) $client->getResponse()->headers->get('Link'));
+        self::assertContains('<http://localhost/llms.txt>; rel="llms-txt"', $links);
     }
 
     private function createEvents(City $city, int $count, string $date): void
