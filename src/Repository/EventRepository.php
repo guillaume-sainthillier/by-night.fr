@@ -948,29 +948,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The venues of a city or a country with the most events to come, as last counted by UpcomingEventCounter.
-     *
-     * @return list<array{0: Place, events: int|string}> each venue, and its number of events to come
-     */
-    public function findUpcomingPlaces(Location $location, int $limit): array
-    {
-        $qb = $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->select('p', 'p.upcomingEvents AS events')
-            ->from(Place::class, 'p')
-            ->where('p.upcomingEvents > 0')
-            ->orderBy('p.upcomingEvents', SortDirection::Descending)
-            ->addOrderBy('p.name', SortDirection::Ascending)
-            ->setMaxResults($limit);
-
-        return $this
-            ->whereLocation($qb, $location)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
      * The cities of a country with the most events to come.
      *
      * @return list<array{0: City, events: int|string}> each city, and its number of events to come
