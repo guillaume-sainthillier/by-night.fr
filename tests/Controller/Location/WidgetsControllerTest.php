@@ -14,9 +14,9 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 
-final class WidgetsControllerTest extends WebTestCase
+final class WidgetsControllerTest extends AppWebTestCase
 {
     public function testWidgetFragmentsTellSearchEnginesNotToIndexThem(): void
     {

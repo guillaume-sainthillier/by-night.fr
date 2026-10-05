@@ -13,13 +13,13 @@ namespace App\Tests\Controller\Location;
 use App\Factory\CityFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\PlaceLegacySlugFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The agenda page of a place merged into another one leads to the other one's.
  */
-final class MergedPlaceRedirectTest extends WebTestCase
+final class MergedPlaceRedirectTest extends AppWebTestCase
 {
     use StubsAgendaSearch;
 

@@ -35,4 +35,13 @@ final class LocationRequirementTest extends AppKernelTestCase
             self::assertDoesNotMatchRegularExpression('#^(?:' . LocationRequirement::PATTERN . ')$#', 'suisse/' . $word, \sprintf('PATTERN must exclude "%s"', $word));
         }
     }
+
+    public function testAFileIsNeverALocation(): void
+    {
+        foreach (['favicon.php', 'wp-login.php', 'rennes/k.php', 'suisse/geneve.env'] as $path) {
+            self::assertDoesNotMatchRegularExpression('#^(?:' . LocationRequirement::PATTERN . ')$#', $path);
+        }
+
+        self::assertMatchesRegularExpression('#^(?:' . LocationRequirement::PATTERN . ')$#', 'suisse/geneve');
+    }
 }

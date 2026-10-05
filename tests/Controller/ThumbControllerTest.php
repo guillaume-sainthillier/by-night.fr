@@ -10,11 +10,11 @@
 
 namespace App\Tests\Controller;
 
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ThumbControllerTest extends WebTestCase
+final class ThumbControllerTest extends AppWebTestCase
 {
     public function testALegacyThumbRedirectsToTheOriginalImage(): void
     {
@@ -22,7 +22,7 @@ final class ThumbControllerTest extends WebTestCase
 
         $client->request('GET', '/thumb/documents/2019/03/15/affiche.jpg');
 
-        self::assertResponseRedirects('http://localhost/documents/2019/03/15/affiche.jpg', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('https://data.by-night.test/documents/2019/03/15/affiche.jpg', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     /**

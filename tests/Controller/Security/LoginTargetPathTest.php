@@ -11,9 +11,9 @@
 namespace App\Tests\Controller\Security;
 
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use function Zenstruck\Foundry\Persistence\save;
@@ -21,7 +21,7 @@ use function Zenstruck\Foundry\Persistence\save;
 /**
  * A "log in to…" link (J'y vais, comments) names the page it comes from: the login leads back to it.
  */
-final class LoginTargetPathTest extends WebTestCase
+final class LoginTargetPathTest extends AppWebTestCase
 {
     public function testTheLoginLeadsBackToThePageItCameFrom(): void
     {

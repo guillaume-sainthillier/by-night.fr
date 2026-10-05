@@ -12,10 +12,10 @@ namespace App\Tests\Controller\Admin;
 
 use App\Factory\PageFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class PageCrudControllerTest extends WebTestCase
+final class PageCrudControllerTest extends AppWebTestCase
 {
     public function testIndexListsPagesWithViewAction(): void
     {

@@ -12,10 +12,10 @@ namespace App\Tests\Controller;
 
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
-final class OldMediaControllerTest extends WebTestCase
+final class OldMediaControllerTest extends AppWebTestCase
 {
     public function testRedirectsALegacyEventImageUrlToItsOriginAndLetsTheCdnKeepIt(): void
     {
@@ -25,7 +25,7 @@ final class OldMediaControllerTest extends WebTestCase
         $client->request('GET', '/media/cache/thumb/documents/5aa78efdc33f4482315163.jpg');
 
         self::assertResponseStatusCodeSame(301);
-        self::assertMatchesRegularExpression('#^http://localhost/uploads/documents/\d{4}/\d{2}/\d{2}/5aa78efdc33f4482315163\.jpg$#', (string) $client->getResponse()->headers->get('Location'));
+        self::assertMatchesRegularExpression('#^https://data.by-night.test/uploads/documents/\d{4}/\d{2}/\d{2}/5aa78efdc33f4482315163\.jpg$#', (string) $client->getResponse()->headers->get('Location'));
         self::assertResponseHeaderSame('Cache-Control', 'max-age=2592000, public');
     }
 
@@ -37,7 +37,7 @@ final class OldMediaControllerTest extends WebTestCase
         $client->request('GET', '/uploads/users/5aa78efdc33f4482315164.png');
 
         self::assertResponseStatusCodeSame(301);
-        self::assertMatchesRegularExpression('#^http://localhost/uploads/users/\d{4}/\d{2}/\d{2}/5aa78efdc33f4482315164\.png$#', (string) $client->getResponse()->headers->get('Location'));
+        self::assertMatchesRegularExpression('#^https://data.by-night.test/uploads/users/\d{4}/\d{2}/\d{2}/5aa78efdc33f4482315164\.png$#', (string) $client->getResponse()->headers->get('Location'));
     }
 
     public function testUnknownImageReturns404(): void

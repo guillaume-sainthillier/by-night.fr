@@ -96,6 +96,12 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
             return;
         }
 
+        // A city under its country ("suisse/geneve"): the first segment of anything else ("rennes/k") is no country,
+        // not found before any lookup of the city
+        if (str_contains($locationSlug, '/') && !$this->countrySlugs->has(strstr($locationSlug, '/', true))) {
+            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug));
+        }
+
         try {
             // Create lazy-loaded location - database query deferred until access. Countries and cities share the
             // slugs of the URLs ("/france", "/toulouse"): a country's comes first

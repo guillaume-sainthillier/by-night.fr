@@ -13,13 +13,13 @@ namespace App\Tests\Controller\PersonalSpace;
 use App\Factory\EventFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * "Mes sorties": the events to come a member goes to, soonest first.
  */
-final class OutingControllerTest extends WebTestCase
+final class OutingControllerTest extends AppWebTestCase
 {
     public function testAMemberSeesTheEventsToComeTheyGoToSoonestFirst(): void
     {
@@ -43,6 +43,28 @@ final class OutingControllerTest extends WebTestCase
         // The past one stays on the public profile
         self::assertSelectorTextContains('body', 'Votre sortie passée reste');
         self::assertSelectorExists(\sprintf('a[href="/membres/%s--%d#passes"]', $member->getSlug(), $member->getId()));
+    }
+
+    public function testAJyVaisTakenBackLeavesTheOutings(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        foreach (['Finalement non' => [false, false], 'Peut-être' => [false, true], 'Oui' => [true, false]] as $name => [$going, $wish]) {
+            UserEventFactory::createOne([
+                'user' => $member,
+                'event' => EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['name' => $name]),
+                'going' => $going,
+                'wish' => $wish,
+            ]);
+        }
+        $client->loginUser($member);
+
+        $crawler = $client->request('GET', '/espace-perso/mes-sorties');
+
+        // The row of a "J'y vais" taken back stays (EventParticipationManager), neither going nor interested
+        $names = $crawler->filter('#outings .card-title')->each(static fn ($title): string => trim($title->text()));
+        sort($names);
+        self::assertSame(['Oui', 'Peut-être'], $names);
     }
 
     public function testAMemberWithoutOutingsLearnsHowToAddOne(): void

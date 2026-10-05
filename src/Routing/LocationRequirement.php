@@ -20,8 +20,11 @@ final class LocationRequirement
     /** The second segments of a location's own routes */
     public const array RESERVED = ['agenda', 'soiree'];
 
-    /** config/routes.yaml */
-    public const string PATTERN = '[^/]+(?:/(?!(?:agenda|soiree|\d+)(?:/|$))[^/]+)?';
+    /**
+     * config/routes.yaml. No dot: slugs never hold one, and the probes of files ("/wp-login.php", "/rennes/k.php") are
+     * then not found by the router, before any lookup.
+     */
+    public const string PATTERN = '[^/.]+(?:/(?!(?:agenda|soiree|\d+)(?:/|$))[^/.]+)?';
 
     /**
      * Whether a city of a prefixing country may end its slug with this segment.

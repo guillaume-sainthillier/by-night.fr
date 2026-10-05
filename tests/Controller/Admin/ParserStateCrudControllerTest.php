@@ -12,11 +12,11 @@ namespace App\Tests\Controller\Admin;
 
 use App\Factory\ParserStateFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class ParserStateCrudControllerTest extends WebTestCase
+final class ParserStateCrudControllerTest extends AppWebTestCase
 {
     public function testIndexListsTheWatermarkOfEachParser(): void
     {

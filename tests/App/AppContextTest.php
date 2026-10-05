@@ -12,10 +12,10 @@ namespace App\Tests\App;
 
 use App\Factory\CityFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use App\Tests\Controller\Location\StubsAgendaSearch;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class AppContextTest extends WebTestCase
+final class AppContextTest extends AppWebTestCase
 {
     use StubsAgendaSearch;
 

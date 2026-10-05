@@ -165,7 +165,7 @@ final class ImageRemovalTest extends AppKernelTestCase
 
         self::assertEqualsCanonicalizing([
             ['files' => array_map(static fn (string $path): string => 'https://data.example.test/uploads/documents/' . $path, $paths)],
-            ['prefixes' => array_map(static fn (string $path): string => 'by-night.fr/p/image/glide/vich/' . $path . '/', $paths)],
+            ['prefixes' => array_map(static fn (string $path): string => 'by-night.test/p/image/glide/vich/' . $path . '/', $paths)],
         ], array_map(static fn (array $body): array => array_map(static function (array $values): array {
             sort($values);
 

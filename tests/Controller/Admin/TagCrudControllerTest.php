@@ -12,14 +12,14 @@ namespace App\Tests\Controller\Admin;
 
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Covers the Gedmo slug regeneration on a TextField, which is how every slug but Page's is exposed
  * in the back-office. Page uses SlugField instead, so PageCrudControllerTest covers the other half.
  */
-final class TagCrudControllerTest extends WebTestCase
+final class TagCrudControllerTest extends AppWebTestCase
 {
     public function testCreateTagGeneratesSlugFromNameWhenSlugIsLeftEmpty(): void
     {

@@ -222,7 +222,7 @@ final class EventType extends AbstractType
 
     /**
      * The event's times are the span of its dates (first start, last end): the form shows instead the slot every
-     * date shares as the default, and the dates as following it, or no default when they differ.
+     * date shares as the default, and the dates without precisions as following it, or no default when they differ.
      */
     public function onPreSetData(FormEvent $event): void
     {
@@ -237,6 +237,12 @@ final class EventType extends AbstractType
         $data->endTime = $shared?->endTime;
         if (null !== $shared) {
             foreach ($data->timesheets as $timesheet) {
+                // A date with precisions keeps its times: the default only fills back the dates without any
+                // (applyDefaultSlot), saving the form as is would lose them
+                if (null !== $timesheet->hours) {
+                    continue;
+                }
+
                 $timesheet->startTime = null;
                 $timesheet->endTime = null;
             }

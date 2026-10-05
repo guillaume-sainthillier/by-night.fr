@@ -21,6 +21,20 @@ function resolveElement(element) {
 }
 
 /**
+ * Whether the field sits in a panel fixed to the screen, as the agenda filters' offcanvas on a phone: the calendar's
+ * "auto" placement opens it above the field there, its header out of the screen.
+ *
+ * @param {HTMLElement} input
+ * @returns {boolean}
+ */
+function inFixedPanel(input) {
+    const panel = input.closest(
+        '.offcanvas, .offcanvas-sm, .offcanvas-md, .offcanvas-lg, .offcanvas-xl, .offcanvas-xxl'
+    )
+    return panel !== null && getComputedStyle(panel).position === 'fixed'
+}
+
+/**
  * @param {string} date - YYYY-MM-DD
  * @returns {string}
  */
@@ -80,12 +94,13 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
     const selectedDates = []
     if (from?.value) {
         const start = from.value
-        const end = to?.value || start
+        // No end: a range open from its start ("À partir du 3 oct. 2026"), not that day alone
+        const end = to?.value || null
         if (singleDate) {
             selectedDates.push(start)
             input.value = formatDate(start)
         } else {
-            selectedDates.push(start, end)
+            selectedDates.push(...(end ? [start, end] : [start]))
             input.value = formatRangeLabel(start, end)
         }
     }
@@ -95,7 +110,7 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
         // Side by side months (type: 'multiple')
         extensions: [months],
         inputMode: true,
-        positionToInput: 'auto',
+        positionToInput: inFixedPanel(input) ? ['bottom', 'left'] : 'auto',
         locale: 'fr-FR',
         firstWeekday: 1,
         selectedTheme: 'light',

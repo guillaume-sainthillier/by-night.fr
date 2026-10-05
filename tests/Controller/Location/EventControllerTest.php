@@ -17,16 +17,16 @@ use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
 use IntlDateFormatter;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DomCrawler\Crawler;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 use function Zenstruck\Foundry\Persistence\save;
 
-final class EventControllerTest extends WebTestCase
+final class EventControllerTest extends AppWebTestCase
 {
     public function testAdminSeesEditButtonNextToTitle(): void
     {
@@ -120,6 +120,21 @@ final class EventControllerTest extends WebTestCase
         $client->request('GET', $this->eventUrl($event));
 
         self::assertSelectorExists(\sprintf('#comments a[href="%s"]', $this->withTarget('/login', $this->eventUrl($event) . '#comments')));
+    }
+
+    public function testTheLoginLinksThatLeadBackAreNotFollowed(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $crawler = $client->request('GET', $this->eventUrl($event));
+
+        // One login URL per event (its _target_path): crawlers would open a session on each of the millions of them
+        $links = $crawler->filter('a[href*="_target_path="]')->each(static fn (Crawler $link): array => [$link->attr('href'), $link->attr('rel') ?? '']);
+        self::assertNotEmpty($links);
+        foreach ($links as [$href, $rel]) {
+            self::assertContains('nofollow', explode(' ', $rel), (string) $href);
+        }
     }
 
     public function testAMemberGetsNoLoginDialogButAButtonThatRecordsTheClickMadeBeforeTheLogin(): void

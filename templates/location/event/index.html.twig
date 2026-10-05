@@ -94,7 +94,7 @@
                 {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     {# Its author, logged out, gets back to their preview; the visitor already has this URL #}
                     Vous en êtes l'organisateur&nbsp;?
-                    <a href="{{ path('app_login', {_target_path: app.request.pathInfo}) }}">Connectez-vous pour le voir</a>.
+                    <a rel="nofollow" href="{{ path('app_login', {_target_path: app.request.pathInfo}) }}">Connectez-vous pour le voir</a>.
                 {% endif %}
             </div>
         </div>
@@ -195,7 +195,7 @@
                             {% else %}
                                 {# Going needs an account: the button opens the login dialog (modals block), the login page without
                                    the script #}
-                                <a class="btn participate" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" data-bs-toggle="modal" data-bs-target="#login-dialog" title="Connectez-vous pour indiquer que vous y allez">
+                                <a class="btn participate" rel="nofollow" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" data-bs-toggle="modal" data-bs-target="#login-dialog" title="Connectez-vous pour indiquer que vous y allez">
                                     <twig:Icon name="lucide:heart" />
                                     J'y vais&nbsp;!
                                 </a>

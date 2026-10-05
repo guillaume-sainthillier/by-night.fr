@@ -10,14 +10,14 @@
 
 namespace App\Tests\EventSubscriber;
 
+use App\Tests\AppWebTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The URLs of the countries carried a "c--" prefix: each former one reaches the new one in a single redirect.
  */
-final class LegacyCountryUrlSubscriberTest extends WebTestCase
+final class LegacyCountryUrlSubscriberTest extends AppWebTestCase
 {
     /**
      * @return iterable<string, array{string, string}>

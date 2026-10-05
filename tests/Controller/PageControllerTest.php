@@ -11,11 +11,11 @@
 namespace App\Tests\Controller;
 
 use App\Factory\PageFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AppWebTestCase;
 
 use function Zenstruck\Foundry\Persistence\save;
 
-final class PageControllerTest extends WebTestCase
+final class PageControllerTest extends AppWebTestCase
 {
     public function testShowRendersContentAndSeoMetadata(): void
     {

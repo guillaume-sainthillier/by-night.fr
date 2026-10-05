@@ -14,13 +14,13 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
+use App\Tests\AppWebTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AgendaControllerTest extends WebTestCase
+final class AgendaControllerTest extends AppWebTestCase
 {
     use CountsUpcomingEvents;
 

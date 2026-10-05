@@ -13,11 +13,11 @@ namespace App\Tests\Controller\Admin;
 use App\Admin\Filter\FromDataFilter;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
-final class EventCrudControllerTest extends WebTestCase
+final class EventCrudControllerTest extends AppWebTestCase
 {
     public function testEditFormExposesUserAndSystemImageUploads(): void
     {

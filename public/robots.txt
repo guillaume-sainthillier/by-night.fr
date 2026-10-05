@@ -8,6 +8,10 @@
 User-agent: *
 Disallow: /*/tweeter-feed/*
 Disallow: /login-social/*
+# The login and the sign-up, linked from every event with the page to lead back to (_target_path): one URL per event,
+# each opening a session
+Disallow: /login
+Disallow: /inscription
 Disallow: /espace-perso/*
 
 # Sitemap files

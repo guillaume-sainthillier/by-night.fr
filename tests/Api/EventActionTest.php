@@ -10,18 +10,18 @@
 
 namespace App\Tests\Api;
 
-use ApiPlatform\Test\ApiTestCase;
 use ApiPlatform\Test\Client;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
+use App\Tests\AppApiTestCase;
 use Override;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Zenstruck\Foundry\Persistence\Proxy;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
-final class EventActionTest extends ApiTestCase
+final class EventActionTest extends AppApiTestCase
 {
     #[Override]
     protected static ?bool $alwaysBootKernel = true;
