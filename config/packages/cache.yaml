@@ -27,6 +27,8 @@ framework:
 when@test:
     framework:
         cache:
+            # In memory: the tests need no Redis, and a new kernel starts from an empty cache
+            app: cache.adapter.array
             pools:
                 # The login throttling counts every attempt: no Redis needed to run the tests, and
                 # unlike an array pool, the count outlives the request

@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class MergedPlaceRedirectTest extends WebTestCase
 {
+    use StubsAgendaSearch;
+
     public function testTheSlugOfAMergedPlaceRedirectsToThePlaceThatTookItsEvents(): void
     {
         $client = self::createClient();
@@ -35,8 +37,8 @@ final class MergedPlaceRedirectTest extends WebTestCase
 
     public function testALiveSlugOfTheCityWinsOverAMergedOne(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $toulouse = CityFactory::toulouse()->create();
         $bikini = PlaceFactory::createOne(['name' => 'Le Bikini', 'slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
         PlaceFactory::createOne(['name' => 'Le Bikini 1', 'slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -60,19 +62,5 @@ final class MergedPlaceRedirectTest extends WebTestCase
 
         // No place of that slug: back to the city page
         self::assertResponseRedirects('/toulouse/');
-    }
-
-    /**
-     * The agenda page reads its cached counts from Redis, which CI does not run.
-     */
-    private function requireRedis(): void
-    {
-        $host = $_SERVER['REDIS_HOST'] ?? $_ENV['REDIS_HOST'] ?? 'localhost';
-        $socket = @fsockopen((string) $host, 6379, $errno, $errstr, 1);
-        if (false === $socket) {
-            self::markTestSkipped(\sprintf('Redis is not reachable on %s:6379', $host));
-        }
-
-        fclose($socket);
     }
 }

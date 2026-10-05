@@ -55,7 +55,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAPlaceUrlShowsThePlaceOfTheCityItNames(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $toulouse->getCountry()]);
@@ -102,7 +101,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAListingWithoutResultsIsNotIndexable(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -118,7 +116,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheLinksKeepTheShortcutByItsName(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -133,7 +130,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testTheDatesPickedWinOverTheShortcut(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -147,7 +143,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAnUnknownShortcutIsTousLesJours(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -160,7 +155,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAPlaceAgendaKeepsThePlaceNameAsWritten(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Zénith Toulouse Métropole', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -174,7 +168,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAPlaceAgendaContractsThePrepositionWithThePlaceArticle(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -186,7 +179,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testACityAgendaContractsThePrepositionWithTheCityArticle(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $city = CityFactory::createOne(['name' => 'Le Mans']);
 
@@ -197,7 +189,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testATypeAgendaNamesTheTypeLikeItsHeadingInTheBreadcrumb(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -214,7 +205,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheKeywordsOfATypePageAreTheirOwnAndItsLinksKeepThem(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -233,7 +223,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testATypeLinkOfAVenuePageIsTheTypePageAndKeepsTheVenueForAVisitor(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -250,7 +239,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheThemesOfTheMomentLeadToTheirAgendaWithTheirCountsWhileNothingNarrowsTheSearch(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -282,7 +270,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testACategoryPageNarrowedToATypeKeepsBothFilters(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
         $jazz = TagFactory::createOne(['name' => 'Jazz']);
@@ -303,7 +290,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testAVenuePageNarrowedToATypeAndACategoryKeepsThemAll(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -332,7 +318,6 @@ final class AgendaControllerTest extends WebTestCase
      */
     public function testTheTypeLinksOfACategoryPageKeepTheCategory(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
         $gastronomy = TagFactory::createOne(['name' => 'Gastronomie']);
@@ -352,7 +337,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAVenuePageNarrowedToATypeKeepsBothFilters(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -369,7 +353,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAVenuePageIgnoresAnUnknownType(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
@@ -394,7 +377,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testThePriceShortcutIsKeptByTheLinksAndRemovedByItsChip(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -409,7 +391,6 @@ final class AgendaControllerTest extends WebTestCase
 
     public function testAnUnknownPriceShortcutIsEveryPrice(): void
     {
-        $this->requireRedis();
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
@@ -428,20 +409,6 @@ final class AgendaControllerTest extends WebTestCase
         $client->request('GET', '/toulouse/agenda/sortir/brocante');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-    }
-
-    /**
-     * The listing page reads the event types through the Redis-backed cache, which CI does not run.
-     */
-    private function requireRedis(): void
-    {
-        $host = $_SERVER['REDIS_HOST'] ?? $_ENV['REDIS_HOST'] ?? 'localhost';
-        $socket = @fsockopen((string) $host, 6379, $errno, $errstr, 1);
-        if (false === $socket) {
-            self::markTestSkipped(\sprintf('Redis is not reachable on %s:6379', $host));
-        }
-
-        fclose($socket);
     }
 
     /**
