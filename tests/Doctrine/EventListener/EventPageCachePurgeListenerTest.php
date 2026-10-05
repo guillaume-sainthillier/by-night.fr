@@ -14,13 +14,16 @@ use App\Factory\CommentFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
-use App\Message\PurgeCdnCacheTag;
+use App\Factory\UserFactory;
+use App\Message\PurgeCdnCacheTags;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 use function Zenstruck\Foundry\Persistence\delete;
+use function Zenstruck\Foundry\Persistence\flush_after;
 use function Zenstruck\Foundry\Persistence\save;
 
 final class EventPageCachePurgeListenerTest extends AppKernelTestCase
@@ -122,8 +125,30 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
 
         self::assertNotSame([], $this->purgedTags());
         foreach ($async->getSent() as $envelope) {
-            self::assertNotInstanceOf(PurgeCdnCacheTag::class, $envelope->getMessage(), 'the Cloudflare throttle would hold up the "async" worker');
+            self::assertNotInstanceOf(PurgeCdnCacheTags::class, $envelope->getMessage(), 'the Cloudflare throttle would hold up the "async" worker');
         }
+    }
+
+    public function testAFlushQueuesItsTagsByRequest(): void
+    {
+        $place = PlaceFactory::createOne(['name' => 'Le Bikini']);
+        // One category and no themes: 150 events would exhaust the unique tag names
+        $events = EventFactory::createMany(150, ['place' => $place, 'category' => TagFactory::createOne(), 'themes' => [], 'user' => UserFactory::createOne()]);
+        $this->transport()->reset();
+
+        flush_after(static function () use ($place, $events): void {
+            $place->setName('Bikini');
+            save($place);
+            foreach ($events as $event) {
+                $event->setName('Renamed');
+                save($event);
+                // Its session in the same flush: the same page, purged once
+                EventTimesheetFactory::createOne(['event' => $event]);
+            }
+        });
+
+        self::assertSame([100, 51], array_map(\count(...), $this->sentTagLists()), 'one message per Cloudflare request');
+        self::assertCount(151, array_unique($this->purgedTags()));
     }
 
     public function testANewEventPurgesNothing(): void
@@ -142,15 +167,25 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
      */
     private function purgedTags(): array
     {
-        $tags = [];
+        return array_merge(...$this->sentTagLists());
+    }
+
+    /**
+     * @return list<list<string>> the tags of each message
+     *
+     * @phpstan-impure
+     */
+    private function sentTagLists(): array
+    {
+        $lists = [];
         foreach ($this->transport()->getSent() as $envelope) {
             $message = $envelope->getMessage();
-            if ($message instanceof PurgeCdnCacheTag) {
-                $tags[] = $message->tag;
+            if ($message instanceof PurgeCdnCacheTags) {
+                $lists[] = $message->tags;
             }
         }
 
-        return $tags;
+        return $lists;
     }
 
     private function transport(): InMemoryTransport

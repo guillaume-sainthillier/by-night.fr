@@ -43,7 +43,7 @@ framework:
             # Route your messages to the transports
             App\Dto\EventDto: parser
             App\Message\PurgeCdnCacheUrl: cdn
-            App\Message\PurgeCdnCacheTag: cdn
+            App\Message\PurgeCdnCacheTags: cdn
             App\Message\PurgeCdnCachePrefix: cdn
             App\Message\RemoveImageThumbnails: async
             App\Message\RecountUpcomingEvents: async

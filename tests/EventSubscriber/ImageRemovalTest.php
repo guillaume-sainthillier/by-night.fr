@@ -15,7 +15,7 @@ use App\Entity\Event;
 use App\Factory\EventFactory;
 use App\Manager\EventImageRemover;
 use App\Message\PurgeCdnCachePrefix;
-use App\Message\PurgeCdnCacheTag;
+use App\Message\PurgeCdnCacheTags;
 use App\Message\PurgeCdnCacheUrl;
 use App\Message\RemoveImageThumbnails;
 use App\MessageHandler\PurgeCdnCachePrefixHandler;
@@ -230,8 +230,8 @@ final class ImageRemovalTest extends AppKernelTestCase
     {
         $tags = [];
         foreach ($this->sentMessages() as $message) {
-            if ($message instanceof PurgeCdnCacheTag) {
-                $tags[] = $message->tag;
+            if ($message instanceof PurgeCdnCacheTags) {
+                array_push($tags, ...$message->tags);
             }
         }
 
@@ -269,9 +269,11 @@ final class ImageRemovalTest extends AppKernelTestCase
      */
     private function transports(): array
     {
-        $transports = [self::getContainer()->get('messenger.transport.async'), self::getContainer()->get('messenger.transport.cdn')];
-        foreach ($transports as $transport) {
+        $transports = [];
+        foreach (['async', 'cdn'] as $name) {
+            $transport = self::getContainer()->get('messenger.transport.' . $name);
             self::assertInstanceOf(InMemoryTransport::class, $transport);
+            $transports[] = $transport;
         }
 
         return $transports;

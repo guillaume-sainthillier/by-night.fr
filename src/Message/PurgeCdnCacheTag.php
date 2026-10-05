@@ -10,6 +10,9 @@
 
 namespace App\Message;
 
+/**
+ * @deprecated one tag per message: replaced by PurgeCdnCacheTags, kept to read the messages already queued
+ */
 final readonly class PurgeCdnCacheTag
 {
     public function __construct(public string $tag)

@@ -10,13 +10,14 @@
 
 namespace App\Doctrine\EventListener;
 
+use App\Cdn\CloudflareCdnPurger;
 use App\Cdn\EventPageCache;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Entity\Place;
 use App\Entity\UserEvent;
-use App\Message\PurgeCdnCacheTag;
+use App\Message\PurgeCdnCacheTags;
 use App\Messenger\TransactionalMessageDispatcher;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -72,12 +73,13 @@ final class EventPageCachePurgeListener implements ResetInterface
 
     public function postFlush(): void
     {
-        $tags = array_keys($this->tags);
+        $tags = array_map(strval(...), array_keys($this->tags));
         $this->reset();
 
-        // Held until the commit when the flush is part of a transaction (an import batch)
-        foreach ($tags as $tag) {
-            $this->messageDispatcher->dispatch(new PurgeCdnCacheTag($tag));
+        // Held until the commit when the flush is part of a transaction (an import batch). One message per request:
+        // the "cdn" worker still packs those of consecutive flushes together (PurgeCdnCacheTagsHandler)
+        foreach (array_chunk($tags, CloudflareCdnPurger::MAX_FILES_PER_REQUEST) as $chunk) {
+            $this->messageDispatcher->dispatch(new PurgeCdnCacheTags($chunk));
         }
     }
 
