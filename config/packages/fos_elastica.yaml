@@ -140,8 +140,8 @@ fos_elastica:
                 type:
                     type: text
                     analyzer: french_natural
-                # The agenda type pages the event is listed on, found once it is indexed (Event::$agendaTypes): an
-                # existing index gets it from app:events:classify-agenda-types, which adds it before writing any
+                # The agenda type pages the event is listed on, found each night (Event::$agendaTypes): an existing
+                # index gets it from app:events:classify-agenda-types, which adds it before writing any
                 agendaTypes:
                     type: keyword
                 # The lowest price to get in, 0 for a free entry, none when unknown (Event::$startingPrice). A float, as the

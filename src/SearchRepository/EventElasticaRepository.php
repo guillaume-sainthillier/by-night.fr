@@ -25,7 +25,6 @@ use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\DisMax;
 use Elastica\Query\GeoDistance;
-use Elastica\Query\Ids;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
 use Elastica\Query\MatchQuery;
@@ -205,26 +204,21 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * The events with a session from a day on, whatever their place, or those of them with these ids, each hit naming
-     * the type pages that list it in its "matched_queries": what AgendaTypeClassifier stores as their agenda types. The
-     * type queries are optional clauses (the filter makes them so): they select nothing, and are only run on the hits
-     * returned to name them.
-     *
-     * @param list<int>|null $ids
+     * The events with a session from a day on, whatever their place, each hit naming the type pages that list it in its
+     * "matched_queries": what app:events:classify-agenda-types stores as their agenda types, in one search for the five
+     * types. The type queries are optional clauses (the filter makes them so): they select nothing, and only name the
+     * hits. Sorted in index order, the cheapest for a scroll.
      */
-    public function createAgendaTypesQuery(DateTimeImmutable $from, ?array $ids = null): Query
+    public function createAgendaTypesQuery(DateTimeImmutable $from): Query
     {
         $bool = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from, null))));
-        if (null !== $ids) {
-            $bool->addFilter(new Ids($ids));
-        }
-
         foreach (AgendaType::cases() as $type) {
             $bool->addShould($this->createTypeQuery($type)->setParam('_name', $type->value));
         }
 
         $query = Query::create($bool);
         $query->setSource(false);
+        $query->setSort(['_doc']);
 
         return $query;
     }
@@ -355,9 +349,9 @@ final class EventElasticaRepository extends Repository
 
     /**
      * The events of a type page, and of its counts: the types stored on the events (Event::$agendaTypes), found by
-     * createTypeQuery() once each event is indexed (AgendaTypeClassifier). Running that full-text search on each page
-     * took ~0.1–0.15 s per type, ~0.5 s for the five type links of every agenda page (the fuzzy terms expand over the
-     * whole index). An event imported or changed shows on its type pages a few seconds after it is indexed.
+     * createTypeQuery() each night. Running that full-text search on each page took ~0.1–0.15 s per type, ~0.5 s for
+     * the five type links of every agenda page (the fuzzy terms expand over the whole index). An event imported or
+     * changed today shows on its type pages once classified again.
      *
      * @return ($type is null ? null : Term)
      */

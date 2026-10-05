@@ -25,6 +25,5 @@ final class InsertManyDocumentsHandler extends AbstractActionHandler
         }
 
         $this->getPersister($action)->doInsertMany($entities);
-        $this->classify($action);
     }
 }

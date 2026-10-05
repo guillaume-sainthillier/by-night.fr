@@ -54,7 +54,6 @@ framework:
             App\Elasticsearch\Message\ReplaceManyDocuments: async
             App\Elasticsearch\Message\DeleteManyDocumentsByIdentifiers: async
             App\Elasticsearch\Message\RefreshEventDocuments: async
-            App\Elasticsearch\Message\ClassifyEvents: async
 
 when@test:
     framework:

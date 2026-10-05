@@ -25,6 +25,5 @@ final class ReplaceManyDocumentsHandler extends AbstractActionHandler
         }
 
         $this->getPersister($action)->doReplaceMany($entities);
-        $this->classify($action);
     }
 }

@@ -27,9 +27,9 @@ use Symfony\Contracts\Service\ResetInterface;
 /**
  * Purges from Cloudflare the event pages a flush changed, which it otherwise keeps up to a week (EventPageCache):
  * the event row itself (an edit, a cancellation, a deletion), its sessions, comments and participants, and the
- * address of its place. Bulk DQL updates (the agenda classification) bypass the unit of work, so they purge nothing,
- * and neither does an event row whose change the page does not show (a parser version bump stamps every event the
- * source still lists).
+ * address of its place. Bulk DQL updates (the nightly agenda classification) bypass the unit of work, so they
+ * purge nothing, and neither does an event row whose change the page does not show (a parser version bump stamps
+ * every event the source still lists).
  */
 #[AsDoctrineListener(event: Events::onFlush)]
 #[AsDoctrineListener(event: Events::postFlush)]

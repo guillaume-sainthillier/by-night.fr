@@ -22,8 +22,8 @@ use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 use function Zenstruck\Foundry\Persistence\refresh;
 
 /**
- * What AgendaTypeClassifier writes for the events just indexed or for each page of events to come, once Elasticsearch
- * said which type pages list each of them (AgendaTypeClassifier::store()).
+ * What the nightly app:events:classify-agenda-types writes for each page of events to come, once Elasticsearch said
+ * which type pages list each of them (AgendaTypeClassifier::store()).
  */
 final class AgendaTypeClassifierTest extends AppKernelTestCase
 {
@@ -41,7 +41,7 @@ final class AgendaTypeClassifierTest extends AppKernelTestCase
         $both = $this->event();
         $none = $this->event();
 
-        self::assertSame([$concert->getId(), $both->getId()], $this->classifier->store([$concert->getId() => ['concert'], $both->getId() => ['concert', 'family'], $none->getId() => []]));
+        self::assertSame(2, $this->classifier->store([$concert->getId() => ['concert'], $both->getId() => ['concert', 'family'], $none->getId() => []]));
 
         self::assertSame(['concert'], refresh($concert)->getAgendaTypes());
         self::assertSame(['concert', 'family'], refresh($both)->getAgendaTypes());
@@ -56,12 +56,12 @@ final class AgendaTypeClassifierTest extends AppKernelTestCase
         $lost = $this->event(['family']);
         $page = [$unchanged->getId() => ['concert'], $changed->getId() => ['show'], $lost->getId() => []];
 
-        self::assertSame([$changed->getId(), $lost->getId()], $this->classifier->store($page));
+        self::assertSame(2, $this->classifier->store($page));
 
         self::assertSame(['show'], refresh($changed)->getAgendaTypes());
         self::assertSame([], refresh($lost)->getAgendaTypes(), 'No type page lists it anymore');
         self::assertSame([[$changed->getId(), $lost->getId()]], $this->reindexed(), 'One message for the page');
-        self::assertSame([], $this->classifier->store($page));
+        self::assertSame(0, $this->classifier->store($page));
     }
 
     public function testTheEventsOfOtherPagesAreLeftAsTheyAre(): void
@@ -70,11 +70,11 @@ final class AgendaTypeClassifierTest extends AppKernelTestCase
         $otherPage = $this->event(['family']);
         $past = EventFactory::new()->withDates(new DateTimeImmutable('-1 month'))->create(['agendaTypes' => ['concert']]);
 
-        self::assertSame([$page->getId()], $this->classifier->store([$page->getId() => ['concert']]));
+        self::assertSame(1, $this->classifier->store([$page->getId() => ['concert']]));
 
         self::assertSame(['family'], refresh($otherPage)->getAgendaTypes());
         self::assertSame(['concert'], refresh($past)->getAgendaTypes());
-        self::assertSame([], $this->classifier->store([]), 'An empty page');
+        self::assertSame(0, $this->classifier->store([]), 'An empty page');
     }
 
     public function testAnEventFoundAlthoughItEndedInTheDatabaseIsNotWrittenAgain(): void
@@ -82,7 +82,7 @@ final class AgendaTypeClassifierTest extends AppKernelTestCase
         // Its end date is over, but a session is still to come, so the agenda lists it
         $inconsistent = EventFactory::new()->withDates(new DateTimeImmutable('-1 month'))->create(['agendaTypes' => ['concert']]);
 
-        self::assertSame([], $this->classifier->store([$inconsistent->getId() => ['concert']]));
+        self::assertSame(0, $this->classifier->store([$inconsistent->getId() => ['concert']]));
     }
 
     /**
