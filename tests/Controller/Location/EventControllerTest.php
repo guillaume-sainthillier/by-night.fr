@@ -103,13 +103,13 @@ final class EventControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         // "#participer": the page clicks "J'y vais" for the member once they are back (like.js)
-        $target = rawurlencode($this->eventUrl($event) . '#participer');
+        $target = $this->eventUrl($event) . '#participer';
         // The login page without the script, the dialog with it
-        self::assertSelectorExists(\sprintf('a.participate[href="/login?_target_path=%s"][data-bs-target="#login-dialog"]', $target));
+        self::assertSelectorExists(\sprintf('a.participate[href="%s"][data-bs-target="#login-dialog"]', $this->withTarget('/login', $target)));
         // Every way in leads back: the e-mail, a new account, a social network
-        self::assertSelectorExists(\sprintf('#login-dialog a[href="/login?_target_path=%s"]', $target));
-        self::assertSelectorExists(\sprintf('#login-dialog a[href="/inscription?_target_path=%s"]', $target));
-        self::assertSelectorExists(\sprintf('#login-dialog a[href="/login-social/google?_target_path=%s"]', $target));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="%s"]', $this->withTarget('/login', $target)));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="%s"]', $this->withTarget('/inscription', $target)));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="%s"]', $this->withTarget('/login-social/google', $target)));
     }
 
     public function testTheLoginToCommentLeadsBackToTheComments(): void
@@ -119,7 +119,7 @@ final class EventControllerTest extends WebTestCase
 
         $client->request('GET', $this->eventUrl($event));
 
-        self::assertSelectorExists(\sprintf('#comments a[href="/login?_target_path=%s"]', rawurlencode($this->eventUrl($event) . '#comments')));
+        self::assertSelectorExists(\sprintf('#comments a[href="%s"]', $this->withTarget('/login', $this->eventUrl($event) . '#comments')));
     }
 
     public function testAMemberGetsNoLoginDialogButAButtonThatRecordsTheClickMadeBeforeTheLogin(): void
@@ -501,6 +501,14 @@ final class EventControllerTest extends WebTestCase
         }
 
         return EventFactory::createOne($attributes);
+    }
+
+    /**
+     * A login URL leading back to $target, as the router writes it: the slashes of a query stay as they are.
+     */
+    private function withTarget(string $path, string $target): string
+    {
+        return $path . '?_target_path=' . str_replace('%2F', '/', rawurlencode($target));
     }
 
     private function eventUrl(Event $event): string
