@@ -253,6 +253,19 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorNotExists('a.btn[href="https://billetterie.example.org/concert"]');
     }
 
+    public function testThePageNamesTheArtists(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setPerformers(['Seth', 'The Great Old Ones']);
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorTextContains('.event-facts', 'Artistes');
+        self::assertSelectorTextContains('.event-facts', 'Seth, The Great Old Ones');
+    }
+
     public function testALongListShowsTheNextSessionsAndFoldsThePastAndLaterOnes(): void
     {
         $client = self::createClient();

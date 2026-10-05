@@ -119,6 +119,17 @@ final class CleanerTest extends AppKernelTestCase
         self::assertSame('https://cdn.openagenda.com/main/a.jpg', $dto->imageUrl);
     }
 
+    public function testCleanEventNamesEachArtistOnceAsFirstSpelled(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->performers = ['Seth', ' SETH ', 'PETER HOOK &amp; THE  LIGHT', 'PLK', ''];
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertSame(['Seth', 'PETER HOOK & THE LIGHT', 'PLK'], $dto->performers);
+    }
+
     public function testCleanPlaceAndCityFitTheirColumns(): void
     {
         $place = new PlaceDto();

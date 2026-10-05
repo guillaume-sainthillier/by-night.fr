@@ -173,6 +173,11 @@ final class SeeTicketsKwankoParser extends AbstractParser
         $event->latitude = (float) ($data['latitude'] ?? 0);
         $event->longitude = (float) ($data['longitude'] ?? 0);
         $event->status = EventStatus::fromStatusMessage($data['onsale'] ?? null);
+        // The headliner, then the other artists of the bill separated by "|" (the Cleaner drops the repeats)
+        $event->performers = array_values(array_filter(
+            [$data['primary_artist'] ?? '', ...explode('|', $data['secondary_artist'] ?? '')],
+            static fn (string $artist): bool => '' !== trim($artist),
+        ));
 
         $event->prices = self::formatPriceRange([$data['min_price'] ?? '', $data['max_price'] ?? '']);
 

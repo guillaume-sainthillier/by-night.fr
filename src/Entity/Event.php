@@ -176,6 +176,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 1024, nullable: true)]
     private ?string $ticketUrl = null;
 
+    /**
+     * The artists on stage, as the source names them (the headliner first).
+     *
+     * @var list<string>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $performers = null;
+
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reservationTelephone = null;
 
@@ -1383,6 +1391,24 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setTicketUrl(?string $ticketUrl): self
     {
         $this->ticketUrl = $ticketUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getPerformers(): array
+    {
+        return $this->performers ?? [];
+    }
+
+    /**
+     * @param list<string> $performers
+     */
+    public function setPerformers(array $performers): self
+    {
+        $this->performers = [] === $performers ? null : $performers;
 
         return $this;
     }

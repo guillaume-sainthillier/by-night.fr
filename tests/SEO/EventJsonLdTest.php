@@ -118,6 +118,21 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertArrayNotHasKey('offers', $schema);
     }
 
+    public function testTheArtistsAreThePerformers(): void
+    {
+        $schema = $this->schema($this->createEvent(['performers' => ['Seth', 'The Great Old Ones']]));
+
+        self::assertSame([
+            ['@type' => 'PerformingGroup', 'name' => 'Seth'],
+            ['@type' => 'PerformingGroup', 'name' => 'The Great Old Ones'],
+        ], $schema['performer']);
+    }
+
+    public function testAnEventWithoutArtistsHasNoPerformer(): void
+    {
+        self::assertArrayNotHasKey('performer', $this->schema($this->createEvent([])));
+    }
+
     /**
      * @param list<string> $agendaTypes
      */

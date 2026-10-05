@@ -31,6 +31,7 @@ final class EventDtoFactory
         $event->fromData = $entity->getFromData();
         $event->source = $entity->getSource();
         $event->ticketUrl = $entity->getTicketUrl();
+        $event->performers = $entity->getPerformers();
         $event->entityId = $entity->getId();
         $event->externalId = $entity->getExternalId();
         $event->externalOrigin = $entity->getExternalOrigin();

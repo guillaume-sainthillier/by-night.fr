@@ -88,6 +88,9 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?string $ticketUrl = null;
 
+    /** @var list<string> the headliner first */
+    public array $performers = [];
+
     public ?string $type = null;
 
     public ?EventStatus $status = null;

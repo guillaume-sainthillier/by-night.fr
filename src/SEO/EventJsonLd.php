@@ -85,6 +85,12 @@ final readonly class EventJsonLd
             $schema['isAccessibleForFree'] = true;
         }
 
+        // A group or one artist, the sources do not say: PerformingGroup, as Google's examples name the artists of a bill
+        $performers = $event->getPerformers();
+        if ([] !== $performers) {
+            $schema['performer'] = array_map(static fn (string $name): array => ['@type' => 'PerformingGroup', 'name' => $name], $performers);
+        }
+
         if ($event->getUser() instanceof User) {
             $schema['organizer'] = $this->buildOrganizerSchema($event);
         }

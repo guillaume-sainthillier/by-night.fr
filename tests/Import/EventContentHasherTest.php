@@ -53,6 +53,31 @@ final class EventContentHasherTest extends TestCase
         self::assertNotSame($base, $this->hasher->hash($renamed));
     }
 
+    /**
+     * The fingerprints are stored: a field added later must leave the hash of the events without it as it was, or the
+     * next import would publish every event again.
+     */
+    public function testTheFieldsAddedLaterLeaveTheFingerprintOfTheEventsWithoutThem(): void
+    {
+        self::assertSame('e88b5a38ea9088f3c3ada90cbce45d59d217e54d', $this->hasher->hash($this->event()));
+    }
+
+    public function testATicketingLinkChangesHash(): void
+    {
+        $withTicketing = $this->event();
+        $withTicketing->ticketUrl = 'https://billetterie.example.org';
+
+        self::assertNotSame($this->hasher->hash($this->event()), $this->hasher->hash($withTicketing));
+    }
+
+    public function testTheArtistsChangeHash(): void
+    {
+        $withArtists = $this->event();
+        $withArtists->performers = ['Messmer'];
+
+        self::assertNotSame($this->hasher->hash($this->event()), $this->hasher->hash($withArtists));
+    }
+
     public function testChangingPlaceChangesHash(): void
     {
         $base = $this->hasher->hash($this->event());

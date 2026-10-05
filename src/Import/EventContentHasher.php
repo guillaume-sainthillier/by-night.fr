@@ -95,6 +95,10 @@ final class EventContentHasher
             $canonical['ticketUrl'] = $dto->ticketUrl;
         }
 
+        if ([] !== $dto->performers) {
+            $canonical['performers'] = $dto->performers;
+        }
+
         return $canonical;
     }
 

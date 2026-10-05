@@ -282,6 +282,16 @@
                                 </div>
                             {% endif %}
 
+                            {% if event.performers %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:music" class="text-primary" />
+                                    <div>
+                                        <div class="subheader">{{ '{count, plural, one {Artiste} other {Artistes}}'|trans({count: event.performers|length}, 'messages+intl-icu') }}</div>
+                                        <div class="fw-semibold">{{ event.performers|join(', ') }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             {% if event.prices %}
                                 <div class="detail-item">
                                     <twig:Icon name="lucide:ticket" class="text-primary" />

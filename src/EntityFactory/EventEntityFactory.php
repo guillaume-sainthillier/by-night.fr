@@ -88,6 +88,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setParserVersion($dto->parserVersion);
         $entity->setSource($dto->source);
         $entity->setTicketUrl($dto->ticketUrl);
+        $entity->setPerformers($dto->performers);
 
         // Convert category TagDto to Tag entity
         $categoryEntity = null;
