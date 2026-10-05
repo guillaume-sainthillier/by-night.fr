@@ -45,6 +45,28 @@ final class OutingControllerTest extends WebTestCase
         self::assertSelectorExists(\sprintf('a[href="/membres/%s--%d#passes"]', $member->getSlug(), $member->getId()));
     }
 
+    public function testAJyVaisTakenBackLeavesTheOutings(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        foreach (['Finalement non' => [false, false], 'Peut-être' => [false, true], 'Oui' => [true, false]] as $name => [$going, $wish]) {
+            UserEventFactory::createOne([
+                'user' => $member,
+                'event' => EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['name' => $name]),
+                'going' => $going,
+                'wish' => $wish,
+            ]);
+        }
+        $client->loginUser($member);
+
+        $crawler = $client->request('GET', '/espace-perso/mes-sorties');
+
+        // The row of a "J'y vais" taken back stays (EventParticipationManager), neither going nor interested
+        $names = $crawler->filter('#outings .card-title')->each(static fn ($title): string => trim($title->text()));
+        sort($names);
+        self::assertSame(['Oui', 'Peut-être'], $names);
+    }
+
     public function testAMemberWithoutOutingsLearnsHowToAddOne(): void
     {
         $client = self::createClient();

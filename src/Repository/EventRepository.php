@@ -759,8 +759,18 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->from(UserEvent::class, 'ue')
             ->join('ue.event', 'e')
             ->where('ue.user = :user')
+            ->andWhere(self::inCalendar('ue'))
             ->andWhere('e.draft = false')
             ->setParameter('user', $user->getId());
+    }
+
+    /**
+     * A "J'y vais" taken back keeps its row, neither going nor interested (EventParticipationManager::participate()):
+     * out of the calendar.
+     */
+    private static function inCalendar(string $alias): string
+    {
+        return \sprintf('(%1$s.going = true OR %1$s.wish = true)', $alias);
     }
 
     public function findAllNextEvents(User $user, bool $isNext = true): QueryBuilder
@@ -769,6 +779,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->join('e.userEvents', 'cal')
             ->where('cal.user = :user')
+            ->andWhere(self::inCalendar('cal'))
             ->andWhere('e.draft = false')
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
             ->orderBy('e.endDate', $isNext ? SortDirection::Ascending : SortDirection::Descending)
