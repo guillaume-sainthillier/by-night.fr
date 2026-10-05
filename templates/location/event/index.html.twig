@@ -24,7 +24,7 @@
         {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
     {% else %}
         {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
-        {% do menu.addItem('Sortir ' ~ event.placeCity|at_place, url('app_agenda_index', {location: location.city.slug})) %}
+        {% do menu.addItem('Sortir ' ~ event.placeCity|at_place, url('app_location_index', {location: location.city.slug})) %}
     {% endif %}
 
     {% if not isHiddenDraft %}
@@ -85,7 +85,7 @@
         {% set price = event.prices|price_label %}
         {% set hasEnded = event_seo.hasEnded(event) %}
         {% set placeAgenda = path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) %}
-        {% set agenda = path('app_agenda_index', {location: place.locationSlug}) %}
+        {% set agenda = path('app_location_index', {location: place.locationSlug}) %}
 
         {# The embedded map looks the venue up by name, or by its coordinates when it has no city to name #}
         {% set mapValue = (event.placeName ~ ' ' ~ event.placeCity)|trim %}

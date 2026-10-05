@@ -8,7 +8,7 @@
 {% block meta_description 'By Night est votre guide de sorties en France. Depuis 2013, nous référençons concerts, spectacles, expos et événements pour vous aider à trouver votre prochaine sortie.' %}
 
 {% set since = 2013 %}
-{% set agenda = location ? path('app_agenda_index', {location: location.slug}) : path('app_index') %}
+{% set agenda = location ? path('app_location_index', {location: location.slug}) : path('app_index') %}
 
 {% block body %}
     <section class="hero-glow py-5">

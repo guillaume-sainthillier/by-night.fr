@@ -317,7 +317,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->addOrderBy('c.population', SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
-            // Scans the ~88k admin zones; a flag set in the back office shows within 10 minutes
+            // A flag set in the back office shows within 10 minutes
             ->enableResultCache(600)
             ->getResult();
     }

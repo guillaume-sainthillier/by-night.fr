@@ -924,50 +924,47 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         $from = new DateTimeImmutable('today');
 
+        // The ids first: event_popular_idx covers this query, so MySQL ranks the upcoming events without reading
+        // them. Selecting the events themselves would load every upcoming row (~180k) to test its start date, as
+        // MySQL pushes no condition down to an index over a virtual column (has_image)
         $qb = $this
             ->createQueryBuilder('e')
+            ->select('e.id')
             ->join('e.place', 'p')
             ->andWhere('e.startDate <= :to')
-            ->andWhere("((e.image.name IS NOT NULL AND e.image.name <> '') OR (e.imageSystem.name IS NOT NULL AND e.imageSystem.name <> ''))")
+            ->andWhere('e.hasImage = true')
             ->setParameter('to', $from->modify('+6 days')->format('Y-m-d'))
             ->orderBy('e.participations', SortDirection::Descending)
             ->addOrderBy('e.endDate', SortDirection::Ascending)
             ->addOrderBy('e.id', SortDirection::Ascending)
             ->setMaxResults($limit);
 
+        /** @var list<int> $ids */
+        $ids = $this
+            ->whereUpcoming($qb, $location)
+            ->getQuery()
+            ->enableResultCache(self::PORTAL_CACHE_TTL)
+            ->getSingleColumnResult();
+
+        if ([] === $ids) {
+            return [];
+        }
+
         /** @var Event[] $events */
         $events = $this
-            ->whereUpcoming($qb, $location)
+            ->createQueryBuilder('e')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->enableResultCache(self::PORTAL_CACHE_TTL)
             ->getResult();
 
+        $ranks = array_flip($ids);
+        usort($events, static fn (Event $a, Event $b): int => $ranks[$a->getId()] <=> $ranks[$b->getId()]);
+
         $this->loadAllEager($events, ['view' => 'events:portal:list']);
 
         return $events;
-    }
-
-    /**
-     * The venues of a city or a country with the most events to come, as last counted by UpcomingEventCounter.
-     *
-     * @return list<array{0: Place, events: int|string}> each venue, and its number of events to come
-     */
-    public function findUpcomingPlaces(Location $location, int $limit): array
-    {
-        $qb = $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->select('p', 'p.upcomingEvents AS events')
-            ->from(Place::class, 'p')
-            ->where('p.upcomingEvents > 0')
-            ->orderBy('p.upcomingEvents', SortDirection::Descending)
-            ->addOrderBy('p.name', SortDirection::Ascending)
-            ->setMaxResults($limit);
-
-        return $this
-            ->whereLocation($qb, $location)
-            ->getQuery()
-            ->getResult();
     }
 
     /**

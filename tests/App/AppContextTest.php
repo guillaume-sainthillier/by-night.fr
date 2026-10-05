@@ -12,10 +12,13 @@ namespace App\Tests\App;
 
 use App\Factory\CityFactory;
 use App\Factory\UserFactory;
+use App\Tests\Controller\Location\StubsAgendaSearch;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class AppContextTest extends WebTestCase
 {
+    use StubsAgendaSearch;
+
     public function testThePagesWithoutLocationTakeTheMembersCity(): void
     {
         $client = self::createClient();
@@ -24,21 +27,22 @@ final class AppContextTest extends WebTestCase
         $client->request('GET', '/recherche/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('#navbar-main a[href="/toulouse/"]');
+        self::assertSelectorExists('#navbar-main a[href="/toulouse"]');
     }
 
     public function testTheCityOfTheUrlWinsOverTheMembersCity(): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $toulouse = CityFactory::toulouse()->create();
         CityFactory::createOne(['name' => 'Lyon', 'slug' => 'lyon', 'country' => $toulouse->getCountry()]);
         $client->loginUser(UserFactory::createOne(['city' => $toulouse]));
 
-        $client->request('GET', '/lyon/');
+        $client->request('GET', '/lyon');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('#navbar-main a[href="/lyon/"]');
-        self::assertSelectorNotExists('#navbar-main a[href="/toulouse/"]');
+        self::assertSelectorExists('#navbar-main a[href="/lyon"]');
+        self::assertSelectorNotExists('#navbar-main a[href="/toulouse"]');
     }
 
     public function testAMemberWithoutCityHasNoLocation(): void
@@ -50,6 +54,6 @@ final class AppContextTest extends WebTestCase
         $client->request('GET', '/recherche/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorNotExists('#navbar-main a[href="/toulouse/"]');
+        self::assertSelectorNotExists('#navbar-main a[href="/toulouse"]');
     }
 }

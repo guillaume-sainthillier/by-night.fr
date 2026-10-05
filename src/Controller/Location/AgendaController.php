@@ -13,6 +13,8 @@ namespace App\Controller\Location;
 use App\App\AppContext;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Tag;
@@ -50,9 +52,17 @@ final class AgendaController extends BaseController
     /** The busiest categories of the filters under each type */
     private const int TYPE_CATEGORIES = 4;
 
+    /** Also the busiest cities on each country card, here and on the home page: they share the query */
+    public const int VENUES = 5;
+
+    /** Below, a country has no ranking of its cities */
+    private const int MIN_CITIES = 3;
+
+    private const int NEIGHBOURS = 5;
+
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
-    #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
+    #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{typeSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['typeSlug' => new AgendaTypeSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{placeSlug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tagSlug<%patterns.slug%>}--{tagId<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['tagId' => '\d+'], methods: ['GET'])]
@@ -74,6 +84,9 @@ final class AgendaController extends BaseController
         ?string $legacyTag = null,
     ): Response {
         $location = $appContext->getLocation();
+        // The page of the location itself: "/toulouse", "/toulouse/2"
+        $isLocationPage = 'app_location_index' === $request->attributes->getString('_route');
+
         $type = null !== $typeSlug ? AgendaType::fromSlug($typeSlug) : null;
         $place = null;
         $tag = null;
@@ -86,7 +99,7 @@ final class AgendaController extends BaseController
         if (null !== $placeSlug) {
             $place = $this->findPlace($placeRepository, $location, $placeSlug);
             if (null === $place) {
-                return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()]);
+                return $this->redirectToRoute('app_location_index', ['location' => $location->getSlug()]);
             }
 
             // Another location, or the slug of a place merged into this one
@@ -149,9 +162,11 @@ final class AgendaController extends BaseController
             $events = $this->createEmptyPaginator($page, self::EVENT_PER_PAGE);
         }
 
-        // Redirect if page exceeds results
+        // Redirect if page exceeds results; the first page goes without its number
         if ($page > $events->getNbPages()) {
-            return $this->redirectToRoute($request->attributes->getString('_route'), [...$routeParams, ...$filters, 'page' => max(1, $events->getNbPages())]);
+            $lastPage = $events->getNbPages();
+
+            return $this->redirectToRoute($request->attributes->getString('_route'), [...$routeParams, ...$filters, 'page' => $lastPage > 1 ? $lastPage : null]);
         }
 
         $dateRange = $search->getDateRange();
@@ -185,7 +200,47 @@ final class AgendaController extends BaseController
             'undatedFilters' => array_diff_key($filters, ['when' => true, 'dateRange' => true]),
             'unpricedFilters' => array_diff_key($filters, ['price' => true]),
             'form' => $form,
+            // The first page of the location also introduces it: its busiest cities, and its neighbours
+            'portal' => $isLocationPage && 1 === $page ? $this->getPortal($eventRepository, $location) : null,
         ]);
+    }
+
+    /**
+     * The location's agenda used to be a page of its own, besides the page of the location: they are one page now.
+     */
+    #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_legacy', methods: ['GET'])]
+    public function legacyIndex(Request $request, string $location, int $page = 1): Response
+    {
+        return $this->redirectToRoute('app_location_index', [
+            ...$request->query->all(),
+            'location' => $location,
+            'page' => $page > 1 ? $page : null,
+        ], Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    /**
+     * @return array{
+     *     cities: list<array{0: City, events: int|string}>,
+     *     neighbours: list<array{0: City|Country, events: int|string}>,
+     * }
+     */
+    private function getPortal(EventRepository $eventRepository, Location $location): array
+    {
+        $cities = [];
+        if ($location->isCity()) {
+            // The cities around the city
+            $neighbours = $eventRepository->findUpcomingCitiesAround($location->getCity(), self::NEIGHBOURS);
+        } else {
+            // The busiest cities of the country, and the other countries, as the home page lists them
+            $cities = $eventRepository->findUpcomingCitiesOfCountry($location->getCountry(), self::VENUES);
+            $neighbours = $eventRepository->findUpcomingCountries(self::VENUES, $location->getCountry());
+        }
+
+        return [
+            // A country with too few busy cities to rank (Monaco) has its venues in the filters of its agenda
+            'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
+            'neighbours' => $neighbours,
+        ];
     }
 
     /**
@@ -202,7 +257,7 @@ final class AgendaController extends BaseController
         }
 
         if (null === $place) {
-            return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
+            return $this->redirectToRoute('app_location_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         return $this->redirectToRoute('app_agenda_by_place', [
@@ -346,7 +401,7 @@ final class AgendaController extends BaseController
             null !== $place => ['app_agenda_by_place', ['placeSlug' => $place->getSlug(), 'location' => $location->getSlug()]],
             null !== $tag => ['app_agenda_by_tag', ['tagSlug' => $tag->getSlug(), 'tagId' => $tag->getId(), 'location' => $location->getSlug()]],
             null !== $type => ['app_agenda_by_type', ['typeSlug' => $type->getSlug(), 'location' => $location->getSlug()]],
-            default => ['app_agenda_index', ['location' => $location->getSlug()]],
+            default => ['app_location_index', ['location' => $location->getSlug()]],
         });
     }
 }

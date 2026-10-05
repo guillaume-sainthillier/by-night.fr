@@ -120,7 +120,6 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($cities as $city) {
             $this->addUrl($section, 'app_location_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
 
             if ((int) $city['nb'] < self::CATEGORY_PAGES_MIN_EVENTS) {
                 continue;
