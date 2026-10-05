@@ -21,9 +21,26 @@
     --vc-date-range-middle-color: var(--body-color);
     --vc-months-years-bg-selected: var(--primary);
     --vc-months-years-color-selected: var(--primary-fg);
+    --vc-time-border-color: var(--border-color);
+    --vc-time-input-bg: transparent;
+    --vc-time-input-bg-hover: var(--primary-lt);
+    --vc-time-input-color: var(--body-color);
+    --vc-time-separator-color: var(--body-color);
+    --vc-time-range-bg: transparent;
+    --vc-time-range-track-color: var(--border-color);
+    --vc-time-range-thumb-bg: var(--primary);
+    --vc-time-range-thumb-border: var(--primary);
+    --vc-time-range-thumb-border-hover: var(--primary);
 
     z-index: $zindex-dropdown;
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius-lg);
     font-family: inherit;
+}
+
+// The time picker shows the time control alone (TimepickerService): no dates above it to keep apart from
+.vc [data-vc='time']:first-child {
+    margin-top: 0;
+    border-top-width: 0;
+    padding-top: 0;
 }
