@@ -198,7 +198,7 @@ final class EventControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('#event');
-        self::assertSelectorTextContains('.alert-secondary', "Retiré de l'agenda de l'organisateur");
+        self::assertSelectorTextContains('.alert-danger', "Retiré de l'agenda de l'organisateur");
         self::assertSelectorNotExists('#event-draft-notice', 'Nothing to publish');
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
     }
