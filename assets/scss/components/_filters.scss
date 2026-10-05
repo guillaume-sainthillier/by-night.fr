@@ -26,6 +26,14 @@
     padding-right: 0.25rem;
 }
 
+// The count pill of a group's header (FilterGroup/Header.html.twig): 12 px figures, with the padding that keeps the height
+// of the 0.857rem badge it was (1.5 × 0.857rem: its line and its 0.25em paddings)
+.badge.filter-group-count {
+    font-size: 0.75rem;
+    padding-top: calc((1.5 * 0.857143rem - 0.75rem) / 2);
+    padding-bottom: calc((1.5 * 0.857143rem - 0.75rem) / 2);
+}
+
 // The link of the header, or the button that folds the group when it has no page
 .filter-group-link {
     display: flex;

@@ -211,7 +211,7 @@
                                         {% set when = option.preset.value == 'anytime' ? {} : {when: option.preset.value} %}
                                         <twig:Chip href="{{ path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) }}" class="btn-sm" rel="nofollow">
                                             {{ option.preset.label }}
-                                            <span class="ms-1 opacity-75 fw-normal">{{ option.count }}</span>
+                                            <span class="chip-count">{{ option.count }}</span>
                                         </twig:Chip>
                                     {% endfor %}
                                 </div>

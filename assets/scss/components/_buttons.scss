@@ -96,6 +96,14 @@
     --btn-active-border-color: #{$primary};
 }
 
+// The count a chip ends with ("Demain 339"): smaller than its label, which keeps the chip's height
+.btn-chip .chip-count {
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: $font-weight-normal;
+    opacity: 0.75;
+}
+
 // A selected chip stays selected under the pointer, a shade darker. Tabler's ".btn-check + .btn:hover" comes after
 // Bootstrap's ".btn-check:checked + .btn" with the same specificity, so the checked chip turned back to the hover look.
 .btn-check:checked + .btn-chip:hover,

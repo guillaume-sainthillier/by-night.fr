@@ -38,13 +38,13 @@
                 <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Prix">
                     <twig:Chip href="{{ path(app.current_route, routeParams|merge(unpricedFilters)) }}" active="{{ search.price is null }}" class="btn-sm" rel="nofollow">
                         Tous les prix
-                        {% if facets.prices.any is defined %}<span class="ms-1 opacity-75 fw-normal">{{ facets.prices.any }}</span>{% endif %}
+                        {% if facets.prices.any is defined %}<span class="chip-count">{{ facets.prices.any }}</span>{% endif %}
                     </twig:Chip>
                     {% for price in enum_cases('App\\Enum\\PricePreset') %}
                         {% set count = facets.prices[price.value] ?? null %}
                         <twig:Chip href="{{ path(app.current_route, routeParams|merge(unpricedFilters)|merge({price: price.value})) }}" active="{{ search.price is same as(price) }}" class="btn-sm" rel="nofollow">
                             {{ price.label }}
-                            {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
+                            {% if count is not null %}<span class="chip-count">{{ count }}</span>{% endif %}
                         </twig:Chip>
                     {% endfor %}
                 </div>
