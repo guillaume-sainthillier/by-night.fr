@@ -122,6 +122,21 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorExists(\sprintf('#comments a[href="%s"]', $this->withTarget('/login', $this->eventUrl($event) . '#comments')));
     }
 
+    public function testTheLoginLinksThatLeadBackAreNotFollowed(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $crawler = $client->request('GET', $this->eventUrl($event));
+
+        // One login URL per event (its _target_path): crawlers would open a session on each of the millions of them
+        $links = $crawler->filter('a[href*="_target_path="]')->each(static fn (Crawler $link): array => [$link->attr('href'), $link->attr('rel') ?? '']);
+        self::assertNotEmpty($links);
+        foreach ($links as [$href, $rel]) {
+            self::assertContains('nofollow', explode(' ', $rel), (string) $href);
+        }
+    }
+
     public function testAMemberGetsNoLoginDialogButAButtonThatRecordsTheClickMadeBeforeTheLogin(): void
     {
         $client = self::createClient();
