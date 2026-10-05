@@ -74,6 +74,16 @@ final readonly class EventJsonLd
 
         $schema['location'] = $this->buildLocationSchema($event);
 
+        $offer = $this->buildOfferSchema($event);
+        if (null !== $offer) {
+            $schema['offers'] = $offer;
+        }
+
+        // 0 is a free entry; null an unknown price, not a free one (StartingPrice)
+        if (0.0 === $event->getStartingPrice()) {
+            $schema['isAccessibleForFree'] = true;
+        }
+
         if ($event->getUser() instanceof User) {
             $schema['organizer'] = $this->buildOrganizerSchema($event);
         }
@@ -134,6 +144,38 @@ final readonly class EventJsonLd
         }
 
         return $location;
+    }
+
+    /**
+     * The tickets, from the lowest price the sources give. A cancelled event sells none, and an event whose price is
+     * unknown only gets an offer when it is sold out, which is worth telling on its own.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildOfferSchema(Event $event): ?array
+    {
+        $status = $event->getStatus();
+        $price = $event->getStartingPrice();
+        $soldOut = EventStatus::SoldOut === $status;
+
+        if (EventStatus::Cancelled === $status || (null === $price && !$soldOut)) {
+            return null;
+        }
+
+        $offer = [
+            '@type' => 'Offer',
+            // The ticketing page for the affiliates' events, the event page for the others
+            'url' => $event->isAffiliate() && $event->getSource() ? $event->getSource() : $this->generateEventUrl($event),
+            'availability' => $soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+        ];
+
+        if (null !== $price) {
+            // StartingPrice only reads amounts in euros
+            $offer['price'] = $price;
+            $offer['priceCurrency'] = 'EUR';
+        }
+
+        return $offer;
     }
 
     /**
