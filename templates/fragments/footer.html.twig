@@ -28,7 +28,7 @@
                 <ul class="list-unstyled">
                     {% for city in random_cities(app_context.country) %}
                         <li class="mb-2">
-                            <a class="link-secondary" title="Sortir {{ city.name|at_place }}, {{ city.country }}" href="{{ path('app_agenda_index', {location: city.slug}) }}">
+                            <a class="link-secondary" title="Sortir {{ city.name|at_place }}, {{ city.country }}" href="{{ path('app_location_index', {location: city.slug}) }}">
                                 {{ city.name }}
                             </a>
                         </li>

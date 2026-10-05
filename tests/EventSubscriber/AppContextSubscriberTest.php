@@ -11,6 +11,7 @@
 namespace App\Tests\EventSubscriber;
 
 use App\Factory\CityFactory;
+use App\Tests\Controller\Location\StubsAgendaSearch;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class AppContextSubscriberTest extends WebTestCase
 {
+    use StubsAgendaSearch;
+
     /**
      * @return iterable<string, array{string}>
      */
@@ -45,6 +48,7 @@ final class AppContextSubscriberTest extends WebTestCase
     public function testACityPageNoLongerSetsACookie(): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         CityFactory::toulouse()->create();
 
         $client->request('GET', '/toulouse/');
@@ -59,7 +63,7 @@ final class AppContextSubscriberTest extends WebTestCase
         CityFactory::toulouse()->create();
 
         // The slug of the URL is readable without loading the city: what needs the city itself still 404s
-        $client->request('GET', '/ville-inconnue/agenda');
+        $client->request('GET', '/ville-inconnue/');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }

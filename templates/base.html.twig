@@ -77,7 +77,7 @@ _______     __  _   _ _____ _____ _    _ _______
     {# Pages not worth indexing (empty listings, drafts, empty profiles) set a "noindex" here #}
     {% block meta_robots '' %}
 
-    <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
+    <link rel="canonical" href="{% block canonical %}{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}{% endblock %}" />
 
     <!-- CSS -->
     {{ reprise_entry_link_tags('app') }}

@@ -11,7 +11,7 @@
 namespace App\Controller;
 
 use App\App\AppContext;
-use App\Controller\Location\DefaultController;
+use App\Controller\Location\AgendaController;
 use App\Enum\DateRangePreset;
 use App\Form\Type\QuickSearchType;
 use App\Repository\CityRepository;
@@ -33,11 +33,11 @@ final class HomeController extends AbstractController
         // (assets/js/pages/index.js)
         $memberCity = $appContext->getCity();
         $form = $this->createForm(QuickSearchType::class, ['when' => DateRangePreset::Anytime], [
-            'action' => null !== $memberCity ? $this->generateUrl('app_agenda_index', ['location' => $memberCity->getSlug()]) : '',
+            'action' => null !== $memberCity ? $this->generateUrl('app_location_index', ['location' => $memberCity->getSlug()]) : '',
         ]);
 
         // The countries with events to come, with their busiest cities: the same cards as the country pages
-        $countries = $eventRepository->findUpcomingCountries(DefaultController::VENUES);
+        $countries = $eventRepository->findUpcomingCountries(AgendaController::VENUES);
 
         $metropolises = $cityRepository->findMetropolises(self::METROPOLISES);
         // Until the back office flags some: the biggest cities of the visitor's country, else of the first one

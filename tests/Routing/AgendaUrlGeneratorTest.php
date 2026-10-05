@@ -39,7 +39,7 @@ final class AgendaUrlGeneratorTest extends AppKernelTestCase
             $generator->generate('toulouse', AgendaType::Student, null, $jazz, $filters),
         );
         self::assertSame('/toulouse/agenda/sortir/etudiant?when=this_weekend', $generator->generate('toulouse', AgendaType::Student, filters: $filters));
-        self::assertSame('/toulouse/agenda?when=this_weekend', $generator->generate('toulouse', filters: $filters));
+        self::assertSame('/toulouse/?when=this_weekend', $generator->generate('toulouse', filters: $filters));
     }
 
     public function testAVenueKeepsItsOwnLocation(): void

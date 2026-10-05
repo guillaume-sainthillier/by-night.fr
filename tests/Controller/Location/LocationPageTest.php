@@ -18,12 +18,17 @@ use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
-final class DefaultControllerTest extends WebTestCase
+/**
+ * The page of a location: its agenda, introduced by its copy, its universes, its busiest cities and its neighbours.
+ */
+final class LocationPageTest extends WebTestCase
 {
     use CountsUpcomingEvents;
+    use StubsAgendaSearch;
 
     /**
      * @return iterable<string, array{string, string}>
@@ -38,6 +43,7 @@ final class DefaultControllerTest extends WebTestCase
     public function testTheLocationPageCountsItsPublishedUpcomingEvents(string $url, string $atName): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $toulouse = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
         $belgium = CountryFactory::belgium()->create();
@@ -65,9 +71,10 @@ final class DefaultControllerTest extends WebTestCase
         self::assertSelectorTextSame('#upcoming-count', '3 sorties à venir');
     }
 
-    public function testACountryWithFewCitiesShowsItsVenues(): void
+    public function testACountryWithFewCitiesRanksNone(): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $monaco = CountryFactory::createOne(['id' => 'MC', 'name' => 'Monaco', 'displayName' => 'Monaco', 'atDisplayName' => 'à Monaco']);
         $city = CityFactory::createOne(['name' => 'Monaco', 'country' => $monaco]);
         $place = PlaceFactory::createOne(['name' => 'Grimaldi Forum', 'city' => $city, 'country' => $monaco]);
@@ -77,13 +84,14 @@ final class DefaultControllerTest extends WebTestCase
         $client->request('GET', '/c--monaco/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('#venues h2', 'Les lieux incontournables');
-        self::assertSelectorTextSame('#venues .card-title', 'Grimaldi Forum');
+        // Its busiest venues are the ones of the filters of its agenda
+        self::assertSelectorNotExists('#cities');
     }
 
     public function testACountryWithSeveralCitiesShowsTheBusiest(): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $france = CountryFactory::france()->create();
         foreach (['Lyon' => 3, 'Nantes' => 1, 'Lille' => 2] as $name => $events) {
             $place = PlaceFactory::createOne(['city' => CityFactory::createOne(['name' => $name, 'country' => $france]), 'country' => $france]);
@@ -94,13 +102,14 @@ final class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/c--france/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('#venues h2', 'Les villes les plus animées');
-        self::assertSame(['Lyon', 'Lille', 'Nantes'], $crawler->filter('#venues .card-title')->each(static fn ($title): string => trim($title->text())));
+        self::assertSelectorTextContains('#cities h2', 'Les villes les plus animées');
+        self::assertSame(['Lyon', 'Lille', 'Nantes'], $crawler->filter('#cities .card-title')->each(static fn ($title): string => trim($title->text())));
     }
 
     public function testACountryListsTheOtherCountriesWithTheCardsOfTheHomePage(): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $cities = ['FR' => ['Toulouse' => 1], 'BE' => ['Bruxelles' => 3, 'Liège' => 1], 'CH' => ['Genève' => 1]];
         foreach ([CountryFactory::france()->create(), CountryFactory::belgium()->create(), CountryFactory::switzerland()->create()] as $country) {
             foreach ($cities[$country->getId()] as $name => $events) {
@@ -123,6 +132,7 @@ final class DefaultControllerTest extends WebTestCase
     public function testTheUniversesLeadToTheAgendasOfTheLocation(string $url, string $agenda): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         CityFactory::toulouse()->create();
 
         $crawler = $client->request('GET', $url);
@@ -144,16 +154,45 @@ final class DefaultControllerTest extends WebTestCase
     }
 
     #[DataProvider('provideLocationAgendas')]
-    public function testTheSearchIsSentByGetToTheFiltersOfTheAgendaOfTheLocation(string $url, string $agenda): void
+    public function testTheFormerAgendaRedirectsToTheLocationPageWithItsFiltersAndItsPage(string $url, string $agenda): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', $url);
+        $client->request('GET', $agenda);
+        self::assertResponseRedirects($url, Response::HTTP_MOVED_PERMANENTLY);
 
-        self::assertSelectorExists('input[name="when"][value="anytime"]:checked');
-        $form = $crawler->selectButton('Explorer')->form(['term' => 'jazz', 'when' => 'this_weekend']);
-        self::assertSame('GET', $form->getMethod());
-        self::assertSame('http://localhost' . $agenda . '?term=jazz&when=this_weekend', $form->getUri());
+        $client->request('GET', $agenda . '/3?term=jazz&when=this_weekend');
+        self::assertResponseRedirects($url . '?term=jazz&when=this_weekend&page=3', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    public function testAFilterLeavesTheIntroductionOutForTheAgenda(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse/?term=jazz');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('.hero-location');
+        self::assertSelectorNotExists('#univers');
+        self::assertSelectorTextSame('h1', "Que faire à Toulouse\u{a0}?");
+    }
+
+    public function testTheLocationPageIsTheParentOfItsAgendas(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', '/toulouse/agenda/sortir/concert');
+
+        self::assertResponseIsSuccessful();
+        // The type page is the current one: the last link is the location, with no agenda in between
+        $links = $crawler->filter('.breadcrumb a')->each(static fn ($link): string => (string) parse_url((string) $link->attr('href'), \PHP_URL_PATH));
+        self::assertSame('/toulouse/', end($links));
+        self::assertNotContains('/toulouse/agenda', $links);
     }
 }
