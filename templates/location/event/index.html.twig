@@ -151,7 +151,7 @@
                 </div>
             {% endif %}
             {% if event.status or event.statusMessage %}
-                <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " />
+                <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " full="{{ true }}" />
             {% endif %}
 
             {# On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both

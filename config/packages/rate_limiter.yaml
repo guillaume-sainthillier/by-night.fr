@@ -60,3 +60,14 @@ framework:
                 interval: '18 seconds'
                 amount: 5
             cache_pool: 'cache.rate_limiter'
+        # Sowprog API v2 quotas (https://app.sowprog.com/docs/api/v2), per IP address: 10 req/s,
+        # 100 req/min, 500 req/hour. The hourly one binds: 5 tokens every 36 s is exactly
+        # 500/hour, and a bucket of 10 stays under the other two. A full import is a few pages
+        # of 200 events.
+        sowprog_api:
+            policy: 'token_bucket'
+            limit: 10
+            rate:
+                interval: '36 seconds'
+                amount: 5
+            cache_pool: 'cache.rate_limiter'

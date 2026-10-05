@@ -58,7 +58,7 @@ final class CountryDto implements DependencyObjectInterface, DtoEntityIdentifier
             return ObjectKey::data($this->getKeyPrefix(), 'code', $code);
         }
 
-        // Or the name, for the feeds that send one (DataTourisme, SowProg)
+        // Or the name, for the feeds that send one (DataTourisme)
         $name = mb_strtolower(trim((string) $this->name));
         if ('' !== $name) {
             return ObjectKey::data($this->getKeyPrefix(), 'name', $name);

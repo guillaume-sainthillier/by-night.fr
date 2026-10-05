@@ -1,6 +1,7 @@
 {# @var event \App\Entity\Event #}
 {# @var prefix string|null #}
-{% props event, prefix = null %}
+{# @var full bool the whole message, line breaks included (the event page), rather than its start (the cards) #}
+{% props event, prefix = null, full = false %}
 {% if event.status or event.statusMessage %}
     {% set statusIcon = 'lucide:triangle-alert' %}
     {% set alertClass = 'alert-warning' %}
@@ -18,6 +19,7 @@
     {% endif %}
     <div {{ attributes.defaults({class: 'alert ' ~ alertClass ~ ' mb-0'}) }}>
         <twig:Icon name="{{ statusIcon }}" />
-        <span>{% if prefix %}{{ prefix }}{% endif %}{{ event.statusMessage ?: event.status.label }}</span>
+        {# A feed may give a whole announcement: Sowprog cancel reasons run to 924 characters #}
+        <span>{% if prefix %}{{ prefix }}{% endif %}{% if not event.statusMessage %}{{ event.status.label }}{% elseif full %}{{ event.statusMessage|nl2br }}{% else %}{{ event.statusMessage|excerpt(100) }}{% endif %}</span>
     </div>
 {% endif %}
