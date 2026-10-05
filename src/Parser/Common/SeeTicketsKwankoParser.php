@@ -60,7 +60,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
      * {@inheritDoc}
      */
     #[Override]
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
         $path = $this->downloadCsv();
 

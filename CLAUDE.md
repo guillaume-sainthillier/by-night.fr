@@ -156,6 +156,7 @@ bin/console messenger:setup-transports
 # Import events from a parser
 bin/console app:events:import <parser-name> -vv          # changes since the parser's last run
 bin/console app:events:import <parser-name> --full -vv   # whole catalogue
+bin/console app:events:import <parser-name> --whole -vv  # backfill: whole catalogue, past events included
 
 # Process queued events (the `parser` transport; workers in docker/supervisord-worker.conf)
 bin/console messenger:consume parser -vv
@@ -177,7 +178,7 @@ The system imports events through a multi-stage pipeline:
     - Extend `AbstractParser`, implement `ParserInterface`
     - Each parser has a command name (e.g., `openagenda`, `toulouse.opendata`)
     - Parsers create `EventDto` objects and dispatch them on the Messenger bus (`AbstractParser`), routed to the `parser` transport
-    - `parse(?DateTimeImmutable $since)`: `app:events:import` passes the start of the parser's previous successful run (stored in `parser_state`, see `ParserStateRepository`) so incremental sources fetch only what changed since then; `null` (first run, or `--full`) means a full import
+    - `parse(?DateTimeImmutable $since)`: `app:events:import` passes the start of the parser's previous successful run (stored in `parser_state`, see `ParserStateRepository`) so incremental sources fetch only what changed since then; `null` (first run, or `--full`) means a full import. `parse($since, $includePast)`: `--whole` (implies `--full`) also asks for the events already over, to backfill; only DataTourisme and OpenAgenda filter them out by default (SowProg always sends them, the affiliate and Toulouse feeds have no history)
     - `DataTourismeParser` reads the DATAtourisme API (`DATATOURISME_API_KEY`) through the `datatourisme.client` scoped HTTP client, throttled to the API quotas by the `datatourisme_api` rate limiter (`config/packages/rate_limiter.yaml`)
 
 2. **Message Queue**: Events are queued in RabbitMQ (Messenger `parser` transport) for async processing

@@ -27,11 +27,14 @@ interface ParserInterface
     /**
      * Publishes the source's events.
      *
-     * @param DateTimeImmutable|null $since when the previous successful run started; parsers that
-     *                                      support incremental imports fetch only what changed
-     *                                      since then, null asks for a full import
+     * @param DateTimeImmutable|null $since       when the previous successful run started; parsers that
+     *                                            support incremental imports fetch only what changed
+     *                                            since then, null asks for a full import
+     * @param bool                   $includePast also asks for the events already over, which a
+     *                                            source leaves out by default (a backfill); a feed
+     *                                            without history has nothing more to give
      */
-    public function parse(?DateTimeImmutable $since): void;
+    public function parse(?DateTimeImmutable $since, bool $includePast = false): void;
 
     public function getParsedEvents(): int;
 

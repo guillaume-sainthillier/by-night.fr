@@ -104,6 +104,17 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame(3, $this->parser->getParsedEvents());
     }
 
+    public function testABackfillAlsoAsksForThePastEvents(): void
+    {
+        $this->responses = [self::page([self::apiEvent(['identifier' => 'A'])], null)];
+
+        $this->parser->parse(null, includePast: true);
+
+        self::assertCount(1, $this->requests);
+        self::assertArrayNotHasKey('filters', self::query($this->requests[0]['url']), 'No end date filter left, nor an empty one');
+        self::assertSame(['A'], $this->externalIds());
+    }
+
     public function testIncrementalImportOnlyAsksForTheEventsUpdatedSinceThePreviousRun(): void
     {
         $this->responses = [self::page([], null)];

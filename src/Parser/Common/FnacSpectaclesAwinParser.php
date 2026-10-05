@@ -73,7 +73,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
      * {@inheritDoc}
      */
     #[Override]
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
         // Not a generator: a show's rows can sit anywhere in the feed, so no event is complete
         // before the last row is read. The grouped events (one per show) are the least to keep.

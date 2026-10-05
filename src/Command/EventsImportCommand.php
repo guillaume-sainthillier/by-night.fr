@@ -47,7 +47,8 @@ final class EventsImportCommand extends Command
     {
         $this
             ->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
-            ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible au lieu des seuls changements depuis le dernier import');
+            ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible au lieu des seuls changements depuis le dernier import')
+            ->addOption('whole', 'w', InputOption::VALUE_NONE, 'Importe tout le catalogue, événements passés compris (rattrapage) ; implique --full');
     }
 
     /**
@@ -56,7 +57,9 @@ final class EventsImportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $parserName = $input->getArgument('parser');
-        $full = (bool) $input->getOption('full');
+        // A backfill is a full import that keeps the events already over
+        $whole = (bool) $input->getOption('whole');
+        $full = $whole || (bool) $input->getOption('full');
         $failed = false;
 
         foreach ($this->parsers as $parser) {
@@ -83,11 +86,15 @@ final class EventsImportCommand extends Command
             Monitor::writeln(\sprintf(
                 'Starting <info>%s</info> (%s)',
                 $parser->getName(),
-                null === $since ? 'full import' : \sprintf('changes since %s', $since->format('Y-m-d H:i:s'))
+                match (true) {
+                    $whole => 'whole catalogue, past events included',
+                    null === $since => 'full import',
+                    default => \sprintf('changes since %s', $since->format('Y-m-d H:i:s')),
+                }
             ));
 
             try {
-                $parser->parse($since);
+                $parser->parse($since, $whole);
             } catch (Throwable $exception) {
                 // One source failing must not keep the next ones from importing: "all" goes on and
                 // ends as a failure, while a single parser's failure surfaces as it is

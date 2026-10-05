@@ -62,8 +62,9 @@ final class SowProgParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
+        // The API filters on nothing but the modification date: past events always come along
         $modifiedSince = null === $since ? 0 : 1_000 * self::withSafetyMargin($since)->getTimestamp();
 
         $page = 1;
