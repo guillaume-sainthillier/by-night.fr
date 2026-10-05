@@ -7,6 +7,7 @@ import initTimesheetRows from '@/js/listeners/timesheet-rows'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createTags } from '@/js/services/ui/TagsService'
+import { create as createTimepicker } from '@/js/services/ui/TimepickerService'
 import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 
@@ -18,6 +19,13 @@ function initDatepickers(container = document) {
             toInput: document.getElementById(el.dataset.to),
             singleDate: el.dataset.singleDate === 'true',
         })
+    })
+}
+
+// The hours of the event and of each date (TimeType fields)
+function initTimepickers(container = document) {
+    container.querySelectorAll('input[type="time"]').forEach((el) => {
+        createTimepicker({ element: el })
     })
 }
 
@@ -75,6 +83,7 @@ function initStatusMessage() {
 /** @type {Page} */
 function initialize({ app }) {
     initDatepickers()
+    initTimepickers()
     initTagInputs()
     initCategoryInputs()
     initWysiwygs()
@@ -87,13 +96,14 @@ function initialize({ app }) {
     initTimesheetHoursSync(document.body)
     initTimesheetRows(document.body)
 
-    // Reinitialize date pickers when new timesheet items are added
+    // Reinitialize date and time pickers when new timesheet items are added
     const timesheetsCollection = document.getElementById('app_event_timesheets')
     if (timesheetsCollection) {
         timesheetsCollection.addEventListener('collection.added', (e) => {
             const newItem = e.detail?.item
             if (newItem) {
                 initDatepickers(newItem)
+                initTimepickers(newItem)
             }
         })
     }

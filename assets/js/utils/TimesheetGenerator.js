@@ -1,7 +1,6 @@
-import moment from 'moment'
-import 'moment/locale/fr'
+import { addDays, diffDays, formatDay, isoWeekday, parseDay } from '@/js/utils/days'
 
-moment.locale('fr')
+const MAX_TIMESHEETS = 500
 
 /**
  * Client-side timesheet generator for event scheduling patterns
@@ -15,26 +14,7 @@ export default class TimesheetGenerator {
      * @returns {Array<{startAt: string, endAt: string}>} Array of timesheets
      */
     generateDaily(startDate, endDate) {
-        const timesheets = []
-        const start = moment(startDate).startOf('day')
-        const end = moment(endDate).startOf('day')
-
-        const current = start.clone()
-        let count = 0
-        const maxTimesheets = 500
-
-        while (current.isSameOrBefore(end) && count < maxTimesheets) {
-            const dateStr = current.format('YYYY-MM-DD')
-            timesheets.push({
-                startAt: dateStr,
-                endAt: dateStr,
-            })
-
-            current.add(1, 'day')
-            count++
-        }
-
-        return timesheets
+        return this.generate(startDate, endDate, () => true)
     }
 
     /**
@@ -46,30 +26,7 @@ export default class TimesheetGenerator {
      * @returns {Array<{startAt: string, endAt: string}>} Array of timesheets
      */
     generateWeekdays(startDate, endDate, weekdays) {
-        const timesheets = []
-        const start = moment(startDate).startOf('day')
-        const end = moment(endDate).startOf('day')
-
-        const current = start.clone()
-        let count = 0
-        const maxTimesheets = 500
-
-        while (current.isSameOrBefore(end) && count < maxTimesheets) {
-            const dayOfWeek = current.isoWeekday() // 1=Monday, 7=Sunday
-
-            if (weekdays.includes(dayOfWeek)) {
-                const dateStr = current.format('YYYY-MM-DD')
-                timesheets.push({
-                    startAt: dateStr,
-                    endAt: dateStr,
-                })
-                count++
-            }
-
-            current.add(1, 'day')
-        }
-
-        return timesheets
+        return this.generate(startDate, endDate, (day) => weekdays.includes(isoWeekday(day)))
     }
 
     /**
@@ -80,15 +37,33 @@ export default class TimesheetGenerator {
      * @returns {boolean} True if valid
      */
     validateDateRange(startDate, endDate) {
-        if (!startDate || !endDate) return false
+        const start = parseDay(startDate)
+        const end = parseDay(endDate)
+        if (!start || !end || end < start) return false
 
-        const start = moment(startDate)
-        const end = moment(endDate)
+        return diffDays(end, start) <= 365
+    }
 
-        if (!start.isValid() || !end.isValid()) return false
-        if (end.isBefore(start)) return false
+    /**
+     * One-day timesheets for the days of the range the filter keeps, MAX_TIMESHEETS at most
+     *
+     * @param {Date|string} startDate
+     * @param {Date|string} endDate
+     * @param {(day: Date) => boolean} filter
+     * @returns {Array<{startAt: string, endAt: string}>}
+     */
+    generate(startDate, endDate, filter) {
+        const timesheets = []
+        const end = parseDay(endDate)
 
-        const daysDiff = end.diff(start, 'days')
-        return daysDiff <= 365
+        for (let day = parseDay(startDate); day && end && day <= end; day = addDays(day, 1)) {
+            if (filter(day)) {
+                const dateStr = formatDay(day)
+                timesheets.push({ startAt: dateStr, endAt: dateStr })
+                if (timesheets.length === MAX_TIMESHEETS) break
+            }
+        }
+
+        return timesheets
     }
 }

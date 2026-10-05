@@ -254,7 +254,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
     - etc.
 
 3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/listeners/image-previews.js`)
-    - `DatepickerService.js` - Date range picker (moment.js, daterangepicker)
+    - `DatepickerService.js` - Date and date range picker (vanilla-calendar-pro)
     - `SliderService.js` - Range sliders (nouislider)
     - `TagsService.js` - Tag inputs (tom-select)
     - `WysiwygService.js` - Rich text editor (summernote)

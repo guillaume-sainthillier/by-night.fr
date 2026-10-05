@@ -5,8 +5,7 @@ import { defineConfig } from 'vitest/config'
 // which writes entrypoints.json and manifest.json into public/build/.
 export default defineConfig({
     resolve: {
-        // Same "@" alias as vite.config.mjs. Its moment alias isn't needed here: tests load
-        // dependencies through Node, which resolves moment's `main` for every importer.
+        // Same "@" alias as vite.config.mjs
         alias: {
             '@': fileURLToPath(new URL('./assets', import.meta.url)),
         },

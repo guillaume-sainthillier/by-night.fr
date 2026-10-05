@@ -12,21 +12,22 @@
         "@algolia/autocomplete-theme-classic": "^1.19.4",
         "@fontsource-variable/epilogue": "^5.3.0",
         "@googlemaps/js-api-loader": "^2.0.2",
+        "@maskito/core": "^5.6.0",
+        "@maskito/kit": "^5.6.0",
         "@sentry/browser": "^11.0.0",
         "@tabler/core": "^1.6.1",
         "@tarekraafat/autocomplete.js": "^10.2.9",
-        "daterangepicker": "^3.1.0",
         "fancybox": "^3.0.0",
         "hotkeys-js": "^4.0.0",
         "jquery": "^3.7.1",
         "lodash": "^4.17.23",
-        "moment": "2.31.0",
         "nouislider": "^15.8.1",
         "preact": "^10.28.3",
         "preact-render-to-string": "^6.6.5",
         "summernote": "^0.9.1",
         "sweetalert2": "^11.26.18",
-        "tom-select": "^2.4.6"
+        "tom-select": "^2.4.6",
+        "vanilla-calendar-pro": "^3.4.0"
     },
     "resolutions": {
         "jquery": "3.7.1"
