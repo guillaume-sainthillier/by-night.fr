@@ -48,6 +48,6 @@ final class AgendaUrlGeneratorTest extends AppKernelTestCase
         $toulouse = CityFactory::toulouse()->create();
         $bikini = PlaceFactory::createOne(['slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
 
-        self::assertSame('/toulouse/agenda/sortir-a/le-bikini', $generator->generate('c--france', place: $bikini));
+        self::assertSame('/toulouse/agenda/sortir-a/le-bikini', $generator->generate('france', place: $bikini));
     }
 }

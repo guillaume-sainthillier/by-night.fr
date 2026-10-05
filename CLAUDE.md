@@ -208,7 +208,7 @@ Entity providers (`src/EntityProvider/`) find existing entities matching DTOs.
 
 ### Routing
 
-Routes are location-prefixed (e.g., `/toulouse`, the location page and its agenda, then `/toulouse/2`; `/toulouse/agenda/sortir/concert`; `/toulouse/` and the former `/toulouse/agenda` 301 to `/toulouse`). `AppContextSubscriber` (`src/EventSubscriber/AppContextSubscriber.php`, on `kernel.request`) resolves the `{location}` parameter to a `Location` value object containing City/Country context and stores it in `App\App\AppContext`. Routes without a `{location}` parameter take the city a logged-in member chose on their profile (`User::$city`, looked up by `AppContext` only when a page reads the location), else have none.
+Routes are location-prefixed (e.g., `/toulouse`, the location page and its agenda, then `/toulouse/2`; `/toulouse/agenda/sortir/concert`; `/toulouse/` and the former `/toulouse/agenda` 301 to `/toulouse`). `AppContextSubscriber` (`src/EventSubscriber/AppContextSubscriber.php`, on `kernel.request`) resolves the `{location}` parameter to a `Location` value object containing City/Country context and stores it in `App\App\AppContext`. Countries and cities share that segment (`/france`, `/toulouse`): a country's slug comes first (`App\App\CountrySlugs`, read once per request), no city takes one (`CitySlugHandler`, Gedmo), and the former `/c--france/…` URLs 301 in one hop (`LegacyCountryUrlSubscriber`, before the router). Routes without a `{location}` parameter take the city a logged-in member chose on their profile (`User::$city`, looked up by `AppContext` only when a page reads the location), else have none.
 
 ### Caching
 
