@@ -10,12 +10,10 @@
 
 namespace App\Tests\Command;
 
-use App\App\Location;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
-use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -30,14 +28,13 @@ final class EventsCountUpcomingCommandTest extends AppKernelTestCase
     {
         $toulouse = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many(2)->create(['place' => $place, 'category' => TagFactory::createOne(), 'agendaTypes' => ['concert']]);
+        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many(2)->create(['place' => $place, 'category' => TagFactory::createOne()]);
 
         $tester = new CommandTester(new Application(self::$kernel)->find('app:events:count-upcoming'));
         $tester->execute([]);
 
         self::assertSame(Command::SUCCESS, $tester->getStatusCode());
-        self::assertMatchesRegularExpression('/^\s*1\s+1\s+1\s+2\s+2\s*$/m', $tester->getDisplay());
+        self::assertMatchesRegularExpression('/^\s*1\s+1\s+1\s+2\s*$/m', $tester->getDisplay());
         self::assertSame(2, refresh($toulouse)->getUpcomingEvents());
-        self::assertSame(['concert' => 2], self::getContainer()->get(EventRepository::class)->findUpcomingAgendaTypes(new Location()->setCity($toulouse)));
     }
 }

@@ -19,10 +19,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Recounts the events to come that the home page, the portals and the footer read from places, cities and countries,
- * and the categories and agenda types of the events to come of each city and country.
+ * and the categories of the events to come of each city and country.
  * Scheduled on the host just after midnight, when yesterday's events stop being "to come".
  */
-#[AsCommand('app:events:count-upcoming', 'Recount the events to come of every place, city and country, and their categories and types (daily, just after midnight)')]
+#[AsCommand('app:events:count-upcoming', 'Recount the events to come of every place, city and country, and their categories (daily, just after midnight)')]
 final class EventsCountUpcomingCommand extends Command
 {
     public function __construct(
@@ -37,7 +37,7 @@ final class EventsCountUpcomingCommand extends Command
 
         $written = $this->counter->refresh();
 
-        $io->table(['Countries', 'Cities', 'Places', 'Category counts', 'Type counts'], [[$written['countries'], $written['cities'], $written['places'], $written['categories'], $written['types']]]);
+        $io->table(['Countries', 'Cities', 'Places', 'Category counts'], [[$written['countries'], $written['cities'], $written['places'], $written['categories']]]);
         $io->success('Counts of events to come updated.');
 
         return Command::SUCCESS;

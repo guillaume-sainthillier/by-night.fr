@@ -12,9 +12,9 @@
     <twig:Section id="univers" eyebrow="Inspirez vos envies" icon="lucide:compass" title="Explorez par univers" description="Des spectacles jeune public du dimanche aux concerts du samedi soir, trouvez la sortie qui vous ressemble {{ location.atName }}.">
         <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-lg-5">
             {% for type in types %}
-                {# The type counts of the zone (UpcomingCount, see UpcomingEventCounter), from the types found on each event
-                   once indexed; without any event, the link names the page alone #}
-                {% set events = portal.typeCounts[type.type] ?? 0 %}
+                {# The type counts of the agenda below (its filters' facets): what each type page lists; without any event,
+                   or without the counts (an invalid search), the link names the page alone #}
+                {% set events = facets.types[type.type] ?? 0 %}
                 {% set meta %}{{ events > 0 ? ('{count, plural, one {# ' ~ type.one ~ '} other {# ' ~ type.other ~ '}}')|trans({count: events}, 'messages+intl-icu') ~ ' ' ~ location.atName : type.link }}{% endset %}
                 <div class="col">
                     <twig:Tile

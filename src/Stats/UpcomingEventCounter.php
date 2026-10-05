@@ -12,32 +12,22 @@ namespace App\Stats;
 
 use App\Entity\City;
 use App\Entity\Country;
-use App\Entity\Event;
 use App\Entity\Place;
-use App\Entity\UpcomingCount;
-use App\Enum\AgendaType;
 use App\Repository\EventRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
-use Silarhi\CursorPagination\Configuration\OrderConfiguration;
-use Silarhi\CursorPagination\Configuration\OrderConfigurations;
-use Silarhi\CursorPagination\Pagination\CursorPagination;
 
 /**
- * Stores the number of published events to come on every place, city and country, and of each category and each
- * agenda type in every city and country (UpcomingCount), so the portals rank and count them with an indexed read
- * instead of grouping every event to come on each page.
+ * Stores the number of published events to come on every place, city and country, and of each category in every
+ * city and country (UpcomingCategory), so the portals rank and count them with an indexed read instead of grouping
+ * every event to come on each page.
  *
  * Run daily just after midnight by app:events:count-upcoming, when yesterday's events stop being "to come"; the
  * events imported during the day show in the counts the next night. An event created, changed or deleted on the site
  * (personal space, back office) is recounted right away, for its venues only (refreshPlaces(), see
- * UpcomingEventCountListener), and so are the type counts of its city and country once its types are found, as soon
- * as it is indexed (refreshAgendaTypesOfEvents(), see ClassifyEventsHandler). The type counts of every city and
- * country are recounted again by app:events:classify-agenda-types, run after the parsers (refreshAgendaTypes()). The
- * rows are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt changes and nothing is
- * reindexed.
+ * UpcomingEventCountListener). The rows are written by DQL bulk updates: no lifecycle callback runs, so no updatedAt
+ * changes and nothing is reindexed.
  *
  * The counts are read by plain SELECTs, then only the changed rows are written, by id. A single UPDATE joined to the
  * counts (a CTE) is no faster: it share-locks every event to come while it runs, and the parser worker then waits on
@@ -50,15 +40,12 @@ final readonly class UpcomingEventCounter
     public function __construct(
         private EntityManagerInterface $entityManager,
         private EventRepository $eventRepository,
-        /** How many cities or countries are counted by category or type at once: what the memory holds */
-        private int $zonesPerPage = 500,
     ) {
     }
 
     /**
-     * Returns the number of rows whose count changed, and of category and type counts stored.
-     *
-     * @return array{countries: int, cities: int, places: int, categories: int, types: int}
+     * @return array{countries: int, cities: int, places: int, categories: int} the number of rows whose count changed,
+     *                                                                          and of category counts stored
      */
     public function refresh(): array
     {
@@ -69,63 +56,36 @@ final readonly class UpcomingEventCounter
             'countries' => $this->store(Country::class, $this->sumPlacesBy('country')),
             'cities' => $this->store(City::class, $this->sumPlacesBy('city')),
             'places' => $places,
-            // After the cities and countries: their counts pick the zones to count by category and type
-            'categories' => $this->storeCounts(Dimension::Category),
-            'types' => $this->storeCounts(Dimension::AgendaType),
+            'categories' => $this->storeCategories(),
         ];
     }
 
     /**
-     * Recounts the agenda types of every city and country: app:events:classify-agenda-types, once the parsers ran.
-     *
-     * @return int the number of type counts stored
-     */
-    public function refreshAgendaTypes(): int
-    {
-        return $this->storeCounts(Dimension::AgendaType);
-    }
-
-    /**
-     * Recounts the agenda types of the cities and countries of these events, once their types changed on the site.
-     *
-     * @param list<int> $eventIds
-     *
-     * @return int the number of type counts stored
-     */
-    public function refreshAgendaTypesOfEvents(array $eventIds): int
-    {
-        [$cityIds, $countryIds] = $this->zonesOf($this
-            ->entityManager
-            ->createQueryBuilder()
-            ->from(Event::class, 'e')
-            ->join('e.place', 'p')
-            ->where('e.id IN (:ids)')
-            ->setParameter('ids', $eventIds));
-
-        return $this->storeCountsOf(Dimension::AgendaType, $cityIds, $countryIds);
-    }
-
-    /**
-     * Recounts these venues, their cities and countries, and the category and type counts of those cities and
-     * countries: what a change to the events of these venues can move. The other rows keep the counts they have.
-     * Returns the number of rows whose count changed, and of category and type counts stored.
+     * Recounts these venues, their cities and countries, and the category counts of those cities and countries: what
+     * a change to the events of these venues can move. The other rows keep the counts they have.
      *
      * @param list<int> $placeIds
      *
-     * @return array{countries: int, cities: int, places: int, categories: int, types: int}
+     * @return array{countries: int, cities: int, places: int, categories: int} the number of rows whose count changed,
+     *                                                                          and of category counts stored
      */
     public function refreshPlaces(array $placeIds): array
     {
         if ([] === $placeIds) {
-            return ['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0, 'types' => 0];
+            return ['countries' => 0, 'cities' => 0, 'places' => 0, 'categories' => 0];
         }
 
-        [$cityIds, $countryIds] = $this->zonesOf($this
+        $zones = $this
             ->entityManager
             ->createQueryBuilder()
+            ->select('IDENTITY(p.city) AS city', 'IDENTITY(p.country) AS country')
             ->from(Place::class, 'p')
             ->where('p.id IN (:ids)')
-            ->setParameter('ids', $placeIds));
+            ->setParameter('ids', $placeIds)
+            ->getQuery()
+            ->getScalarResult();
+        $cityIds = self::ids(array_column($zones, 'city'));
+        $countryIds = self::ids(array_column($zones, 'country'));
 
         $places = $this->store(Place::class, $this->eventRepository->countUpcomingByPlace($placeIds), $placeIds);
 
@@ -133,146 +93,70 @@ final readonly class UpcomingEventCounter
             'countries' => [] === $countryIds ? 0 : $this->store(Country::class, $this->sumPlacesBy('country', $countryIds), $countryIds),
             'cities' => [] === $cityIds ? 0 : $this->store(City::class, $this->sumPlacesBy('city', $cityIds), $cityIds),
             'places' => $places,
-            'categories' => $this->storeCountsOf(Dimension::Category, $cityIds, $countryIds),
-            'types' => $this->storeCountsOf(Dimension::AgendaType, $cityIds, $countryIds),
+            'categories' => $this->storeCategories($cityIds, $countryIds),
         ];
     }
 
     /**
-     * @param QueryBuilder $qb the venues ("p")
+     * Rewrites the category counts of every city and country, or of these ones only, in one transaction: the pages
+     * read the previous counts until it commits. A few thousand rows that only the pages read, unlike the place and
+     * city rows the parser worker updates all day, so they are not diffed.
      *
-     * @return array{list<int|string>, list<int|string>} the cities, then the countries of these venues
-     */
-    private function zonesOf(QueryBuilder $qb): array
-    {
-        $zones = $qb
-            ->select('IDENTITY(p.city) AS city', 'IDENTITY(p.country) AS country')
-            ->distinct()
-            ->getQuery()
-            ->getScalarResult();
-
-        return [self::ids(array_column($zones, 'city')), self::ids(array_column($zones, 'country'))];
-    }
-
-    /**
-     * Rewrites the counts of a dimension of these cities and countries, a page of them at a time.
-     *
-     * @param list<int|string> $cityIds
-     * @param list<int|string> $countryIds
+     * @param list<int|string>|null $cityIds    the cities to recount, null for all of them
+     * @param list<int|string>|null $countryIds the countries to recount, null for all of them
      *
      * @return int the number of rows stored
      */
-    private function storeCountsOf(Dimension $dimension, array $cityIds, array $countryIds): int
+    private function storeCategories(?array $cityIds = null, ?array $countryIds = null): int
     {
-        $stored = 0;
-        foreach (['city' => $cityIds, 'country' => $countryIds] as $zone => $ids) {
-            foreach (array_chunk($ids, $this->zonesPerPage) as $page) {
-                $stored += $this->storeZoneCounts($dimension, $zone, $page);
+        if ([] === $cityIds && [] === $countryIds) {
+            return 0;
+        }
+
+        // A venue of a recounted country may be in a city that is not recounted, and the other way around
+        $keptCities = null === $cityIds ? null : array_flip($cityIds);
+        $keptCountries = null === $countryIds ? null : array_flip($countryIds);
+        $cities = [];
+        $countries = [];
+        foreach ($this->eventRepository->countUpcomingCategoriesByZone($cityIds, $countryIds) as $row) {
+            $events = (int) $row['events'];
+            if (null !== $row['city'] && (null === $keptCities || isset($keptCities[$row['city']]))) {
+                $cities[$row['city']][$row['category']] = ($cities[$row['city']][$row['category']] ?? 0) + $events;
+            }
+
+            if (null !== $row['country'] && (null === $keptCountries || isset($keptCountries[$row['country']]))) {
+                $countries[$row['country']][$row['category']] = ($countries[$row['country']][$row['category']] ?? 0) + $events;
             }
         }
 
-        return $stored;
-    }
-
-    /**
-     * Rewrites the counts of a dimension of every city and country with events to come, a page of zones at a time,
-     * then removes those of the zones left without any.
-     *
-     * @return int the number of rows stored
-     */
-    private function storeCounts(Dimension $dimension): int
-    {
-        $stored = 0;
-        foreach ([City::class => 'city', Country::class => 'country'] as $class => $zone) {
-            foreach ($this->zonePages($class) as $ids) {
-                $stored += $this->storeZoneCounts($dimension, $zone, $ids);
-            }
-
-            // The zones no page holds: their counts, if any, are of events that are over
-            $this
-                ->entityManager
-                ->createQueryBuilder()
-                ->delete(UpcomingCount::class, 'uc')
-                ->where(\sprintf('uc.%s IS NOT NULL', $dimension->field()))
-                ->andWhere(\sprintf('uc.%1$s IN (SELECT z.id FROM %2$s z WHERE z.upcomingEvents = 0)', $zone, $class))
-                ->getQuery()
-                ->execute();
-        }
-
-        return $stored;
-    }
-
-    /**
-     * The cities or countries that have events to come, by pages of ids: a cursor on the id, so a page costs what the
-     * first one does. Only their ids are read: no entity to clear.
-     *
-     * @param class-string<City|Country> $class
-     *
-     * @return iterable<list<int|string>>
-     */
-    private function zonePages(string $class): iterable
-    {
-        $pagination = new CursorPagination(
-            $this->entityManager->createQueryBuilder()->select('z.id')->from($class, 'z')->where('z.upcomingEvents > 0'),
-            new OrderConfigurations(new OrderConfiguration('z.id', static fn (array $zone): int|string => $zone['id'])),
-            $this->zonesPerPage,
-            fetchJoinCollection: false,
-        );
-
-        foreach ($pagination->getChunkResults() as $zones) {
-            yield array_column($zones, 'id');
-        }
-    }
-
-    /**
-     * Rewrites the counts of a dimension of these cities or countries in one transaction: the pages read the previous
-     * counts until it commits. A few rows by zone that only the pages read, unlike the place and city rows the parser
-     * worker updates all day, so they are not diffed.
-     *
-     * @param 'city'|'country' $zone
-     * @param list<int|string> $ids
-     *
-     * @return int the number of rows stored
-     */
-    private function storeZoneCounts(Dimension $dimension, string $zone, array $ids): int
-    {
-        // zone id => value => events
-        $counts = [];
-        if (Dimension::Category === $dimension) {
-            foreach ($this->eventRepository->countUpcomingCategoriesIn($zone, $ids) as $row) {
-                $counts[$row['zone']][$row['category']] = (int) $row['events'];
-            }
-        } else {
-            // A row counts the events of a combination of types ("concert,family"): each of them counts them
-            foreach ($this->eventRepository->countUpcomingAgendaTypesIn($zone, $ids) as $row) {
-                foreach (explode(',', $row['types']) as $type) {
-                    if (null !== AgendaType::tryFrom($type)) {
-                        $counts[$row['zone']][$type] = ($counts[$row['zone']][$type] ?? 0) + (int) $row['events'];
-                    }
-                }
-            }
-        }
-
-        // value, events, zone id
+        // tag_id, events, city_id, country_id
         $rows = [];
-        foreach ($counts as $id => $values) {
-            foreach ($values as $value => $events) {
-                $rows[] = [$value, $events, $id];
+        foreach ($cities as $city => $categories) {
+            foreach ($categories as $category => $events) {
+                $rows[] = [$category, $events, $city, null];
             }
         }
 
-        $column = $dimension->column();
-        $zoneColumn = $zone . '_id';
-        $this->entityManager->getConnection()->transactional(static function (Connection $connection) use ($rows, $ids, $column, $zoneColumn, $zone): void {
-            $connection->executeStatement(
-                \sprintf('DELETE FROM upcoming_count WHERE %s IS NOT NULL AND %s IN (?)', $column, $zoneColumn),
-                [$ids],
-                ['city' === $zone ? ArrayParameterType::INTEGER : ArrayParameterType::STRING],
-            );
+        foreach ($countries as $country => $categories) {
+            foreach ($categories as $category => $events) {
+                $rows[] = [$category, $events, null, $country];
+            }
+        }
+
+        $this->entityManager->getConnection()->transactional(static function (Connection $connection) use ($rows, $cityIds, $countryIds): void {
+            if (null === $cityIds && null === $countryIds) {
+                $connection->executeStatement('DELETE FROM upcoming_category');
+            } else {
+                $connection->executeStatement(
+                    'DELETE FROM upcoming_category WHERE city_id IN (?) OR country_id IN (?)',
+                    [$cityIds ?? [], $countryIds ?? []],
+                    [ArrayParameterType::INTEGER, ArrayParameterType::STRING],
+                );
+            }
 
             foreach (array_chunk($rows, self::BATCH_SIZE) as $chunk) {
                 $connection->executeStatement(
-                    \sprintf('INSERT INTO upcoming_count (%s, events, %s) VALUES ', $column, $zoneColumn) . implode(', ', array_fill(0, \count($chunk), '(?, ?, ?)')),
+                    'INSERT INTO upcoming_category (tag_id, events, city_id, country_id) VALUES ' . implode(', ', array_fill(0, \count($chunk), '(?, ?, ?, ?)')),
                     array_merge(...$chunk),
                 );
             }

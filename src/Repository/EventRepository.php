@@ -19,10 +19,9 @@ use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Tag;
-use App\Entity\UpcomingCount;
+use App\Entity\UpcomingCategory;
 use App\Entity\User;
 use App\Entity\UserEvent;
-use App\Enum\AgendaType;
 use App\Enum\EventStatus;
 use App\Enum\PersonalEventFilter;
 use App\Manager\PreloadManager;
@@ -915,7 +914,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder()
             ->select('t', 'uc.events AS events')
             ->from(Tag::class, 't')
-            ->join(UpcomingCount::class, 'uc', Join::ON, 'uc.tag = t')
+            ->join(UpcomingCategory::class, 'uc', Join::ON, 'uc.tag = t')
             ->orderBy('uc.events', SortDirection::Descending)
             ->addOrderBy('t.name', SortDirection::Ascending)
             ->setMaxResults($limit);
@@ -934,44 +933,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         }
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * The number of events to come in a city or a country of each agenda type page, as last counted by
-     * UpcomingEventCounter.
-     *
-     * @return array<string, int> by AgendaType value, the types without any event left out
-     */
-    public function findUpcomingAgendaTypes(Location $location): array
-    {
-        $qb = $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->select('uc.agendaType AS type', 'uc.events AS events')
-            ->from(UpcomingCount::class, 'uc')
-            ->andWhere('uc.agendaType IS NOT NULL');
-
-        if (null !== $city = $location->getCity()) {
-            $qb
-                ->andWhere('uc.city = :city')
-                ->setParameter('city', $city->getId());
-        } elseif (null !== $country = $location->getCountry()) {
-            $qb
-                ->andWhere('uc.country = :country')
-                ->setParameter('country', $country->getId());
-        } else {
-            // Only cities and countries are counted
-            return [];
-        }
-
-        $counts = [];
-        foreach ($qb->getQuery()->getScalarResult() as $row) {
-            // A scalar result leaves the column as stored, not as the enum
-            $type = $row['type'] instanceof AgendaType ? $row['type']->value : (string) $row['type'];
-            $counts[$type] = (int) $row['events'];
-        }
-
-        return $counts;
     }
 
     /**
@@ -1164,7 +1125,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      * @param list<int> $ids
      *
      * @return array<int, list<string>> the types stored on these events, by id (the events without any left out):
-     *                                  what AgendaTypeClassifier compares a page of its findings with
+     *                                  what AgendaTypeClassifier compares its findings with
      */
     public function findAgendaTypesOf(array $ids): array
     {
@@ -1195,53 +1156,29 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The published events to come that have a category, counted by category in each of these cities or countries
-     * (the zone of their venue): what UpcomingEventCounter stores as UpcomingCount rows.
+     * The published events to come that have a category, counted by the city and the country of their venue: what
+     * UpcomingEventCounter stores as UpcomingCategory rows.
      *
-     * @param 'city'|'country' $zone
-     * @param list<int|string> $ids  the cities or the countries
+     * @param list<int|string>|null $cityIds    with $countryIds, keeps the venues in these cities or in these countries only
+     * @param list<int|string>|null $countryIds
      *
-     * @return list<array{zone: int|string, category: int|string, events: int|string}>
+     * @return list<array{city: int|string|null, country: string|null, category: int|string, events: int|string}>
      */
-    public function countUpcomingCategoriesIn(string $zone, array $ids): array
+    public function countUpcomingCategoriesByZone(?array $cityIds = null, ?array $countryIds = null): array
     {
-        return $this->countUpcomingIn($zone, $ids, 'IDENTITY(e.category)', 'category', 'e.category');
-    }
-
-    /**
-     * The published events to come that have agenda types, counted by their stored types ("concert,family") in each
-     * of these cities or countries (the zone of their venue): what UpcomingEventCounter adds up by type.
-     *
-     * @param 'city'|'country' $zone
-     * @param list<int|string> $ids  the cities or the countries
-     *
-     * @return list<array{zone: int|string, types: string, events: int|string}>
-     */
-    public function countUpcomingAgendaTypesIn(string $zone, array $ids): array
-    {
-        return $this->countUpcomingIn($zone, $ids, 'e.agendaTypes', 'types', 'e.agendaTypes');
-    }
-
-    /**
-     * @param 'city'|'country' $zone
-     * @param list<int|string> $ids
-     *
-     * @return list<array<string, int|string>>
-     */
-    private function countUpcomingIn(string $zone, array $ids, string $key, string $alias, string $field): array
-    {
-        if ([] === $ids) {
-            return [];
-        }
-
         $qb = $this
             ->createQueryBuilder('e')
-            ->select(\sprintf('IDENTITY(p.%s) AS zone', $zone), \sprintf('%s AS %s', $key, $alias), 'COUNT(e.id) AS events')
+            ->select('IDENTITY(p.city) AS city', 'IDENTITY(p.country) AS country', 'IDENTITY(e.category) AS category', 'COUNT(e.id) AS events')
             ->join('e.place', 'p')
-            ->andWhere(\sprintf('p.%s IN (:zones)', $zone))
-            ->andWhere(\sprintf('%s IS NOT NULL', $field))
-            ->setParameter('zones', $ids)
-            ->groupBy(\sprintf('p.%s', $zone), $field);
+            ->andWhere('e.category IS NOT NULL')
+            ->groupBy('p.city', 'p.country', 'e.category');
+
+        if (null !== $cityIds || null !== $countryIds) {
+            $qb
+                ->andWhere('p.city IN (:cities) OR p.country IN (:countries)')
+                ->setParameter('cities', $cityIds ?? [])
+                ->setParameter('countries', $countryIds ?? []);
+        }
 
         return $this->whereUpcoming($qb)->getQuery()->getScalarResult();
     }
