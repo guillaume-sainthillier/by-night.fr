@@ -13,7 +13,6 @@ namespace App\Security;
 use App\Entity\User;
 use App\Social\Social;
 use App\Social\SocialProvider;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * A social login matched an account through its e-mail. Registering needs no verification, so when
@@ -27,7 +26,7 @@ final readonly class UnverifiedAccountClaim
     private const array USER_SOCIALS = [SocialProvider::FACEBOOK, SocialProvider::GOOGLE, SocialProvider::TWITTER];
 
     public function __construct(
-        private UserPasswordHasherInterface $passwordHasher,
+        private PasswordManager $passwordManager,
         private SocialProvider $socialProvider,
     ) {
     }
@@ -43,9 +42,8 @@ final readonly class UnverifiedAccountClaim
             return false;
         }
 
-        $user
-            ->setPassword($this->passwordHasher->hashPassword($user, bin2hex(random_bytes(32))))
-            ->setVerified(true);
+        $this->passwordManager->scramble($user);
+        $user->setVerified(true);
 
         foreach (self::USER_SOCIALS as $name) {
             $otherSocial = $this->socialProvider->getSocial($name);

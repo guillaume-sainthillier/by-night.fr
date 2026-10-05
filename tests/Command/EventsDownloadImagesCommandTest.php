@@ -13,10 +13,12 @@ namespace App\Tests\Command;
 use App\Command\EventsDownloadImagesCommand;
 use App\Factory\EventFactory;
 use App\Handler\EventHandler;
+use App\Handler\EventImageDownloader;
 use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
 use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -44,6 +46,25 @@ final class EventsDownloadImagesCommandTest extends AppKernelTestCase
         }
     }
 
+    /**
+     * An image taken down on request is not downloaded again (EventImageRemover), and an event whose source gave none
+     * has nothing to wait for.
+     */
+    public function testATakenDownImageIsNotDownloadedAgain(): void
+    {
+        $takenDown = EventFactory::createOne(['url' => 'https://cdn.example.org/retiree.png', 'imageRemovedAt' => new DateTimeImmutable('-1 day')]);
+        $withoutImage = EventFactory::createOne(['url' => null]);
+
+        self::assertSame(0, self::getContainer()->get(EventRepository::class)->countWaitingForImage());
+
+        new CommandTester($this->command())->execute([]);
+
+        refresh($takenDown);
+        refresh($withoutImage);
+        self::assertNull($takenDown->getImageSystem()->getName());
+        self::assertNull($withoutImage->getImageSystem()->getName());
+    }
+
     private function command(): EventsDownloadImagesCommand
     {
         $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', true);
@@ -55,10 +76,11 @@ final class EventsDownloadImagesCommandTest extends AppKernelTestCase
             self::getContainer()->get(UploadHandler::class),
         );
 
+        $repository = self::getContainer()->get(EventRepository::class);
+
         return new EventsDownloadImagesCommand(
-            self::getContainer()->get(EntityManagerInterface::class),
-            self::getContainer()->get(EventRepository::class),
-            $handler,
+            new EventImageDownloader(self::getContainer()->get(EntityManagerInterface::class), $repository, $handler),
+            $repository,
         );
     }
 }

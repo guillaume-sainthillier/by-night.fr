@@ -42,4 +42,28 @@ final class LocationExtensionTest extends TestCase
         yield 'no code' => ['Bruxelles-Capitale', null, 'Bruxelles-Capitale'];
         yield 'no department' => [null, '31', null];
     }
+
+    /**
+     * @param array<string, string> $countries
+     */
+    #[DataProvider('provideCountries')]
+    public function testTheCountriesCaptionLeadsWithFranceAndGroupsTheOverseasTerritories(array $countries, string $expected): void
+    {
+        self::assertSame($expected, new LocationExtension()->countriesSummary($countries));
+    }
+
+    /**
+     * @return iterable<string, array{array<string, string>, string}>
+     */
+    public static function provideCountries(): iterable
+    {
+        yield 'France first, the others in their order, the territories counted' => [
+            ['CH' => 'Suisse', 'RE' => 'La Réunion', 'FR' => 'France', 'MQ' => 'Martinique', 'BE' => 'Belgique'],
+            "France, Suisse, Belgique et 2 territoires d'Outre-Mer",
+        ];
+        yield 'a single territory keeps its name' => [['FR' => 'France', 'YT' => 'Mayotte'], 'France et Mayotte'];
+        yield 'no territory' => [['FR' => 'France'], 'France'];
+        yield 'no France' => [['BE' => 'Belgique', 'GP' => 'Guadeloupe', 'GF' => 'Guyane'], "Belgique et 2 territoires d'Outre-Mer"];
+        yield 'no event to come anywhere' => [[], ''];
+    }
 }

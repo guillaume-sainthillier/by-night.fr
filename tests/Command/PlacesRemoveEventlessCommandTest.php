@@ -14,6 +14,7 @@ use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PlaceLegacySlugFactory;
 use App\Factory\PlaceMetadataFactory;
 use App\Factory\PlaceNameSlugFactory;
 use App\Tests\AppKernelTestCase;
@@ -81,6 +82,18 @@ final class PlacesRemoveEventlessCommandTest extends AppKernelTestCase
 
         // Idempotent: a second run finds nothing to do
         self::assertStringContainsString('No event-less place', $this->doRunCommand(['--apply' => true])->getDisplay());
+    }
+
+    /**
+     * A place other places were merged into keeps their former slugs; they go with it.
+     */
+    public function testAMergedPlaceGoesWithItsFormerSlugs(): void
+    {
+        PlaceLegacySlugFactory::createOne(['place' => PlaceFactory::find(['name' => 'Ancienne salle']), 'slug' => 'ancienne-salle-1']);
+
+        $this->doRunCommand(['--apply' => true]);
+
+        self::assertSame(0, PlaceLegacySlugFactory::count());
     }
 
     public function testOriginKeepsThePlacesOfTheOtherSources(): void

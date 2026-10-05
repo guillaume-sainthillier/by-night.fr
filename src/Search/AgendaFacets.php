@@ -10,20 +10,27 @@
 
 namespace App\Search;
 
+use App\Entity\Place;
+use App\Entity\Tag;
+
 /**
- * The counts next to the agenda filters, from Elasticsearch aggregations (EventElasticaRepository::getFacets()).
+ * The counts next to the agenda filters, from Elasticsearch aggregations (EventElasticaRepository::getFacets()), and
+ * the venues and categories they name once loaded (App\SearchRepository\AgendaFacetsLoader).
  */
 final readonly class AgendaFacets
 {
     /**
-     * @param array<string, int>             $dates          the events of each date window, by the name it was asked with (a
-     *                                                       DateRangePreset value, a day as Y-m-d)
-     * @param array<string, int>             $types          the events of each type page, by AgendaType value, and of the whole agenda ("all")
-     * @param array<int, int>                $places         the events of the busiest venues by place id, the busiest first
-     * @param array<string, array<int, int>> $typeCategories the events of the busiest categories of each type by tag
-     *                                                       id, the busiest first
-     * @param array<string, int>             $prices         the events of each price shortcut, by PricePreset value, and of
-     *                                                       every price ("any")
+     * @param array<string, int>                                $dates            the events of each date window, by the name it was asked with (a
+     *                                                                            DateRangePreset value, a day as Y-m-d)
+     * @param array<string, int>                                $types            the events of each type page, by AgendaType value, and of the whole agenda ("all")
+     * @param array<int, int>                                   $places           the events of the busiest venues by place id, the busiest first
+     * @param array<string, array<int, int>>                    $typeCategories   the events of the busiest categories of each type by tag
+     *                                                                            id, the busiest first
+     * @param array<string, int>                                $prices           the events of each price shortcut, by PricePreset value, and of
+     *                                                                            every price ("any")
+     * @param list<Place>                                       $venues           the venues of $places, the busiest first
+     * @param array<string, list<array{tag: Tag, events: int}>> $categoriesByType the categories of $typeCategories with
+     *                                                                            their counts, by AgendaType value
      */
     public function __construct(
         public array $dates = [],
@@ -31,7 +38,18 @@ final readonly class AgendaFacets
         public array $places = [],
         public array $typeCategories = [],
         public array $prices = [],
+        public array $venues = [],
+        public array $categoriesByType = [],
     ) {
+    }
+
+    /**
+     * @param list<Place>                                       $venues
+     * @param array<string, list<array{tag: Tag, events: int}>> $categoriesByType
+     */
+    public function withEntities(array $venues, array $categoriesByType): self
+    {
+        return new self($this->dates, $this->types, $this->places, $this->typeCategories, $this->prices, $venues, $categoriesByType);
     }
 
     /**

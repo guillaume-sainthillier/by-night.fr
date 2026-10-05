@@ -11,6 +11,7 @@
 namespace App\Tests\Command;
 
 use App\Command\EventsImportCommand;
+use App\Import\ParserRunner;
 use App\Parser\Common\TestParser;
 use App\Repository\ParserStateRepository;
 use App\Tests\AppKernelTestCase;
@@ -122,7 +123,7 @@ final class EventsImportCommandTest extends AppKernelTestCase
         $this->parserStates->markParsed('fake', $previousRun);
         $parser = new RecordingParser('fake', parsedEvents: 95, failedRecords: 5);
 
-        $tester = new CommandTester(new EventsImportCommand([$parser], $this->parserStates, new NullLogger()));
+        $tester = new CommandTester(new EventsImportCommand([$parser], new ParserRunner($this->parserStates), new NullLogger()));
 
         self::assertSame(Command::SUCCESS, $tester->execute(['parser' => 'fake']));
         self::assertGreaterThan($previousRun, $this->parserStates->findLastParsedAt('fake'), 'The bad records come back with their next change');
@@ -149,7 +150,7 @@ final class EventsImportCommandTest extends AppKernelTestCase
         $failing = new RecordingParser('failing', failing: true);
         $next = new RecordingParser('next');
 
-        $tester = new CommandTester(new EventsImportCommand([$failing, $next], $this->parserStates, new NullLogger()));
+        $tester = new CommandTester(new EventsImportCommand([$failing, $next], new ParserRunner($this->parserStates), new NullLogger()));
         $status = $tester->execute(['parser' => 'all']);
 
         self::assertSame(Command::FAILURE, $status);
@@ -180,7 +181,7 @@ final class EventsImportCommandTest extends AppKernelTestCase
      */
     private function import(array $parsers, string $parserName, array $options = []): void
     {
-        $tester = new CommandTester(new EventsImportCommand($parsers, $this->parserStates, new NullLogger()));
+        $tester = new CommandTester(new EventsImportCommand($parsers, new ParserRunner($this->parserStates), new NullLogger()));
         $tester->execute(['parser' => $parserName, ...$options]);
     }
 

@@ -14,7 +14,6 @@ use App\App\AppContext;
 use App\Controller\AbstractController as BaseController;
 use App\Manager\EventRedirectManager;
 use App\Manager\WidgetsManager;
-use App\Security\Voter\EventVoter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -24,11 +23,7 @@ final class WidgetsController extends BaseController
     public function nextEvents(AppContext $appContext, EventRedirectManager $eventRedirectManager, WidgetsManager $widgetsManager, string $slug, ?int $id = null, int $page = 1): Response
     {
         $location = $appContext->getLocation();
-        $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
-        // The events at its venue or on its date would tell where and when a draft takes place
-        if (!$this->isGranted(EventVoter::VIEW, $event)) {
-            throw $this->createNotFoundException();
-        }
+        $event = $eventRedirectManager->getVisibleEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
         $eventsData = $widgetsManager->getNextEventsData($event, $location, $page);
 
         return $this->renderFragment('location/hinclude/details-events.html.twig', [
@@ -40,11 +35,7 @@ final class WidgetsController extends BaseController
     public function similarEvents(AppContext $appContext, EventRedirectManager $eventRedirectManager, WidgetsManager $widgetsManager, string $slug, ?int $id = null, ?int $page = 1): Response
     {
         $location = $appContext->getLocation();
-        $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
-        // The events at its venue or on its date would tell where and when a draft takes place
-        if (!$this->isGranted(EventVoter::VIEW, $event)) {
-            throw $this->createNotFoundException();
-        }
+        $event = $eventRedirectManager->getVisibleEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
         $eventsData = $widgetsManager->getSimilarEventsData($event, $location, $page);
 
         return $this->renderFragment('location/hinclude/details-events.html.twig', [

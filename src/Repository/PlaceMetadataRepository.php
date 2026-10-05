@@ -28,4 +28,22 @@ final class PlaceMetadataRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PlaceMetadata::class);
     }
+
+    /**
+     * @param list<int> $placeIds
+     */
+    public function countByPlaces(array $placeIds): int
+    {
+        if ([] === $placeIds) {
+            return 0;
+        }
+
+        return (int) $this
+            ->createQueryBuilder('x')
+            ->select('COUNT(x.id)')
+            ->where('x.place IN (:ids)')
+            ->setParameter('ids', $placeIds)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

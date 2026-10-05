@@ -71,7 +71,8 @@ final class UserCrudControllerTest extends WebTestCase
 
     /**
      * As from the profile: comments and favourites go with the member, their events stay online
-     * (BY-NIGHTFR-66X: the foreign keys refused a plain remove).
+     * (BY-NIGHTFR-66X: the foreign keys refused a plain remove). The counters of their favourites are
+     * recounted from the calendars left, whatever they said before.
      */
     public function testDeletingAMemberKeepsTheirEventsOnline(): void
     {
@@ -81,6 +82,7 @@ final class UserCrudControllerTest extends WebTestCase
         $event = EventFactory::createOne(['user' => $user]);
         $favourite = EventFactory::createOne(['participations' => 3]);
         UserEventFactory::createOne(['user' => $user, 'event' => $favourite, 'going' => true]);
+        UserEventFactory::createMany(2, ['event' => $favourite, 'going' => true]);
         CommentFactory::createOne(['user' => $user, 'event' => $favourite]);
 
         $crawler = $client->request('GET', \sprintf('/_administration/user/%d', $userId));
@@ -90,7 +92,7 @@ final class UserCrudControllerTest extends WebTestCase
         self::assertResponseRedirects();
         self::assertSame(0, UserFactory::count(['id' => $userId]));
         self::assertSame(0, CommentFactory::count());
-        self::assertSame(0, UserEventFactory::count());
+        self::assertSame(2, UserEventFactory::count());
         self::assertNull(EventFactory::find(['id' => $event->getId()])->getUser());
         self::assertSame(2, EventFactory::find(['id' => $favourite->getId()])->getParticipations());
     }
