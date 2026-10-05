@@ -94,12 +94,13 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
     const selectedDates = []
     if (from?.value) {
         const start = from.value
-        const end = to?.value || start
+        // No end: a range open from its start ("À partir du 3 oct. 2026"), not that day alone
+        const end = to?.value || null
         if (singleDate) {
             selectedDates.push(start)
             input.value = formatDate(start)
         } else {
-            selectedDates.push(start, end)
+            selectedDates.push(...(end ? [start, end] : [start]))
             input.value = formatRangeLabel(start, end)
         }
     }

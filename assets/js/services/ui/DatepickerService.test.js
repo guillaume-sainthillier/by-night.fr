@@ -63,6 +63,13 @@ describe('DatepickerService', () => {
         expect(Calendar.mock.instances[0].options.selectedDates).toEqual(['2026-10-09', '2026-10-11'])
     })
 
+    test('keeps a range open from its start as the server labels it', () => {
+        create({ element: input, fromInput: from, toInput: field() })
+
+        expect(input.value).toBe('À partir du 9 oct. 2026')
+        expect(Calendar.mock.instances[0].options.selectedDates).toEqual(['2026-10-09'])
+    })
+
     test('opens below a field of a panel fixed to the screen, wherever there is room otherwise', () => {
         vi.stubGlobal('getComputedStyle', (element) => ({ position: element.position }))
 
