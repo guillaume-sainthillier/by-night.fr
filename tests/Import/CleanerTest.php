@@ -96,10 +96,12 @@ final class CleanerTest extends AppKernelTestCase
         $dto->name = str_repeat('é', 300);
         $dto->source = 'https://example.org/' . str_repeat('a', 300);
         $dto->imageUrl = 'https://example.org/' . str_repeat('b', 300) . '.jpg';
+        $dto->statusMessage = str_repeat('Annulé faute de réservations. ', 80);
 
         $this->cleaner->cleanEvent($dto);
 
         self::assertSame(255, mb_strlen((string) $dto->name));
+        self::assertLessThanOrEqual(2000, mb_strlen((string) $dto->statusMessage));
         self::assertNull($dto->source, 'A cut link would lead nowhere');
         self::assertNull($dto->imageUrl);
     }

@@ -40,6 +40,7 @@ final readonly class Cleaner
         $dto->emailContacts = $dto->emailContacts ?: null;
         $dto->address = mb_substr($dto->address ?? '', 0, 255) ?: null;
         $dto->type = mb_substr($dto->type ?? '', 0, 128) ?: null;
+        $dto->statusMessage = $this->fit($this->clean($dto->statusMessage), 2000);
 
         // Clean category TagDto
         if (null !== $dto->category) {

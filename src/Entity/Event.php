@@ -105,7 +105,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 16, nullable: true, enumType: EventStatus::class)]
     private ?EventStatus $status = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    // A whole announcement at times: Sowprog cancel reasons run to 924 characters
+    #[ORM\Column(type: Types::STRING, length: 2000, nullable: true)]
     private ?string $statusMessage = null;
 
     #[ORM\Column(type: Types::FLOAT, nullable: true)]
