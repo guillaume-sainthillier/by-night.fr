@@ -124,16 +124,55 @@ final class IndexMappingTest extends AppKernelTestCase
     }
 
     /**
-     * @return array<string, mixed>
+     * "marché de noël" needs "marché" and "noël" only: the stop words are left out of the words searched, never of the
+     * documents, whose phrases keep them ("boîte de nuit", an agenda type).
      */
-    private function mappingOf(string $index): array
+    public function testTheStopWordsAreLeftOutOfTheSearchOnly(): void
+    {
+        $index = $this->indexOf('event');
+        $analyzers = $index['settings']['analysis']['analyzer'];
+
+        foreach (['name', 'name.heavy', 'description', 'description.heavy', 'place.name', 'place.cityName', 'themes.name'] as $field) {
+            $declared = $this->declaration($index['mappings'], $field);
+            self::assertNotNull($declared, $field);
+            self::assertNotContains('french_stop', $analyzers[$declared['analyzer']]['filter'], $field);
+            self::assertContains('french_stop', $analyzers[$declared['search_analyzer']]['filter'], $field);
+        }
+    }
+
+    /**
+     * The header search finds a word from its beginning: the names are indexed cut into their beginnings, the words
+     * typed are read whole.
+     */
+    public function testTheNamesAreFoundFromTheirBeginnings(): void
+    {
+        $index = $this->indexOf('event');
+
+        foreach (['name.autocomplete', 'place.name.autocomplete'] as $field) {
+            self::assertSame(['type' => 'text', 'analyzer' => 'autocomplete_index', 'search_analyzer' => 'french_search'], $this->declaration($index['mappings'], $field), $field);
+        }
+        self::assertContains('autocomplete_ngram', $index['settings']['analysis']['analyzer']['autocomplete_index']['filter']);
+    }
+
+    /**
+     * @return array<string, mixed> the settings and the mappings of an index
+     */
+    private function indexOf(string $index): array
     {
         $configManager = self::getContainer()->get('fos_elastica.config_manager');
         self::assertInstanceOf(ConfigManager::class, $configManager);
         $mappingBuilder = self::getContainer()->get('fos_elastica.mapping_builder');
         self::assertInstanceOf(MappingBuilder::class, $mappingBuilder);
 
-        return $mappingBuilder->buildIndexMapping($configManager->getIndexConfiguration($index))['mappings'];
+        return $mappingBuilder->buildIndexMapping($configManager->getIndexConfiguration($index));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function mappingOf(string $index): array
+    {
+        return $this->indexOf($index)['mappings'];
     }
 
     /**

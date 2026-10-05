@@ -37,6 +37,17 @@ fos_elastica:
                         french_stemmer:
                             type: stemmer
                             language: light_french
+                        # The words a search never requires ("marché de noël" finds "Marché noël"), on the search side
+                        # only (the *_search analyzers): the documents keep them, for the phrases of the agenda types.
+                        # After icu_folding: "à" is "a"
+                        french_stop:
+                            type: stop
+                            stopwords:
+                                [de, du, des, la, le, les, a, au, aux, en, et, un, une, pour, sur, par, avec, dans, ou]
+                        autocomplete_ngram:
+                            type: edge_ngram
+                            min_gram: 2
+                            max_gram: 15
                     analyzer:
                         french_heavy: &french_heavy
                             tokenizer: icu_tokenizer
@@ -65,6 +76,30 @@ fos_elastica:
                                 - french_elision
                                 - icu_folding
                                 - lowercase
+                        # How the words searched are read: as the fields read theirs, without the stop words
+                        french_search:
+                            tokenizer: icu_tokenizer
+                            filter:
+                                - french_elision
+                                - icu_folding
+                                - lowercase
+                                - french_stop
+                        french_heavy_search:
+                            tokenizer: icu_tokenizer
+                            filter:
+                                - french_elision
+                                - icu_folding
+                                - lowercase
+                                - french_stop
+                                - french_stemmer
+                        # The beginnings of the words, 2 to 15 letters: the header search finds "Orelsan" from "orel"
+                        autocomplete_index:
+                            tokenizer: icu_tokenizer
+                            filter:
+                                - french_elision
+                                - icu_folding
+                                - lowercase
+                                - autocomplete_ngram
             persistence:
                 model: App\Entity\Event
                 repository: App\SearchRepository\EventElasticaRepository
@@ -86,10 +121,16 @@ fos_elastica:
                 name:
                     type: text
                     analyzer: french_light
+                    search_analyzer: french_search
                     fields:
                         heavy:
                             type: text
                             analyzer: french_heavy
+                            search_analyzer: french_heavy_search
+                        autocomplete:
+                            type: text
+                            analyzer: autocomplete_index
+                            search_analyzer: french_search
                 # No positions (index_options: freqs) on the fields only the keywords multi_match reads
                 # (EventElasticaRepository::createKeywordsQuery()), never a phrase query nor a highlight: the two
                 # description fields were 1.17 GB of the 2.6 GB index, ~40% of it positions. A match_phrase, a
@@ -97,11 +138,13 @@ fos_elastica:
                 description:
                     type: text
                     analyzer: french_html_light
+                    search_analyzer: french_search
                     index_options: freqs
                     fields:
                         heavy:
                             type: text
                             analyzer: french_html_heavy
+                            search_analyzer: french_heavy_search
                             index_options: freqs
                 startDate:
                     type: date
@@ -125,21 +168,26 @@ fos_elastica:
                 placeName:
                     type: text
                     analyzer: french_natural
+                    search_analyzer: french_search
                 placeStreet:
                     type: text
                     analyzer: french_natural
+                    search_analyzer: french_search
                     index_options: freqs
                 placeCity:
                     type: text
                     analyzer: french_natural
+                    search_analyzer: french_search
                     index_options: freqs
                 placePostalCode:
                     type: text
                     analyzer: french_natural
+                    search_analyzer: french_search
                     index_options: freqs
                 type:
                     type: text
                     analyzer: french_natural
+                    search_analyzer: french_search
                 # The agenda type pages the event is listed on, found each night (Event::$agendaTypes): an existing
                 # index gets it from app:events:classify-agenda-types, which adds it before writing any
                 agendaTypes:
@@ -156,6 +204,7 @@ fos_elastica:
                         name:
                             type: text
                             analyzer: french_natural
+                            search_analyzer: french_search
                 themes:
                     type: nested
                     properties:
@@ -164,6 +213,7 @@ fos_elastica:
                         name:
                             type: text
                             analyzer: french_natural
+                            search_analyzer: french_search
                 place:
                     type: object
                     properties:
@@ -172,17 +222,32 @@ fos_elastica:
                         name:
                             type: text
                             analyzer: french_natural
+                            search_analyzer: french_search
+                            fields:
+                                autocomplete:
+                                    type: text
+                                    analyzer: autocomplete_index
+                                    search_analyzer: french_search
                         street:
                             type: text
                             analyzer: french_natural
+                            search_analyzer: french_search
                             index_options: freqs
                         cityName:
                             type: text
                             analyzer: french_natural
+                            search_analyzer: french_search
                             index_options: freqs
+                            fields:
+                                heavy:
+                                    type: text
+                                    analyzer: french_heavy
+                                    search_analyzer: french_heavy_search
+                                    index_options: freqs
                         cityPostalCode:
                             type: text
                             analyzer: french_natural
+                            search_analyzer: french_search
                             index_options: freqs
                         city:
                             type: object
