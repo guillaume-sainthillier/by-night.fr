@@ -152,7 +152,8 @@
                 </div>
             </header>
 
-            {% if event.draft %}
+            {# An event its source no longer lists is hidden as a draft, but has nothing to publish: its status says why #}
+            {% if event.draft and not event.removedAtSource %}
                 <div class="alert alert-info" id="event-draft-notice" role="status">
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <twig:Icon name="lucide:eye" class="alert-icon" />

@@ -202,6 +202,21 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSelectorNotExists('#event-draft-notice');
     }
 
+    public function testEveryoneStillSeesAnEventItsSourceNoLongerLists(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        save($event->markRemovedAtSource());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#event');
+        self::assertSelectorTextContains('.alert-danger', "Retiré de l'agenda de l'organisateur");
+        self::assertSelectorNotExists('#event-draft-notice', 'Nothing to publish');
+        self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
+    }
+
     public function testAnotherMemberOnlyGetsANoticeOnADraft(): void
     {
         $client = self::createClient();

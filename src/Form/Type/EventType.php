@@ -112,6 +112,8 @@ final class EventType extends AbstractType
             ->add('status', EnumType::class, [
                 'label' => 'Statut',
                 'class' => EventStatus::class,
+                // Only an import sets it, from the source of the event
+                'choice_filter' => static fn (?EventStatus $status): bool => EventStatus::Removed !== $status,
                 'choice_label' => static fn (EventStatus $status) => $status->getLabel(),
                 'required' => false,
                 'placeholder' => 'Programmé',

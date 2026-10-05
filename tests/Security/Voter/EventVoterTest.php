@@ -12,6 +12,7 @@ namespace App\Tests\Security\Voter;
 
 use App\Entity\Event;
 use App\Entity\User;
+use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\UserFactory;
 use App\Security\Voter\EventVoter;
@@ -114,6 +115,14 @@ final class EventVoterTest extends AppKernelTestCase
         self::assertTrue($this->isGranted(UserFactory::createOne(['roles' => ['ROLE_ADMIN']]), EventVoter::VIEW, $draft), 'An administrator');
         self::assertFalse($this->isGranted(UserFactory::createOne(), EventVoter::VIEW, $draft), 'Another member');
         self::assertFalse($this->isGranted(null, EventVoter::VIEW, $draft), 'A visitor');
+    }
+
+    public function testEveryoneSeesAnEventItsSourceNoLongerLists(): void
+    {
+        $removed = EventFactory::createOne(['user' => null, 'draft' => true, 'status' => EventStatus::Removed]);
+
+        self::assertTrue($this->isGranted(null, EventVoter::VIEW, $removed), 'Out of the listings, but its page stays');
+        self::assertFalse($this->isGranted(UserFactory::createOne(['verified' => true]), EventVoter::EDIT, $removed));
     }
 
     public function testTheVoterAbstainsOnOtherAttributes(): void

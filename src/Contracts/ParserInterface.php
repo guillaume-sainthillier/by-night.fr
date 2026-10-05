@@ -41,6 +41,11 @@ interface ParserInterface
     public function getSkippedEvents(): int;
 
     /**
+     * Records its source said are gone (tombstones), whose events get flagged as removed.
+     */
+    public function getRemovedEvents(): int;
+
+    /**
      * Records of the source the parser could not map, left out of the run.
      */
     public function getFailedRecords(): int;

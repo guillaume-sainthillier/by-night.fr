@@ -19,6 +19,11 @@ enum EventStatus: string
     case Rescheduled = 'rescheduled';
     /** Still taking place, online instead of at its venue */
     case MovedOnline = 'moved_online';
+    /**
+     * No longer listed by the source it was imported from (an OpenAgenda event removed from
+     * its agenda, a DATAtourisme object made obsolete). The page stays, out of the listings.
+     */
+    case Removed = 'removed';
 
     public static function fromStatusMessage(?string $statusMessage): ?self
     {
@@ -51,6 +56,7 @@ enum EventStatus: string
             self::SoldOut => 'Complet',
             self::Rescheduled => 'Reprogrammé',
             self::MovedOnline => 'Déplacé en ligne',
+            self::Removed => "Retiré de l'agenda de l'organisateur",
         };
     }
 
@@ -62,6 +68,8 @@ enum EventStatus: string
             self::SoldOut => 'https://schema.org/EventScheduled',
             self::Rescheduled => 'https://schema.org/EventRescheduled',
             self::MovedOnline => 'https://schema.org/EventMovedOnline',
+            // schema.org has no "unlisted": the page is noindex (the event is hidden), and nothing says it was cancelled
+            self::Removed => 'https://schema.org/EventScheduled',
         };
     }
 }

@@ -28,6 +28,7 @@ use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -205,6 +206,30 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $this->loadAllEager($events, ['view' => 'events:import']);
 
         return $events;
+    }
+
+    /**
+     * The events imported from these records of a source.
+     *
+     * @param list<string> $externalIds
+     *
+     * @return Event[]
+     */
+    public function findByExternalIds(string $externalOrigin, array $externalIds): array
+    {
+        if ([] === $externalIds) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.externalOrigin = :externalOrigin')
+            ->andWhere('e.externalId IN (:externalIds)')
+            ->setParameter('externalOrigin', $externalOrigin)
+            // Numeric ids must stay strings, see DtoFindableTrait
+            ->setParameter('externalIds', $externalIds, ArrayParameterType::STRING)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

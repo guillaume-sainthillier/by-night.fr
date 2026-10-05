@@ -16,15 +16,20 @@ use App\Enum\EventStatus;
 use App\Factory\AdminZone1Factory;
 use App\Factory\CountryFactory;
 use App\Handler\EventHandler;
+use App\Import\EventPublicationGuard;
+use App\Message\RemoveSourceEvents;
 use App\Parser\Common\OpenAgendaParser;
 use App\Repository\CountryRepository;
 use App\Tests\AppKernelTestCase;
+use DateTimeImmutable;
+use DateTimeZone;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\NullLogger;
 use ReflectionMethod;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
@@ -253,7 +258,9 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         $client = new MockHttpClient(static function (string $method, string $url) use (&$eventQueries): MockResponse {
             if (str_contains($url, '/events')) {
                 parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
-                $eventQueries[] = $query;
+                if (!isset($query['removed'])) {
+                    $eventQueries[] = $query;
+                }
 
                 return new MockResponse('{"events":[],"after":null}');
             }
@@ -286,7 +293,9 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         $client = new MockHttpClient(static function (string $method, string $url) use (&$eventQueries): MockResponse {
             if (str_contains($url, '/events')) {
                 parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
-                $eventQueries[] = $query;
+                if (!isset($query['removed'])) {
+                    $eventQueries[] = $query;
+                }
 
                 return new MockResponse('{"events":[],"after":null}');
             }
@@ -340,7 +349,9 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         $readAgendas = [];
         $client = new MockHttpClient(static function (string $method, string $url) use (&$readAgendas): MockResponse {
             if (preg_match('#/agendas/(\d+)/events#', $url, $matches)) {
-                $readAgendas[] = (int) $matches[1];
+                if (!str_contains($url, 'removed=1')) {
+                    $readAgendas[] = (int) $matches[1];
+                }
 
                 return new MockResponse('{"events":[],"after":null}');
             }
@@ -376,7 +387,9 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         $readAgendas = [];
         $client = new MockHttpClient(static function (string $method, string $url) use (&$readAgendas): MockResponse {
             if (preg_match('#/agendas/(\d+)/events#', $url, $matches)) {
-                $readAgendas[] = (int) $matches[1];
+                if (!str_contains($url, 'removed=1')) {
+                    $readAgendas[] = (int) $matches[1];
+                }
 
                 return new MockResponse('{"events":[],"after":null}');
             }
@@ -404,6 +417,58 @@ final class OpenAgendaParserTest extends AppKernelTestCase
 
         // Only the agenda without a single published event has nothing to give
         self::assertSame([1, 2, 4], $readAgendas);
+    }
+
+    public function testTheEventsRemovedFromAnAgendaSinceThePreviousRunAreRemoved(): void
+    {
+        $removedQueries = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$removedQueries): MockResponse {
+            if (str_contains($url, '/events')) {
+                parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
+                if (!isset($query['removed'])) {
+                    return new MockResponse('{"events":[],"after":null}');
+                }
+
+                $removedQueries[] = $query;
+
+                // As the API answers removed=1: the uid, and nothing else worth reading
+                return new MockResponse('{"events":[{"uid":25537140,"removed":true},{"uid":53307891,"removed":true}],"after":null}');
+            }
+
+            return new MockResponse(json_encode([
+                'agendas' => [self::feedAgenda(42, current: 1, upcoming: 1)],
+                'after' => null,
+            ], \JSON_THROW_ON_ERROR));
+        });
+        $removals = [];
+        $bus = $this->createStub(MessageBusInterface::class);
+        $bus->method('dispatch')->willReturnCallback(static function (object $message) use (&$removals): Envelope {
+            if ($message instanceof RemoveSourceEvents) {
+                $removals[] = $message;
+            }
+
+            return new Envelope($message);
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            $bus,
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+        $parser->setPublicationGuard(self::getContainer()->get(EventPublicationGuard::class));
+
+        $parser->parse(new DateTimeImmutable('2026-10-05 03:00:00', new DateTimeZone('UTC')));
+
+        self::assertCount(1, $removedQueries);
+        self::assertSame('1', $removedQueries[0]['removed']);
+        self::assertSame(['gte' => '2026-10-05T02:00:00+00:00'], $removedQueries[0]['updatedAt'], 'Removed since the previous run, safety margin included');
+        self::assertCount(1, $removals);
+        self::assertSame('openagenda', $removals[0]->externalOrigin);
+        self::assertSame(['25537140', '53307891'], $removals[0]->externalIds);
+        self::assertSame('https://openagenda.com/agenda-42/events/', $removals[0]->sourcePrefix, 'Only gone from the agenda it was imported from');
+        self::assertSame(2, $parser->getRemovedEvents());
     }
 
     /**

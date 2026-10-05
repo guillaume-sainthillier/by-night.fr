@@ -21,6 +21,9 @@
         {% elseif event.status == enum('App\\Enum\\EventStatus').MovedOnline %}
             {% set statusIcon = 'lucide:monitor-smartphone' %}
             {% set alertClass = 'alert-info' %}
+        {% elseif event.status == enum('App\\Enum\\EventStatus').Removed %}
+            {% set statusIcon = 'lucide:calendar-x' %}
+            {% set alertClass = 'alert-danger' %}
         {% endif %}
     {% endif %}
     <div {{ attributes.defaults({class: 'alert ' ~ alertClass ~ ' mb-0'}) }}>

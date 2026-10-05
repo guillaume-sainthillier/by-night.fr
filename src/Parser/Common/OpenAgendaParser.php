@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\RemovedEventDto;
 use App\Dto\TagDto;
 use App\Enum\EventStatus;
 use App\Handler\EventHandler;
@@ -70,6 +71,29 @@ final class OpenAgendaParser extends AbstractParser
             foreach ($this->getAgendaEvents($since, $includePast, $agendaId) as $event) {
                 yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($event, $agendaSlug), ['uid' => $event['uid'] ?? null, 'agenda' => $agendaSlug]);
             }
+
+            // An event shared by several agendas may leave this one and stay on the others: it is only gone for us
+            // when it leaves the agenda it was imported from, the one its source URL names
+            foreach ($this->getRemovedEventUids($since, $agendaId) as $uid) {
+                yield new RemovedEventDto((string) $uid, \sprintf('https://openagenda.com/%s/events/', $agendaSlug));
+            }
+        }
+    }
+
+    /**
+     * The events removed from the agenda or deleted (removed=1), since the previous run: OpenAgenda keeps their uid,
+     * stamped with the time of their removal as updatedAt. A full import takes them all.
+     *
+     * @return iterable<int|string>
+     */
+    private function getRemovedEventUids(?DateTimeImmutable $since, int $agendaId): iterable
+    {
+        $filter = null === $since ? [] : ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]];
+
+        foreach ($this->paginate($agendaId, array_merge($filter, ['removed' => 1])) as $event) {
+            if (isset($event['uid'])) {
+                yield $event['uid'];
+            }
         }
     }
 
@@ -85,14 +109,27 @@ final class OpenAgendaParser extends AbstractParser
             default => ['relative' => ['current', 'upcoming']],
         };
 
+        return $this->paginate($agendaId, array_merge($filter, [
+            'includeLabels' => true,
+            'detailed' => true,
+            'monolingual' => 'fr',
+        ]));
+    }
+
+    /**
+     * Pages through the events of an agenda matching the query.
+     *
+     * @param array<string, mixed> $query
+     *
+     * @return iterable<array<string, mixed>>
+     */
+    private function paginate(int $agendaId, array $query): iterable
+    {
         $after = [];
         while (true) {
             $response = $this->client->request('GET', \sprintf('https://api.openagenda.com/v2/agendas/%d/events/', $agendaId), [
-                'query' => array_merge($filter, [
+                'query' => array_merge($query, [
                     'key' => $this->openAgendaKey,
-                    'includeLabels' => true,
-                    'detailed' => true,
-                    'monolingual' => 'fr',
                     'size' => self::EVENT_BATCH_SIZE,
                     'after' => $after,
                 ]),

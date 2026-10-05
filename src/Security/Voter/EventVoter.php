@@ -41,7 +41,8 @@ final class EventVoter extends Voter
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
-        if (self::VIEW === $attribute && !$subject->isDraft()) {
+        // An event its source no longer lists is a draft for the listings only: its page stays open
+        if (self::VIEW === $attribute && (!$subject->isDraft() || $subject->isRemovedAtSource())) {
             return true;
         }
 

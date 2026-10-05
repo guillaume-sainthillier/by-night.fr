@@ -15,6 +15,7 @@ use App\Dto\EventTimesheetDto;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\EntityFactory\EventEntityFactory;
+use App\Enum\EventStatus;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 
@@ -32,6 +33,36 @@ final class EventEntityFactoryTest extends AppKernelTestCase
 
         self::assertInstanceOf(Event::class, $event);
         self::assertSame('Concert', $event->getType());
+    }
+
+    public function testAnEventListedAgainByItsSourceIsBackInTheListings(): void
+    {
+        $removed = new Event()->markRemovedAtSource();
+        $dto = new EventDto();
+        $dto->name = 'Nuit du jazz';
+        $dto->status = EventStatus::Postponed;
+        $dto->startDate = new DateTimeImmutable('2026-10-01');
+        $dto->endDate = new DateTimeImmutable('2026-10-01');
+
+        $event = self::getContainer()->get(EventEntityFactory::class)->create($removed, $dto);
+
+        self::assertInstanceOf(Event::class, $event);
+        self::assertSame(EventStatus::Postponed, $event->getStatus(), 'Its own status, as the source gives it');
+        self::assertFalse($event->isDraft());
+    }
+
+    public function testAnImportLeavesAHiddenEventHidden(): void
+    {
+        $hidden = new Event()->setDraft(true);
+        $dto = new EventDto();
+        $dto->name = 'Nuit du jazz';
+        $dto->startDate = new DateTimeImmutable('2026-10-01');
+        $dto->endDate = new DateTimeImmutable('2026-10-01');
+
+        $event = self::getContainer()->get(EventEntityFactory::class)->create($hidden, $dto);
+
+        self::assertInstanceOf(Event::class, $event);
+        self::assertTrue($event->isDraft(), 'Hidden by an administrator, not by its source');
     }
 
     public function testTheParserVersionIsStoredForTheExplorationOfADeletedEvent(): void
