@@ -191,7 +191,8 @@ final class LocationPageTest extends WebTestCase
     {
         $client = self::createClient();
 
-        // Without its slash, the search page is still found, not taken for a city
+        // Without its slash, the search page is still found, not taken for a city: the router tries the static routes
+        // first, and redirects to the one the slash alone sets apart
         $client->request('GET', '/recherche');
 
         self::assertResponseRedirects('http://localhost/recherche/', Response::HTTP_MOVED_PERMANENTLY);
