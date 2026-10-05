@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d369c8bffa8aa22371dcc9db06f2ea3",
+    "content-hash": "9ef7aa78dec014a6d02f6218a81f1a38",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5910,16 +5910,16 @@
         },
         {
             "name": "silarhi/llms-txt-bundle",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/llms-txt-bundle.git",
-                "reference": "8c4aa00f21803322251550795c0c06920405b4ca"
+                "reference": "2421d9c60cdea571763e9b4d9c31c478334db9fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/llms-txt-bundle/zipball/8c4aa00f21803322251550795c0c06920405b4ca",
-                "reference": "8c4aa00f21803322251550795c0c06920405b4ca",
+                "url": "https://api.github.com/repos/silarhi/llms-txt-bundle/zipball/2421d9c60cdea571763e9b4d9c31c478334db9fc",
+                "reference": "2421d9c60cdea571763e9b4d9c31c478334db9fc",
                 "shasum": ""
             },
             "require": {
@@ -5974,9 +5974,9 @@
             ],
             "support": {
                 "issues": "https://github.com/silarhi/llms-txt-bundle/issues",
-                "source": "https://github.com/silarhi/llms-txt-bundle/tree/v1.1.0"
+                "source": "https://github.com/silarhi/llms-txt-bundle/tree/v1.2.0"
             },
-            "time": "2026-10-05T12:03:25+00:00"
+            "time": "2026-10-05T12:30:24+00:00"
         },
         {
             "name": "silarhi/picasso-bundle",
