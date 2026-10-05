@@ -228,6 +228,8 @@ Elasticsearch indexes defined in `config/packages/fos_elastica.yaml`:
 
 - `event` index with French language analyzers
 - Async document persistence via Symfony Messenger
+- Keywords (`/recherche`, the agenda's `?term=`, the header search): `EventElasticaRepository::createKeywordsQuery()`, every word required but the stop words (`french_stop`, search side only), found as typed across the fields naming the event first, then inflected, in a theme, in the description, and with a typo in the name last (`Fuzzy`: never on the first letter). Ties go by the next date; the header search also matches the beginnings of words (`name.autocomplete`). `/recherche` and the header search take the page's `?city=` slug, whose events and those around score up to ×3. The nightly agenda types keep their own query (`createTypeKeywordsQuery()`)
+- A change of the mapping or the analyzers needs `bin/console fos:elastica:populate --index=event` (the index is recreated: about 15 min of partial results, and the queries naming a new analyzer fail until it starts)
 
 ## Frontend Architecture
 

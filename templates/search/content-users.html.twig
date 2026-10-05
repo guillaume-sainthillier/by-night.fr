@@ -3,7 +3,7 @@
 {% if users.hasNextPage() %}
     <div class="text-center my-4">
         <a class="btn btn-outline-primary more"
-           href="{{ path('app_search_index', {q: term, page: users.getNextPage(), type: 'membres'}) }}">
+           href="{{ path('app_search_index', {q: term, page: users.getNextPage(), type: 'membres', city: near?.slug}) }}">
             Plus de membres
         </a>
     </div>
