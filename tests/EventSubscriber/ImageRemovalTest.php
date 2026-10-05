@@ -12,6 +12,7 @@ namespace App\Tests\EventSubscriber;
 
 use App\Cdn\CloudflareCdnPurger;
 use App\Entity\Event;
+use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Manager\EventImageRemover;
 use App\Message\PurgeCdnCachePrefix;
@@ -90,6 +91,26 @@ final class ImageRemovalTest extends AppKernelTestCase
         self::assertFalse($this->events()->fileExists($memberPath));
         self::assertFalse($this->events()->fileExists($sourcePath));
         $this->assertRemovedEverywhere([$memberPath, $sourcePath]);
+    }
+
+    /**
+     * A mapping without directories (the country and city covers) stores its files at the root of its folder: their
+     * thumbnails are keyed by the name alone, as Picasso resolves it, and their URL has no empty directory in it.
+     */
+    public function testReplacingACoverWithoutDirectoriesPurgesItsOwnPaths(): void
+    {
+        $country = CountryFactory::createOne();
+        $country->setHeroImageFile($this->png('ancienne.png'));
+        save($country);
+        $oldName = (string) $country->getHeroImage()->getName();
+        $this->resetTransports();
+
+        $country->setHeroImageFile($this->png('nouvelle.png'));
+        save($country);
+
+        $sent = $this->sentMessages();
+        self::assertEquals([new RemoveImageThumbnails($oldName, 'country_image')], array_values(array_filter($sent, static fn (object $message): bool => $message instanceof RemoveImageThumbnails)));
+        self::assertEquals([new PurgeCdnCacheUrl('/uploads/countries/' . $oldName)], array_values(array_filter($sent, static fn (object $message): bool => $message instanceof PurgeCdnCacheUrl)));
     }
 
     /**

@@ -11,34 +11,26 @@
 namespace App\Controller\User;
 
 use App\Controller\AbstractController;
-use App\Entity\User;
 use App\Form\Type\ChangePasswordFormType;
+use App\Form\Type\DeleteAccountFormType;
 use App\Form\Type\ProfileFormType;
 use App\Manager\UserRemover;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
 use App\Security\EmailVerifier;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormInterface;
+use App\Security\PasswordManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Validator\Constraints\EqualTo;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[Route(path: '/profile')]
 final class ProfileController extends AbstractController
 {
-    /** The word the member types to confirm the deletion of their account */
-    public const string DELETE_CONFIRMATION = 'SUPPRIMER';
-
     #[Route(path: '/delete', name: 'app_user_delete', methods: ['GET', 'POST'])]
     public function delete(Request $request, UserRemover $userRemover, TokenStorageInterface $tokenStorage): Response
     {
-        $form = $this->createDeleteForm();
+        $form = $this->createForm(DeleteAccountFormType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $userRemover->remove($this->getAppUser(), (bool) $form->get('delete_events')->getData());
@@ -59,7 +51,7 @@ final class ProfileController extends AbstractController
     }
 
     #[Route(path: '/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, UserPasswordHasherInterface $passwordHasher, EventRepository $eventRepository, CommentRepository $commentRepository): Response
+    public function edit(Request $request, PasswordManager $passwordManager, EventRepository $eventRepository, CommentRepository $commentRepository): Response
     {
         $user = $this->getAppUser();
         $form = $this->createForm(ProfileFormType::class, $user);
@@ -74,19 +66,14 @@ final class ProfileController extends AbstractController
         $formChangePassword = $this->createForm(ChangePasswordFormType::class, $user);
         $formChangePassword->handleRequest($request);
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {
-            $user->setPassword(
-                $passwordHasher->hashPassword(
-                    $user,
-                    $formChangePassword->get('plainPassword')->getData()
-                )
-            );
+            $passwordManager->change($user, $formChangePassword->get('plainPassword')->getData());
             $em = $this->getEntityManager();
             $em->flush();
 
             $this->addFlash('success', 'Votre mot de passe a bien été mis à jour.');
         }
 
-        $formDelete = $this->createDeleteForm();
+        $formDelete = $this->createForm(DeleteAccountFormType::class);
 
         return $this->render('profile/edit.html.twig', [
             'form' => $form,
@@ -94,29 +81,12 @@ final class ProfileController extends AbstractController
             'formDelete' => $formDelete,
             // The tab of the submitted form, so that its errors or its success message show
             'activeTab' => $formChangePassword->isSubmitted() ? 'password' : 'profile',
-            'profileCompletion' => $this->getProfileCompletion($user),
+            'profileCompletion' => $user->getProfileCompletion(),
             // What the deletion erases, shown on its tab
             'favoritesCount' => $eventRepository->getUserFavoriteEventsCount($user),
             'commentsCount' => $commentRepository->count(['user' => $user]),
             'eventsCount' => $eventRepository->count(['user' => $user]),
         ]);
-    }
-
-    /**
-     * How complete the profile is, in percent: the picture, the names, the presentation and a verified e-mail address.
-     */
-    private function getProfileCompletion(User $user): int
-    {
-        // Empty strings (older rows) count as not filled, like null
-        $fields = [
-            $user->hasImage(),
-            $user->getFirstname(),
-            $user->getLastname(),
-            $user->getDescription(),
-            $user->isVerified(),
-        ];
-
-        return (int) round(100 * \count(array_filter($fields)) / \count($fields));
     }
 
     #[Route(path: '/mail-de-verification', name: 'app_send_verification_email', methods: ['POST'])]
@@ -125,23 +95,5 @@ final class ProfileController extends AbstractController
         $emailVerifier->sendEmailConfirmation($this->getAppUser());
 
         return new Response(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function createDeleteForm(): FormInterface
-    {
-        $confirmationMessage = \sprintf('Tapez %s pour confirmer la suppression de votre compte.', self::DELETE_CONFIRMATION);
-
-        return $this
-            ->createFormBuilder()
-            ->add('delete_events', CheckboxType::class, [
-                'required' => false,
-            ])
-            ->add('confirmation', TextType::class, [
-                'constraints' => [
-                    new NotBlank(message: $confirmationMessage),
-                    new EqualTo(value: self::DELETE_CONFIRMATION, message: $confirmationMessage),
-                ],
-            ])
-            ->getForm();
     }
 }

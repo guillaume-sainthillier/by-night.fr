@@ -13,26 +13,24 @@ namespace App\Controller\Location;
 use App\App\AppContext;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
-use App\Entity\City;
-use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Tag;
 use App\Enum\AgendaType;
 use App\Enum\DateRangePreset;
 use App\Form\Type\SearchType;
+use App\Manager\PlaceRedirectManager;
 use App\Manager\TagRedirectManager;
 use App\Repository\EventRepository;
-use App\Repository\PlaceRepository;
-use App\Repository\TagRepository;
 use App\Routing\AgendaTypeSlugRequirement;
 use App\Routing\AgendaUrlGenerator;
 use App\Search\AgendaFacets;
 use App\Search\AgendaSection;
-use App\Search\DateRange;
 use App\Search\SearchEvent;
+use App\SearchRepository\AgendaFacetsLoader;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\ResultWindow;
+use App\Stats\LocationPortalProvider;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,14 +50,6 @@ final class AgendaController extends BaseController
     /** The busiest categories of the filters under each type */
     private const int TYPE_CATEGORIES = 4;
 
-    /** Also the busiest cities on each country card, here and on the home page: they share the query */
-    public const int VENUES = 5;
-
-    /** Below, a country has no ranking of its cities */
-    private const int MIN_CITIES = 3;
-
-    private const int NEIGHBOURS = 5;
-
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
     #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', methods: ['GET'])]
@@ -72,10 +62,11 @@ final class AgendaController extends BaseController
         Request $request,
         RepositoryManagerInterface $repositoryManager,
         EventRepository $eventRepository,
-        PlaceRepository $placeRepository,
-        TagRepository $tagRepository,
+        PlaceRedirectManager $placeRedirectManager,
         TagRedirectManager $tagRedirectManager,
         AgendaUrlGenerator $agendaUrlGenerator,
+        AgendaFacetsLoader $agendaFacetsLoader,
+        LocationPortalProvider $locationPortalProvider,
         int $page = 1,
         ?string $typeSlug = null,
         ?string $placeSlug = null,
@@ -91,26 +82,9 @@ final class AgendaController extends BaseController
         $place = null;
         $tag = null;
 
-        if (null === $placeSlug && 'app_agenda_by_place' === $request->attributes->getString('_route')) {
-            return $this->redirectLegacyPlaceUrl($request, $location, $placeRepository);
-        }
-
-        // Handle place filtering
-        if (null !== $placeSlug) {
-            $place = $this->findPlace($placeRepository, $location, $placeSlug);
-            if (null === $place) {
-                return $this->redirectToRoute('app_location_index', ['location' => $location->getSlug()]);
-            }
-
-            // Another location, or the slug of a place merged into this one
-            if ($location->getSlug() !== $place->getLocationSlug() || $placeSlug !== $place->getSlug()) {
-                return $this->redirectToRoute('app_agenda_by_place', [...$request->query->all(), 'location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
-            }
-
-            // Its path names the venue: a type and a category narrowing it down come as "?type=student&tag=40"
-            $type = AgendaType::tryFrom($request->query->getString('type'));
-            $categoryId = $request->query->getInt('tag');
-            $tag = $categoryId > 0 ? $tagRepository->find($categoryId) : null;
+        // The venue of the URL, else a redirect to its own URL or to the location's page
+        if ('app_agenda_by_place' === $request->attributes->getString('_route')) {
+            $place = $placeRedirectManager->getPlace($placeSlug, $location);
         }
 
         // Handle tag filtering (canonical route with ID)
@@ -123,14 +97,12 @@ final class AgendaController extends BaseController
             $tag = $tagRedirectManager->getTag(null, $legacyTag, $location->getSlug(), 'app_agenda_by_tag', ['page' => $page]);
         }
 
-        // Like a venue, a category narrowed down to a type takes it as "?type=student"
-        if (null === $place && null !== $tag) {
-            $type = AgendaType::tryFrom($request->query->getString('type'));
-        }
+        // A venue or a category page narrowed down by the query string: "?type=student&tag=40"
+        [$type, $tag] = $agendaUrlGenerator->resolveQuery($request, $type, $place, $tag);
 
         // Search for events
-        $search = new SearchEvent();
-        $formAction = $this->handleSearch($search, $location, $type, $place, $tag);
+        $search = $this->createSearch($location, $type, $place, $tag);
+        [$formAction, $formQuery] = $agendaUrlGenerator->formTarget($location->getSlug(), $type, $place, $tag);
 
         // Create and submit the form
         $form = $this->createForm(SearchType::class, $search, [
@@ -172,10 +144,7 @@ final class AgendaController extends BaseController
         $dateRange = $search->getDateRange();
         $sections = AgendaSection::fromEvents($events->getCurrentPageResults(), $dateRange->from, $dateRange->to);
 
-        $facets = new AgendaFacets();
-        if ($isValid) {
-            $facets = $repository->getFacets($search, $this->getFacetDates($sections), self::PLACES, self::TYPE_CATEGORIES);
-        }
+        $facets = $isValid ? $agendaFacetsLoader->load($search, $sections, self::PLACES, self::TYPE_CATEGORIES) : new AgendaFacets();
 
         return $this->render('location/agenda/index.html.twig', [
             'location' => $location,
@@ -188,20 +157,19 @@ final class AgendaController extends BaseController
             'events' => $events,
             'sections' => $sections,
             'facets' => $facets,
-            'places' => $this->getPlaces($placeRepository, $facets),
             'categories' => $eventRepository->findUpcomingCategories($location, self::CATEGORIES),
-            'typeCategories' => $this->getTypeCategories($tagRepository, $facets),
             'page' => $page,
             'search' => $search,
             'dateRange' => $dateRange,
             'isValid' => $isValid,
             'routeParams' => $routeParams,
+            'formQuery' => $formQuery,
             'filters' => $filters,
             'undatedFilters' => array_diff_key($filters, ['when' => true, 'dateRange' => true]),
             'unpricedFilters' => array_diff_key($filters, ['price' => true]),
             'form' => $form,
             // The first page of the location also introduces it: its busiest cities, and its neighbours
-            'portal' => $isLocationPage && 1 === $page ? $this->getPortal($eventRepository, $location) : null,
+            'portal' => $isLocationPage && 1 === $page ? $locationPortalProvider->getPortal($location) : null,
         ]);
     }
 
@@ -219,76 +187,6 @@ final class AgendaController extends BaseController
     }
 
     /**
-     * @return array{
-     *     cities: list<array{0: City, events: int|string}>,
-     *     neighbours: list<array{0: City|Country, events: int|string}>,
-     * }
-     */
-    private function getPortal(EventRepository $eventRepository, Location $location): array
-    {
-        $cities = [];
-        if ($location->isCity()) {
-            // The cities around the city
-            $neighbours = $eventRepository->findUpcomingCitiesAround($location->getCity(), self::NEIGHBOURS);
-        } else {
-            // The busiest cities of the country, and the other countries, as the home page lists them
-            $cities = $eventRepository->findUpcomingCitiesOfCountry($location->getCountry(), self::VENUES);
-            $neighbours = $eventRepository->findUpcomingCountries(self::VENUES, $location->getCountry());
-        }
-
-        return [
-            // A country with too few busy cities to rank (Monaco) has its venues in the filters of its agenda
-            'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
-            'neighbours' => $neighbours,
-        ];
-    }
-
-    /**
-     * "/agenda/sortir-a" without a place is not a page of its own. The sitemap used to link it
-     * with the place as "?slug=…", so that parameter still leads to the place's own URL, in the
-     * place's own city; anything else goes to the city agenda.
-     */
-    private function redirectLegacyPlaceUrl(Request $request, Location $location, PlaceRepository $placeRepository): Response
-    {
-        $legacySlug = $request->query->getString('slug');
-        $place = null;
-        if ('' !== $legacySlug) {
-            $place = $this->findPlace($placeRepository, $location, $legacySlug);
-        }
-
-        if (null === $place) {
-            return $this->redirectToRoute('app_location_index', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
-        }
-
-        return $this->redirectToRoute('app_agenda_by_place', [
-            'location' => $place->getLocationSlug(),
-            'placeSlug' => $place->getSlug(),
-        ], Response::HTTP_MOVED_PERMANENTLY);
-    }
-
-    /**
-     * Place slugs are not unique ("salle-des-fetes" names hundreds of places): the place in the city
-     * the URL names (or without a city, in its country) comes first; another one is only a fallback,
-     * which the caller redirects to its own URL. The location's city and country are lazy proxies,
-     * hence their ids rather than the objects.
-     */
-    private function findPlace(PlaceRepository $placeRepository, Location $location, string $slug): ?Place
-    {
-        $city = $location->getCity();
-        $country = $location->getCountry();
-        $place = match (true) {
-            null !== $city => $placeRepository->findOneBy(['slug' => $slug, 'city' => $city->getId()]),
-            null !== $country => $placeRepository->findOneBy(['slug' => $slug, 'country' => $country->getId(), 'city' => null]),
-            default => null,
-        };
-
-        return $place
-            // The slug of a place merged into another one of its city
-            ?? $placeRepository->findOneByLegacySlug($slug, $location)
-            ?? $placeRepository->findOneBy(['slug' => $slug]);
-    }
-
-    /**
      * The filters of the query string, which the links of the page keep: the period, the price, the keywords, the radius. The type
      * and the category are left out, as the route parameters already hold them (AgendaUrlGenerator::route()). The period is the search's: its
      * shortcut by name, which stays true the next week, else the dates picked. An unknown price shortcut is left out.
@@ -298,7 +196,7 @@ final class AgendaController extends BaseController
     private function buildFilters(Request $request, SearchEvent $search): array
     {
         $filters = $request->query->all();
-        unset($filters['page'], $filters['type'], $filters['tag'], $filters['when'], $filters['dateRange'], $filters['price']);
+        unset($filters['page'], $filters[AgendaUrlGenerator::TYPE], $filters[AgendaUrlGenerator::CATEGORY], $filters['when'], $filters['dateRange'], $filters['price']);
         if (null === $search->getTerm()) {
             unset($filters['term']);
         }
@@ -317,73 +215,9 @@ final class AgendaController extends BaseController
         return $filters;
     }
 
-    /**
-     * The date windows the filters count: the date shortcuts, and the days the page lists.
-     *
-     * @param list<AgendaSection> $sections
-     *
-     * @return array<string, DateRange>
-     */
-    private function getFacetDates(array $sections): array
+    private function createSearch(Location $location, ?AgendaType $type, ?Place $place, ?Tag $tag): SearchEvent
     {
-        $dates = [];
-        foreach (DateRangePreset::cases() as $preset) {
-            $dates[$preset->value] = $preset->range();
-        }
-
-        foreach ($sections as $section) {
-            $dates[$section->day->format('Y-m-d')] = new DateRange($section->day, $section->day);
-        }
-
-        return $dates;
-    }
-
-    /**
-     * @return list<Place> the busiest venues, the busiest first
-     */
-    private function getPlaces(PlaceRepository $placeRepository, AgendaFacets $facets): array
-    {
-        if ([] === $facets->places) {
-            return [];
-        }
-
-        $places = $placeRepository->findBy(['id' => array_keys($facets->places)]);
-        usort($places, static fn (Place $a, Place $b): int => $facets->places[$b->getId()] <=> $facets->places[$a->getId()]);
-
-        return $places;
-    }
-
-    /**
-     * The busiest categories of each type, with their counts, in the order of the facets.
-     *
-     * @return array<string, list<array{tag: Tag, events: int}>> by AgendaType value
-     */
-    private function getTypeCategories(TagRepository $tagRepository, AgendaFacets $facets): array
-    {
-        $ids = array_unique(array_merge(...array_map(array_keys(...), array_values($facets->typeCategories))));
-        if ([] === $ids) {
-            return [];
-        }
-
-        $tags = [];
-        foreach ($tagRepository->findBy(['id' => $ids]) as $tag) {
-            $tags[$tag->getId()] = $tag;
-        }
-
-        $typeCategories = [];
-        foreach ($facets->typeCategories as $type => $categories) {
-            foreach ($categories as $id => $events) {
-                if (isset($tags[$id])) {
-                    $typeCategories[$type][] = ['tag' => $tags[$id], 'events' => $events];
-                }
-            }
-        }
-
-        return $typeCategories;
-    }
-
-    private function handleSearch(SearchEvent $search, Location $location, ?AgendaType $type, ?Place $place, ?Tag $tag): string
-    {
+        $search = new SearchEvent();
         if (null !== $place) {
             $search->setLieux([$place->getId()]);
         }
@@ -395,13 +229,6 @@ final class AgendaController extends BaseController
         $search->setLocation($location);
         $search->setType($type);
 
-        // The path of the page: a GET form drops the query string of its action, so the type and the category of a
-        // venue come as hidden fields (location/agenda/_filters.html.twig)
-        return $this->generateUrl(...match (true) {
-            null !== $place => ['app_agenda_by_place', ['placeSlug' => $place->getSlug(), 'location' => $location->getSlug()]],
-            null !== $tag => ['app_agenda_by_tag', ['tagSlug' => $tag->getSlug(), 'tagId' => $tag->getId(), 'location' => $location->getSlug()]],
-            null !== $type => ['app_agenda_by_type', ['typeSlug' => $type->getSlug(), 'location' => $location->getSlug()]],
-            default => ['app_location_index', ['location' => $location->getSlug()]],
-        });
+        return $search;
     }
 }

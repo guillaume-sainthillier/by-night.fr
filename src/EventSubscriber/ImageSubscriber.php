@@ -12,27 +12,22 @@ namespace App\EventSubscriber;
 
 use App\Contracts\BatchResetInterface;
 use App\Entity\User;
-use App\Message\PurgeCdnCacheUrl;
-use App\Message\RemoveImageThumbnails;
+use App\Storage\ImageCachePurger;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
 final class ImageSubscriber implements EventSubscriberInterface, BatchResetInterface
 {
-    /** @var string[] */
-    private array $paths = [];
-
-    /** @var array<string, string> Image path in its storage => VichUploader mapping */
-    private array $imageCachePaths = [];
+    /** @var array<string, array{string, string, string}> their VichUploader mapping, its public path, and their path there; one purge per file */
+    private array $deletedImages = [];
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly MessageBusInterface $messageBus,
+        private readonly ImageCachePurger $imageCachePurger,
     ) {
     }
 
@@ -80,33 +75,25 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
         $object = $event->getObject();
         $mapping = $event->getMapping();
 
-        $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
-        $this->paths[] = $path;
-
-        $imageCachePath = $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
-        $this->imageCachePaths[$imageCachePath] = $mapping->getMappingName();
+        // As Vich resolves it: a mapping without directories stores its files at its root
+        $directory = (string) $mapping->getUploadDir($object);
+        $fileName = (string) $mapping->getFileName($object);
+        $path = '' === $directory ? $fileName : $directory . '/' . $fileName;
+        $this->deletedImages[$mapping->getMappingName() . '|' . $path] = [$mapping->getMappingName(), $mapping->getUriPrefix(), $path];
     }
 
     public function onImageDeleted(): void
     {
-        // Schedule thumbnails delete
-        foreach ($this->imageCachePaths as $path => $mappingName) {
-            $this->messageBus->dispatch(new RemoveImageThumbnails((string) $path, $mappingName));
+        foreach ($this->deletedImages as [$mappingName, $uriPrefix, $path]) {
+            $this->imageCachePurger->purge($mappingName, $uriPrefix, $path);
         }
 
-        // Schedule CDN purging of old image path
-        foreach ($this->paths as $path) {
-            $this->messageBus->dispatch(new PurgeCdnCacheUrl($path));
-        }
-
-        $this->paths = [];
-        $this->imageCachePaths = [];
+        $this->deletedImages = [];
     }
 
     public function batchReset(): void
     {
-        $this->paths = [];
-        $this->imageCachePaths = [];
+        $this->deletedImages = [];
     }
 
     private function getImageMetadata(File $file): array

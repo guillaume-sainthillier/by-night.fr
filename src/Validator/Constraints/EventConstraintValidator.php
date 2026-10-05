@@ -10,24 +10,16 @@
 
 namespace App\Validator\Constraints;
 
-use App\Contracts\BatchResetInterface;
 use App\Dto\EventDto;
 use App\Reject\Reject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-final class EventConstraintValidator extends ConstraintValidator implements BatchResetInterface
+final class EventConstraintValidator extends ConstraintValidator
 {
-    private bool $checkIfUpdate = false;
-
     public function __construct(private readonly LoggerInterface $logger)
     {
-    }
-
-    public function setUpdatabilityCkeck(bool $checkIfUpdate): void
-    {
-        $this->checkIfUpdate = $checkIfUpdate;
     }
 
     public function validate(mixed $value, Constraint $constraint): void
@@ -36,9 +28,8 @@ final class EventConstraintValidator extends ConstraintValidator implements Batc
         \assert($constraint instanceof EventConstraint);
         $reject = $value->reject;
 
-        if ($reject && !$this->checkIfUpdate) {
-            $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
-        }
+        // Someone editing their event wants it saved, whether or not its source changed since
+        $reject?->removeReason(Reject::NO_NEED_TO_UPDATE);
 
         if (!$reject || $reject->isValid()) {
             return;
@@ -72,10 +63,6 @@ final class EventConstraintValidator extends ConstraintValidator implements Batc
 
         if ($reject->isBadEventDescription()) {
             $this->context->buildViolation($constraint->badEventDescrition)->atPath('description')->addViolation();
-        }
-
-        if ($reject->hasNoNeedToUpdate()) {
-            $this->context->buildViolation($constraint->noNeedToUpdate)->addViolation();
         }
 
         if ($reject->hasNoPlaceProvided()) {
@@ -113,10 +100,5 @@ final class EventConstraintValidator extends ConstraintValidator implements Batc
         if (0 === \count($this->context->getViolations())) {
             $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé. Code d'erreur\u{a0}: " . $reject->getReason())->addViolation();
         }
-    }
-
-    public function batchReset(): void
-    {
-        $this->checkIfUpdate = false;
     }
 }

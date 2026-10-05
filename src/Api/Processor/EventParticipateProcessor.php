@@ -16,11 +16,8 @@ use App\Api\Model\EventParticipateInput;
 use App\Api\Model\EventParticipationOutput;
 use App\Entity\Event;
 use App\Entity\User;
-use App\Entity\UserEvent;
-use App\Repository\EventRepository;
-use App\Repository\UserEventRepository;
+use App\Manager\EventParticipationManager;
 use App\Security\Voter\EventVoter;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -30,10 +27,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final readonly class EventParticipateProcessor implements ProcessorInterface
 {
     public function __construct(
-        private ProcessorInterface $persistProcessor,
-        private EntityManagerInterface $entityManager,
-        private EventRepository $eventRepository,
-        private UserEventRepository $userEventRepository,
+        private EventParticipationManager $eventParticipationManager,
         private Security $security,
     ) {
     }
@@ -48,33 +42,12 @@ final readonly class EventParticipateProcessor implements ProcessorInterface
 
         /** @var User $user */
         $user = $this->security->getUser();
-
-        $userEvent = $this->userEventRepository->findOneBy([
-            'user' => $user,
-            'event' => $event,
-        ]);
-
-        if (null === $userEvent) {
-            $userEvent = new UserEvent();
-            $userEvent
-                ->setUser($user)
-                ->setEvent($event);
-            $this->entityManager->persist($userEvent);
-        }
-
-        $userEvent->setGoing($data->like);
-        $this->persistProcessor->process($event, $operation, $uriVariables, $context);
-
-        // Update participation counts
-        $participations = $this->eventRepository->getParticipationTrendsCount($event);
-        $interests = $this->eventRepository->getInterestTrendsCount($event);
-        $event->setParticipations($participations)->setInterests($interests);
-        $this->persistProcessor->process($event, $operation, $uriVariables, $context);
+        $this->eventParticipationManager->participate($user, $event, $data->like);
 
         return new EventParticipationOutput(
             success: true,
             like: $data->like,
-            likes: $participations + $interests,
+            likes: $event->getParticipations() + $event->getInterests(),
         );
     }
 }

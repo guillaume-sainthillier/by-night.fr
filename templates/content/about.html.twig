@@ -87,7 +87,7 @@
         {% set stats = [
             {icon: 'lucide:calendar-check', tone: 'primary', value: '+' ~ '{count, number, ::compact-short .# rounding-mode-floor}'|trans({count: events_count()}, 'messages+intl-icu'), title: 'Événements référencés', text: 'Concerts, spectacles, vernissages et fêtes de quartier réunis depuis le lancement.'},
             {icon: 'lucide:hand-heart', tone: 'teal', value: '100 %', title: 'Gratuit, sans abonnement', text: 'Libre d\'accès pour les festivaliers, les curieux du dimanche et les organisateurs, associatifs ou non.'},
-            {icon: 'lucide:globe', tone: 'yellow', value: countries|length, title: '{count, plural, one {Pays ou territoire} other {Pays & territoires}}'|trans({count: countries|length}, 'messages+intl-icu'), text: countriesSummary ~ ' : partout où des sorties sont à venir.'},
+            {icon: 'lucide:globe', tone: 'yellow', value: countries|length, title: '{count, plural, one {Pays ou territoire} other {Pays & territoires}}'|trans({count: countries|length}, 'messages+intl-icu'), text: countries|countries_summary ~ ' : partout où des sorties sont à venir.'},
         ] %}
         <div class="row row-cards row-deck" id="stats">
             {% for stat in stats %}

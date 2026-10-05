@@ -20,6 +20,7 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\PlaceLegacySlug;
 use App\Entity\PlaceMetadata;
+use App\Entity\PlaceNameSlug;
 use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -278,6 +279,35 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->getSingleColumnResult();
 
         return array_map(intval(...), $ids);
+    }
+
+    /**
+     * Deletes the places and every row pointing at them (identities, name slugs, former slugs), those first, in bulk:
+     * nothing of the unit of work sees it.
+     *
+     * @param list<int> $placeIds
+     */
+    public function deleteWithRows(array $placeIds): void
+    {
+        if ([] === $placeIds) {
+            return;
+        }
+
+        foreach ([PlaceMetadata::class, PlaceNameSlug::class, PlaceLegacySlug::class] as $class) {
+            $this->getEntityManager()->createQueryBuilder()
+                ->delete($class, 'x')
+                ->where('x.place IN (:ids)')
+                ->setParameter('ids', $placeIds)
+                ->getQuery()
+                ->execute();
+        }
+
+        $this->createQueryBuilder('p')
+            ->delete()
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $placeIds)
+            ->getQuery()
+            ->execute();
     }
 
     /**

@@ -332,6 +332,42 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The events waiting for the image their source gives: never stored, or lost, and not taken down on request
+     * (EventImageRemover), which is not downloaded again.
+     */
+    public function createWaitingForImageQueryBuilder(): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.url IS NOT NULL')
+            ->andWhere("e.imageSystem.name IS NULL OR e.imageSystem.name = ''")
+            ->andWhere('e.imageRemovedAt IS NULL');
+    }
+
+    public function countWaitingForImage(): int
+    {
+        return (int) $this->createWaitingForImageQueryBuilder()
+            ->select('COUNT(e.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * The event whose picture, from its member or its source, is stored under that file name.
+     */
+    public function findOneByImageName(string $name): ?Event
+    {
+        /* @var Event|null */
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.image.name = :name OR e.imageSystem.name = :name')
+            ->setParameter('name', $name)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * The event with the place, city and country its URL and page are built from, in one query.
      * The city's parent is joined too: it targets the AdminZone inheritance root, which Doctrine
      * cannot proxy, so hydrating a city without it loads it with a query of its own.
@@ -747,30 +783,6 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         return (int) $this->createUserCalendarQueryBuilder($user)
             ->select('COUNT(ue.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function getParticipationTrendsCount(Event $event): int
-    {
-        return $this->getTrendsCount($event);
-    }
-
-    public function getInterestTrendsCount(Event $event): int
-    {
-        return $this->getTrendsCount($event, false);
-    }
-
-    protected function getTrendsCount(Event $event, bool $isParticipation = true): int
-    {
-        return (int) $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('COUNT(u)')
-            ->from(UserEvent::class, 'ue')
-            ->join('ue.user', 'u')
-            ->where('ue.event = :event')
-            ->andWhere(($isParticipation ? 'ue.going' : 'ue.wish') . ' = true')
-            ->setParameter('event', $event->getId())
             ->getQuery()
             ->getSingleScalarResult();
     }

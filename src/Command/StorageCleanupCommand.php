@@ -10,23 +10,13 @@
 
 namespace App\Command;
 
-use App\Message\PurgeCdnCacheUrl;
-use App\Message\RemoveImageThumbnails;
-use Aws\S3\S3Client;
-use DateTimeImmutable;
-use DateTimeInterface;
-use Doctrine\DBAL\ArrayParameterType;
-use Doctrine\DBAL\Connection;
-use Generator;
-use Silarhi\CursorPagination\Iterator\ChunkIterator;
+use App\Storage\OrphanedUploadsCleaner;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
     name: 'app:storage:cleanup',
@@ -36,34 +26,8 @@ final class StorageCleanupCommand extends Command
 {
     private const int DEFAULT_BATCH_SIZE = 1000;
 
-    /**
-     * VichUploader mapping of each upload storage (its S3 prefix, config/packages/flysystem.yaml): the thumbnails of a
-     * deleted file are found under the Picasso loader named after it.
-     *
-     * @var array<string, string>
-     */
-    private const array MAPPINGS_BY_PREFIX = [
-        'uploads/documents' => 'event_image',
-        'uploads/users' => 'user_image',
-        'uploads/pages' => 'page_image',
-        'uploads/countries' => 'country_image',
-        'uploads/cities' => 'city_image',
-    ];
-
-    /**
-     * Vich writes a file to the bucket during the flush that stores its name: until that
-     * transaction commits (an import batch downloads its images one after the other), the file
-     * looks unreferenced. Recent files are left for a later run.
-     */
-    private const string MIN_AGE = '24 hours';
-
     public function __construct(
-        private readonly Connection $connection,
-        #[Autowire(service: 's3_client')]
-        private readonly S3Client $s3Client,
-        #[Autowire(env: 'S3_BUCKET_NAME')]
-        private readonly string $bucketName,
-        private readonly MessageBusInterface $messageBus,
+        private readonly OrphanedUploadsCleaner $cleaner,
     ) {
         parent::__construct();
     }
@@ -78,25 +42,27 @@ final class StorageCleanupCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $dryRun = $input->getOption('dry-run');
+        $dryRun = (bool) $input->getOption('dry-run');
         $batchSize = (int) $input->getOption('batch-size');
 
         if ($dryRun) {
             $io->note('Running in dry-run mode. No files will be deleted.');
         }
 
-        $totalFiles = 0;
         $orphanedFiles = 0;
         $orphanedSize = 0;
+        $orphans = $this->cleaner->findOrphans($batchSize);
+        foreach ($orphans as $orphan) {
+            ++$orphanedFiles;
+            $orphanedSize += $orphan['size'];
 
-        $chunks = new ChunkIterator($this->listAllFiles(), $batchSize);
+            if ($io->isVerbose()) {
+                $io->writeln(\sprintf('  [%s] %s', $dryRun ? 'DRY-RUN' : 'DELETE', $orphan['key']));
+            }
 
-        /** @var array<string, array{key: string, size: int}> $chunk */
-        foreach ($chunks as $chunk) {
-            $totalFiles += \count($chunk);
-            $stats = $this->processBatch($chunk, $dryRun, $io);
-            $orphanedFiles += $stats['orphanedFiles'];
-            $orphanedSize += $stats['orphanedSize'];
+            if (!$dryRun) {
+                $this->cleaner->delete($orphan['key']);
+            }
         }
 
         $io->newLine();
@@ -107,7 +73,7 @@ final class StorageCleanupCommand extends Command
                 $dryRun ? 'Would delete' : 'Deleted',
                 $orphanedFiles,
                 $orphanedSize / 1_048_576,
-                $totalFiles,
+                $orphans->getReturn(),
             );
             $dryRun ? $io->info($message) : $io->success($message);
         } else {
@@ -115,119 +81,5 @@ final class StorageCleanupCommand extends Command
         }
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param array<string, array{key: string, size: int}> $batch basename => entry
-     *
-     * @return array{orphanedFiles: int, orphanedSize: int}
-     */
-    private function processBatch(array $batch, bool $dryRun, SymfonyStyle $io): array
-    {
-        $orphanedFiles = 0;
-        $orphanedSize = 0;
-
-        $basenames = array_keys($batch);
-        $referencedPaths = $this->findReferencedPaths($basenames);
-
-        foreach ($batch as $basename => $entry) {
-            if (isset($referencedPaths[$basename])) {
-                continue;
-            }
-
-            ++$orphanedFiles;
-            $orphanedSize += $entry['size'];
-            $path = $entry['key'];
-
-            if ($io->isVerbose()) {
-                $io->writeln(\sprintf(
-                    '  [%s] %s',
-                    $dryRun ? 'DRY-RUN' : 'DELETE',
-                    $path,
-                ));
-            }
-
-            if (!$dryRun) {
-                $this->s3Client->deleteObject([
-                    'Bucket' => $this->bucketName,
-                    'Key' => $path,
-                ]);
-
-                foreach (self::MAPPINGS_BY_PREFIX as $prefix => $mapping) {
-                    if (str_starts_with($path, $prefix . '/')) {
-                        $this->messageBus->dispatch(new RemoveImageThumbnails(substr($path, \strlen($prefix) + 1), $mapping));
-                    }
-                }
-                $this->messageBus->dispatch(new PurgeCdnCacheUrl('/' . ltrim($path, '/')));
-            }
-        }
-
-        return [
-            'orphanedFiles' => $orphanedFiles,
-            'orphanedSize' => $orphanedSize,
-        ];
-    }
-
-    /**
-     * @return Generator<string, array{key: string, size: int}>
-     */
-    private function listAllFiles(): Generator
-    {
-        $paginator = $this->s3Client->getPaginator('ListObjectsV2', [
-            'Bucket' => $this->bucketName,
-            'Prefix' => 'uploads/',
-        ]);
-
-        $uploadedBefore = new DateTimeImmutable('-' . self::MIN_AGE);
-        foreach ($paginator as $page) {
-            /** @var array{Key: string, Size: int, LastModified: DateTimeInterface} $object */
-            foreach ($page['Contents'] ?? [] as $object) {
-                if ($object['LastModified'] > $uploadedBefore) {
-                    continue;
-                }
-
-                yield basename($object['Key']) => [
-                    'key' => $object['Key'],
-                    'size' => $object['Size'],
-                ];
-            }
-        }
-    }
-
-    /**
-     * @param list<string> $basenames
-     *
-     * @return array<string, true>
-     */
-    private function findReferencedPaths(array $basenames): array
-    {
-        $sql = <<<'SQL'
-            SELECT image_name AS path FROM `event` WHERE image_name IN (:names)
-            UNION
-            SELECT image_system_name AS path FROM `event` WHERE image_system_name IN (:names)
-            UNION
-            SELECT image_name AS path FROM `user` WHERE image_name IN (:names)
-            UNION
-            SELECT image_system_name AS path FROM `user` WHERE image_system_name IN (:names)
-            UNION
-            SELECT image_name AS path FROM `page` WHERE image_name IN (:names)
-            UNION
-            SELECT hero_image_name AS path FROM `country` WHERE hero_image_name IN (:names)
-            UNION
-            SELECT hero_image_name AS path FROM `admin_zone` WHERE hero_image_name IN (:names)
-            SQL;
-
-        $result = $this->connection->executeQuery($sql, [
-            'names' => $basenames,
-        ], [
-            'names' => ArrayParameterType::STRING,
-        ]);
-
-        $referenced = [];
-        while (false !== ($path = $result->fetchOne())) {
-            $referenced[$path] = true;
-        }
-
-        return $referenced;
     }
 }

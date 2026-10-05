@@ -10,8 +10,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Event;
-use App\Entity\User;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\Asset\Packages;
@@ -33,39 +31,16 @@ final class OldMediaController extends AbstractController
     #[Route(path: '/uploads/{path<%patterns.path%>}', methods: ['GET'])]
     public function index(string $path, StorageInterface $storage, Packages $packages, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
-        $infos = pathinfo($path);
-        /** @var Event|null $event */
-        $event = $eventRepository
-            ->createQueryBuilder('e')
-            ->where('e.image.name = :path OR e.imageSystem.name = :path')
-            ->setParameter('path', $infos['basename'])
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        if ($event) {
-            $field = $event->getImage()->getName() === $infos['basename'] ? 'imageFile' : 'imageSystemFile';
-            $url = $packages->getUrl($storage->resolveUri($event, $field), 's3');
-
-            return $this->permanentRedirect($url);
+        $name = basename($path);
+        $entity = $eventRepository->findOneByImageName($name) ?? $userRepository->findOneByImageName($name);
+        if (null === $entity) {
+            throw $this->createNotFoundException(\sprintf('Unable to find event or user for path "%s"', $path));
         }
 
-        /** @var User|null $user */
-        $user = $userRepository
-            ->createQueryBuilder('u')
-            ->where('u.image.name = :path OR u.imageSystem.name = :path')
-            ->setParameter('path', $infos['basename'])
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-        if ($user) {
-            $field = $user->getImage()->getName() === $infos['basename'] ? 'imageFile' : 'imageSystemFile';
-            $url = $packages->getUrl($storage->resolveUri($user, $field), 's3');
+        // Its own picture, else the one from its source or network
+        $field = $entity->getImage()->getName() === $name ? 'imageFile' : 'imageSystemFile';
 
-            return $this->permanentRedirect($url);
-        }
-
-        throw $this->createNotFoundException(\sprintf('Unable to find event or user for path "%s"', $path));
+        return $this->permanentRedirect($packages->getUrl($storage->resolveUri($entity, $field), 's3'));
     }
 
     private function permanentRedirect(string $url): Response

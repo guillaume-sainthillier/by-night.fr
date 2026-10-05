@@ -59,13 +59,10 @@
                     {% do form.range.setRendered %}
                 {% endif %}
                 {# The type of a venue or a category page, and the category of a venue page, are query parameters, which a
-                   GET form drops from its action #}
-                {% if (place or tagEntity) and type %}
-                    <input type="hidden" name="type" value="{{ type.value }}">
-                {% endif %}
-                {% if place and tagEntity %}
-                    <input type="hidden" name="tag" value="{{ tagEntity.id }}">
-                {% endif %}
+                   GET form drops from its action (AgendaUrlGenerator::formTarget()) #}
+                {% for name, value in formQuery %}
+                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                {% endfor %}
                 <button type="submit" class="btn btn-primary w-100">
                     <twig:Icon name="lucide:search" />
                     Rechercher
@@ -103,7 +100,7 @@
                         {# Each type unfolds to its busiest categories within the search; the whole agenda has none #}
                         <twig:FilterGroup id="univers-{{ group.key }}" href="{{ group.href }}" filteredHref="{{ group.filteredHref }}" icon="{{ group.icon }}" tone="{{ group.tone }}" label="{{ group.label }}" count="{{ facets.types[group.key] ?? null }}" title="{{ title }}" active="{{ current == group.key }}" open="{{ current == group.key }}">
                             {% if group.key != 'all' %}
-                                {% for row in typeCategories[group.key] ?? [] %}
+                                {% for row in facets.categoriesByType[group.key] ?? [] %}
                                     <twig:FilterGroup:Item
                                         href="{{ path('app_agenda_by_tag', filters|merge({location: location.slug, tagSlug: row.tag.slug, tagId: row.tag.id})) }}"
                                         filteredHref="{{ agenda_path(location.slug, type: group.type, place: place, tag: row.tag, filters: filters) }}"
@@ -136,14 +133,14 @@
                     {% endif %}
                 </div>
 
-                {% if places %}
+                {% if facets.venues %}
                     <div class="filter-section-header mt-4">
                         <h3 class="subheader mb-0">Lieux les plus actifs</h3>
                     </div>
                     <div class="d-flex flex-column gap-1">
                         {# Its count is the page's own: the one without the venue is not counted #}
                         <twig:FilterOption href="{{ withoutPlace }}" label="Tous les lieux" count="{{ place ? null : events.nbResults }}" active="{{ place is null }}" />
-                        {% for row in places %}
+                        {% for row in facets.venues %}
                             <twig:FilterOption
                                 href="{{ path('app_agenda_by_place', filters|merge({placeSlug: row.slug, location: row.locationSlug})) }}"
                                 filteredHref="{{ type or tagEntity ? agenda_path(location.slug, type: type, place: row, tag: tagEntity, filters: filters) : null }}"

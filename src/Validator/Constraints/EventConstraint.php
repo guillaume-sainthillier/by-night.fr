@@ -27,8 +27,6 @@ final class EventConstraint extends Constraint
 
     public string $badEventDescrition = "La description de l'événement est incorrecte.";
 
-    public string $noNeedToUpdate = "L'événement n'a pas besoin d'être mis à jour.";
-
     public string $noPlaceProvided = "Le lieu de l'événement n'est pas rempli.";
 
     public string $noPlaceLocationProvided = "L'endroit du lieu de l'événement n'est pas rempli.";

@@ -140,6 +140,28 @@ final class EventRedirectManagerTest extends AppKernelTestCase
         self::assertSame($draft, $this->manager->getEvent($draft->getId(), $draft->getSlug(), 'toulouse', 'app_event_details'));
     }
 
+    /**
+     * What shows a draft's surroundings (the events at its venue or on its date) tells where and when it takes place:
+     * even at its own URL, it is not found by those who cannot see it.
+     */
+    public function testTheSurroundingsOfADraftAreNotFoundByThoseWhoCannotSeeIt(): void
+    {
+        $draft = $this->createEvent('Soirée surprise', ['draft' => true]);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->manager->getVisibleEvent($draft->getId(), $draft->getSlug(), 'toulouse', 'app_widget_next_events');
+    }
+
+    public function testTheAuthorSeesTheSurroundingsOfTheirDraft(): void
+    {
+        $draft = $this->createEvent('Soirée surprise', ['draft' => true]);
+        $author = $draft->getUser();
+        self::getContainer()->get('security.token_storage')->setToken(new UsernamePasswordToken($author, 'main', $author->getRoles()));
+
+        self::assertSame($draft, $this->manager->getVisibleEvent($draft->getId(), $draft->getSlug(), 'toulouse', 'app_widget_next_events'));
+    }
+
     public function testAnUnknownEventIsNotFound(): void
     {
         $this->expectException(NotFoundHttpException::class);

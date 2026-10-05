@@ -192,6 +192,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
             || (null !== $this->imageSystem->getName() && '' !== $this->imageSystem->getName());
     }
 
+    /**
+     * How complete the profile is, in percent: the picture, the names, the presentation and a verified e-mail address.
+     */
+    public function getProfileCompletion(): int
+    {
+        // Empty strings (older rows) count as not filled, like null
+        $fields = [
+            $this->hasImage(),
+            $this->firstname,
+            $this->lastname,
+            $this->description,
+            $this->verified,
+        ];
+
+        return (int) round(100 * \count(array_filter($fields)) / \count($fields));
+    }
+
     public function addRole(string $role): self
     {
         $role = strtoupper($role);

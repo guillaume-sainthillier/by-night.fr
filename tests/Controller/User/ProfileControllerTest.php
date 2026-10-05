@@ -10,10 +10,10 @@
 
 namespace App\Tests\Controller\User;
 
-use App\Controller\User\ProfileController;
 use App\Entity\User;
 use App\Factory\CityFactory;
 use App\Factory\UserFactory;
+use App\Form\Type\DeleteAccountFormType;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -29,7 +29,7 @@ final class ProfileControllerTest extends WebTestCase
         $client->loginUser($user);
 
         // An expired CSRF token makes the deletion form invalid
-        $client->request('POST', '/profile/delete', ['form' => ['delete_events' => '1', '_token' => 'expired']]);
+        $client->request('POST', '/profile/delete', ['delete_account_form' => ['delete_events' => '1', '_token' => 'expired']]);
 
         self::assertResponseRedirects('/profile/edit#delete');
         $client->followRedirect();
@@ -44,7 +44,7 @@ final class ProfileControllerTest extends WebTestCase
         $client->loginUser($user);
 
         $client->request('GET', '/profile/edit');
-        $client->submitForm('Supprimer mon compte', ['form[confirmation]' => 'supprimer']);
+        $client->submitForm('Supprimer mon compte', ['delete_account_form[confirmation]' => 'supprimer']);
 
         self::assertResponseRedirects('/profile/edit#delete');
         self::assertSame(1, UserFactory::count(['id' => $user->getId()]), 'The account is kept');
@@ -58,7 +58,7 @@ final class ProfileControllerTest extends WebTestCase
         $client->loginUser($user);
 
         $client->request('GET', '/profile/edit');
-        $client->submitForm('Supprimer mon compte', ['form[confirmation]' => ProfileController::DELETE_CONFIRMATION]);
+        $client->submitForm('Supprimer mon compte', ['delete_account_form[confirmation]' => DeleteAccountFormType::CONFIRMATION]);
 
         self::assertResponseRedirects('/');
         self::assertSame(0, UserFactory::count(['id' => $userId]));

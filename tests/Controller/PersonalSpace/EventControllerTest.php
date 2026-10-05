@@ -11,9 +11,11 @@
 namespace App\Tests\Controller\PersonalSpace;
 
 use App\Enum\EventStatus;
+use App\Factory\CommentFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
+use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\RecountUpcomingEvents;
 use App\MessageHandler\RecountUpcomingEventsHandler;
@@ -245,6 +247,50 @@ final class EventControllerTest extends WebTestCase
         $event = EventFactory::find(['name' => 'Soirée swing au Bikini']);
         self::assertSame($user->getId(), $event->getUser()?->getId());
         self::assertFalse($event->isDraft());
+    }
+
+    /**
+     * Its author goes, and their message is the first comment of the event.
+     */
+    public function testTheAuthorOfANewEventGoesAndCommentsIt(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $form = $this->newEventForm($client, 'Soirée swing au Bikini');
+        $form['app_event[comment]'] = 'On vous attend nombreux !';
+        $client->submit($form);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $event = EventFactory::find(['name' => 'Soirée swing au Bikini']);
+        self::assertSame(1, $event->getParticipations());
+        self::assertSame(1, UserEventFactory::count(['user' => $user, 'event' => $event, 'going' => true]));
+        self::assertSame(1, CommentFactory::count(['user' => $user, 'event' => $event, 'comment' => 'On vous attend nombreux !']));
+    }
+
+    /**
+     * An imported event changed by its member is dated as changed now, as a change of its source would be.
+     */
+    public function testEditingAnImportedEventDatesItsChange(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne([
+            'name' => 'Concert de jazz',
+            'externalId' => 'jazz-42',
+            'externalOrigin' => 'openagenda',
+            'externalUpdatedAt' => new DateTimeImmutable('-1 month'),
+        ]);
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $form = $crawler->filter('form[name="app_event"]')->form();
+        $form['app_event[name]'] = 'Concert de jazz manouche';
+        $client->submit($form);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertGreaterThan(new DateTimeImmutable('-1 minute'), EventFactory::find(['id' => $event->getId()])->getExternalUpdatedAt());
     }
 
     /**

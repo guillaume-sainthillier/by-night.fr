@@ -40,6 +40,9 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
     final public const string KEY_PREFIX = 'country';
 
+    /** The French overseas departments and collectivities, grouped as "l'Outre-Mer" where the countries are listed */
+    final public const array FRENCH_OVERSEAS = ['GP', 'MQ', 'GF', 'RE', 'YT', 'PM', 'BL', 'MF', 'WF', 'PF', 'NC', 'TF'];
+
     #[ORM\Column(type: Types::STRING, length: 2)]
     #[ORM\Id]
     #[Groups(['elasticsearch:event:details', 'elasticsearch:user:details', 'elasticsearch:city:details'])]
