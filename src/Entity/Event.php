@@ -1339,7 +1339,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function setPhoneContacts(?array $phoneContacts): self
     {
-        $this->phoneContacts = $phoneContacts;
+        $this->phoneContacts = UnitOfWorkOptimizer::getArrayValue($this->phoneContacts, $phoneContacts);
 
         return $this;
     }
@@ -1351,7 +1351,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function setMailContacts(?array $mailContacts): self
     {
-        $this->mailContacts = $mailContacts;
+        $this->mailContacts = UnitOfWorkOptimizer::getArrayValue($this->mailContacts, $mailContacts);
 
         return $this;
     }
@@ -1363,7 +1363,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     public function setWebsiteContacts(?array $websiteContacts): self
     {
-        $this->websiteContacts = $websiteContacts;
+        $this->websiteContacts = UnitOfWorkOptimizer::getArrayValue($this->websiteContacts, $websiteContacts);
 
         return $this;
     }

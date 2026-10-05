@@ -22,6 +22,7 @@ use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
 use App\Import\EventContentHasher;
 use App\Utils\ObjectKey;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 
 /**
@@ -69,8 +70,12 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $entity->setUpdatedAt($dto->updatedAt);
         }
 
-        // "simple_array" stores [] as NULL and loads NULL as []: setting null back made every merge a change
-        $entity->getImage()->setDimensions($dto->image?->getDimensions() ?? []);
+        // "simple_array": loaded as strings ("800", "600") whatever Vich measured
+        $dimensions = $dto->image?->getDimensions();
+        $entity->getImage()->setDimensions(UnitOfWorkOptimizer::getArrayValue(
+            $entity->getImage()->getDimensions(),
+            null === $dimensions ? null : array_map(strval(...), $dimensions),
+        ));
         $entity->getImage()->setMimeType($dto->image?->getMimeType());
         $entity->getImage()->setName($dto->image?->getName());
         $entity->getImage()->setOriginalName($dto->image?->getOriginalName());
