@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Dto\RemovedEventDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
@@ -157,6 +158,13 @@ final class DataTourismeParser extends AbstractParser
             $data = $this->datatourismeClient->request('GET', $url, ['query' => $query])->toArray();
 
             foreach ($data['objects'] ?? [] as $object) {
+                // An object "no longer current" is a tombstone: the event imported from it is gone at the source
+                if (true === ($object['isObsolete'] ?? false)) {
+                    yield new RemovedEventDto($this->externalId($object));
+
+                    continue;
+                }
+
                 yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($object), ['uuid' => $object['uuid'] ?? null]);
             }
 
@@ -166,14 +174,25 @@ final class DataTourismeParser extends AbstractParser
     }
 
     /**
+     * The producer's identifier is what the Diffuseur flux exposed as dc:identifier, so the
+     * events imported before the API keep their identity; DATAtourisme's own uuid steps in
+     * when a producer sends none, or one too long for event.external_id (some producers
+     * compose it from the venue, the title and the date).
+     *
+     * @param array<string, mixed> $data
+     */
+    private function externalId(array $data): string
+    {
+        $identifier = $this->string($data['identifier'] ?? null);
+
+        return null !== $identifier && mb_strlen($identifier) <= self::MAX_EXTERNAL_ID_LENGTH ? $identifier : (string) $data['uuid'];
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     private function arrayToDto(array $data): ?EventDto
     {
-        if (true === ($data['isObsolete'] ?? false)) {
-            return null;
-        }
-
         $location = $data['isLocatedAt'][0] ?? null;
         $address = $location['address'][0] ?? null;
         if (!\is_array($location) || !\is_array($address) || empty($data['takesPlaceAt'])) {
@@ -208,12 +227,7 @@ final class DataTourismeParser extends AbstractParser
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
-        // The producer's identifier is what the Diffuseur flux exposed as dc:identifier, so
-        // the events imported before the API keep their identity; DATAtourisme's own uuid
-        // steps in when a producer sends none, or one too long for event.external_id (some
-        // producers compose it from the venue, the title and the date).
-        $identifier = $this->string($data['identifier'] ?? null);
-        $event->externalId = null !== $identifier && mb_strlen($identifier) <= self::MAX_EXTERNAL_ID_LENGTH ? $identifier : $data['uuid'];
+        $event->externalId = $this->externalId($data);
         $event->externalUpdatedAt = max($lastUpdate, $lastUpdateDatatourisme);
         $event->name = $this->text($data['label'] ?? null);
         $event->description = $this->text($data['hasDescription'][0]['description'] ?? null)

@@ -14,6 +14,7 @@ use App\Dto\EventDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Import\EventPublicationGuard;
+use App\Message\RemoveSourceEvents;
 use App\Parser\Common\DataTourismeParser;
 use App\Tests\AppKernelTestCase;
 use App\Utils\StartingPrice;
@@ -50,6 +51,9 @@ final class DataTourismeParserTest extends AppKernelTestCase
     /** @var list<EventDto> */
     private array $dispatched = [];
 
+    /** @var list<RemoveSourceEvents> */
+    private array $removals = [];
+
     private DataTourismeParser $parser;
 
     #[Override]
@@ -68,8 +72,12 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
         $bus = $this->createStub(MessageBusInterface::class);
         $bus->method('dispatch')->willReturnCallback(function (object $message, array $stamps = []): Envelope {
-            self::assertInstanceOf(EventDto::class, $message);
-            $this->dispatched[] = $message;
+            if ($message instanceof RemoveSourceEvents) {
+                $this->removals[] = $message;
+            } else {
+                self::assertInstanceOf(EventDto::class, $message);
+                $this->dispatched[] = $message;
+            }
 
             return new Envelope($message, $stamps);
         });
@@ -234,7 +242,6 @@ final class DataTourismeParserTest extends AppKernelTestCase
      */
     public static function provideUnusableObjects(): iterable
     {
-        yield 'obsolete' => [['isObsolete' => true]];
         yield 'no schedule' => [['takesPlaceAt' => []]];
         yield 'schedule without dates' => [['takesPlaceAt' => [['startTime' => '20:00']]]];
         yield 'no location' => [['isLocatedAt' => []]];
@@ -249,6 +256,24 @@ final class DataTourismeParserTest extends AppKernelTestCase
         $this->parser->parse(null);
 
         self::assertSame([], $this->dispatched);
+    }
+
+    public function testAnObsoleteObjectRemovesTheEventImportedFromIt(): void
+    {
+        $this->responses = [self::page([
+            self::apiEvent(['identifier' => 'A', 'isObsolete' => true]),
+            self::apiEvent(['identifier' => null, 'isObsolete' => true]),
+            self::apiEvent(['identifier' => 'B']),
+        ], null)];
+
+        $this->parser->parse(null);
+
+        self::assertSame(['B'], $this->externalIds());
+        self::assertCount(1, $this->removals);
+        self::assertSame('datatourisme', $this->removals[0]->externalOrigin);
+        self::assertSame(['A', '0000eb03-9346-3cc8-ab23-dbb259b8e493'], $this->removals[0]->externalIds, 'Under the external id the event was imported with');
+        self::assertNull($this->removals[0]->sourcePrefix);
+        self::assertSame(2, $this->parser->getRemovedEvents());
     }
 
     public function testDatatourismeUuidStandsInForAMissingProducerIdentifier(): void
