@@ -17,7 +17,6 @@ use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -139,14 +138,9 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             return null;
         }
 
-        // Parse hours from custom_7 (HH:mm format)
-        $hours = null;
-        $startTime = null;
+        // The showtime is in custom_7 (HH:mm format)
         $eventTime = trim($data['custom_7'] ?? '');
-        if ('' !== $eventTime) {
-            $hours = \sprintf('À %s', str_replace(':', 'h', $eventTime));
-            $startTime = DateTimeImmutable::createFromFormat('!H:i', $eventTime) ?: null;
-        }
+        $startTime = '' === $eventTime ? null : (DateTimeImmutable::createFromFormat('!H:i', $eventTime) ?: null);
 
         // Normalize to a date-only value (timesheets are stored as dates).
         // Also prevents Reject::BAD_EVENT_DATE_INTERVAL.
@@ -157,14 +151,12 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $timesheet = new EventTimesheetDto();
         $timesheet->startAt = $startDate;
         $timesheet->endAt = $startDate;
-        $timesheet->hours = $hours;
+        $timesheet->startTime = $startTime;
 
         $event = new EventDto();
         $event->fromData = self::getParserName();
         $event->startDate = $startDate;
         $event->endDate = $startDate;
-        $event->hours = $hours;
-        $event->startTime = $startTime;
         $event->timesheets = [$timesheet];
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
@@ -221,22 +213,18 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
     /**
      * Fold a duplicate row (carrying a single timesheet) into the event already
-     * built for this show: add its date if new and widen the event's date range.
+     * built for this show: add its performance if new and widen the event's date range.
      */
     private function mergeDuplicateRow(EventDto $event, EventDto $row): void
     {
         foreach ($row->timesheets as $timesheet) {
-            if (!$this->hasTimesheetForDate($event, $timesheet->startAt)) {
+            if (!$this->hasPerformance($event, $timesheet)) {
                 $event->timesheets[] = $timesheet;
             }
         }
 
-        // The first performance gives the start time: the earliest day, then the earliest time of that day
         if (null !== $row->startDate && (null === $event->startDate || $row->startDate < $event->startDate)) {
             $event->startDate = $row->startDate;
-            $event->startTime = $row->startTime;
-        } elseif ($row->startDate?->format('Y-m-d') === $event->startDate?->format('Y-m-d') && null !== $row->startTime && (null === $event->startTime || $row->startTime < $event->startTime)) {
-            $event->startTime = $row->startTime;
         }
 
         if (null !== $row->endDate && (null === $event->endDate || $row->endDate > $event->endDate)) {
@@ -244,20 +232,29 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         }
     }
 
-    private function hasTimesheetForDate(EventDto $event, ?DateTimeInterface $date): bool
+    /**
+     * A performance is a day and a showtime: the products of one performance (its ticket tiers) are one session,
+     * two showtimes of a day are two.
+     */
+    private function hasPerformance(EventDto $event, EventTimesheetDto $performance): bool
     {
-        if (null === $date) {
+        if (null === $performance->startAt) {
             return false;
         }
 
-        $needle = $date->format('Y-m-d');
+        $needle = self::performance($performance);
 
-        return array_any($event->timesheets, static fn ($timesheet) => $timesheet->startAt?->format('Y-m-d') === $needle);
+        return array_any($event->timesheets, static fn (EventTimesheetDto $timesheet): bool => self::performance($timesheet) === $needle);
+    }
+
+    private static function performance(EventTimesheetDto $timesheet): string
+    {
+        return \sprintf('%s %s', $timesheet->startAt?->format('Y-m-d'), $timesheet->startTime?->format('H:i'));
     }
 
     /**
      * Once every duplicate row has been folded in, derive the aggregate fields:
-     * chronological timesheets, a shared hours label and the full price range.
+     * chronological timesheets and the full price range.
      *
      * @param list<string> $prices the price of each ticket product of the show, as the feed gives them
      */
@@ -265,15 +262,8 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
     {
         usort(
             $event->timesheets,
-            static fn (EventTimesheetDto $a, EventTimesheetDto $b): int => ($a->startAt?->getTimestamp() ?? 0) <=> ($b->startAt?->getTimestamp() ?? 0),
+            static fn (EventTimesheetDto $a, EventTimesheetDto $b): int => self::performance($a) <=> self::performance($b),
         );
-
-        // Surface a single event-level hours label only when every date shares it.
-        $distinctHours = array_values(array_unique(array_filter(array_map(
-            static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours,
-            $event->timesheets,
-        ))));
-        $event->hours = 1 === \count($distinctHours) ? $distinctHours[0] : null;
 
         // Reflect the full ticket price range gathered across the duplicate rows.
         $event->prices = self::formatPriceRange($prices);

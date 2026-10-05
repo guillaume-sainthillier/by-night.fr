@@ -40,7 +40,12 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
         self::assertSame('Le Songe', $event->name);
         self::assertSame('2027-04-06 00:00', $event->startDate?->format('Y-m-d H:i'));
         self::assertSame('2027-04-07 00:00', $event->endDate?->format('Y-m-d H:i'), 'valid_to is the last session on sale');
-        self::assertSame('À 20h30', $event->hours);
+        self::assertNull($event->hours);
+        self::assertSame(
+            [['2027-04-06', '2027-04-06', '20:30'], ['2027-04-07', '2027-04-07', '20:30']],
+            array_map(static fn ($timesheet): array => [$timesheet->startAt?->format('Y-m-d'), $timesheet->endAt?->format('Y-m-d'), $timesheet->startTime?->format('H:i')], $event->timesheets),
+            'Each session is a day and its time',
+        );
         self::assertSame('25.5€', $event->prices);
         self::assertSame('https://images.billetreduc.com/n800/987654.jpeg', $event->imageUrl, 'The 800px rendition');
         self::assertSame("Une pièce.<br />\n<br />\nDe Shakespeare.", $event->description);
@@ -61,15 +66,22 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
         self::assertSame('2027-04-06', $event->startDate?->format('Y-m-d'));
     }
 
-    public function testSessionsAtSeveralTimesGiveNoSingleShowtime(): void
+    public function testEverySessionOnSaleIsATimesheetInChronologicalOrder(): void
     {
         $event = $this->map(self::row(['custom_3' => json_encode([
-            ['SessionDate' => '2027-04-06T15:00:00', 'SoldOut' => 0, 'Delayed' => 0],
             ['SessionDate' => '2027-04-07T20:30:00', 'SoldOut' => 0, 'Delayed' => 0],
+            ['SessionDate' => '2027-04-06T20:30:00', 'SoldOut' => 0, 'Delayed' => 0],
+            ['SessionDate' => '2027-04-06T15:00:00', 'SoldOut' => 0, 'Delayed' => 0],
+            ['SessionDate' => '2027-04-06T15:00:00', 'SoldOut' => 0, 'Delayed' => 0],
+            ['SessionDate' => '2027-04-08T20:30:00', 'SoldOut' => 1, 'Delayed' => 0],
         ])]));
 
-        self::assertNull($event->hours);
-        self::assertSame('15:00', $event->startTime?->format('H:i'), 'The earliest session starts the event');
+        self::assertSame(
+            ['2027-04-06 15:00', '2027-04-06 20:30', '2027-04-07 20:30'],
+            array_map(static fn ($timesheet): string => $timesheet->startAt?->format('Y-m-d') . ' ' . $timesheet->startTime?->format('H:i'), $event->timesheets),
+            'Two sessions of a day are two timesheets, a repeated one is one, a sold-out one none',
+        );
+        self::assertSame('2027-04-06', $event->startDate?->format('Y-m-d'));
     }
 
     public function testAPlaceholderStreetIsDropped(): void

@@ -143,8 +143,9 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertNull($event->emailContacts, 'The API exposes no e-mail');
         self::assertSame('2026-10-17', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-10-17', $event->endDate?->format('Y-m-d'));
-        self::assertSame('À 20h30', $event->hours, 'An end time equal to the start time is a placeholder');
+        self::assertNull($event->hours);
         self::assertSame('20:30', $event->startTime?->format('H:i'));
+        self::assertNull($event->timesheets[0]->endTime, 'An end time equal to the start time is a placeholder');
         self::assertCount(1, $event->timesheets);
         self::assertSame(47.10078, $event->latitude);
         self::assertSame(-1.81272, $event->longitude);

@@ -201,8 +201,6 @@ final class DataTourismeParser extends AbstractParser
         $lastUpdate = null === $this->string($data['lastUpdate'] ?? null) ? null : new DateTimeImmutable($data['lastUpdate'])->setTime(0, 0);
         $lastUpdateDatatourisme = null === $this->string($data['lastUpdateDatatourisme'] ?? null) ? null : new DateTimeImmutable($data['lastUpdateDatatourisme']);
 
-        $hours = array_values(array_unique(array_filter(array_map(static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours, $timesheets))));
-
         $event = new EventDto();
         $event->fromData = self::getParserName();
         // The producer's identifier is what the Diffuseur flux exposed as dc:identifier, so
@@ -238,8 +236,6 @@ final class DataTourismeParser extends AbstractParser
         // The periods come in no particular order: the event spans from the earliest to the latest
         $event->startDate = min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
-        $event->hours = 1 === \count($hours) ? $hours[0] : null;
-        $event->startTime = $this->startTime((array) $data['takesPlaceAt']);
         $event->prices = $this->prices((array) ($data['offers'] ?? []));
         $event->timesheets = $timesheets;
 
@@ -291,7 +287,8 @@ final class DataTourismeParser extends AbstractParser
             $timesheet = new EventTimesheetDto();
             $timesheet->startAt = new DateTimeImmutable($startDate);
             $timesheet->endAt = new DateTimeImmutable($endDate);
-            $timesheet->hours = $this->hours($this->string($period['startTime'] ?? null), $this->string($period['endTime'] ?? null));
+            $timesheet->startTime = $this->time($period['startTime'] ?? null);
+            $timesheet->endTime = $this->time($period['endTime'] ?? null);
             $timesheets[] = $timesheet;
         }
 
@@ -299,48 +296,13 @@ final class DataTourismeParser extends AbstractParser
     }
 
     /**
-     * The time of the first session: the earliest period, and the earliest time given that day ("20:30" or
-     * "20:30:00"). Null when that day has none.
-     *
-     * @param list<array<string, mixed>> $periods
+     * "20:30" or "20:30:00": an end equal to the start is a placeholder many producers send, which the Cleaner drops.
      */
-    private function startTime(array $periods): ?DateTimeImmutable
+    private function time(mixed $time): ?DateTimeImmutable
     {
-        $first = null;
-        foreach ($periods as $period) {
-            $date = $this->string($period['startDate'] ?? null);
-            if (null === $date) {
-                continue;
-            }
+        $time = $this->string($time);
 
-            $time = $this->string($period['startTime'] ?? null);
-            $time = null === $time ? null : substr($time, 0, 5);
-            if (null === $first || $date < $first[0] || ($date === $first[0] && null !== $time && (null === $first[1] || $time < $first[1]))) {
-                $first = [$date, $time];
-            }
-        }
-
-        return null === $first || null === $first[1] ? null : (DateTimeImmutable::createFromFormat('!H:i', $first[1]) ?: null);
-    }
-
-    /**
-     * "20:30" or "20:30:00" → "De 20h30 à 22h00" / "À 20h30" (also when the end equals the start,
-     * a placeholder many producers send).
-     */
-    private function hours(?string $startTime, ?string $endTime): ?string
-    {
-        $startTime = null === $startTime ? null : preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
-        $endTime = null === $endTime ? null : preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $endTime);
-
-        if (null === $startTime) {
-            return null;
-        }
-
-        if (null === $endTime || $endTime === $startTime) {
-            return \sprintf('À %s', $startTime);
-        }
-
-        return \sprintf('De %s à %s', $startTime, $endTime);
+        return null === $time ? null : (DateTimeImmutable::createFromFormat('!H:i', substr($time, 0, 5)) ?: null);
     }
 
     /**

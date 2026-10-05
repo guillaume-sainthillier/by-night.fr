@@ -13,6 +13,7 @@ namespace App\Parser\Common;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use DateTimeImmutable;
 
@@ -60,9 +61,9 @@ final class BilletsReducAwinParser extends AbstractAwinParser
             return null;
         }
 
-        // Find the earliest non-sold-out session date as start date
+        // Every session still on sale is a timesheet, the earliest one starts the event
         $startDate = null;
-        $seenHours = [];
+        $timesheets = [];
         foreach ($sessions as $session) {
             if (!isset($session['SessionDate'])) {
                 continue;
@@ -82,7 +83,12 @@ final class BilletsReducAwinParser extends AbstractAwinParser
                 $startDate = $sessionDate;
             }
 
-            $seenHours[] = \sprintf('À %s', $sessionDate->format('H\hi'));
+            $timesheet = new EventTimesheetDto();
+            // Prevents Reject::BAD_EVENT_DATE_INTERVAL: the dates are days, the time apart
+            $timesheet->startAt = $sessionDate->setTime(0, 0);
+            $timesheet->endAt = $timesheet->startAt;
+            $timesheet->startTime = $sessionDate;
+            $timesheets[$sessionDate->format('Y-m-d H:i')] = $timesheet;
         }
 
         if (null === $startDate) {
@@ -95,15 +101,7 @@ final class BilletsReducAwinParser extends AbstractAwinParser
             $endDate = $startDate;
         }
 
-        // Determine hours display
-        $hours = null;
-        $seenHours = array_unique($seenHours);
-        if (1 === \count($seenHours)) {
-            $hours = $seenHours[0];
-        }
-
-        // The earliest session's time, before the dates become days
-        $startTime = $startDate;
+        ksort($timesheets);
 
         // Prevents Reject::BAD_EVENT_DATE_INTERVAL
         $endDate = $endDate->setTime(0, 0);
@@ -114,8 +112,7 @@ final class BilletsReducAwinParser extends AbstractAwinParser
         $event->externalId = $data['merchant_product_id'];
         $event->startDate = $startDate;
         $event->endDate = $endDate;
-        $event->hours = $hours;
-        $event->startTime = $startTime;
+        $event->timesheets = array_values($timesheets);
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));

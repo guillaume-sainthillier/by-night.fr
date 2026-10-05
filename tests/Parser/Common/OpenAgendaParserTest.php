@@ -108,12 +108,13 @@ final class OpenAgendaParserTest extends AppKernelTestCase
 
         self::assertInstanceOf(EventDto::class, $dto);
         self::assertSame(
-            ['De 09h00 à 12h30', 'De 13h30 à 18h30', 'À 20h00'],
-            array_map(static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours, $dto->timesheets)
+            [['09:00', '12:30'], ['13:30', '18:30'], ['20:00', '20:00']],
+            array_map(static fn (EventTimesheetDto $timesheet): array => [$timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i')], $dto->timesheets),
+            'The end repeating the start is dropped by the Cleaner',
         );
         self::assertSame('2026-09-01', $dto->timesheets[0]->startAt?->format('Y-m-d'));
-        self::assertNull($dto->hours, 'Distinct slots: no single summary for the event');
-        self::assertSame('09:00', $dto->startTime?->format('H:i'), 'The earliest timing starts the event');
+        self::assertNull($dto->timesheets[0]->hours);
+        self::assertNull($dto->hours);
     }
 
     public function testAnEmptyLongDescriptionFallsBackOnTheDescription(): void
@@ -122,17 +123,6 @@ final class OpenAgendaParserTest extends AppKernelTestCase
 
         self::assertInstanceOf(EventDto::class, $dto);
         self::assertStringContainsString('Concert de jazz en plein air', (string) $dto->description);
-    }
-
-    public function testOneSlotRepeatedOverTheDatesSummarisesTheEvent(): void
-    {
-        $dto = $this->arrayToDto(self::feedEvent(event: ['timings' => [
-            ['begin' => '2026-10-01T20:00:00+02:00', 'end' => '2026-10-01T22:00:00+02:00'],
-            ['begin' => '2026-10-02T20:00:00+02:00', 'end' => '2026-10-02T22:00:00+02:00'],
-        ]]));
-
-        self::assertInstanceOf(EventDto::class, $dto);
-        self::assertSame('De 20h00 à 22h00', $dto->hours);
     }
 
     public function testTheRegistrationLinkIsTheTicketing(): void

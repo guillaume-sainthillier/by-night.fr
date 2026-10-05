@@ -192,16 +192,17 @@ final class OpenAgendaParser extends AbstractParser
         // Build timesheets from timings array
         $timings = $data['timings'];
         $timesheets = [];
-        $allHours = [];
 
+        // A timing is one slot with both ends, in the time of the event's place; OpenAgenda repeats the start as
+        // the end when the producer gave none, which the Cleaner drops
         foreach ($timings as $timing) {
             $timesheetDto = new EventTimesheetDto();
             $timesheetDto->startAt = new DateTimeImmutable($timing['begin']);
             $timesheetDto->endAt = new DateTimeImmutable($timing['end']);
-            $timesheetDto->hours = self::hours($timesheetDto->startAt, $timesheetDto->endAt);
+            $timesheetDto->startTime = $timesheetDto->startAt;
+            $timesheetDto->endTime = $timesheetDto->endAt;
 
             $timesheets[] = $timesheetDto;
-            $allHours[$timesheetDto->hours] = true;
         }
 
         // Compute aggregate start/end dates for backwards compatibility
@@ -209,10 +210,6 @@ final class OpenAgendaParser extends AbstractParser
         $lastTiming = end($timings);
         $startDate = new DateTimeImmutable($firstTiming['begin']);
         $endDate = new DateTimeImmutable($lastTiming['end']);
-
-        // One slot repeated over the dates summarises the event; distinct slots (a morning
-        // and an afternoon session, say) cannot, the timesheets carry them.
-        $hours = 1 === \count($allHours) ? array_key_first($allHours) : null;
 
         $mdParser = new Parsedown();
         // An empty long description ("") must fall back too: the check above lets it through
@@ -274,9 +271,6 @@ final class OpenAgendaParser extends AbstractParser
         $event->externalUpdatedAt = new DateTimeImmutable($data['updatedAt']);
         $event->startDate = $startDate;
         $event->endDate = $endDate;
-        $event->hours = $hours;
-        // The timings carry the time of the event's place: the earliest one is when the event starts
-        $event->startTime = [] === $timesheets ? null : min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->timesheets = $timesheets;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);
@@ -323,18 +317,6 @@ final class OpenAgendaParser extends AbstractParser
     public function getCommandName(): string
     {
         return 'openagenda';
-    }
-
-    /**
-     * A timing is one slot with both ends, "De 09h00 à 12h30"; OpenAgenda repeats the
-     * start as the end when the producer gave none, "À 09h00".
-     */
-    private static function hours(DateTimeInterface $begin, DateTimeInterface $end): string
-    {
-        $start = $begin->format('H\hi');
-        $finish = $end->format('H\hi');
-
-        return $start === $finish ? \sprintf('À %s', $start) : \sprintf('De %s à %s', $start, $finish);
     }
 
     /**

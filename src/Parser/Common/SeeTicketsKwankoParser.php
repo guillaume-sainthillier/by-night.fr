@@ -153,9 +153,6 @@ final class SeeTicketsKwankoParser extends AbstractParser
             return null;
         }
 
-        // Format hours as "À HHhMM"
-        $hours = \sprintf('À %s', $startDate->format('H\hi'));
-
         // Normalize date to midnight for date-only comparison
         $dateOnly = $startDate->setTime(0, 0);
 
@@ -169,7 +166,6 @@ final class SeeTicketsKwankoParser extends AbstractParser
         $event->source = $data['purl'] ?? null;
         $event->startDate = $dateOnly;
         $event->endDate = $dateOnly;
-        $event->hours = $hours;
         $event->startTime = $startDate;
         $event->latitude = (float) ($data['latitude'] ?? 0);
         $event->longitude = (float) ($data['longitude'] ?? 0);

@@ -58,7 +58,8 @@ final class SeeTicketsKwankoParserTest extends TestCase
         self::assertSame('Les 4 Saisons de Vivaldi', $event->name);
         self::assertSame('Classique', $event->type);
         self::assertSame('2026-10-02', $event->startDate?->format('Y-m-d'));
-        self::assertSame('À 20h45', $event->hours);
+        self::assertNull($event->hours);
+        self::assertSame('20:45', $event->startTime?->format('H:i'));
         self::assertSame('De 25€ à 35€', $event->prices);
         self::assertSame(EventStatus::fromStatusMessage('Vente en cours'), $event->status);
         self::assertSame('Église Saint-Germain', $event->place?->name);
