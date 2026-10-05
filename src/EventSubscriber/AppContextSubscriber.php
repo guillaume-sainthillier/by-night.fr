@@ -36,7 +36,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
 {
     /**
      * The events filed in no country answered on "/unknown". The ones located since redirect to their city from
-     * these pages; the others are deleted (app:events:remove-countryless), and the listings of "/unknown" are gone.
+     * these pages; the others were deleted on 2026-10-05, and the listings of "/unknown" are gone.
      */
     private const string UNKNOWN_LOCATION = 'unknown';
 
