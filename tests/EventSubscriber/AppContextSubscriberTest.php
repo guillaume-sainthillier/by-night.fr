@@ -51,7 +51,7 @@ final class AppContextSubscriberTest extends WebTestCase
         $this->stubAgendaSearch();
         CityFactory::toulouse()->create();
 
-        $client->request('GET', '/toulouse/');
+        $client->request('GET', '/toulouse');
 
         self::assertResponseIsSuccessful();
         self::assertResponseNotHasCookie('app_city');
@@ -63,7 +63,7 @@ final class AppContextSubscriberTest extends WebTestCase
         CityFactory::toulouse()->create();
 
         // The slug of the URL is readable without loading the city: what needs the city itself still 404s
-        $client->request('GET', '/ville-inconnue/');
+        $client->request('GET', '/ville-inconnue');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }

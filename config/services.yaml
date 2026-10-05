@@ -19,6 +19,9 @@ parameters:
     disable_polled_feeds: '%kernel.debug%'
     patterns.path: '.+'
     patterns.page: '[1-9](\d*)'
+    # The location of its own page ("/toulouse"): not the first segment of a route ending with a slash ("/recherche/",
+    # "/info/", "/_administration/", "/_profiler/"), which a request without the slash must still reach
+    patterns.location: '(?!(?:recherche|info|_[^/]*)(?:/|$))[^/]+'
     patterns.id: '\d+'
     patterns.slug: '[^/]+'
     patterns.social: 'facebook|google|twitter'

@@ -35,8 +35,8 @@ final class LocationPageTest extends WebTestCase
      */
     public static function provideLocationPages(): iterable
     {
-        yield 'country' => ['/c--france/', 'en France'];
-        yield 'city' => ['/toulouse/', 'à Toulouse'];
+        yield 'country' => ['/c--france', 'en France'];
+        yield 'city' => ['/toulouse', 'à Toulouse'];
     }
 
     #[DataProvider('provideLocationPages')]
@@ -81,7 +81,7 @@ final class LocationPageTest extends WebTestCase
         EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['place' => $place]);
         self::counter()->refresh();
 
-        $client->request('GET', '/c--monaco/');
+        $client->request('GET', '/c--monaco');
 
         self::assertResponseIsSuccessful();
         // Its busiest venues are the ones of the filters of its agenda
@@ -99,7 +99,7 @@ final class LocationPageTest extends WebTestCase
         }
         self::counter()->refresh();
 
-        $crawler = $client->request('GET', '/c--france/');
+        $crawler = $client->request('GET', '/c--france');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#cities h2', 'Les villes les plus animées');
@@ -119,7 +119,7 @@ final class LocationPageTest extends WebTestCase
         }
         self::counter()->refresh();
 
-        $crawler = $client->request('GET', '/c--france/');
+        $crawler = $client->request('GET', '/c--france');
 
         self::assertResponseIsSuccessful();
         self::assertSame(['Belgique', 'Suisse'], $crawler->filter('#neighbours h3')->each(static fn ($title): string => trim($title->text())));
@@ -149,8 +149,8 @@ final class LocationPageTest extends WebTestCase
      */
     public static function provideLocationAgendas(): iterable
     {
-        yield 'country' => ['/c--france/', '/c--france/agenda'];
-        yield 'city' => ['/toulouse/', '/toulouse/agenda'];
+        yield 'country' => ['/c--france', '/c--france/agenda'];
+        yield 'city' => ['/toulouse', '/toulouse/agenda'];
     }
 
     #[DataProvider('provideLocationAgendas')]
@@ -164,7 +164,37 @@ final class LocationPageTest extends WebTestCase
         self::assertResponseRedirects($url, Response::HTTP_MOVED_PERMANENTLY);
 
         $client->request('GET', $agenda . '/3?term=jazz&when=this_weekend');
-        self::assertResponseRedirects($url . '?term=jazz&when=this_weekend&page=3', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects($url . '/3?term=jazz&when=this_weekend', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideLocationUrls(): iterable
+    {
+        yield 'country' => ['/c--france'];
+        yield 'city' => ['/toulouse'];
+    }
+
+    #[DataProvider('provideLocationUrls')]
+    public function testTheTrailingSlashRedirectsToTheLocationPage(string $url): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', $url . '/?when=this_weekend');
+
+        self::assertResponseRedirects('http://localhost' . $url . '?when=this_weekend', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    public function testThePagesWhosePathEndsWithASlashAreNoLocations(): void
+    {
+        $client = self::createClient();
+
+        // Without its slash, the search page is still found, not taken for a city
+        $client->request('GET', '/recherche');
+
+        self::assertResponseRedirects('http://localhost/recherche/', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testAFilterLeavesTheIntroductionOutForTheAgenda(): void
@@ -173,7 +203,7 @@ final class LocationPageTest extends WebTestCase
         $this->stubAgendaSearch();
         CityFactory::toulouse()->create();
 
-        $client->request('GET', '/toulouse/?term=jazz');
+        $client->request('GET', '/toulouse?term=jazz');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('.hero-location');
@@ -192,7 +222,7 @@ final class LocationPageTest extends WebTestCase
         self::assertResponseIsSuccessful();
         // The type page is the current one: the last link is the location, with no agenda in between
         $links = $crawler->filter('.breadcrumb a')->each(static fn ($link): string => (string) parse_url((string) $link->attr('href'), \PHP_URL_PATH));
-        self::assertSame('/toulouse/', end($links));
+        self::assertSame('/toulouse', end($links));
         self::assertNotContains('/toulouse/agenda', $links);
     }
 }

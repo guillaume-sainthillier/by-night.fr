@@ -86,7 +86,7 @@ final class AgendaControllerTest extends WebTestCase
 
         $client->request('GET', '/toulouse/agenda/sortir-a?slug=nowhere');
 
-        self::assertResponseRedirects('/toulouse/', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('/toulouse', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testTheAgendaByPlaceWithoutAPlaceRedirectsToTheCityAgenda(): void
@@ -96,7 +96,7 @@ final class AgendaControllerTest extends WebTestCase
 
         $client->request('GET', '/toulouse/agenda/sortir-a');
 
-        self::assertResponseRedirects('/toulouse/', Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseRedirects('/toulouse', Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testAListingWithoutResultsIsNotIndexable(): void
@@ -105,7 +105,7 @@ final class AgendaControllerTest extends WebTestCase
         CityFactory::toulouse()->create();
 
         // An invalid filter skips the Elasticsearch query and renders the listing with no result
-        $client->request('GET', '/toulouse/?range=not-a-number');
+        $client->request('GET', '/toulouse?range=not-a-number');
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
@@ -119,7 +119,7 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/?term=jazz&when=this_weekend&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?term=jazz&when=this_weekend&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('this_weekend', $query['when'] ?? null);
@@ -133,7 +133,7 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/?when=this_weekend&dateRange[from]=2026-10-10&dateRange[to]=2026-10-12&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?when=this_weekend&dateRange[from]=2026-10-10&dateRange[to]=2026-10-12&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame(['from' => '2026-10-10', 'to' => '2026-10-12'], $query['dateRange'] ?? null);
@@ -146,7 +146,7 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/?when=next_year&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?when=next_year&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('when', $query);
@@ -182,7 +182,7 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         $city = CityFactory::createOne(['name' => 'Le Mans']);
 
-        $client->request('GET', \sprintf('/%s/?range=not-a-number', $city->getSlug()));
+        $client->request('GET', \sprintf('/%s?range=not-a-number', $city->getSlug()));
 
         self::assertSelectorTextContains('h1', 'Que faire au Mans');
     }
@@ -230,7 +230,7 @@ final class AgendaControllerTest extends WebTestCase
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number');
 
         self::assertSelectorExists('#agenda-filters a[href="/toulouse/agenda/sortir/concert?term=jazz&range=not-a-number"][data-filtered-href="/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number&type=concert"]');
-        self::assertSelectorExists('#agenda-filters a[href="/toulouse/?term=jazz&range=not-a-number"][data-filtered-href="/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number"]', '"Toutes les sorties"');
+        self::assertSelectorExists('#agenda-filters a[href="/toulouse?term=jazz&range=not-a-number"][data-filtered-href="/toulouse/agenda/sortir-a/le-bikini?term=jazz&range=not-a-number"]', '"Toutes les sorties"');
     }
 
     /**
@@ -250,7 +250,7 @@ final class AgendaControllerTest extends WebTestCase
         self::counter()->refresh();
         $themes = '#agenda-filters a[href*="/agenda/tag/"]';
 
-        $crawler = $client->request('GET', '/toulouse/?range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?range=not-a-number');
 
         self::assertSame(
             [['Théâtre', '2'], ['Concert', '1']],
@@ -258,7 +258,7 @@ final class AgendaControllerTest extends WebTestCase
         );
         self::assertSame(\sprintf('/toulouse/agenda/tag/theatre--%d?range=not-a-number', $theatre->getId()), $crawler->filter($themes)->first()->attr('href'));
 
-        $crawler = $client->request('GET', '/toulouse/?term=jazz&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?term=jazz&range=not-a-number');
 
         self::assertCount(0, $crawler->filter($themes . ' .badge'));
         self::assertSame('jazz', $this->queryOf($crawler->filter($themes)->first()->attr('href'))['term'] ?? null);
@@ -380,12 +380,12 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/?price=under_20&term=jazz&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?price=under_20&term=jazz&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('under_20', $query['price'] ?? null, 'A type link keeps the price');
         self::assertSame(["Jusqu'à 20\u{a0}€"], $crawler->filter('#agenda-filters [aria-label="Prix"] .btn-chip.active')->each(static fn (Crawler $chip): string => trim($chip->text())));
-        self::assertSame(['/toulouse/', ['term' => 'jazz']], $this->chipsOf($crawler)["Jusqu'à 20\u{a0}€"] ?? null, 'Its chip leaves the other filters');
+        self::assertSame(['/toulouse', ['term' => 'jazz']], $this->chipsOf($crawler)["Jusqu'à 20\u{a0}€"] ?? null, 'Its chip leaves the other filters');
         self::assertSelectorExists('#search-form input[type="hidden"][name="price"][value="under_20"]');
     }
 
@@ -394,7 +394,7 @@ final class AgendaControllerTest extends WebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse/?price=cheap&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse?price=cheap&range=not-a-number');
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('price', $query);

@@ -62,7 +62,7 @@ final class AgendaController extends BaseController
 
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
-    #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
+    #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', requirements: ['location' => '%patterns.location%'], methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{typeSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['typeSlug' => new AgendaTypeSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{placeSlug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tagSlug<%patterns.slug%>}--{tagId<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['tagId' => '\d+'], methods: ['GET'])]
@@ -84,11 +84,8 @@ final class AgendaController extends BaseController
         ?string $legacyTag = null,
     ): Response {
         $location = $appContext->getLocation();
-        // The page of the location itself, whose path has no room for a page number: "/toulouse/?page=2"
+        // The page of the location itself: "/toulouse", "/toulouse/2"
         $isLocationPage = 'app_location_index' === $request->attributes->getString('_route');
-        if ($isLocationPage) {
-            $page = max(1, $request->query->getInt('page', 1));
-        }
 
         $type = null !== $typeSlug ? AgendaType::fromSlug($typeSlug) : null;
         $place = null;

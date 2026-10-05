@@ -64,15 +64,6 @@
     {% endif %}
 {% endblock %}
 
-{# The location's page numbers its pages in the query string, which the canonical URL of base.html.twig leaves out #}
-{% block canonical %}
-    {%- if isLocationPage and page > 1 -%}
-        {{ url('app_location_index', {location: location.slug, page: page}) }}
-    {%- else -%}
-        {{ parent() }}
-    {%- endif -%}
-{% endblock %}
-
 {% block meta_robots %}
     {% if events.nbResults == 0 %}
         <meta name="robots" content="noindex, follow">

@@ -61,6 +61,6 @@ final class MergedPlaceRedirectTest extends WebTestCase
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini-1');
 
         // No place of that slug: back to the city page
-        self::assertResponseRedirects('/toulouse/');
+        self::assertResponseRedirects('/toulouse');
     }
 }
