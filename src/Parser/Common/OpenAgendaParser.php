@@ -36,7 +36,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class OpenAgendaParser extends AbstractParser
 {
     /**
-     * Attempts at the same page of the agenda list before the run gives up.
+     * Attempts at the same page of the API before the run gives up.
      */
     private const int MAX_ATTEMPTS = 3;
 
@@ -127,16 +127,10 @@ final class OpenAgendaParser extends AbstractParser
     {
         $after = [];
         while (true) {
-            $response = $this->client->request('GET', \sprintf('https://api.openagenda.com/v2/agendas/%d/events/', $agendaId), [
-                'query' => array_merge($query, [
-                    'key' => $this->openAgendaKey,
-                    'size' => self::EVENT_BATCH_SIZE,
-                    'after' => $after,
-                ]),
-            ]);
-
-            // OpenAgenda lets through text cut in the middle of an emoji, which toArray() rejects
-            $data = LenientJson::decode($response->getContent());
+            $data = $this->fetchPage(\sprintf('https://api.openagenda.com/v2/agendas/%d/events/', $agendaId), array_merge($query, [
+                'size' => self::EVENT_BATCH_SIZE,
+                'after' => $after,
+            ]));
 
             foreach ($data['events'] as $event) {
                 yield $event;
@@ -153,32 +147,46 @@ final class OpenAgendaParser extends AbstractParser
     private function getAgendasUidAndSlugs(bool $includePast): iterable
     {
         $after = [];
+        while (true) {
+            $data = $this->fetchPage('https://api.openagenda.com/v2/agendas', [
+                'size' => 100,
+                'after' => $after,
+                'fields' => ['summary'],
+            ]);
+
+            foreach ($data['agendas'] as $agenda) {
+                if (self::hasEventsToImport($agenda['summary']['publishedEvents'] ?? [], $includePast)) {
+                    yield [$agenda['uid'], $agenda['slug']];
+                }
+            }
+
+            if (empty($data['after'])) {
+                return;
+            }
+
+            $after = $data['after'];
+        }
+    }
+
+    /**
+     * One page of the API, asked again on a failure: a backfill reads tens of thousands of pages, and a single
+     * transient error (a 403 the gateway answered after 10 s, a timeout) would otherwise end the whole run.
+     *
+     * @param array<string, mixed> $query
+     *
+     * @return array<mixed>
+     */
+    private function fetchPage(string $url, array $query): array
+    {
         $failedAttempts = 0;
         while (true) {
             try {
-                $response = $this->client->request('GET', 'https://api.openagenda.com/v2/agendas', [
-                    'query' => [
-                        'key' => $this->openAgendaKey,
-                        'size' => 100,
-                        'after' => $after,
-                        'fields' => ['summary'],
-                    ],
+                $response = $this->client->request('GET', $url, [
+                    'query' => array_merge($query, ['key' => $this->openAgendaKey]),
                 ]);
 
-                $data = LenientJson::decode($response->getContent());
-                $failedAttempts = 0;
-
-                foreach ($data['agendas'] as $agenda) {
-                    if (self::hasEventsToImport($agenda['summary']['publishedEvents'] ?? [], $includePast)) {
-                        yield [$agenda['uid'], $agenda['slug']];
-                    }
-                }
-
-                if (empty($data['after'])) {
-                    return;
-                }
-
-                $after = $data['after'];
+                // OpenAgenda lets through text cut in the middle of an emoji, which toArray() rejects
+                return LenientJson::decode($response->getContent());
             } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
                 // A revoked key, a quota or an outage never goes away by asking again: past a few
                 // attempts the run fails, and the next one starts over from the same watermark

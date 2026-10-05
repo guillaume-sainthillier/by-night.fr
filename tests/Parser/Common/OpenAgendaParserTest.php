@@ -252,6 +252,56 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertSame(3, $requests);
     }
 
+    public function testAnEventPageRefusedOnceIsAskedAgain(): void
+    {
+        // The gateway answered 403 once in the middle of a backfill (2026-10-05), the next request went through
+        $requests = 0;
+        $client = new MockHttpClient(static function () use (&$requests): MockResponse {
+            return 1 === ++$requests
+                ? new MockResponse('', ['http_code' => 403])
+                : new MockResponse(json_encode(['events' => [self::feedEvent()], 'after' => null], \JSON_THROW_ON_ERROR));
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $events = iterator_to_array((new ReflectionMethod($parser, 'getAgendaEvents'))->invoke($parser, null, false, 42), false);
+
+        self::assertCount(1, $events);
+        self::assertSame(2, $requests);
+    }
+
+    public function testAnEventPageGivesUpAfterAFewFailedAttempts(): void
+    {
+        $requests = 0;
+        $client = new MockHttpClient(static function () use (&$requests): MockResponse {
+            ++$requests;
+
+            return new MockResponse('', ['http_code' => 403]);
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        try {
+            iterator_to_array((new ReflectionMethod($parser, 'getAgendaEvents'))->invoke($parser, null, false, 42));
+            self::fail('An event page the API keeps refusing must fail the run');
+        } catch (ClientExceptionInterface) {
+        }
+
+        self::assertSame(3, $requests);
+    }
+
     public function testAFullImportFetchesTheEventsNotOverYet(): void
     {
         $eventQueries = [];
