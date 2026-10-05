@@ -13,7 +13,6 @@ namespace App\Tests\Import;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
-use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
@@ -186,7 +185,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         $secondId = $this->sibling('oa-2', '2026-10-10');
         $this->resolve([$secondId]);
 
-        save($this->reload($secondId)->setStatus(EventStatus::Removed)->setDraft(true));
+        save($this->reload($secondId)->markRemovedAtSource());
         $this->resolve([$secondId]);
 
         $canonical = $this->reload($firstId);
@@ -201,7 +200,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         $secondId = $this->sibling('oa-2', '2026-10-10');
         $this->resolve([$secondId]);
 
-        save($this->reload($firstId)->setStatus(EventStatus::Removed)->setDraft(true));
+        save($this->reload($firstId)->markRemovedAtSource());
         $this->resolve([$firstId]);
 
         $canonical = $this->reload($secondId);
@@ -216,8 +215,8 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         $secondId = $this->sibling('oa-2', '2026-10-10');
         $this->resolve([$secondId]);
 
-        save($this->reload($firstId)->setStatus(EventStatus::Removed)->setDraft(true));
-        save($this->reload($secondId)->setStatus(EventStatus::Removed)->setDraft(true));
+        save($this->reload($firstId)->markRemovedAtSource());
+        save($this->reload($secondId)->markRemovedAtSource());
         $this->resolve([$firstId, $secondId]);
 
         self::assertNull($this->reload($firstId)->getDuplicateOf(), 'Public URLs stay put.');

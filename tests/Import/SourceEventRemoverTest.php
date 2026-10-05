@@ -8,25 +8,24 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\MessageHandler;
+namespace App\Tests\Import;
 
 use App\Entity\Event;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\ParserDataFactory;
-use App\Message\RemoveSourceEvents;
-use App\MessageHandler\RemoveSourceEventsHandler;
+use App\Import\SourceEventRemover;
 use App\Tests\AppKernelTestCase;
 
 use function Zenstruck\Foundry\Persistence\save;
 
-final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
+final class SourceEventRemoverTest extends AppKernelTestCase
 {
     public function testAnEventItsSourceNoLongerListsLeavesTheListingsButKeepsItsPage(): void
     {
         $id = $this->imported('oa-1', 'https://openagenda.com/agenda-42/events/concert')->getId();
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1']));
+        self::assertSame(1, $this->remove('openagenda', ['oa-1', 'never-imported']));
 
         $event = EventFactory::find(['id' => $id]);
         self::assertSame(EventStatus::Removed, $event->getStatus());
@@ -40,7 +39,7 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
         $event = $this->imported('oa-1');
         save($event->setStatus(EventStatus::Cancelled)->setStatusMessage('Annulé pour raisons de santé'));
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1']));
+        $this->remove('openagenda', ['oa-1']);
 
         $event = EventFactory::find(['id' => $event->getId()]);
         self::assertSame(EventStatus::Removed, $event->getStatus(), 'Removed overrides Cancelled');
@@ -55,7 +54,7 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
             'externalOrigin' => 'openagenda',
         ])->getId();
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1']));
+        $this->remove('openagenda', ['oa-1']);
 
         self::assertSame(EventStatus::Removed, EventFactory::find(['id' => $id])->getStatus());
     }
@@ -68,7 +67,7 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
             'externalOrigin' => 'openagenda',
         ])->getId();
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1']));
+        self::assertSame(0, $this->remove('openagenda', ['oa-1']));
 
         $event = EventFactory::find(['id' => $id]);
         self::assertNull($event->getStatus());
@@ -81,7 +80,7 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
         ParserDataFactory::createOne(['externalId' => 'oa-1', 'externalOrigin' => 'openagenda']);
         ParserDataFactory::createOne(['externalId' => 'oa-2', 'externalOrigin' => 'openagenda']);
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1']));
+        $this->remove('openagenda', ['oa-1']);
 
         self::assertNull(ParserDataFactory::find(['externalId' => 'oa-1'])->getContentHash(), 'Else the dedup gate drops it as unchanged');
         self::assertNotNull(ParserDataFactory::find(['externalId' => 'oa-2'])->getContentHash());
@@ -92,7 +91,7 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
         $sameIdElsewhere = $this->imported('oa-1', origin: 'sowprog')->getId();
         $stillListed = $this->imported('oa-2')->getId();
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1']));
+        $this->remove('openagenda', ['oa-1']);
 
         self::assertNull(EventFactory::find(['id' => $sameIdElsewhere])->getStatus());
         self::assertNull(EventFactory::find(['id' => $stillListed])->getStatus());
@@ -102,7 +101,7 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
     {
         $id = $this->imported('oa-1', 'https://openagenda.com/agenda-42/events/concert')->getId();
 
-        $this->handle(new RemoveSourceEvents('openagenda', ['oa-1'], 'https://openagenda.com/agenda-7/events/'));
+        $this->remove('openagenda', ['oa-1'], 'https://openagenda.com/agenda-7/events/');
 
         self::assertNull(EventFactory::find(['id' => $id])->getStatus(), 'Still listed on the agenda it was imported from');
     }
@@ -117,8 +116,11 @@ final class RemoveSourceEventsHandlerTest extends AppKernelTestCase
         ]);
     }
 
-    private function handle(RemoveSourceEvents $message): void
+    /**
+     * @param list<string> $externalIds
+     */
+    private function remove(string $externalOrigin, array $externalIds, ?string $sourcePrefix = null): int
     {
-        self::getContainer()->get(RemoveSourceEventsHandler::class)($message);
+        return self::getContainer()->get(SourceEventRemover::class)->remove($externalOrigin, $externalIds, $sourcePrefix);
     }
 }

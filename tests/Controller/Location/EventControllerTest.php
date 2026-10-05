@@ -12,7 +12,6 @@ namespace App\Tests\Controller\Location;
 
 use App\Entity\Event;
 use App\Entity\User;
-use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
@@ -191,8 +190,8 @@ final class EventControllerTest extends WebTestCase
     public function testEveryoneStillSeesAnEventItsSourceNoLongerLists(): void
     {
         $client = self::createClient();
-        $event = $this->createEvent(new DateTimeImmutable('+10 days'), draft: true);
-        save($event->setStatus(EventStatus::Removed));
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        save($event->markRemovedAtSource());
 
         $client->request('GET', $this->eventUrl($event));
 

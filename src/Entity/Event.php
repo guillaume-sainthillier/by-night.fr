@@ -751,6 +751,19 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return EventStatus::Removed === $this->status;
     }
 
+    /**
+     * No longer listed by its source: the status says why the page is there, the draft takes the event out of the
+     * listings. Whatever the source said of it before (a cancellation, its message) no longer applies.
+     */
+    public function markRemovedAtSource(): self
+    {
+        $this->status = EventStatus::Removed;
+        $this->statusMessage = null;
+        $this->draft = true;
+
+        return $this;
+    }
+
     public function getStatusMessage(): ?string
     {
         return $this->statusMessage;

@@ -37,7 +37,7 @@ final class EventEntityFactoryTest extends AppKernelTestCase
 
     public function testAnEventListedAgainByItsSourceIsBackInTheListings(): void
     {
-        $removed = new Event()->setStatus(EventStatus::Removed)->setDraft(true);
+        $removed = new Event()->markRemovedAtSource();
         $dto = new EventDto();
         $dto->name = 'Nuit du jazz';
         $dto->status = EventStatus::Postponed;
