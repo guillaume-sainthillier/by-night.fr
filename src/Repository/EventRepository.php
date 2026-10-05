@@ -1122,23 +1122,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The agenda types stored on the published events that end from a day on: what AgendaTypeClassifier compares its
-     * findings with. The index only holds published events.
-     *
-     * @return array<int, list<string>> the types, by event id (the events without any left out)
-     */
-    public function findAgendaTypesEndingFrom(DateTimeImmutable $from): array
-    {
-        return self::agendaTypes($this
-            ->createIsActiveQueryBuilder()
-            ->andWhere('e.endDate >= :from')
-            ->setParameter('from', $from->format('Y-m-d')));
-    }
-
-    /**
      * @param list<int> $ids
      *
-     * @return array<int, list<string>> the types stored on these events, by id (the events without any left out)
+     * @return array<int, list<string>> the types stored on these events, by id (the events without any left out):
+     *                                  what AgendaTypeClassifier compares its findings with
      */
     public function findAgendaTypesOf(array $ids): array
     {

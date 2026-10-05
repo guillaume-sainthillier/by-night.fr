@@ -204,14 +204,19 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * The ids of the events a type page lists from a day on, whatever their place: what
-     * app:events:classify-agenda-types stores as their agenda types.
+     * The events with a session from a day on, whatever their place, each hit naming the type pages that list it in its
+     * "matched_queries": what app:events:classify-agenda-types stores as their agenda types, in one search for the five
+     * types. The type queries are optional clauses (the filter makes them so): they select nothing, and only name the
+     * hits. Sorted in index order, the cheapest for a scroll.
      */
-    public function createAgendaTypeQuery(AgendaType $type, DateTimeImmutable $from): Query
+    public function createAgendaTypesQuery(DateTimeImmutable $from): Query
     {
-        $query = Query::create(new BoolQuery()
-            ->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from, null))))
-            ->addFilter($this->createTypeQuery($type)));
+        $bool = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from, null))));
+        foreach (AgendaType::cases() as $type) {
+            $bool->addShould($this->createTypeQuery($type)->setParam('_name', $type->value));
+        }
+
+        $query = Query::create($bool);
         $query->setSource(false);
         $query->setSort(['_doc']);
 
