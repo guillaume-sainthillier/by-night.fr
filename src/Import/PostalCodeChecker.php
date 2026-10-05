@@ -19,7 +19,7 @@ use App\Repository\CountryRepository;
  *
  * Runs inside the {@see Firewall}, i.e. BEFORE entity resolution: the incoming
  * {@see CountryDto} usually carries only an ISO code ("CH" from OpenAgenda, Awin or the
- * personal-space form) or a display name ("Suisse" from DataTourisme or SowProg), so the
+ * personal-space form) or a display name ("Suisse" from DataTourisme), so the
  * matching {@see Country} row is looked up here on purpose. The expected format lives in
  * {@see Country::getPostalCodeRegex()} (editable in the admin), so supporting a new
  * country is a data change, not a code change.
