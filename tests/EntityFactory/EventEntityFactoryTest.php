@@ -11,7 +11,9 @@
 namespace App\Tests\EntityFactory;
 
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Entity\Event;
+use App\Entity\EventTimesheet;
 use App\EntityFactory\EventEntityFactory;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -44,5 +46,71 @@ final class EventEntityFactoryTest extends AppKernelTestCase
 
         self::assertInstanceOf(Event::class, $event);
         self::assertSame('4.0', $event->getParserVersion());
+    }
+
+    public function testTheTimesOfTheSessionsAndOfTheEventAreStored(): void
+    {
+        $dto = $this->twoSessionsOnOneDay();
+
+        $event = self::getContainer()->get(EventEntityFactory::class)->create(null, $dto);
+
+        self::assertInstanceOf(Event::class, $event);
+        self::assertSame('15:00', $event->getStartTime()?->format('H:i'));
+        self::assertSame('23:00', $event->getEndTime()?->format('H:i'));
+        self::assertSame(
+            [['15:00', '17:00'], ['20:30', '23:00']],
+            $this->times($event),
+            'Two sessions of the same day are told apart by their times',
+        );
+    }
+
+    public function testAnUnchangedSessionKeepsItsRowWhileAMovedOneIsReplaced(): void
+    {
+        $factory = self::getContainer()->get(EventEntityFactory::class);
+        $event = $factory->create(null, $this->twoSessionsOnOneDay());
+        self::assertInstanceOf(Event::class, $event);
+        [$afternoon, $evening] = $event->getTimesheets()->toArray();
+
+        $dto = $this->twoSessionsOnOneDay();
+        $dto->timesheets[1]->startTime = new DateTimeImmutable('21:00');
+        $factory->create($event, $dto);
+
+        self::assertSame([['15:00', '17:00'], ['21:00', '23:00']], $this->times($event));
+        self::assertContains($afternoon, $event->getTimesheets());
+        self::assertNotContains($evening, $event->getTimesheets());
+    }
+
+    private function twoSessionsOnOneDay(): EventDto
+    {
+        $dto = new EventDto();
+        $dto->name = 'Nuit du jazz';
+        $dto->startDate = new DateTimeImmutable('2026-10-01');
+        $dto->endDate = new DateTimeImmutable('2026-10-01');
+        $dto->startTime = new DateTimeImmutable('15:00');
+        $dto->endTime = new DateTimeImmutable('23:00');
+        foreach ([['15:00', '17:00'], ['20:30', '23:00']] as [$start, $end]) {
+            $timesheet = new EventTimesheetDto();
+            $timesheet->startAt = new DateTimeImmutable('2026-10-01');
+            $timesheet->endAt = new DateTimeImmutable('2026-10-01');
+            $timesheet->startTime = new DateTimeImmutable($start);
+            $timesheet->endTime = new DateTimeImmutable($end);
+            $dto->timesheets[] = $timesheet;
+        }
+
+        return $dto;
+    }
+
+    /**
+     * @return list<array{0: string|null, 1: string|null}>
+     */
+    private function times(Event $event): array
+    {
+        $times = array_map(static fn (EventTimesheet $timesheet): array => [
+            $timesheet->getStartTime()?->format('H:i'),
+            $timesheet->getEndTime()?->format('H:i'),
+        ], $event->getTimesheets()->toArray());
+        sort($times);
+
+        return $times;
     }
 }

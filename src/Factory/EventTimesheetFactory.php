@@ -32,14 +32,14 @@ final class EventTimesheetFactory extends PersistentObjectFactory
             'event' => EventFactory::new(),
             'startAt' => $date,
             'endAt' => $date,
-            'hours' => 'À 20h00',
+            'startTime' => new DateTimeImmutable('20:00'),
         ];
     }
 
     /**
      * A single-day timesheet on the given date.
      */
-    public function on(string $date, ?string $hours = 'À 20h00'): self
+    public function on(string $date, ?string $hours = null): self
     {
         return $this->with([
             'startAt' => new DateTimeImmutable($date),

@@ -83,16 +83,20 @@ final class EventDtoFactoryTest extends AppKernelTestCase
             'event' => $event,
             'startAt' => new DateTimeImmutable('2026-10-01 20:00'),
             'endAt' => new DateTimeImmutable('2026-10-01 23:00'),
-            'hours' => 'De 20h à 23h',
+            'startTime' => new DateTimeImmutable('20:00'),
+            'endTime' => new DateTimeImmutable('23:00'),
+            'hours' => 'Ouverture des portes à 19h',
         ]);
 
         $dto = self::getContainer()->get(EventDtoFactory::class)->create($event);
 
         self::assertSame(
-            [['2026-10-01 20:00', '2026-10-01 23:00', 'De 20h à 23h']],
+            [['2026-10-01 20:00', '2026-10-01 23:00', '20:00', '23:00', 'Ouverture des portes à 19h']],
             array_map(static fn ($timesheet): array => [
                 $timesheet->startAt?->format('Y-m-d H:i'),
                 $timesheet->endAt?->format('Y-m-d H:i'),
+                $timesheet->startTime?->format('H:i'),
+                $timesheet->endTime?->format('H:i'),
                 $timesheet->hours,
             ], $dto->timesheets),
         );

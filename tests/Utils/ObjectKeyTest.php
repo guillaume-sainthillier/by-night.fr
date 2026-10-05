@@ -59,27 +59,42 @@ final class ObjectKeyTest extends TestCase
         self::assertNotSame(ObjectKey::transient('place', $object), ObjectKey::internal('place', spl_object_id($object)));
     }
 
-    public function testTheTimeOfDayASourceSendsIsNotPartOfATimesheetKey(): void
+    public function testTheTimeOfDayOfTheDatesIsNotPartOfATimesheetKey(): void
     {
+        $time = new DateTimeImmutable('20:30');
+
         self::assertSame(
-            ObjectKey::timesheet(new DateTimeImmutable('2026-10-03'), new DateTimeImmutable('2026-10-03'), 'À 20h30'),
-            ObjectKey::timesheet(new DateTime('2026-10-03 20:30'), new DateTime('2026-10-03 23:00'), 'À 20h30'),
+            ObjectKey::timesheet(new DateTimeImmutable('2026-10-03'), new DateTimeImmutable('2026-10-03'), $time, null, null),
+            ObjectKey::timesheet(new DateTime('2026-10-03 20:30'), new DateTime('2026-10-03 23:00'), $time, null, null),
         );
+    }
+
+    public function testTheTimesTellTwoSessionsOfADayApart(): void
+    {
+        $day = new DateTimeImmutable('2026-10-03');
+        $afternoon = new DateTimeImmutable('15:00');
+        $evening = new DateTimeImmutable('20:30');
+
+        self::assertNotSame(ObjectKey::timesheet($day, $day, $afternoon, null, null), ObjectKey::timesheet($day, $day, $evening, null, null));
+        self::assertNotSame(ObjectKey::timesheet($day, $day, $evening, null, null), ObjectKey::timesheet($day, $day, $evening, new DateTimeImmutable('23:00'), null));
+        self::assertNotSame(ObjectKey::timesheet($day, $day, null, null, null), ObjectKey::timesheet($day, $day, $evening, null, null));
+        // The start and the end are not interchangeable
+        self::assertNotSame(ObjectKey::timesheet($day, $day, $evening, null, null), ObjectKey::timesheet($day, $day, null, $evening, null));
     }
 
     public function testTheHoursTellTwoSessionsOfADayApart(): void
     {
         $day = new DateTimeImmutable('2026-10-03');
 
-        self::assertNotSame(ObjectKey::timesheet($day, $day, 'À 15h00'), ObjectKey::timesheet($day, $day, 'À 20h30'));
-        self::assertNotSame(ObjectKey::timesheet($day, $day, null), ObjectKey::timesheet($day, $day, 'À 20h30'));
+        self::assertNotSame(ObjectKey::timesheet($day, $day, null, null, 'À 15h, puis à 18h'), ObjectKey::timesheet($day, $day, null, null, 'À 20h, puis à 22h'));
+        self::assertNotSame(ObjectKey::timesheet($day, $day, null, null, null), ObjectKey::timesheet($day, $day, null, null, 'À 20h, puis à 22h'));
     }
 
     public function testASessionWithoutEndEndsTheDayItStarts(): void
     {
         $day = new DateTimeImmutable('2026-10-03');
 
-        self::assertSame(ObjectKey::timesheet($day, $day, null), ObjectKey::timesheet($day, null, null));
-        self::assertNotSame(ObjectKey::timesheet($day, new DateTimeImmutable('2026-10-05'), null), ObjectKey::timesheet($day, null, null));
+        self::assertSame(ObjectKey::timesheet($day, $day, null, null, null), ObjectKey::timesheet($day, null, null, null, null));
+        self::assertNotSame(ObjectKey::timesheet($day, new DateTimeImmutable('2026-10-05'), null, null, null), ObjectKey::timesheet($day, null, null, null, null));
     }
 }

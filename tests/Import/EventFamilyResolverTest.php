@@ -76,6 +76,27 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         self::assertSame(['2026-10-10' => null], $this->datesBySource($duplicate));
     }
 
+    public function testTheInheritedSessionsKeepTheirTimes(): void
+    {
+        $firstId = $this->sibling('oa-1', '2026-10-03');
+        // A sibling without timesheets is one session, at the times of the event
+        $secondId = $this->sibling('oa-2', '2026-10-10', false);
+        $second = $this->reload($secondId);
+        $second->setStartTime(new DateTimeImmutable('21:00'));
+        $second->setEndTime(new DateTimeImmutable('23:30'));
+        save($second);
+
+        $this->resolve([$secondId]);
+
+        $times = [];
+        foreach ($this->reload($firstId)->getTimesheets() as $timesheet) {
+            $times[(string) $timesheet->getStartAt()?->format('Y-m-d')] = [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i')];
+        }
+
+        ksort($times);
+        self::assertSame(['2026-10-03' => ['20:00', null], '2026-10-10' => ['21:00', '23:30']], $times);
+    }
+
     public function testInheritedDatesFollowTheSiblingsOwnDates(): void
     {
         $firstId = $this->sibling('oa-1', '2026-10-03');

@@ -39,6 +39,7 @@ final class EventDtoFactory
         $event->startDate = clone $entity->getStartDate();
         $event->endDate = clone $entity->getEndDate();
         $event->startTime = $entity->getStartTime();
+        $event->endTime = $entity->getEndTime();
         $event->createdAt = clone $entity->getCreatedAt();
         $event->updatedAt = clone $entity->getUpdatedAt();
         $event->imageFile = $entity->getImageFile();
@@ -104,6 +105,8 @@ final class EventDtoFactory
             $timesheetDto = new EventTimesheetDto();
             $timesheetDto->startAt = $timesheetEntity->getStartAt() ? clone $timesheetEntity->getStartAt() : null;
             $timesheetDto->endAt = $timesheetEntity->getEndAt() ? clone $timesheetEntity->getEndAt() : null;
+            $timesheetDto->startTime = $timesheetEntity->getStartTime();
+            $timesheetDto->endTime = $timesheetEntity->getEndTime();
             $timesheetDto->hours = $timesheetEntity->getHours();
 
             $event->timesheets[] = $timesheetDto;

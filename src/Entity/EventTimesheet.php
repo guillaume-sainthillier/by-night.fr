@@ -54,6 +54,17 @@ class EventTimesheet implements Stringable
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTimeImmutable $endAt = null;
 
+    /**
+     * The time the session starts and ends, when the source gives them: the label shown is built from them
+     * (see SessionHours), $hours only holds what they cannot say ("À 20h, de 21h à minuit"). An end earlier
+     * than the start goes past midnight.
+     */
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $startTime = null;
+
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $endTime = null;
+
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
 
@@ -117,6 +128,30 @@ class EventTimesheet implements Stringable
     public function setEndAt(?DateTimeImmutable $endAt): self
     {
         $this->endAt = UnitOfWorkOptimizer::getDateTimeValue($this->endAt, $endAt);
+
+        return $this;
+    }
+
+    public function getStartTime(): ?DateTimeImmutable
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(?DateTimeImmutable $startTime): self
+    {
+        $this->startTime = UnitOfWorkOptimizer::getTimeValue($this->startTime, $startTime);
+
+        return $this;
+    }
+
+    public function getEndTime(): ?DateTimeImmutable
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(?DateTimeImmutable $endTime): self
+    {
+        $this->endTime = UnitOfWorkOptimizer::getTimeValue($this->endTime, $endTime);
 
         return $this;
     }
