@@ -94,7 +94,7 @@ final class EventControllerTest extends WebTestCase
         self::assertSelectorNotExists('.event-header a[href^="/espace-perso/"]');
     }
 
-    public function testTheLoginOfAVisitorLeadsBackToTheEvent(): void
+    public function testJyVaisOpensALoginDialogThatLeadsBackToTheEventAndRecordsIt(): void
     {
         $client = self::createClient();
         $event = $this->createEvent();
@@ -102,9 +102,37 @@ final class EventControllerTest extends WebTestCase
         $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
-        $login = '/login?_target_path=' . rawurlencode($this->eventUrl($event));
-        self::assertSelectorExists(\sprintf('a.participate[href="%s"]', $login), "J'y vais");
-        self::assertSelectorExists(\sprintf('#comments a[href="%s"]', $login), 'Se connecter pour commenter');
+        // "#participer": the page clicks "J'y vais" for the member once they are back (like.js)
+        $target = rawurlencode($this->eventUrl($event) . '#participer');
+        // The login page without the script, the dialog with it
+        self::assertSelectorExists(\sprintf('a.participate[href="/login?_target_path=%s"][data-bs-target="#login-dialog"]', $target));
+        // Every way in leads back: the e-mail, a new account, a social network
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="/login?_target_path=%s"]', $target));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="/inscription?_target_path=%s"]', $target));
+        self::assertSelectorExists(\sprintf('#login-dialog a[href="/login-social/google?_target_path=%s"]', $target));
+    }
+
+    public function testTheLoginToCommentLeadsBackToTheComments(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorExists(\sprintf('#comments a[href="/login?_target_path=%s"]', rawurlencode($this->eventUrl($event) . '#comments')));
+    }
+
+    public function testAMemberGetsNoLoginDialogButAButtonThatRecordsTheClickMadeBeforeTheLogin(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#login-dialog');
+        self::assertSelectorExists('button.btn-like-event[data-intent="participer"]');
     }
 
     public function testTheCountryKeywordLeadsToTheCountryAgenda(): void

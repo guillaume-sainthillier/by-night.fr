@@ -58,6 +58,17 @@ final class RegistrationControllerTest extends WebTestCase
         self::assertSame(0, UserFactory::count(['email' => 'camille.martin@example.com']));
     }
 
+    #[RequiresPhpExtension('mjml')]
+    public function testANewMemberGoesBackToThePageTheySignedUpFrom(): void
+    {
+        $client = self::createClient();
+
+        $this->signUp($client, 'camille.martin@example.com', 'camille_m', url: '/inscription?_target_path=' . rawurlencode('/toulouse/soiree/concert--42#participer'));
+
+        // Logged in at once, back on the event, whose page records the "J'y vais" clicked before signing up
+        self::assertResponseRedirects('/toulouse/soiree/concert--42#participer');
+    }
+
     public function testABrokenVerificationLinkLeadsToTheAccountPage(): void
     {
         $client = self::createClient();
@@ -69,9 +80,9 @@ final class RegistrationControllerTest extends WebTestCase
         self::assertResponseRedirects('/profile/edit');
     }
 
-    private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1'): void
+    private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1', string $url = '/inscription'): void
     {
-        $client->request('GET', '/inscription');
+        $client->request('GET', $url);
         $client->submitForm('Créer mon compte', [
             'registration_form[firstname]' => 'Camille',
             'registration_form[lastname]' => 'Martin',

@@ -33,6 +33,16 @@ final class LoginTargetPathTest extends WebTestCase
         self::assertResponseRedirects('/toulouse/soiree/concert--42');
     }
 
+    public function testTheLoginKeepsTheFragmentThatRecordsTheClickMadeBeforeIt(): void
+    {
+        $client = $this->createClientFromAnIpOfItsOwn();
+        $email = $this->createMember();
+
+        $this->login($client, $email, '/login?_target_path=' . rawurlencode('/toulouse/soiree/concert--42#participer'));
+
+        self::assertResponseRedirects('/toulouse/soiree/concert--42#participer');
+    }
+
     public function testTheNextLoginGoesToThePersonalSpaceAgain(): void
     {
         $client = $this->createClientFromAnIpOfItsOwn();

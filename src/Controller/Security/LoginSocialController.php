@@ -12,18 +12,16 @@ namespace App\Controller\Security;
 
 use App\Controller\AbstractController;
 use App\Entity\User;
+use App\Security\LoginTargetPath;
 use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 #[Route(path: '/login-social')]
 final class LoginSocialController extends AbstractController
 {
-    use TargetPathTrait;
-
     #[Route(path: '/check-{service<%patterns.social%>}', name: 'login_social_check', methods: ['GET', 'POST'])]
     public function connectCheck(): never
     {
@@ -31,8 +29,11 @@ final class LoginSocialController extends AbstractController
     }
 
     #[Route(path: '/{service<%patterns.social%>}', name: 'login_social_start', methods: ['GET', 'POST'])]
-    public function connect(string $service, ClientRegistry $clientRegistry): Response
+    public function connect(string $service, Request $request, ClientRegistry $clientRegistry, LoginTargetPath $loginTargetPath): Response
     {
+        // The login dialog of a page names it: the network leads back to it once the member is logged in
+        $loginTargetPath->saveFromQuery($request);
+
         $scopes = match ($service) {
             'facebook' => ['public_profile', 'email'],
             'google' => ['email', 'profile'],
@@ -46,7 +47,7 @@ final class LoginSocialController extends AbstractController
     }
 
     #[Route(path: '/success-{service<%patterns.social%>}', name: 'login_social_success', methods: ['GET'])]
-    public function success(Request $request): Response
+    public function success(Request $request, LoginTargetPath $loginTargetPath): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -55,9 +56,7 @@ final class LoginSocialController extends AbstractController
         }
 
         // Out of a popup, the member goes back to the page they logged in from (see LoginFormController), as with the form
-        $session = $request->getSession();
-        $targetPath = $this->getTargetPath($session, 'main');
-        $this->removeTargetPath($session, 'main');
+        $targetPath = $loginTargetPath->pull($request->getSession());
 
         return $this->render('security/connect-success.html.twig', [
             'userInformation' => [

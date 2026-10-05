@@ -7,6 +7,10 @@
 {% set original = eventProfilePicture.originalPicture(event) %}
 
 {% set place = event.place %}
+{# The way back after a login: "#participer" records the "J'y vais" clicked before it (like.js), "#comments" opens on the
+   comment form #}
+{% set eventPath = path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
+{% set goingAfterLogin = eventPath ~ '#participer' %}
 {# Collect all tags (category + themes) for meta tags #}
 {% set allTags = [] %}
 {% if event.category %}
@@ -99,8 +103,6 @@
         {% set hasEnded = event_seo.hasEnded(event) %}
         {% set placeAgenda = path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) %}
         {% set agenda = path('app_location_index', {location: place.locationSlug}) %}
-        {# The login of "J'y vais" and of the comments leads back here #}
-        {% set login = path('app_login', {_target_path: path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})}) %}
 
         {# The embedded map looks the venue up by name, or by its coordinates when it has no city to name #}
         {% set mapValue = (event.placeName ~ ' ' ~ event.placeCity)|trim %}
@@ -186,13 +188,14 @@
                         <div class="card-footer d-flex flex-wrap align-items-center gap-2">
                             {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                                 <button type="button" class="btn participate btn-like-event {{ trendsData.participate ? 'btn-primary' }}"
-                                        data-href="{{ path('api_event_participer', {id: event.id}) }}">
+                                        data-href="{{ path('api_event_participer', {id: event.id}) }}" data-intent="participer">
                                     <twig:Icon name="lucide:heart" />
                                     J'y vais&nbsp;!
                                 </button>
                             {% else %}
-                                {# Going needs an account: the button leads to the login page #}
-                                <a class="btn participate" href="{{ login }}" title="Connectez-vous pour indiquer que vous y allez">
+                                {# Going needs an account: the button opens the login dialog (modals block), the login page without
+                                   the script #}
+                                <a class="btn participate" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" data-bs-toggle="modal" data-bs-target="#login-dialog" title="Connectez-vous pour indiquer que vous y allez">
                                     <twig:Icon name="lucide:heart" />
                                     J'y vais&nbsp;!
                                 </a>
@@ -498,7 +501,7 @@
                         </div>
                     </div>
 
-                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm, login: login}) }}
+                    {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm, login: path('app_login', {_target_path: eventPath ~ '#comments'})}) }}
                 </div>
             </div>
         </div>
@@ -523,4 +526,12 @@
 
 {% block modals %}
     {{ include('location/event/_modal-content-removal-request.html.twig') }}
+    {% if not isHiddenDraft and not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+        {{ include('security/_login-dialog.html.twig', {
+            id: 'login-dialog',
+            title: 'Vous y allez ?',
+            text: 'Connectez-vous : la sortie rejoint vos sorties, et vous revenez ici.',
+            targetPath: goingAfterLogin,
+        }) }}
+    {% endif %}
 {% endblock %}

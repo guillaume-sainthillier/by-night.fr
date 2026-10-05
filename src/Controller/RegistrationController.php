@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Form\Type\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Security\LoginTargetPath;
 use App\Security\UserFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,8 +32,11 @@ final class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/inscription', name: 'app_register', methods: ['GET', 'POST'])]
-    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserFormAuthenticator $authenticator, UserRepository $userRepository): Response
+    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserFormAuthenticator $authenticator, UserRepository $userRepository, LoginTargetPath $loginTargetPath): Response
     {
+        // The login dialog of a page names it: the new member, logged in at once, goes back to it
+        $loginTargetPath->saveFromQuery($request);
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);

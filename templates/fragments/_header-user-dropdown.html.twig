@@ -16,9 +16,14 @@
                 </a>
                 <div class="dropdown-divider"></div>
             {% endif %}
-            <a class="dropdown-item" title="Gérer mes événements" href="{{ path('app_event_list') }}">
+            {# The member who goes out, then the organizer #}
+            <a class="dropdown-item" title="Les événements où je vais" href="{{ path('app_outing_list') }}">
+                <twig:Icon name="lucide:heart" />
+                Mes sorties
+            </a>
+            <a class="dropdown-item" title="Gérer les événements que j'ai publiés" href="{{ path('app_event_list') }}">
                 <twig:Icon name="lucide:list-checks" />
-                Mes événements
+                Mes événements publiés
             </a>
             <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
                 <twig:Icon name="lucide:settings" />

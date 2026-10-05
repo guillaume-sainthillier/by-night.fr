@@ -11,25 +11,19 @@
 namespace App\Controller\Security;
 
 use App\Controller\AbstractController;
+use App\Security\LoginTargetPath;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 final class LoginFormController extends AbstractController
 {
-    use TargetPathTrait;
-
     #[Route(path: '/login', name: 'app_login', methods: ['GET', 'POST'])]
-    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils, LoginTargetPath $loginTargetPath): Response
     {
-        // The page a "log in to…" link comes from ("J'y vais", comments): the login, by form or social network, leads
-        // back to it. A path of this site only, never another host
-        $targetPath = $request->query->getString('_target_path');
-        if (self::isLocalPath($targetPath)) {
-            $this->saveTargetPath($request->getSession(), 'main', $targetPath);
-        }
+        // The page a "log in to…" link comes from ("J'y vais", comments): the login leads back to it
+        $loginTargetPath->saveFromQuery($request);
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -40,13 +34,5 @@ final class LoginFormController extends AbstractController
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
-    }
-
-    private static function isLocalPath(string $path): bool
-    {
-        return str_starts_with($path, '/')
-            && !str_starts_with($path, '//')
-            && !str_contains($path, '\\')
-            && !preg_match('/[\x00-\x1F\x7F]/', $path);
     }
 }

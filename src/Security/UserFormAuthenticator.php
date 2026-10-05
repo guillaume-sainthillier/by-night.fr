@@ -24,17 +24,15 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 {
-    use TargetPathTrait;
-
     private const string LOGIN_ROUTE = 'app_login';
 
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly UserAuthenticatorInterface $userAuthenticator,
+        private readonly LoginTargetPath $loginTargetPath,
     ) {
     }
 
@@ -68,9 +66,8 @@ final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            $this->removeTargetPath($request->getSession(), $firewallName);
-
+        // The page the member logged in from (LoginTargetPath), or the one that needed the login
+        if ($targetPath = $this->loginTargetPath->pull($request->getSession())) {
             return new RedirectResponse($targetPath);
         }
 

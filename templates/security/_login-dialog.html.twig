@@ -1,0 +1,34 @@
+{#
+    The dialog an action that needs an account opens ("J'y vais"): the visitor stays on the page, then every way in, a
+    social network, the e-mail or a new account, leads back to it (LoginTargetPath). The button keeps the login page as
+    its href, for a page without its script.
+
+    {{ include('security/_login-dialog.html.twig', {id: 'login-dialog', title: '…', text: '…', targetPath: '/…#participer'}) }}
+#}
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ id }}-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
+                    <twig:Icon name="lucide:heart" />
+                </span>
+                <h2 class="h3 mb-2" id="{{ id }}-title">{{ title }}</h2>
+                <p class="text-secondary mb-4">{{ text }}</p>
+
+                <twig:Auth:SocialButtons title="Connectez-vous avec" targetPath="{{ targetPath }}" />
+
+                <div class="hr-text">ou</div>
+
+                <a class="btn btn-primary w-100" href="{{ path('app_login', {_target_path: targetPath}) }}">
+                    <twig:Icon name="lucide:mail" />
+                    Se connecter avec mon e-mail
+                </a>
+                <p class="small text-secondary mt-3 mb-0">
+                    Pas encore de compte&nbsp;?
+                    <a class="fw-bold" href="{{ path('app_register', {_target_path: targetPath}) }}">Créer un compte gratuitement</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

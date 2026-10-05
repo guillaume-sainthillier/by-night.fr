@@ -205,6 +205,7 @@ Entity providers (`src/EntityProvider/`) find existing entities matching DTOs.
 
 - **Firewall** (`src/Import/Firewall.php`): Validates and filters event data (with the rest of the import-pipeline services — `Cleaner`, `EventContentHasher`, `EventChangeDetector`, `EventPublicationGuard` — in the `App\Import` namespace)
 - **DoctrineEventHandler**: Main orchestrator for event persistence
+- **Login return** (`src/Security/LoginTargetPath.php`): a "log in to…" link passes `?_target_path=` (a local path, optionally with a fragment) to the login, sign-up or social login, which keep it in the firewall's target-path session entry and lead back to it. `#participer` makes the event page record the "J'y vais" clicked before the login (`assets/js/listeners/like.js`)
 - **Images**: Handled by the `silarhi/picasso-bundle` (`config/packages/picasso.yaml` — Glide transformer, blur placeholders, thumbnails cached in `thumbs.storage`). Render images with the `<twig:Picasso:Image>` component; per-entity picture services live in `src/Picture/` (e.g. `EventProfilePicture`, `UserProfilePicture`)
 
 ### Routing

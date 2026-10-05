@@ -1,0 +1,61 @@
+{% extends 'layouts/default.html.twig' %}
+
+{% block title 'Mes sorties' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Mes sorties', url('app_outing_list')) %}
+{% endblock %}
+
+{% block body -%}
+    {% set city = app_context.city %}
+    <p class="lead text-secondary mb-4">
+        Les événements où vous avez dit «&nbsp;J'y vais&nbsp;!&nbsp;», du plus proche au plus lointain.
+    </p>
+
+    {% if outings.nbResults > 0 %}
+        <div class="row row-cards" id="outings">
+            {% for event in outings %}
+                <div class="col-md-6 col-xl-4">
+                    <twig:Event:Card event="{{ event }}" priority="{{ loop.first }}" />
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if outings.haveToPaginate %}
+            <div class="d-flex justify-content-center mt-4">
+                {{ pagerfanta(outings, {omitFirstPage: true, proximity: 1}) }}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="card">
+            <div class="empty">
+                <div class="empty-icon"><twig:Icon name="lucide:heart" /></div>
+                <p class="empty-title">Aucune sortie prévue pour l'instant</p>
+                <p class="empty-subtitle text-secondary">
+                    Sur la page d'un événement, «&nbsp;J'y vais&nbsp;!&nbsp;» l'ajoute ici&nbsp;: vous le retrouvez le jour venu.
+                </p>
+                <div class="empty-action">
+                    {% if city %}
+                        <a class="btn btn-primary" href="{{ path('app_location_index', {location: city.slug}) }}">
+                            <twig:Icon name="lucide:calendar-days" />
+                            Que faire {{ city.name|at_place }}&nbsp;?
+                        </a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{{ path('app_index') }}">
+                            <twig:Icon name="lucide:map-pin" />
+                            Choisir une ville
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if pastCount > 0 %}
+        <p class="text-secondary mt-4 mb-0">
+            <twig:Icon name="lucide:history" />
+            {{ '{count, plural, one {Votre sortie passée reste} other {Vos # sorties passées restent}}'|trans({count: pastCount}, 'messages+intl-icu') }}
+            sur <a href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug, _fragment: 'passes'}) }}">votre profil public</a>.
+        </p>
+    {% endif %}
+{%- endblock %}
