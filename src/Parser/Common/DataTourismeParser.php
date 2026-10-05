@@ -128,13 +128,16 @@ final class DataTourismeParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
-        // A past event is useless whatever changed: both imports keep only the events still
-        // running or to come. The API compares dates at day granularity, so an incremental
-        // import starts from the (UTC) day the previous run started: at most one day of
-        // overlap, which the publication guard drops for free.
-        $filters = [\sprintf('takesPlaceAt.endDate[gte]=%s', new DateTimeImmutable('today')->format('Y-m-d'))];
+        // Outside a backfill a past event is useless whatever changed: both imports keep only
+        // the events still running or to come. The API compares dates at day granularity, so
+        // an incremental import starts from the (UTC) day the previous run started: at most
+        // one day of overlap, which the publication guard drops for free.
+        $filters = [];
+        if (!$includePast) {
+            $filters[] = \sprintf('takesPlaceAt.endDate[gte]=%s', new DateTimeImmutable('today')->format('Y-m-d'));
+        }
         if (null !== $since) {
             $filters[] = \sprintf('lastUpdateDatatourisme[gte]=%s', self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d'));
         }
@@ -144,8 +147,10 @@ final class DataTourismeParser extends AbstractParser
             'fields' => implode(',', self::FIELDS),
             'lang' => 'fr',
             'page_size' => self::PAGE_SIZE,
-            'filters' => implode(' and ', $filters),
         ];
+        if ([] !== $filters) {
+            $query['filters'] = implode(' and ', $filters);
+        }
 
         // Page numbers stop working past 10 000 results: follow the cursor links instead.
         while (null !== $url) {

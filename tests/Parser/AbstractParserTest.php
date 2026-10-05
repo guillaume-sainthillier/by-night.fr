@@ -120,7 +120,7 @@ final class AbstractParserTest extends AppKernelTestCase
                 return 'unreliable';
             }
 
-            protected function fetchEvents(?DateTimeImmutable $since): iterable
+            protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
             {
                 foreach (['first', 'broken', 'last'] as $record) {
                     yield $this->mapRecord(static function () use ($record): EventDto {

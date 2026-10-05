@@ -39,7 +39,7 @@ final class BikiniParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
         // Récupère les différents liens à parser depuis le flux RSS
         $data = json_decode(file_get_contents(self::EVENTS_URL), true, 512, \JSON_THROW_ON_ERROR);

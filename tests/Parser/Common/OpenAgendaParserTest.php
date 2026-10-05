@@ -290,6 +290,39 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertArrayNotHasKey('timings', $eventQueries[0]);
     }
 
+    public function testABackfillFetchesTheEventsWhateverTheirDates(): void
+    {
+        $eventQueries = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$eventQueries): MockResponse {
+            if (str_contains($url, '/events')) {
+                parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
+                $eventQueries[] = $query;
+
+                return new MockResponse('{"events":[],"after":null}');
+            }
+
+            return new MockResponse(json_encode([
+                'agendas' => [self::feedAgenda(42, current: 1, upcoming: 1)],
+                'after' => null,
+            ], \JSON_THROW_ON_ERROR));
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $parser->parse(null, includePast: true);
+
+        self::assertCount(1, $eventQueries);
+        self::assertArrayNotHasKey('relative', $eventQueries[0]);
+        self::assertArrayNotHasKey('updatedAt', $eventQueries[0]);
+        self::assertArrayNotHasKey('timings', $eventQueries[0]);
+    }
+
     public function testEveryAgendaWithAnEventNotOverYetIsRead(): void
     {
         $readAgendas = [];
@@ -326,17 +359,52 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertSame([1, 2, 3], $readAgendas);
     }
 
+    public function testABackfillReadsEveryAgendaWithAnEventEvenLongOver(): void
+    {
+        $readAgendas = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$readAgendas): MockResponse {
+            if (preg_match('#/agendas/(\d+)/events#', $url, $matches)) {
+                $readAgendas[] = (int) $matches[1];
+
+                return new MockResponse('{"events":[],"after":null}');
+            }
+
+            return new MockResponse(json_encode([
+                'agendas' => [
+                    self::feedAgenda(1, current: 2, upcoming: 5),
+                    self::feedAgenda(2, current: 0, upcoming: 0, passed: 1),
+                    self::feedAgenda(3, current: 0, upcoming: 0, passed: 0),
+                    self::feedAgenda(4, current: 0, upcoming: 3, passed: 0),
+                ],
+                'after' => null,
+            ], \JSON_THROW_ON_ERROR));
+        });
+        $parser = new OpenAgendaParser(
+            new NullLogger(),
+            self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(EventHandler::class),
+            $client,
+            self::getContainer()->get(CountryRepository::class),
+            'key',
+        );
+
+        $parser->parse(null, includePast: true);
+
+        // Only the agenda without a single published event has nothing to give
+        self::assertSame([1, 2, 4], $readAgendas);
+    }
+
     /**
      * An agenda as the agenda list returns it (fields=summary).
      *
      * @return array<string, mixed>
      */
-    private static function feedAgenda(int $uid, int $current, int $upcoming): array
+    private static function feedAgenda(int $uid, int $current, int $upcoming, int $passed = 10): array
     {
         return [
             'uid' => $uid,
             'slug' => 'agenda-' . $uid,
-            'summary' => ['publishedEvents' => ['passed' => 10, 'current' => $current, 'upcoming' => $upcoming]],
+            'summary' => ['publishedEvents' => ['passed' => $passed, 'current' => $current, 'upcoming' => $upcoming]],
         ];
     }
 }

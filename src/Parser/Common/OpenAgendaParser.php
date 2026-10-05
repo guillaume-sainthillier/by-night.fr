@@ -63,24 +63,26 @@ final class OpenAgendaParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
-        foreach ($this->getAgendasUidAndSlugs() as [$agendaId, $agendaSlug]) {
-            foreach ($this->getAgendaEvents($since, $agendaId) as $event) {
+        foreach ($this->getAgendasUidAndSlugs($includePast) as [$agendaId, $agendaSlug]) {
+            foreach ($this->getAgendaEvents($since, $includePast, $agendaId) as $event) {
                 yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($event, $agendaSlug), ['uid' => $event['uid'] ?? null, 'agenda' => $agendaSlug]);
             }
         }
     }
 
-    private function getAgendaEvents(?DateTimeImmutable $since, int $agendaId): iterable
+    private function getAgendaEvents(?DateTimeImmutable $since, bool $includePast, int $agendaId): iterable
     {
         // A full import keeps the events not over yet. timings[gte] only matches a timing that
         // begins in the range, which drops an exhibition begun last week and running for a
         // month; "current" (a timing under way) and "upcoming" together are exactly the
-        // events that have not ended.
-        $filter = null !== $since
-            ? ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]]
-            : ['relative' => ['current', 'upcoming']];
+        // events that have not ended. A backfill takes them all.
+        $filter = match (true) {
+            null !== $since => ['updatedAt' => ['gte' => self::withSafetyMargin($since)->setTimezone(new DateTimeZone('UTC'))->format(DateTimeInterface::ATOM)]],
+            $includePast => [],
+            default => ['relative' => ['current', 'upcoming']],
+        };
 
         $after = [];
         while (true) {
@@ -109,7 +111,7 @@ final class OpenAgendaParser extends AbstractParser
         }
     }
 
-    private function getAgendasUidAndSlugs(): iterable
+    private function getAgendasUidAndSlugs(bool $includePast): iterable
     {
         $after = [];
         $failedAttempts = 0;
@@ -128,11 +130,7 @@ final class OpenAgendaParser extends AbstractParser
                 $failedAttempts = 0;
 
                 foreach ($data['agendas'] as $agenda) {
-                    // One event not over yet, running (current) or to come (upcoming), is
-                    // enough: a season announced weeks ahead has nothing running yet, and
-                    // an agenda down to its last exhibition has nothing to come
-                    $publishedEvents = $agenda['summary']['publishedEvents'] ?? [];
-                    if (($publishedEvents['current'] ?? 0) + ($publishedEvents['upcoming'] ?? 0) > 0) {
+                    if (self::hasEventsToImport($agenda['summary']['publishedEvents'] ?? [], $includePast)) {
                         yield [$agenda['uid'], $agenda['slug']];
                     }
                 }
@@ -152,6 +150,22 @@ final class OpenAgendaParser extends AbstractParser
                 $this->logException($exception);
             }
         }
+    }
+
+    /**
+     * Whether an agenda is worth paging through, from the event counts of its summary.
+     *
+     * @param array{passed?: int, current?: int, upcoming?: int} $publishedEvents
+     */
+    private static function hasEventsToImport(array $publishedEvents, bool $includePast): bool
+    {
+        // One event not over yet, running (current) or to come (upcoming), is enough: a
+        // season announced weeks ahead has nothing running yet, and an agenda down to its
+        // last exhibition has nothing to come
+        $notOverYet = ($publishedEvents['current'] ?? 0) + ($publishedEvents['upcoming'] ?? 0);
+
+        // A backfill takes all it can: every agenda with an event, even one long over
+        return ($includePast ? $notOverYet + ($publishedEvents['passed'] ?? 0) : $notOverYet) > 0;
     }
 
     private function arrayToDto(array $data, string $agendaSlug): ?EventDto

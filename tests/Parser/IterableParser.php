@@ -45,7 +45,7 @@ final class IterableParser extends AbstractParser
         return 'test.feed';
     }
 
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
         return ($this->events)();
     }

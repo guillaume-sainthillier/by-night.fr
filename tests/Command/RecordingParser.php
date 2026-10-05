@@ -24,6 +24,11 @@ final class RecordingParser implements ParserInterface
      */
     public array $runs = [];
 
+    /**
+     * @var list<bool> whether each parse() call asked for the past events too
+     */
+    public array $includedPast = [];
+
     public function __construct(
         private readonly string $commandName,
         private readonly bool $enabled = true,
@@ -55,9 +60,10 @@ final class RecordingParser implements ParserInterface
         return \sprintf('Recording %s', $this->commandName);
     }
 
-    public function parse(?DateTimeImmutable $since): void
+    public function parse(?DateTimeImmutable $since, bool $includePast = false): void
     {
         $this->runs[] = $since;
+        $this->includedPast[] = $includePast;
 
         if ($this->failing) {
             throw new RuntimeException('Source unavailable');

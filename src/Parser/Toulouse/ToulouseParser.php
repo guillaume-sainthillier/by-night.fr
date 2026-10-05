@@ -37,7 +37,7 @@ final class ToulouseParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
         return $this->parseCSV($this->downloadCSV());
     }

@@ -78,6 +78,29 @@ final class EventsImportCommandTest extends AppKernelTestCase
         self::assertGreaterThan($previousRun, $this->parserStates->findLastParsedAt('fake'));
     }
 
+    public function testWholeOptionIsAFullImportThatKeepsThePastEvents(): void
+    {
+        $previousRun = new DateTimeImmutable('2026-09-21 02:00:00');
+        $this->parserStates->markParsed('fake', $previousRun);
+        $parser = new RecordingParser('fake');
+
+        $this->import([$parser], 'fake', ['--whole' => true]);
+
+        self::assertSame([null], $parser->runs, 'A backfill ignores the watermark');
+        self::assertSame([true], $parser->includedPast);
+        self::assertGreaterThan($previousRun, $this->parserStates->findLastParsedAt('fake'), 'A completed backfill still moves it');
+    }
+
+    public function testOnlyTheWholeOptionAsksForThePastEvents(): void
+    {
+        $parser = new RecordingParser('fake');
+
+        $this->import([$parser], 'fake');
+        $this->import([$parser], 'fake', ['--full' => true]);
+
+        self::assertSame([false, false], $parser->includedPast);
+    }
+
     public function testAFailedRunDoesNotMoveTheWatermark(): void
     {
         $previousRun = new DateTimeImmutable('2026-09-21 02:00:00');

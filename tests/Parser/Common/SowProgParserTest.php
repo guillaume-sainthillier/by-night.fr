@@ -200,7 +200,7 @@ final class SowProgParserTest extends AppKernelTestCase
             ]);
         }, 'https://app.sowprog.com/api/v2/');
 
-        $events = iterator_to_array(new ReflectionMethod(SowProgParser::class, 'fetchEvents')->invoke($this->parser($client), null), false);
+        $events = iterator_to_array(new ReflectionMethod(SowProgParser::class, 'fetchEvents')->invoke($this->parser($client), null, false), false);
 
         self::assertSame(['1', '2'], array_map(static fn (?EventDto $event): ?string => $event?->externalId, $events));
         self::assertCount(2, $requests);

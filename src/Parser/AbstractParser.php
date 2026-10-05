@@ -81,9 +81,9 @@ abstract class AbstractParser implements ParserInterface
      * Final: every event goes through the chunked dedup gate of publishMany(); a parser only
      * says what its source holds, in fetchEvents().
      */
-    final public function parse(?DateTimeImmutable $since): void
+    final public function parse(?DateTimeImmutable $since, bool $includePast = false): void
     {
-        $this->publishMany($this->fetchEvents($since));
+        $this->publishMany($this->fetchEvents($since, $includePast));
     }
 
     /**
@@ -91,11 +91,12 @@ abstract class AbstractParser implements ParserInterface
      * chunk, so a whole feed never sits in memory. A null entry (a row the parser could not
      * map) is skipped, which lets a parser yield its arrayToDto() results as they are.
      *
-     * @param DateTimeImmutable|null $since see {@see ParserInterface::parse()}
+     * @param DateTimeImmutable|null $since       see {@see ParserInterface::parse()}
+     * @param bool                   $includePast see {@see ParserInterface::parse()}
      *
      * @return iterable<EventDto|null>
      */
-    abstract protected function fetchEvents(?DateTimeImmutable $since): iterable;
+    abstract protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable;
 
     /**
      * Maps one record of the source. A record that cannot be mapped (a malformed date, a

@@ -30,7 +30,7 @@ final class TestParser extends AbstractParser
         return 'test';
     }
 
-    protected function fetchEvents(?DateTimeImmutable $since): iterable
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
         $placeId = 'SP-9999999-' . random_int(0, 100000);
         $placeName = 'CECI ' . random_int(0, 50000) . 'EST UNIQUE - ' . random_int(0, 100000);
