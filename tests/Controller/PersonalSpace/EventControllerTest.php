@@ -13,6 +13,7 @@ namespace App\Tests\Controller\PersonalSpace;
 use App\Enum\EventStatus;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventTimesheetFactory;
 use App\Factory\UserFactory;
 use App\Message\RecountUpcomingEvents;
 use App\MessageHandler\RecountUpcomingEventsHandler;
@@ -267,6 +268,88 @@ final class EventControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/espace-perso/mes-soirees');
         self::assertCount(1, EventFactory::find(['name' => 'Soirée swing tous les jeudis'])->getTimesheets());
+    }
+
+    public function testTheDatesWithoutHoursOfTheirOwnTakeTheDefaultSlot(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $form = $this->newEventForm($client, 'Soirée swing du jeudi');
+        $values = $form->getPhpValues();
+        $first = new DateTimeImmutable('+2 weeks')->format('Y-m-d');
+        $second = new DateTimeImmutable('+3 weeks')->format('Y-m-d');
+        $third = new DateTimeImmutable('+4 weeks')->format('Y-m-d');
+        $values['app_event']['startTime'] = '20:00';
+        $values['app_event']['endTime'] = '23:30';
+        $values['app_event']['timesheets'] = [
+            ['dateRange' => ['from' => $first, 'to' => $first], 'startTime' => '', 'endTime' => '', 'hours' => ''],
+            ['dateRange' => ['from' => $second, 'to' => $second], 'startTime' => '15:00', 'endTime' => '', 'hours' => ''],
+            ['dateRange' => ['from' => $third, 'to' => $third], 'startTime' => '', 'endTime' => '', 'hours' => 'Horaires à venir'],
+        ];
+        $client->request($form->getMethod(), $form->getUri(), $values);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $event = EventFactory::find(['name' => 'Soirée swing du jeudi']);
+        $sessions = [];
+        foreach ($event->getTimesheets() as $timesheet) {
+            $sessions[(string) $timesheet->getStartAt()?->format('Y-m-d')] = [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i'), $timesheet->getHours()];
+        }
+
+        ksort($sessions);
+        self::assertSame([
+            $first => ['20:00', '23:30', null],
+            $second => ['15:00', null, null],
+            $third => [null, null, 'Horaires à venir'],
+        ], $sessions, 'The default fills the dates without hours, not those with their own times or precisions');
+        self::assertSame('20:00', $event->getStartTime()?->format('H:i'), 'The event starts with its first date');
+    }
+
+    public function testADefaultTypedAsTextIsASlot(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $form = $this->newEventForm($client, 'Soirée swing du vendredi');
+        $values = $form->getPhpValues();
+        $day = new DateTimeImmutable('+2 weeks')->format('Y-m-d');
+        $values['app_event']['hours'] = 'de 21h à minuit';
+        $values['app_event']['timesheets'] = [['dateRange' => ['from' => $day, 'to' => $day], 'startTime' => '', 'endTime' => '', 'hours' => '']];
+        $client->request($form->getMethod(), $form->getUri(), $values);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $event = EventFactory::find(['name' => 'Soirée swing du vendredi']);
+        self::assertNull($event->getHours());
+        $timesheet = $event->getTimesheets()->first();
+        self::assertNotFalse($timesheet);
+        self::assertSame(['21:00', '00:00'], [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i')]);
+    }
+
+    public function testTheSlotEveryDateSharesIsShownAsTheDefault(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        foreach (['+2 weeks', '+3 weeks'] as $date) {
+            EventTimesheetFactory::new()->on($date)->create(['event' => $event, 'startTime' => new DateTimeImmutable('20:00'), 'endTime' => new DateTimeImmutable('23:00')]);
+        }
+
+        $client->loginUser($event->getUser());
+
+        $form = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()))->filter('form[name="app_event"]')->form();
+        self::assertSame('20:00', $form['app_event[startTime]']->getValue());
+        self::assertSame('23:00', $form['app_event[endTime]']->getValue());
+        self::assertSame('', $form['app_event[timesheets][0][startTime]']->getValue(), 'The dates follow the default');
+
+        // Saved as is, the dates keep their slot
+        $client->submit($form);
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        foreach (EventFactory::find(['id' => $event->getId()])->getTimesheets() as $timesheet) {
+            self::assertSame(['20:00', '23:00'], [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i')]);
+        }
     }
 
     public function testCreatingADraftSavesItOffTheSite(): void

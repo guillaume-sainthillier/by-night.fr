@@ -1,7 +1,18 @@
 import { dom, findAll, on } from '@/js/utils/dom'
 
 /**
- * Sync timesheet hours placeholders with parent hours field
+ * Whether a date row has hours of its own: a start, an end or precisions. Without, it shows the event's default hours.
+ *
+ * @param {HTMLElement} item - A .timesheet-item of the timesheets collection
+ */
+const markOwnHours = (item) => {
+    const own = [...findAll('.timesheet-time, .timesheet-hours', item)].some((field) => field.value.trim() !== '')
+    item.toggleAttribute('data-hours-own', own)
+}
+
+/**
+ * Keeps the date rows in step with the event's default hours: the precisions of each row show the default ones as
+ * their placeholder, and each row's badge says whether it follows the default or has hours of its own.
  *
  * @param {HTMLElement} container - DOM container
  */
@@ -12,15 +23,13 @@ export default function initTimesheetHoursSync(container) {
     if (!hoursField || !timesheetsCollection) return
 
     /**
-     * Update all timesheet hours placeholders
+     * Update all timesheet precisions placeholders
      */
     const updateTimesheetPlaceholders = () => {
-        const hoursValue = hoursField.value.trim()
-        const placeholder = hoursValue || 'À 20h, de 21h à minuit'
+        const placeholder = hoursField.value.trim() || 'Précisions (facultatif)'
 
         // Update existing timesheet hours fields
-        const timesheetHoursFields = findAll('.timesheet-hours', timesheetsCollection)
-        timesheetHoursFields.forEach((field) => {
+        findAll('.timesheet-hours', timesheetsCollection).forEach((field) => {
             field.placeholder = placeholder
         })
 
@@ -29,11 +38,10 @@ export default function initTimesheetHoursSync(container) {
         if (prototype) {
             // Replace placeholder in prototype HTML
             // Find the timesheet-hours input and update its placeholder
-            const updatedPrototype = prototype.replace(
+            timesheetsCollection.dataset.prototype = prototype.replace(
                 /(<input[^>]*class="[^"]*timesheet-hours[^"]*"[^>]*placeholder=")[^"]*(")/g,
                 `$1${placeholder}$2`
             )
-            timesheetsCollection.dataset.prototype = updatedPrototype
         }
     }
 
@@ -43,6 +51,15 @@ export default function initTimesheetHoursSync(container) {
 
     // Update when new timesheet is added
     on(timesheetsCollection, 'collection.added', updateTimesheetPlaceholders)
+
+    // A row's own hours, as they are typed
+    const markRow = (e) => {
+        if (e.target.matches('.timesheet-time, .timesheet-hours')) {
+            markOwnHours(e.target.closest('.timesheet-item'))
+        }
+    }
+    on(timesheetsCollection, 'input', markRow)
+    on(timesheetsCollection, 'change', markRow)
 
     // Initial update
     updateTimesheetPlaceholders()

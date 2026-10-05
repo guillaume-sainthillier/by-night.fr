@@ -2,12 +2,12 @@
 
 {#
     Theme of the event form (personal space). A date of the event is a row: its calendar leaf, its date picker and its
-    own hours, which fall back on the event's hours (their placeholder) and say so in a badge. The rows keep the classes
-    of the other collections (.collection-item, .remove-collection) that the collection manager and the date generator
-    look for.
+    own hours (a start, an end and precisions), which fall back on the event's default hours while they are empty and
+    say so in a badge (timesheet-hours-sync.js). The rows keep the classes of the other collections (.collection-item,
+    .remove-collection) that the collection manager and the date generator look for.
 #}
 {%- block _app_event_timesheets_widget -%}
-    {% set default_hours = form.parent.children.hours.vars.value ?: 'À 20h, de 21h à minuit' %}
+    {% set default_hours = form.parent.children.hours.vars.value ?: 'Précisions (facultatif)' %}
     {% if prototype is defined and not prototype.rendered %}
         {% set child = prototype %}
         {% set attr = attr|merge({
@@ -24,7 +24,8 @@
 {%- endblock -%}
 
 {%- block event_timesheet_item -%}
-    <div class="collection-item timesheet-item card card-sm mb-2">
+    {% set own_hours = child.startTime.vars.value or child.endTime.vars.value or child.hours.vars.value %}
+    <div class="collection-item timesheet-item card card-sm mb-2"{{ own_hours ? ' data-hours-own' }}>
         <div class="card-body">
             {# One line from md, two on phones (leaf and date, then hours and delete): bottom-aligned, the button
                lines up with the fields #}
@@ -38,13 +39,29 @@
                 <div class="w-100 d-md-none"></div>
                 <div class="col">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                        {{ form_label(child.hours, 'Horaires', {label_attr: {class: 'mb-0'}}) }}
+                        {{ form_label(child.startTime, 'Horaires', {label_attr: {class: 'mb-0'}}) }}
                         <span class="badge bg-secondary-lt timesheet-hours-default">Par défaut</span>
                         <span class="badge bg-teal-lt timesheet-hours-own">Personnalisés</span>
                     </div>
-                    <twig:InputIcon iconPrepend="lucide:clock">
-                        {{ form_widget(child.hours, {attr: child.hours.vars.attr|merge({placeholder: default_hours})}) }}
-                    </twig:InputIcon>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <span class="input-group-text">De</span>
+                                {{ form_widget(child.startTime, {attr: child.startTime.vars.attr|merge({'aria-label': 'Début'})}) }}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <span class="input-group-text">à</span>
+                                {{ form_widget(child.endTime, {attr: child.endTime.vars.attr|merge({'aria-label': 'Fin'})}) }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            {{ form_widget(child.hours, {attr: child.hours.vars.attr|merge({placeholder: default_hours, 'aria-label': 'Précisions'})}) }}
+                        </div>
+                    </div>
+                    {{ form_errors(child.startTime) }}
+                    {{ form_errors(child.endTime) }}
                     {{ form_errors(child.hours) }}
                 </div>
                 {% if not disabled and allow_delete %}
