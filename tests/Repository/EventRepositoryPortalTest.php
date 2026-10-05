@@ -62,6 +62,40 @@ final class EventRepositoryPortalTest extends AppKernelTestCase
         self::assertSame(['Popular', 'Quiet', 'System picture'], $this->names($highlights));
     }
 
+    public function testTheHighlightsLeaveOutTheBlankPicturesAndBreakTiesOnTheEndDateThenTheId(): void
+    {
+        $france = CountryFactory::france()->create();
+        $place = PlaceFactory::createOne(['country' => $france]);
+        $today = new DateTimeImmutable('today');
+        $withPicture = ['image' => $this->picture('poster.jpg')];
+
+        // Created in another order than their rank: the events are loaded by id, then put back in rank order
+        $this->event('Ends later', $today, $place, $withPicture, $today->modify('+3 days'));
+        $this->event('Ends sooner, created first', $today, $place, $withPicture, $today->modify('+1 day'));
+        $this->event('Blank picture', $today, $place, ['participations' => 500, 'image' => $this->picture(''), 'imageSystem' => $this->picture('')]);
+        $this->event('Followed', $today->modify('+6 days'), $place, ['participations' => 2] + $withPicture);
+        $this->event('Next week', $today->modify('+7 days'), $place, ['participations' => 500] + $withPicture);
+        $this->event('Ended', $today->modify('-2 days'), $place, ['participations' => 500] + $withPicture, $today->modify('-1 day'));
+        $this->event('Ends sooner, created next', $today, $place, $withPicture, $today->modify('+1 day'));
+
+        $location = new Location()->setCountry($france);
+
+        self::assertSame(
+            ['Followed', 'Ends sooner, created first', 'Ends sooner, created next', 'Ends later'],
+            $this->names($this->repository->findHighlights($location, 10)),
+        );
+        self::assertSame(['Followed', 'Ends sooner, created first'], $this->names($this->repository->findHighlights($location, 2)));
+    }
+
+    public function testThereAreNoHighlightsWithoutPicturedEventsThisWeek(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        $this->event('No picture', new DateTimeImmutable('tomorrow'), $place, ['participations' => 500]);
+
+        self::assertSame([], $this->repository->findHighlights(new Location()->setCity($toulouse), 10));
+    }
+
     public function testTheCitiesAroundLeaveOutTheCityAndTheFarAwayOnes(): void
     {
         $toulouse = CityFactory::toulouse()->create();
@@ -171,9 +205,9 @@ final class EventRepositoryPortalTest extends AppKernelTestCase
     /**
      * @param array<string, mixed> $attributes
      */
-    private function event(string $name, DateTimeImmutable $day, Place $place, array $attributes): void
+    private function event(string $name, DateTimeImmutable $day, Place $place, array $attributes, ?DateTimeImmutable $endDay = null): void
     {
-        EventFactory::new()->withDates($day)->create(['name' => $name, 'place' => $place] + $attributes);
+        EventFactory::new()->withDates($day, $endDay)->create(['name' => $name, 'place' => $place] + $attributes);
     }
 
     private function picture(string $name): EmbeddedFile
