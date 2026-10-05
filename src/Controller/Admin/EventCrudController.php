@@ -34,6 +34,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use Override;
 
@@ -122,7 +123,9 @@ final class EventCrudController extends AbstractCrudController
         $nom = TextField::new('name');
         $startDate = DateField::new('startDate');
         $endDate = DateField::new('endDate');
-        $horaires = TextField::new('hours');
+        $startTime = TimeField::new('startTime', 'Heure de début')->setHelp('Celle de la première séance');
+        $endTime = TimeField::new('endTime', 'Heure de fin')->setHelp('Celle de la dernière séance');
+        $horaires = TextField::new('hours', 'Horaires affichés')->setHelp('Seulement ce que les heures ne disent pas («\u{a0}À 20h, de 21h à minuit\u{a0}»)');
         $timesheets = CollectionField::new('timesheets')
             ->setEntryType(EventTimesheetEntityType::class)
             ->allowAdd()
@@ -223,6 +226,8 @@ final class EventCrudController extends AbstractCrudController
             $descriptif,
             $startDate,
             $endDate,
+            $startTime,
+            $endTime,
             $horaires,
             $timesheets,
             $tarif,

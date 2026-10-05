@@ -19,6 +19,7 @@ use App\Enum\EventStatus;
 use App\Parser\AbstractParser;
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use Override;
 
 final class BikiniParser extends AbstractParser
@@ -51,14 +52,9 @@ final class BikiniParser extends AbstractParser
 
     private function arrayToDto(array $data): object
     {
-        $startDate = DateTime::createFromFormat('U', $data['startTime']);
-        $endDate = DateTime::createFromFormat('U', $data['endTime']);
-
-        if ($startDate->getTimestamp() === $endDate->getTimestamp()) {
-            $hours = \sprintf('À %s', $startDate->format('H:i'));
-        } else {
-            $hours = \sprintf('De %s à %s', $startDate->format('H:i'), $endDate->format('H:i'));
-        }
+        // Timestamps: the times are those of the venue, not UTC (an end equal to the start is dropped by the Cleaner)
+        $startDate = DateTime::createFromFormat('U', (string) $data['startTime'])->setTimezone(new DateTimeZone('Europe/Paris'));
+        $endDate = DateTime::createFromFormat('U', (string) $data['endTime'])->setTimezone(new DateTimeZone('Europe/Paris'));
 
         $placeParts = explode("\n", (string) $data['place']['address']);
         $placeParts = array_map(trim(...), $placeParts);
@@ -69,7 +65,8 @@ final class BikiniParser extends AbstractParser
         $event->name = $data['title'];
         $event->startDate = $startDate;
         $event->endDate = $endDate;
-        $event->hours = $hours;
+        $event->startTime = $startDate;
+        $event->endTime = $endDate;
         $event->description = $data['htmlDescription'];
         $event->type = 'Concert, Musique';
 

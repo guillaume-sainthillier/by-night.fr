@@ -355,14 +355,115 @@ final class CleanerTest extends AppKernelTestCase
         self::assertNull($dto->hours);
     }
 
-    public function testCleanEventTimesheetPreservesValidHours(): void
+    public function testCleanEventTimesheetPreservesWhatTheTimesCannotSay(): void
+    {
+        $dto = new EventTimesheetDto();
+        $dto->hours = 'À 20h, de 21h à minuit';
+
+        $this->cleaner->cleanEventTimesheet($dto);
+
+        self::assertSame('À 20h, de 21h à minuit', $dto->hours);
+        self::assertNull($dto->startTime);
+    }
+
+    public function testAPlainSlotLabelBecomesTheTimesOfTheSession(): void
     {
         $dto = new EventTimesheetDto();
         $dto->hours = 'De 20h à 23h';
 
         $this->cleaner->cleanEventTimesheet($dto);
 
-        self::assertEquals('De 20h à 23h', $dto->hours);
+        self::assertNull($dto->hours);
+        self::assertSame(['20:00', '23:00'], self::times($dto));
+    }
+
+    public function testTheTimesGivenWinOverAPlainSlotLabel(): void
+    {
+        $dto = new EventTimesheetDto();
+        $dto->startTime = new DateTime('20:30');
+        $dto->hours = 'À 20h';
+
+        $this->cleaner->cleanEventTimesheet($dto);
+
+        self::assertNull($dto->hours);
+        self::assertSame(['20:30', null], self::times($dto));
+    }
+
+    /**
+     * @param array{0: string|null, 1: string|null} $expected
+     */
+    #[DataProvider('slots')]
+    public function testTheTimesOfASessionAreCleaned(?string $start, ?string $end, array $expected): void
+    {
+        $dto = new EventTimesheetDto();
+        $dto->startTime = null === $start ? null : new DateTime($start);
+        $dto->endTime = null === $end ? null : new DateTime($end);
+
+        $this->cleaner->cleanEventTimesheet($dto);
+
+        self::assertSame($expected, self::times($dto));
+    }
+
+    /**
+     * @return iterable<string, array{0: string|null, 1: string|null, 2: array{0: string|null, 1: string|null}}>
+     */
+    public static function slots(): iterable
+    {
+        yield 'a slot' => ['20:00', '23:00', ['20:00', '23:00']];
+        yield 'past midnight' => ['21:00', '02:00', ['21:00', '02:00']];
+        yield 'the end is the start' => ['20:30', '20:30', ['20:30', null]];
+        yield 'the whole day' => ['00:00', '23:59', [null, null]];
+        yield 'the whole day, shifted by OpenAgenda' => ['02:00', '01:59', [null, null]];
+        yield 'midnight alone is a day without time' => ['00:00', null, [null, null]];
+        yield 'midnight to midnight' => ['00:00', '00:00', [null, null]];
+        yield 'a night from midnight' => ['00:00', '06:00', ['00:00', '06:00']];
+        yield 'an end alone' => [null, '23:00', [null, '23:00']];
+    }
+
+    public function testTheLabelOfAnEventWithoutTimesheetsBecomesItsTimes(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->hours = 'À 20h30';
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertNull($dto->hours);
+        self::assertSame('20:30', $dto->startTime?->format('H:i'));
+        self::assertNull($dto->endTime);
+    }
+
+    public function testTheTimesOfAnEventSpanItsSessions(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startTime = new DateTime('09:00');
+        $dto->timesheets = [
+            self::session('2024-01-16', '10:00', '12:00'),
+            self::session('2024-01-15', '20:30', '23:00'),
+            self::session('2024-01-15', '15:00', '17:00'),
+            self::session('2024-01-16', '14:00', '18:00'),
+        ];
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertSame('15:00', $dto->startTime?->format('H:i'), 'The earliest time of the first day, whatever the event said');
+        self::assertSame('18:00', $dto->endTime?->format('H:i'), 'The latest time of the last day');
+    }
+
+    public function testTheSpanHasNoTimeWhenItsDayGivesNone(): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTime('2024-01-15');
+        $dto->timesheets = [
+            self::session('2024-01-15', null, null),
+            self::session('2024-01-16', '20:00', null),
+        ];
+
+        $this->cleaner->cleanEvent($dto);
+
+        self::assertNull($dto->startTime, 'The first day gives no time: a later day does not start the event');
+        self::assertNull($dto->endTime, 'The last session gives no end');
     }
 
     public function testCleaningIsIdempotentForTheDedupFingerprint(): void
@@ -405,5 +506,24 @@ final class CleanerTest extends AppKernelTestCase
 
         self::assertEquals(255, \strlen((string) $dto->timesheets[0]->hours));
         self::assertNull($dto->timesheets[1]->hours);
+    }
+
+    private static function session(string $day, ?string $start, ?string $end): EventTimesheetDto
+    {
+        $timesheet = new EventTimesheetDto();
+        $timesheet->startAt = new DateTime($day);
+        $timesheet->endAt = new DateTime($day);
+        $timesheet->startTime = null === $start ? null : new DateTime($start);
+        $timesheet->endTime = null === $end ? null : new DateTime($end);
+
+        return $timesheet;
+    }
+
+    /**
+     * @return array{0: string|null, 1: string|null}
+     */
+    private static function times(EventTimesheetDto $timesheet): array
+    {
+        return [$timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i')];
     }
 }

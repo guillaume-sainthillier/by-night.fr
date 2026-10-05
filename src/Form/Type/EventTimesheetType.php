@@ -13,6 +13,7 @@ namespace App\Form\Type;
 use App\Dto\EventTimesheetDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -27,8 +28,26 @@ final class EventTimesheetType extends AbstractType
                 'label' => 'Date',
                 'single_date_picker' => true,
             ])
+            ->add('startTime', TimeType::class, [
+                'label' => 'Début',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
+                'attr' => [
+                    'class' => 'timesheet-time',
+                ],
+            ])
+            ->add('endTime', TimeType::class, [
+                'label' => 'Fin',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
+                'attr' => [
+                    'class' => 'timesheet-time',
+                ],
+            ])
             ->add('hours', TextType::class, [
-                'label' => 'Horaires',
+                'label' => 'Précisions',
                 'required' => false,
                 'attr' => [
                     'class' => 'timesheet-hours',

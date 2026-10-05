@@ -21,5 +21,12 @@ final class EventTimesheetDto
     #[Assert\NotBlank(message: 'Vous devez indiquer une date de fin')]
     public ?DateTimeInterface $endAt = null;
 
+    /** The time the session starts (its date is not read), when the source gives one */
+    public ?DateTimeInterface $startTime = null;
+
+    /** The time the session ends (its date is not read): earlier than the start, it goes past midnight */
+    public ?DateTimeInterface $endTime = null;
+
+    /** What the times cannot say ("À 20h, de 21h à minuit"): a plain slot goes in the times */
     public ?string $hours = null;
 }

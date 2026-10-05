@@ -47,6 +47,20 @@ class EventTest extends TestCase
         self::assertCount(0, $event->getTimesheets(), 'The synthesized session is not a timesheet row.');
     }
 
+    public function testTheSessionOfAnEventWithoutTimesheetsHasTheTimesOfTheEvent(): void
+    {
+        $event = new Event();
+        $event->setStartDate(new DateTimeImmutable('2026-10-03'));
+        $event->setStartTime(new DateTimeImmutable('20:30'));
+        $event->setEndTime(new DateTimeImmutable('23:00'));
+
+        [$session] = $event->getSessions();
+
+        self::assertSame('20:30', $session->getStartTime()?->format('H:i'));
+        self::assertSame('23:00', $session->getEndTime()?->format('H:i'));
+        self::assertNull($session->getHours());
+    }
+
     public function testSessionForPrefersTheFirstSessionOverlappingTheWindow(): void
     {
         $event = new Event();

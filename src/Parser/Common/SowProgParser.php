@@ -91,7 +91,6 @@ final class SowProgParser extends AbstractParser
         }
 
         $timesheets = array_map($this->timesheet(...), $data['dates']);
-        $allHours = array_unique(array_filter(array_map(static fn (EventTimesheetDto $timesheet): ?string => $timesheet->hours, $timesheets)));
 
         $prices = [];
         $free = false;
@@ -136,7 +135,6 @@ final class SowProgParser extends AbstractParser
         $event->timesheets = $timesheets;
         $event->startDate = min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
-        $event->hours = 1 === \count($allHours) ? reset($allHours) : null;
         $event->prices = [] !== $prices ? implode(' - ', array_unique($prices)) : ($free ? 'Gratuit' : null);
         $event->websiteContacts = array_values(array_unique(array_column($links, 'url')));
         $event->latitude = isset($venue['latitude']) ? (float) $venue['latitude'] : null;
@@ -182,25 +180,22 @@ final class SowProgParser extends AbstractParser
         $timesheet->startAt = new DateTimeImmutable(substr($date['date'], 0, 10));
         // A night that goes past midnight ("De 23h00 à 05h00") ends the next day, as the v1.2 feed had it
         $timesheet->endAt = null !== $startTime && null !== $endTime && $endTime < $startTime ? $timesheet->startAt->modify('+1 day') : $timesheet->startAt;
-        if (null !== $startTime && null !== $endTime && $startTime !== $endTime) {
-            $timesheet->hours = \sprintf('De %s à %s', $startTime, $endTime);
-        } elseif (null !== $startTime) {
-            $timesheet->hours = \sprintf('À %s', $startTime);
-        }
+        $timesheet->startTime = $startTime;
+        $timesheet->endTime = $endTime;
 
         return $timesheet;
     }
 
     /**
-     * "1970-01-01T20:30:00.000Z" or "20:30:00" → "20h30".
+     * "1970-01-01T20:30:00.000Z" or "20:30:00" → 20:30.
      */
-    private static function time(?string $time): ?string
+    private static function time(?string $time): ?DateTimeImmutable
     {
         if (null === $time || !preg_match('/(\d{2}):(\d{2}):\d{2}/', $time, $matches)) {
             return null;
         }
 
-        return $matches[1] . 'h' . $matches[2];
+        return DateTimeImmutable::createFromFormat('!H:i', $matches[1] . ':' . $matches[2]) ?: null;
     }
 
     /**

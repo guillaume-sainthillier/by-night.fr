@@ -11,6 +11,7 @@
 namespace App\SEO;
 
 use App\Entity\Event;
+use App\Utils\SessionHours;
 use DateTimeInterface;
 use IntlDateFormatter;
 
@@ -62,8 +63,9 @@ final class EventSEO
     {
         $datetime = $this->getEventDate($event);
 
-        if ($event->getHours()) {
-            $datetime .= \sprintf(' - %s', $event->getHours());
+        $hours = SessionHours::ofEvent($event);
+        if (null !== $hours) {
+            $datetime .= \sprintf(' - %s', $hours);
         }
 
         return trim($datetime);

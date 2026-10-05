@@ -63,11 +63,11 @@ final class ObjectKey
 
     /**
      * A session of an event, for the import (EventEntityFactory) and the family resolver
-     * alike. Sessions are stored as dates, so the time of day a source sends is dropped: two
-     * sessions on the same day only differ by their hours label, and an unchanged session
-     * keeps its row across imports. A session without end ends the day it starts.
+     * alike. Sessions are stored as dates with their times apart: two sessions on the same
+     * day differ by their times or their hours label, and an unchanged session keeps its row
+     * across imports. A session without end ends the day it starts.
      */
-    public static function timesheet(?DateTimeInterface $startAt, ?DateTimeInterface $endAt, ?string $hours): string
+    public static function timesheet(?DateTimeInterface $startAt, ?DateTimeInterface $endAt, ?DateTimeInterface $startTime, ?DateTimeInterface $endTime, ?string $hours): string
     {
         $endAt ??= $startAt;
 
@@ -75,6 +75,8 @@ final class ObjectKey
             self::TIMESHEET_PREFIX,
             $startAt?->format('Y-m-d') ?? '',
             $endAt?->format('Y-m-d') ?? '',
+            $startTime?->format('H:i') ?? '',
+            $endTime?->format('H:i') ?? '',
             $hours ?? '',
         );
     }

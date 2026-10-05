@@ -70,7 +70,17 @@
                                  data-generate-button="event-scheduler-generate"
                                  data-detect-existing="{{ event is defined and event.timesheets|length > 0 ? 'true' : 'false' }}"></div>
                             <hr class="my-3">
-                            {{ form_row(form.hours, {icon_prepend: 'lucide:clock', row_class: 'mb-0', help: "Ils valent pour chaque date qui n'a pas ses propres horaires."}) }}
+                            {# The default hours: a slot, and precisions for what it cannot say #}
+                            <div class="subheader d-flex align-items-center gap-1 mb-3">
+                                <twig:Icon name="lucide:clock" class="text-primary" />
+                                Horaires par défaut
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-6 col-md-3">{{ form_row(form.startTime, {row_class: 'mb-0'}) }}</div>
+                                <div class="col-6 col-md-3">{{ form_row(form.endTime, {row_class: 'mb-0'}) }}</div>
+                                <div class="col-md-6">{{ form_row(form.hours, {row_class: 'mb-0'}) }}</div>
+                            </div>
+                            <div class="form-hint mt-2">Ils valent pour chaque date qui n'a pas ses propres horaires. Les précisions ne servent qu'à ce que les heures ne disent pas.</div>
                         </div>
                     </div>
 

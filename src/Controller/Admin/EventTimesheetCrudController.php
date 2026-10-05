@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TimeField;
 use Override;
 
 #[AdminRoute(path: '/event-timesheet', name: 'event_timesheet')]
@@ -47,12 +48,14 @@ final class EventTimesheetCrudController extends AbstractCrudController
             ->setHelp("Renseigné sur les dates qu'un événement principal hérite d'un doublon de sa famille\u{a0}: elles suivent ce doublon et disparaissent avec lui.");
         $startAt = DateTimeField::new('startAt', 'Début');
         $endAt = DateTimeField::new('endAt', 'Fin');
-        $hours = TextField::new('hours', 'Horaires affichés');
+        $startTime = TimeField::new('startTime', 'Heure de début');
+        $endTime = TimeField::new('endTime', 'Heure de fin');
+        $hours = TextField::new('hours', 'Horaires affichés')->setHelp('Seulement ce que les heures ne disent pas');
         $createdAt = DateTimeField::new('createdAt');
         $updatedAt = DateTimeField::new('updatedAt');
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $event, $sourceEvent, $startAt, $endAt, $hours];
+            return [$id, $event, $sourceEvent, $startAt, $endAt, $startTime, $endTime, $hours];
         }
 
         return [
@@ -61,6 +64,8 @@ final class EventTimesheetCrudController extends AbstractCrudController
             $sourceEvent,
             $startAt,
             $endAt,
+            $startTime,
+            $endTime,
             $hours,
             $createdAt->hideOnForm(),
             $updatedAt->hideOnForm(),

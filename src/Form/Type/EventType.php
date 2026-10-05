@@ -11,10 +11,12 @@
 namespace App\Form\Type;
 
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Enum\EventStatus;
 use App\Form\DataTransformer\TagDtoArrayTransformer;
 use App\Form\DataTransformer\TagDtoTransformer;
 use App\Handler\DoctrineEventHandler;
+use App\Utils\HoursLabel;
 use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -22,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -68,8 +71,21 @@ final class EventType extends AbstractType
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
             ])
+            // The default slot of the dates: the dates without times of their own take it (onSubmit)
+            ->add('startTime', TimeType::class, [
+                'label' => 'Début',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
+            ])
+            ->add('endTime', TimeType::class, [
+                'label' => 'Fin',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
+            ])
             ->add('hours', TextType::class, [
-                'label' => 'Horaires par défaut',
+                'label' => 'Précisions',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'À 20h, de 21h à minuit',
@@ -184,6 +200,7 @@ final class EventType extends AbstractType
             ->add('saveDraft', SubmitType::class, [
                 'label' => 'Enregistrer en brouillon',
             ])
+            ->addEventListener(FormEvents::PRE_SET_DATA, $this->onPreSetData(...))
             ->addEventListener(FormEvents::SUBMIT, $this->onSubmit(...));
 
         $builder->get('category')->addModelTransformer(new TagDtoTransformer());
@@ -204,6 +221,29 @@ final class EventType extends AbstractType
     }
 
     /**
+     * The event's times are the span of its dates (first start, last end): the form shows instead the slot every
+     * date shares as the default, and the dates as following it, or no default when they differ.
+     */
+    public function onPreSetData(FormEvent $event): void
+    {
+        $data = $event->getData();
+        if (!$data instanceof EventDto || [] === $data->timesheets) {
+            return;
+        }
+
+        $slots = array_unique(array_map(self::slot(...), $data->timesheets));
+        $shared = 1 === \count($slots) && '|' !== reset($slots) ? $data->timesheets[0] : null;
+        $data->startTime = $shared?->startTime;
+        $data->endTime = $shared?->endTime;
+        if (null !== $shared) {
+            foreach ($data->timesheets as $timesheet) {
+                $timesheet->startTime = null;
+                $timesheet->endTime = null;
+            }
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function onSubmit(FormEvent $event): void
@@ -213,6 +253,8 @@ final class EventType extends AbstractType
         if (!$data instanceof EventDto) {
             return;
         }
+
+        $this->applyDefaultSlot($data);
 
         if (null !== $data->place?->country && null !== $data->place->city) {
             $data->place->city->country = $data->place->country;
@@ -244,5 +286,35 @@ final class EventType extends AbstractType
     public function getBlockPrefix(): string
     {
         return 'app_event';
+    }
+
+    /**
+     * The dates with neither times nor precisions of their own take the default slot; the default precisions are
+     * shown for them as they are (SessionHours). A default typed as text ("20h", "de 20h à 23h") is a slot.
+     */
+    private function applyDefaultSlot(EventDto $data): void
+    {
+        if ([] === $data->timesheets) {
+            // A single session: the event's times are its own
+            return;
+        }
+
+        $typed = null === $data->startTime && null === $data->endTime ? HoursLabel::parse($data->hours) : null;
+        if (null !== $typed) {
+            [$data->startTime, $data->endTime] = $typed;
+            $data->hours = null;
+        }
+
+        foreach ($data->timesheets as $timesheet) {
+            if (null === $timesheet->startTime && null === $timesheet->endTime && null === $timesheet->hours) {
+                $timesheet->startTime = $data->startTime;
+                $timesheet->endTime = $data->endTime;
+            }
+        }
+    }
+
+    private static function slot(EventTimesheetDto $timesheet): string
+    {
+        return \sprintf('%s|%s', $timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i'));
     }
 }

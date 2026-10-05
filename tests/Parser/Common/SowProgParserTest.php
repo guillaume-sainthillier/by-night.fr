@@ -41,7 +41,8 @@ final class SowProgParserTest extends AppKernelTestCase
         self::assertSame(['https://tickets.example.com/rosenberg', 'https://www.example.com'], $event->websiteContacts, 'Ticketing first');
         self::assertSame('2026-06-15', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-06-15', $event->endDate?->format('Y-m-d'));
-        self::assertSame('De 21h00 à 23h30', $event->hours);
+        self::assertNull($event->hours);
+        self::assertSame(['21:00', '23:30'], [$event->timesheets[0]->startTime?->format('H:i'), $event->timesheets[0]->endTime?->format('H:i')]);
         self::assertSame('Plein tarif : 22€', $event->prices);
         self::assertNull($event->status);
         self::assertSame('7', $event->place?->externalId);
@@ -90,10 +91,10 @@ final class SowProgParserTest extends AppKernelTestCase
         ]]));
 
         self::assertSame(
-            [['2026-10-01', 'De 20h30 à 23h00'], ['2026-10-02', 'À 18h00'], ['2026-10-03', null]],
-            array_map(static fn ($timesheet): array => [$timesheet->startAt?->format('Y-m-d'), $timesheet->hours], $event->timesheets),
+            [['2026-10-01', '20:30', '23:00'], ['2026-10-02', '18:00', null], ['2026-10-03', null, null]],
+            array_map(static fn ($timesheet): array => [$timesheet->startAt?->format('Y-m-d'), $timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i')], $event->timesheets),
         );
-        self::assertNull($event->hours, 'Several distinct schedules: no single summary');
+        self::assertNull($event->hours);
     }
 
     /**
@@ -110,14 +111,13 @@ final class SowProgParserTest extends AppKernelTestCase
 
         self::assertSame('2026-10-01', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-11-20', $event->endDate?->format('Y-m-d'));
-        self::assertSame('De 20h30 à 23h00', $event->hours, 'One schedule for every date: it sums them up');
     }
 
     public function testANightPastMidnightEndsTheNextDay(): void
     {
         $event = $this->map(self::record(['dates' => [self::date('2026-10-10', '23:00:00', '05:00:00')]]));
 
-        self::assertSame('De 23h00 à 05h00', $event->hours);
+        self::assertSame(['23:00', '05:00'], [$event->timesheets[0]->startTime?->format('H:i'), $event->timesheets[0]->endTime?->format('H:i')]);
         self::assertSame('2026-10-10', $event->timesheets[0]->startAt?->format('Y-m-d'));
         self::assertSame('2026-10-11', $event->timesheets[0]->endAt?->format('Y-m-d'));
         self::assertSame('2026-10-11', $event->endDate?->format('Y-m-d'));

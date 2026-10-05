@@ -99,6 +99,10 @@ final class EventContentHasher
             $canonical['startTime'] = $dto->startTime->format('H:i');
         }
 
+        if (null !== $dto->endTime) {
+            $canonical['endTime'] = $dto->endTime->format('H:i');
+        }
+
         if ([] !== $dto->performers) {
             $canonical['performers'] = $dto->performers;
         }
@@ -138,6 +142,9 @@ final class EventContentHasher
             'startAt' => $this->date($timesheet->startAt),
             'endAt' => $this->date($timesheet->endAt),
             'hours' => $timesheet->hours,
+            // Added after the fingerprints were stored: only there when set, as the event's own fields
+            ...(null !== $timesheet->startTime ? ['startTime' => $timesheet->startTime->format('H:i')] : []),
+            ...(null !== $timesheet->endTime ? ['endTime' => $timesheet->endTime->format('H:i')] : []),
         ], $dto->timesheets);
 
         sort($timesheets);

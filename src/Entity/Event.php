@@ -102,11 +102,20 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?DateTimeImmutable $endDate = null;
 
     /**
-     * The time the first session starts, when the source gives one: the dates are days, and $hours is a text.
+     * The time the first session starts, when the source gives one: the dates are days. With $endTime, the time
+     * the last session ends, they make the span of the event (startDate startTime → endDate endTime), not a slot
+     * every session shares: the sessions carry their own times. An event without timesheets is one session,
+     * whose times these are.
      */
     #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $startTime = null;
 
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $endTime = null;
+
+    /**
+     * What the times cannot say ("À 20h, de 21h à minuit"), shared by every session: a plain slot is in the times.
+     */
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
 
@@ -693,6 +702,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setStartTime(?DateTimeImmutable $startTime): self
     {
         $this->startTime = UnitOfWorkOptimizer::getTimeValue($this->startTime, $startTime);
+
+        return $this;
+    }
+
+    public function getEndTime(): ?DateTimeImmutable
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(?DateTimeImmutable $endTime): self
+    {
+        $this->endTime = UnitOfWorkOptimizer::getTimeValue($this->endTime, $endTime);
 
         return $this;
     }
@@ -1538,6 +1559,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
                 new EventTimesheet()
                     ->setStartAt($this->startDate)
                     ->setEndAt($this->endDate ?? $this->startDate)
+                    ->setStartTime($this->startTime)
+                    ->setEndTime($this->endTime)
                     ->setHours($this->hours),
             ];
         }

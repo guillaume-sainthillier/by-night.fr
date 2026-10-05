@@ -61,6 +61,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setStartDate(null === $dto->startDate ? null : DateTimeImmutable::createFromInterface($dto->startDate));
         $entity->setEndDate(null === $dto->endDate ? null : DateTimeImmutable::createFromInterface($dto->endDate));
         $entity->setStartTime(null === $dto->startTime ? null : DateTimeImmutable::createFromInterface($dto->startTime));
+        $entity->setEndTime(null === $dto->endTime ? null : DateTimeImmutable::createFromInterface($dto->endTime));
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
@@ -191,7 +192,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
     /**
      * Sync timesheets from DTO to entity.
-     * - Keeps the timesheets the DTO still carries (same dates and hours label)
+     * - Keeps the timesheets the DTO still carries (same dates, times and hours label)
      * - Adds the new ones
      * - Removes the ones the DTO no longer carries
      *
@@ -208,7 +209,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         /** @var array<string, true> $existingKeys */
         $existingKeys = [];
         foreach ($existingTimesheets as $existing) {
-            $existingKeys[ObjectKey::timesheet($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())] = true;
+            $existingKeys[self::timesheetKey($existing)] = true;
         }
 
         /** @var array<string, true> $wantedKeys */
@@ -216,7 +217,9 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         foreach ($dto->timesheets as $timesheetDto) {
             $startAt = null === $timesheetDto->startAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->startAt);
             $endAt = null === $timesheetDto->endAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->endAt);
-            $key = ObjectKey::timesheet($startAt, $endAt, $timesheetDto->hours);
+            $startTime = null === $timesheetDto->startTime ? null : DateTimeImmutable::createFromInterface($timesheetDto->startTime);
+            $endTime = null === $timesheetDto->endTime ? null : DateTimeImmutable::createFromInterface($timesheetDto->endTime);
+            $key = ObjectKey::timesheet($startAt, $endAt, $startTime, $endTime, $timesheetDto->hours);
             $wantedKeys[$key] = true;
 
             if (isset($existingKeys[$key])) {
@@ -226,6 +229,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $timesheet = new EventTimesheet();
             $timesheet->setStartAt($startAt);
             $timesheet->setEndAt($endAt);
+            $timesheet->setStartTime($startTime);
+            $timesheet->setEndTime($endTime);
             $timesheet->setHours($timesheetDto->hours);
             $entity->addTimesheet($timesheet);
             $existingKeys[$key] = true;
@@ -233,7 +238,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         foreach ($existingTimesheets as $existing) {
-            if (isset($wantedKeys[ObjectKey::timesheet($existing->getStartAt(), $existing->getEndAt(), $existing->getHours())])) {
+            if (isset($wantedKeys[self::timesheetKey($existing)])) {
                 continue;
             }
 
@@ -242,5 +247,10 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         return $changed;
+    }
+
+    private static function timesheetKey(EventTimesheet $timesheet): string
+    {
+        return ObjectKey::timesheet($timesheet->getStartAt(), $timesheet->getEndAt(), $timesheet->getStartTime(), $timesheet->getEndTime(), $timesheet->getHours());
     }
 }

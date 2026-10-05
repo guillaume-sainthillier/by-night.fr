@@ -19,7 +19,6 @@ use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\PurgeCdnCacheTags;
 use App\Tests\AppKernelTestCase;
-use DateTimeImmutable;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 use function Zenstruck\Foundry\Persistence\delete;
@@ -76,7 +75,9 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         $timesheet = EventTimesheetFactory::createOne();
         $this->transport()->reset();
 
-        $timesheet->setStartAt(new DateTimeImmutable('2026-12-24'))->setEndAt(new DateTimeImmutable('2026-12-24'));
+        // A day after its own: a fixed date is the factory's random one now and then (Faker seed 705984), a change of nothing
+        $day = $timesheet->getStartAt()?->modify('+1 day');
+        $timesheet->setStartAt($day)->setEndAt($day);
         save($timesheet);
 
         self::assertSame(['event-' . $timesheet->getEvent()?->getId()], $this->purgedTags());

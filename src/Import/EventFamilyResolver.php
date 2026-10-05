@@ -223,37 +223,37 @@ final readonly class EventFamilyResolver
                 continue;
             }
 
-            $own[ObjectKey::timesheet($timesheet->getStartAt(), $timesheet->getEndAt(), $timesheet->getHours())] = true;
+            $own[self::key($timesheet)] = true;
         }
 
         // A canonical without timesheets (imported before that model, or by a parser
         // that only sets a date range) would lose its own date once the range spans
         // the union: materialize it first.
         if ([] === $own && [] !== $lenders && null !== $canonical->getStartDate()) {
-            $startAt = $canonical->getStartDate();
-            $endAt = $canonical->getEndDate() ?? $startAt;
-            $canonical->addTimesheet($this->timesheet($startAt, $endAt, $canonical->getHours(), null));
-            $own[ObjectKey::timesheet($startAt, $endAt, $canonical->getHours())] = true;
+            [$session] = $this->sessions($canonical);
+            $materialized = $this->timesheet($session, null);
+            $canonical->addTimesheet($materialized);
+            $own[self::key($materialized)] = true;
             $changed = true;
         }
 
-        /** @var array<string, array{0: DateTimeImmutable, 1: DateTimeImmutable, 2: string|null, 3: Event}> $desired */
+        /** @var array<string, array{0: EventTimesheet, 1: Event}> $desired */
         $desired = [];
         foreach ($lenders as $lender) {
-            foreach ($this->tuples($lender) as [$startAt, $endAt, $hours]) {
-                $key = ObjectKey::timesheet($startAt, $endAt, $hours);
+            foreach ($this->sessions($lender) as $session) {
+                $key = self::key($session);
                 if (isset($own[$key]) || isset($desired[$key])) {
                     continue;
                 }
 
-                $desired[$key] = [$startAt, $endAt, $hours, $lender];
+                $desired[$key] = [$session, $lender];
             }
         }
 
         // Keep the inherited rows still wanted from the same lender, drop the others
         foreach ($canonical->getInheritedTimesheets() as $inherited) {
-            $key = ObjectKey::timesheet($inherited->getStartAt(), $inherited->getEndAt(), $inherited->getHours());
-            if (isset($desired[$key]) && $desired[$key][3]->getId() === $inherited->getSourceEvent()?->getId()) {
+            $key = self::key($inherited);
+            if (isset($desired[$key]) && $desired[$key][1]->getId() === $inherited->getSourceEvent()?->getId()) {
                 unset($desired[$key]);
 
                 continue;
@@ -263,8 +263,8 @@ final readonly class EventFamilyResolver
             $changed = true;
         }
 
-        foreach ($desired as [$startAt, $endAt, $hours, $lender]) {
-            $canonical->addTimesheet($this->timesheet($startAt, $endAt, $hours, $lender));
+        foreach ($desired as [$session, $lender]) {
+            $canonical->addTimesheet($this->timesheet($session, $lender));
             $changed = true;
         }
 
@@ -278,28 +278,28 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * A row's own dates as [start, end, hours] tuples, synthesized from its date range
-     * when it has no timesheet of its own.
+     * A row's own sessions, synthesized from its date range when it has no timesheet of
+     * its own (see Event::getSessions(), which also counts the inherited ones).
      *
-     * @return list<array{0: DateTimeImmutable, 1: DateTimeImmutable, 2: string|null}>
+     * @return list<EventTimesheet>
      */
-    private function tuples(Event $event): array
+    private function sessions(Event $event): array
     {
-        $tuples = [];
-        foreach ($event->getOwnTimesheets() as $timesheet) {
-            $startAt = $timesheet->getStartAt();
-            if (null === $startAt) {
-                continue;
-            }
+        $sessions = array_values(array_filter(
+            $event->getOwnTimesheets()->toArray(),
+            static fn (EventTimesheet $timesheet): bool => null !== $timesheet->getStartAt(),
+        ));
 
-            $tuples[] = [$startAt, $timesheet->getEndAt() ?? $startAt, $timesheet->getHours()];
+        if ([] === $sessions && null !== $event->getStartDate()) {
+            $sessions[] = new EventTimesheet()
+                ->setStartAt($event->getStartDate())
+                ->setEndAt($event->getEndDate() ?? $event->getStartDate())
+                ->setStartTime($event->getStartTime())
+                ->setEndTime($event->getEndTime())
+                ->setHours($event->getHours());
         }
 
-        if ([] === $tuples && null !== $event->getStartDate()) {
-            $tuples[] = [$event->getStartDate(), $event->getEndDate() ?? $event->getStartDate(), $event->getHours()];
-        }
-
-        return $tuples;
+        return $sessions;
     }
 
     /**
@@ -334,12 +334,24 @@ final readonly class EventFamilyResolver
         $canonical->setEndDate($end);
     }
 
-    private function timesheet(DateTimeImmutable $startAt, DateTimeImmutable $endAt, ?string $hours, ?Event $source): EventTimesheet
+    /**
+     * A copy of a session for the canonical: lent by $source, or its own when null.
+     */
+    private function timesheet(EventTimesheet $session, ?Event $source): EventTimesheet
     {
+        $startAt = $session->getStartAt();
+
         return new EventTimesheet()
             ->setStartAt($startAt)
-            ->setEndAt($endAt)
-            ->setHours($hours)
+            ->setEndAt($session->getEndAt() ?? $startAt)
+            ->setStartTime($session->getStartTime())
+            ->setEndTime($session->getEndTime())
+            ->setHours($session->getHours())
             ->setSourceEvent($source);
+    }
+
+    private static function key(EventTimesheet $timesheet): string
+    {
+        return ObjectKey::timesheet($timesheet->getStartAt(), $timesheet->getEndAt(), $timesheet->getStartTime(), $timesheet->getEndTime(), $timesheet->getHours());
     }
 }

@@ -46,6 +46,33 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertSame('2026-09-24', $schema['endDate']);
     }
 
+    public function testTheEndTimeGoesWithTheLastDay(): void
+    {
+        $event = $this->createEvent([
+            'startDate' => new DateTimeImmutable('2026-09-22'),
+            'endDate' => new DateTimeImmutable('2026-09-24'),
+            'startTime' => new DateTimeImmutable('20:30'),
+            'endTime' => new DateTimeImmutable('23:00'),
+        ]);
+
+        self::assertSame('2026-09-24T23:00', $this->schema($event)['endDate']);
+    }
+
+    public function testANightPastMidnightEndsTheNextDay(): void
+    {
+        $event = $this->createEvent([
+            'startDate' => new DateTimeImmutable('2026-09-22'),
+            'endDate' => new DateTimeImmutable('2026-09-22'),
+            'startTime' => new DateTimeImmutable('21:00'),
+            'endTime' => new DateTimeImmutable('02:00'),
+        ]);
+
+        $schema = $this->schema($event);
+
+        self::assertSame('2026-09-22T21:00', $schema['startDate']);
+        self::assertSame('2026-09-23T02:00', $schema['endDate']);
+    }
+
     public function testTheDescriptionIsPlainText(): void
     {
         $event = $this->createEvent(['description' => '<p>Rock &amp; folk</p><p>Second&nbsp;set</p>']);

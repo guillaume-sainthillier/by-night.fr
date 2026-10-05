@@ -14,6 +14,7 @@ use App\Entity\EventTimesheet;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -35,6 +36,18 @@ final class EventTimesheetEntityType extends AbstractType
                 'label' => 'Fin',
                 'widget' => 'single_text',
                 'required' => true,
+            ])
+            ->add('startTime', TimeType::class, [
+                'label' => 'Heure de début',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
+            ])
+            ->add('endTime', TimeType::class, [
+                'label' => 'Heure de fin',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
             ])
             ->add('hours', TextType::class, [
                 'label' => 'Horaires affichés',

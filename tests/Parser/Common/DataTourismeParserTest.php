@@ -143,8 +143,9 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertNull($event->emailContacts, 'The API exposes no e-mail');
         self::assertSame('2026-10-17', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-10-17', $event->endDate?->format('Y-m-d'));
-        self::assertSame('À 20h30', $event->hours, 'An end time equal to the start time is a placeholder');
+        self::assertNull($event->hours);
         self::assertSame('20:30', $event->startTime?->format('H:i'));
+        self::assertNull($event->timesheets[0]->endTime, 'An end time equal to the start time is a placeholder');
         self::assertCount(1, $event->timesheets);
         self::assertSame(47.10078, $event->latitude);
         self::assertSame(-1.81272, $event->longitude);
@@ -271,10 +272,11 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame('2026-11-14', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-11-22', $event->endDate?->format('Y-m-d'));
         self::assertSame(
-            ['De 09h00 à 12h30', 'De 13h30 à 18h30', null],
-            array_map(static fn ($timesheet): ?string => $timesheet->hours, $event->timesheets)
+            [['09:00', '12:30', null], ['13:30', '18:30', null], [null, null, null]],
+            array_map(static fn ($timesheet): array => [$timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i'), $timesheet->hours], $event->timesheets)
         );
         self::assertNull($event->hours, 'Several distinct schedules: no single summary');
+        self::assertSame(['09:00', null], [$event->startTime?->format('H:i'), $event->endTime?->format('H:i')], 'The last period gives no end time');
     }
 
     public function testTheEventSpansItsPeriodsWhateverTheirOrder(): void

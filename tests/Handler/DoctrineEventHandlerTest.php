@@ -458,7 +458,9 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         // Verify timesheet data
         $timesheets = $event->getTimesheets()->toArray();
-        $this->assertEquals('De 10h à 18h', $timesheets[0]->getHours());
+        $this->assertNull($timesheets[0]->getHours(), 'A plain slot is in the times');
+        $this->assertSame('10:00', $timesheets[0]->getStartTime()?->format('H:i'));
+        $this->assertSame('18:00', $timesheets[0]->getEndTime()?->format('H:i'));
         $this->assertEquals('2024-06-15 00:00:00', $timesheets[0]->getStartAt()->format('Y-m-d H:i:s'));
     }
 
@@ -1352,43 +1354,43 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
         CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
 
-        // Two sessions on the same day, told apart by their hours label
-        $workshop = function (string $afternoonHours, string $description) {
+        // Two sessions on the same day, told apart by their times
+        $workshop = function (string $afternoonStart, string $description) {
             $dto = $this->createSessionEventDto('oa-1', '2026-10-03');
             $dto->description = $description;
 
             $afternoon = new EventTimesheetDto();
             $afternoon->startAt = new DateTime('2026-10-03 14:00:00');
             $afternoon->endAt = new DateTime('2026-10-03 16:00:00');
-            $afternoon->hours = $afternoonHours;
+            $afternoon->startTime = new DateTime($afternoonStart);
             $dto->timesheets[] = $afternoon;
 
             return $dto;
         };
 
-        $this->handler->handleOne($workshop('À 14h00', 'Un atelier de poterie pour découvrir le tour, ouvert à tous les niveaux.'));
+        $this->handler->handleOne($workshop('14:00', 'Un atelier de poterie pour découvrir le tour, ouvert à tous les niveaux.'));
 
         $event = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
         $this->assertNotNull($event);
-        $rowIds = $this->timesheetIdsByHours($event);
-        $this->assertSame(['À 14h00', 'À 20h30'], array_keys($rowIds), 'Same day, two sessions: two rows');
+        $rowIds = $this->timesheetIdsByStartTime($event);
+        $this->assertSame(['14:00', '20:30'], array_keys($rowIds), 'Same day, two sessions: two rows');
 
         // The description changes, the sessions do not: their rows survive untouched even
         // though the source sends a time of day and the rows are stored as dates
-        $this->handler->handleOne($workshop('À 14h00', 'Un atelier de poterie pour découvrir le tour, désormais ouvert aux enfants.'));
+        $this->handler->handleOne($workshop('14:00', 'Un atelier de poterie pour découvrir le tour, désormais ouvert aux enfants.'));
 
         $event = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
         $this->assertNotNull($event);
-        $this->assertSame($rowIds, $this->timesheetIdsByHours($event), 'Unchanged sessions keep their rows');
+        $this->assertSame($rowIds, $this->timesheetIdsByStartTime($event), 'Unchanged sessions keep their rows');
 
-        // One session's label changes: only that row is replaced
-        $this->handler->handleOne($workshop('À 15h00', 'Un atelier de poterie pour découvrir le tour, désormais ouvert aux enfants.'));
+        // One session's time changes: only that row is replaced
+        $this->handler->handleOne($workshop('15:00', 'Un atelier de poterie pour découvrir le tour, désormais ouvert aux enfants.'));
 
         $event = $this->eventRepository->findOneBy(['externalId' => 'oa-1']);
         $this->assertNotNull($event);
-        $newRowIds = $this->timesheetIdsByHours($event);
-        $this->assertSame(['À 15h00', 'À 20h30'], array_keys($newRowIds));
-        $this->assertSame($rowIds['À 20h30'], $newRowIds['À 20h30'], 'The untouched session keeps its row');
+        $newRowIds = $this->timesheetIdsByStartTime($event);
+        $this->assertSame(['15:00', '20:30'], array_keys($newRowIds));
+        $this->assertSame($rowIds['20:30'], $newRowIds['20:30'], 'The untouched session keeps its row');
     }
 
     /**
@@ -1417,13 +1419,13 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
     }
 
     /**
-     * @return array<string, int|null> timesheet id by hours label, in label order
+     * @return array<string, int|null> timesheet id by start time, in time order
      */
-    private function timesheetIdsByHours(Event $event): array
+    private function timesheetIdsByStartTime(Event $event): array
     {
         $ids = [];
         foreach ($event->getTimesheets() as $timesheet) {
-            $ids[(string) $timesheet->getHours()] = $timesheet->getId();
+            $ids[(string) $timesheet->getStartTime()?->format('H:i')] = $timesheet->getId();
         }
 
         ksort($ids);
@@ -1446,12 +1448,11 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->source = 'https://openagenda.com/atelier/events/' . $externalId;
         $dto->startDate = new DateTime($date);
         $dto->endDate = new DateTime($date);
-        $dto->hours = 'À 20h30';
 
         $timesheet = new EventTimesheetDto();
         $timesheet->startAt = new DateTime($date . ' 20:30:00');
         $timesheet->endAt = new DateTime($date . ' 22:30:00');
-        $timesheet->hours = 'À 20h30';
+        $timesheet->startTime = new DateTime('20:30');
         $dto->timesheets = [$timesheet];
 
         $placeDto = new PlaceDto();
