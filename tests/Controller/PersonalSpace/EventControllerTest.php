@@ -398,6 +398,33 @@ final class EventControllerTest extends WebTestCase
         }
     }
 
+    public function testADateWithPrecisionsKeepsTheSharedSlotOnceSaved(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        foreach (['+2 weeks' => null, '+3 weeks' => 'Salle B'] as $date => $hours) {
+            EventTimesheetFactory::new()->on($date)->create(['event' => $event, 'startTime' => new DateTimeImmutable('20:00'), 'endTime' => new DateTimeImmutable('23:00'), 'hours' => $hours]);
+        }
+
+        $client->loginUser($event->getUser());
+
+        $form = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()))->filter('form[name="app_event"]')->form();
+        self::assertSame('20:00', $form['app_event[startTime]']->getValue());
+        self::assertSame('', $form['app_event[timesheets][0][startTime]']->getValue(), 'The date without precisions follows the default');
+        // The default only fills the dates with neither times nor precisions: this one shows its own times
+        self::assertSame('20:00', $form['app_event[timesheets][1][startTime]']->getValue());
+        self::assertSame('23:00', $form['app_event[timesheets][1][endTime]']->getValue());
+
+        $client->submit($form);
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $sessions = [];
+        foreach (EventFactory::find(['id' => $event->getId()])->getTimesheets() as $timesheet) {
+            $sessions[] = [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i'), $timesheet->getHours()];
+        }
+
+        self::assertSame([['20:00', '23:00', null], ['20:00', '23:00', 'Salle B']], $sessions);
+    }
+
     public function testCreatingADraftSavesItOffTheSite(): void
     {
         $client = self::createClient();
