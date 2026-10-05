@@ -78,7 +78,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Test Venue';
         $placeDto->street = '123 Test Street';
 
-        $dto->place = $placeDto;
+        $dto->place = $this->inFrance($placeDto);
 
         // Act: Insert the event
         $this->handler->handleOne($dto);
@@ -135,7 +135,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Updated Venue';
         $placeDto->street = '456 Updated Street';
 
-        $dto->place = $placeDto;
+        $dto->place = $this->inFrance($placeDto);
 
         $this->handler->handleOne($dto);
 
@@ -165,7 +165,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto1->name = 'Test Venue';
         $placeDto1->street = '789 Test Ave';
 
-        $dto1->place = $placeDto1;
+        $dto1->place = $this->inFrance($placeDto1);
 
         // First insertion
         $this->handler->handleOne($dto1);
@@ -184,7 +184,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto2->name = 'Test Venue';
         $placeDto2->street = '789 Test Ave';
 
-        $dto2->place = $placeDto2;
+        $dto2->place = $this->inFrance($placeDto2);
 
         // Act: Second insertion with same external ID
         $this->handler->handleOne($dto2);
@@ -216,7 +216,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $placeDto = new PlaceDto();
             $placeDto->name = 'Venue ' . $i;
             $placeDto->street = $i . '00 Street';
-            $dto->place = $placeDto;
+            $dto->place = $this->inFrance($placeDto);
 
             $dtos[] = $dto;
         }
@@ -281,7 +281,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Madison Square Garden';
         $placeDto->street = '4 Pennsylvania Plaza';
 
-        $dto->place = $placeDto;
+        $dto->place = $this->inFrance($placeDto);
 
         // Act: Insert the event
         $this->handler->handleOne($dto);
@@ -312,7 +312,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $placeDto = new PlaceDto();
             $placeDto->name = 'Batch Venue ' . $i;
             $placeDto->street = 'Batch Street ' . $i;
-            $dto->place = $placeDto;
+            $dto->place = $this->inFrance($placeDto);
 
             $dtos[] = $dto;
         }
@@ -352,7 +352,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Contact Test Venue';
         $placeDto->street = '999 Contact St';
 
-        $dto->place = $placeDto;
+        $dto->place = $this->inFrance($placeDto);
 
         // Act: Insert the event
         $this->handler->handleOne($dto);
@@ -382,7 +382,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Timestamp Venue';
         $placeDto->street = '111 Time St';
 
-        $dto->place = $placeDto;
+        $dto->place = $this->inFrance($placeDto);
 
         // Act: Insert the event
         $beforeInsert = new DateTime();
@@ -437,7 +437,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Festival Grounds';
         $placeDto->street = '1 Festival Way';
 
-        $dto->place = $placeDto;
+        $dto->place = $this->inFrance($placeDto);
 
         // Act: Insert the event
         $this->handler->handleOne($dto);
@@ -481,7 +481,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $placeDto->name = 'Update Test Venue';
         $placeDto->street = '100 Update St';
 
-        $dto1->place = $placeDto;
+        $dto1->place = $this->inFrance($placeDto);
 
         $this->handler->handleOne($dto1);
 
@@ -506,7 +506,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $newTimesheet2->hours = 'New hours day 2';
 
         $dto2->timesheets = [$newTimesheet1, $newTimesheet2];
-        $dto2->place = $placeDto;
+        $dto2->place = $this->inFrance($placeDto);
 
         $this->handler->handleOne($dto2);
 
@@ -661,7 +661,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $cityDto->country = $countryDto;
             $placeDto->city = $cityDto;
 
-            $dto->place = $placeDto;
+            $dto->place = $this->inFrance($placeDto);
 
             $dtos[] = $dto;
         }
@@ -1058,6 +1058,22 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             EventFactory::find(['externalId' => 'sdf-1'])->getPlace()?->getId(),
             EventFactory::find(['externalId' => 'sdf-2'])->getPlace()?->getId(),
         );
+    }
+
+    /**
+     * The firewall turns away a venue in no country we serve: these places are in France.
+     */
+    private function inFrance(PlaceDto $place): PlaceDto
+    {
+        if (0 === CountryFactory::count(['id' => 'FR'])) {
+            CountryFactory::france()->create();
+        }
+
+        $country = new CountryDto();
+        $country->code = 'FR';
+        $place->country = $place->city?->country ?? $country;
+
+        return $place;
     }
 
     private function makeEventInUnknownTown(string $eventExternalId, string $placeName, string $town, string $postalCode): EventDto

@@ -82,10 +82,13 @@ final class EventDtoFactory
             $event->user = $user;
         }
 
-        if (null !== $entity->getPlaceCountry()) {
+        // The event's copy of its venue's country is missing on older rows: the venue's own then, or the form would
+        // send no country and the firewall turn the event down
+        $placeCountry = $entity->getPlaceCountry() ?? $entity->getPlace()?->getCountry();
+        if (null !== $placeCountry) {
             $country = new CountryDto();
-            $country->entityId = $entity->getPlaceCountry()->getId();
-            $country->code = $entity->getPlaceCountry()->getId();
+            $country->entityId = $placeCountry->getId();
+            $country->code = $placeCountry->getId();
 
             $city->country = $country;
             $place->country = $country;

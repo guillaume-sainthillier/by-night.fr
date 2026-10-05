@@ -10,10 +10,12 @@
 
 namespace App\Tests\Import;
 
+use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Entity\ParserData;
+use App\Factory\CountryFactory;
 use App\Import\EventContentHasher;
 use App\Import\Firewall;
 use App\Reject\Reject;
@@ -339,6 +341,61 @@ final class FirewallTest extends AppKernelTestCase
         $this->firewall->filterEvent($dto);
 
         self::assertTrue($dto->reject->isBadEventDateInterval());
+    }
+
+    public function testAVenueWithoutCountryIsRejected(): void
+    {
+        $dto = $this->createEventDtoAt(null);
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->hasNoCountryProvided());
+        self::assertFalse($this->firewall->isEventDtoValid($dto));
+    }
+
+    public function testAVenueInACountryWeDoNotServeIsRejected(): void
+    {
+        CountryFactory::france()->create();
+        $spain = new CountryDto();
+        $spain->code = 'ES';
+
+        $dto = $this->createEventDtoAt($spain);
+
+        $this->firewall->filterEvent($dto);
+
+        self::assertTrue($dto->reject->isBadCountryName());
+        self::assertFalse($dto->reject->hasNoCountryProvided());
+        self::assertFalse($this->firewall->isEventDtoValid($dto));
+    }
+
+    public function testAVenueInAKnownCountryPasses(): void
+    {
+        CountryFactory::france()->create();
+
+        // A feed's ISO code, then the personal-space form's resolved country
+        $byCode = new CountryDto();
+        $byCode->code = 'FR';
+        $byId = new CountryDto();
+        $byId->entityId = 'FR';
+
+        foreach ([$byCode, $byId] as $country) {
+            $dto = $this->createEventDtoAt($country);
+
+            $this->firewall->filterEvent($dto);
+
+            self::assertTrue($this->firewall->isEventDtoValid($dto));
+        }
+    }
+
+    private function createEventDtoAt(?CountryDto $country): EventDto
+    {
+        $dto = $this->createValidEventDto();
+        $dto->place = new PlaceDto();
+        $dto->place->reject = new Reject();
+        $dto->place->name = 'Le Bikini';
+        $dto->place->country = $country;
+
+        return $dto;
     }
 
     private function createValidEventDto(): EventDto

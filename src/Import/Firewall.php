@@ -34,6 +34,7 @@ final class Firewall implements BatchResetInterface
         private readonly EventContentHasher $contentHasher,
         private readonly EventChangeDetector $changeDetector,
         private readonly PostalCodeChecker $postalCodeChecker,
+        private readonly CountryResolver $countryResolver,
     ) {
     }
 
@@ -245,6 +246,14 @@ final class Firewall implements BatchResetInterface
         // Le nom du lieu doit comporter au moins 2 caractères
         if (!$this->checkMinLengthValidity($dto->place->name, 2)) {
             $dto->place->reject->addReason(Reject::BAD_PLACE_NAME);
+        }
+
+        // The events of a venue in no country we serve (abroad, or a value no Country row matches)
+        // would be filed nowhere: no city or country page lists them, their URLs said "/unknown"
+        if (null === $dto->place->country) {
+            $dto->place->reject->addReason(Reject::NO_COUNTRY_PROVIDED);
+        } elseif (null === $this->countryResolver->resolve($dto->place->country)) {
+            $dto->place->reject->addReason(Reject::BAD_COUNTRY);
         }
 
         // The expected postal code format depends on the country (5 digits in France,
