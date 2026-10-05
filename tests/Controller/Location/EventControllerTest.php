@@ -24,6 +24,8 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DomCrawler\Crawler;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
+use function Zenstruck\Foundry\Persistence\save;
+
 final class EventControllerTest extends WebTestCase
 {
     public function testAdminSeesEditButtonNextToTitle(): void
@@ -127,7 +129,7 @@ final class EventControllerTest extends WebTestCase
         self::assertPageTitleContains('Événement bientôt disponible');
         self::assertSelectorTextNotContains('title', (string) $event->getName());
         self::assertSelectorNotExists('meta[property="og:image"][content*="draft-poster.jpg"]');
-        self::assertNotContains('Event', $this->jsonLdTypes($crawler));
+        self::assertFalse($this->hasEventJsonLd($crawler));
         // Nor anywhere else a scraper reads: description, keywords, breadcrumb
         self::assertStringNotContainsString((string) $event->getName(), (string) $client->getResponse()->getContent());
     }
@@ -169,7 +171,7 @@ final class EventControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertPageTitleContains((string) $event->getName());
         self::assertSelectorExists('meta[property="og:image"][content*="draft-poster.jpg"]');
-        self::assertContains('Event', $this->jsonLdTypes($crawler));
+        self::assertTrue($this->hasEventJsonLd($crawler));
     }
 
     public function testTheAuthorPreviewsTheirDraft(): void
@@ -225,6 +227,43 @@ final class EventControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('meta[name="robots"]');
         self::assertSelectorNotExists('#event-ended');
+    }
+
+    public function testTheTicketingOfAnUpcomingEventIsOneClickAway(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setTicketUrl('https://billetterie.example.org/concert');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorTextContains('a.btn[href="https://billetterie.example.org/concert"][rel="noopener nofollow"]', 'Réserver');
+    }
+
+    public function testAnEventThatIsOverOffersNoTicketing(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('-10 days'));
+        $event->setTicketUrl('https://billetterie.example.org/concert');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorNotExists('a.btn[href="https://billetterie.example.org/concert"]');
+    }
+
+    public function testThePageNamesTheArtists(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setPerformers(['Seth', 'The Great Old Ones']);
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorTextContains('.event-facts', 'Artistes');
+        self::assertSelectorTextContains('.event-facts', 'Seth, The Great Old Ones');
     }
 
     public function testALongListShowsTheNextSessionsAndFoldsThePastAndLaterOnes(): void
@@ -349,15 +388,14 @@ final class EventControllerTest extends WebTestCase
     }
 
     /**
-     * The @var of each JSON-LD block of the page (null for a @graph).
-     *
-     * @return list<string|null>
+     * Whether a JSON-LD block of the page describes the event: its type is a subtype as often as "Event", its status
+     * is always there.
      */
-    private function jsonLdTypes(Crawler $crawler): array
+    private function hasEventJsonLd(Crawler $crawler): bool
     {
-        return $crawler->filter('script[type="application/ld+json"]')->each(
-            static fn (Crawler $script): ?string => json_decode($script->text(), true, flags: \JSON_THROW_ON_ERROR)['@type'] ?? null,
-        );
+        return \in_array(true, $crawler->filter('script[type="application/ld+json"]')->each(
+            static fn (Crawler $script): bool => isset(json_decode($script->text(), true, flags: \JSON_THROW_ON_ERROR)['eventStatus']),
+        ), true);
     }
 
     private function createEvent(?DateTimeImmutable $date = null, bool $draft = false, ?User $author = null, ?string $poster = null): Event

@@ -30,12 +30,15 @@ final class EventDtoFactory
         $event = new EventDto();
         $event->fromData = $entity->getFromData();
         $event->source = $entity->getSource();
+        $event->ticketUrl = $entity->getTicketUrl();
+        $event->performers = $entity->getPerformers();
         $event->entityId = $entity->getId();
         $event->externalId = $entity->getExternalId();
         $event->externalOrigin = $entity->getExternalOrigin();
         $event->externalUpdatedAt = $entity->getExternalUpdatedAt();
         $event->startDate = clone $entity->getStartDate();
         $event->endDate = clone $entity->getEndDate();
+        $event->startTime = $entity->getStartTime();
         $event->createdAt = clone $entity->getCreatedAt();
         $event->updatedAt = clone $entity->getUpdatedAt();
         $event->imageFile = $entity->getImageFile();

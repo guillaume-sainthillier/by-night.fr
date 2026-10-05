@@ -141,9 +141,11 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         // Parse hours from custom_7 (HH:mm format)
         $hours = null;
+        $startTime = null;
         $eventTime = trim($data['custom_7'] ?? '');
         if ('' !== $eventTime) {
             $hours = \sprintf('À %s', str_replace(':', 'h', $eventTime));
+            $startTime = DateTimeImmutable::createFromFormat('!H:i', $eventTime) ?: null;
         }
 
         // Normalize to a date-only value (timesheets are stored as dates).
@@ -162,6 +164,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->startDate = $startDate;
         $event->endDate = $startDate;
         $event->hours = $hours;
+        $event->startTime = $startTime;
         $event->timesheets = [$timesheet];
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
@@ -228,8 +231,12 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
             }
         }
 
+        // The first performance gives the start time: the earliest day, then the earliest time of that day
         if (null !== $row->startDate && (null === $event->startDate || $row->startDate < $event->startDate)) {
             $event->startDate = $row->startDate;
+            $event->startTime = $row->startTime;
+        } elseif ($row->startDate?->format('Y-m-d') === $event->startDate?->format('Y-m-d') && null !== $row->startTime && (null === $event->startTime || $row->startTime < $event->startTime)) {
+            $event->startTime = $row->startTime;
         }
 
         if (null !== $row->endDate && (null === $event->endDate || $row->endDate > $event->endDate)) {

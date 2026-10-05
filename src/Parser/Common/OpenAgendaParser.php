@@ -241,6 +241,9 @@ final class OpenAgendaParser extends AbstractParser
             $urls[] = $registration['value'];
         }
 
+        // The registration links are where to book: the first one is the ticketing
+        $ticketUrl = $urls[0] ?? null;
+
         if (!empty($location['website'])) {
             $urls[] = $location['website'];
         }
@@ -272,6 +275,8 @@ final class OpenAgendaParser extends AbstractParser
         $event->startDate = $startDate;
         $event->endDate = $endDate;
         $event->hours = $hours;
+        // The timings carry the time of the event's place: the earliest one is when the event starts
+        $event->startTime = [] === $timesheets ? null : min(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->startAt, $timesheets));
         $event->timesheets = $timesheets;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);
@@ -284,6 +289,7 @@ final class OpenAgendaParser extends AbstractParser
         $event->address = $location['address'];
         $event->type = implode(',', $type);
         $event->websiteContacts = $urls;
+        $event->ticketUrl = $ticketUrl;
         $event->phoneContacts = $phones;
         $event->emailContacts = $emails;
 
@@ -349,13 +355,15 @@ final class OpenAgendaParser extends AbstractParser
     /**
      * OpenAgenda's status, {id, label} with includeLabels: 1 scheduled, 2 rescheduled, 3 moved
      * online (still taking place), 4 postponed, 5 full, 6 cancelled. It was not read: a
-     * cancelled event was listed as taking place.
+     * cancelled event was listed as taking place. A scheduled event has no status.
      */
     private static function status(mixed $status): ?EventStatus
     {
         $id = \is_array($status) ? ($status['id'] ?? null) : $status;
 
         return match (is_numeric($id) ? (int) $id : null) {
+            2 => EventStatus::Rescheduled,
+            3 => EventStatus::MovedOnline,
             4 => EventStatus::Postponed,
             5 => EventStatus::SoldOut,
             6 => EventStatus::Cancelled,

@@ -29,12 +29,18 @@ final readonly class Cleaner
     public function cleanEvent(EventDto $dto): void
     {
         $dto->endDate ??= $dto->startDate;
+        // Midnight is how the feeds write a day without a time
+        if ('00:00' === $dto->startTime?->format('H:i')) {
+            $dto->startTime = null;
+        }
 
         // Every value must fit its column: MySQL refuses a longer one and the whole batch fails with it
         $dto->name = $this->fit($this->clean($dto->name ?? ''), 255);
         $dto->description = $this->clean($dto->description ?? '') ?: null;
         $dto->source = $this->fitUrl($dto->source, 256);
         $dto->imageUrl = $this->fitUrl($dto->imageUrl, 255);
+        $dto->ticketUrl = $this->fitUrl($this->htmlFormatter->ensureProtocol($dto->ticketUrl), 1024);
+        $dto->performers = $this->cleanPerformers($dto->performers);
         $dto->phoneContacts = $dto->phoneContacts ?: null;
         $dto->websiteContacts = $this->cleanWebsites($dto->websiteContacts) ?: null;
         $dto->emailContacts = $dto->emailContacts ?: null;
@@ -69,6 +75,28 @@ final readonly class Cleaner
         foreach ($dto->timesheets as $timesheet) {
             $this->cleanEventTimesheet($timesheet);
         }
+    }
+
+    /**
+     * The feeds repeat an artist in another case ("Seth|SETH") and encode their names ("PETER HOOK &amp; THE
+     * LIGHT"): each one once, as first spelled.
+     *
+     * @param list<string> $performers
+     *
+     * @return list<string>
+     */
+    private function cleanPerformers(array $performers): array
+    {
+        $cleaned = [];
+        foreach ($performers as $performer) {
+            // Spaces only: the names keep their case ("PLK", "47TER")
+            $performer = $this->fit(mb_trim((string) preg_replace('/\s+/u', ' ', html_entity_decode($performer, \ENT_QUOTES | \ENT_HTML5, 'UTF-8'))), 255);
+            if (null !== $performer) {
+                $cleaned[mb_strtolower($performer)] ??= $performer;
+            }
+        }
+
+        return array_values($cleaned);
     }
 
     public function cleanEventTimesheet(EventTimesheetDto $dto): void

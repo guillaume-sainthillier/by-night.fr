@@ -59,6 +59,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setStartDate(null === $dto->startDate ? null : DateTimeImmutable::createFromInterface($dto->startDate));
         $entity->setEndDate(null === $dto->endDate ? null : DateTimeImmutable::createFromInterface($dto->endDate));
+        $entity->setStartTime(null === $dto->startTime ? null : DateTimeImmutable::createFromInterface($dto->startTime));
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
@@ -87,6 +88,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         // Stamped on the exploration when the event gets deleted (EventParserDataListener)
         $entity->setParserVersion($dto->parserVersion);
         $entity->setSource($dto->source);
+        $entity->setTicketUrl($dto->ticketUrl);
+        $entity->setPerformers($dto->performers);
 
         // Convert category TagDto to Tag entity
         $categoryEntity = null;

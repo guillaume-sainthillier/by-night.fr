@@ -64,6 +64,12 @@
     {% endif %}
 {% endblock %}
 
+{% block json_ld %}
+    {% if place %}
+        {{ place_json_ld(place) }}
+    {% endif %}
+{% endblock %}
+
 {% block meta_robots %}
     {% if events.nbResults == 0 %}
         <meta name="robots" content="noindex, follow">

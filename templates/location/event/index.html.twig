@@ -282,6 +282,16 @@
                                 </div>
                             {% endif %}
 
+                            {% if event.performers %}
+                                <div class="detail-item">
+                                    <twig:Icon name="lucide:music" class="text-primary" />
+                                    <div>
+                                        <div class="subheader">{{ '{count, plural, one {Artiste} other {Artistes}}'|trans({count: event.performers|length}, 'messages+intl-icu') }}</div>
+                                        <div class="fw-semibold">{{ event.performers|join(', ') }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             {% if event.prices %}
                                 <div class="detail-item">
                                     <twig:Icon name="lucide:ticket" class="text-primary" />
@@ -344,12 +354,19 @@
                             {% endif %}
                         {% endset %}
                         {% set directionsHere = directionsTo and not mapValue %}
-                        {% if event.affiliate or directionsHere or calendarUrl %}
+                        {# The ticketing link of the other sources leads to their own booking, which earns us nothing #}
+                        {% set ticketUrl = event.affiliate or hasEnded ? null : event.ticketUrl|ensure_protocol %}
+                        {% if event.affiliate or ticketUrl or directionsHere or calendarUrl %}
                             <div class="card-body d-grid gap-2">
                                 {% if event.affiliate %}
                                     <a href="{{ event.source }}" class="btn btn-primary btn-lg" rel="sponsored">
                                         <twig:Icon name="lucide:ticket" />
                                         Réserver mes billets
+                                    </a>
+                                {% elseif ticketUrl %}
+                                    <a href="{{ ticketUrl }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener nofollow">
+                                        <twig:Icon name="lucide:ticket" />
+                                        Réserver
                                     </a>
                                 {% endif %}
                                 {% if directionsHere %}

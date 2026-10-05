@@ -101,6 +101,12 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?DateTimeImmutable $endDate = null;
 
+    /**
+     * The time the first session starts, when the source gives one: the dates are days, and $hours is a text.
+     */
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $startTime = null;
+
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $hours = null;
 
@@ -168,6 +174,21 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $websiteContacts = null;
+
+    /**
+     * Where to book or buy a ticket, as the source tells it apart from its other links (the registration link of
+     * OpenAgenda, the booking contact of DATAtourisme). The ticketing feeds have none: their source is the ticketing.
+     */
+    #[ORM\Column(type: Types::STRING, length: 1024, nullable: true)]
+    private ?string $ticketUrl = null;
+
+    /**
+     * The artists on stage, as the source names them (the headliner first).
+     *
+     * @var list<string>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $performers = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reservationTelephone = null;
@@ -660,6 +681,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setEndDate(?DateTimeImmutable $endDate): self
     {
         $this->endDate = UnitOfWorkOptimizer::getDateValue($this->endDate, $endDate);
+
+        return $this;
+    }
+
+    public function getStartTime(): ?DateTimeImmutable
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(?DateTimeImmutable $startTime): self
+    {
+        $this->startTime = UnitOfWorkOptimizer::getTimeValue($this->startTime, $startTime);
 
         return $this;
     }
@@ -1364,6 +1397,36 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setWebsiteContacts(?array $websiteContacts): self
     {
         $this->websiteContacts = $websiteContacts;
+
+        return $this;
+    }
+
+    public function getTicketUrl(): ?string
+    {
+        return $this->ticketUrl;
+    }
+
+    public function setTicketUrl(?string $ticketUrl): self
+    {
+        $this->ticketUrl = $ticketUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getPerformers(): array
+    {
+        return $this->performers ?? [];
+    }
+
+    /**
+     * @param list<string> $performers
+     */
+    public function setPerformers(array $performers): self
+    {
+        $this->performers = [] === $performers ? null : $performers;
 
         return $this;
     }

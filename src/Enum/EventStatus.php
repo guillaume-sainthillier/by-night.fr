@@ -15,6 +15,10 @@ enum EventStatus: string
     case Postponed = 'postponed';
     case Cancelled = 'cancelled';
     case SoldOut = 'sold_out';
+    /** Taking place on new dates, which the event now has */
+    case Rescheduled = 'rescheduled';
+    /** Still taking place, online instead of at its venue */
+    case MovedOnline = 'moved_online';
 
     public static function fromStatusMessage(?string $statusMessage): ?self
     {
@@ -45,6 +49,8 @@ enum EventStatus: string
             self::Postponed => 'Reporté',
             self::Cancelled => 'Annulé',
             self::SoldOut => 'Complet',
+            self::Rescheduled => 'Reprogrammé',
+            self::MovedOnline => 'Déplacé en ligne',
         };
     }
 
@@ -54,6 +60,8 @@ enum EventStatus: string
             self::Postponed => 'https://schema.org/EventPostponed',
             self::Cancelled => 'https://schema.org/EventCancelled',
             self::SoldOut => 'https://schema.org/EventScheduled',
+            self::Rescheduled => 'https://schema.org/EventRescheduled',
+            self::MovedOnline => 'https://schema.org/EventMovedOnline',
         };
     }
 }
