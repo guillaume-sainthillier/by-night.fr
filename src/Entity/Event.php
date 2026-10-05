@@ -48,6 +48,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_place_upcoming_idx', columns: ['place_id', 'duplicate_of_id', 'draft', 'end_date'])]
 #[ORM\Index(name: 'event_place_start_date_idx', columns: ['place_id', 'start_date'])]
 #[ORM\Index(name: 'event_upcoming_idx', columns: ['duplicate_of_id', 'draft', 'end_date', 'participations', 'place_id'])]
+#[ORM\Index(name: 'event_popular_idx', columns: ['duplicate_of_id', 'draft', 'has_image', 'end_date', 'start_date', 'participations', 'place_id'])]
 #[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
 #[ORM\Index(name: 'event_identity_hash_idx', columns: ['identity_hash'])]
@@ -227,6 +228,21 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
 
+    /**
+     * Whether the event has a picture, uploaded or fetched: a VIRTUAL column the database computes from the image names,
+     * for event_popular_idx to answer the highlights of the portals (e.hasImage in DQL). Never written by Doctrine, and
+     * not mapped as "generated" either, which would re-read it after every insert and update of an event: it holds the
+     * state of the last load. hasImage() is the live state.
+     */
+    #[ORM\Column(
+        name: 'has_image',
+        type: Types::BOOLEAN,
+        insertable: false,
+        updatable: false,
+        columnDefinition: "TINYINT(1) GENERATED ALWAYS AS ((image_name IS NOT NULL AND image_name <> '') OR (image_system_name IS NOT NULL AND image_system_name <> '')) VIRTUAL NOT NULL",
+    )]
+    private bool $hasImage = false;
+
     #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement\u{a0}!")]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Groups(['elasticsearch:event:details'])]
@@ -404,6 +420,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     {
         return (null !== $this->image->getName() && '' !== $this->image->getName())
             || (null !== $this->imageSystem->getName() && '' !== $this->imageSystem->getName());
+    }
+
+    /**
+     * The has_image column as of the last load of the event: stale after a change of its pictures until it is reloaded.
+     */
+    public function hasImageAsLoaded(): bool
+    {
+        return $this->hasImage;
     }
 
     public function getReject(): ?Reject
