@@ -12,10 +12,13 @@ namespace App\Tests\App;
 
 use App\Factory\CityFactory;
 use App\Factory\UserFactory;
+use App\Tests\Controller\Location\StubsAgendaSearch;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class AppContextTest extends WebTestCase
 {
+    use StubsAgendaSearch;
+
     public function testThePagesWithoutLocationTakeTheMembersCity(): void
     {
         $client = self::createClient();
@@ -30,6 +33,7 @@ final class AppContextTest extends WebTestCase
     public function testTheCityOfTheUrlWinsOverTheMembersCity(): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $toulouse = CityFactory::toulouse()->create();
         CityFactory::createOne(['name' => 'Lyon', 'slug' => 'lyon', 'country' => $toulouse->getCountry()]);
         $client->loginUser(UserFactory::createOne(['city' => $toulouse]));
