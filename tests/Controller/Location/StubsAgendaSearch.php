@@ -23,9 +23,25 @@ use FOS\ElasticaBundle\Paginator\PartialResultsInterface;
  */
 trait StubsAgendaSearch
 {
-    private function stubAgendaSearch(): void
+    /**
+     * @param array<string, int> $dateCounts the events of each date window the facets count ("today", "this_weekend"…),
+     *                                       none by default
+     */
+    private function stubAgendaSearch(array $dateCounts = []): void
     {
-        $empty = new readonly class implements PaginatorAdapterInterface, PartialResultsInterface {
+        $aggregations = [] === $dateCounts ? [] : ['dates' => ['windows' => ['buckets' => array_map(
+            static fn (int $count): array => ['doc_count' => $count],
+            $dateCounts,
+        )]]];
+
+        $empty = new readonly class($aggregations) implements PaginatorAdapterInterface, PartialResultsInterface {
+            /**
+             * @param array<string, mixed> $aggregations
+             */
+            public function __construct(private array $aggregations)
+            {
+            }
+
             public function getTotalHits(): int
             {
                 return 0;
@@ -43,7 +59,7 @@ trait StubsAgendaSearch
 
             public function getAggregations(): array
             {
-                return [];
+                return $this->aggregations;
             }
 
             public function getSuggests(): array

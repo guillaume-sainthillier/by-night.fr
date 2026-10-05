@@ -226,4 +226,53 @@ final class LocationPageTest extends WebTestCase
         self::assertSame('/toulouse', end($links));
         self::assertNotContains('/toulouse/agenda', $links);
     }
+
+    public function testTheDateShortcutsHeadTheAgendaWithTheirCounts(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch(['anytime' => 9, 'today' => 1, 'tomorrow' => 2, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]);
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', '/toulouse');
+
+        self::assertResponseIsSuccessful();
+        // Above the events, not in the filters, which a phone lists after them
+        self::assertSelectorNotExists('#agenda-filters #agenda-dates');
+        self::assertSame(
+            ['Tous les jours 9', "Aujourd'hui 1", 'Demain 2', 'Ce week-end 5', 'Cette semaine 6', 'Ce mois 8'],
+            $crawler->filter('#agenda-dates a')->each(static fn ($chip): string => preg_replace('/\s+/', ' ', trim($chip->text()))),
+        );
+        self::assertSelectorTextContains('#agenda-dates .btn-chip.active', 'Tous les jours');
+        self::assertSelectorExists('#agenda-dates a[href="/toulouse?when=tomorrow"]');
+    }
+
+    public function testAnEmptyPeriodSuggestsTheOtherDatesThatHaveEvents(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch(['anytime' => 9, 'today' => 0, 'tomorrow' => 0, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]);
+        CityFactory::toulouse()->create();
+
+        $crawler = $client->request('GET', '/toulouse?when=today&term=jazz');
+
+        self::assertResponseIsSuccessful();
+        // The closest first, "Tous les jours" last, none for the period on show or for a period as empty, each keeping
+        // the other filters
+        self::assertSame(
+            [['Ce week-end 5', '/toulouse?term=jazz&when=this_weekend'], ['Cette semaine 6', '/toulouse?term=jazz&when=this_week'], ['Ce mois 8', '/toulouse?term=jazz&when=this_month'], ['Tous les jours 9', '/toulouse?term=jazz']],
+            $crawler->filter('#agenda-wider a')->each(static fn ($chip): array => [preg_replace('/\s+/', ' ', trim($chip->text())), $chip->attr('href')]),
+        );
+    }
+
+    public function testAPeriodShortcutGetsNoChipOfItsOwnAmongTheActiveFilters(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse?when=this_weekend&term=jazz');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#agenda-dates .btn-chip.active', 'Ce week-end');
+        self::assertSelectorCount(1, '.btn-chip[title="Retirer ce filtre"]', 'Only the keywords: the date shortcuts show the period');
+    }
 }

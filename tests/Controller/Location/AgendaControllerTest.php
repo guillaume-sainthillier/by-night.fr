@@ -150,7 +150,7 @@ final class AgendaControllerTest extends WebTestCase
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('this_weekend', $query['when'] ?? null);
         self::assertArrayNotHasKey('dateRange', $query);
-        self::assertSame('Ce week-end', trim($crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active')->text()));
+        self::assertSame('Ce week-end', trim($crawler->filter('#agenda-dates .btn-chip.active')->text()));
         self::assertSelectorExists('#search-form input[type="hidden"][name="when"][value="this_weekend"]');
     }
 
@@ -164,7 +164,7 @@ final class AgendaControllerTest extends WebTestCase
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame(['from' => '2026-10-10', 'to' => '2026-10-12'], $query['dateRange'] ?? null);
         self::assertArrayNotHasKey('when', $query);
-        self::assertCount(0, $crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active'), 'No shortcut is these dates');
+        self::assertCount(0, $crawler->filter('#agenda-dates .btn-chip.active'), 'No shortcut is these dates');
     }
 
     public function testAnUnknownShortcutIsTousLesJours(): void
@@ -176,7 +176,7 @@ final class AgendaControllerTest extends WebTestCase
 
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertArrayNotHasKey('when', $query);
-        self::assertSame('Tous les jours', trim($crawler->filter('#agenda-filters [aria-label="Dates"] .btn-chip.active')->text()));
+        self::assertSame('Tous les jours', trim($crawler->filter('#agenda-dates .btn-chip.active')->text()));
     }
 
     public function testAPlaceAgendaKeepsThePlaceNameAsWritten(): void

@@ -100,11 +100,13 @@
     {% if search.price %}
         {% set active = active|merge([{label: search.price.label, href: path(app.current_route, routeParams|merge(unpricedFilters))}]) %}
     {% endif %}
-    {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours" #}
+    {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours". A shortcut gets no chip
+       of its own: the date shortcuts that head the agenda show it #}
     {% set preset = search.preset %}
     {% if preset is null or preset.value != 'anytime' %}
-        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters))}]) %}
+        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters)), shortcut: preset is not null}]) %}
     {% endif %}
+    {% set removable = active|filter(filter => not (filter.shortcut ?? false)) %}
 
     {# The first page of the location introduces it, unless a filter narrows it down: the agenda then comes first #}
     {% set intro = portal and not active %}
@@ -164,11 +166,15 @@
                             {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
                         </p>
 
-                        {# Without active filters, only the button of the phone filters: nothing to show on a desktop #}
-                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4{{ active ? '' : ' d-lg-none' }}">
-                            {% if active %}
+                        <div class="mt-4">
+                            {{ include('location/agenda/_dates.html.twig') }}
+                        </div>
+
+                        {# Without filters to remove, only the button of the phone filters: nothing to show on a desktop #}
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-3{{ removable ? '' : ' d-lg-none' }}">
+                            {% if removable %}
                                 <span class="subheader me-1">Filtres actifs&nbsp;:</span>
-                                {% for filter in active %}
+                                {% for filter in removable %}
                                     <twig:Chip href="{{ filter.href }}" active="{{ true }}" class="btn-sm" title="Retirer ce filtre">
                                         {{ filter.label }}
                                         <twig:Icon name="lucide:x" class="icon-end" />
@@ -186,10 +192,33 @@
                 {% if events.nbResults == 0 %}
                     {# The way out of an empty page: the whole agenda, unless this is it, and the search of the whole site #}
                     {% set fullAgenda = path('app_location_index', {location: location.slug}) %}
-                    <div class="alert alert-info">
+                    {# The other periods that do have events with the page's other filters, the closest first and "Tous les
+                       jours" last: an empty page widens itself instead of only saying so #}
+                    {% set wider = [] %}
+                    {% for other in enum_cases('App\\Enum\\DateRangePreset')|filter(other => other.value != 'anytime')|merge([enum('App\\Enum\\DateRangePreset').Anytime]) %}
+                        {% set count = facets.dates[other.value] ?? 0 %}
+                        {% if count > 0 and other is not same as(search.preset) %}
+                            {% set wider = wider|merge([{preset: other, count: count}]) %}
+                        {% endif %}
+                    {% endfor %}
+                    <div class="alert alert-info" id="agenda-empty">
                         <twig:Icon name="lucide:info" />
                         <div>
-                            Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                            {% if wider %}
+                                Aucune sortie ne correspond à ces dates. D'autres dates en ont&nbsp;:
+                                <div class="d-flex flex-wrap gap-2 mt-2" id="agenda-wider">
+                                    {% for option in wider %}
+                                        {% set when = option.preset.value == 'anytime' ? {} : {when: option.preset.value} %}
+                                        <twig:Chip href="{{ path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) }}" class="btn-sm" rel="nofollow">
+                                            {{ option.preset.label }}
+                                            <span class="ms-1 opacity-75 fw-normal">{{ option.count }}</span>
+                                        </twig:Chip>
+                                    {% endfor %}
+                                </div>
+                                <div class="mt-3">Ou élargissez votre recherche&nbsp;:</div>
+                            {% else %}
+                                Aucune sortie ne correspond à vos critères pour le moment. Essayez d'élargir vos dates ou utilisez la recherche pour découvrir d'autres sorties.
+                            {% endif %}
                             <div class="d-flex flex-wrap gap-2 mt-2">
                                 {% if fullAgenda != app.request.requestUri %}
                                     <a class="btn btn-sm" href="{{ fullAgenda }}">

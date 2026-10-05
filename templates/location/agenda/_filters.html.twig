@@ -25,18 +25,7 @@
                 {{ form_errors(form) }}
                 {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
                 {{ form_row(form.dateRange, {label: 'Dates', icon_prepend: 'lucide:calendar-days'}) }}
-                <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Dates">
-                    {# The shortcuts of the date picker: "Tous les jours" leaves the period out of the URL #}
-                    {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
-                        {% set count = facets.dates[preset.value] ?? null %}
-                        {% set when = preset.value == 'anytime' ? {} : {when: preset.value} %}
-                        {% set href = path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) %}
-                        <twig:Chip href="{{ href }}" active="{{ search.preset is same as(preset) }}" class="btn-sm" rel="nofollow">
-                            {{ preset.label }}
-                            {% if count is not null %}<span class="ms-1 opacity-75 fw-normal">{{ count }}</span>{% endif %}
-                        </twig:Chip>
-                    {% endfor %}
-                </div>
+                {# The date shortcuts head the agenda itself (_dates.html.twig): the picker is for the other periods #}
                 {# The price shortcuts: "Tous les prix" leaves the price out of the URL, and keeps the events without a known
                    price, which no shortcut lists #}
                 <div class="form-label" aria-hidden="true">Prix</div>

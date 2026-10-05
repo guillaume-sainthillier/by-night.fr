@@ -137,3 +137,13 @@
         background: radial-gradient(circle, $primary 0 40%, transparent 45%);
     }
 }
+
+// The date shortcuts heading the agenda (location/agenda/_dates.html.twig): one line, scrolled sideways on a phone
+// without a scrollbar under the chips
+.agenda-dates {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
