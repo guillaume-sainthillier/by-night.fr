@@ -1,7 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { searchPageHref } from './searchPage'
 
 describe('searchPageHref', () => {
+    beforeEach(() => vi.stubGlobal('window', { location: { href: 'https://by-night.test/toulouse' } }))
+    afterEach(() => vi.unstubAllGlobals())
+
     it('adds the query to the search page', () => {
         expect(searchPageHref('/recherche/', 'jazz')).toBe('/recherche/?q=jazz')
     })

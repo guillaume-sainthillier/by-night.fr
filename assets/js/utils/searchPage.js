@@ -7,7 +7,7 @@
  * @returns {string}
  */
 export function searchPageHref(searchPageUrl, query) {
-    const url = new URL(searchPageUrl, 'https://by-night.fr')
+    const url = new URL(searchPageUrl, window.location.href)
     url.searchParams.set('q', query)
 
     return `${url.pathname}${url.search}`
