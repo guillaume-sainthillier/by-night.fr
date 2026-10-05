@@ -11,6 +11,7 @@
 namespace App\Tests\Twig;
 
 use App\Twig\StringExtension;
+use App\Utils\HtmlExcerpter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +20,7 @@ final class StringExtensionTest extends TestCase
     #[DataProvider('provideExcerpts')]
     public function testExcerpt(?string $html, int $length, string $expected): void
     {
-        self::assertSame($expected, new StringExtension()->excerpt($html, $length));
+        self::assertSame($expected, new StringExtension(new HtmlExcerpter())->excerpt($html, $length));
     }
 
     /**

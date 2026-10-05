@@ -67,7 +67,7 @@ final class PurgeCdnCacheUrlHandlerTest extends TestCase
     private function makeHandler(MockHttpClient $client): PurgeCdnCacheUrlHandler
     {
         return new PurgeCdnCacheUrlHandler(
-            new CloudflareCdnPurger($client, 'zone-123', 'https://cdn.example.test'),
+            new CloudflareCdnPurger($client, $client, 'zone-123', 'https://cdn.example.test'),
             new NullLogger(),
         );
     }

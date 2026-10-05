@@ -45,6 +45,24 @@ final class UserControllerTest extends WebTestCase
         self::assertSelectorNotExists('meta[name="robots"]');
     }
 
+    public function testTheProfileIsAProfilePageAboutTheMember(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['username' => 'fan', 'description' => 'Concerts et expos', 'website' => 'www.fan.fr']);
+
+        $crawler = $client->request('GET', $this->profilePath($user));
+
+        $schemas = $crawler->filter('script[type="application/ld+json"]')->each(static fn ($script): array => json_decode($script->text(), true, flags: \JSON_THROW_ON_ERROR));
+        $pages = array_values(array_filter($schemas, static fn (array $schema): bool => 'ProfilePage' === ($schema['@type'] ?? null)));
+        self::assertCount(1, $pages);
+        self::assertSame('Person', $pages[0]['mainEntity']['@type']);
+        self::assertSame('fan', $pages[0]['mainEntity']['name']);
+        self::assertSame('Concerts et expos', $pages[0]['mainEntity']['description']);
+        self::assertSame(['https://www.fan.fr'], $pages[0]['mainEntity']['sameAs']);
+        self::assertArrayNotHasKey('image', $pages[0]['mainEntity'], 'The placeholder is no picture of the member');
+        self::assertArrayHasKey('dateCreated', $pages[0]);
+    }
+
     public function testTheProfileAgreesTheFavoritesCountWithItsNoun(): void
     {
         $client = self::createClient();

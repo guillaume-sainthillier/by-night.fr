@@ -113,6 +113,7 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         );
         self::assertSame('2026-09-01', $dto->timesheets[0]->startAt?->format('Y-m-d'));
         self::assertNull($dto->hours, 'Distinct slots: no single summary for the event');
+        self::assertSame('09:00', $dto->startTime?->format('H:i'), 'The earliest timing starts the event');
     }
 
     public function testAnEmptyLongDescriptionFallsBackOnTheDescription(): void
@@ -134,14 +135,34 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertSame('De 20h00 à 22h00', $dto->hours);
     }
 
+    public function testTheRegistrationLinkIsTheTicketing(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(location: ['website' => 'https://www.parc.fr'], event: ['registration' => [
+            ['type' => 'phone', 'value' => '05 61 00 00 00'],
+            ['type' => 'link', 'value' => 'https://billetterie.parc.fr/concert'],
+        ]]));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertSame('https://billetterie.parc.fr/concert', $dto->ticketUrl);
+        self::assertSame(['https://billetterie.parc.fr/concert', 'https://www.parc.fr'], $dto->websiteContacts);
+    }
+
+    public function testAnEventWithoutARegistrationLinkHasNoTicketing(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(location: ['website' => 'https://www.parc.fr']));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertNull($dto->ticketUrl, "The venue's website is no ticketing");
+    }
+
     /**
      * @return iterable<string, array{mixed, ?EventStatus}>
      */
     public static function provideStatuses(): iterable
     {
         yield 'scheduled' => [['id' => 1, 'label' => ['fr' => 'Programmé']], null];
-        yield 'rescheduled' => [['id' => 2, 'label' => ['fr' => 'Reprogrammé']], null];
-        yield 'moved online' => [['id' => 3, 'label' => ['fr' => 'Déplacé en ligne']], null];
+        yield 'rescheduled' => [['id' => 2, 'label' => ['fr' => 'Reprogrammé']], EventStatus::Rescheduled];
+        yield 'moved online' => [['id' => 3, 'label' => ['fr' => 'Déplacé en ligne']], EventStatus::MovedOnline];
         yield 'postponed' => [['id' => 4, 'label' => ['fr' => 'Reporté']], EventStatus::Postponed];
         yield 'full' => [['id' => 5, 'label' => ['fr' => 'Complet']], EventStatus::SoldOut];
         yield 'cancelled' => [['id' => 6, 'label' => ['fr' => 'Annulé']], EventStatus::Cancelled];

@@ -289,7 +289,7 @@ final readonly class SearchProvider implements ProviderInterface
                 shortDescription: '',
                 description: null,
                 url: $this->urlGenerator->generate('app_agenda_by_tag', [
-                    'location' => 'c--france',
+                    'location' => 'france',
                     'tagSlug' => $tag->getSlug(),
                     'tagId' => $tag->getId(),
                 ]),

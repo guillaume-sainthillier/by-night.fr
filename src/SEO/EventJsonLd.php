@@ -16,14 +16,20 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
+use App\Utils\HtmlExcerpter;
 use DateTimeImmutable;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class EventJsonLd
 {
+    /** Long enough for any real description, short enough not to weigh on the page twice */
+    private const int DESCRIPTION_LENGTH = 5000;
+
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private EventProfilePicture $eventProfilePicture,
+        private HtmlExcerpter $htmlExcerpter,
+        private EventSchemaType $eventSchemaType,
     ) {
     }
 
@@ -41,20 +47,25 @@ final readonly class EventJsonLd
     {
         $schema = [
             '@context' => 'https://schema.org',
-            '@type' => 'Event',
+            '@type' => $this->eventSchemaType->resolve($event),
             'name' => $event->getName(),
             'url' => $this->generateEventUrl($event),
             'eventStatus' => $this->mapEventStatus($event->getStatus()),
-            'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+            'eventAttendanceMode' => EventStatus::MovedOnline === $event->getStatus()
+                ? 'https://schema.org/OnlineEventAttendanceMode'
+                : 'https://schema.org/OfflineEventAttendanceMode',
         ];
 
         if ($event->getStartDate() instanceof DateTimeImmutable) {
-            // DATE columns: the day alone, a midnight time would read as the actual start or end
-            $schema['startDate'] = $event->getStartDate()->format('Y-m-d');
+            // DATE columns: the day alone, a midnight time would read as the actual start or end. With the time of the
+            // first session when the source gives it, and no offset: Google reads such a time in the time zone of the
+            // event's place, which also holds for the overseas departments
+            $schema['startDate'] = $event->getStartDate()->format('Y-m-d') . ($event->getStartTime()?->format('\\TH:i') ?? '');
         }
 
-        if ($event->getDescription()) {
-            $schema['description'] = strip_tags($event->getDescription());
+        $description = $this->htmlExcerpter->excerpt($event->getDescription(), self::DESCRIPTION_LENGTH);
+        if ('' !== $description) {
+            $schema['description'] = $description;
         }
 
         $endDate = $event->getEndDate() ?? $event->getStartDate();
@@ -67,6 +78,22 @@ final readonly class EventJsonLd
         }
 
         $schema['location'] = $this->buildLocationSchema($event);
+
+        $offer = $this->buildOfferSchema($event);
+        if (null !== $offer) {
+            $schema['offers'] = $offer;
+        }
+
+        // 0 is a free entry; null an unknown price, not a free one (StartingPrice)
+        if (0.0 === $event->getStartingPrice()) {
+            $schema['isAccessibleForFree'] = true;
+        }
+
+        // A group or one artist, the sources do not say: PerformingGroup, as Google's examples name the artists of a bill
+        $performers = $event->getPerformers();
+        if ([] !== $performers) {
+            $schema['performer'] = array_map(static fn (string $name): array => ['@type' => 'PerformingGroup', 'name' => $name], $performers);
+        }
 
         if ($event->getUser() instanceof User) {
             $schema['organizer'] = $this->buildOrganizerSchema($event);
@@ -128,6 +155,46 @@ final readonly class EventJsonLd
         }
 
         return $location;
+    }
+
+    /**
+     * The tickets, from the lowest price the sources give. A cancelled event sells none, and an event whose price is
+     * unknown only gets an offer when it is sold out, which is worth telling on its own.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildOfferSchema(Event $event): ?array
+    {
+        $status = $event->getStatus();
+        $price = $event->getStartingPrice();
+        $soldOut = EventStatus::SoldOut === $status;
+
+        if (EventStatus::Cancelled === $status || (null === $price && !$soldOut)) {
+            return null;
+        }
+
+        $offer = [
+            '@type' => 'Offer',
+            'url' => $this->ticketUrl($event) ?? $this->generateEventUrl($event),
+            'availability' => $soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+        ];
+
+        if (null !== $price) {
+            // StartingPrice only reads amounts in euros
+            $offer['price'] = $price;
+            $offer['priceCurrency'] = 'EUR';
+        }
+
+        return $offer;
+    }
+
+    /**
+     * Where to book the event: our affiliate link for the ticketing feeds, as the event page's button, else the
+     * ticketing the source gives.
+     */
+    private function ticketUrl(Event $event): ?string
+    {
+        return ($event->isAffiliate() ? $event->getSource() : null) ?? $event->getTicketUrl();
     }
 
     /**

@@ -68,6 +68,9 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
 
     public ?DateTimeInterface $endDate = null;
 
+    /** The time the first session starts (its date is not read), when the source gives one */
+    public ?DateTimeInterface $startTime = null;
+
     public ?string $fromData = null;
 
     #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement\u{a0}!")]
@@ -85,6 +88,11 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
     public ?string $hours = null;
 
     public ?string $source = null;
+
+    public ?string $ticketUrl = null;
+
+    /** @var list<string> the headliner first */
+    public array $performers = [];
 
     public ?string $type = null;
 

@@ -92,7 +92,7 @@ final class EventElasticaRepository extends Repository
         $finalQuery = Query::create($mainQuery);
         // The hits are loaded from the database by their _id (FOSElastica's transformer): none of the document is read
         $finalQuery->setSource(false);
-        // The count stops at 10 000 otherwise ("sur 10 000" on /c--france/agenda). The pages still stop at the result
+        // The count stops at 10 000 otherwise ("sur 10 000" on /france). The pages still stop at the result
         // window (ResultWindow); counting the rest took no measurable time, the nested sort already visits every hit
         $finalQuery->setTrackTotalHits(true);
         if (null === $textQuery) {

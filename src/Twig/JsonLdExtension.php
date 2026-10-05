@@ -11,8 +11,12 @@
 namespace App\Twig;
 
 use App\Entity\Event;
+use App\Entity\Place;
+use App\Entity\User;
 use App\SEO\BreadcrumbJsonLd;
 use App\SEO\EventJsonLd;
+use App\SEO\PlaceJsonLd;
+use App\SEO\ProfilePageJsonLd;
 use App\SEO\SiteJsonLd;
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Twig\Attribute\AsTwigFunction;
@@ -23,7 +27,21 @@ final readonly class JsonLdExtension
         private EventJsonLd $eventJsonLd,
         private SiteJsonLd $siteJsonLd,
         private BreadcrumbJsonLd $breadcrumbJsonLd,
+        private PlaceJsonLd $placeJsonLd,
+        private ProfilePageJsonLd $profilePageJsonLd,
     ) {
+    }
+
+    #[AsTwigFunction(name: 'place_json_ld', isSafe: ['html'])]
+    public function placeJsonLd(Place $place): string
+    {
+        return $this->script($this->placeJsonLd->generatePlaceJsonLd($place));
+    }
+
+    #[AsTwigFunction(name: 'profile_page_json_ld', isSafe: ['html'])]
+    public function profilePageJsonLd(User $user): string
+    {
+        return $this->script($this->profilePageJsonLd->generateProfilePageJsonLd($user));
     }
 
     #[AsTwigFunction(name: 'event_json_ld', isSafe: ['html'])]

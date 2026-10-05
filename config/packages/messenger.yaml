@@ -20,6 +20,14 @@ framework:
                 retry_strategy:
                     max_retries: 10
                     delay: 10000
+            # Cloudflare purges, apart from the rest: the "cloudflare.client" throttle (rate_limiter.yaml) holds
+            # their worker up to 12 s per request, which held the Elasticsearch updates queued behind them on
+            # "async" for hours after a big import.
+            cdn:
+                dsn: '%env(MESSENGER_CDN_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 10
+                    delay: 10000
             image:
                 dsn: '%env(MESSENGER_IMAGE_TRANSPORT_DSN)%'
                 retry_strategy:
@@ -34,9 +42,9 @@ framework:
         routing:
             # Route your messages to the transports
             App\Dto\EventDto: parser
-            App\Message\PurgeCdnCacheUrl: async
-            App\Message\PurgeCdnCacheTag: async
-            App\Message\PurgeCdnCachePrefix: async
+            App\Message\PurgeCdnCacheUrl: cdn
+            App\Message\PurgeCdnCacheTags: cdn
+            App\Message\PurgeCdnCachePrefix: cdn
             App\Message\RemoveImageThumbnails: async
             App\Message\RecountUpcomingEvents: async
             App\Message\DownloadEventImages: image
@@ -54,6 +62,7 @@ when@test:
             #            # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
             transports:
                 async: 'in-memory://'
+                cdn: 'in-memory://'
                 elastica: 'in-memory://'
                 image: 'in-memory://'
                 failed: 'in-memory://'

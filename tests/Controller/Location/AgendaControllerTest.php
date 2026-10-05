@@ -166,6 +166,44 @@ final class AgendaControllerTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Zénith Toulouse Métropole');
     }
 
+    public function testAPlaceAgendaDescribesTheVenue(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        PlaceFactory::createOne([
+            'name' => 'Le Bikini',
+            'street' => 'Rue Théodore Monod',
+            'cityName' => 'Ramonville-Saint-Agne',
+            'cityPostalCode' => '31520',
+            'latitude' => 43.5464,
+            'longitude' => 1.4892,
+            'city' => $toulouse,
+            'country' => $toulouse->getCountry(),
+        ]);
+
+        $crawler = $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini?range=not-a-number');
+
+        $places = array_values(array_filter(
+            $crawler->filter('script[type="application/ld+json"]')->each(static fn ($script): array => json_decode($script->text(), true, flags: \JSON_THROW_ON_ERROR)),
+            static fn (array $schema): bool => 'Place' === ($schema['@type'] ?? null),
+        ));
+        self::assertCount(1, $places);
+        self::assertSame('Le Bikini', $places[0]['name']);
+        self::assertStringEndsWith('/toulouse/agenda/sortir-a/le-bikini', $places[0]['url']);
+        self::assertSame(['@type' => 'PostalAddress', 'streetAddress' => 'Rue Théodore Monod', 'addressLocality' => 'Ramonville-Saint-Agne', 'postalCode' => '31520', 'addressCountry' => 'FR'], $places[0]['address']);
+        self::assertSame(43.5464, $places[0]['geo']['latitude']);
+    }
+
+    public function testACityAgendaDescribesNoVenue(): void
+    {
+        $client = self::createClient();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse?range=not-a-number');
+
+        self::assertStringNotContainsString('"@type": "Place"', (string) $client->getResponse()->getContent());
+    }
+
     public function testAPlaceAgendaContractsThePrepositionWithThePlaceArticle(): void
     {
         $client = self::createClient();

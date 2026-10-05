@@ -22,6 +22,7 @@ use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
 use App\Import\EventContentHasher;
 use App\Utils\ObjectKey;
+use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
 
 /**
@@ -59,6 +60,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setStartDate(null === $dto->startDate ? null : DateTimeImmutable::createFromInterface($dto->startDate));
         $entity->setEndDate(null === $dto->endDate ? null : DateTimeImmutable::createFromInterface($dto->endDate));
+        $entity->setStartTime(null === $dto->startTime ? null : DateTimeImmutable::createFromInterface($dto->startTime));
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
@@ -69,7 +71,12 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $entity->setUpdatedAt($dto->updatedAt);
         }
 
-        $entity->getImage()->setDimensions($dto->image?->getDimensions());
+        // "simple_array": loaded as strings ("800", "600") whatever Vich measured
+        $dimensions = $dto->image?->getDimensions();
+        $entity->getImage()->setDimensions(UnitOfWorkOptimizer::getArrayValue(
+            $entity->getImage()->getDimensions(),
+            null === $dimensions ? null : array_map(strval(...), $dimensions),
+        ));
         $entity->getImage()->setMimeType($dto->image?->getMimeType());
         $entity->getImage()->setName($dto->image?->getName());
         $entity->getImage()->setOriginalName($dto->image?->getOriginalName());
@@ -87,6 +94,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         // Stamped on the exploration when the event gets deleted (EventParserDataListener)
         $entity->setParserVersion($dto->parserVersion);
         $entity->setSource($dto->source);
+        $entity->setTicketUrl($dto->ticketUrl);
+        $entity->setPerformers($dto->performers);
 
         // Convert category TagDto to Tag entity
         $categoryEntity = null;

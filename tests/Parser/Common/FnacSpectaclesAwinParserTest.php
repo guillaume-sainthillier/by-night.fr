@@ -74,6 +74,18 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         self::assertSame('2026-08-01', $event->startDate?->format('Y-m-d'));
         self::assertSame('2026-08-03', $event->endDate?->format('Y-m-d'));
         self::assertNull($event->hours, 'No single event-level hours when showtimes differ.');
+        self::assertSame('20:30', $event->startTime?->format('H:i'), 'The first performance starts the event');
+    }
+
+    public function testTheEarliestShowtimeOfTheFirstDayStartsTheEvent(): void
+    {
+        $events = $this->groupEvents([
+            $this->row('60000001', 'Matinée', '12', '2026-09-02', '11:00'),
+            $this->row('60000002', 'Matinée', '12', '2026-09-01', '20:00'),
+            $this->row('60000003', 'Matinée', '12', '2026-09-01', '15:00'),
+        ]);
+
+        self::assertSame('15:00', $events[0]->startTime?->format('H:i'));
     }
 
     public function testAZeroPriceIsNoPrice(): void

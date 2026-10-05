@@ -47,7 +47,8 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
 
     #[ORM\Column(length: 63, unique: true)]
     #[Ignore]
-    #[Gedmo\Slug(fields: ['name'], prefix: 'c--')]
+    // Shared with the cities' slugs in the URLs ("/france", "/toulouse"): see CountrySlugs
+    #[Gedmo\Slug(fields: ['name'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::STRING, length: 5, nullable: true)]

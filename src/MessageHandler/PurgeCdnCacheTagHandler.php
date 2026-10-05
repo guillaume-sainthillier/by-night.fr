@@ -10,24 +10,27 @@
 
 namespace App\MessageHandler;
 
-use App\Cdn\CloudflareCdnPurger;
 use App\Message\PurgeCdnCacheTag;
-use Psr\Log\LoggerInterface;
+use App\Message\PurgeCdnCacheTags;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Handler\Acknowledger;
 use Symfony\Component\Messenger\Handler\BatchHandlerInterface;
 use Symfony\Component\Messenger\Handler\BatchHandlerTrait;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
+/**
+ * The one-tag messages queued before PurgeCdnCacheTags, still on the "async" queue of the release that sent them:
+ * forwarded 100 at a time to "cdn" instead of holding the "async" worker in the Cloudflare throttle. To delete, with
+ * PurgeCdnCacheTag, once production has drained them.
+ */
 #[AsMessageHandler]
 final class PurgeCdnCacheTagHandler implements BatchHandlerInterface
 {
     use BatchHandlerTrait;
 
-    public function __construct(
-        private readonly CloudflareCdnPurger $cdnPurger,
-        private readonly LoggerInterface $logger,
-    ) {
+    public function __construct(private readonly MessageBusInterface $messageBus)
+    {
     }
 
     public function __invoke(PurgeCdnCacheTag $message, ?Acknowledger $ack = null): mixed
@@ -38,22 +41,15 @@ final class PurgeCdnCacheTagHandler implements BatchHandlerInterface
     /** @phpstan-ignore method.unused (called by BatchHandlerTrait) */
     private function process(array $jobs): void
     {
-        $tags = array_map(static fn (array $job): string => $job[0]->tag, $jobs);
+        $tags = array_values(array_unique(array_map(static fn (array $job): string => $job[0]->tag, $jobs)));
 
         try {
-            $this->cdnPurger->purgeTags($tags);
+            $this->messageBus->dispatch(new PurgeCdnCacheTags($tags));
 
             foreach ($jobs as [$message, $ack]) {
                 $ack->ack();
             }
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
-                'extra' => [
-                    'tags' => $tags,
-                ],
-            ]);
-
             foreach ($jobs as [$message, $ack]) {
                 $ack->nack($e);
             }
@@ -63,7 +59,6 @@ final class PurgeCdnCacheTagHandler implements BatchHandlerInterface
     /** @phpstan-ignore method.unused (called by BatchHandlerTrait) */
     private function getBatchSize(): int
     {
-        // One batch is one Cloudflare request, so fill it up to the "max operations per request".
-        return CloudflareCdnPurger::MAX_FILES_PER_REQUEST;
+        return 100;
     }
 }

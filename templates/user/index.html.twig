@@ -20,6 +20,10 @@
     {% endif %}
 {% endblock %}
 
+{% block json_ld %}
+    {{ profile_page_json_ld(user) }}
+{% endblock %}
+
 {# The member's name opens the page, above the two columns (see body) #}
 {% block layout_top %}
     {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}

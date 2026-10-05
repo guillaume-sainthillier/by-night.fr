@@ -1,14 +1,19 @@
 framework:
     http_client:
         scoped_clients:
-            # Cloudflare API client used by App\Cdn\CloudflareCdnPurger. The "rate_limiter"
-            # option wraps it in Symfony's ThrottlingHttpClient, which waits for a
-            # "cloudflare_purge" token (see rate_limiter.yaml) before every request, so the
-            # per-account purge quota is enforced whatever code sends the request.
+            # Cloudflare API clients used by App\Cdn\CloudflareCdnPurger, one per purge quota. The
+            # "rate_limiter" option wraps each in Symfony's ThrottlingHttpClient, which waits for a
+            # token (see rate_limiter.yaml) before every request, so the per-account purge quotas
+            # are enforced whatever code sends the request. Tag and prefix purges:
             cloudflare.client:
                 base_uri: 'https://api.cloudflare.com/client/v4/'
                 auth_bearer: '%env(CLOUDFLARE_API_TOKEN)%'
                 rate_limiter: 'cloudflare_purge'
+            # URL purges, whose quota is far larger
+            cloudflare_files.client:
+                base_uri: 'https://api.cloudflare.com/client/v4/'
+                auth_bearer: '%env(CLOUDFLARE_API_TOKEN)%'
+                rate_limiter: 'cloudflare_purge_files'
 
             # DATAtourisme API client used by App\Parser\Common\DataTourismeParser. Same
             # mechanism: every request first takes a "datatourisme_api" token (see

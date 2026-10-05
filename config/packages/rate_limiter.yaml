@@ -32,20 +32,30 @@ framework:
                 interval: '1 second'
                 amount: '%env(int:MESSENGER_ELASTICA_RATE_LIMIT)%'
             cache_pool: 'cache.rate_limiter'
-        # Cloudflare purge API quota, applied to the "cloudflare.client" scoped HTTP client
-        # (see http_client.yaml). Cloudflare enforces it per account with a token bucket
-        # just like this one: every purge request costs one token whatever the number of
-        # URLs it carries (App\Cdn\CloudflareCdnPurger caps that at 100 per request).
-        # Figures below are the Free plan; other plans only change these two knobs:
-        # Pro 5 req/s + bucket 25, Business 10 req/s + bucket 50, Enterprise 50 req/s +
-        # bucket 500. "5 per minute" is modelled as one token every 12 s: same average,
-        # but the worst-case wait for a token is 12 s instead of 60 s.
+        # Cloudflare purge API quotas, applied to the "cloudflare.client" (tags, prefixes) and "cloudflare_files.client"
+        # (URLs) scoped HTTP clients (see http_client.yaml). Cloudflare enforces them per account (shared by the zones
+        # of the same plan) and each purge type has its own (https://developers.cloudflare.com/cache/how-to/purge-cache/).
+        # App\Cdn\CloudflareCdnPurger caps a request at 100 tags, prefixes or URLs.
+        #
+        # Tag, prefix, hostname and "everything" purges: a token bucket like this one, every request costs one token
+        # whatever it carries. Figures below are the Free plan; other plans only change these two knobs:
+        # Pro 5 req/s + bucket 25, Business 10 req/s + bucket 50, Enterprise 50 req/s + bucket 500. "5 per minute" is
+        # modelled as one token every 12 s: same average, but the worst-case wait for a token is 12 s instead of 60 s.
         cloudflare_purge:
             policy: 'token_bucket'
             limit: 25
             rate:
                 interval: '12 seconds'
                 amount: 1
+            cache_pool: 'cache.rate_limiter'
+        # Single-file (URL) purges: 800 URLs/s on the Free plan (1,500 Pro and Business, 3,000 Enterprise), a moving
+        # average, i.e. 8 requests of 100 URLs a second. Before they had this bucket, they spent the tag tokens above.
+        cloudflare_purge_files:
+            policy: 'token_bucket'
+            limit: 8
+            rate:
+                interval: '1 second'
+                amount: 8
             cache_pool: 'cache.rate_limiter'
         # DATAtourisme API quotas (https://api.datatourisme.fr/v1/docs): 20-30 concurrent
         # requests, ~10 req/s sustained, 1000 req/hour. One token bucket covers all three:
