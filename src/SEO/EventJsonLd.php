@@ -165,8 +165,7 @@ final readonly class EventJsonLd
 
         $offer = [
             '@type' => 'Offer',
-            // The ticketing page for the affiliates' events, the event page for the others
-            'url' => $event->isAffiliate() && $event->getSource() ? $event->getSource() : $this->generateEventUrl($event),
+            'url' => $this->ticketUrl($event) ?? $this->generateEventUrl($event),
             'availability' => $soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
         ];
 
@@ -177,6 +176,15 @@ final readonly class EventJsonLd
         }
 
         return $offer;
+    }
+
+    /**
+     * Where to book the event: our affiliate link for the ticketing feeds, as the event page's button, else the
+     * ticketing the source gives.
+     */
+    private function ticketUrl(Event $event): ?string
+    {
+        return ($event->isAffiliate() ? $event->getSource() : null) ?? $event->getTicketUrl();
     }
 
     /**

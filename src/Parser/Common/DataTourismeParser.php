@@ -186,6 +186,9 @@ final class DataTourismeParser extends AbstractParser
             (array) ($data['hasTheme'] ?? []),
         ))));
 
+        // The booking contact's website is where to book, the others are the organiser's or the venue's
+        $ticketUrl = $this->first($data['hasBookingContact'][0]['homepage'] ?? null);
+
         $websites = [];
         $phones = [];
         $emails = [];
@@ -229,6 +232,7 @@ final class DataTourismeParser extends AbstractParser
         $event->longitude = (float) ($location['geo']['longitude'] ?? 0);
         $event->imageUrl = $this->first($data['hasMainRepresentation'][0]['hasRelatedResource'][0]['locator'] ?? null);
         $event->websiteContacts = array_values(array_unique(array_filter($websites)));
+        $event->ticketUrl = $ticketUrl;
         $event->phoneContacts = array_values(array_unique(array_filter($phones)));
         $event->emailContacts = array_values(array_unique(array_filter($emails)));
         // The periods come in no particular order: the event spans from the earliest to the latest

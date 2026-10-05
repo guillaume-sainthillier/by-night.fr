@@ -156,6 +156,25 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertSame($event->place?->country, $event->place?->city?->country, 'City and place share one country DTO');
     }
 
+    public function testTheWebsiteOfTheBookingContactIsTheTicketing(): void
+    {
+        $this->responses = [self::page([self::apiEvent(['hasBookingContact' => [['homepage' => ['https://billetterie.pazanne.fr']]]])], null)];
+
+        $this->parser->parse(null);
+
+        self::assertSame('https://billetterie.pazanne.fr', $this->dispatched[0]->ticketUrl);
+        self::assertSame(['https://billetterie.pazanne.fr', 'http://www.sainte-pazanne.fr/listes/theatre-municipal-pazenais'], $this->dispatched[0]->websiteContacts);
+    }
+
+    public function testAnEventWithoutABookingContactHasNoTicketing(): void
+    {
+        $this->responses = [self::page([self::apiEvent()], null)];
+
+        $this->parser->parse(null);
+
+        self::assertNull($this->dispatched[0]->ticketUrl, 'The general contact is no ticketing');
+    }
+
     public function testTheSameAddressIsTheSameVenueWhateverTheEvent(): void
     {
         $this->responses = [self::page([

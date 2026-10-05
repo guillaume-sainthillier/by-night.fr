@@ -169,6 +169,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $websiteContacts = null;
 
+    /**
+     * Where to book or buy a ticket, as the source tells it apart from its other links (the registration link of
+     * OpenAgenda, the booking contact of DATAtourisme). The ticketing feeds have none: their source is the ticketing.
+     */
+    #[ORM\Column(type: Types::STRING, length: 1024, nullable: true)]
+    private ?string $ticketUrl = null;
+
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reservationTelephone = null;
 
@@ -1364,6 +1371,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setWebsiteContacts(?array $websiteContacts): self
     {
         $this->websiteContacts = $websiteContacts;
+
+        return $this;
+    }
+
+    public function getTicketUrl(): ?string
+    {
+        return $this->ticketUrl;
+    }
+
+    public function setTicketUrl(?string $ticketUrl): self
+    {
+        $this->ticketUrl = $ticketUrl;
 
         return $this;
     }

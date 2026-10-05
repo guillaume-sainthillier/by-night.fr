@@ -35,6 +35,7 @@ final readonly class Cleaner
         $dto->description = $this->clean($dto->description ?? '') ?: null;
         $dto->source = $this->fitUrl($dto->source, 256);
         $dto->imageUrl = $this->fitUrl($dto->imageUrl, 255);
+        $dto->ticketUrl = $this->fitUrl($this->htmlFormatter->ensureProtocol($dto->ticketUrl), 1024);
         $dto->phoneContacts = $dto->phoneContacts ?: null;
         $dto->websiteContacts = $this->cleanWebsites($dto->websiteContacts) ?: null;
         $dto->emailContacts = $dto->emailContacts ?: null;

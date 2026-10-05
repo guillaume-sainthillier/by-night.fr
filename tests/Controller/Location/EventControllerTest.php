@@ -24,6 +24,8 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DomCrawler\Crawler;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
+use function Zenstruck\Foundry\Persistence\save;
+
 final class EventControllerTest extends WebTestCase
 {
     public function testAdminSeesEditButtonNextToTitle(): void
@@ -225,6 +227,30 @@ final class EventControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('meta[name="robots"]');
         self::assertSelectorNotExists('#event-ended');
+    }
+
+    public function testTheTicketingOfAnUpcomingEventIsOneClickAway(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setTicketUrl('https://billetterie.example.org/concert');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorTextContains('a.btn[href="https://billetterie.example.org/concert"][rel="noopener nofollow"]', 'Réserver');
+    }
+
+    public function testAnEventThatIsOverOffersNoTicketing(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('-10 days'));
+        $event->setTicketUrl('https://billetterie.example.org/concert');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorNotExists('a.btn[href="https://billetterie.example.org/concert"]');
     }
 
     public function testALongListShowsTheNextSessionsAndFoldsThePastAndLaterOnes(): void

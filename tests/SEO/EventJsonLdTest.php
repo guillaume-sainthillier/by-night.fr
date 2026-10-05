@@ -64,6 +64,25 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertSame('https://www.awin1.com/pclick.php?p=1', $this->schema($event)['offers']['url']);
     }
 
+    public function testTheAffiliateLinkWinsOverAnyOtherTicketing(): void
+    {
+        $event = $this->createEvent([
+            'prices' => '22€',
+            'fromData' => FnacSpectaclesAwinParser::getParserName(),
+            'source' => 'https://www.awin1.com/pclick.php?p=1',
+            'ticketUrl' => 'https://billetterie.example.org/concert',
+        ]);
+
+        self::assertSame('https://www.awin1.com/pclick.php?p=1', $this->schema($event)['offers']['url']);
+    }
+
+    public function testTheOfferLeadsToTheTicketingTheSourceGives(): void
+    {
+        $event = $this->createEvent(['prices' => '12€', 'ticketUrl' => 'https://billetterie.example.org/concert']);
+
+        self::assertSame('https://billetterie.example.org/concert', $this->schema($event)['offers']['url']);
+    }
+
     public function testAFreeEventIsAccessibleForFree(): void
     {
         $event = $this->createEvent(['prices' => 'Gratuit']);

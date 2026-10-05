@@ -241,6 +241,9 @@ final class OpenAgendaParser extends AbstractParser
             $urls[] = $registration['value'];
         }
 
+        // The registration links are where to book: the first one is the ticketing
+        $ticketUrl = $urls[0] ?? null;
+
         if (!empty($location['website'])) {
             $urls[] = $location['website'];
         }
@@ -284,6 +287,7 @@ final class OpenAgendaParser extends AbstractParser
         $event->address = $location['address'];
         $event->type = implode(',', $type);
         $event->websiteContacts = $urls;
+        $event->ticketUrl = $ticketUrl;
         $event->phoneContacts = $phones;
         $event->emailContacts = $emails;
 

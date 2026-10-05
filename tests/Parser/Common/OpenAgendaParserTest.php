@@ -134,6 +134,26 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertSame('De 20h00 à 22h00', $dto->hours);
     }
 
+    public function testTheRegistrationLinkIsTheTicketing(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(location: ['website' => 'https://www.parc.fr'], event: ['registration' => [
+            ['type' => 'phone', 'value' => '05 61 00 00 00'],
+            ['type' => 'link', 'value' => 'https://billetterie.parc.fr/concert'],
+        ]]));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertSame('https://billetterie.parc.fr/concert', $dto->ticketUrl);
+        self::assertSame(['https://billetterie.parc.fr/concert', 'https://www.parc.fr'], $dto->websiteContacts);
+    }
+
+    public function testAnEventWithoutARegistrationLinkHasNoTicketing(): void
+    {
+        $dto = $this->arrayToDto(self::feedEvent(location: ['website' => 'https://www.parc.fr']));
+
+        self::assertInstanceOf(EventDto::class, $dto);
+        self::assertNull($dto->ticketUrl, "The venue's website is no ticketing");
+    }
+
     /**
      * @return iterable<string, array{mixed, ?EventStatus}>
      */

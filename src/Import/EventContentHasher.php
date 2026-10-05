@@ -65,7 +65,7 @@ final class EventContentHasher
      */
     private function canonicalize(EventDto $dto): array
     {
-        return [
+        $canonical = [
             'name' => $dto->name,
             'description' => $dto->description,
             'startDate' => $this->date($dto->startDate),
@@ -88,6 +88,14 @@ final class EventContentHasher
             'timesheets' => $this->timesheets($dto),
             'place' => $this->place($dto->place),
         ];
+
+        // Added after the fingerprints were stored: only there when set, so that the events without one keep theirs
+        // and are not all published again
+        if (null !== $dto->ticketUrl) {
+            $canonical['ticketUrl'] = $dto->ticketUrl;
+        }
+
+        return $canonical;
     }
 
     /**
