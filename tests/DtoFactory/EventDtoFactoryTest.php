@@ -16,6 +16,7 @@ use App\Enum\EventStatus;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
+use App\Factory\PlaceFactory;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 
@@ -63,6 +64,20 @@ final class EventDtoFactoryTest extends AppKernelTestCase
         $dto = self::getContainer()->get(EventDtoFactory::class)->create($this->createImportedEvent());
 
         self::assertSame('Concert', $dto->type);
+    }
+
+    /**
+     * Older events have no copy of their venue's country: the form shows the venue's own, or
+     * an edit would send no country and the firewall would turn the event down.
+     */
+    public function testTheDtoFallsBackOnTheCountryOfTheVenue(): void
+    {
+        $country = CountryFactory::france()->create();
+        $event = EventFactory::createOne(['place' => PlaceFactory::new(['country' => $country, 'city' => null]), 'placeCountry' => null]);
+
+        $dto = self::getContainer()->get(EventDtoFactory::class)->create($event);
+
+        self::assertSame('FR', $dto->place?->country?->entityId);
     }
 
     /**

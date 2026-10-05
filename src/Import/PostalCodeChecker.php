@@ -12,7 +12,6 @@ namespace App\Import;
 
 use App\Dto\CountryDto;
 use App\Entity\Country;
-use App\Repository\CountryRepository;
 
 /**
  * Decides whether an imported postal code is plausible for the country it belongs to.
@@ -20,13 +19,13 @@ use App\Repository\CountryRepository;
  * Runs inside the {@see Firewall}, i.e. BEFORE entity resolution: the incoming
  * {@see CountryDto} usually carries only an ISO code ("CH" from OpenAgenda, Awin or the
  * personal-space form) or a display name ("Suisse" from DataTourisme), so the
- * matching {@see Country} row is looked up here on purpose. The expected format lives in
+ * matching {@see Country} row is looked up here on purpose ({@see CountryResolver}). The expected format lives in
  * {@see Country::getPostalCodeRegex()} (editable in the admin), so supporting a new
  * country is a data change, not a code change.
  */
 final readonly class PostalCodeChecker
 {
-    public function __construct(private CountryRepository $countryRepository)
+    public function __construct(private CountryResolver $countryResolver)
     {
     }
 
@@ -36,7 +35,7 @@ final readonly class PostalCodeChecker
         // and Cleaner::cleanCity() strips the same characters before persistence.
         $digits = (string) preg_replace('#\D#', '', (string) $postalCode);
 
-        return $this->matchesCountryFormat($this->resolveCountry($countryDto), $digits);
+        return $this->matchesCountryFormat($this->countryResolver->resolve($countryDto), $digits);
     }
 
     /**
@@ -62,20 +61,5 @@ final readonly class PostalCodeChecker
         }
 
         return 1 === preg_match('#' . $regex . '#', $digits);
-    }
-
-    private function resolveCountry(?CountryDto $dto): ?Country
-    {
-        if (null === $dto) {
-            return null;
-        }
-
-        // Already resolved (personal-space form): cheap identity-map hit.
-        if (null !== $dto->entityId) {
-            return $this->countryRepository->find($dto->entityId);
-        }
-
-        // Raw feed value: match by ISO code, name or display name (result-cached query).
-        return $this->countryRepository->findAllByDtos([$dto], false)[0] ?? null;
     }
 }
