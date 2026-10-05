@@ -18,8 +18,14 @@ const { Calendar } = vi.hoisted(() => ({
 vi.mock('vanilla-calendar-pro', () => ({ Calendar, months: {} }))
 vi.mock('@/js/utils/utils', () => ({ isTouchDevice: () => false }))
 
-function field(value = '') {
-    return { value, removeAttribute: vi.fn(), classList: { add: vi.fn() }, dispatchEvent: vi.fn() }
+function field(value = '', panel = null) {
+    return {
+        value,
+        removeAttribute: vi.fn(),
+        classList: { add: vi.fn() },
+        dispatchEvent: vi.fn(),
+        closest: () => panel,
+    }
 }
 
 // Clicks in the picker: the library has updated its selection when it calls onChangeToInput
@@ -55,6 +61,22 @@ describe('DatepickerService', () => {
 
         expect(input.value).toBe('Du 9 oct. 2026 au 11 oct. 2026')
         expect(Calendar.mock.instances[0].options.selectedDates).toEqual(['2026-10-09', '2026-10-11'])
+    })
+
+    test('opens below a field of a panel fixed to the screen, wherever there is room otherwise', () => {
+        vi.stubGlobal('getComputedStyle', (element) => ({ position: element.position }))
+
+        create({ element: input, fromInput: from, toInput: to })
+        // The agenda filters' offcanvas on a phone
+        create({ element: field('', { position: 'fixed' }), fromInput: from, toInput: to })
+        // The same panel from the lg breakpoint on: a sidebar
+        create({ element: field('', { position: 'static' }), fromInput: from, toInput: to })
+
+        expect(Calendar.mock.instances.map((calendar) => calendar.options.positionToInput)).toEqual([
+            'auto',
+            ['bottom', 'left'],
+            'auto',
+        ])
     })
 
     test('applies a range on its second click only', () => {

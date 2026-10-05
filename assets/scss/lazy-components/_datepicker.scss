@@ -32,7 +32,9 @@
     --vc-time-range-thumb-border: var(--primary);
     --vc-time-range-thumb-border-hover: var(--primary);
 
-    z-index: $zindex-dropdown;
+    // Appended to <body> in input mode: above the offcanvas the agenda filters sit in on a phone (and its backdrop), as
+    // the autocomplete
+    z-index: calc(#{$zindex-offcanvas} + 50);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius-lg);
     font-family: inherit;

@@ -21,6 +21,20 @@ function resolveElement(element) {
 }
 
 /**
+ * Whether the field sits in a panel fixed to the screen, as the agenda filters' offcanvas on a phone: the calendar's
+ * "auto" placement opens it above the field there, its header out of the screen.
+ *
+ * @param {HTMLElement} input
+ * @returns {boolean}
+ */
+function inFixedPanel(input) {
+    const panel = input.closest(
+        '.offcanvas, .offcanvas-sm, .offcanvas-md, .offcanvas-lg, .offcanvas-xl, .offcanvas-xxl'
+    )
+    return panel !== null && getComputedStyle(panel).position === 'fixed'
+}
+
+/**
  * @param {string} date - YYYY-MM-DD
  * @returns {string}
  */
@@ -95,7 +109,7 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
         // Side by side months (type: 'multiple')
         extensions: [months],
         inputMode: true,
-        positionToInput: 'auto',
+        positionToInput: inFixedPanel(input) ? ['bottom', 'left'] : 'auto',
         locale: 'fr-FR',
         firstWeekday: 1,
         selectedTheme: 'light',
