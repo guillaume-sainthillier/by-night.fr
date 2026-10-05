@@ -275,4 +275,31 @@ final class LocationPageTest extends WebTestCase
         self::assertSelectorTextContains('#agenda-dates .btn-chip.active', 'Ce week-end');
         self::assertSelectorCount(1, '.btn-chip[title="Retirer ce filtre"]', 'Only the keywords: the date shortcuts show the period');
     }
+
+    public function testThePhoneFiltersApplyFromTheBarAtTheirBottom(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse?term=jazz');
+
+        self::assertResponseIsSuccessful();
+        // The bar's button sends the search form; it counts the events on show until a field changes (pages/agenda.js)
+        self::assertSelectorTextSame('#agenda-filters .agenda-filters-bar button[form="search-form"][data-filters-submit]', 'Voir les résultats');
+        self::assertSelectorExists('#agenda-filters .agenda-filters-bar a[href="/toulouse"]', 'Réinitialiser, with a filter on');
+    }
+
+    public function testThePhoneFiltersOfferNoResetWithoutAFilter(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#agenda-filters .agenda-filters-bar [data-filters-submit]');
+        self::assertSelectorNotExists('#agenda-filters .agenda-filters-bar a');
+    }
 }

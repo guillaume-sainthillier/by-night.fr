@@ -156,3 +156,30 @@
         overflow-x: visible;
     }
 }
+
+// The filters' panel on a phone (location/agenda/_filters.html.twig): the whole screen, the filters without the chrome
+// of the sidebar's card, and a bar at the bottom whose button applies them
+@include media-breakpoint-down(lg) {
+    #agenda-filters {
+        --offcanvas-width: 100%;
+    }
+
+    .agenda-filters-card {
+        border: 0;
+        box-shadow: none;
+        background-color: transparent;
+
+        > .card-body {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}
+
+.agenda-filters-bar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border-color);
+    background-color: $white;
+}

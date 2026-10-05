@@ -4,9 +4,10 @@ import '@/scss/lazy-components/_slider.scss'
 
 /**
  * Turns a number input into a slider. The input stays in the form, hidden, and keeps the value the form submits: the
- * slider only writes into it, and shows the value at the end of the input's label.
+ * slider only writes into it, and shows the value at the end of the input's label. `onChange` runs once the handle is
+ * released on a new value, never when the slider starts.
  */
-export function create({ element, range, snap = false, unit = '', label = null }) {
+export function create({ element, range, snap = false, unit = '', label = null, onChange = null }) {
     const labelEl = element.id ? document.querySelector(`label[for="${element.id}"]`) : null
     const ariaLabel = label ?? labelEl?.textContent.trim() ?? ''
     // A range edge is either a value or a [value, step] pair
@@ -39,6 +40,10 @@ export function create({ element, range, snap = false, unit = '', label = null }
         element.value = Math.round(value)
         output.textContent = format.to(value)
     })
+
+    if (onChange) {
+        instance.on('change', () => onChange(element.value))
+    }
 
     return {
         destroy: () => {

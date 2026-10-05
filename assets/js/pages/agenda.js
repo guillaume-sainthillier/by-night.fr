@@ -1,7 +1,40 @@
+import { Offcanvas } from '@tabler/core/dist/js/tabler.esm'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
 
-function initDatepickers(container = document) {
+/**
+ * The bottom bar of the phone's filters (location/agenda/_filters.html.twig): its button counts the events on show,
+ * which closing the panel shows again, until a field of the form changes; it then says "Rechercher", and sends it.
+ */
+function initFiltersBar() {
+    const button = document.querySelector('[data-filters-submit]')
+    const form = button?.form
+    if (!form) {
+        return () => {}
+    }
+
+    let dirty = false
+    const markDirty = () => {
+        if (!dirty) {
+            dirty = true
+            button.textContent = button.dataset.dirtyLabel
+        }
+    }
+
+    button.addEventListener('click', (event) => {
+        if (!dirty) {
+            event.preventDefault()
+            const panel = document.getElementById('agenda-filters')
+            Offcanvas.getOrCreateInstance(panel).hide()
+        }
+    })
+    form.addEventListener('input', markDirty)
+    form.addEventListener('change', markDirty)
+
+    return markDirty
+}
+
+function initDatepickers(markDirty, container = document) {
     container.querySelectorAll('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
@@ -14,6 +47,7 @@ function initDatepickers(container = document) {
                 if (when) {
                     when.value = ''
                 }
+                markDirty()
             },
         })
     })
@@ -28,11 +62,12 @@ const RADIUS_SCALE = {
     snap: true,
 }
 
-function initSliders(container = document) {
+function initSliders(markDirty, container = document) {
     container.querySelectorAll('input[data-slider]').forEach((el) => {
         createSlider({
             element: el,
             unit: el.dataset.slider,
+            onChange: markDirty,
             ...RADIUS_SCALE,
         })
     })
@@ -40,8 +75,9 @@ function initSliders(container = document) {
 
 /** @type {Page} */
 function initialize() {
-    initDatepickers()
-    initSliders()
+    const markDirty = initFiltersBar()
+    initDatepickers(markDirty)
+    initSliders(markDirty)
 }
 
 window.App.registerPage('agenda', initialize)

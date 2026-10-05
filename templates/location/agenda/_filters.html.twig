@@ -1,5 +1,7 @@
-{# The filters of the agenda, with the counts of each one (EventElasticaRepository::getFacets()). Below lg, an offcanvas
-   the "Filtres" button of the page header opens. #}
+{# The filters of the agenda, with the counts of each one (EventElasticaRepository::getFacets()). Below lg, a full-screen
+   panel the "Filtres" button of the page header opens: a choice (date, price, universe, venue) applies as it is tapped,
+   being a link; what is typed (keywords, dates picked, radius) applies from the bar at its bottom, whose button counts
+   the events on show until a field changes (pages/agenda.js). #}
 {% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
 {% set hasFilters = type or place or tag or filters|filter((value, key) => key in ['term', 'when', 'dateRange', 'price']) %}
 <div class="offcanvas-lg offcanvas-start" tabindex="-1" id="agenda-filters" aria-labelledby="agenda-filters-title">
@@ -8,8 +10,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#agenda-filters" aria-label="Fermer"></button>
     </div>
     <div class="offcanvas-body d-block p-3 p-lg-0">
-        <div class="card mb-lg-4">
-            <div class="card-header">
+        <div class="card agenda-filters-card mb-lg-4">
+            {# The panel's own title says it below lg #}
+            <div class="card-header d-none d-lg-flex">
                 <h2 class="card-title d-flex align-items-center gap-2">
                     <twig:Icon name="lucide:sliders-horizontal" class="text-primary" />
                     Filtres & recherche
@@ -52,7 +55,8 @@
                 {% for name, value in formQuery %}
                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                 {% endfor %}
-                <button type="submit" class="btn btn-primary w-100">
+                {# Below lg, the button of the bottom bar sends the form #}
+                <button type="submit" class="btn btn-primary w-100 d-none d-lg-inline-flex">
                     <twig:Icon name="lucide:search" />
                     Rechercher
                 </button>
@@ -144,5 +148,13 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+    <div class="agenda-filters-bar d-lg-none">
+        {% if hasFilters %}
+            <a class="btn" href="{{ path('app_location_index', {location: location.slug}) }}">Réinitialiser</a>
+        {% endif %}
+        <button type="submit" form="search-form" class="btn btn-primary flex-fill" data-filters-submit data-dirty-label="Rechercher">
+            {{- '{count, plural, =0 {Voir les résultats} one {Voir la sortie} other {Voir les # sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') -}}
+        </button>
     </div>
 </div>
