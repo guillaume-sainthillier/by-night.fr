@@ -20,6 +20,7 @@ use App\Enum\EventStatus;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
 use App\Repository\CountryRepository;
+use App\Utils\LenientJson;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
@@ -97,7 +98,8 @@ final class OpenAgendaParser extends AbstractParser
                 ]),
             ]);
 
-            $data = $response->toArray();
+            // OpenAgenda lets through text cut in the middle of an emoji, which toArray() rejects
+            $data = LenientJson::decode($response->getContent());
 
             foreach ($data['events'] as $event) {
                 yield $event;
@@ -126,7 +128,7 @@ final class OpenAgendaParser extends AbstractParser
                     ],
                 ]);
 
-                $data = $response->toArray();
+                $data = LenientJson::decode($response->getContent());
                 $failedAttempts = 0;
 
                 foreach ($data['agendas'] as $agenda) {
