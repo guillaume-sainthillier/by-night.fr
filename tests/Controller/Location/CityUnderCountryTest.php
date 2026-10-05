@@ -20,6 +20,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * The cities of a country that prefixes its cities' URLs live under it ("/suisse/geneve"); their former URLs
@@ -98,6 +99,18 @@ final class CityUnderCountryTest extends WebTestCase
         $client->request('GET', '/geneve-2');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testAPathUnderAnythingButACountryIsNotFoundBeforeAnyCityLookup(): void
+    {
+        $client = self::createClient();
+        $client->catchExceptions(false);
+
+        // Thrown by AppContextSubscriber, not by the lazy city the agenda reads (LazyLocationFactory)
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage("La location 'toulouse/k' est introuvable");
+
+        $client->request('GET', '/toulouse/k');
     }
 
     private function geneva(): City
