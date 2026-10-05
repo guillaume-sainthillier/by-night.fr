@@ -15,6 +15,7 @@ use ApiPlatform\State\Pagination\Pagination;
 use App\Api\ApiResource\SearchResult;
 use App\Api\Pagination\ArrayPaginator;
 use App\Api\Provider\SearchProvider;
+use App\App\LazyLocationFactory;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Tag;
@@ -28,6 +29,7 @@ use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use Elastica\Query;
 use Elastica\Result;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use FOS\ElasticaBundle\HybridResult;
@@ -47,6 +49,9 @@ final class SearchProviderTest extends AppKernelTestCase
      * 16 per page: 4 hits of each type.
      */
     private const int ITEMS_PER_PAGE = 16;
+
+    /** @var list<array<string, mixed>> the queries the indexes got, events first */
+    private array $queries = [];
 
     public function testAPageCombinesTheHitsOfEachType(): void
     {
@@ -146,7 +151,30 @@ final class SearchProviderTest extends AppKernelTestCase
         $repositoryManager = $this->createStub(RepositoryManagerInterface::class);
         $repositoryManager->method('getRepository')->willReturnCallback(static fn (string $indexName): Repository => $repositories[$indexName]);
 
-        return new SearchProvider($repositoryManager, self::getContainer()->get(UrlGeneratorInterface::class), new Pagination());
+        return new SearchProvider($repositoryManager, self::getContainer()->get(LazyLocationFactory::class), self::getContainer()->get(UrlGeneratorInterface::class), new Pagination());
+    }
+
+    /**
+     * The page sends the slug of its city: the events of that city and around come first.
+     */
+    public function testTheEventsAroundTheCityOfThePageComeFirst(): void
+    {
+        $city = CityFactory::createOne(['slug' => 'toulouse', 'latitude' => 43.60426, 'longitude' => 1.44367]);
+
+        $this->createProvider([])->provide(new GetCollection(paginationItemsPerPage: self::ITEMS_PER_PAGE), context: ['filters' => ['q' => 'jazz', 'city' => 'toulouse']]);
+
+        $nearby = $this->queries[0]['query']['bool']['must'][0]['function_score']['functions'][1]['gauss']['place.city.location'] ?? null;
+        self::assertSame(\sprintf('%F,%F', $city->getLatitude(), $city->getLongitude()), $nearby['origin'] ?? null);
+    }
+
+    /**
+     * A slug the page sent before its city was renamed or merged names no city: the search goes on without one.
+     */
+    public function testAnUnknownCityLeavesTheSearchAsIs(): void
+    {
+        $this->createProvider([])->provide(new GetCollection(paginationItemsPerPage: self::ITEMS_PER_PAGE), context: ['filters' => ['q' => 'jazz', 'city' => 'atlantide']]);
+
+        self::assertArrayHasKey('dis_max', $this->queries[0]['query']['bool']['must'][0]);
     }
 
     private static function hit(object $entity): HybridResult
@@ -216,7 +244,11 @@ final class SearchProviderTest extends AppKernelTestCase
         };
 
         $finder = $this->createStub(PaginatedFinderInterface::class);
-        $finder->method('createHybridPaginatorAdapter')->willReturn($adapter);
+        $finder->method('createHybridPaginatorAdapter')->willReturnCallback(function (Query $query) use ($adapter): PaginatorAdapterInterface {
+            $this->queries[] = $query->toArray();
+
+            return $adapter;
+        });
 
         return $finder;
     }

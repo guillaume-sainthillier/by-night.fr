@@ -10,6 +10,7 @@
 
 namespace App\SearchRepository;
 
+use App\Entity\City;
 use App\Enum\AgendaType;
 use App\Enum\DateRangePreset;
 use App\Enum\PricePreset;
@@ -25,6 +26,8 @@ use Elastica\Query;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\DisMax;
+use Elastica\Query\Exists;
+use Elastica\Query\FunctionScore;
 use Elastica\Query\GeoDistance;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
@@ -76,7 +79,7 @@ final class EventElasticaRepository extends Repository
 
         $textQuery = $this->createTextQuery($search);
         if (null !== $textQuery) {
-            $mainQuery->addMust($textQuery);
+            $mainQuery->addMust($this->favourNear($textQuery, $search->getNear()));
         }
 
         $tagFilter = $this->createTagFilter($search);
@@ -96,15 +99,20 @@ final class EventElasticaRepository extends Repository
         // The count stops at 10 000 otherwise ("sur 10 000" on /france). The pages still stop at the result
         // window (ResultWindow); counting the rest took no measurable time, the nested sort already visits every hit
         $finalQuery->setTrackTotalHits(true);
-        if (null === $textQuery) {
-            // Soonest-ending session in the window first: a one-day session sorts by
-            // its day, an exhibition still running by its last day, as the range did.
-            $finalQuery->addSort(['sessions.endAt' => [
-                'order' => 'asc',
-                'mode' => 'min',
-                'nested' => ['path' => 'sessions', 'filter' => $sessionFilter->toArray()],
-            ]]);
+        if (null !== $textQuery) {
+            // By relevance, the next date between equals: the ten "Marché de Noël" by date, not in index order
+            $finalQuery->addSort(['_score' => ['order' => 'desc']]);
+        }
 
+        // Soonest-ending session in the window first: a one-day session sorts by
+        // its day, an exhibition still running by its last day, as the range did.
+        $finalQuery->addSort(['sessions.endAt' => [
+            'order' => 'asc',
+            'mode' => 'min',
+            'nested' => ['path' => 'sessions', 'filter' => $sessionFilter->toArray()],
+        ]]);
+
+        if (null === $textQuery) {
             $city = $search->getLocation()?->isCity() ? $search->getLocation()->getCity() : null;
             if (null !== $city && [] === $search->getLieux()) {
                 $finalQuery->addSort(['_geo_distance' => [
@@ -312,10 +320,32 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * Events naming all these words, fuzzily, in one of their fields or in the name of one of their themes. The best
-     * of the two counts, as the best field of the multi_match does: a theme is one more field.
+     * The events of a city and around it scored up to three times as high: ×3 within 10 km, ×2 at 40 km, about ×1 past
+     * 100 km. A visitor of Toulouse searching "marché de noël" gets the markets around Toulouse first, the rest of
+     * France after. An event whose place has no city (13% of those to come) is not around: Elasticsearch scores a
+     * missing location as the closest, which put them all first.
      */
-    private function createKeywordsQuery(string $keywords): DisMax
+    private function favourNear(AbstractQuery $query, ?City $city): AbstractQuery
+    {
+        if (null === $city?->getLatitude() || null === $city->getLongitude()) {
+            return $query;
+        }
+
+        return new FunctionScore()
+            ->setQuery($query)
+            ->addWeightFunction(1.0)
+            ->addDecayFunction(FunctionScore::DECAY_GAUSS, 'place.city.location', \sprintf('%F,%F', $city->getLatitude(), $city->getLongitude()), '30km', '10km', 0.5, 2.0, new Exists('place.city.location'))
+            ->setScoreMode(FunctionScore::SCORE_MODE_SUM)
+            ->setBoostMode(FunctionScore::BOOST_MODE_MULTIPLY);
+    }
+
+    /**
+     * The synonyms of a type page, for its nightly classification (createTypeQuery()): events naming all these words,
+     * fuzzily, in one of their fields or in the name of one of their themes. The best of the two counts, as the best
+     * field of the multi_match does: a theme is one more field. Kept apart from the keywords a visitor types
+     * (createKeywordsQuery()), so that a change of the search leaves the type pages as they are.
+     */
+    private function createTypeKeywordsQuery(string $keywords): DisMax
     {
         return new DisMax()
             ->addQuery(new MultiMatch()
@@ -351,6 +381,86 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
+     * The events holding every word searched, the stop words aside ("marché de noël" needs "marché" and "noël"), scored
+     * by the best way they hold them:
+     * - as typed, each in any of the fields that name the event (its name, its venue, its city, its category, its
+     *   type, its postal code): "concert toulouse" finds the event named "Concert" in Toulouse
+     * - inflected ("spectacles enfants"), in its name or its city. Not its venue: "salsa" found the venue named "Ferme
+     *   De Salsas"
+     * - in the name of one of its themes
+     * - in its description, far less
+     * - with a typo, in its name only and far less still: never above an event naming the words as typed. In any
+     *   field, a rare look-alike outscored the word searched ("toulouse" found the Zénith of Toulon first, "salsa" a
+     *   venue named Salsas, "bikini" an event named "Bibbidi Doo").
+     *
+     * @param bool $asTyped whether the last word may be unfinished (the header search, as the visitor types)
+     */
+    private function createKeywordsQuery(string $keywords, bool $asTyped = false): DisMax
+    {
+        $query = new DisMax()
+            ->setTieBreaker(0.3)
+            ->addQuery(new MultiMatch()
+                ->setType(MultiMatch::TYPE_CROSS_FIELDS)
+                ->setQuery($keywords)
+                ->setFields([
+                    'name^5',
+                    'placeName^3',
+                    'place.name^3',
+                    'placeCity^2',
+                    'place.cityName^2',
+                    'place.cityPostalCode^2',
+                    'placePostalCode',
+                    'placeStreet',
+                    'place.street',
+                    'category.name',
+                    'type',
+                ])
+                // The fields read their words alike but under several names: one analyzer makes them one group, each
+                // word searched across all of them
+                ->setAnalyzer('french_search')
+                ->setOperator(MultiMatch::OPERATOR_AND)
+                ->setParam('boost', 3))
+            ->addQuery(new MultiMatch()
+                ->setType(MultiMatch::TYPE_CROSS_FIELDS)
+                ->setQuery($keywords)
+                ->setFields(['name.heavy^5', 'place.cityName.heavy^2'])
+                ->setAnalyzer('french_heavy_search')
+                ->setOperator(MultiMatch::OPERATOR_AND)
+                ->setParam('boost', 2.5))
+            // Themes are nested documents, which a query on the event itself never reaches
+            ->addQuery(new Nested()
+                ->setPath('themes')
+                ->setScoreMode('max')
+                ->setQuery(new MatchQuery()
+                    ->setFieldQuery('themes.name', $keywords)
+                    ->setFieldOperator('themes.name', MatchQuery::OPERATOR_AND))
+                ->setParam('boost', 2))
+            ->addQuery(new MultiMatch()
+                ->setQuery($keywords)
+                ->setFields(['description.heavy'])
+                ->setOperator(MultiMatch::OPERATOR_AND)
+                ->setParam('boost', 0.5))
+            ->addQuery(new MultiMatch()
+                ->setQuery($keywords)
+                ->setFields(['name'])
+                ->setFuzziness(Fuzzy::FUZZINESS)
+                ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
+                ->setOperator(MultiMatch::OPERATOR_AND)
+                ->setParam('boost', 0.1));
+
+        if ($asTyped) {
+            // The beginnings of the words (name.autocomplete): "orel" finds Orelsan, "marché de no" the markets of Noël
+            $query->addQuery(new MultiMatch()
+                ->setType(MultiMatch::TYPE_CROSS_FIELDS)
+                ->setQuery($keywords)
+                ->setFields(['name.autocomplete^5', 'place.name.autocomplete^3'])
+                ->setOperator(MultiMatch::OPERATOR_AND));
+        }
+
+        return $query;
+    }
+
+    /**
      * The events of a type page, and of its counts: the types stored on the events (Event::$agendaTypes), found by
      * createTypeQuery() each night. Running that full-text search on each page took ~0.1–0.15 s per type, ~0.5 s for
      * the five type links of every agenda page (the fuzzy terms expand over the whole index). An event imported or
@@ -371,7 +481,7 @@ final class EventElasticaRepository extends Repository
     private function createTypeQuery(AgendaType $type): BoolQuery
     {
         return $this->createAnyTermQuery($type->getTerms())
-            ->addShould($this->createKeywordsQuery(implode(' ', $type->getTerms())));
+            ->addShould($this->createTypeKeywordsQuery(implode(' ', $type->getTerms())));
     }
 
     private function createTagFilter(SearchEvent $search): ?AbstractQuery
@@ -417,32 +527,26 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * The events of the header search, with their highlights: those with a session still to come, as the agenda
-     * lists. Over the whole index, the best scores were mostly events long over ("marché de noël" suggested the
-     * markets of 2016 to 2022), and the search took 4 to 6 times longer.
+     * The events of the header search, with their highlights, as the visitor types: the keywords of the search page,
+     * the last word possibly unfinished, around the city of the page first. Only those with a session still to come,
+     * as the agenda lists: over the whole index, the best scores were mostly events long over ("marché de noël"
+     * suggested the markets of 2016 to 2022), and the search took 4 to 6 times longer.
      *
      * @return PagerfantaInterface<HybridResult>
      */
-    public function findWithHighlightsPaginated(string $query): PagerfantaInterface
+    public function findWithHighlightsPaginated(string $query, ?City $near = null): PagerfantaInterface
     {
-        $multiMatch = new MultiMatch();
-        $multiMatch
-            ->setFields([
-                'name^5',
-                'name.heavy^5',
-                'placeName^3',
-                'place.name^3',
-                'placeCity^2',
-                'place.cityName^2',
-                'description',
-            ])
-            ->setFuzziness(Fuzzy::FUZZINESS)
-            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
-            ->setOperator('AND')
-            ->setQuery($query);
-
-        $upcoming = new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(DateRangePreset::Anytime->range()));
-        $finalQuery = Query::create(new BoolQuery()->addMust($multiMatch)->addFilter($upcoming));
+        $sessionFilter = $this->createSessionFilter(DateRangePreset::Anytime->range());
+        $finalQuery = Query::create(new BoolQuery()
+            ->addMust($this->favourNear($this->createKeywordsQuery($query, asTyped: true), $near))
+            ->addFilter(new Nested()->setPath('sessions')->setQuery($sessionFilter)));
+        // The next date between equals, as the search page
+        $finalQuery->addSort(['_score' => ['order' => 'desc']]);
+        $finalQuery->addSort(['sessions.endAt' => [
+            'order' => 'asc',
+            'mode' => 'min',
+            'nested' => ['path' => 'sessions', 'filter' => $sessionFilter->toArray()],
+        ]]);
         // Loaded from the database by their _id; the highlights come without the document
         $finalQuery->setSource(false);
 

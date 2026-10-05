@@ -11,6 +11,7 @@
 namespace App\Search;
 
 use App\App\Location;
+use App\Entity\City;
 use App\Enum\AgendaType;
 use App\Enum\DateRangePreset;
 use App\Enum\PricePreset;
@@ -48,6 +49,12 @@ final class SearchEvent
     private ?AgendaType $type = null;
 
     private ?Location $location = null;
+
+    /**
+     * The city of the visitor on a search with no location (/recherche, the header search): its events and those around
+     * come first, the others still found
+     */
+    private ?City $near = null;
 
     /**
      * @return string[]
@@ -183,6 +190,18 @@ final class SearchEvent
     public function setLocation(?Location $location): self
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function getNear(): ?City
+    {
+        return $this->near;
+    }
+
+    public function setNear(?City $near): self
+    {
+        $this->near = $near;
 
         return $this;
     }

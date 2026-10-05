@@ -15,6 +15,7 @@ use ApiPlatform\State\Pagination\Pagination;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ApiResource\SearchResult;
 use App\Api\Pagination\ArrayPaginator;
+use App\App\LazyLocationFactory;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Tag;
@@ -38,6 +39,7 @@ final readonly class SearchProvider implements ProviderInterface
 {
     public function __construct(
         private RepositoryManagerInterface $repositoryManager,
+        private LazyLocationFactory $lazyLocationFactory,
         private UrlGeneratorInterface $urlGenerator,
         private Pagination $pagination,
     ) {
@@ -62,8 +64,12 @@ final readonly class SearchProvider implements ProviderInterface
             return [];
         }
 
+        // A slug the page sends back, which may name a city renamed or merged since: no city then
+        $citySlug = $context['filters']['city'] ?? null;
+        $near = \is_string($citySlug) && '' !== $citySlug ? $this->lazyLocationFactory->createWithCity($citySlug)?->getCity() : null;
+
         // Get paginated hybrid results from each repository
-        $eventsPaginator = $this->getEventsPaginator($query, $page, $itemsPerType);
+        $eventsPaginator = $this->getEventsPaginator($query, $near, $page, $itemsPerType);
         $citiesPaginator = $this->getCitiesPaginator($query, $page, $itemsPerType);
         $usersPaginator = $this->getUsersPaginator($query, $page, $itemsPerType);
         $tagsPaginator = $this->getTagsPaginator($query, $page, $itemsPerType);
@@ -96,12 +102,12 @@ final readonly class SearchProvider implements ProviderInterface
     /**
      * @return PagerfantaInterface<HybridResult<Event>>
      */
-    private function getEventsPaginator(string $query, int $page, int $itemsPerType): PagerfantaInterface
+    private function getEventsPaginator(string $query, ?City $near, int $page, int $itemsPerType): PagerfantaInterface
     {
         /** @var EventElasticaRepository $repo */
         $repo = $this->repositoryManager->getRepository(Event::class);
 
-        return $this->atPage($repo->findWithHighlightsPaginated($query), $page, $itemsPerType);
+        return $this->atPage($repo->findWithHighlightsPaginated($query, $near), $page, $itemsPerType);
     }
 
     /**

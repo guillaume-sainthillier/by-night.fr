@@ -11,6 +11,10 @@
             <div class="card">
                 <div class="card-body">
                     <form method="GET" class="no-margin-form" action="{{ path('app_search_index') }}">
+                        {# The city the search came from, whose events come first (SearchController) #}
+                        {% if near %}
+                            <input type="hidden" name="city" value="{{ near.slug }}">
+                        {% endif %}
                         <div class="row">
                             <div class="col-md-6 col-lg-8">
                                 <div class="mb-3">

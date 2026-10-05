@@ -10,7 +10,9 @@
 
 namespace App\Tests\Controller;
 
+use App\Factory\CityFactory;
 use App\Tests\AppWebTestCase;
+use App\Tests\Controller\Location\StubsAgendaSearch;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,6 +20,37 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class SearchControllerTest extends AppWebTestCase
 {
+    use StubsAgendaSearch;
+
+    /**
+     * The header sends the city of its page (data-search-page-url): the search page keeps it for the next search.
+     */
+    public function testTheSearchPageKeepsTheCityItCameFrom(): void
+    {
+        $client = self::createClient();
+        CityFactory::createOne(['slug' => 'toulouse']);
+        $this->stubAgendaSearch();
+
+        $client->request('GET', '/recherche/?q=jazz&type=evenements&city=toulouse');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('form input[type="hidden"][name="city"][value="toulouse"]');
+    }
+
+    /**
+     * A slug sent before its city was renamed or merged names no city: the search goes on without one.
+     */
+    public function testAnUnknownCityIsLeftOut(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+
+        $client->request('GET', '/recherche/?q=jazz&type=evenements&city=atlantide');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('form input[name="city"]');
+    }
+
     public function testASearchPagePastTheResultWindowIsNotFound(): void
     {
         $client = self::createClient();
