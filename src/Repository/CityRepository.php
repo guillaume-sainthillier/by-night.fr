@@ -26,6 +26,9 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Override;
+use Silarhi\CursorPagination\Configuration\OrderConfiguration;
+use Silarhi\CursorPagination\Configuration\OrderConfigurations;
+use Silarhi\CursorPagination\Pagination\CursorPagination;
 use SortDirection;
 
 /**
@@ -203,11 +206,11 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     /**
      * Cities with at least one published event ending on or after $from, with that event count.
      *
-     * @return iterable<array{slug: string, nb: int|string}>
+     * @return CursorPagination<array{slug: string, nb: int|string}>
      */
-    public function findAllSitemap(DateTimeInterface $from): iterable
+    public function findAllSitemap(DateTimeInterface $from, int $batchSize): CursorPagination
     {
-        return parent::createQueryBuilder('c')
+        $queryBuilder = parent::createQueryBuilder('c')
             ->select('c.slug, COUNT(e.id) AS nb')
             ->join(Place::class, 'p', Join::ON, 'p.city = c')
             ->join(Event::class, 'e', Join::ON, 'e.place = p')
@@ -215,18 +218,29 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy('c.slug')
-            ->getQuery()
-            ->toIterable();
+            ->groupBy('c.slug');
+
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(new OrderConfiguration('c.slug', static fn (array $city): string => $city['slug'])),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
     }
 
     /**
      * @return iterable<array{citySlug: string, tagId: int, tagSlug: string}>
      */
-    public function findAllTagsSitemap(): iterable
+    public function findAllTagsSitemap(int $batchSize): iterable
     {
+        // A city and a tag make one row of each query: together they are the cursor
+        $tagCursor = static fn (string $tagAlias): OrderConfigurations => new OrderConfigurations(
+            new OrderConfiguration('c.slug', static fn (array $tag): string => $tag['citySlug']),
+            new OrderConfiguration($tagAlias . '.id', static fn (array $tag): int => $tag['tagId']),
+        );
+
         // Tags from category relation
-        yield from parent::createQueryBuilder('c')
+        $categories = parent::createQueryBuilder('c')
             ->select('c.slug AS citySlug, cat.id AS tagId, cat.slug AS tagSlug')
             ->join(Place::class, 'p', Join::ON, 'p.city = c')
             ->join(Event::class, 'e', Join::ON, 'e.place = p')
@@ -235,12 +249,12 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->setParameter('from', date('Y-m-d'))
-            ->groupBy('c.slug, cat.id, cat.slug')
-            ->getQuery()
-            ->toIterable();
+            ->groupBy('c.slug, cat.id, cat.slug');
 
-        // Tags from themes relation (getResult() because toIterable() forbids ManyToMany joins)
-        yield from parent::createQueryBuilder('c')
+        yield from new CursorPagination($categories, $tagCursor('cat'), $batchSize, fetchJoinCollection: false);
+
+        // Tags from themes relation
+        $themes = parent::createQueryBuilder('c')
             ->select('c.slug AS citySlug, t.id AS tagId, t.slug AS tagSlug')
             ->join(Place::class, 'p', Join::ON, 'p.city = c')
             ->join(Event::class, 'e', Join::ON, 'e.place = p')
@@ -249,9 +263,9 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->setParameter('from', date('Y-m-d'))
-            ->groupBy('c.slug, t.id, t.slug')
-            ->getQuery()
-            ->getResult();
+            ->groupBy('c.slug, t.id, t.slug');
+
+        yield from new CursorPagination($themes, $tagCursor('t'), $batchSize, fetchJoinCollection: false);
     }
 
     /**

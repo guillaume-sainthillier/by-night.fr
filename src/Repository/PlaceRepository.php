@@ -26,6 +26,9 @@ use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Silarhi\CursorPagination\Configuration\OrderConfiguration;
+use Silarhi\CursorPagination\Configuration\OrderConfigurations;
+use Silarhi\CursorPagination\Pagination\CursorPagination;
 use SortDirection;
 
 /**
@@ -345,11 +348,11 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     /**
      * Places hosting at least one published event ending on or after $from.
      *
-     * @return iterable<array{slug: string, city_slug: string}>
+     * @return CursorPagination<array{slug: string, city_slug: string}>
      */
-    public function findAllSitemap(DateTimeInterface $from): iterable
+    public function findAllSitemap(DateTimeInterface $from, int $batchSize): CursorPagination
     {
-        return $this
+        $queryBuilder = $this
             ->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
@@ -359,8 +362,17 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->andWhere('e.draft = false')
             ->andWhere('p.slug IS NOT NULL')
             ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy('p.slug, c.slug')
-            ->getQuery()
-            ->toIterable();
+            ->groupBy('p.slug, c.slug');
+
+        // Place slugs are not unique: one row per slug in a city, the place page's URL
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(
+                new OrderConfiguration('c.slug', static fn (array $place): string => $place['city_slug']),
+                new OrderConfiguration('p.slug', static fn (array $place): string => $place['slug']),
+            ),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
     }
 }
