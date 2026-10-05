@@ -68,7 +68,7 @@ final class SitemapSuscriberTest extends AppKernelTestCase
         $this->createEvent($this->createPlace($toulouse, 'Le Bikini'), 10);
         $this->createEvent($this->createPlace($bordeaux, 'Le Rocher'), -60);
 
-        self::assertSame(['/toulouse/', '/toulouse/agenda'], $this->collectSection('agenda'));
+        self::assertSame(['/toulouse/'], $this->collectSection('agenda'));
     }
 
     public function testCategoryPagesNeedAFullPageOfUpcomingEvents(): void
@@ -78,7 +78,6 @@ final class SitemapSuscriberTest extends AppKernelTestCase
 
         self::assertSame([
             '/toulouse/',
-            '/toulouse/agenda',
             '/toulouse/agenda/sortir/concert',
             '/toulouse/agenda/sortir/spectacle',
             '/toulouse/agenda/sortir/exposition',
