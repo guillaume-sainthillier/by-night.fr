@@ -15,8 +15,11 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Dto\TagDto;
+use App\Utils\HoursLabel;
 use App\Utils\HtmlFormatter;
 use App\Utils\Util;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 final readonly class Cleaner
 {
@@ -29,10 +32,6 @@ final readonly class Cleaner
     public function cleanEvent(EventDto $dto): void
     {
         $dto->endDate ??= $dto->startDate;
-        // Midnight is how the feeds write a day without a time
-        if ('00:00' === $dto->startTime?->format('H:i')) {
-            $dto->startTime = null;
-        }
 
         // Every value must fit its column: MySQL refuses a longer one and the whole batch fails with it
         $dto->name = $this->fit($this->clean($dto->name ?? ''), 255);
@@ -75,6 +74,13 @@ final readonly class Cleaner
         foreach ($dto->timesheets as $timesheet) {
             $this->cleanEventTimesheet($timesheet);
         }
+
+        if ([] === $dto->timesheets) {
+            // One session: the event's own
+            [$dto->startTime, $dto->endTime, $dto->hours] = $this->cleanSlot($dto->startTime, $dto->endTime, $dto->hours);
+        } else {
+            [$dto->startTime, $dto->endTime] = $this->span($dto->timesheets);
+        }
     }
 
     /**
@@ -102,6 +108,79 @@ final readonly class Cleaner
     public function cleanEventTimesheet(EventTimesheetDto $dto): void
     {
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
+        [$dto->startTime, $dto->endTime, $dto->hours] = $this->cleanSlot($dto->startTime, $dto->endTime, $dto->hours);
+    }
+
+    /**
+     * The times of a session, and its label once they are out of it:
+     * - a label that only states a slot ("À 20h30", "De 10h00 à 18h00") gives the times when there are none, and
+     *   goes: the label shown is built from the times;
+     * - the whole day is no time: midnight to 23:59, or 02:00 to 01:59 as OpenAgenda shifts it, as well as a
+     *   midnight start alone, which is how the feeds write a day without a time;
+     * - an end equal to the start is none, a placeholder many producers send.
+     *
+     * @return array{0: DateTimeInterface|null, 1: DateTimeInterface|null, 2: string|null}
+     */
+    private function cleanSlot(?DateTimeInterface $startTime, ?DateTimeInterface $endTime, ?string $hours): array
+    {
+        $slot = HoursLabel::parse($hours);
+        if (null !== $slot) {
+            if (null === $startTime && null === $endTime) {
+                [$startTime, $endTime] = $slot;
+            }
+
+            $hours = null;
+        }
+
+        $start = $startTime?->format('H:i');
+        $end = $endTime?->format('H:i');
+        if (null !== $startTime && null !== $endTime && DateTimeImmutable::createFromInterface($startTime)->modify('-1 minute')->format('H:i') === $end) {
+            return [null, null, $hours];
+        }
+
+        if ($start === $end) {
+            $endTime = null;
+        }
+
+        if ('00:00' === $start && null === $endTime) {
+            $startTime = null;
+        }
+
+        return [$startTime, $endTime, $hours];
+    }
+
+    /**
+     * The span of the sessions: the time the first one starts (the earliest day, then the earliest time given that
+     * day) and the time the last one ends (the latest day, then the latest time given that day). Null when that day
+     * gives none.
+     *
+     * @param list<EventTimesheetDto> $timesheets
+     *
+     * @return array{0: DateTimeInterface|null, 1: DateTimeInterface|null}
+     */
+    private function span(array $timesheets): array
+    {
+        $first = null;
+        $last = null;
+        foreach ($timesheets as $timesheet) {
+            $startDay = $timesheet->startAt?->format('Y-m-d');
+            if (null === $startDay) {
+                continue;
+            }
+
+            $endDay = $timesheet->endAt?->format('Y-m-d') ?? $startDay;
+            $start = $timesheet->startTime?->format('H:i');
+            $end = $timesheet->endTime?->format('H:i');
+            if (null === $first || $startDay < $first[0] || ($startDay === $first[0] && null !== $start && (null === $first[1] || $start < $first[1]))) {
+                $first = [$startDay, $start, $timesheet->startTime];
+            }
+
+            if (null === $last || $endDay > $last[0] || ($endDay === $last[0] && null !== $end && (null === $last[1] || $end > $last[1]))) {
+                $last = [$endDay, $end, $timesheet->endTime];
+            }
+        }
+
+        return [$first[2] ?? null, $last[2] ?? null];
     }
 
     /**
