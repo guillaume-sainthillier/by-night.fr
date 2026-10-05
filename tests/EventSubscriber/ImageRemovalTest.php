@@ -82,7 +82,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         $sourcePath = $this->storedPath($event->getImageSystem()->getName());
         $this->renderThumbnails($memberPath);
         $this->renderThumbnails($sourcePath);
-        $this->transport()->reset();
+        $this->resetTransports();
 
         self::getContainer()->get(EventImageRemover::class)->remove($event);
         save($event);
@@ -113,7 +113,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         );
 
         // Thumbnails: deleted from the storage, then a prefix purge queued for Cloudflare
-        $this->transport()->reset();
+        $this->resetTransports();
         $thumbnailsHandler = self::getContainer()->get(RemoveImageThumbnailsHandler::class);
         foreach ($sent as $message) {
             if ($message instanceof RemoveImageThumbnails) {
@@ -157,7 +157,7 @@ final class ImageRemovalTest extends AppKernelTestCase
         $event = EventFactory::createOne();
         $event->setImageFile($this->png($name));
         save($event);
-        $this->transport()->reset();
+        $this->resetTransports();
 
         return $event;
     }
@@ -245,15 +245,36 @@ final class ImageRemovalTest extends AppKernelTestCase
      */
     private function sentMessages(): array
     {
-        return array_values(array_map(static fn ($envelope): object => $envelope->getMessage(), $this->transport()->getSent()));
+        $messages = [];
+        foreach ($this->transports() as $transport) {
+            foreach ($transport->getSent() as $envelope) {
+                $messages[] = $envelope->getMessage();
+            }
+        }
+
+        return $messages;
     }
 
-    private function transport(): InMemoryTransport
+    private function resetTransports(): void
     {
-        $transport = self::getContainer()->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $transport);
+        foreach ($this->transports() as $transport) {
+            $transport->reset();
+        }
+    }
 
-        return $transport;
+    /**
+     * The thumbnail removals go to "async", the Cloudflare purges to "cdn".
+     *
+     * @return list<InMemoryTransport>
+     */
+    private function transports(): array
+    {
+        $transports = [self::getContainer()->get('messenger.transport.async'), self::getContainer()->get('messenger.transport.cdn')];
+        foreach ($transports as $transport) {
+            self::assertInstanceOf(InMemoryTransport::class, $transport);
+        }
+
+        return $transports;
     }
 
     private function events(): FilesystemOperator

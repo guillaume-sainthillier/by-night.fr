@@ -110,6 +110,22 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         self::assertSame([], $this->purgedTags());
     }
 
+    public function testPurgesDoNotQueueBehindTheSearchIndexUpdates(): void
+    {
+        $event = EventFactory::createOne(['name' => 'Concert']);
+        $async = self::getContainer()->get('messenger.transport.async');
+        self::assertInstanceOf(InMemoryTransport::class, $async);
+        $async->reset();
+
+        $event->setName('Concert annulé');
+        save($event);
+
+        self::assertNotSame([], $this->purgedTags());
+        foreach ($async->getSent() as $envelope) {
+            self::assertNotInstanceOf(PurgeCdnCacheTag::class, $envelope->getMessage(), 'the Cloudflare throttle would hold up the "async" worker');
+        }
+    }
+
     public function testANewEventPurgesNothing(): void
     {
         $this->transport()->reset();
@@ -139,7 +155,7 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
 
     private function transport(): InMemoryTransport
     {
-        $transport = self::getContainer()->get('messenger.transport.async');
+        $transport = self::getContainer()->get('messenger.transport.cdn');
         self::assertInstanceOf(InMemoryTransport::class, $transport);
 
         return $transport;
