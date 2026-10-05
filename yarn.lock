@@ -341,6 +341,16 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@maskito/core@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@maskito/core/-/core-5.6.0.tgz#4ad12a2105bc202cd9e34be0d7647a8b87f5d8b7"
+  integrity sha512-CchnaPiXWy4llMEsb6AG4o7CwlyS2j/1ttHQXo0FMnLhcA5OwlFgMpEb6gCZkUN5a0Bns8UTjm7eUpVBHRoqUQ==
+
+"@maskito/kit@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@maskito/kit/-/kit-5.6.0.tgz#26a5f5f90353367b3d7ebf80946c6acf056fb2f4"
+  integrity sha512-QbOElQlC/fUlZG7KhNKDDTovXCp1hnm9BT6JzffW/y3hKEepDn3iWAbUxi4mHnQEkrWw24LWI1j8VENdlGgmbQ==
+
 "@napi-rs/wasm-runtime@^1.1.6":
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.4.tgz#ae38d9ea8483942054c5d82f00c0163374cd1e5f"

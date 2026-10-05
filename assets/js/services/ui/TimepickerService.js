@@ -1,3 +1,5 @@
+import { Maskito } from '@maskito/core'
+import { maskitoTime } from '@maskito/kit'
 import { Calendar, time } from 'vanilla-calendar-pro'
 import 'vanilla-calendar-pro/styles/layout/core.css'
 import 'vanilla-calendar-pro/styles/layout/time.css'
@@ -25,6 +27,10 @@ export function create({ element, step = 5 } = {}) {
     element.title ||= 'Heure au format hh:mm'
     element.placeholder ||= 'hh:mm'
 
+    // Typing "2030" gives "20:30", "9" gives "09:", and no hour past 23 or minute past 59 gets in. The arrow keys
+    // move the segment under the caret by one.
+    const mask = new Maskito(element, maskitoTime({ mode: 'HH:MM', step: 1 }))
+
     const calendar = new Calendar(element, {
         extensions: [time],
         inputMode: true,
@@ -35,21 +41,38 @@ export function create({ element, step = 5 } = {}) {
         timeStepMinute: step,
         selectedTime: TIME_PATTERN.test(element.value) ? element.value : DEFAULT_TIME,
         // Starts from what was typed in the field since the last opening
-        onShow(self) {
-            if (TIME_PATTERN.test(element.value) && element.value !== self.context.selectedTime) {
-                self.set({ selectedTime: element.value })
-            }
-        },
+        onShow: (self) => follow(self),
         onChangeToInput(self) {
+            if (element.value === self.context.selectedTime) return
+
             element.value = self.context.selectedTime
             // The listeners of the field (timesheet-hours-sync) read it as it is typed
             element.dispatchEvent(new Event('input', { bubbles: true }))
             element.dispatchEvent(new Event('change', { bubbles: true }))
         },
     })
+
+    // Moves the sliders to a complete time typed in the field
+    const follow = (self) => {
+        if (TIME_PATTERN.test(element.value) && element.value !== self.context.selectedTime) {
+            self.set({ selectedTime: element.value })
+        }
+    }
+
+    const onInput = () => {
+        if (calendar.context.isShowInInputMode) {
+            follow(calendar)
+        }
+    }
+
     calendar.init()
+    element.addEventListener('input', onInput)
 
     return {
-        destroy: () => calendar.destroy(),
+        destroy: () => {
+            element.removeEventListener('input', onInput)
+            mask.destroy()
+            calendar.destroy()
+        },
     }
 }
