@@ -343,12 +343,13 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
         return $this->createQueryBuilder('c')
             ->where('country.slug = :country')
             ->setParameter('country', $countrySlug)
+            // The order of admin_zone_type_population_idx (type, population, then the id every InnoDB index ends
+            // with), read backwards: the first cities found are the ones listed, < 1 ms. A tie broken by name sorted
+            // the ~59k cities of France first, ~150 ms
             ->orderBy('c.population', SortDirection::Descending)
-            ->addOrderBy('c.name', SortDirection::Ascending)
+            ->addOrderBy('c.id', SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
-            // Sorting the ~44k cities of France takes ~150 ms, and they only change with a GeoNames import
-            ->enableResultCache(86400) // 1 day
             ->getResult();
     }
 

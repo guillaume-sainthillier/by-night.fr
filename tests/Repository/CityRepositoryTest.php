@@ -57,6 +57,28 @@ final class CityRepositoryTest extends AppKernelTestCase
         self::assertSame(array_fill(0, 4, ParameterType::STRING), array_values($query['types']));
     }
 
+    /**
+     * In the order of admin_zone_type_population_idx read backwards (a tie between populations broken by the latest
+     * id): MySQL reads the first cities it lists instead of sorting every city of the country.
+     */
+    public function testTheBiggestCitiesOfACountryComeMostPopulatedFirst(): void
+    {
+        $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'slug' => 'france']);
+        $toulouse = CityFactory::createOne(['name' => 'Toulouse', 'country' => $france, 'population' => 500_000]);
+        // Same population: the latest GeoNames id first, whatever the name
+        $nice = CityFactory::createOne(['id' => 2_990_440, 'name' => 'Nice', 'country' => $france, 'population' => 340_000]);
+        $lille = CityFactory::createOne(['id' => 2_998_324, 'name' => 'Lille', 'country' => $france, 'population' => 340_000]);
+        CityFactory::createOne(['name' => 'Albi', 'country' => $france, 'population' => 50_000]);
+        CityFactory::createOne(['name' => 'Bruxelles', 'country' => CountryFactory::createOne(['id' => 'BE', 'name' => 'Belgique']), 'population' => 1_200_000]);
+
+        $cities = self::getContainer()->get(CityRepository::class)->findBiggestOfCountry('france', 3);
+
+        self::assertSame(
+            [$toulouse->getId(), $lille->getId(), $nice->getId()],
+            array_map(static fn (City $city): ?int => $city->getId(), $cities),
+        );
+    }
+
     public function testCitiesFoundByNameAndByPostalCodeAreMergedOnce(): void
     {
         $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
