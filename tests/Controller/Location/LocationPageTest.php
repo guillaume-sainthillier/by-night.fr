@@ -148,16 +148,13 @@ final class LocationPageTest extends WebTestCase
     public function testTheUniversesCountTheEventsToComeOfEachType(string $url, string $atName): void
     {
         $client = self::createClient();
+        $this->stubAgendaSearch();
         $toulouse = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
         $tomorrow = new DateTimeImmutable('tomorrow');
         EventFactory::new()->withDates($tomorrow)->many(2)->create(['place' => $place, 'agendaTypes' => ['concert']]);
         EventFactory::new()->withDates($tomorrow)->create(['place' => $place, 'agendaTypes' => ['concert', 'family']]);
         self::counter()->refresh();
-        // The counter writes the counts by query: the page reads them from the entities already loaded
-        $france = $toulouse->getCountry();
-        refresh($toulouse);
-        refresh($france);
 
         $crawler = $client->request('GET', $url);
 
