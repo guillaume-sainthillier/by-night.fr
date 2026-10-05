@@ -10,6 +10,7 @@
 
 namespace App\Importer;
 
+use App\Doctrine\Sluggable\CitySlugHandler;
 use App\Entity\AdminZone;
 use App\Entity\AdminZone1;
 use App\Entity\AdminZone2;
@@ -52,6 +53,7 @@ final readonly class CountryImporter
             Monitor::writeln(\sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->em->persist($country);
             $this->em->flush();
+            $this->freeCountrySlug($country);
         } else {
             Monitor::writeln(\sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
         }
@@ -60,6 +62,24 @@ final readonly class CountryImporter
         $this->createZipCities($country);
         $this->cleanDatas($country);
         $this->deleteEmptyDatas($country);
+    }
+
+    /**
+     * A new country takes its slug from the city that had it: they share the URLs ("/luxembourg"), and the
+     * country's comes first. The city's events and venues redirect to its new slug by themselves.
+     */
+    private function freeCountrySlug(Country $country): void
+    {
+        $city = $this->em->getRepository(City::class)->findOneBy(['slug' => $country->getSlug()]);
+        if (null === $city) {
+            return;
+        }
+
+        $slug = CitySlugHandler::freeSlug($this->em->getConnection(), (string) $country->getSlug());
+        Monitor::writeln(\sprintf('La ville <info>%s</info> prend le slug <info>%s</info>', $city->getName(), $slug));
+        // Zones track their changes explicitly (DEFERRED_EXPLICIT): persist() schedules the update
+        $this->em->persist($city->setSlug($slug));
+        $this->em->flush();
     }
 
     private function createAdminZones(Country $country): void

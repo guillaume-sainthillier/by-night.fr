@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Doctrine\Sluggable\CitySlugHandler;
 use App\Repository\AdminZoneRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -46,6 +47,8 @@ abstract class AdminZone implements Stringable
     #[ORM\Column(length: 200, unique: true)]
     #[Ignore]
     #[Gedmo\Slug(fields: ['name'])]
+    // A city's slug is never a country's: they share the URLs
+    #[Gedmo\SlugHandler(class: CitySlugHandler::class)]
     protected ?string $slug = null;
 
     #[ORM\Column(type: Types::STRING, length: 200)]
