@@ -220,6 +220,27 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     }
 
     /**
+     * The cities with at least $minEvents published events to come, as last counted by UpcomingEventCounter, the
+     * busiest first: the agendas /llms.txt lists. admin_zone_type_upcoming_idx ends with this order, so MySQL reads
+     * the range from the index instead of grouping the events to come.
+     *
+     * @return iterable<array{name: string, slug: string, department: string|null, country: string, events: int|string}>
+     */
+    public function findAllLlmsTxt(int $minEvents): iterable
+    {
+        return parent::createQueryBuilder('c')
+            ->select('c.name, c.slug, p.name AS department, co.displayName AS country, c.upcomingEvents AS events')
+            ->leftJoin('c.parent', 'p')
+            ->join('c.country', 'co')
+            ->where('c.upcomingEvents >= :minEvents')
+            ->setParameter('minEvents', $minEvents)
+            ->orderBy('c.upcomingEvents', SortDirection::Descending)
+            ->addOrderBy('c.population', SortDirection::Descending)
+            ->getQuery()
+            ->toIterable();
+    }
+
+    /**
      * @return iterable<array{citySlug: string, tagId: int, tagSlug: string}>
      */
     public function findAllTagsSitemap(): iterable

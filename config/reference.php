@@ -2518,6 +2518,19 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     script_attributes?: list<mixed>,
  *     link_attributes?: list<mixed>,
  * }
+ * @psalm-type LlmsTxtConfig = array{
+ *     title?: scalar|Param|null, // The H1 of the file, the name of the site. Required, unless a LlmsTxtPopulateEvent listener sets it. // Default: null
+ *     summary?: scalar|Param|null, // A short summary of the site, rendered as a blockquote. // Default: null
+ *     details?: scalar|Param|null, // Free Markdown rendered after the summary: paragraphs, lists, anything but headings. // Default: null
+ *     route_section?: scalar|Param|null, // The section of the routes carrying an "llms_txt" option without a "section" of their own. // Default: "Pages"
+ *     dump_directory?: scalar|Param|null, // Where llms-txt:dump writes the file, and where the controller looks for it before building it on the fly. // Default: "%kernel.project_dir%/public"
+ *     content_type?: scalar|Param|null, // The Content-Type served by the controller. "text/markdown" is more accurate, but browsers download it instead of showing it. // Default: "text/plain; charset=UTF-8"
+ *     max_age?: int|Param, // The Cache-Control max-age of the controller responses, in seconds. // Default: 3600
+ *     discovery?: array{
+ *         link_header?: bool|Param, // Adds the file to the Link header of the HTML pages, through WebLink ("framework.web_link"). // Default: false
+ *         rel?: scalar|Param|null, // The relation of the Link header and of the llms_txt_link() tag. // Default: "llms-txt"
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2547,6 +2560,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     karser_recaptcha3?: KarserRecaptcha3Config,
  *     mjml?: MjmlConfig,
  *     reprise?: RepriseConfig,
+ *     llms_txt?: LlmsTxtConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2580,6 +2594,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
  *         reprise?: RepriseConfig,
+ *         llms_txt?: LlmsTxtConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2611,6 +2626,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
  *         reprise?: RepriseConfig,
+ *         llms_txt?: LlmsTxtConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2645,6 +2661,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
  *         reprise?: RepriseConfig,
+ *         llms_txt?: LlmsTxtConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

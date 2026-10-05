@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38794530ec21d05fd959bb086a49a857",
+    "content-hash": "0d369c8bffa8aa22371dcc9db06f2ea3",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5907,6 +5907,76 @@
                 "source": "https://github.com/silarhi/cursor-pagination/tree/2.1.1"
             },
             "time": "2026-10-01T08:37:34+00:00"
+        },
+        {
+            "name": "silarhi/llms-txt-bundle",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silarhi/llms-txt-bundle.git",
+                "reference": "8c4aa00f21803322251550795c0c06920405b4ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silarhi/llms-txt-bundle/zipball/8c4aa00f21803322251550795c0c06920405b4ca",
+                "reference": "8c4aa00f21803322251550795c0c06920405b4ca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/web-link": "^6.4 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.54.0",
+                "friendsofphp/php-cs-fixer": "^3.95.27",
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.2.16",
+                "phpstan/phpstan-strict-rules": "^2.0.12",
+                "phpstan/phpstan-symfony": "^2.0.20",
+                "phpunit/phpunit": "^11.5.55 || ^12 || ^13.1.13",
+                "rector/rector": "^2.6.7",
+                "symfony/browser-kit": "^6.4 || ^7.0 || ^8.0",
+                "symfony/console": "^6.4 || ^7.0 || ^8.0",
+                "symfony/css-selector": "^6.4 || ^7.0 || ^8.0",
+                "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0"
+            },
+            "suggest": {
+                "symfony/console": "Required for the llms-txt:dump command",
+                "symfony/twig-bundle": "Required for the llms_txt_url() and llms_txt_link() Twig functions"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Silarhi\\LlmsTxtBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guillaume Sainthillier",
+                    "email": "guillaume@silarhi.fr"
+                }
+            ],
+            "description": "Build, dump and serve an llms.txt file from your Symfony application, the PrestaSitemapBundle way.",
+            "keywords": [
+                "ai",
+                "geo",
+                "llm",
+                "llms",
+                "llms.txt",
+                "seo",
+                "symfony",
+                "symfony-bundle"
+            ],
+            "support": {
+                "issues": "https://github.com/silarhi/llms-txt-bundle/issues",
+                "source": "https://github.com/silarhi/llms-txt-bundle/tree/v1.1.0"
+            },
+            "time": "2026-10-05T12:03:25+00:00"
         },
         {
             "name": "silarhi/picasso-bundle",

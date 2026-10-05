@@ -13,6 +13,7 @@ namespace App\Repository;
 use App\Entity\Page;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<Page>
@@ -37,6 +38,19 @@ final class PageRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('p')
             ->select('p.slug, p.updatedAt')
+            ->getQuery()
+            ->toIterable();
+    }
+
+    /**
+     * @return iterable<array{slug: string, title: string, metaDescription: string|null}>
+     */
+    public function findAllLlmsTxt(): iterable
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->select('p.slug, p.title, p.metaDescription')
+            ->orderBy('p.title', SortDirection::Ascending)
             ->getQuery()
             ->toIterable();
     }

@@ -26,7 +26,7 @@ final class HomeController extends AbstractController
 
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
-    #[Route(path: '/', name: 'app_index', methods: ['GET'])]
+    #[Route(path: '/', name: 'app_index', options: ['llms_txt' => ['title' => 'Accueil', 'description' => "Découvrez des milliers d'événements près de chez vous : concerts, spectacles, expos, soirées et sorties en famille. Choisissez votre ville et trouvez votre prochaine sortie !"]], methods: ['GET'])]
     public function index(AppContext $appContext, EventRepository $eventRepository, CityRepository $cityRepository): Response
     {
         // The search goes by GET to the agenda of the member's city, until the city picker points it at another one

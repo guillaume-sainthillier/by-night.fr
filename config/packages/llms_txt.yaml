@@ -1,0 +1,12 @@
+# The /llms.txt of the site (https://llmstxt.org), built on the fly: its links come from App\EventSubscriber\LlmsTxtSubscriber
+# and from the "llms_txt" option of the static routes
+llms_txt:
+    title: 'By Night'
+    summary: 'Agenda des sorties partout en France : des milliers de concerts, spectacles, expos, soirées et sorties en famille, ville par ville.'
+    details: |
+        By Night est un agenda de sorties indépendant, né en 2013 à Toulouse. Sa base est mise à jour chaque jour avec les agendas des salles, des villes et des collectifs, et les organisateurs y publient gratuitement leurs événements. La consultation est libre, sans abonnement ni inscription.
+
+        Chaque ville et chaque pays a sa page d'agenda, qui liste ses événements à venir. Les plus actifs sont listés ci-dessous, avec leur nombre de sorties à venir, recompté chaque nuit.
+    discovery:
+        # in the Link header of the pages, through WebLink, next to the <link> tag of base.html.twig
+        link_header: true

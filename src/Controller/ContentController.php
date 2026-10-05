@@ -28,19 +28,19 @@ final class ContentController extends BaseController
     /** The French overseas departments and collectivities, grouped as "l'Outre-Mer" on the "about" page */
     private const array OVERSEAS = ['GP', 'MQ', 'GF', 'RE', 'YT', 'PM', 'BL', 'MF', 'WF', 'PF', 'NC', 'TF'];
 
-    #[Route(path: '/cookie', name: 'app_main_cookie', methods: ['GET'])]
+    #[Route(path: '/cookie', name: 'app_main_cookie', options: ['llms_txt' => ['title' => 'Politique de cookies', 'description' => 'Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.', 'section' => 'Optional']], methods: ['GET'])]
     public function cookie(): Response
     {
         return $this->render('content/cookies.html.twig');
     }
 
-    #[Route(path: '/mentions-legales', name: 'app_legal_mentions', methods: ['GET'])]
+    #[Route(path: '/mentions-legales', name: 'app_legal_mentions', options: ['llms_txt' => ['title' => 'Mentions légales', 'description' => 'Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.', 'section' => 'Optional']], methods: ['GET'])]
     public function legalMentions(): Response
     {
         return $this->render('content/legal-mentions.html.twig');
     }
 
-    #[Route(path: '/a-propos', name: 'app_about', methods: ['GET'])]
+    #[Route(path: '/a-propos', name: 'app_about', options: ['llms_txt' => ['title' => 'À propos de By Night', 'description' => 'By Night est votre guide de sorties en France. Depuis 2013, nous référençons concerts, spectacles, expos et événements pour vous aider à trouver votre prochaine sortie.']], methods: ['GET'])]
     public function about(AppContext $appContext, EventRepository $eventRepository): Response
     {
         // The countries and territories with events to come, the busiest first
@@ -53,7 +53,7 @@ final class ContentController extends BaseController
         ]);
     }
 
-    #[Route(path: '/en-savoir-plus', name: 'app_plus', methods: ['GET'])]
+    #[Route(path: '/en-savoir-plus', name: 'app_plus', options: ['llms_txt' => ['title' => 'Comment publier un événement sur By Night', 'description' => 'Publiez votre événement gratuitement sur By Night en 4 étapes simples : configurez, communiquez, contrôlez et suivez vos événements.']], methods: ['GET'])]
     public function plus(EventRepository $eventRepository): Response
     {
         return $this->render('content/plus.html.twig', [

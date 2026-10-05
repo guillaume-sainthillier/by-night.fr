@@ -29,7 +29,7 @@ final class SearchController extends AbstractController
 {
     private const int ITEMS_PER_PAGE = 20;
 
-    #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
+    #[Route(path: '/', name: 'app_search_index', options: ['llms_txt' => ['title' => 'Recherche', 'description' => 'Trouvez des événements, concerts, spectacles et sorties parmi des milliers de références.']], methods: ['GET'])]
     public function index(Request $request, RepositoryManagerInterface $rm, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         // Scanners send bytes that are not UTF-8 ("q=e%C0%A7"): they would break the JSON-LD of the page
