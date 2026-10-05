@@ -10,6 +10,8 @@
 
 namespace App\Controller;
 
+use App\App\LazyLocationFactory;
+use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Repository\EventRepository;
@@ -31,7 +33,7 @@ final class SearchController extends AbstractController
     private const int ITEMS_PER_PAGE = 20;
 
     #[Route(path: '/', name: 'app_search_index', options: ['llms_txt' => new LlmsTxtEntry(title: 'Recherche', description: 'Trouvez des événements, concerts, spectacles et sorties parmi des milliers de références.')], methods: ['GET'])]
-    public function index(Request $request, RepositoryManagerInterface $rm, EventRepository $eventRepository, UserRepository $userRepository): Response
+    public function index(Request $request, RepositoryManagerInterface $rm, EventRepository $eventRepository, UserRepository $userRepository, LazyLocationFactory $lazyLocationFactory): Response
     {
         // Scanners send bytes that are not UTF-8 ("q=e%C0%A7"): they would break the JSON-LD of the page
         $q = trim(mb_scrub($request->query->getString('q'), 'UTF-8'));
@@ -45,16 +47,22 @@ final class SearchController extends AbstractController
             $type = null;
         }
 
+        // The city of the page the search came from (the header): its events and those around come first. A slug,
+        // which may name a city renamed or merged since: no city then
+        $citySlug = $request->query->getString('city');
+        $near = '' !== $citySlug ? $lazyLocationFactory->createWithCity($citySlug)?->getCity() : null;
+
         $events = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
         $users = $this->createEmptyPaginator($page, self::ITEMS_PER_PAGE);
         if ('' !== $q) {
             if (!$type || 'evenements' === $type) { // Search for events
-                $events = $this->searchEvents($rm, $eventRepository, $q, $page, self::ITEMS_PER_PAGE);
+                $events = $this->searchEvents($rm, $eventRepository, $q, $near, $page, self::ITEMS_PER_PAGE);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('search/content-events.html.twig', [
                         'type' => $type,
                         'term' => $q,
+                        'near' => $near,
                         'page' => $page,
                         'events' => $events,
                     ]);
@@ -68,6 +76,7 @@ final class SearchController extends AbstractController
                     return $this->render('search/content-users.html.twig', [
                         'type' => $type,
                         'term' => $q,
+                        'near' => $near,
                         'page' => $page,
                         'users' => $users,
                     ]);
@@ -77,6 +86,7 @@ final class SearchController extends AbstractController
 
         return $this->render('search/index.html.twig', [
             'term' => $q,
+            'near' => $near,
             'type' => $type,
             'page' => $page,
             'events' => $events,
@@ -87,11 +97,11 @@ final class SearchController extends AbstractController
     /**
      * @return PagerfantaInterface<Event>
      */
-    private function searchEvents(RepositoryManagerInterface $rm, EventRepository $eventRepository, ?string $query, int $page, int $limit): PagerfantaInterface
+    private function searchEvents(RepositoryManagerInterface $rm, EventRepository $eventRepository, ?string $query, ?City $near, int $page, int $limit): PagerfantaInterface
     {
         /** @var EventElasticaRepository $repoSearch */
         $repoSearch = $rm->getRepository(Event::class);
-        $search = new SearchEvent()->setTerm($query);
+        $search = new SearchEvent()->setTerm($query)->setNear($near);
 
         $adapter = $repoSearch->findWithSearch($search);
 

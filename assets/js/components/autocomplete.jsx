@@ -16,6 +16,7 @@ import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
 import UserIcon from '@/js/icons/lucide/User'
 import { splitHighlights } from '@/js/utils/highlight'
 import { plural } from '@/js/utils/plural'
+import { searchPageHref } from '@/js/utils/searchPage'
 
 export default function init({
     autocompleteSelector = '#autocomplete',
@@ -158,10 +159,7 @@ export default function init({
                     {children}
                     {state.query && state.status === 'idle' && state.collections.length > 0 && searchPageUrl && (
                         <div className="aa-PanelFooter">
-                            <a
-                                href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`}
-                                className="aa-ViewAllLink"
-                            >
+                            <a href={searchPageHref(searchPageUrl, state.query)} className="aa-ViewAllLink">
                                 Voir tous les résultats pour «&nbsp;<strong>{state.query}</strong>&nbsp;»
                             </a>
                         </div>
@@ -230,10 +228,7 @@ export default function init({
                             Aucun résultat pour <strong>«&nbsp;{state.query}&nbsp;»</strong>.
                         </h2>
                         {searchPageUrl && (
-                            <a
-                                href={`${searchPageUrl}?q=${encodeURIComponent(state.query)}`}
-                                className="btn btn-primary mt-3"
-                            >
+                            <a href={searchPageHref(searchPageUrl, state.query)} className="btn btn-primary mt-3">
                                 Essayer la recherche avancée
                             </a>
                         )}

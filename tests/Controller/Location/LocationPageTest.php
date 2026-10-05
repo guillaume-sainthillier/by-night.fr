@@ -71,6 +71,22 @@ final class LocationPageTest extends AppWebTestCase
         self::assertSelectorTextSame('#upcoming-count', '3 sorties à venir');
     }
 
+    /**
+     * The header search starts from the city of the page: its suggestions, its results and its search page favour the
+     * events around it.
+     */
+    public function testTheHeaderSearchStartsFromTheCityOfThePage(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('#autocomplete[data-search-url="/api/search?city=toulouse"][data-suggestions-url="/api/search/suggestions?city=toulouse"][data-search-page-url="/recherche/?city=toulouse"]');
+    }
+
     public function testACountryWithFewCitiesRanksNone(): void
     {
         $client = self::createClient();

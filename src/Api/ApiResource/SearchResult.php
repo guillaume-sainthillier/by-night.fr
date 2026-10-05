@@ -43,6 +43,14 @@ use Symfony\Component\Validator\Constraints as Assert;
                         new Assert\Length(min: 1, max: 200),
                     ],
                 ),
+                'city' => new QueryParameter(
+                    schema: ['type' => 'string', 'maxLength' => 255],
+                    description: 'The slug of the city of the visitor, if the page knows one: its events and those around come first',
+                    required: false,
+                    constraints: [
+                        new Assert\Length(max: 255),
+                    ],
+                ),
             ],
         ),
         new GetCollection(
