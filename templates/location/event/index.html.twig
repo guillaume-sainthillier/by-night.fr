@@ -63,6 +63,14 @@
 {% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
 {% block og_image isHiddenDraft ? parent() : original %}
 
+{# The poster morphs from the card the visitor clicked (scss/components/_view-transitions.scss): the first render, which
+   the view transition captures, waits for it to be parsed #}
+{% block head_js %}
+    {% if not isHiddenDraft %}
+        <link rel="expect" href="#event-poster" blocking="render">
+    {% endif %}
+{% endblock %}
+
 {% block json_ld %}
     {% if not isHiddenDraft %}
         {{ event_json_ld(event) }}
@@ -160,7 +168,7 @@
                 <div class="event-layout-media">
                     <div class="card card-layout overflow-visible mb-0">
                         <a class="image-gallery card-img-top d-block overflow-hidden" href="{{ original }}" title="{{ eventShortName }}">
-                            <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" priority="{{ true }}" />
+                            <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" priority="{{ true }}" id="event-poster" />
                         </a>
                         <div class="card-footer d-flex flex-wrap align-items-center gap-2">
                             {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
