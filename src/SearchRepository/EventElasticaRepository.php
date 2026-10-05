@@ -11,6 +11,7 @@
 namespace App\SearchRepository;
 
 use App\Enum\AgendaType;
+use App\Enum\DateRangePreset;
 use App\Enum\PricePreset;
 use App\Search\AgendaFacets;
 use App\Search\DateRange;
@@ -334,7 +335,8 @@ final class EventElasticaRepository extends Repository
                     'type',
                     'category.name',
                 ])
-                ->setFuzziness('auto')
+                ->setFuzziness(Fuzzy::FUZZINESS)
+                ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
                 ->setOperator('AND')
                 ->setQuery($keywords))
             // Themes are nested documents, which a query on the event itself never reaches
@@ -343,7 +345,8 @@ final class EventElasticaRepository extends Repository
                 ->setScoreMode('max')
                 ->setQuery(new MatchQuery()
                     ->setFieldQuery('themes.name', $keywords)
-                    ->setFieldFuzziness('themes.name', 'auto')
+                    ->setFieldFuzziness('themes.name', Fuzzy::FUZZINESS)
+                    ->setFieldPrefixLength('themes.name', Fuzzy::PREFIX_LENGTH)
                     ->setFieldOperator('themes.name', MatchQuery::OPERATOR_AND)));
     }
 
@@ -414,7 +417,9 @@ final class EventElasticaRepository extends Repository
     }
 
     /**
-     * Returns a paginated list of hybrid results with highlights.
+     * The events of the header search, with their highlights: those with a session still to come, as the agenda
+     * lists. Over the whole index, the best scores were mostly events long over ("marché de noël" suggested the
+     * markets of 2016 to 2022), and the search took 4 to 6 times longer.
      *
      * @return PagerfantaInterface<HybridResult>
      */
@@ -431,11 +436,13 @@ final class EventElasticaRepository extends Repository
                 'place.cityName^2',
                 'description',
             ])
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
             ->setQuery($query);
 
-        $finalQuery = Query::create($multiMatch);
+        $upcoming = new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(DateRangePreset::Anytime->range()));
+        $finalQuery = Query::create(new BoolQuery()->addMust($multiMatch)->addFilter($upcoming));
         // Loaded from the database by their _id; the highlights come without the document
         $finalQuery->setSource(false);
 

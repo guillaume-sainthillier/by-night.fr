@@ -32,7 +32,8 @@ final class CityElasticaRepository extends Repository
                 'name.autocomplete^3',
                 'parent.name',
             ])
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
             ->setQuery($q ?? '')
         ;
@@ -63,7 +64,8 @@ final class CityElasticaRepository extends Repository
                 'name.autocomplete^3',
                 'parent.name',
             ])
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
             ->setQuery($query);
 

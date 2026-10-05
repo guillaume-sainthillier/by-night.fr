@@ -33,7 +33,8 @@ final class UserElasticaRepository extends Repository
         $match
             ->setFields(['username'])
             ->setQuery($q ?? '')
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
         ;
 
@@ -58,7 +59,8 @@ final class UserElasticaRepository extends Repository
         $multiMatch
             ->setFields(['username'])
             ->setQuery($query)
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND');
 
         $finalQuery = Query::create($multiMatch);

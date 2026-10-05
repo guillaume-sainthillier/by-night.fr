@@ -32,7 +32,8 @@ final class TagElasticaRepository extends Repository
                 'name^5',
                 'name.autocomplete^3',
             ])
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
             ->setQuery($q);
 
@@ -57,7 +58,8 @@ final class TagElasticaRepository extends Repository
                 'name^5',
                 'name.autocomplete^3',
             ])
-            ->setFuzziness('auto')
+            ->setFuzziness(Fuzzy::FUZZINESS)
+            ->setPrefixLength(Fuzzy::PREFIX_LENGTH)
             ->setOperator('AND')
             ->setQuery($query);
 

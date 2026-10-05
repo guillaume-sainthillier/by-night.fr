@@ -367,7 +367,7 @@ final class EventElasticaRepositoryTest extends TestCase
         self::assertEquals(['nested' => [
             'path' => 'themes',
             'score_mode' => 'max',
-            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'fuzziness' => 'auto', 'operator' => 'and']]],
+            'query' => ['match' => ['themes.name' => ['query' => 'jazz manouche', 'fuzziness' => 'auto', 'prefix_length' => 1, 'operator' => 'and']]],
         ]], $themes);
     }
 
@@ -403,6 +403,28 @@ final class EventElasticaRepositoryTest extends TestCase
 
         self::assertFalse($queries[0]['_source']);
         self::assertSame(['name', 'place.name'], array_keys($queries[0]['highlight']['fields']));
+    }
+
+    /**
+     * The header search suggests the events still to come, as the agenda lists them, never those long over.
+     */
+    public function testTheHeaderSearchSuggestsTheEventsStillToCome(): void
+    {
+        $queries = [];
+        $finder = $this->createStub(PaginatedFinderInterface::class);
+        $finder->method('createHybridPaginatorAdapter')->willReturnCallback(function (Query $query) use (&$queries): PaginatorAdapterInterface {
+            $queries[] = $query->toArray();
+
+            return $this->createStub(PaginatorAdapterInterface::class);
+        });
+        new EventElasticaRepository($finder)->findWithHighlightsPaginated('marché de noël');
+
+        $bool = $queries[0]['query']['bool'];
+        self::assertSame('marché de noël', $bool['must'][0]['multi_match']['query']);
+        self::assertEquals([['nested' => [
+            'path' => 'sessions',
+            'query' => ['bool' => ['filter' => [['range' => ['sessions.endAt' => ['gte' => new DateTimeImmutable('today')->format('Y-m-d')]]]]]],
+        ]]], $bool['filter']);
     }
 
     /**
