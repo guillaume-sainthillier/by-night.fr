@@ -388,7 +388,7 @@ final class EventControllerTest extends WebTestCase
     }
 
     /**
-     * Whether a JSON-LD block of the page describes the event: its @type is a subtype as often as "Event", its status
+     * Whether a JSON-LD block of the page describes the event: its type is a subtype as often as "Event", its status
      * is always there.
      */
     private function hasEventJsonLd(Crawler $crawler): bool
