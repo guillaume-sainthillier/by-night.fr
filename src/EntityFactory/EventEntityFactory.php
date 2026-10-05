@@ -69,7 +69,8 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $entity->setUpdatedAt($dto->updatedAt);
         }
 
-        $entity->getImage()->setDimensions($dto->image?->getDimensions());
+        // "simple_array" stores [] as NULL and loads NULL as []: setting null back made every merge a change
+        $entity->getImage()->setDimensions($dto->image?->getDimensions() ?? []);
         $entity->getImage()->setMimeType($dto->image?->getMimeType());
         $entity->getImage()->setName($dto->image?->getName());
         $entity->getImage()->setOriginalName($dto->image?->getOriginalName());
