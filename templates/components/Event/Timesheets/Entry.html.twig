@@ -16,7 +16,8 @@
             {{ timesheet.endAt|format_date('full') }}
         </time>
     {% endif %}
-    {% if timesheet.hours %}
-        <span class="text-muted">({{ timesheet.hours }})</span>
+    {% set hours = session_hours(timesheet) %}
+    {% if hours %}
+        <span class="text-muted">({{ hours }})</span>
     {% endif %}
 </div>

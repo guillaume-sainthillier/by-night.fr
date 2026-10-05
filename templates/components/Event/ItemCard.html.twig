@@ -45,8 +45,9 @@
                             </time>
                         {% endif %}
                         <small class="text-muted">
-                            {%- if session.hours %}
-                                - {{ session.hours }}
+                            {%- set hours = session_hours(session) %}
+                            {%- if hours %}
+                                - {{ hours }}
                             {%- endif %}
                             {%- if otherDates > 0 %}
                                 (+{{ '{count, plural, one {# autre date} other {# autres dates}}'|trans({count: otherDates}, 'messages+intl-icu') }})

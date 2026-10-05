@@ -244,12 +244,13 @@
                                 </div>
                             </div>
 
-                            {% if event.hours %}
+                            {% set hours = event_hours(event) %}
+                            {% if hours %}
                                 <div class="detail-item">
                                     <twig:Icon name="lucide:clock" class="text-primary" />
                                     <div>
                                         <div class="subheader">Horaires</div>
-                                        <div class="fw-semibold">{{ event.hours }}</div>
+                                        <div class="fw-semibold">{{ hours }}</div>
                                     </div>
                                 </div>
                             {% endif %}

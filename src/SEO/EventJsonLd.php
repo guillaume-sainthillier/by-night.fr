@@ -70,7 +70,7 @@ final readonly class EventJsonLd
 
         $endDate = $event->getEndDate() ?? $event->getStartDate();
         if ($endDate instanceof DateTimeImmutable) {
-            $schema['endDate'] = $endDate->format('Y-m-d');
+            $schema['endDate'] = $this->endDate($event, $endDate);
         }
 
         if ($event->hasImage()) {
@@ -212,6 +212,27 @@ final readonly class EventJsonLd
                 'slug' => $user->getSlug(),
             ], UrlGeneratorInterface::ABSOLUTE_URL),
         ];
+    }
+
+    /**
+     * The last day, with the time the last session ends when the source gives it (no offset, as the start). An end not
+     * after the start, the same day, goes past midnight (21:00 to 02:00): it is on the next day.
+     */
+    private function endDate(Event $event, DateTimeImmutable $endDate): string
+    {
+        $endTime = $event->getEndTime();
+        if (null === $endTime) {
+            return $endDate->format('Y-m-d');
+        }
+
+        $end = $endDate->setTime((int) $endTime->format('G'), (int) $endTime->format('i'));
+        $startTime = $event->getStartTime();
+        $start = $event->getStartDate()?->setTime((int) $startTime?->format('G'), (int) $startTime?->format('i'));
+        if (null !== $start && $end <= $start) {
+            $end = $end->modify('+1 day');
+        }
+
+        return $end->format('Y-m-d\\TH:i');
     }
 
     private function mapEventStatus(?EventStatus $status): string
