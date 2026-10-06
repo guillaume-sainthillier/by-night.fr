@@ -66,7 +66,8 @@ final readonly class EventFamilyResolver
     /**
      * Resolve the families of the given events, just imported or linked: the ones they
      * now belong to and the ones they may have left. Runs in the import transaction,
-     * after the batch has been merged and the EntityManager cleared.
+     * after the batch has been merged and the EntityManager cleared, or in the one of
+     * CrossSourceLinker, its events still managed: it reads them through the identity map.
      *
      * @param int[] $eventIds
      */

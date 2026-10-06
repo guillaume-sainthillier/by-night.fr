@@ -15,7 +15,6 @@ use App\Enum\DuplicateReason;
 use App\Enum\EventStatus;
 use App\Repository\EventRepository;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Finds the shows two sources import at the same venue, among the events that are not over. Read only: it tells
@@ -36,7 +35,6 @@ final readonly class CrossSourceDuplicateFinder
         private EventRepository $eventRepository,
         private EventTitleComparator $titleComparator,
         private CrossSourceMatcher $matcher,
-        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -50,7 +48,7 @@ final readonly class CrossSourceDuplicateFinder
 
     /**
      * The pairs whose titles agree, with the verdict of the full match (their sessions may still keep them apart),
-     * a chunk of venues at a time. The entity manager is cleared between two chunks.
+     * a chunk of venues at a time. Their events stay in the entity manager: whoever reads the chunks clears it.
      *
      * @param list<int> $placeIds
      *
@@ -87,8 +85,6 @@ final readonly class CrossSourceDuplicateFinder
             }
 
             yield new CrossSourceChunk(\count($chunk), $eventPlaces, $this->matchAll($candidates), $identityHashes);
-
-            $this->entityManager->clear();
         }
     }
 

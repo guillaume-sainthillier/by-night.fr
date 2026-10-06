@@ -127,6 +127,9 @@ final readonly class CrossSourceLinker
             }
 
             yield new CrossSourceLinkResult($chunk, $groups, \count($added), \count($removed));
+
+            // The events of a chunk, matched, linked and resolved, are of no use to the next one
+            $this->entityManager->clear();
         }
     }
 
