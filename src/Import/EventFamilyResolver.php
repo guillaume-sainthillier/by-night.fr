@@ -110,7 +110,9 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * Elect a canonical per family and point every other member at it.
+     * Elect a canonical per family and point every other member at it, with the rows
+     * outside the family that pointed at a member (links made before the identity hash):
+     * a redirect never leads to another one.
      *
      * @param string[]         $familyHashes
      * @param array<int, true> $dirty
@@ -126,6 +128,9 @@ final readonly class EventFamilyResolver
             $families[(string) $member->getIdentityHash()][] = $member;
         }
 
+        /** @var array<int, Event> $canonicalOf the canonical of each member now a duplicate */
+        $canonicalOf = [];
+
         foreach ($families as $members) {
             $memberIds = array_map(static fn (Event $member): ?int => $member->getId(), $members);
             $canonical = $this->elect($members);
@@ -134,6 +139,10 @@ final readonly class EventFamilyResolver
             foreach ($members as $member) {
                 $current = $member->getDuplicateOf();
                 $target = $member === $canonical ? null : $canonical;
+                if (null !== $target) {
+                    $canonicalOf[(int) $member->getId()] = $target;
+                }
+
                 if ($current === $target) {
                     continue;
                 }
@@ -145,6 +154,21 @@ final readonly class EventFamilyResolver
 
                 $member->setDuplicateOf($target);
             }
+        }
+
+        if ([] === $canonicalOf) {
+            return;
+        }
+
+        // Read before the flush: a member that pointed at another one is rewired above already
+        foreach ($this->eventRepository->findBy(['duplicateOf' => array_keys($canonicalOf)]) as $row) {
+            $canonical = $canonicalOf[(int) $row->getDuplicateOf()?->getId()] ?? null;
+            if (null === $canonical) {
+                continue;
+            }
+
+            $row->setDuplicateOf($canonical);
+            $dirty[(int) $canonical->getId()] = true;
         }
     }
 
