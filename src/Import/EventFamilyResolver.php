@@ -209,7 +209,9 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * Elect a canonical per family and point every other member at it.
+     * Elect a canonical per family and point every other member at it, with the rows
+     * outside the family that pointed at a member (links made before the identity hash):
+     * a redirect never leads to another one.
      *
      * @param array<int, true> $dirty
      *
@@ -217,6 +219,9 @@ final readonly class EventFamilyResolver
      */
     private function wireFamilies(EventFamilies $families, array &$dirty): int
     {
+        /** @var array<int, Event> $canonicalOf the canonical of each member now a duplicate */
+        $canonicalOf = [];
+
         $wired = 0;
         foreach ($families->families() as $members) {
             ++$wired;
@@ -227,6 +232,10 @@ final readonly class EventFamilyResolver
             foreach ($members as $member) {
                 $current = $member->getDuplicateOf();
                 $target = $member === $canonical ? null : $canonical;
+                if (null !== $target) {
+                    $canonicalOf[(int) $member->getId()] = $target;
+                }
+
                 $reason = null === $target ? null : self::reasonOf($member, $canonical);
                 if ($current === $target && $member->getDuplicateReason() === $reason) {
                     continue;
@@ -238,6 +247,20 @@ final readonly class EventFamilyResolver
                 }
 
                 $member->setDuplicateOf($target, $reason);
+            }
+        }
+
+        // Read before the flush: a member that pointed at another one is rewired above already.
+        // A row followed keeps its reason: a link without one stays one made by hand
+        if ([] !== $canonicalOf) {
+            foreach ($this->eventRepository->findBy(['duplicateOf' => array_keys($canonicalOf)]) as $row) {
+                $canonical = $canonicalOf[(int) $row->getDuplicateOf()?->getId()] ?? null;
+                if (null === $canonical) {
+                    continue;
+                }
+
+                $row->setDuplicateOf($canonical, $row->getDuplicateReason());
+                $dirty[(int) $canonical->getId()] = true;
             }
         }
 
