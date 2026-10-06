@@ -40,13 +40,14 @@ final readonly class StringExtension
     }
 
     /**
-     * The price badge of an event card: {label: "Gratuit", free: true}, or null to show none.
+     * The price badge of an event card: {label: "Gratuit", free: true}, or null to show none. With the event's starting
+     * price, "Dès" the price another source of the show sells it for, when lower.
      *
      * @return array{label: string, free: bool}|null
      */
     #[AsTwigFilter(name: 'price_label')]
-    public function priceLabel(?string $prices): ?array
+    public function priceLabel(?string $prices, ?float $startingPrice = null): ?array
     {
-        return PriceLabel::fromPrices($prices);
+        return PriceLabel::fromPrices($prices, $startingPrice);
     }
 }

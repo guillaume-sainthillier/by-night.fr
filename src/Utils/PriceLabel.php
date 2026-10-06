@@ -22,12 +22,20 @@ final class PriceLabel
     private const int MAX_NOTE_LENGTH = 24;
 
     /**
+     * @param float|null $startingPrice the event's starting price: when its family sells the show at another price than
+     *                                  its own prices say (EventFamilyResolver), "Dès" that price
+     *
      * @return array{label: string, free: bool}|null null when nothing short enough can be said
      */
-    public static function fromPrices(?string $prices): ?array
+    public static function fromPrices(?string $prices, ?float $startingPrice = null): ?array
     {
+        $own = StartingPrice::fromPrices($prices);
+        if (null !== $startingPrice && $startingPrice > 0 && $startingPrice !== $own) {
+            return ['label' => 'Dès ' . self::formatAmount($startingPrice), 'free' => false];
+        }
+
         // "10 € adultes, gratuit pour les enfants" is not a free event, "0€" is (StartingPrice)
-        if (0.0 === StartingPrice::fromPrices($prices)) {
+        if (0.0 === $own) {
             return ['label' => 'Gratuit', 'free' => true];
         }
 

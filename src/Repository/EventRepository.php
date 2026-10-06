@@ -22,6 +22,7 @@ use App\Entity\Tag;
 use App\Entity\UpcomingCategory;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use App\Enum\DuplicateReason;
 use App\Enum\EventStatus;
 use App\Enum\PersonalEventFilter;
 use App\Manager\PreloadManager;
@@ -106,6 +107,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->preloadManager
             ->preloadEntities(City::class, array_map(static fn (Event $entity) => $entity->getPlace()?->getCity()?->getId(), $entities));
 
+        // The cards show the picture a canonical borrows from its family
+        $loadPictureLenders = fn () => $this
+            ->preloadManager
+            ->preloadEntities(Event::class, array_map(static fn (Event $entity) => $entity->getPictureFrom()?->getId(), $entities));
+
         $loadUsers = fn () => $this
             ->preloadManager
             ->preloadEntities(User::class, array_map(static fn (Event $entity) => $entity->getUser()?->getId(), $entities));
@@ -119,6 +125,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         ], true)) {
             $loadTimesheets();
             $loadUsers();
+            $loadPictureLenders();
         }
 
         if (\in_array($view, [
@@ -139,6 +146,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadPlaces();
             $loadCities();
             $loadCategories();
+            $loadPictureLenders();
         }
 
         // The organizer's list names the category under each event
@@ -341,6 +349,93 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orWhere('e.duplicateOf IN (:ids)')
             ->setParameter('ids', $canonicalIds)
             ->orderBy('e.id', SortDirection::Ascending)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The venues where at least two sources list an event that is not over: the only ones where the same show can
+     * be imported twice (App\Import\CrossSource\CrossSourceDuplicateFinder).
+     *
+     * @return list<int>
+     */
+    public function findPlaceIdsListedBySeveralSources(DateTimeImmutable $from): array
+    {
+        $ids = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(e.place) AS placeId')
+            ->where('e.fromData IS NOT NULL')
+            ->andWhere('e.endDate >= :from')
+            ->andWhere('e.place IS NOT NULL')
+            ->groupBy('e.place')
+            ->having('COUNT(DISTINCT e.fromData) > 1')
+            ->orderBy('placeId', SortDirection::Ascending)
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_map(intval(...), $ids);
+    }
+
+    /**
+     * The imported events of these venues that are not over, as plain rows: enough to compare their titles and
+     * dates before loading the few that look alike, and to tell the rows the comparison leaves out (duplicates linked
+     * by hand, events taken back by their source) from those it covers.
+     *
+     * @param list<int> $placeIds
+     *
+     * @return list<array{id: int, placeId: int, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null, duplicateOfId: int|null, duplicateReason: DuplicateReason|null, identityHash: string|null, canonicalIdentityHash: string|null, status: EventStatus|null, draft: bool}>
+     */
+    public function findImportedRowsAtPlaces(array $placeIds, DateTimeImmutable $from): array
+    {
+        if ([] === $placeIds) {
+            return [];
+        }
+
+        /** @var list<array{id: int, placeId: int|string, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null, duplicateOfId: int|string|null, duplicateReason: DuplicateReason|null, identityHash: string|null, canonicalIdentityHash: string|null, status: EventStatus|null, draft: bool|null}> $rows */
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('e.id, IDENTITY(e.place) AS placeId, e.fromData, e.name, e.startDate, e.endDate, p.name AS placeName, c.name AS cityName')
+            ->addSelect('IDENTITY(e.duplicateOf) AS duplicateOfId, e.duplicateReason, e.identityHash, d.identityHash AS canonicalIdentityHash, e.status, e.draft')
+            ->join('e.place', 'p')
+            ->leftJoin('p.city', 'c')
+            ->leftJoin('e.duplicateOf', 'd')
+            ->where('e.place IN (:places)')
+            ->andWhere('e.fromData IS NOT NULL')
+            ->andWhere('e.endDate >= :from')
+            ->orderBy('e.id', SortDirection::Ascending)
+            ->setParameter('places', $placeIds)
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn (array $row): array => [
+            'placeId' => (int) $row['placeId'],
+            'duplicateOfId' => null !== $row['duplicateOfId'] ? (int) $row['duplicateOfId'] : null,
+            'draft' => (bool) $row['draft'],
+        ] + $row, $rows);
+    }
+
+    /**
+     * These events, their timesheets loaded in the same query.
+     *
+     * @param list<int> $ids
+     *
+     * @return Event[]
+     */
+    public function findWithTimesheets(array $ids): array
+    {
+        if ([] === $ids) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('e')
+            ->addSelect('t', 'p')
+            ->leftJoin('e.timesheets', 't')
+            ->leftJoin('e.place', 'p')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
     }

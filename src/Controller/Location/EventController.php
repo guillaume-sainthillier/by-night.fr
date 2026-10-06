@@ -22,6 +22,7 @@ use App\Manager\WidgetsManager;
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
 use App\Security\Voter\EventVoter;
+use App\Ticketing\EventTicketOffers;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,7 +36,7 @@ final class EventController extends BaseController
     #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
     #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
-    public function index(AppContext $appContext, EventPageCache $eventPageCache, EventRedirectManager $eventRedirectManager, CommentRepository $commentRepository, UserRepository $userRepository, WidgetsManager $widgetsManager, string $slug, ?int $id = null): Response
+    public function index(AppContext $appContext, EventPageCache $eventPageCache, EventRedirectManager $eventRedirectManager, CommentRepository $commentRepository, UserRepository $userRepository, WidgetsManager $widgetsManager, EventTicketOffers $eventTicketOffers, string $slug, ?int $id = null): Response
     {
         $location = $appContext->getLocation();
         $event = $eventRedirectManager->getEvent($id, $slug, $location->getSlug(), 'app_event_details');
@@ -94,6 +95,8 @@ final class EventController extends BaseController
             'comments' => $comments,
             'commentForm' => $commentForm,
             'nextEventsData' => $nextEventsData,
+            // Where to book, cheapest first
+            'ticketOffers' => $eventTicketOffers->forEvent($event),
         ];
 
         return $eventPageCache->applyTo($this->render('location/event/index.html.twig', $renderData), $event);

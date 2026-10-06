@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
+use App\Enum\DuplicateReason;
 use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
 use App\Picture\ImageFormats;
@@ -248,6 +249,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $imageRemovedAt = null;
 
+    /**
+     * The member of its family whose picture its page shows, much larger than its own (a CDiscount poster in 2048px
+     * beside Fnac's 222px): set by EventFamilyResolver, the file stays with the row it was downloaded for.
+     */
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'picture_from_id', nullable: true, onDelete: 'SET NULL')]
+    private ?Event $pictureFrom = null;
+
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M', mimeTypes: ImageFormats::MIME_TYPES)]
@@ -361,6 +370,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'duplicates')]
     #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'SET NULL')]
     private ?Event $duplicateOf = null;
+
+    /**
+     * Why it redirects to $duplicateOf, when EventFamilyResolver linked them; null for a link made by hand or before
+     * the identity hash, which the resolver leaves as it is.
+     */
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true, enumType: DuplicateReason::class)]
+    private ?DuplicateReason $duplicateReason = null;
 
     /**
      * The rows redirecting to this event: one page with it, deleted along with it. Left behind,
@@ -943,6 +959,41 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this->startingPrice;
     }
 
+    /**
+     * The lowest price of its family, set by EventFamilyResolver: another source may sell the show for less.
+     */
+    public function setStartingPrice(?float $startingPrice): self
+    {
+        $this->startingPrice = $startingPrice;
+
+        return $this;
+    }
+
+    public function getPictureFrom(): ?self
+    {
+        return $this->pictureFrom;
+    }
+
+    public function setPictureFrom(?self $pictureFrom): self
+    {
+        $this->pictureFrom = $pictureFrom;
+
+        return $this;
+    }
+
+    /**
+     * The event whose picture its page shows: a member of its family with a much larger one, else itself. Its own
+     * pictures taken down on request take the borrowed one down too, and a borrowed one gone since is not shown.
+     */
+    public function getShownPictureEvent(): self
+    {
+        if (null === $this->pictureFrom || null !== $this->imageRemovedAt || !$this->pictureFrom->hasImage()) {
+            return $this;
+        }
+
+        return $this->pictureFrom;
+    }
+
     public function getFromData(): ?string
     {
         return $this->fromData;
@@ -1509,11 +1560,20 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this->duplicateOf;
     }
 
-    public function setDuplicateOf(?self $duplicateOf): self
+    /**
+     * @param DuplicateReason|null $reason why, when the resolver links them; a link made by hand has none
+     */
+    public function setDuplicateOf(?self $duplicateOf, ?DuplicateReason $reason = null): self
     {
         $this->duplicateOf = $duplicateOf;
+        $this->duplicateReason = null === $duplicateOf ? null : $reason;
 
         return $this;
+    }
+
+    public function getDuplicateReason(): ?DuplicateReason
+    {
+        return $this->duplicateReason;
     }
 
     public function isDuplicate(): bool

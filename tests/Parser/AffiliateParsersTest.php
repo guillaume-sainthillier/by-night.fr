@@ -12,6 +12,7 @@ namespace App\Tests\Parser;
 
 use App\Dto\EventDto;
 use App\Entity\Event;
+use App\Parser\AffiliateParsers;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
@@ -43,5 +44,17 @@ final class AffiliateParsersTest extends TestCase
 
         self::assertSame($affiliate, $dto->isAffiliate(), 'The import Firewall reads the DTO');
         self::assertSame($affiliate, $event->isAffiliate(), 'The event page reads the entity');
+    }
+
+    public function testTheAgendasShowAnEventBestThenTheFeedsInOrder(): void
+    {
+        self::assertSame([0, 1, 2, 3, 4], array_map(AffiliateParsers::pageRank(...), [
+            OpenAgendaParser::getParserName(),
+            FnacSpectaclesAwinParser::getParserName(),
+            BilletsReducAwinParser::getParserName(),
+            SeeTicketsKwankoParser::getParserName(),
+            CDiscountAwinParser::getParserName(),
+        ]));
+        self::assertSame(0, AffiliateParsers::pageRank(null), 'A member\'s own event');
     }
 }

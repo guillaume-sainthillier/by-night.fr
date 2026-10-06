@@ -16,6 +16,8 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
+use App\Ticketing\EventTicketOffers;
+use App\Ticketing\TicketOffer;
 use App\Utils\HtmlExcerpter;
 use DateTimeImmutable;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -30,20 +32,26 @@ final readonly class EventJsonLd
         private EventProfilePicture $eventProfilePicture,
         private HtmlExcerpter $htmlExcerpter,
         private EventSchemaType $eventSchemaType,
+        private EventTicketOffers $eventTicketOffers,
     ) {
     }
 
-    public function generateEventJsonLd(Event $event): string
+    /**
+     * @param list<TicketOffer>|null $ticketOffers the offers its page lists (EventTicketOffers), null to read them
+     */
+    public function generateEventJsonLd(Event $event, ?array $ticketOffers = null): string
     {
-        $schema = $this->generateEventSchema($event);
+        $schema = $this->generateEventSchema($event, $ticketOffers ?? $this->eventTicketOffers->forEvent($event));
 
         return $this->toJson($schema);
     }
 
     /**
+     * @param list<TicketOffer> $ticketOffers
+     *
      * @return array<string, mixed>
      */
-    private function generateEventSchema(Event $event): array
+    private function generateEventSchema(Event $event, array $ticketOffers): array
     {
         $schema = [
             '@context' => 'https://schema.org',
@@ -78,7 +86,7 @@ final readonly class EventJsonLd
 
         $schema['location'] = $this->buildLocationSchema($event);
 
-        $offer = $this->buildOfferSchema($event);
+        $offer = $this->buildOffersSchema($event, $ticketOffers);
         if (null !== $offer) {
             $schema['offers'] = $offer;
         }
@@ -185,6 +193,46 @@ final readonly class EventJsonLd
         }
 
         return $offer;
+    }
+
+    /**
+     * The offers its page lists (EventTicketOffers), one per ticketing site, at each site's own price; without any,
+     * the event's own price. A single offer of unknown price is only worth telling when sold out, as the event's own.
+     *
+     * @param list<TicketOffer> $offers
+     *
+     * @return array<string, mixed>|list<array<string, mixed>>|null
+     */
+    private function buildOffersSchema(Event $event, array $offers): ?array
+    {
+        if (EventStatus::Cancelled === $event->getStatus()) {
+            return null;
+        }
+
+        return match (\count($offers)) {
+            0 => $this->buildOfferSchema($event),
+            1 => null === $offers[0]->startingPrice && !$offers[0]->soldOut ? null : self::ticketOfferSchema($offers[0]),
+            default => array_map(self::ticketOfferSchema(...), $offers),
+        };
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function ticketOfferSchema(TicketOffer $offer): array
+    {
+        $schema = [
+            '@type' => 'Offer',
+            'url' => $offer->url,
+            'availability' => $offer->soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+        ];
+
+        if (null !== $offer->startingPrice) {
+            $schema['price'] = $offer->startingPrice;
+            $schema['priceCurrency'] = 'EUR';
+        }
+
+        return $schema;
     }
 
     /**

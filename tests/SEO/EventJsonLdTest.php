@@ -15,11 +15,15 @@ use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Parser\Common\OpenAgendaParser;
 use App\SEO\EventJsonLd;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+
+use function Zenstruck\Foundry\Persistence\refresh;
+use function Zenstruck\Foundry\Persistence\save;
 
 final class EventJsonLdTest extends AppKernelTestCase
 {
@@ -122,6 +126,52 @@ final class EventJsonLdTest extends AppKernelTestCase
         $event = $this->createEvent(['prices' => '12€', 'ticketUrl' => 'https://billetterie.example.org/concert']);
 
         self::assertSame('https://billetterie.example.org/concert', $this->schema($event)['offers']['url']);
+    }
+
+    public function testEverySiteSellingTheShowIsAnOffer(): void
+    {
+        $event = $this->createEvent([
+            'prices' => '25€',
+            'fromData' => FnacSpectaclesAwinParser::getParserName(),
+            'source' => 'https://www.awin1.com/fnac',
+        ]);
+        EventFactory::createOne([
+            'prices' => '22€',
+            'fromData' => CDiscountAwinParser::getParserName(),
+            'source' => 'https://www.awin1.com/cdiscount',
+            'status' => EventStatus::SoldOut,
+            'duplicateOf' => $event,
+        ]);
+        refresh($event);
+
+        $offers = $this->schema($event)['offers'];
+
+        self::assertSame(['https://www.awin1.com/fnac', 'https://www.awin1.com/cdiscount'], array_column($offers, 'url'));
+        self::assertSame([25, 22], array_map(intval(...), array_column($offers, 'price')));
+        self::assertSame(['https://schema.org/InStock', 'https://schema.org/SoldOut'], array_column($offers, 'availability'));
+    }
+
+    public function testTheOnlySiteSellingTheShowIsItsOfferNotTheOrganizersBooking(): void
+    {
+        $event = EventFactory::createOne([
+            'fromData' => OpenAgendaParser::getParserName(),
+            'prices' => '12€',
+            'ticketUrl' => 'https://billetterie.example.org/concert',
+        ]);
+        $duplicate = EventFactory::createOne([
+            'fromData' => FnacSpectaclesAwinParser::getParserName(),
+            'prices' => '25€',
+            'source' => 'https://www.awin1.com/fnac',
+        ]);
+        $duplicate->setDuplicateOf($event);
+        save($duplicate);
+        refresh($event);
+
+        // As on its page: the booking button leads to Fnac
+        $offer = $this->schema($event)['offers'];
+
+        self::assertSame('https://www.awin1.com/fnac', $offer['url']);
+        self::assertSame(25, (int) $offer['price']);
     }
 
     public function testAFreeEventIsAccessibleForFree(): void

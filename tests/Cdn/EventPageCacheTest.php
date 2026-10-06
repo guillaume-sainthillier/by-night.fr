@@ -16,8 +16,10 @@ use App\SEO\EventIndexingPolicy;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionProperty;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\Response;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 final class EventPageCacheTest extends TestCase
 {
@@ -75,5 +77,17 @@ final class EventPageCacheTest extends TestCase
 
         self::assertSame(604800, $response->getMaxAge());
         self::assertSame('event', $response->headers->get('Cache-Tag'));
+    }
+
+    public function testAPageShowingABorrowedPictureIsPurgedWithItsLender(): void
+    {
+        $picture = new EmbeddedFile();
+        $picture->setName('cdiscount.jpg');
+        $lender = new Event()->setImageSystem($picture);
+        new ReflectionProperty(Event::class, 'id')->setValue($lender, 42);
+
+        $tags = new EventPageCache(new MockClock(self::NOW))->tags(new Event()->setPictureFrom($lender));
+
+        self::assertSame(['event', 'event-42'], $tags);
     }
 }

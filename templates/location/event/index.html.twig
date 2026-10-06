@@ -77,7 +77,7 @@
 
 {% block json_ld %}
     {% if not isHiddenDraft %}
-        {{ event_json_ld(event) }}
+        {{ event_json_ld(event, ticketOffers ?? null) }}
     {% endif %}
 {% endblock %}
 
@@ -99,7 +99,7 @@
             </div>
         </div>
     {% else %}
-        {% set price = event.prices|price_label %}
+        {% set price = event.prices|price_label(event.startingPrice) %}
         {% set hasEnded = event_seo.hasEnded(event) %}
         {% set placeAgenda = path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) %}
         {% set agenda = path('app_location_index', {location: place.locationSlug}) %}
@@ -113,6 +113,9 @@
             ? event.latitude ~ ',' ~ event.longitude
             : [event.placeName, event.placeStreet, event.placePostalCode, event.placeCity]|filter(part => part)|join(' ') %}
         {% set calendarUrl = hasEnded ? null : google_calendar_url(event, eventUrl) %}
+        {# Where to book, cheapest first (EventTicketOffers). Once the event is over, only the ticketing sites' links stay #}
+        {% set offers = (ticketOffers ?? [])|filter(offer => offer.affiliate or not hasEnded) %}
+        {% set bestOffer = offers|first %}
 
         {% set going = (event.participations ?? 0) + (event.fbParticipations ?? 0) %}
         {% set interested = (event.interests ?? 0) + (event.fbInterests ?? 0) %}
@@ -318,7 +321,8 @@
                                 </div>
                             {% endif %}
 
-                            {% if event.prices %}
+                            {# A ticketing site's prices are the ones of its offer, listed with the others under the booking button #}
+                            {% if event.prices and not (event.affiliate and offers|length > 1) %}
                                 <div class="detail-item">
                                     <twig:Icon name="lucide:ticket" class="text-primary" />
                                     <div>
@@ -380,20 +384,32 @@
                             {% endif %}
                         {% endset %}
                         {% set directionsHere = directionsTo and not mapValue %}
-                        {# The ticketing link of the other sources leads to their own booking, which earns us nothing #}
-                        {% set ticketUrl = event.affiliate or hasEnded ? null : event.ticketUrl|ensure_protocol %}
-                        {% if event.affiliate or ticketUrl or directionsHere or calendarUrl %}
+                        {% if bestOffer or directionsHere or calendarUrl %}
                             <div class="card-body d-grid gap-2">
-                                {% if event.affiliate %}
-                                    <a href="{{ event.source }}" class="btn btn-primary btn-lg" rel="sponsored">
+                                {% if bestOffer.affiliate ?? false %}
+                                    <a href="{{ bestOffer.url }}" class="btn btn-primary btn-lg" rel="sponsored">
                                         <twig:Icon name="lucide:ticket" />
                                         Réserver mes billets
                                     </a>
-                                {% elseif ticketUrl %}
-                                    <a href="{{ ticketUrl }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener nofollow">
+                                {% elseif bestOffer %}
+                                    <a href="{{ bestOffer.url }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener nofollow">
                                         <twig:Icon name="lucide:ticket" />
                                         Réserver
                                     </a>
+                                {% endif %}
+                                {% if offers|length > 1 %}
+                                    <div class="list-group list-group-flush" id="event-ticket-offers">
+                                        {% for offer in offers %}
+                                            <a href="{{ offer.url }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 px-0"{% if offer.affiliate %} rel="sponsored"{% else %} target="_blank" rel="noopener nofollow"{% endif %}>
+                                                <span class="fw-medium">{{ offer.seller }}</span>
+                                                {% if offer.soldOut %}
+                                                    <span class="ms-auto text-secondary">Complet</span>
+                                                {% elseif offer.priceLabel %}
+                                                    <span class="ms-auto">{{ offer.priceLabel.label }}</span>
+                                                {% endif %}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
                                 {% endif %}
                                 {% if directionsHere %}
                                     {{ directions }}

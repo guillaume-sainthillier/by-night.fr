@@ -36,13 +36,15 @@ final readonly class EventProfilePicture
     /**
      * Absolute URL of the full-size picture (og:image, JSON-LD): the upload, or the
      * parser placeholder shipped with the build.
+     *
+     * @param bool $own see getPicturePathAndSource()
      */
-    public function getOriginalPicture(Event|EventDto $event): string
+    public function getOriginalPicture(Event|EventDto $event, bool $own = false): string
     {
         [
             'path' => $path,
             'source' => $source,
-        ] = $this->getPicturePathAndSource($event);
+        ] = $this->getPicturePathAndSource($event, $own);
 
         if ('upload' === $source) {
             return $this->packages->getUrl(
@@ -55,8 +57,16 @@ final readonly class EventProfilePicture
         return $this->urlHelper->getAbsoluteUrl($path);
     }
 
-    public function getPicturePathAndSource(Event|EventDto $event): array
+    /**
+     * @param bool $own the event's own picture (its edit form), not the one its page shows, which may come from
+     *                  another member of its family (Event::getShownPictureEvent())
+     */
+    public function getPicturePathAndSource(Event|EventDto $event, bool $own = false): array
     {
+        if ($event instanceof Event && !$own) {
+            $event = $event->getShownPictureEvent();
+        }
+
         $image = $event instanceof EventDto
             ? $event->image
             : $event->getImage();
