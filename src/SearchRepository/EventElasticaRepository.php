@@ -16,6 +16,7 @@ use App\Enum\DateRangePreset;
 use App\Enum\PricePreset;
 use App\Search\AgendaFacets;
 use App\Search\DateRange;
+use App\Search\DuplicateSearch;
 use App\Search\SearchEvent;
 use DateTimeImmutable;
 use Elastica\Aggregation\AbstractAggregation;
@@ -29,6 +30,7 @@ use Elastica\Query\DisMax;
 use Elastica\Query\Exists;
 use Elastica\Query\FunctionScore;
 use Elastica\Query\GeoDistance;
+use Elastica\Query\Ids;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
 use Elastica\Query\MatchQuery;
@@ -46,6 +48,13 @@ use Pagerfanta\PagerfantaInterface;
 
 final class EventElasticaRepository extends Repository
 {
+    /**
+     * How far from a member's place an event may be the same one, measured from the centre of its city: the twins of
+     * the events members published came up to 11 km off, a venue some source places at the centre of its city or
+     * geocodes to the next town (DuplicateEventFinder).
+     */
+    private const string DUPLICATE_DISTANCE = '15km';
+
     public function findWithSearch(SearchEvent $search): AdapterInterface
     {
         return new FantaPaginatorAdapter($this->createPaginatorAdapter($this->createSearchQuery($search)));
@@ -524,6 +533,62 @@ final class EventElasticaRepository extends Repository
         }
 
         return $query;
+    }
+
+    /**
+     * The published events a member's new event may repeat: one of its dates, around its place, and one of the words
+     * of its name at least, the closest names first. A loose net on the name: the sources word a title their own way
+     * ("Orelsan" for "Concert d'Orelsan au Zénith"), DuplicateEventFinder judges the names it brings back.
+     */
+    public function createDuplicateCandidatesQuery(DuplicateSearch $search, int $size): Query
+    {
+        $dates = new BoolQuery()->setMinimumShouldMatch(1);
+        foreach ($search->dates as $date) {
+            $dates->addShould($this->createSessionFilter($date));
+        }
+
+        $query = new BoolQuery()
+            ->addMust(new MultiMatch()
+                ->setQuery($search->name)
+                ->setFields(['name', 'name.heavy'])
+                ->setAnalyzer('french_search')
+                ->setOperator(MultiMatch::OPERATOR_OR))
+            ->addFilter(new Nested()->setPath('sessions')->setQuery($dates))
+            ->addFilter($this->createNearFilter($search));
+
+        if (null !== $search->excluded) {
+            $query->addMustNot(new Ids([(string) $search->excluded]));
+        }
+
+        $finalQuery = Query::create($query)->setSize($size);
+        $finalQuery->setSource(false);
+
+        return $finalQuery;
+    }
+
+    /**
+     * Around the place, by the location of its city (the index has none for the places): a venue lies up to a few
+     * kilometres from the centre of its city. Without coordinates (no address picked on the map), its city.
+     */
+    private function createNearFilter(DuplicateSearch $search): AbstractQuery
+    {
+        if ($search->hasCoordinates()) {
+            return new GeoDistance('place.city.location', ['lat' => $search->latitude, 'lon' => $search->longitude], self::DUPLICATE_DISTANCE);
+        }
+
+        $city = new BoolQuery()->setMinimumShouldMatch(1);
+        if (null !== $search->postalCode && '' !== $search->postalCode) {
+            $city->addShould(new MatchQuery('place.cityPostalCode', $search->postalCode));
+        }
+
+        if (null !== $search->cityName && '' !== $search->cityName) {
+            // Every word of the name, not a phrase: the field keeps no positions
+            $city->addShould(new MatchQuery()
+                ->setFieldQuery('place.cityName', $search->cityName)
+                ->setFieldOperator('place.cityName', MatchQuery::OPERATOR_AND));
+        }
+
+        return $city;
     }
 
     /**
