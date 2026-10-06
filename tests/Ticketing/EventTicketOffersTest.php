@@ -72,6 +72,17 @@ final class EventTicketOffersTest extends AppKernelTestCase
         ], $this->summary($this->offers($canonical)));
     }
 
+    public function testEachSiteIsOfferedAtItsOwnPriceNotTheFamilysLowest(): void
+    {
+        $canonical = $this->event(FnacSpectaclesAwinParser::getParserName(), '50€', 'https://www.awin1.com/fnac');
+        $this->duplicateOf($canonical, SeeTicketsKwankoParser::getParserName(), '30€', 'https://kwanko.com/seetickets');
+        // As EventFamilyResolver leaves it: the lowest price of the family
+        $canonical->setStartingPrice(30.0);
+        save($canonical);
+
+        self::assertSame([['SeeTickets', 30.0, false], ['Fnac Spectacles', 50.0, false]], $this->summary($this->offers($canonical)));
+    }
+
     public function testOneOfferPerSiteAtItsLowestPrice(): void
     {
         $canonical = $this->event(FnacSpectaclesAwinParser::getParserName(), '25€', 'https://www.awin1.com/fnac/1');

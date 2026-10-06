@@ -14,6 +14,7 @@ use App\Entity\Event;
 use App\Enum\EventStatus;
 use App\Utils\HtmlFormatter;
 use App\Utils\PriceLabel;
+use App\Utils\StartingPrice;
 
 /**
  * Where to book an event, cheapest first: one offer per ticketing site among the event and the rows redirecting to it
@@ -89,7 +90,8 @@ final readonly class EventTicketOffers
             $seller,
             $url,
             $row->isAffiliate(),
-            $row->getStartingPrice(),
+            // Its own prices: a canonical's starting price is the lowest of its family (EventFamilyResolver)
+            StartingPrice::fromPrices($row->getPrices()),
             PriceLabel::fromPrices($row->getPrices()),
             EventStatus::SoldOut === $row->getStatus(),
         );
