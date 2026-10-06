@@ -184,7 +184,7 @@
                                             Publier<span class="d-none d-sm-inline ms-1"> l'événement</span>
                                         </button>
                                     {% endblock %}
-                                    <button type="submit" name="{{ form.saveDraft.vars.full_name }}" class="btn btn-outline-secondary" title="L'événement ne sera pas visible sur le site">
+                                    <button type="submit" name="{{ form.saveDraft.vars.full_name }}" class="btn btn-outline-secondary" title="L'événement ne sera pas visible sur le site" data-skip-duplicates>
                                         <twig:Icon name="lucide:eye-off" />
                                         <span class="form-actions-label">{{ form.saveDraft.vars.label }}</span>
                                     </button>

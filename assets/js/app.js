@@ -14,6 +14,7 @@ import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
 import cookieSettings from '@/js/listeners/cookie-settings'
 import dropzone from '@/js/listeners/dropzone'
+import duplicateCheck from '@/js/listeners/duplicate-check'
 import emailVerify from '@/js/listeners/email-verify'
 import eventPublish from '@/js/listeners/event-publish'
 import feedback from '@/js/listeners/feedback'
@@ -84,6 +85,7 @@ class App {
             contentRemovalRequest,
             cookieSettings,
             dropzone,
+            duplicateCheck,
             emailVerify,
             eventPublish,
             feedback,
