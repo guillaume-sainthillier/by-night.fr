@@ -13,13 +13,54 @@ namespace App\Parser\Common;
 use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
+use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
+use App\Enum\EventStatus;
+use App\Handler\EventHandler;
+use App\Parser\Ticketmaster\TicketmasterCatalogue;
+use App\Parser\Ticketmaster\TicketmasterPerformance;
+use App\Parser\Ticketmaster\TicketmasterShow;
 use DateTimeImmutable;
+use Override;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * CDiscount resells Ticketmaster France: one row per show, keyed by the Ticketmaster show id
+ * (merchant_product_id is the "idmanif" of ticketmaster.fr URLs), with a single date and a
+ * 200px picture. Ticketmaster's own catalogue completes the shows it knows (93% of them on
+ * 2026-10-06) with all their dates, a 2048px picture and the venue's coordinates.
+ */
 final class CDiscountAwinParser extends AbstractAwinParser
 {
     // Note: merchant_image_url returns 404, use aw_image_url instead (200x200 proxied images)
+    /**
+     * The performances that take place: "offsale" is a show whose sales are closed (sold out,
+     * or over before the day), "rescheduled" one already at its new date. "cancelled" and any
+     * status the feed would add are left out.
+     */
+    private const array HELD_STATUSES = ['onsale', 'offsale', 'rescheduled'];
+
     private const string DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/fid/48133/format/csv/language/fr/delimiter/%2C/compression/gzip/columns/aw_deep_link,aw_image_url,merchant_product_id,product_name,description,search_price,custom_1,custom_2,custom_3,custom_4,custom_6/';
+
+    /** @var array<array-key, TicketmasterShow> the catalogue of the current run, by show id */
+    private array $ticketmasterShows = [];
+
+    public function __construct(
+        LoggerInterface $logger,
+        MessageBusInterface $messageBus,
+        EventHandler $eventHandler,
+        HttpClientInterface $httpClient,
+        #[Autowire('%kernel.project_dir%/var/storage/temp')]
+        string $tempPath,
+        #[Autowire(env: 'AWIN_API_KEY')]
+        string $awinApiKey,
+        private readonly TicketmasterCatalogue $ticketmaster,
+    ) {
+        parent::__construct($logger, $messageBus, $eventHandler, $httpClient, $tempPath, $awinApiKey);
+    }
 
     /**
      * {@inheritDoc}
@@ -35,6 +76,21 @@ final class CDiscountAwinParser extends AbstractAwinParser
     public function getCommandName(): string
     {
         return 'awin.cdiscount';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
+    {
+        $this->ticketmasterShows = $this->ticketmaster->shows();
+
+        try {
+            yield from parent::fetchEvents($since, $includePast);
+        } finally {
+            $this->ticketmasterShows = [];
+        }
     }
 
     /**
@@ -131,6 +187,57 @@ final class CDiscountAwinParser extends AbstractAwinParser
 
         $event->place = $place;
 
+        $show = $this->ticketmasterShows[$event->externalId] ?? null;
+        if (null !== $show) {
+            $this->completeWithTicketmaster($event, $show);
+        }
+
         return $event;
+    }
+
+    private function completeWithTicketmaster(EventDto $event, TicketmasterShow $show): void
+    {
+        $event->imageUrl = $show->imageUrl ?? $event->imageUrl;
+        if (null !== $event->place && null !== $show->latitude && null !== $show->longitude) {
+            $event->place->latitude = $show->latitude;
+            $event->place->longitude = $show->longitude;
+        }
+
+        $performances = self::heldPerformances($show);
+        if ([] === $performances) {
+            // Cancelled on every date: CDiscount may still list it
+            if ([] !== $show->performances) {
+                $event->status = EventStatus::Cancelled;
+            }
+
+            return;
+        }
+
+        $event->timesheets = array_map(static function (TicketmasterPerformance $performance): EventTimesheetDto {
+            $timesheet = new EventTimesheetDto();
+            // Prevents Reject::BAD_EVENT_DATE_INTERVAL: the dates are days, the time apart
+            $timesheet->startAt = $performance->date;
+            $timesheet->endAt = $performance->date;
+            $timesheet->startTime = $performance->time;
+
+            return $timesheet;
+        }, $performances);
+        $event->startDate = $performances[0]->date;
+        $event->endDate = $performances[\count($performances) - 1]->date;
+        // The cleaner spans the event's times over its sessions
+        $event->startTime = null;
+    }
+
+    /**
+     * The dates of the show that become sessions of the event.
+     *
+     * @return list<TicketmasterPerformance> in chronological order
+     */
+    private static function heldPerformances(TicketmasterShow $show): array
+    {
+        return array_values(array_filter(
+            $show->performances,
+            static fn (TicketmasterPerformance $performance): bool => \in_array($performance->status, self::HELD_STATUSES, true),
+        ));
     }
 }
