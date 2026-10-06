@@ -46,6 +46,19 @@ final class EventsDownloadImagesCommandTest extends AppKernelTestCase
         }
     }
 
+    public function testUpcomingOnlyLeavesThePastEventsWaiting(): void
+    {
+        $upcoming = EventFactory::createOne(['url' => 'https://cdn.example.org/a-venir.png', 'endDate' => new DateTimeImmutable('today')]);
+        $past = EventFactory::createOne(['url' => 'https://cdn.example.org/passe.png', 'endDate' => new DateTimeImmutable('-1 day')]);
+
+        new CommandTester($this->command())->execute(['--upcoming' => true]);
+
+        refresh($upcoming);
+        refresh($past);
+        self::assertNotNull($upcoming->getImageSystem()->getName(), 'An event ending today is not over yet');
+        self::assertNull($past->getImageSystem()->getName());
+    }
+
     /**
      * An image taken down on request is not downloaded again (EventImageRemover), and an event whose source gave none
      * has nothing to wait for.

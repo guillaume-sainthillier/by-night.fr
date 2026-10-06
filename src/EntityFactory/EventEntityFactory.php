@@ -21,6 +21,7 @@ use App\EntityProvider\TagEntityProvider;
 use App\Handler\EntityProviderHandler;
 use App\Handler\EventImageDownloadScheduler;
 use App\Import\EventContentHasher;
+use App\Utils\ImageUrl;
 use App\Utils\ObjectKey;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
@@ -84,8 +85,10 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->getImage()->setSize($dto->image?->getSize());
         $entity->setImageFile($dto->imageFile);
 
-        if ($entity->getUrl() !== $dto->imageUrl || null === $entity->getImageSystem()->getName()) {
-            $entity->setUrl($dto->imageUrl);
+        // A picture the source only moved to another of its hosts is kept: its URL follows, nothing is downloaded again
+        $sameImage = ImageUrl::isSameImage($entity->getUrl(), $dto->imageUrl);
+        $entity->setUrl($dto->imageUrl);
+        if (!$sameImage || null === $entity->getImageSystem()->getName()) {
             // Defer the (slow) image download + S3 upload to a dedicated async
             // transport so it no longer blocks the import critical path.
             $this->imageDownloadScheduler->schedule($entity);

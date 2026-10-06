@@ -16,8 +16,10 @@ use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\EntityFactory\EventEntityFactory;
 use App\Enum\EventStatus;
+use App\Handler\EventImageDownloadScheduler;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use ReflectionProperty;
 
 final class EventEntityFactoryTest extends AppKernelTestCase
 {
@@ -109,6 +111,64 @@ final class EventEntityFactoryTest extends AppKernelTestCase
         self::assertSame([['15:00', '17:00'], ['21:00', '23:00']], $this->times($event));
         self::assertContains($afternoon, $event->getTimesheets());
         self::assertNotContains($evening, $event->getTimesheets());
+    }
+
+    public function testAPictureMovedToAnotherHostOfItsSourceIsNotDownloadedAgain(): void
+    {
+        // OpenAgenda moved its agendas to img. in 2026: the same picture, recompressed
+        $event = $this->eventWithItsPicture('https://cdn.openagenda.com/main/a.full.image.jpg');
+
+        self::getContainer()->get(EventEntityFactory::class)->create($event, $this->withPicture('https://img.openagenda.com/main/a.full.image.jpg'));
+
+        self::assertSame('https://img.openagenda.com/main/a.full.image.jpg', $event->getUrl(), 'The URL follows the source');
+        self::assertSame([], $this->scheduledDownloads());
+    }
+
+    public function testANewPictureIsDownloaded(): void
+    {
+        $event = $this->eventWithItsPicture('https://cdn.openagenda.com/main/a.full.image.jpg');
+
+        self::getContainer()->get(EventEntityFactory::class)->create($event, $this->withPicture('https://img.openagenda.com/main/b.full.image.jpg'));
+
+        self::assertSame([$event], $this->scheduledDownloads());
+    }
+
+    public function testAPictureNeverDownloadedIsDownloadedFromItsNewHost(): void
+    {
+        $event = new Event()->setUrl('https://cdn.openagenda.com/main/a.full.image.jpg');
+
+        self::getContainer()->get(EventEntityFactory::class)->create($event, $this->withPicture('https://img.openagenda.com/main/a.full.image.jpg'));
+
+        self::assertSame([$event], $this->scheduledDownloads());
+    }
+
+    private function eventWithItsPicture(string $url): Event
+    {
+        $event = new Event()->setUrl($url);
+        $event->getImageSystem()->setName('a-full-image.jpg');
+
+        return $event;
+    }
+
+    private function withPicture(string $url): EventDto
+    {
+        $dto = new EventDto();
+        $dto->name = 'Nuit du jazz';
+        $dto->startDate = new DateTimeImmutable('2026-10-01');
+        $dto->endDate = new DateTimeImmutable('2026-10-01');
+        $dto->imageUrl = $url;
+
+        return $dto;
+    }
+
+    /**
+     * @return Event[]
+     */
+    private function scheduledDownloads(): array
+    {
+        $scheduler = self::getContainer()->get(EventImageDownloadScheduler::class);
+
+        return new ReflectionProperty(EventImageDownloadScheduler::class, 'events')->getValue($scheduler);
     }
 
     private function twoSessionsOnOneDay(): EventDto

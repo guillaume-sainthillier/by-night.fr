@@ -12,6 +12,7 @@ namespace App\Handler;
 
 use App\Entity\Event;
 use App\Repository\EventRepository;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
 use Silarhi\CursorPagination\Configuration\OrderConfiguration;
@@ -47,9 +48,11 @@ final readonly class EventImageDownloader
     /**
      * Every event waiting for its image (EventRepository::createWaitingForImageQueryBuilder()), by batches.
      *
+     * @param DateTimeInterface|null $endingFrom only the events not over by that day
+     *
      * @return Generator<int, int> the events of each batch, once it is downloaded
      */
-    public function downloadWaiting(int $batchSize): Generator
+    public function downloadWaiting(int $batchSize, ?DateTimeInterface $endingFrom = null): Generator
     {
         // Keyset pagination on the id: a downloaded image takes its event out of the filter, so
         // page numbers moved the offset past as many events as the page before had fixed, and
@@ -58,7 +61,7 @@ final readonly class EventImageDownloader
             new OrderConfiguration('e.id', static fn (Event $event): ?int => $event->getId(), orderAscending: false),
         );
         /** @var CursorPagination<Event> $pagination */
-        $pagination = new CursorPagination($this->eventRepository->createWaitingForImageQueryBuilder(), $configurations, $batchSize, fetchJoinCollection: false);
+        $pagination = new CursorPagination($this->eventRepository->createWaitingForImageQueryBuilder($endingFrom), $configurations, $batchSize, fetchJoinCollection: false);
 
         foreach ($pagination->getChunkResults() as $events) {
             $this->download($events);
