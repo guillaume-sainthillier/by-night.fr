@@ -346,6 +346,90 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The venues where at least two sources list an event that is not over: the only ones where the same show can
+     * be imported twice (App\Import\CrossSource\CrossSourceDuplicateFinder).
+     *
+     * @return list<int>
+     */
+    public function findPlaceIdsListedBySeveralSources(DateTimeImmutable $from): array
+    {
+        $ids = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(e.place) AS placeId')
+            ->where('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.fromData IS NOT NULL')
+            ->andWhere('e.endDate >= :from')
+            ->andWhere('e.place IS NOT NULL')
+            ->groupBy('e.place')
+            ->having('COUNT(DISTINCT e.fromData) > 1')
+            ->orderBy('placeId', SortDirection::Ascending)
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_map(intval(...), $ids);
+    }
+
+    /**
+     * The imported events of these venues that are not over, as plain rows: enough to compare their titles and
+     * dates before loading the few that look alike.
+     *
+     * @param list<int> $placeIds
+     *
+     * @return list<array{id: int, placeId: int, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null}>
+     */
+    public function findImportedRowsAtPlaces(array $placeIds, DateTimeImmutable $from): array
+    {
+        if ([] === $placeIds) {
+            return [];
+        }
+
+        /** @var list<array{id: int, placeId: int|string, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null}> $rows */
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('e.id, IDENTITY(e.place) AS placeId, e.fromData, e.name, e.startDate, e.endDate, p.name AS placeName, c.name AS cityName')
+            ->join('e.place', 'p')
+            ->leftJoin('p.city', 'c')
+            ->where('e.place IN (:places)')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.fromData IS NOT NULL')
+            ->andWhere('e.endDate >= :from')
+            ->orderBy('e.id', SortDirection::Ascending)
+            ->setParameter('places', $placeIds)
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn (array $row): array => ['placeId' => (int) $row['placeId']] + $row, $rows);
+    }
+
+    /**
+     * These events, their timesheets loaded in the same query.
+     *
+     * @param list<int> $ids
+     *
+     * @return Event[]
+     */
+    public function findWithTimesheets(array $ids): array
+    {
+        if ([] === $ids) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('e')
+            ->addSelect('t', 'p')
+            ->leftJoin('e.timesheets', 't')
+            ->leftJoin('e.place', 'p')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * The events of the search index, paged by id by App\Elasticsearch\Pager\EventPagerProvider.
      */
     public function createIsActiveQueryBuilder(): QueryBuilder
