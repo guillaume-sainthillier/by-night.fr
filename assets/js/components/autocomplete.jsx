@@ -153,7 +153,7 @@ export default function init({
         },
         plugins: [recentSearchesPlugin],
         // Build the panel with the app's Preact: autocomplete-js otherwise creates its vnodes with its own Preact,
-        // and `render` below would mount another Preact's vnodes. Paired with `dedupe: ['preact']` in vite.config.mjs.
+        // and `render` below would mount another Preact's vnodes.
         renderer: { createElement: h, Fragment, render },
         render({ children, state }, root) {
             render(

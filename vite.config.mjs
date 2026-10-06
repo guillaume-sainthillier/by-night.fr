@@ -96,9 +96,6 @@ export default defineConfig(({ mode }) => {
                 // locale would be registered on the one the app does not use.
                 { find: /^moment$/, replacement: moment },
             ],
-            // @algolia/autocomplete-js pins preact ^10 and gets a nested copy: resolve it to the app's Preact so the
-            // bundle carries a single instance (its panel is rendered with the app's Preact anyway, see autocomplete.jsx).
-            dedupe: ['preact'],
         },
 
         build: {
