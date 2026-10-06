@@ -1,5 +1,5 @@
 import { autocomplete } from '@algolia/autocomplete-js'
-import { Fragment, render } from 'preact'
+import { Fragment, h, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import { Offcanvas } from '@tabler/core'
@@ -152,6 +152,9 @@ export default function init({
             detachedCancelButtonText: 'Annuler',
         },
         plugins: [recentSearchesPlugin],
+        // Build the panel with the app's Preact: autocomplete-js otherwise creates its vnodes with its own Preact,
+        // and `render` below would mount them with another copy (vnodes don't cross Preact versions).
+        renderer: { createElement: h, Fragment, render },
         render({ children, state }, root) {
             render(
                 <Fragment>
