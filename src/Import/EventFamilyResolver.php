@@ -506,22 +506,31 @@ final readonly class EventFamilyResolver
     }
 
     /**
-     * The lowest price to get in that the agenda filters on, among the canonical and the
-     * members still on sale (EventTicketOffers keeps the same ones). A show some source
-     * sells a ticket for is no free show, whatever another one writes ("Gratuit" beside a
-     * 39 € ticket): free only when every price the family gives says so.
+     * The lowest price to get in that the agenda filters on, among the members still on
+     * sale, the canonical included; when none is, among those not cancelled, so that a
+     * show sold out everywhere keeps its price. A show some source sells a ticket for is no
+     * free show, whatever another one writes ("Gratuit" beside a 39 € ticket): free only
+     * when every price the family gives says so.
      *
      * @param list<Event> $lenders
      */
     private static function startingPrice(Event $canonical, array $lenders): ?float
     {
+        $rows = [$canonical, ...$lenders];
+        $onSale = array_filter($rows, static fn (Event $row): bool => !\in_array($row->getStatus(), [EventStatus::SoldOut, EventStatus::Cancelled], true));
+
+        return self::lowestPrice($onSale)
+            ?? self::lowestPrice(array_filter($rows, static fn (Event $row): bool => $row === $canonical || EventStatus::Cancelled !== $row->getStatus()));
+    }
+
+    /**
+     * @param Event[] $rows
+     */
+    private static function lowestPrice(array $rows): ?float
+    {
         $paying = [];
         $free = false;
-        foreach ([$canonical, ...$lenders] as $row) {
-            if ($row !== $canonical && \in_array($row->getStatus(), [EventStatus::SoldOut, EventStatus::Cancelled], true)) {
-                continue;
-            }
-
+        foreach ($rows as $row) {
             $price = StartingPrice::fromPrices($row->getPrices());
             if (null === $price) {
                 continue;

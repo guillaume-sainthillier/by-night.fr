@@ -265,6 +265,29 @@ final class EventFamilyResolverCrossSourceTest extends AppKernelTestCase
         self::assertSame(39.0, $this->reload($cdiscount)->getStartingPrice(), 'Back on its own page, its own price');
     }
 
+    public function testASoldOutCanonicalsPriceStepsAsideForATicketOnSale(): void
+    {
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-04', attributes: ['prices' => '30€', 'status' => EventStatus::SoldOut]);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['prices' => '45€']);
+        $this->link($fnac, $cdiscount);
+
+        $this->resolver->resolveForEvents([$cdiscount]);
+
+        self::assertSame($fnac, $this->reload($cdiscount)->getDuplicateOf()?->getId());
+        self::assertSame(45.0, $this->reload($fnac)->getStartingPrice());
+    }
+
+    public function testAShowSoldOutEverywhereKeepsItsLowestPrice(): void
+    {
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-04', attributes: ['prices' => '45€', 'status' => EventStatus::SoldOut]);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['prices' => '30€', 'status' => EventStatus::SoldOut]);
+        $this->link($fnac, $cdiscount);
+
+        $this->resolver->resolveForEvents([$cdiscount]);
+
+        self::assertSame(30.0, $this->reload($fnac)->getStartingPrice());
+    }
+
     public function testAShowFreeEverywhereIsFree(): void
     {
         $openAgenda = $this->event(OpenAgendaParser::getParserName(), 'oa-hash', '2026-12-04', attributes: ['prices' => null]);
