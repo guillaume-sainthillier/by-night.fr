@@ -70,8 +70,12 @@ final readonly class CrossSourceDuplicateFinder
             }
 
             foreach ($rowsByPlace as $rows) {
-                foreach ($rows as $i => $left) {
-                    foreach (\array_slice($rows, $i + 1) as $right) {
+                // Every two rows of a venue: thousands at the largest, indexed rather than sliced to spare the copies
+                $count = \count($rows);
+                for ($i = 0; $i < $count; ++$i) {
+                    $left = $rows[$i];
+                    for ($j = $i + 1; $j < $count; ++$j) {
+                        $right = $rows[$j];
                         if ($left['fromData'] === $right['fromData'] || !self::rangesOverlap($left, $right)) {
                             continue;
                         }

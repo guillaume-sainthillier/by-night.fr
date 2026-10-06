@@ -75,8 +75,11 @@ final readonly class CrossSourceGrouper
     {
         $conflicts = [];
         $ids = array_keys($members);
-        foreach ($ids as $i => $left) {
-            foreach (\array_slice($ids, $i + 1) as $right) {
+        $count = \count($ids);
+        for ($i = 0; $i < $count; ++$i) {
+            $left = $ids[$i];
+            for ($j = $i + 1; $j < $count; ++$j) {
+                $right = $ids[$j];
                 if (!$this->titleComparator->compare($members[$left]['name'], $members[$right]['name'], $context)->isMatch()) {
                     $conflicts[] = [$left, $right];
                 }
