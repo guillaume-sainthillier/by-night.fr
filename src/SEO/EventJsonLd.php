@@ -73,9 +73,8 @@ final readonly class EventJsonLd
             $schema['endDate'] = $this->endDate($event, $endDate);
         }
 
-        if ($event->hasImage()) {
-            $schema['image'] = $this->eventProfilePicture->getOriginalPicture($event);
-        }
+        // Google flags an event without image: one without a poster takes its source's placeholder, as its og:image
+        $schema['image'] = $this->eventProfilePicture->getOriginalPicture($event);
 
         $schema['location'] = $this->buildLocationSchema($event);
 

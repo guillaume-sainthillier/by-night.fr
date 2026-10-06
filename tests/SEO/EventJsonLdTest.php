@@ -16,6 +16,7 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Parser\Common\FnacSpectaclesAwinParser;
+use App\Parser\Common\OpenAgendaParser;
 use App\SEO\EventJsonLd;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -187,6 +188,13 @@ final class EventJsonLdTest extends AppKernelTestCase
 
         self::assertSame('https://schema.org/EventMovedOnline', $schema['eventStatus']);
         self::assertSame('https://schema.org/OnlineEventAttendanceMode', $schema['eventAttendanceMode']);
+    }
+
+    public function testAnEventWithoutPosterShowsItsSourcePlaceholder(): void
+    {
+        $schema = $this->schema($this->createEvent(['fromData' => OpenAgendaParser::getParserName()]));
+
+        self::assertMatchesRegularExpression('#^https://by-night\.test/build/images/parsers/openagenda(\.[0-9a-f]+)?\.jpg$#', $schema['image']);
     }
 
     public function testTheTypeIsTheSubtypeOfTheEvent(): void
