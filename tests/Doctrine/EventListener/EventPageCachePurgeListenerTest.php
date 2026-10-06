@@ -10,6 +10,7 @@
 
 namespace App\Tests\Doctrine\EventListener;
 
+use App\Enum\EventStatus;
 use App\Factory\CommentFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
@@ -61,6 +62,42 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         delete($event);
 
         self::assertContains($tag, $this->purgedTags());
+    }
+
+    public function testADuplicatesChangePurgesItsCanonicalsPageListingItsOffer(): void
+    {
+        $canonical = EventFactory::createOne();
+        $duplicate = EventFactory::createOne(['duplicateOf' => $canonical]);
+        $this->transport()->reset();
+
+        $duplicate->setStatus(EventStatus::SoldOut);
+        save($duplicate);
+
+        self::assertEqualsCanonicalizing(['event-' . $duplicate->getId(), 'event-' . $canonical->getId()], $this->purgedTags());
+    }
+
+    public function testADuplicateSetFreePurgesItsFormerCanonicalsPage(): void
+    {
+        $canonical = EventFactory::createOne();
+        $duplicate = EventFactory::createOne(['duplicateOf' => $canonical]);
+        $this->transport()->reset();
+
+        $duplicate->setDuplicateOf(null);
+        save($duplicate);
+
+        self::assertEqualsCanonicalizing(['event-' . $duplicate->getId(), 'event-' . $canonical->getId()], $this->purgedTags());
+    }
+
+    public function testADeletedDuplicatePurgesItsCanonicalsPage(): void
+    {
+        $canonical = EventFactory::createOne();
+        $duplicate = EventFactory::createOne(['duplicateOf' => $canonical]);
+        $canonicalTag = 'event-' . $canonical->getId();
+        $this->transport()->reset();
+
+        delete($duplicate);
+
+        self::assertContains($canonicalTag, $this->purgedTags());
     }
 
     public function testANewSessionPurgesItsEventsPage(): void

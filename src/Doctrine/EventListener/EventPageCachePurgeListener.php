@@ -31,7 +31,8 @@ use Symfony\Contracts\Service\ResetInterface;
  * address of its place. Bulk DQL updates (the nightly agenda classification) bypass the unit of work, so they
  * purge nothing, and neither does an event row whose change the page does not show (a parser version bump stamps
  * every event the source still lists). An imported event whose new image is still to download is purged once
- * that image is stored, not twice (EventImageDownloadScheduler::defersPagePurge(), EventImageDownloader).
+ * that image is stored, not twice (EventImageDownloadScheduler::defersPagePurge(), EventImageDownloader). A
+ * duplicate's change purges its canonical's page too, which lists its ticketing offer (EventTicketOffers).
  */
 #[AsDoctrineListener(event: Events::onFlush)]
 #[AsDoctrineListener(event: Events::postFlush)]
@@ -68,17 +69,29 @@ final class EventPageCachePurgeListener implements ResetInterface
     {
         $unitOfWork = $args->getObjectManager()->getUnitOfWork();
 
+        foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
+            if ($entity instanceof Event) {
+                $this->purgeCanonicals($entity, []);
+            }
+        }
+
         foreach ($unitOfWork->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof Event && null !== $entity->getId()) {
                 $this->tags[EventPageCache::eventTag($entity->getId())] = true;
+                $this->purgeCanonicals($entity, []);
             }
         }
 
         foreach ($unitOfWork->getScheduledEntityUpdates() as $entity) {
             if ($entity instanceof Event && null !== $entity->getId()
-                && [] !== array_diff(array_keys($unitOfWork->getEntityChangeSet($entity)), self::UNSHOWN_EVENT_FIELDS)
-                && !$this->imageDownloadScheduler->defersPagePurge($entity)) {
-                $this->tags[EventPageCache::eventTag($entity->getId())] = true;
+                && [] !== array_diff(array_keys($changeSet = $unitOfWork->getEntityChangeSet($entity)), self::UNSHOWN_EVENT_FIELDS)) {
+                // The image still to download defers the event's own page, not its canonical's: it shows its price,
+                // status and link, and a borrowed picture purges it through its lender's tag (EventPageCache)
+                if (!$this->imageDownloadScheduler->defersPagePurge($entity)) {
+                    $this->tags[EventPageCache::eventTag($entity->getId())] = true;
+                }
+
+                $this->purgeCanonicals($entity, $changeSet);
             } elseif ($entity instanceof Place && null !== $entity->getId()
                 && [] !== array_intersect(self::PLACE_FIELDS, array_keys($unitOfWork->getEntityChangeSet($entity)))) {
                 $this->tags[EventPageCache::placeTag($entity->getId())] = true;
@@ -110,5 +123,20 @@ final class EventPageCachePurgeListener implements ResetInterface
     public function reset(): void
     {
         $this->tags = [];
+    }
+
+    /**
+     * The page of the canonical a duplicate redirects to, and of the one it left: both list (or listed) its offer.
+     *
+     * @param array<string, array{mixed, mixed}> $changeSet
+     */
+    private function purgeCanonicals(Event $event, array $changeSet): void
+    {
+        $canonicals = [$event->getDuplicateOf(), ...(isset($changeSet['duplicateOf']) ? [$changeSet['duplicateOf'][0]] : [])];
+        foreach ($canonicals as $canonical) {
+            if ($canonical instanceof Event && null !== $canonical->getId() && !$this->imageDownloadScheduler->defersPagePurge($canonical)) {
+                $this->tags[EventPageCache::eventTag($canonical->getId())] = true;
+            }
+        }
     }
 }
