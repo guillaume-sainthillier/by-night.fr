@@ -12,6 +12,7 @@ namespace App\Tests\Parser\Common;
 
 use App\Dto\EventDto;
 use App\Parser\Common\FnacSpectaclesAwinParser;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -150,6 +151,22 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         $events = $this->groupEvents([$this->row('60000001', 'Affiche', '10', '2026-10-01', '20:00')]);
 
         self::assertSame('https://www.fnacspectacles.com/obj/poster_547641_4260525_222x222.jpg', $events[0]->imageUrl);
+    }
+
+    public static function providePlaceholders(): iterable
+    {
+        yield 'blank.gif' => ['https://www.fnacspectacles.com/obj/media/FR-eventim/teaser/blank.gif'];
+        yield 'the name of the show' => ["https://www.fnacspectacles.com/obj/media/FR-eventim/teaser/Back to the 80's !"];
+        yield 'nothing' => [''];
+    }
+
+    #[DataProvider('providePlaceholders')]
+    public function testAPlaceholderIsNoPoster(string $placeholder): void
+    {
+        $row = $this->row('60000002', 'Sans affiche', '10', '2026-10-01', '20:00');
+        $row['merchant_image_url'] = $placeholder;
+
+        self::assertNull($this->groupEvents([$row])[0]->imageUrl);
     }
 
     /**

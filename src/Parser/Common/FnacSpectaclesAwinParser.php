@@ -163,7 +163,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));
         // As served: the feed links 222x222 thumbnails with no larger variant, so there is
         // nothing to look up (a "grand/" to "600/" rewrite once checked each poster with a HEAD)
-        $event->imageUrl = $data['merchant_image_url'] ?? null;
+        $event->imageUrl = self::posterUrl($data['merchant_image_url'] ?? null);
         $event->prices = self::formatPriceRange([$data['search_price']]);
         $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
         $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
@@ -250,6 +250,20 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
     private static function performance(EventTimesheetDto $timesheet): string
     {
         return \sprintf('%s %s', $timesheet->startAt?->format('Y-m-d'), $timesheet->startTime?->format('H:i'));
+    }
+
+    /**
+     * The poster of a show, or none: the feed fills a show without one with a "teaser" placeholder, blank.gif (a 404
+     * since 2026) or the show's name with no extension, which every import would try to download again. The posters
+     * themselves live under /obj/mam/.
+     */
+    private static function posterUrl(?string $url): ?string
+    {
+        if (null === $url || '' === trim($url) || str_contains($url, '/obj/media/FR-eventim/teaser/')) {
+            return null;
+        }
+
+        return $url;
     }
 
     /**
