@@ -23,6 +23,7 @@ use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 
 use function Zenstruck\Foundry\Persistence\refresh;
+use function Zenstruck\Foundry\Persistence\save;
 
 final class EventJsonLdTest extends AppKernelTestCase
 {
@@ -148,6 +149,29 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertSame(['https://www.awin1.com/fnac', 'https://www.awin1.com/cdiscount'], array_column($offers, 'url'));
         self::assertSame([25, 22], array_map(intval(...), array_column($offers, 'price')));
         self::assertSame(['https://schema.org/InStock', 'https://schema.org/SoldOut'], array_column($offers, 'availability'));
+    }
+
+    public function testTheOnlySiteSellingTheShowIsItsOfferNotTheOrganizersBooking(): void
+    {
+        $event = EventFactory::createOne([
+            'fromData' => OpenAgendaParser::getParserName(),
+            'prices' => '12€',
+            'ticketUrl' => 'https://billetterie.example.org/concert',
+        ]);
+        $duplicate = EventFactory::createOne([
+            'fromData' => FnacSpectaclesAwinParser::getParserName(),
+            'prices' => '25€',
+            'source' => 'https://www.awin1.com/fnac',
+        ]);
+        $duplicate->setDuplicateOf($event);
+        save($duplicate);
+        refresh($event);
+
+        // As on its page: the booking button leads to Fnac
+        $offer = $this->schema($event)['offers'];
+
+        self::assertSame('https://www.awin1.com/fnac', $offer['url']);
+        self::assertSame(25, (int) $offer['price']);
     }
 
     public function testAFreeEventIsAccessibleForFree(): void

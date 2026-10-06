@@ -18,6 +18,7 @@ use App\SEO\EventJsonLd;
 use App\SEO\PlaceJsonLd;
 use App\SEO\ProfilePageJsonLd;
 use App\SEO\SiteJsonLd;
+use App\Ticketing\TicketOffer;
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Twig\Attribute\AsTwigFunction;
 
@@ -44,10 +45,13 @@ final readonly class JsonLdExtension
         return $this->script($this->profilePageJsonLd->generateProfilePageJsonLd($user));
     }
 
+    /**
+     * @param list<TicketOffer>|null $ticketOffers the offers the page lists, not to read them twice
+     */
     #[AsTwigFunction(name: 'event_json_ld', isSafe: ['html'])]
-    public function eventJsonLd(Event $event): string
+    public function eventJsonLd(Event $event, ?array $ticketOffers = null): string
     {
-        return $this->script($this->eventJsonLd->generateEventJsonLd($event));
+        return $this->script($this->eventJsonLd->generateEventJsonLd($event, $ticketOffers));
     }
 
     #[AsTwigFunction(name: 'site_json_ld', isSafe: ['html'])]

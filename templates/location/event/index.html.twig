@@ -77,7 +77,7 @@
 
 {% block json_ld %}
     {% if not isHiddenDraft %}
-        {{ event_json_ld(event) }}
+        {{ event_json_ld(event, ticketOffers ?? null) }}
     {% endif %}
 {% endblock %}
 

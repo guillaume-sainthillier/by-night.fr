@@ -36,17 +36,22 @@ final readonly class EventJsonLd
     ) {
     }
 
-    public function generateEventJsonLd(Event $event): string
+    /**
+     * @param list<TicketOffer>|null $ticketOffers the offers its page lists (EventTicketOffers), null to read them
+     */
+    public function generateEventJsonLd(Event $event, ?array $ticketOffers = null): string
     {
-        $schema = $this->generateEventSchema($event);
+        $schema = $this->generateEventSchema($event, $ticketOffers ?? $this->eventTicketOffers->forEvent($event));
 
         return $this->toJson($schema);
     }
 
     /**
+     * @param list<TicketOffer> $ticketOffers
+     *
      * @return array<string, mixed>
      */
-    private function generateEventSchema(Event $event): array
+    private function generateEventSchema(Event $event, array $ticketOffers): array
     {
         $schema = [
             '@context' => 'https://schema.org',
@@ -81,7 +86,7 @@ final readonly class EventJsonLd
 
         $schema['location'] = $this->buildLocationSchema($event);
 
-        $offer = $this->buildOffersSchema($event) ?? $this->buildOfferSchema($event);
+        $offer = $this->buildOffersSchema($event, $ticketOffers);
         if (null !== $offer) {
             $schema['offers'] = $offer;
         }
@@ -191,32 +196,43 @@ final readonly class EventJsonLd
     }
 
     /**
-     * One offer per ticketing site when several sell the event, as on its page (EventTicketOffers); null to describe
-     * the event's own offer alone.
+     * The offers its page lists (EventTicketOffers), one per ticketing site, at each site's own price; without any,
+     * the event's own price. A single offer of unknown price is only worth telling when sold out, as the event's own.
      *
-     * @return list<array<string, mixed>>|null
+     * @param list<TicketOffer> $offers
+     *
+     * @return array<string, mixed>|list<array<string, mixed>>|null
      */
-    private function buildOffersSchema(Event $event): ?array
+    private function buildOffersSchema(Event $event, array $offers): ?array
     {
-        $offers = $this->eventTicketOffers->forEvent($event);
-        if (\count($offers) < 2 || EventStatus::Cancelled === $event->getStatus()) {
+        if (EventStatus::Cancelled === $event->getStatus()) {
             return null;
         }
 
-        return array_map(static function (TicketOffer $offer): array {
-            $schema = [
-                '@type' => 'Offer',
-                'url' => $offer->url,
-                'availability' => $offer->soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-            ];
+        return match (\count($offers)) {
+            0 => $this->buildOfferSchema($event),
+            1 => null === $offers[0]->startingPrice && !$offers[0]->soldOut ? null : self::ticketOfferSchema($offers[0]),
+            default => array_map(self::ticketOfferSchema(...), $offers),
+        };
+    }
 
-            if (null !== $offer->startingPrice) {
-                $schema['price'] = $offer->startingPrice;
-                $schema['priceCurrency'] = 'EUR';
-            }
+    /**
+     * @return array<string, mixed>
+     */
+    private static function ticketOfferSchema(TicketOffer $offer): array
+    {
+        $schema = [
+            '@type' => 'Offer',
+            'url' => $offer->url,
+            'availability' => $offer->soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+        ];
 
-            return $schema;
-        }, $offers);
+        if (null !== $offer->startingPrice) {
+            $schema['price'] = $offer->startingPrice;
+            $schema['priceCurrency'] = 'EUR';
+        }
+
+        return $schema;
     }
 
     /**
