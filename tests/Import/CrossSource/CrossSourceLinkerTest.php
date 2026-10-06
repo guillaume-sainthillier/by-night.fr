@@ -190,9 +190,23 @@ final class CrossSourceLinkerTest extends AppKernelTestCase
         self::assertNull($this->reload($fnac)->getDuplicateOf());
     }
 
+    public function testTheShowsOfSeveralVenuesAreLinkedInOneRun(): void
+    {
+        // Resolved venue by venue: each venue's show is gathered, none lost between two
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'Claudio Capéo - Tournée');
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'Claudio capeo');
+        $otherVenue = PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $this->venue->getCity(), 'country' => $this->venue->getCountry()]);
+        $date = new DateTimeImmutable('+12 days');
+        $otherFnac = (int) EventFactory::createOne(['fromData' => FnacSpectaclesAwinParser::getParserName(), 'name' => 'Orelsan - Tournée', 'place' => $otherVenue, 'startDate' => $date, 'endDate' => $date])->getId();
+        $otherSeeTickets = (int) EventFactory::createOne(['fromData' => SeeTicketsKwankoParser::getParserName(), 'name' => 'ORELSAN', 'place' => $otherVenue, 'startDate' => $date, 'endDate' => $date])->getId();
+
+        self::assertSame([2, 0], $this->link(scanAll: true));
+
+        self::assertSame($fnac, $this->reload($cdiscount)->getDuplicateOf()?->getId());
+        self::assertSame($otherFnac, $this->reload($otherSeeTickets)->getDuplicateOf()?->getId());
+    }
+
     /**
-     * @param bool $scanAll every venue the nightly run scans, not only the test's
-     *
      * @return array{int, int} the links made and taken back
      */
     private function link(bool $apply = true, bool $scanAll = false): array

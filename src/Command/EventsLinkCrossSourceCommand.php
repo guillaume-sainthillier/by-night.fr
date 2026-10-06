@@ -13,6 +13,7 @@ namespace App\Command;
 use App\Import\CrossSource\CrossSourceGroup;
 use App\Import\CrossSource\CrossSourceLinker;
 use App\Import\CrossSource\CrossSourcePair;
+use App\Utils\MemoryUtils;
 use DateTimeImmutable;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -147,6 +148,8 @@ final class EventsLinkCrossSourceCommand extends Command
         $this->showSample($io, $matches, $inconsistent, $sample);
 
         $io->table(['Links ' . ($apply ? 'made' : 'to make'), 'Links ' . ($apply ? 'taken back' : 'to take back')], [[$added, $removed]]);
+        // The cron runs it with a raised memory limit: the margin left is worth watching
+        $io->text(\sprintf('Peak memory: %s.', MemoryUtils::getPeakMemoryUsage(true)));
         if ($apply) {
             $io->success(\sprintf('%d link(s) made, %d taken back.', $added, $removed));
         } else {
