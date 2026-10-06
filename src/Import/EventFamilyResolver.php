@@ -12,6 +12,13 @@ namespace App\Import;
 
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
+use App\Enum\DuplicateReason;
+use App\Parser\AffiliateParsers;
+use App\Parser\Common\BilletsReducAwinParser;
+use App\Parser\Common\CDiscountAwinParser;
+use App\Parser\Common\FnacSpectaclesAwinParser;
+use App\Parser\Common\SeeTicketsKwankoParser;
+use App\Repository\CrossSourceLinkRepository;
 use App\Repository\EventRepository;
 use App\Utils\ObjectKey;
 use DateTimeImmutable;
@@ -23,12 +30,16 @@ use Psr\Log\LoggerInterface;
  * family, and materializes the family on one of them.
  *
  * Some sources publish one record per session of an event: OpenAgenda organizers
- * duplicate an event for each date instead of adding a timing to it. Every record
- * keeps its own row, external id, exploration and timesheets, so the import keeps
- * tracking each source record on its own. Rows sharing an identity hash (see
- * EventContentHasher::identity()) form a family:
+ * duplicate an event for each date instead of adding a timing to it. And several
+ * sources sell or list the same show: Fnac, CDiscount and SeeTickets each import a
+ * concert. Every record keeps its own row, external id, exploration and timesheets,
+ * so the import keeps tracking each source record on its own. Two rows belong to the
+ * same family when something proves they are the same event: a shared identity hash
+ * (EventContentHasher::identity(), one source), or a cross-source link
+ * (CrossSourceLink, written by CrossSourceLinker); and so do the rows joined to them.
  *  - one member is the canonical event, the others point at it through duplicateOf
- *    (301 redirect, excluded from the search index and the listings);
+ *    (301 redirect, excluded from the search index and the listings), with the
+ *    reason of the link;
  *  - the canonical carries the union of the family's dates: its own timesheets plus
  *    an inherited copy of each sibling's own timesheets, tagged with the sibling it
  *    comes from, so the copy is rebuilt on every change and goes away with the
@@ -36,21 +47,22 @@ use Psr\Log\LoggerInterface;
  *  - its start and end dates span that union, since the listings filter and sort
  *    on them.
  *
- * Links that predate the identity hash are left as they are: a row without a hash
- * is neither moved nor asked to lend its dates.
+ * Links made by hand, or before the identity hash, are left as they are: a row linked
+ * without a reason and without a hash is neither moved nor asked to lend its dates.
  */
 final readonly class EventFamilyResolver
 {
     public function __construct(
         private EventRepository $eventRepository,
+        private CrossSourceLinkRepository $crossSourceLinkRepository,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
     ) {
     }
 
     /**
-     * Resolve the families of the given events, just imported: the ones they now
-     * belong to and the ones they may have left. Runs in the import transaction,
+     * Resolve the families of the given events, just imported or linked: the ones they
+     * now belong to and the ones they may have left. Runs in the import transaction,
      * after the batch has been merged and the EntityManager cleared.
      *
      * @param int[] $eventIds
@@ -63,15 +75,7 @@ final readonly class EventFamilyResolver
         }
 
         $candidates = $this->eventRepository->findFamilyCandidates($eventIds);
-
-        $hashes = [];
-        foreach ($candidates as $candidate) {
-            if (null !== $candidate->getIdentityHash()) {
-                $hashes[$candidate->getIdentityHash()] = true;
-            }
-        }
-
-        $familyHashes = $this->eventRepository->findSharedIdentityHashes(array_keys($hashes));
+        $families = $this->gather($candidates);
 
         /** @var array<int, true> $dirty canonical ids whose materialization must be rebuilt */
         $dirty = [];
@@ -86,47 +90,126 @@ final readonly class EventFamilyResolver
             // the canonical's range was reset by the import. Rebuild either way.
             $dirty[(int) $canonical->getId()] = true;
 
-            // The row demonstrably describes another event than its canonical now: set
+            // Nothing proves any longer the row describes the event of its canonical: set
             // it free. If it has a family of its own, wireFamilies() re-links it below.
-            $hash = $candidate->getIdentityHash();
-            if (null !== $hash && null !== $canonical->getIdentityHash() && $hash !== $canonical->getIdentityHash()) {
+            if (!$families->together($candidate, $canonical) && self::isResolverLink($candidate, $canonical)) {
                 $candidate->setDuplicateOf(null);
                 $dirty[(int) $candidate->getId()] = true;
             }
         }
 
-        $this->wireFamilies($familyHashes, $dirty);
+        $wired = $this->wireFamilies($families, $dirty);
         $this->entityManager->flush();
 
-        $this->materializeAll(array_keys($dirty));
+        $this->materializeAll(array_keys($dirty), $families);
         $this->entityManager->flush();
 
-        if ([] !== $familyHashes || [] !== $dirty) {
+        if ($wired > 0 || [] !== $dirty) {
             $this->logger->info('Resolved {families} event families, rebuilt {canonicals} canonical(s)', [
-                'families' => \count($familyHashes),
+                'families' => $wired,
                 'canonicals' => \count($dirty),
             ]);
         }
     }
 
     /**
+     * The candidates and every row proven to be the same event as one of them, step by
+     * step: the rows sharing an identity hash, the rows linked across sources, then the
+     * rows sharing their hash or linked to them, until no row is left to add.
+     *
+     * @param Event[] $candidates
+     */
+    private function gather(array $candidates): EventFamilies
+    {
+        $families = new EventFamilies();
+        $added = array_values(array_filter($candidates, $families->add(...)));
+
+        /** @var array<string, int> $firstByHash the first row met of each identity hash */
+        $firstByHash = [];
+        /** @var array<string, true> $loadedHashes the hashes whose rows are all loaded */
+        $loadedHashes = [];
+
+        while ([] !== $added) {
+            $hashes = [];
+            foreach ($added as $event) {
+                $hash = $event->getIdentityHash();
+                if (null !== $hash && !isset($loadedHashes[$hash])) {
+                    $hashes[$hash] = $loadedHashes[$hash] = true;
+                }
+            }
+
+            $next = [];
+            foreach ($this->eventRepository->findAllByIdentityHashes($this->eventRepository->findSharedIdentityHashes(array_keys($hashes))) as $member) {
+                if ($families->add($member)) {
+                    $next[] = $member;
+                }
+            }
+
+            $links = array_filter(
+                $this->crossSourceLinkRepository->findTouching(array_map(static fn (Event $event): int => (int) $event->getId(), $added)),
+                static fn (array $link): bool => !$link['keptApart'],
+            );
+            $missing = [];
+            foreach ($links as $link) {
+                foreach ([$link['eventId'], $link['linkedEventId']] as $id) {
+                    if (!$families->has($id)) {
+                        $missing[$id] = $id;
+                    }
+                }
+            }
+
+            if ([] !== $missing) {
+                foreach ($this->eventRepository->findBy(['id' => array_values($missing)]) as $linked) {
+                    if ($families->add($linked)) {
+                        $next[] = $linked;
+                    }
+                }
+            }
+
+            // Every row of a shared hash is loaded with the first one met: join them on it
+            foreach ([...$added, ...$next] as $event) {
+                $hash = $event->getIdentityHash();
+                if (null === $hash) {
+                    continue;
+                }
+
+                $firstByHash[$hash] ??= (int) $event->getId();
+                $families->join($firstByHash[$hash], (int) $event->getId());
+            }
+
+            foreach ($links as $link) {
+                $families->join($link['eventId'], $link['linkedEventId']);
+            }
+
+            $added = $next;
+        }
+
+        return $families;
+    }
+
+    /**
+     * Whether the link is one the resolver made or would make, which it takes back when
+     * nothing proves it any longer. A link made by hand, or made before the identity hash,
+     * between rows the resolver cannot compare, is left as it is.
+     */
+    private static function isResolverLink(Event $duplicate, Event $canonical): bool
+    {
+        return null !== $duplicate->getDuplicateReason()
+            || (null !== $duplicate->getIdentityHash() && null !== $canonical->getIdentityHash());
+    }
+
+    /**
      * Elect a canonical per family and point every other member at it.
      *
-     * @param string[]         $familyHashes
      * @param array<int, true> $dirty
+     *
+     * @return int the number of families wired
      */
-    private function wireFamilies(array $familyHashes, array &$dirty): void
+    private function wireFamilies(EventFamilies $families, array &$dirty): int
     {
-        if ([] === $familyHashes) {
-            return;
-        }
-
-        $families = [];
-        foreach ($this->eventRepository->findAllByIdentityHashes($familyHashes) as $member) {
-            $families[(string) $member->getIdentityHash()][] = $member;
-        }
-
-        foreach ($families as $members) {
+        $wired = 0;
+        foreach ($families->families() as $members) {
+            ++$wired;
             $memberIds = array_map(static fn (Event $member): ?int => $member->getId(), $members);
             $canonical = $this->elect($members);
             $dirty[(int) $canonical->getId()] = true;
@@ -134,7 +217,8 @@ final readonly class EventFamilyResolver
             foreach ($members as $member) {
                 $current = $member->getDuplicateOf();
                 $target = $member === $canonical ? null : $canonical;
-                if ($current === $target) {
+                $reason = null === $target ? null : self::reasonOf($member, $canonical);
+                if ($current === $target && $member->getDuplicateReason() === $reason) {
                     continue;
                 }
 
@@ -143,16 +227,28 @@ final readonly class EventFamilyResolver
                     $dirty[(int) $current->getId()] = true;
                 }
 
-                $member->setDuplicateOf($target);
+                $member->setDuplicateOf($target, $reason);
             }
         }
+
+        return $wired;
+    }
+
+    private static function reasonOf(Event $member, Event $canonical): DuplicateReason
+    {
+        return null !== $member->getIdentityHash() && $member->getIdentityHash() === $canonical->getIdentityHash()
+            ? DuplicateReason::SameIdentity
+            : DuplicateReason::SameShow;
     }
 
     /**
      * The current canonical keeps its role, so public URLs stay put and a link made
-     * before the identity hash is respected; otherwise the oldest row wins. A row its
-     * source no longer lists only keeps the role when the whole family is gone: its
-     * page would hide the dates the others still have.
+     * before the identity hash is respected: a canonical of the family already followed
+     * by some of its members first, then any row still a page of its own. Between
+     * several (the pages of two sources, gathered for the first time), the source whose
+     * page shows the event best wins, then the oldest row. A row its source no longer
+     * lists only keeps the role when the whole family is gone: its page would hide the
+     * dates the others still have.
      *
      * @param non-empty-list<Event> $members
      */
@@ -168,15 +264,45 @@ final readonly class EventFamilyResolver
             $pool = $live;
         }
 
-        usort($pool, static fn (Event $a, Event $b): int => ($a->getId() ?? 0) <=> ($b->getId() ?? 0));
+        $followed = [];
+        foreach ($members as $member) {
+            $canonical = $member->getDuplicateOf();
+            if (null !== $canonical) {
+                $followed[(int) $canonical->getId()] = true;
+            }
+        }
+
+        $rank = static fn (Event $event): array => [isset($followed[(int) $event->getId()]) ? 0 : 1, self::pageRank($event), $event->getId() ?? 0];
+        usort($pool, static fn (Event $a, Event $b): int => $rank($a) <=> $rank($b));
 
         return $pool[0];
     }
 
     /**
+     * How well a source's page shows an event, the best first: the agendas and the organizers write a description;
+     * among the ticketing feeds, Fnac and BilletsReduc title their shows as they are spelled, SeeTickets in capitals,
+     * CDiscount in lower case ("Claudio capeo").
+     */
+    private static function pageRank(Event $event): int
+    {
+        $source = $event->getFromData();
+        if (!AffiliateParsers::isAffiliate($source)) {
+            return 0;
+        }
+
+        return match ($source) {
+            FnacSpectaclesAwinParser::getParserName() => 1,
+            BilletsReducAwinParser::getParserName() => 2,
+            SeeTicketsKwankoParser::getParserName() => 3,
+            CDiscountAwinParser::getParserName() => 4,
+            default => 5,
+        };
+    }
+
+    /**
      * @param int[] $canonicalIds
      */
-    private function materializeAll(array $canonicalIds): void
+    private function materializeAll(array $canonicalIds, EventFamilies $families): void
     {
         if ([] === $canonicalIds) {
             return;
@@ -196,7 +322,7 @@ final readonly class EventFamilyResolver
         }
 
         foreach ($canonicals as $id => $canonical) {
-            $this->materialize($canonical, $siblings[$id] ?? []);
+            $this->materialize($canonical, $siblings[$id] ?? [], $families);
         }
     }
 
@@ -205,16 +331,14 @@ final readonly class EventFamilyResolver
      *
      * @param Event[] $siblings the rows pointing at the canonical
      */
-    private function materialize(Event $canonical, array $siblings): void
+    private function materialize(Event $canonical, array $siblings, EventFamilies $families): void
     {
         // Only rows proven to be the same event lend their dates: legacy links stay
         // redirect-only. A row its source no longer lists has no date left to lend.
-        $lenders = array_filter(
+        $lenders = array_values(array_filter(
             $siblings,
-            static fn (Event $sibling): bool => null !== $sibling->getIdentityHash()
-                && $sibling->getIdentityHash() === $canonical->getIdentityHash()
-                && !$sibling->isRemovedAtSource(),
-        );
+            static fn (Event $sibling): bool => $families->together($sibling, $canonical) && !$sibling->isRemovedAtSource(),
+        ));
 
         // A row that just became a duplicate may still carry dates it inherited as a
         // former canonical: they are its canonical's business now.
@@ -246,6 +370,20 @@ final readonly class EventFamilyResolver
             $changed = true;
         }
 
+        // A record of the same event lends each session it lists. Another source describes
+        // the same performances in its own words ("À 20h", no time at all): it only lends a
+        // day the page does not show yet, or the same day at another time.
+        $sameIdentity = static fn (Event $lender): bool => null !== $lender->getIdentityHash() && $lender->getIdentityHash() === $canonical->getIdentityHash();
+        usort($lenders, static fn (Event $a, Event $b): int => [$sameIdentity($a) ? 0 : 1, $a->getId()] <=> [$sameIdentity($b) ? 0 : 1, $b->getId()]);
+
+        /** @var array<string, list<string|null>> $shownDays the start times shown each day */
+        $shownDays = [];
+        foreach ($canonical->getOwnTimesheets() as $timesheet) {
+            if (null !== $timesheet->getStartAt()) {
+                $shownDays[self::day($timesheet)][] = $timesheet->getStartTime()?->format('H:i');
+            }
+        }
+
         /** @var array<string, array{0: EventTimesheet, 1: Event}> $desired */
         $desired = [];
         foreach ($lenders as $lender) {
@@ -255,7 +393,15 @@ final readonly class EventFamilyResolver
                     continue;
                 }
 
+                $day = self::day($session);
+                $time = $session->getStartTime()?->format('H:i');
+                if (!$sameIdentity($lender) && isset($shownDays[$day])
+                    && (null === $time || \in_array(null, $shownDays[$day], true) || \in_array($time, $shownDays[$day], true))) {
+                    continue;
+                }
+
                 $desired[$key] = [$session, $lender];
+                $shownDays[$day][] = $time;
             }
         }
 
@@ -357,6 +503,14 @@ final readonly class EventFamilyResolver
             ->setEndTime($session->getEndTime())
             ->setHours($session->getHours())
             ->setSourceEvent($source);
+    }
+
+    /**
+     * The days a session spans, whatever its times.
+     */
+    private static function day(EventTimesheet $timesheet): string
+    {
+        return $timesheet->getStartAt()?->format('Y-m-d') . '/' . ($timesheet->getEndAt() ?? $timesheet->getStartAt())?->format('Y-m-d');
     }
 
     private static function key(EventTimesheet $timesheet): string

@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
+use App\Enum\DuplicateReason;
 use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
 use App\Picture\ImageFormats;
@@ -361,6 +362,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'duplicates')]
     #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'SET NULL')]
     private ?Event $duplicateOf = null;
+
+    /**
+     * Why it redirects to $duplicateOf, when EventFamilyResolver linked them; null for a link made by hand or before
+     * the identity hash, which the resolver leaves as it is.
+     */
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true, enumType: DuplicateReason::class)]
+    private ?DuplicateReason $duplicateReason = null;
 
     /**
      * The rows redirecting to this event: one page with it, deleted along with it. Left behind,
@@ -1509,11 +1517,20 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return $this->duplicateOf;
     }
 
-    public function setDuplicateOf(?self $duplicateOf): self
+    /**
+     * @param DuplicateReason|null $reason why, when the resolver links them; a link made by hand has none
+     */
+    public function setDuplicateOf(?self $duplicateOf, ?DuplicateReason $reason = null): self
     {
         $this->duplicateOf = $duplicateOf;
+        $this->duplicateReason = null === $duplicateOf ? null : $reason;
 
         return $this;
+    }
+
+    public function getDuplicateReason(): ?DuplicateReason
+    {
+        return $this->duplicateReason;
     }
 
     public function isDuplicate(): bool
