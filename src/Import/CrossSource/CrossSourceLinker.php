@@ -79,19 +79,29 @@ final readonly class CrossSourceLinker
             }
 
             // The links this scan decides on: both events are at these venues and not over, or one of them is and the
-            // other is at another venue, which no show spans. A pair kept apart is never linked again
+            // other is at another venue, which no show spans. A pair kept apart is never linked again, nor any other
+            // record of the same event of either source (the same identity hash)
             $scope = $chunk->eventPlaces;
             /** @var array<string, int> $existing link ids by pair */
             $existing = [];
+            /** @var array<string, true> $keptApart */
+            $keptApart = [];
             foreach ($this->linkRepository->findTouching(array_keys($scope)) as $link) {
                 $key = self::key($link['eventId'], $link['linkedEventId']);
                 if ($link['keptApart']) {
-                    unset($wanted[$key]);
+                    $keptApart[self::identityKey($link['eventId'], $link['eventIdentityHash'], $link['linkedEventId'], $link['linkedEventIdentityHash'])] = true;
                 } elseif (isset($scope[$link['eventId']], $scope[$link['linkedEventId']])
                     || $link['eventPlaceId'] !== $link['linkedEventPlaceId']) {
                     $existing[$key] = $link['id'];
                 }
             }
+
+            $wanted = array_filter($wanted, static fn (array $pair): bool => !isset($keptApart[self::identityKey(
+                $pair[0],
+                $chunk->identityHashes[$pair[0]] ?? null,
+                $pair[1],
+                $chunk->identityHashes[$pair[1]] ?? null,
+            )]));
 
             $added = array_diff_key($wanted, $existing);
             $removed = array_diff_key($existing, $wanted);
@@ -121,9 +131,10 @@ final readonly class CrossSourceLinker
     }
 
     /**
-     * Part an event from the events it is linked to, for good: someone found them to be other shows.
+     * Part an event, and the other records of its source for the same event, from the events they are linked to, for
+     * good: someone found them to be other shows.
      *
-     * @return list<int> the events it was linked to
+     * @return list<int> the events they were linked to
      */
     public function keepApart(int $eventId): array
     {
@@ -139,6 +150,18 @@ final readonly class CrossSourceLinker
     private static function key(int $leftId, int $rightId): string
     {
         return min($leftId, $rightId) . '-' . max($leftId, $rightId);
+    }
+
+    /**
+     * The pair of events a link joins, each told by its identity hash when it has one: every record of a source for
+     * the same event.
+     */
+    private static function identityKey(int $leftId, ?string $leftHash, int $rightId, ?string $rightHash): string
+    {
+        $keys = [$leftHash ?? '#' . $leftId, $rightHash ?? '#' . $rightId];
+        sort($keys);
+
+        return implode('|', $keys);
     }
 
     /**

@@ -22,6 +22,7 @@ use App\Import\CrossSource\CrossSourceLinkResult;
 use App\Import\EventFamilyResolver;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
+use App\Parser\Common\OpenAgendaParser;
 use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -133,6 +134,33 @@ final class CrossSourceLinkerTest extends AppKernelTestCase
         self::assertSame(1, CrossSourceLinkFactory::count(['keptApart' => true]));
     }
 
+    public function testKeepingARecordApartPartsTheOtherRecordsOfItsEvent(): void
+    {
+        // An organizer duplicating the event for each session: two records of one event, each matching the show
+        $first = $this->event(OpenAgendaParser::getParserName(), 'Claudio Capéo', identityHash: 'claudio');
+        $second = $this->event(OpenAgendaParser::getParserName(), 'Claudio Capéo', identityHash: 'claudio');
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'Claudio Capéo - Tournée');
+        // A third record, not published yet: created before any kernel reboot, which would repeat Faker's tag names
+        $third = $this->event(OpenAgendaParser::getParserName(), 'Claudio Capéo', identityHash: 'claudio', draft: true);
+        self::assertSame([2, 0], $this->link());
+
+        self::bootKernel();
+        self::assertSame([$fnac], self::getContainer()->get(CrossSourceLinker::class)->keepApart($first));
+
+        self::assertNull($this->reload($fnac)->getDuplicateOf(), 'Its own page again');
+        self::assertSame(2, CrossSourceLinkFactory::count(['keptApart' => true]));
+        foreach ([$first, $second] as $record) {
+            self::assertNotSame($fnac, $this->reload($record)->getDuplicateOf()?->getId());
+        }
+
+        // The third record of the event is published: still another show than Fnac's
+        self::bootKernel();
+        save($this->reload($third)->setDraft(false));
+        self::assertSame([0, 0], $this->link());
+        self::assertNull($this->reload($fnac)->getDuplicateOf());
+        self::assertNotSame($fnac, $this->reload($third)->getDuplicateOf()?->getId());
+    }
+
     public function testAnEventOverKeepsItsLink(): void
     {
         $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'Claudio Capéo - Tournée', '-10 days');
@@ -182,9 +210,11 @@ final class CrossSourceLinkerTest extends AppKernelTestCase
         return [$added, $removed];
     }
 
-    private function event(string $source, string $name, string $date = '+10 days'): int
+    private function event(string $source, string $name, string $date = '+10 days', ?string $identityHash = null, bool $draft = false): int
     {
         $event = EventFactory::createOne([
+            'identityHash' => $identityHash,
+            'draft' => $draft,
             'fromData' => $source,
             'name' => $name,
             'place' => $this->venue,

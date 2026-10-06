@@ -61,9 +61,11 @@ final readonly class CrossSourceDuplicateFinder
         foreach (array_chunk($placeIds, self::PLACES_PER_CHUNK) as $chunk) {
             $candidates = [];
             $eventPlaces = [];
+            $identityHashes = [];
             $rowsByPlace = [];
             foreach ($this->eventRepository->findImportedRowsAtPlaces($chunk, $from) as $row) {
                 $eventPlaces[$row['id']] = $row['placeId'];
+                $identityHashes[$row['id']] = $row['identityHash'];
                 if (self::isComparable($row)) {
                     $rowsByPlace[$row['placeId']][] = $row;
                 }
@@ -84,7 +86,7 @@ final readonly class CrossSourceDuplicateFinder
                 }
             }
 
-            yield new CrossSourceChunk(\count($chunk), $eventPlaces, $this->matchAll($candidates));
+            yield new CrossSourceChunk(\count($chunk), $eventPlaces, $this->matchAll($candidates), $identityHashes);
 
             $this->entityManager->clear();
         }

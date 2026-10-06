@@ -27,11 +27,12 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
     }
 
     /**
-     * The links touching any of these events, those kept apart included, with the venue of both events.
+     * The links touching any of these events, those kept apart included, with the venue and the identity hash of both
+     * events.
      *
      * @param int[] $eventIds
      *
-     * @return list<array{id: int, eventId: int, linkedEventId: int, keptApart: bool, eventPlaceId: int|null, linkedEventPlaceId: int|null}>
+     * @return list<array{id: int, eventId: int, linkedEventId: int, keptApart: bool, eventPlaceId: int|null, linkedEventPlaceId: int|null, eventIdentityHash: string|null, linkedEventIdentityHash: string|null}>
      */
     public function findTouching(array $eventIds): array
     {
@@ -39,11 +40,12 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
             return [];
         }
 
-        /** @var list<array{id: int|string, eventId: int|string, linkedEventId: int|string, keptApart: bool|int|string, eventPlaceId: int|string|null, linkedEventPlaceId: int|string|null}> $rows */
+        /** @var list<array{id: int|string, eventId: int|string, linkedEventId: int|string, keptApart: bool|int|string, eventPlaceId: int|string|null, linkedEventPlaceId: int|string|null, eventIdentityHash: string|null, linkedEventIdentityHash: string|null}> $rows */
         $rows = $this
             ->createQueryBuilder('l')
             ->select('l.id, IDENTITY(l.event) AS eventId, IDENTITY(l.linkedEvent) AS linkedEventId, l.keptApart')
             ->addSelect('IDENTITY(e.place) AS eventPlaceId, IDENTITY(le.place) AS linkedEventPlaceId')
+            ->addSelect('e.identityHash AS eventIdentityHash, le.identityHash AS linkedEventIdentityHash')
             ->join('l.event', 'e')
             ->join('l.linkedEvent', 'le')
             ->where('l.event IN (:ids)')
@@ -59,6 +61,8 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
             'keptApart' => (bool) $row['keptApart'],
             'eventPlaceId' => null !== $row['eventPlaceId'] ? (int) $row['eventPlaceId'] : null,
             'linkedEventPlaceId' => null !== $row['linkedEventPlaceId'] ? (int) $row['linkedEventPlaceId'] : null,
+            'eventIdentityHash' => $row['eventIdentityHash'],
+            'linkedEventIdentityHash' => $row['linkedEventIdentityHash'],
         ], $rows);
     }
 
@@ -91,24 +95,49 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
     }
 
     /**
-     * Keep the event apart from every event it is linked to.
+     * Keep the event apart from every event it is linked to, with the other records of its source for the same event
+     * (its identity hash): linked one by one to the same show, any of them would keep it in the family.
      *
-     * @return list<int> the events it was linked to
+     * @return list<int> the events they were linked to
      */
     public function keepApart(int $eventId): array
     {
+        $entityManager = $this->getEntityManager();
+        $hash = $entityManager->find(Event::class, $eventId)?->getIdentityHash();
+        $group = [$eventId => true];
+        if (null !== $hash) {
+            /** @var list<int|string> $ids */
+            $ids = $entityManager
+                ->createQuery('SELECT e.id FROM ' . Event::class . ' e WHERE e.identityHash = :hash')
+                ->setParameter('hash', $hash)
+                ->getSingleColumnResult();
+            foreach ($ids as $id) {
+                $group[(int) $id] = true;
+            }
+        }
+
+        /** @var list<CrossSourceLink> $links */
+        $links = $this
+            ->createQueryBuilder('l')
+            ->where('l.event IN (:ids)')
+            ->orWhere('l.linkedEvent IN (:ids)')
+            ->setParameter('ids', array_keys($group))
+            ->getQuery()
+            ->getResult();
+
         $linked = [];
-        foreach ($this->findBy(['event' => $eventId]) as $link) {
-            $linked[] = (int) $link->getLinkedEvent()->getId();
+        foreach ($links as $link) {
+            foreach ([$link->getEvent(), $link->getLinkedEvent()] as $event) {
+                $id = (int) $event->getId();
+                if (!isset($group[$id])) {
+                    $linked[$id] = $id;
+                }
+            }
+
             $link->setKeptApart(true);
         }
 
-        foreach ($this->findBy(['linkedEvent' => $eventId]) as $link) {
-            $linked[] = (int) $link->getEvent()->getId();
-            $link->setKeptApart(true);
-        }
-
-        return $linked;
+        return array_values($linked);
     }
 
     /**
