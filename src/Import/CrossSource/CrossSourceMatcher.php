@@ -11,6 +11,7 @@
 namespace App\Import\CrossSource;
 
 use App\Entity\Event;
+use DateTimeImmutable;
 
 /**
  * Tells whether two events imported from two sources are the same show: the same venue, a day in common, and two
@@ -47,13 +48,12 @@ final readonly class CrossSourceMatcher
     }
 
     /**
-     * An event a source still lists, shown on its own page: a member's event has no other source, a duplicate is
-     * its canonical's business, a row its source took back has no show left to match.
+     * An event a source still lists: a member's event has no other source, a row its source took back has no show
+     * left to match, a draft is not published.
      */
     private static function isComparable(Event $event): bool
     {
         return null !== $event->getFromData()
-            && !$event->isDuplicate()
             && !$event->isRemovedAtSource()
             && !$event->isDraft();
     }
@@ -64,20 +64,20 @@ final readonly class CrossSourceMatcher
      */
     private static function shareADay(Event $left, Event $right): bool
     {
-        foreach ($left->getSessions() as $a) {
-            $aStart = $a->getStartAt()?->format('Y-m-d');
+        foreach (self::ownSessions($left) as $a) {
+            $aStart = $a[0]?->format('Y-m-d');
             if (null === $aStart) {
                 continue;
             }
 
-            $aEnd = $a->getEndAt()?->format('Y-m-d') ?? $aStart;
-            foreach ($right->getSessions() as $b) {
-                $bStart = $b->getStartAt()?->format('Y-m-d');
+            $aEnd = $a[1]?->format('Y-m-d') ?? $aStart;
+            foreach (self::ownSessions($right) as $b) {
+                $bStart = $b[0]?->format('Y-m-d');
                 if (null === $bStart) {
                     continue;
                 }
 
-                $bEnd = $b->getEndAt()?->format('Y-m-d') ?? $bStart;
+                $bEnd = $b[1]?->format('Y-m-d') ?? $bStart;
                 if ($aStart <= $bEnd && $bStart <= $aEnd) {
                     return true;
                 }
@@ -85,5 +85,23 @@ final readonly class CrossSourceMatcher
         }
 
         return false;
+    }
+
+    /**
+     * What its source says of its dates: its own timesheets, or its range without any. Never the dates a canonical
+     * inherits from its family: they would keep it matching the very rows it inherited them from.
+     *
+     * @return list<array{0: DateTimeImmutable|null, 1: DateTimeImmutable|null}> start and end of each session
+     */
+    private static function ownSessions(Event $event): array
+    {
+        $sessions = [];
+        foreach ($event->getOwnTimesheets() as $timesheet) {
+            if (null !== $timesheet->getStartAt()) {
+                $sessions[] = [$timesheet->getStartAt(), $timesheet->getEndAt()];
+            }
+        }
+
+        return [] !== $sessions ? $sessions : [[$event->getStartDate(), $event->getEndDate()]];
     }
 }

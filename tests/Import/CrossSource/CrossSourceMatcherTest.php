@@ -93,15 +93,27 @@ final class CrossSourceMatcherTest extends AppKernelTestCase
         self::assertSame(MatchVerdict::NotComparable, $this->matcher->match($removed, $fnac));
     }
 
-    public function testADuplicateIsItsCanonicalsBusiness(): void
+    public function testADuplicateIsComparedToo(): void
     {
+        // Linked already, the show is checked again and loses its link once its sources no longer agree
         $canonical = $this->event('Fnac Spectacles', 'Claudio Capéo', '2026-12-04');
         $duplicate = $this->event('Fnac Spectacles', 'Claudio Capéo', '2026-12-04');
         $duplicate->setDuplicateOf($canonical);
         save($duplicate);
         $cdiscount = $this->event('CDiscount', 'Claudio capeo', '2026-12-04');
 
-        self::assertSame(MatchVerdict::NotComparable, $this->matcher->match($duplicate, $cdiscount));
+        self::assertSame(MatchVerdict::Same, $this->matcher->match($duplicate, $cdiscount));
+    }
+
+    public function testTheDatesACanonicalInheritsDoNotCount(): void
+    {
+        $canonical = $this->event('Fnac Spectacles', 'Claudio Capéo', '2026-12-04');
+        EventTimesheetFactory::new()->on('2026-12-04')->create(['event' => $canonical]);
+        $lender = $this->event('CDiscount', 'Claudio capeo', '2026-12-20');
+        EventTimesheetFactory::new()->on('2026-12-20')->create(['event' => $canonical, 'sourceEvent' => $lender]);
+        refresh($canonical);
+
+        self::assertSame(MatchVerdict::OtherDay, $this->matcher->match($canonical, $lender));
     }
 
     public function testTwoVenuesKeepTheirShowsApart(): void

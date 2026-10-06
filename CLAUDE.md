@@ -194,6 +194,9 @@ The system imports events through a multi-stage pipeline:
     - `EntityFactoryHandler`: Creates new entities when not found
     - `ComparatorHandler`: Matches DTOs to entities using configurable comparators
 
+5. **Families** (`App\Import\EventFamilyResolver`, after every batch): rows proven to be the same event share one page. Proof is a shared identity hash (`EventContentHasher::identity()`, one source: OpenAgenda's one-record-per-session) or a `CrossSourceLink` (several sources selling the same show). One member is the canonical page, the others redirect to it (`duplicateOf`, with a `DuplicateReason`; a link without a reason was made by hand and is left alone) and lend it their dates. Its page offers every ticketing site of the family, cheapest first (`App\Ticketing\EventTicketOffers`)
+    - Cross-source links are written by `bin/console app:events:link-cross-source --apply` (nightly host cron, after the imports; previews without `--apply`): same resolved place, a session day in common, titles naming the same show (`App\Import\CrossSource\EventTitleComparator`), and every two events of a show agreeing, or the whole show stays unlinked. Links of events already over are kept. `--keep-apart=<event id>` parts a false match for good (the link stays, flagged `keptApart`)
+
 ### DTO/Entity Pattern
 
 DTOs (`src/Dto/`) represent imported data before persistence. Key DTOs:

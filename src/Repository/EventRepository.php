@@ -22,6 +22,7 @@ use App\Entity\Tag;
 use App\Entity\UpcomingCategory;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use App\Enum\DuplicateReason;
 use App\Enum\EventStatus;
 use App\Enum\PersonalEventFilter;
 use App\Manager\PreloadManager;
@@ -356,9 +357,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $ids = $this
             ->createQueryBuilder('e')
             ->select('IDENTITY(e.place) AS placeId')
-            ->where('e.duplicateOf IS NULL')
-            ->andWhere('e.draft = false')
-            ->andWhere('e.fromData IS NOT NULL')
+            ->where('e.fromData IS NOT NULL')
             ->andWhere('e.endDate >= :from')
             ->andWhere('e.place IS NOT NULL')
             ->groupBy('e.place')
@@ -373,11 +372,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     /**
      * The imported events of these venues that are not over, as plain rows: enough to compare their titles and
-     * dates before loading the few that look alike.
+     * dates before loading the few that look alike, and to tell the rows the comparison leaves out (duplicates linked
+     * by hand, events taken back by their source) from those it covers.
      *
      * @param list<int> $placeIds
      *
-     * @return list<array{id: int, placeId: int, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null}>
+     * @return list<array{id: int, placeId: int, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null, duplicateOfId: int|null, duplicateReason: DuplicateReason|null, identityHash: string|null, canonicalIdentityHash: string|null, status: EventStatus|null, draft: bool}>
      */
     public function findImportedRowsAtPlaces(array $placeIds, DateTimeImmutable $from): array
     {
@@ -385,15 +385,15 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             return [];
         }
 
-        /** @var list<array{id: int, placeId: int|string, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null}> $rows */
+        /** @var list<array{id: int, placeId: int|string, fromData: string, name: string|null, startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null, placeName: string|null, cityName: string|null, duplicateOfId: int|string|null, duplicateReason: DuplicateReason|null, identityHash: string|null, canonicalIdentityHash: string|null, status: EventStatus|null, draft: bool|null}> $rows */
         $rows = $this
             ->createQueryBuilder('e')
             ->select('e.id, IDENTITY(e.place) AS placeId, e.fromData, e.name, e.startDate, e.endDate, p.name AS placeName, c.name AS cityName')
+            ->addSelect('IDENTITY(e.duplicateOf) AS duplicateOfId, e.duplicateReason, e.identityHash, d.identityHash AS canonicalIdentityHash, e.status, e.draft')
             ->join('e.place', 'p')
             ->leftJoin('p.city', 'c')
+            ->leftJoin('e.duplicateOf', 'd')
             ->where('e.place IN (:places)')
-            ->andWhere('e.duplicateOf IS NULL')
-            ->andWhere('e.draft = false')
             ->andWhere('e.fromData IS NOT NULL')
             ->andWhere('e.endDate >= :from')
             ->orderBy('e.id', SortDirection::Ascending)
@@ -402,7 +402,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->getQuery()
             ->getArrayResult();
 
-        return array_map(static fn (array $row): array => ['placeId' => (int) $row['placeId']] + $row, $rows);
+        return array_map(static fn (array $row): array => [
+            'placeId' => (int) $row['placeId'],
+            'duplicateOfId' => null !== $row['duplicateOfId'] ? (int) $row['duplicateOfId'] : null,
+            'draft' => (bool) $row['draft'],
+        ] + $row, $rows);
     }
 
     /**
