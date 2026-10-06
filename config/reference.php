@@ -2478,6 +2478,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         default_placeholder?: scalar|Param|null, // Default placeholder name for this loader. Overrides the global default_placeholder. // Default: null
  *         default_transformer?: scalar|Param|null, // Default transformer name for this loader. Overrides the global default_transformer. // Default: null
  *         url_alias?: scalar|Param|null, // Public name of this loader in image URLs and public-cache keys, instead of its name (e.g. "p" for /image/glide/p/…). // Default: null
+ *         private?: bool|Param, // Only your own routes serve the images of this loader (through ImageServer, e.g. behind security voters): the bundle image route refuses it, and rendering requires a "route". // Default: false
  *         resolve_metadata?: scalar|Param|null, // Whether to resolve image metadata for this loader. Null inherits from global. Filesystem loaders default to true. // Default: null
  *     }>,
  *     transformers?: array<string, array{ // Default: []
