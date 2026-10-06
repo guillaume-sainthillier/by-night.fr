@@ -38,6 +38,9 @@
     </div>
 {% endblock %}
 
+{# Only a draft goes online: a published event was already checked, or comes from a source #}
+{% block duplicates_url event.draft ? path('app_event_edit_duplicates', {id: event.id}) : '' %}
+
 {# A draft is put online by the main button, a published event stays online #}
 {% block form_submit %}
     {% if event.draft %}

@@ -5,14 +5,19 @@
 
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import eventPublish from '@/js/listeners/event-publish'
+import { confirmPublication } from '@/js/utils/duplicates'
+
+vi.mock('@/js/utils/duplicates', () => ({ confirmPublication: vi.fn() }))
 
 const URL = '/api/events/42/draft'
 
-const connect = () => {
+const DUPLICATES_URL = '/espace-perso/42/doublons'
+
+const connect = (dataset = {}) => {
     const listeners = {}
     const notice = { remove: vi.fn() }
     const button = {
-        dataset: { publishHref: URL },
+        dataset: { publishHref: URL, ...dataset },
         disabled: false,
         closest: (selector) => (selector === '.alert' ? notice : null),
         addEventListener: (type, listener) => {
@@ -25,15 +30,18 @@ const connect = () => {
         },
     }
     const toastManager = { createToast: vi.fn() }
-    const cleanup = eventPublish.connect(button, { app: { get: () => toastManager } })
+    const modalManager = {}
+    const services = { toastManager, modalManager }
+    const cleanup = eventPublish.connect(button, { app: { get: (name) => services[name] } })
 
-    return { button, notice, toastManager, cleanup, click: () => listeners.click?.() }
+    return { button, notice, toastManager, modalManager, cleanup, click: () => listeners.click?.() }
 }
 
 const json = (body, ok = true) => ({ ok, json: () => Promise.resolve(body) })
 
 afterEach(() => {
     vi.unstubAllGlobals()
+    vi.mocked(confirmPublication).mockReset()
 })
 
 describe('event-publish listener', () => {
@@ -68,6 +76,33 @@ describe('event-publish listener', () => {
         await click()
 
         expect(toastManager.createToast).toHaveBeenCalledWith('error', expect.any(String))
+        expect(notice.remove).not.toHaveBeenCalled()
+        expect(button.disabled).toBe(false)
+    })
+
+    test('asks first for the events already online the draft likely repeats', async () => {
+        vi.mocked(confirmPublication).mockResolvedValue(true)
+        const fetch = vi.fn(() => Promise.resolve(json({ success: true })))
+        vi.stubGlobal('fetch', fetch)
+        const { modalManager, notice, click } = connect({ duplicatesHref: DUPLICATES_URL })
+
+        await click()
+
+        expect(confirmPublication).toHaveBeenCalledWith(modalManager, DUPLICATES_URL)
+        expect(fetch).toHaveBeenCalledWith(URL, expect.objectContaining({ method: 'PUT' }))
+        expect(notice.remove).toHaveBeenCalled()
+    })
+
+    test('keeps the draft when the author cancels', async () => {
+        vi.mocked(confirmPublication).mockResolvedValue(false)
+        const fetch = vi.fn()
+        vi.stubGlobal('fetch', fetch)
+        const { button, notice, toastManager, click } = connect({ duplicatesHref: DUPLICATES_URL })
+
+        await click()
+
+        expect(fetch).not.toHaveBeenCalled()
+        expect(toastManager.createToast).not.toHaveBeenCalled()
         expect(notice.remove).not.toHaveBeenCalled()
         expect(button.disabled).toBe(false)
     })

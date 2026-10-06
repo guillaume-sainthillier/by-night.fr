@@ -1,3 +1,5 @@
+import { confirmPublication } from '@/js/utils/duplicates'
+
 /**
  * Puts the event online through the draft API, returning whether it worked.
  *
@@ -16,7 +18,8 @@ async function publish(url) {
 }
 
 /**
- * "Publish" button of a draft's preview: publishes the event, then drops the preview notice.
+ * "Publish" button of a draft's preview: publishes the event, then drops the preview notice. When it carries
+ * `data-duplicates-href`, it first asks for the events already online the draft likely repeats.
  *
  * @type {Listener}
  */
@@ -25,6 +28,12 @@ export default {
     connect(button, { app }) {
         const onClick = async () => {
             button.disabled = true
+            const { duplicatesHref } = button.dataset
+            if (duplicatesHref && !(await confirmPublication(app.get('modalManager'), duplicatesHref))) {
+                button.disabled = false
+                return
+            }
+
             const published = await publish(button.dataset.publishHref).catch(() => false)
             if (!published) {
                 button.disabled = false

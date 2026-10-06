@@ -16,6 +16,7 @@ use App\Entity\Country;
 use App\Enum\AgendaType;
 use App\Enum\PricePreset;
 use App\Search\DateRange;
+use App\Search\DuplicateSearch;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\Fuzzy;
@@ -529,6 +530,56 @@ final class EventElasticaRepositoryTest extends TestCase
     {
         // After the window of the dates, which every search has
         return $this->repository->createSearchQuery(new SearchEvent()->setType($type))->toArray()['query']['bool']['filter'][1];
+    }
+
+    /**
+     * The events a member's event may repeat: on one of its dates, around its place, sharing a word of its name. The
+     * names are judged afterwards (DuplicateEventFinder).
+     */
+    public function testTheDuplicateCandidatesShareADateAPlaceAndAWord(): void
+    {
+        $search = new DuplicateSearch(
+            'Orelsan au Zénith',
+            [
+                new DateRange(new DateTimeImmutable('2026-10-10'), new DateTimeImmutable('2026-10-10')),
+                new DateRange(new DateTimeImmutable('2026-10-12'), new DateTimeImmutable('2026-10-13')),
+            ],
+            latitude: 43.6,
+            longitude: 1.44,
+            excluded: 42,
+        );
+
+        $query = $this->repository->createDuplicateCandidatesQuery($search, 20)->toArray();
+
+        self::assertSame(20, $query['size']);
+        self::assertFalse($query['_source'], 'Loaded from the database by their ids');
+        $bool = $query['query']['bool'];
+        self::assertSame(['query' => 'Orelsan au Zénith', 'fields' => ['name', 'name.heavy'], 'analyzer' => 'french_search', 'operator' => 'or'], $bool['must'][0]['multi_match']);
+        self::assertEquals(['nested' => ['path' => 'sessions', 'query' => ['bool' => ['minimum_should_match' => 1, 'should' => [
+            ['bool' => ['filter' => [
+                ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
+                ['range' => ['sessions.startAt' => ['lte' => '2026-10-10']]],
+            ]]],
+            ['bool' => ['filter' => [
+                ['range' => ['sessions.endAt' => ['gte' => '2026-10-12']]],
+                ['range' => ['sessions.startAt' => ['lte' => '2026-10-13']]],
+            ]]],
+        ]]]]], $bool['filter'][0], 'A session overlapping one of the dates');
+        self::assertEquals(['geo_distance' => ['place.city.location' => ['lat' => 43.6, 'lon' => 1.44], 'distance' => '15km']], $bool['filter'][1]);
+        self::assertEquals([['ids' => ['values' => ['42']]]], $bool['must_not'], 'Not the event itself, a draft about to be published');
+    }
+
+    public function testWithoutCoordinatesTheDuplicateCandidatesAreInTheCity(): void
+    {
+        $search = new DuplicateSearch('Orelsan', [new DateRange(new DateTimeImmutable('2026-10-10'), new DateTimeImmutable('2026-10-10'))], postalCode: '31000', cityName: 'Saint-Orens-de-Gameville');
+
+        $bool = $this->repository->createDuplicateCandidatesQuery($search, 20)->toArray()['query']['bool'];
+
+        self::assertEquals(['bool' => ['minimum_should_match' => 1, 'should' => [
+            ['match' => ['place.cityPostalCode' => '31000']],
+            ['match' => ['place.cityName' => ['query' => 'Saint-Orens-de-Gameville', 'operator' => 'and']]],
+        ]]], $bool['filter'][1]);
+        self::assertArrayNotHasKey('must_not', $bool);
     }
 
     /**

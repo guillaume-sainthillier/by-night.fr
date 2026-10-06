@@ -1,0 +1,39 @@
+{#
+    The published events a member's event likely repeats (EventController::renderDuplicates()), in the dialog asking to
+    confirm its publication (assets/js/utils/duplicates.js). Each opens in a new tab: the form stays as filled in.
+#}
+{# @var duplicates \App\Entity\Event[] #}
+<p class="text-secondary">
+    {{ '{count, plural, one {Un événement déjà en ligne a lieu} other {Des événements déjà en ligne ont lieu}} aux mêmes dates, au même endroit, sous un nom proche. S’il s’agit du vôtre, inutile de le publier une seconde fois.'|trans({count: duplicates|length}, 'messages+intl-icu') }}
+</p>
+<div class="list-group text-start">
+    {% for event in duplicates %}
+        <a class="list-group-item list-group-item-action" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" target="_blank" rel="noopener">
+            <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <span class="avatar avatar-lg">
+                        <twig:Event:Thumb event="{{ event }}" width="{{ 96 }}" />
+                    </span>
+                </div>
+                <div class="col text-truncate">
+                    <div class="fw-bold text-truncate">{{ event.name }}</div>
+                    <div class="text-secondary small">
+                        <twig:Dates from="{{ event.startDate }}" to="{{ event.endDate }}" />
+                    </div>
+                    {% if event.placeName %}
+                        <div class="text-secondary small text-truncate">{{ event.placeName }}{{ event.placeCity ? ', ' ~ event.placeCity }}</div>
+                    {% endif %}
+                    <div class="text-secondary small">
+                        {%- if event.fromData -%}
+                            Source&nbsp;: {{ event.fromData }}
+                        {%- elseif app.user and event.user and event.user.id == app.user.id -%}
+                            Publié par vous
+                        {%- else -%}
+                            Publié par un membre
+                        {%- endif -%}
+                    </div>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+</div>

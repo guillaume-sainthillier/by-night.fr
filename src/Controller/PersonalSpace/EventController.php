@@ -11,17 +11,20 @@
 namespace App\Controller\PersonalSpace;
 
 use App\Controller\AbstractController as BaseController;
+use App\Dto\EventDto;
 use App\DtoFactory\EventDtoFactory;
 use App\Entity\Event;
 use App\Enum\PersonalEventFilter;
 use App\Form\Type\EventType;
 use App\Manager\MemberEventPublisher;
 use App\Repository\EventRepository;
+use App\SearchRepository\DuplicateEventFinder;
 use App\Security\Voter\EventVoter;
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -81,6 +84,28 @@ final class EventController extends BaseController
         ]);
     }
 
+    /**
+     * The published events the member's new event likely repeats, asked by its form before it publishes it
+     * (assets/js/utils/duplicates.js).
+     */
+    #[Route(path: '/nouvelle-soiree/doublons', name: 'app_event_new_duplicates', methods: ['POST'])]
+    #[IsGranted(EventVoter::CREATE)]
+    public function newDuplicates(Request $request, MemberEventPublisher $memberEventPublisher, DuplicateEventFinder $duplicateEventFinder): Response
+    {
+        return $this->renderDuplicates($request, $memberEventPublisher->createDto($this->getAppUser()), $duplicateEventFinder);
+    }
+
+    /**
+     * The published events a draft likely repeats, before it goes online: from its form as filled in (POST), or as
+     * saved, for the publish button of its preview (GET).
+     */
+    #[Route(path: '/{id<%patterns.id%>}/doublons', name: 'app_event_edit_duplicates', methods: ['GET', 'POST'])]
+    #[IsGranted(EventVoter::EDIT, subject: 'event')]
+    public function editDuplicates(Request $request, Event $event, EventDtoFactory $eventDtoFactory, DuplicateEventFinder $duplicateEventFinder): Response
+    {
+        return $this->renderDuplicates($request, $eventDtoFactory->create($event), $duplicateEventFinder);
+    }
+
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function edit(Request $request, Event $event, EventDtoFactory $eventDtoFactory, MemberEventPublisher $memberEventPublisher): Response
@@ -121,6 +146,31 @@ final class EventController extends BaseController
         );
 
         return $this->redirectToRoute('app_event_list');
+    }
+
+    /**
+     * The list of the likely duplicates, shown in the confirmation dialog; nothing (204) when there is none. A posted
+     * form is read as filled in, valid or not: its picture is left out by the page, its errors are the publication's
+     * business.
+     */
+    private function renderDuplicates(Request $request, EventDto $dto, DuplicateEventFinder $duplicateEventFinder): Response
+    {
+        if ($request->isMethod('POST')) {
+            $form = $this->createForm(EventType::class, $dto);
+            $form->handleRequest($request);
+            if (!$form->isSubmitted()) {
+                throw new BadRequestHttpException('The event form was not sent.');
+            }
+        }
+
+        $duplicates = $duplicateEventFinder->find($dto);
+        if ([] === $duplicates) {
+            return new Response(null, Response::HTTP_NO_CONTENT);
+        }
+
+        return $this->render('personal-space/_duplicates.html.twig', [
+            'duplicates' => $duplicates,
+        ]);
     }
 
     /**

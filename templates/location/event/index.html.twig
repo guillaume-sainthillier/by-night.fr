@@ -161,7 +161,7 @@
                             <div class="fw-bold">Aperçu&nbsp;: cet événement n'est pas encore publié</div>
                             Seuls son auteur et les administrateurs le voient. Publiez-le pour qu'il apparaisse dans l'agenda.
                         </div>
-                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_draft', {id: event.id}) }}">
+                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_draft', {id: event.id}) }}" data-duplicates-href="{{ path('app_event_edit_duplicates', {id: event.id}) }}">
                             <twig:Icon name="lucide:rocket" />
                             Publier l'événement
                         </button>
