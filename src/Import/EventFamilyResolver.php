@@ -15,10 +15,6 @@ use App\Entity\EventTimesheet;
 use App\Enum\DuplicateReason;
 use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
-use App\Parser\Common\BilletsReducAwinParser;
-use App\Parser\Common\CDiscountAwinParser;
-use App\Parser\Common\FnacSpectaclesAwinParser;
-use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Repository\CrossSourceLinkRepository;
 use App\Repository\EventRepository;
 use App\Utils\ObjectKey;
@@ -285,31 +281,10 @@ final readonly class EventFamilyResolver
             }
         }
 
-        $rank = static fn (Event $event): array => [isset($followed[(int) $event->getId()]) ? 0 : 1, self::pageRank($event), $event->getId() ?? 0];
+        $rank = static fn (Event $event): array => [isset($followed[(int) $event->getId()]) ? 0 : 1, AffiliateParsers::pageRank($event->getFromData()), $event->getId() ?? 0];
         usort($pool, static fn (Event $a, Event $b): int => $rank($a) <=> $rank($b));
 
         return $pool[0];
-    }
-
-    /**
-     * How well a source's page shows an event, the best first: the agendas and the organizers write a description;
-     * among the ticketing feeds, Fnac and BilletsReduc title their shows as they are spelled, SeeTickets in capitals,
-     * CDiscount in lower case ("Claudio capeo").
-     */
-    private static function pageRank(Event $event): int
-    {
-        $source = $event->getFromData();
-        if (!AffiliateParsers::isAffiliate($source)) {
-            return 0;
-        }
-
-        return match ($source) {
-            FnacSpectaclesAwinParser::getParserName() => 1,
-            BilletsReducAwinParser::getParserName() => 2,
-            SeeTicketsKwankoParser::getParserName() => 3,
-            CDiscountAwinParser::getParserName() => 4,
-            default => 5,
-        };
     }
 
     /**
