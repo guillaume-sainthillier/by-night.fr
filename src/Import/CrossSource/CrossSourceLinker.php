@@ -107,7 +107,7 @@ final readonly class CrossSourceLinker
             $removed = array_diff_key($existing, $wanted);
 
             if ($apply && ([] !== $added || [] !== $removed)) {
-                $this->entityManager->wrapInTransaction(function () use ($added, $removed): void {
+                $this->entityManager->wrapInTransaction(function () use ($added, $removed, $chunk): void {
                     $this->linkRepository->deleteByIds(array_values($removed));
                     foreach ($added as [$leftId, $rightId]) {
                         $this->linkRepository->link($leftId, $rightId);
@@ -115,14 +115,13 @@ final readonly class CrossSourceLinker
 
                     $this->entityManager->flush();
 
-                    // The events gathered or parted, and through them their families
-                    $affected = [];
-                    foreach ([...array_values($added), ...array_map(self::pairOf(...), array_keys($removed))] as [$leftId, $rightId]) {
-                        $affected[$leftId] = $leftId;
-                        $affected[$rightId] = $rightId;
+                    // The events gathered or parted, and through them their families, venue by venue, each venue's
+                    // forgotten before the next: the families of a whole chunk, sessions loaded, did not fit in the
+                    // 512 MB of a worker on the first run (2026-10-06)
+                    foreach (self::eventIdsByVenue([...array_values($added), ...array_map(self::pairOf(...), array_keys($removed))], $chunk->eventPlaces) as $eventIds) {
+                        $this->entityManager->clear();
+                        $this->familyResolver->resolveForEvents($eventIds);
                     }
-
-                    $this->familyResolver->resolveForEvents(array_values($affected));
                 });
             }
 
@@ -165,6 +164,27 @@ final readonly class CrossSourceLinker
         sort($keys);
 
         return implode('|', $keys);
+    }
+
+    /**
+     * The events of these pairs, by the venue of the pair (the first of its events at a venue scanned; a link taken
+     * back may lead to another venue).
+     *
+     * @param list<array{int, int}> $pairs
+     * @param array<int, int>       $eventPlaces
+     *
+     * @return list<list<int>>
+     */
+    private static function eventIdsByVenue(array $pairs, array $eventPlaces): array
+    {
+        $byVenue = [];
+        foreach ($pairs as [$leftId, $rightId]) {
+            $venue = $eventPlaces[$leftId] ?? $eventPlaces[$rightId] ?? 0;
+            $byVenue[$venue][$leftId] = $leftId;
+            $byVenue[$venue][$rightId] = $rightId;
+        }
+
+        return array_map(array_values(...), array_values($byVenue));
     }
 
     /**
