@@ -20,6 +20,7 @@ use ReflectionMethod;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\JsonMockResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
+use UnexpectedValueException;
 
 /**
  * One Sowprog API v2 event maps to one event with a timesheet per date.
@@ -56,7 +57,7 @@ final class SowProgParserTest extends AppKernelTestCase
 
     public function testPricesKeepTheirCents(): void
     {
-        $event = $this->map(self::record(['dates' => [self::date('2026-06-15', '21:00:00', null, [
+        $event = $this->map(self::record(['dates' => [self::date('2026-06-15', '21:00', null, [
             ['label' => 'Tarif plein', 'price' => 12.5, 'currency' => 'EUR'],
             ['label' => 'Tarif réduit', 'price' => 8, 'currency' => 'EUR'],
         ])]]));
@@ -67,7 +68,7 @@ final class SowProgParserTest extends AppKernelTestCase
     public function testALabelEndingWithAColonIsNotFollowedByASecondOne(): void
     {
         // As served for a Paris Jazz Club concert: "Tarif concert à 21h : : 12€"
-        $event = $this->map(self::record(['dates' => [self::date('2026-06-15', '21:00:00', null, [
+        $event = $this->map(self::record(['dates' => [self::date('2026-06-15', '21:00', null, [
             ['label' => 'Tarif concert à 21h :', 'price' => 12, 'currency' => 'EUR'],
         ])]]));
 
@@ -76,7 +77,7 @@ final class SowProgParserTest extends AppKernelTestCase
 
     public function testAFreeAdmissionWithoutPricesIsFree(): void
     {
-        $date = self::date('2026-06-15', '21:00:00', null, []);
+        $date = self::date('2026-06-15', '21:00', null, []);
         $date['freeAdmission'] = true;
 
         self::assertSame('Gratuit', $this->map(self::record(['dates' => [$date]]))->prices);
@@ -85,8 +86,8 @@ final class SowProgParserTest extends AppKernelTestCase
     public function testEachDateIsATimesheet(): void
     {
         $event = $this->map(self::record(['dates' => [
-            self::date('2026-10-01', '20:30:00', '23:00:00'),
-            self::date('2026-10-02', '18:00:00', null),
+            self::date('2026-10-01', '20:30', '23:00'),
+            self::date('2026-10-02', '18:00', null),
             self::date('2026-10-03', null, null),
         ]]));
 
@@ -104,9 +105,9 @@ final class SowProgParserTest extends AppKernelTestCase
     public function testTheEventSpansItsDatesWhateverTheirOrder(): void
     {
         $event = $this->map(self::record(['dates' => [
-            self::date('2026-11-20', '20:30:00', '23:00:00'),
-            self::date('2026-10-01', '20:30:00', '23:00:00'),
-            self::date('2026-10-15', '20:30:00', '23:00:00'),
+            self::date('2026-11-20', '20:30', '23:00'),
+            self::date('2026-10-01', '20:30', '23:00'),
+            self::date('2026-10-15', '20:30', '23:00'),
         ]]));
 
         self::assertSame('2026-10-01', $event->startDate?->format('Y-m-d'));
@@ -115,12 +116,25 @@ final class SowProgParserTest extends AppKernelTestCase
 
     public function testANightPastMidnightEndsTheNextDay(): void
     {
-        $event = $this->map(self::record(['dates' => [self::date('2026-10-10', '23:00:00', '05:00:00')]]));
+        $event = $this->map(self::record(['dates' => [self::date('2026-10-10', '23:00', '05:00')]]));
 
         self::assertSame(['23:00', '05:00'], [$event->timesheets[0]->startTime?->format('H:i'), $event->timesheets[0]->endTime?->format('H:i')]);
         self::assertSame('2026-10-10', $event->timesheets[0]->startAt?->format('Y-m-d'));
         self::assertSame('2026-10-11', $event->timesheets[0]->endAt?->format('Y-m-d'));
         self::assertSame('2026-10-11', $event->endDate?->format('Y-m-d'));
+    }
+
+    /**
+     * From 2026-10-05 to 2026-10-06 the API served datetimes ("1970-01-01T21:00:00.000Z"): a format
+     * the parser does not know fails the record instead of importing it without its times.
+     */
+    public function testADateInAnotherFormatFailsTheRecord(): void
+    {
+        $date = self::date('2026-06-15', '21:00', null);
+        $date['startTime'] = '1970-01-01T21:00:00.000Z';
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->invoke(self::record(['dates' => [$date]]));
     }
 
     public function testTheTextsLoseTheirHtmlEntities(): void
@@ -240,11 +254,11 @@ final class SowProgParserTest extends AppKernelTestCase
      */
     private static function date(string $date, ?string $startTime, ?string $endTime, ?array $prices = null): array
     {
-        // As the API serves them, as datetimes
+        // As the API serves them, bare: "2026-06-15", "21:00"
         return [
-            'date' => $date . 'T00:00:00.000Z',
-            'startTime' => null === $startTime ? null : '1970-01-01T' . $startTime . '.000Z',
-            'endTime' => null === $endTime ? null : '1970-01-01T' . $endTime . '.000Z',
+            'date' => $date,
+            'startTime' => $startTime,
+            'endTime' => $endTime,
             'freeAdmission' => false,
             'prices' => $prices ?? [['label' => 'Plein tarif', 'price' => 22, 'currency' => 'EUR']],
         ];
@@ -292,7 +306,7 @@ final class SowProgParserTest extends AppKernelTestCase
             'artists' => [
                 ['id' => 89, 'name' => 'Trio Rosenberg', 'instrument' => null, 'position' => 1, 'musicBrainzId' => null, 'imageUrl' => null],
             ],
-            'dates' => [self::date('2026-06-15', '21:00:00', '23:30:00')],
+            'dates' => [self::date('2026-06-15', '21:00', '23:30')],
             'links' => [
                 ['label' => 'Site', 'url' => 'https://www.example.com', 'type' => 'GENERAL'],
                 ['label' => 'Billetterie', 'url' => 'https://tickets.example.com/rosenberg', 'type' => 'TICKETING'],
