@@ -60,8 +60,9 @@ yarn run dev          # Development build
 yarn run watch        # Watch mode
 yarn run build        # Production build
 
-# Start local services (requires Docker)
-docker-compose up -d
+# Start local services (requires Docker; compose refuses to start without BASE_IMAGE_TAG)
+export BASE_IMAGE_TAG=$(cat docker/base/VERSION)
+docker compose up -d
 ```
 
 ### Testing & Quality
