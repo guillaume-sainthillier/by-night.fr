@@ -43,8 +43,9 @@ final class ImageTypeExtension extends AbstractTypeExtension
 
         if (null !== $object) {
             if ($object instanceof Event || $object instanceof EventDto) {
-                $pictureData = $this->eventProfilePicture->getPicturePathAndSource($object);
-                $view->vars['download_uri'] = $this->eventProfilePicture->getOriginalPicture($object);
+                // The form edits the event's own picture, never one its page borrows from its family
+                $pictureData = $this->eventProfilePicture->getPicturePathAndSource($object, own: true);
+                $view->vars['download_uri'] = $this->eventProfilePicture->getOriginalPicture($object, own: true);
                 $view->vars['has_uploaded_image'] = 'upload' === $pictureData['source'];
                 $view->vars['image_thumb'] = [
                     'loader' => $pictureData['loader'],

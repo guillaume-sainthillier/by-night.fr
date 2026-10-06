@@ -107,6 +107,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->preloadManager
             ->preloadEntities(City::class, array_map(static fn (Event $entity) => $entity->getPlace()?->getCity()?->getId(), $entities));
 
+        // The cards show the picture a canonical borrows from its family
+        $loadPictureLenders = fn () => $this
+            ->preloadManager
+            ->preloadEntities(Event::class, array_map(static fn (Event $entity) => $entity->getPictureFrom()?->getId(), $entities));
+
         $loadUsers = fn () => $this
             ->preloadManager
             ->preloadEntities(User::class, array_map(static fn (Event $entity) => $entity->getUser()?->getId(), $entities));
@@ -120,6 +125,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         ], true)) {
             $loadTimesheets();
             $loadUsers();
+            $loadPictureLenders();
         }
 
         if (\in_array($view, [
@@ -140,6 +146,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadPlaces();
             $loadCities();
             $loadCategories();
+            $loadPictureLenders();
         }
 
         // The organizer's list names the category under each event

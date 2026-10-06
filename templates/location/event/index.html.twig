@@ -99,7 +99,7 @@
             </div>
         </div>
     {% else %}
-        {% set price = event.prices|price_label %}
+        {% set price = event.prices|price_label(event.startingPrice) %}
         {% set hasEnded = event_seo.hasEnded(event) %}
         {% set placeAgenda = path('app_agenda_by_place', {placeSlug: place.slug, location: place.locationSlug}) %}
         {% set agenda = path('app_location_index', {location: place.locationSlug}) %}

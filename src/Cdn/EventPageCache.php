@@ -86,6 +86,12 @@ final readonly class EventPageCache
             $tags[] = self::placeTag($placeId);
         }
 
+        // The page shows the picture of another member of its family: a new one there must reach it
+        $shown = $event->getShownPictureEvent();
+        if ($shown !== $event && null !== $lenderId = $shown->getId()) {
+            $tags[] = self::eventTag($lenderId);
+        }
+
         return $tags;
     }
 }

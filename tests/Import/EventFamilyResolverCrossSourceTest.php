@@ -14,6 +14,7 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Enum\DuplicateReason;
+use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\CrossSourceLinkFactory;
@@ -30,6 +31,7 @@ use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use Override;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\save;
@@ -184,6 +186,96 @@ final class EventFamilyResolverCrossSourceTest extends AppKernelTestCase
         self::assertNull($this->reload($dataTourisme)->getDuplicateOf());
     }
 
+    public function testThePageShowsTheMuchLargerPictureOfAnotherSource(): void
+    {
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('fnac.jpg', 222, 222)]);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('cdiscount.jpg', 2048, 2900)]);
+        $link = $this->link($fnac, $cdiscount);
+
+        $this->resolver->resolveForEvents([$cdiscount]);
+
+        $canonical = $this->reload($fnac);
+        self::assertSame($cdiscount, $canonical->getPictureFrom()?->getId());
+        self::assertSame($cdiscount, $canonical->getShownPictureEvent()->getId());
+
+        // Parted, each page shows its own again
+        delete($link);
+        $this->resolver->resolveForEvents([$fnac, $cdiscount]);
+
+        self::assertNull($this->reload($fnac)->getPictureFrom());
+    }
+
+    public function testASlightlyLargerPictureIsNotWorthIt(): void
+    {
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('fnac.jpg', 800, 600)]);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('cdiscount.jpg', 900, 600)]);
+        $this->link($fnac, $cdiscount);
+
+        $this->resolver->resolveForEvents([$cdiscount]);
+
+        self::assertNull($this->reload($fnac)->getPictureFrom());
+    }
+
+    public function testAnUploadedPictureIsNeverReplaced(): void
+    {
+        $openAgenda = $this->event(OpenAgendaParser::getParserName(), 'oa-hash', '2026-12-04', attributes: ['image' => $this->picture('upload.jpg', 100, 100)]);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('cdiscount.jpg', 2048, 2900)]);
+        $this->link($openAgenda, $cdiscount);
+
+        $this->resolver->resolveForEvents([$cdiscount]);
+
+        self::assertNull($this->reload($openAgenda)->getPictureFrom());
+    }
+
+    public function testAPictureTakenDownOnRequestIsNeitherReplacedNorLent(): void
+    {
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-04', attributes: ['imageRemovedAt' => new DateTimeImmutable('-1 day')]);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('cdiscount.jpg', 2048, 2900)]);
+        $seeTickets = $this->event(SeeTicketsKwankoParser::getParserName(), 'seetickets-hash', '2026-12-04', attributes: ['imageSystem' => $this->picture('seetickets.jpg', 2048, 2900), 'imageRemovedAt' => new DateTimeImmutable('-1 day')]);
+        $openAgenda = $this->event(OpenAgendaParser::getParserName(), 'oa-hash', '2026-12-05');
+        $this->link($fnac, $cdiscount);
+        $this->link($seeTickets, $openAgenda);
+
+        $this->resolver->resolveForEvents([$cdiscount, $openAgenda]);
+
+        self::assertNull($this->reload($fnac)->getPictureFrom(), 'Its own was taken down');
+        self::assertNull($this->reload($openAgenda)->getPictureFrom(), 'The one it would borrow was taken down');
+    }
+
+    public function testTheCheapestSourceStillSellingSetsTheStartingPrice(): void
+    {
+        $openAgenda = $this->event(OpenAgendaParser::getParserName(), 'oa-hash', '2026-12-04', attributes: ['prices' => 'Gratuit']);
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-04', attributes: ['prices' => '45€']);
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'cdiscount-hash', '2026-12-04', attributes: ['prices' => '39€']);
+        $seeTickets = $this->event(SeeTicketsKwankoParser::getParserName(), 'seetickets-hash', '2026-12-04', attributes: ['prices' => '30€', 'status' => EventStatus::SoldOut]);
+        $this->link($openAgenda, $fnac);
+        $cdiscountLink = $this->link($openAgenda, $cdiscount);
+        $this->link($openAgenda, $seeTickets);
+
+        $this->resolver->resolveForEvents([$openAgenda]);
+
+        // The cheapest still on sale: neither the sold-out one, nor "Gratuit" beside paying tickets
+        self::assertNull($this->reload($openAgenda)->getDuplicateOf());
+        self::assertSame(39.0, $this->reload($openAgenda)->getStartingPrice());
+
+        delete($cdiscountLink);
+        $this->resolver->resolveForEvents([$cdiscount]);
+
+        self::assertSame(45.0, $this->reload($openAgenda)->getStartingPrice());
+        self::assertSame(39.0, $this->reload($cdiscount)->getStartingPrice(), 'Back on its own page, its own price');
+    }
+
+    public function testAShowFreeEverywhereIsFree(): void
+    {
+        $openAgenda = $this->event(OpenAgendaParser::getParserName(), 'oa-hash', '2026-12-04', attributes: ['prices' => null]);
+        $dataTourisme = $this->event(DataTourismeParser::getParserName(), null, '2026-12-04', attributes: ['prices' => 'Entrée libre']);
+        $this->link($openAgenda, $dataTourisme);
+
+        $this->resolver->resolveForEvents([$dataTourisme]);
+
+        self::assertSame(0.0, $this->reload($openAgenda)->getStartingPrice());
+    }
+
     public function testALinkMadeByHandIsLeftAsItIs(): void
     {
         $openAgenda = $this->event(OpenAgendaParser::getParserName(), 'oa-hash', '2026-12-04');
@@ -199,7 +291,10 @@ final class EventFamilyResolverCrossSourceTest extends AppKernelTestCase
         self::assertSame(['2026-12-04' => null], $this->datesBySource($this->reload($openAgenda)), 'It lends no date');
     }
 
-    private function event(string $source, ?string $hash, string $date, ?string $startTime = null, ?string $hours = null): int
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    private function event(string $source, ?string $hash, string $date, ?string $startTime = null, ?string $hours = null, array $attributes = []): int
     {
         $event = EventFactory::createOne([
             'fromData' => $source,
@@ -209,6 +304,7 @@ final class EventFamilyResolverCrossSourceTest extends AppKernelTestCase
             'user' => $this->user,
             'startDate' => new DateTimeImmutable($date),
             'endDate' => new DateTimeImmutable($date),
+            ...$attributes,
         ]);
         EventTimesheetFactory::new()->on($date, $hours)->create([
             'event' => $event,
@@ -216,6 +312,15 @@ final class EventFamilyResolverCrossSourceTest extends AppKernelTestCase
         ]);
 
         return (int) $event->getId();
+    }
+
+    private function picture(string $name, int $width, int $height): EmbeddedFile
+    {
+        $picture = new EmbeddedFile();
+        $picture->setName($name);
+        $picture->setDimensions([$width, $height]);
+
+        return $picture;
     }
 
     private function link(int $leftId, int $rightId): object

@@ -249,6 +249,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $imageRemovedAt = null;
 
+    /**
+     * The member of its family whose picture its page shows, much larger than its own (a CDiscount poster in 2048px
+     * beside Fnac's 222px): set by EventFamilyResolver, the file stays with the row it was downloaded for.
+     */
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'picture_from_id', nullable: true, onDelete: 'SET NULL')]
+    private ?Event $pictureFrom = null;
+
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M', mimeTypes: ImageFormats::MIME_TYPES)]
@@ -949,6 +957,41 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function getStartingPrice(): ?float
     {
         return $this->startingPrice;
+    }
+
+    /**
+     * The lowest price of its family, set by EventFamilyResolver: another source may sell the show for less.
+     */
+    public function setStartingPrice(?float $startingPrice): self
+    {
+        $this->startingPrice = $startingPrice;
+
+        return $this;
+    }
+
+    public function getPictureFrom(): ?self
+    {
+        return $this->pictureFrom;
+    }
+
+    public function setPictureFrom(?self $pictureFrom): self
+    {
+        $this->pictureFrom = $pictureFrom;
+
+        return $this;
+    }
+
+    /**
+     * The event whose picture its page shows: a member of its family with a much larger one, else itself. Its own
+     * pictures taken down on request take the borrowed one down too, and a borrowed one gone since is not shown.
+     */
+    public function getShownPictureEvent(): self
+    {
+        if (null === $this->pictureFrom || null !== $this->imageRemovedAt || !$this->pictureFrom->hasImage()) {
+            return $this;
+        }
+
+        return $this->pictureFrom;
     }
 
     public function getFromData(): ?string

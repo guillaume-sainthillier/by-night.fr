@@ -88,6 +88,22 @@ final class PriceLabelTest extends TestCase
         yield 'a phone number' => ['Groupes information et réservation : 01 40 05 12 12 de 9h30 à 17h30'];
     }
 
+    public function testAnotherSourceSellingForLessStartsTheLabel(): void
+    {
+        // The event says 45 €, another source of the show sells it for 39 € (EventFamilyResolver)
+        self::assertSame(['label' => "Dès 39\u{a0}€", 'free' => false], PriceLabel::fromPrices('45€', 39.0));
+        self::assertSame(['label' => "Dès 39\u{a0}€", 'free' => false], PriceLabel::fromPrices(null, 39.0), 'Its own price unknown');
+        self::assertSame(['label' => "Dès 27,50\u{a0}€", 'free' => false], PriceLabel::fromPrices('Sur inscription', 27.5));
+        self::assertSame(['label' => "Dès 39\u{a0}€", 'free' => false], PriceLabel::fromPrices('Gratuit', 39.0), 'A ticket is sold: not free');
+    }
+
+    public function testItsOwnPricesWhenNoneSellsForLess(): void
+    {
+        self::assertSame(['label' => "45\u{a0}€", 'free' => false], PriceLabel::fromPrices('45€', 45.0));
+        self::assertSame(['label' => 'Gratuit', 'free' => true], PriceLabel::fromPrices('Gratuit', 0.0));
+        self::assertNull(PriceLabel::fromPrices(null, null));
+    }
+
     public function testNoPrices(): void
     {
         self::assertNull(PriceLabel::fromPrices(null));

@@ -7,7 +7,7 @@
 {% props event, tone = 'primary', from = null, to = null, priority = false %}
 {# The session the visitor is looking for, not the event's overall range #}
 {% set session = event.sessionFor(from, to) %}
-{% set price = event.prices|price_label %}
+{% set price = event.prices|price_label(event.startingPrice) %}
 <article {{ attributes.defaults({class: 'card card-event card-layout h-100 mb-0'}) }}>
     {% if event.status or event.statusMessage %}
         <twig:Event:StatusAlert event="{{ event }}" class="rounded-0 py-2 small" />

@@ -13,6 +13,7 @@ namespace App\Import;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Enum\DuplicateReason;
+use App\Enum\EventStatus;
 use App\Parser\AffiliateParsers;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
@@ -21,6 +22,7 @@ use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Repository\CrossSourceLinkRepository;
 use App\Repository\EventRepository;
 use App\Utils\ObjectKey;
+use App\Utils\StartingPrice;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -45,13 +47,18 @@ use Psr\Log\LoggerInterface;
  *    comes from, so the copy is rebuilt on every change and goes away with the
  *    sibling (ON DELETE CASCADE);
  *  - its start and end dates span that union, since the listings filter and sort
- *    on them.
+ *    on them;
+ *  - its starting price is the lowest the family sells the show for, and its page
+ *    shows the largest picture of the family when much larger than its own.
  *
  * Links made by hand, or before the identity hash, are left as they are: a row linked
  * without a reason and without a hash is neither moved nor asked to lend its dates.
  */
 final readonly class EventFamilyResolver
 {
+    /** How much larger a member's picture must be for the canonical to show it instead of its own */
+    private const float BORROWED_PICTURE_RATIO = 1.5;
+
     public function __construct(
         private EventRepository $eventRepository,
         private CrossSourceLinkRepository $crossSourceLinkRepository,
@@ -340,12 +347,16 @@ final readonly class EventFamilyResolver
             static fn (Event $sibling): bool => $families->together($sibling, $canonical) && !$sibling->isRemovedAtSource(),
         ));
 
-        // A row that just became a duplicate may still carry dates it inherited as a
-        // former canonical: they are its canonical's business now.
+        // A row that just became a duplicate may still carry what it took from its family
+        // as a former canonical (dates, a picture, a price): they are its canonical's
+        // business now.
         foreach ($siblings as $sibling) {
             foreach ($sibling->getInheritedTimesheets() as $inherited) {
                 $sibling->removeTimesheet($inherited);
             }
+
+            $sibling->setPictureFrom(null);
+            $sibling->setStartingPrice(StartingPrice::fromPrices($sibling->getPrices()));
         }
 
         $changed = false;
@@ -430,6 +441,98 @@ final readonly class EventFamilyResolver
         }
 
         $this->realign($canonical);
+
+        $pictureFrom = self::pictureFrom($canonical, $lenders);
+        if ($pictureFrom !== $canonical->getPictureFrom()) {
+            $canonical->setPictureFrom($pictureFrom);
+        }
+
+        $startingPrice = self::startingPrice($canonical, $lenders);
+        if ($startingPrice !== $canonical->getStartingPrice()) {
+            $canonical->setStartingPrice($startingPrice);
+        }
+    }
+
+    /**
+     * The member whose picture the canonical's page shows: the largest of the family, when
+     * it is at least BORROWED_PICTURE_RATIO times the size of the canonical's own (a
+     * CDiscount poster in 2048px beside Fnac's 222px), or any when the canonical has none.
+     * A picture uploaded by a member is never replaced, and a picture taken down on request
+     * is neither replaced nor lent: the request named the show, not one of its sources.
+     *
+     * @param list<Event> $lenders
+     */
+    private static function pictureFrom(Event $canonical, array $lenders): ?Event
+    {
+        if (null !== $canonical->getImageRemovedAt() || '' !== (string) $canonical->getImage()->getName()) {
+            return null;
+        }
+
+        $best = null;
+        $bestArea = self::pictureArea($canonical) * self::BORROWED_PICTURE_RATIO;
+        foreach ($lenders as $lender) {
+            if (null !== $lender->getImageRemovedAt()) {
+                continue;
+            }
+
+            $area = self::pictureArea($lender);
+            if ($area > $bestArea) {
+                $best = $lender;
+                $bestArea = $area;
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * The pixels of the picture downloaded from its source, 0 without one.
+     */
+    private static function pictureArea(Event $event): float
+    {
+        $picture = $event->getImageSystem();
+        $dimensions = $picture->getDimensions();
+        if ('' === (string) $picture->getName() || null === $dimensions) {
+            return 0.0;
+        }
+
+        return (float) $dimensions[0] * (float) $dimensions[1];
+    }
+
+    /**
+     * The lowest price to get in that the agenda filters on, among the canonical and the
+     * members still on sale (EventTicketOffers keeps the same ones). A show some source
+     * sells a ticket for is no free show, whatever another one writes ("Gratuit" beside a
+     * 39 € ticket): free only when every price the family gives says so.
+     *
+     * @param list<Event> $lenders
+     */
+    private static function startingPrice(Event $canonical, array $lenders): ?float
+    {
+        $paying = [];
+        $free = false;
+        foreach ([$canonical, ...$lenders] as $row) {
+            if ($row !== $canonical && \in_array($row->getStatus(), [EventStatus::SoldOut, EventStatus::Cancelled], true)) {
+                continue;
+            }
+
+            $price = StartingPrice::fromPrices($row->getPrices());
+            if (null === $price) {
+                continue;
+            }
+
+            if ($price > 0) {
+                $paying[] = $price;
+            } else {
+                $free = true;
+            }
+        }
+
+        if ([] !== $paying) {
+            return min($paying);
+        }
+
+        return $free ? 0.0 : null;
     }
 
     /**
