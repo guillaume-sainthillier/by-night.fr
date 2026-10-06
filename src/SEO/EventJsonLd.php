@@ -16,6 +16,8 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Enum\EventStatus;
 use App\Picture\EventProfilePicture;
+use App\Ticketing\EventTicketOffers;
+use App\Ticketing\TicketOffer;
 use App\Utils\HtmlExcerpter;
 use DateTimeImmutable;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -30,6 +32,7 @@ final readonly class EventJsonLd
         private EventProfilePicture $eventProfilePicture,
         private HtmlExcerpter $htmlExcerpter,
         private EventSchemaType $eventSchemaType,
+        private EventTicketOffers $eventTicketOffers,
     ) {
     }
 
@@ -78,7 +81,7 @@ final readonly class EventJsonLd
 
         $schema['location'] = $this->buildLocationSchema($event);
 
-        $offer = $this->buildOfferSchema($event);
+        $offer = $this->buildOffersSchema($event) ?? $this->buildOfferSchema($event);
         if (null !== $offer) {
             $schema['offers'] = $offer;
         }
@@ -185,6 +188,35 @@ final readonly class EventJsonLd
         }
 
         return $offer;
+    }
+
+    /**
+     * One offer per ticketing site when several sell the event, as on its page (EventTicketOffers); null to describe
+     * the event's own offer alone.
+     *
+     * @return list<array<string, mixed>>|null
+     */
+    private function buildOffersSchema(Event $event): ?array
+    {
+        $offers = $this->eventTicketOffers->forEvent($event);
+        if (\count($offers) < 2 || EventStatus::Cancelled === $event->getStatus()) {
+            return null;
+        }
+
+        return array_map(static function (TicketOffer $offer): array {
+            $schema = [
+                '@type' => 'Offer',
+                'url' => $offer->url,
+                'availability' => $offer->soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+            ];
+
+            if (null !== $offer->startingPrice) {
+                $schema['price'] = $offer->startingPrice;
+                $schema['priceCurrency'] = 'EUR';
+            }
+
+            return $schema;
+        }, $offers);
     }
 
     /**

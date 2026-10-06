@@ -17,6 +17,8 @@ use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Parser\Common\CDiscountAwinParser;
+use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
 use IntlDateFormatter;
@@ -364,6 +366,42 @@ final class EventControllerTest extends AppWebTestCase
         $client->request('GET', $this->eventUrl($event));
 
         self::assertSelectorNotExists('a.btn[href="https://billetterie.example.org/concert"]');
+    }
+
+    public function testEverySiteSellingTheShowIsOfferedCheapestFirst(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setFromData(FnacSpectaclesAwinParser::getParserName())->setSource('https://www.awin1.com/fnac')->setPrices('25€');
+        save($event);
+        $duplicate = EventFactory::createOne([
+            'fromData' => CDiscountAwinParser::getParserName(),
+            'source' => 'https://www.awin1.com/cdiscount',
+            'prices' => '22€',
+            'duplicateOf' => $event,
+        ]);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('a.btn-primary[href="https://www.awin1.com/cdiscount"][rel="sponsored"]', 'Réserver mes billets');
+        self::assertSelectorCount(2, '#event-ticket-offers a[rel="sponsored"]');
+        self::assertSelectorTextContains('#event-ticket-offers a:first-child', 'CDiscount');
+        self::assertSelectorTextContains('#event-ticket-offers a:last-child', 'Fnac Spectacles');
+        self::assertNotNull($duplicate->getId());
+    }
+
+    public function testASingleSiteGetsTheButtonAlone(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setFromData(FnacSpectaclesAwinParser::getParserName())->setSource('https://www.awin1.com/fnac')->setPrices('25€');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorTextContains('a.btn-primary[href="https://www.awin1.com/fnac"][rel="sponsored"]', 'Réserver mes billets');
+        self::assertSelectorNotExists('#event-ticket-offers');
     }
 
     public function testThePageNamesTheArtists(): void
