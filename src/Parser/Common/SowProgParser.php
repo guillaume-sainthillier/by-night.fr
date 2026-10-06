@@ -25,6 +25,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use UnexpectedValueException;
 
 /**
  * Imports the events of the Sowprog API v2 (https://app.sowprog.com/docs/api/v2) through the
@@ -167,18 +168,20 @@ final class SowProgParser extends AbstractParser
     }
 
     /**
-     * The API serves the date and the times as datetimes ("2026-11-26T00:00:00.000Z",
-     * "1970-01-01T20:30:00.000Z"), the times being the local time of the venue.
+     * The API serves a bare day and bare times ("2026-11-26", "20:30"), the times being the local
+     * time of the venue. Between 2026-10-05 and 2026-10-06 it served datetimes instead
+     * ("2026-11-26T00:00:00.000Z", "1970-01-01T20:30:00.000Z"), a bug Sowprog fixed: any other
+     * format fails the record rather than import it without its times.
      *
      * @param array{date: string, startTime?: string|null, endTime?: string|null} $date
      */
     private function timesheet(array $date): EventTimesheetDto
     {
-        $startTime = self::time($date['startTime'] ?? null);
-        $endTime = self::time($date['endTime'] ?? null);
+        $startTime = self::fromFormat('H:i', $date['startTime'] ?? null);
+        $endTime = self::fromFormat('H:i', $date['endTime'] ?? null);
 
         $timesheet = new EventTimesheetDto();
-        $timesheet->startAt = new DateTimeImmutable(substr($date['date'], 0, 10));
+        $timesheet->startAt = self::fromFormat('Y-m-d', $date['date']);
         // A night that goes past midnight ("De 23h00 à 05h00") ends the next day, as the v1.2 feed had it
         $timesheet->endAt = null !== $startTime && null !== $endTime && $endTime < $startTime ? $timesheet->startAt->modify('+1 day') : $timesheet->startAt;
         $timesheet->startTime = $startTime;
@@ -188,15 +191,16 @@ final class SowProgParser extends AbstractParser
     }
 
     /**
-     * "1970-01-01T20:30:00.000Z" or "20:30:00" → 20:30.
+     * @return ($value is null ? null : DateTimeImmutable)
      */
-    private static function time(?string $time): ?DateTimeImmutable
+    private static function fromFormat(string $format, ?string $value): ?DateTimeImmutable
     {
-        if (null === $time || !preg_match('/(\d{2}):(\d{2}):\d{2}/', $time, $matches)) {
+        if (null === $value) {
             return null;
         }
 
-        return DateTimeImmutable::createFromFormat('!H:i', $matches[1] . ':' . $matches[2]) ?: null;
+        return DateTimeImmutable::createFromFormat('!' . $format, $value)
+            ?: throw new UnexpectedValueException(\sprintf('Sowprog sent "%s" where "%s" was expected.', $value, $format));
     }
 
     /**
