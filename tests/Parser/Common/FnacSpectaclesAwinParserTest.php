@@ -92,6 +92,21 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         self::assertSame('2026-09-01', $events[0]->startDate?->format('Y-m-d'));
     }
 
+    public function testTheEndOfTheSaleIsNoEndOfTheShow(): void
+    {
+        // valid_to is when Fnac stops selling the ticket, weeks after the performance: read as the end, as before
+        // #407, it made "Le Roi Soleil" at the Zénith de Toulouse (one evening, 2027-06-12) run until 2027-07-04
+        $row = $this->row('21528264', 'Le Roi Soleil - Tournée', '35.0', '2027-06-12', '20:30');
+        $row['valid_to'] = '2027-07-04';
+
+        $event = $this->groupEvents([$row])[0];
+
+        self::assertSame('2027-06-12', $event->endDate?->format('Y-m-d'));
+        self::assertCount(1, $event->timesheets);
+        self::assertSame('2027-06-12', $event->timesheets[0]->startAt?->format('Y-m-d'));
+        self::assertSame('2027-06-12', $event->timesheets[0]->endAt?->format('Y-m-d'));
+    }
+
     public function testAZeroPriceIsNoPrice(): void
     {
         // The feed says 0 for a ticket it has no price for: fnac.com sells "Grévin - Billet Daté" at 22 € while a
