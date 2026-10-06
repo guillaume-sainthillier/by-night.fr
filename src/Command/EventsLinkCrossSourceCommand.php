@@ -40,7 +40,7 @@ final class EventsLinkCrossSourceCommand extends Command
             ->addOption('place', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Only these venue ids')
             ->addOption('sample', null, InputOption::VALUE_REQUIRED, 'How many matched pairs and inconsistent shows to print', '0')
             ->addOption('csv', null, InputOption::VALUE_REQUIRED, 'Write every pair whose titles agree to this CSV file, with the verdict of the full match')
-            ->addOption('keep-apart', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Part these event ids from the events they are linked to, for good (a false match), then stop');
+            ->addOption('keep-apart', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Part these event ids, and the other records of their event, from the events they are linked to, for good (a false match), then stop');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
