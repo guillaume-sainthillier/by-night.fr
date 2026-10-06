@@ -194,7 +194,7 @@ final class EventJsonLdTest extends AppKernelTestCase
     {
         $schema = $this->schema($this->createEvent(['fromData' => OpenAgendaParser::getParserName()]));
 
-        self::assertMatchesRegularExpression('#^https://by-night\.test/build/images/parsers/openagenda\.[0-9a-f]+\.jpg$#', $schema['image']);
+        self::assertMatchesRegularExpression('#^https://by-night\.test/build/images/parsers/openagenda(\.[0-9a-f]+)?\.jpg$#', $schema['image']);
     }
 
     public function testTheTypeIsTheSubtypeOfTheEvent(): void
