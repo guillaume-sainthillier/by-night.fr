@@ -11,6 +11,7 @@
 namespace App\Tests\Command;
 
 use App\Command\EventsDownloadImagesCommand;
+use App\Doctrine\EventListener\EventPageCachePurgeListener;
 use App\Factory\EventFactory;
 use App\Handler\EventHandler;
 use App\Handler\EventImageDownloader;
@@ -92,7 +93,7 @@ final class EventsDownloadImagesCommandTest extends AppKernelTestCase
         $repository = self::getContainer()->get(EventRepository::class);
 
         return new EventsDownloadImagesCommand(
-            new EventImageDownloader(self::getContainer()->get(EntityManagerInterface::class), $repository, $handler),
+            new EventImageDownloader(self::getContainer()->get(EntityManagerInterface::class), $repository, $handler, self::getContainer()->get(EventPageCachePurgeListener::class)),
             $repository,
         );
     }

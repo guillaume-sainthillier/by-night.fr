@@ -17,6 +17,9 @@ use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\Handler\EventImageDownloader;
+use App\Handler\EventImageDownloadScheduler;
+use App\Message\DownloadEventImages;
 use App\Message\PurgeCdnCacheTags;
 use App\Tests\AppKernelTestCase;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
@@ -161,6 +164,43 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
 
         self::assertSame([100, 51], array_map(\count(...), $this->sentTagLists()), 'one message per Cloudflare request');
         self::assertCount(151, array_unique($this->purgedTags()));
+    }
+
+    public function testAnImportedEventWhoseNewImageIsToDownloadLeavesItsPageToTheDownload(): void
+    {
+        $event = EventFactory::createOne(['name' => 'Concert']);
+        $scheduler = self::getContainer()->get(EventImageDownloadScheduler::class);
+        $this->transport()->reset();
+
+        // As EventEntityFactory does when the source gives a new picture
+        $event->setName('Concert déplacé');
+        $event->setUrl('https://example.test/new.jpg');
+        $scheduler->schedule($event);
+        flush_after(static function () use ($event): void {
+            save($event);
+            EventTimesheetFactory::createOne(['event' => $event]);
+        });
+        $scheduler->dispatchPending();
+
+        self::assertSame([], $this->purgedTags(), 'purged once its image is stored');
+        $images = self::getContainer()->get('messenger.transport.image');
+        self::assertInstanceOf(InMemoryTransport::class, $images);
+        $message = $images->getSent()[0]->getMessage();
+        self::assertInstanceOf(DownloadEventImages::class, $message);
+        self::assertSame([$event->getId()], $message->pageEventIds);
+    }
+
+    public function testTheDownloadPurgesThePagesTheImportLeftToItEvenWhenTheImageDoesNotChange(): void
+    {
+        // No URL: nothing to download, the event does not change
+        $event = EventFactory::createOne(['url' => null]);
+        $other = EventFactory::createOne(['url' => null]);
+        $downloader = self::getContainer()->get(EventImageDownloader::class);
+        $this->transport()->reset();
+
+        $downloader->downloadEvents([$event->getId(), $other->getId()], [$event->getId()]);
+
+        self::assertSame(['event-' . $event->getId()], $this->purgedTags());
     }
 
     public function testANewEventPurgesNothing(): void

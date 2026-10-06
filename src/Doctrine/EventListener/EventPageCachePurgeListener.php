@@ -17,6 +17,7 @@ use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Entity\Place;
 use App\Entity\UserEvent;
+use App\Handler\EventImageDownloadScheduler;
 use App\Message\PurgeCdnCacheTags;
 use App\Messenger\TransactionalMessageDispatcher;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -29,7 +30,8 @@ use Symfony\Contracts\Service\ResetInterface;
  * the event row itself (an edit, a cancellation, a deletion), its sessions, comments and participants, and the
  * address of its place. Bulk DQL updates (the nightly agenda classification) bypass the unit of work, so they
  * purge nothing, and neither does an event row whose change the page does not show (a parser version bump stamps
- * every event the source still lists).
+ * every event the source still lists). An imported event whose new image is still to download is purged once
+ * that image is stored, not twice (EventImageDownloadScheduler::defersPagePurge(), EventImageDownloader).
  */
 #[AsDoctrineListener(event: Events::onFlush)]
 #[AsDoctrineListener(event: Events::postFlush)]
@@ -44,8 +46,22 @@ final class EventPageCachePurgeListener implements ResetInterface
     /** @var array<string, true> */
     private array $tags = [];
 
-    public function __construct(private readonly TransactionalMessageDispatcher $messageDispatcher)
+    public function __construct(
+        private readonly TransactionalMessageDispatcher $messageDispatcher,
+        private readonly EventImageDownloadScheduler $imageDownloadScheduler,
+    ) {
+    }
+
+    /**
+     * Purges the pages of these events with the next flush, whatever it changes.
+     *
+     * @param int[] $eventIds
+     */
+    public function purgeEventPages(array $eventIds): void
     {
+        foreach ($eventIds as $eventId) {
+            $this->tags[EventPageCache::eventTag($eventId)] = true;
+        }
     }
 
     public function onFlush(OnFlushEventArgs $args): void
@@ -60,7 +76,8 @@ final class EventPageCachePurgeListener implements ResetInterface
 
         foreach ($unitOfWork->getScheduledEntityUpdates() as $entity) {
             if ($entity instanceof Event && null !== $entity->getId()
-                && [] !== array_diff(array_keys($unitOfWork->getEntityChangeSet($entity)), self::UNSHOWN_EVENT_FIELDS)) {
+                && [] !== array_diff(array_keys($unitOfWork->getEntityChangeSet($entity)), self::UNSHOWN_EVENT_FIELDS)
+                && !$this->imageDownloadScheduler->defersPagePurge($entity)) {
                 $this->tags[EventPageCache::eventTag($entity->getId())] = true;
             } elseif ($entity instanceof Place && null !== $entity->getId()
                 && [] !== array_intersect(self::PLACE_FIELDS, array_keys($unitOfWork->getEntityChangeSet($entity)))) {
@@ -69,11 +86,11 @@ final class EventPageCachePurgeListener implements ResetInterface
         }
 
         foreach ([...$unitOfWork->getScheduledEntityInsertions(), ...$unitOfWork->getScheduledEntityUpdates(), ...$unitOfWork->getScheduledEntityDeletions()] as $entity) {
-            $eventId = $entity instanceof EventTimesheet || $entity instanceof Comment || $entity instanceof UserEvent
-                ? $entity->getEvent()?->getId()
+            $event = $entity instanceof EventTimesheet || $entity instanceof Comment || $entity instanceof UserEvent
+                ? $entity->getEvent()
                 : null;
-            if (null !== $eventId) {
-                $this->tags[EventPageCache::eventTag($eventId)] = true;
+            if (null !== $event && null !== $event->getId() && !$this->imageDownloadScheduler->defersPagePurge($event)) {
+                $this->tags[EventPageCache::eventTag($event->getId())] = true;
             }
         }
     }
