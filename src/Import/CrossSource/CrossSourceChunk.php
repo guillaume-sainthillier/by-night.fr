@@ -16,14 +16,15 @@ namespace App\Import\CrossSource;
 final readonly class CrossSourceChunk
 {
     /**
-     * @param int                   $placeCount the venues scanned
-     * @param list<int>             $eventIds   every imported event of these venues that is not over: the links
-     *                                          between two of them are the ones this scan decides on
-     * @param list<CrossSourcePair> $pairs      the pairs whose titles agree, with the verdict of the full match
+     * @param int                   $placeCount  the venues scanned
+     * @param array<int, int>       $eventPlaces the venue of every imported event of these venues that is not over,
+     *                                           by event id: the links between two of them are the ones this scan
+     *                                           decides on, as those leading from one of them to another venue
+     * @param list<CrossSourcePair> $pairs       the pairs whose titles agree, with the verdict of the full match
      */
     public function __construct(
         public int $placeCount,
-        public array $eventIds,
+        public array $eventPlaces,
         public array $pairs,
     ) {
     }

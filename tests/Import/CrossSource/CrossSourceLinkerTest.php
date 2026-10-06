@@ -145,16 +145,36 @@ final class CrossSourceLinkerTest extends AppKernelTestCase
         self::assertSame($fnac, $this->reload($cdiscount)->getDuplicateOf()?->getId());
     }
 
+    public function testAnEventMovedToAnotherVenueLosesItsLink(): void
+    {
+        $fnac = $this->event(FnacSpectaclesAwinParser::getParserName(), 'Claudio Capéo - Tournée');
+        $cdiscount = $this->event(CDiscountAwinParser::getParserName(), 'Claudio capeo');
+        $this->link();
+
+        // The show moved to another hall: one source left at each venue, none listed by several
+        self::bootKernel();
+        $moved = $this->reload($cdiscount)->setPlace(PlaceFactory::createOne(['name' => 'Bikini', 'city' => $this->venue->getCity(), 'country' => $this->venue->getCountry()]));
+        save($moved);
+
+        self::assertSame([0, 1], $this->link(scanAll: true));
+        self::assertSame(0, CrossSourceLinkFactory::count());
+        self::assertNull($this->reload($cdiscount)->getDuplicateOf());
+        self::assertNull($this->reload($fnac)->getDuplicateOf());
+    }
+
     /**
+     * @param bool $scanAll every venue the nightly run scans, not only the test's
+     *
      * @return array{int, int} the links made and taken back
      */
-    private function link(bool $apply = true): array
+    private function link(bool $apply = true, bool $scanAll = false): array
     {
         $linker = self::getContainer()->get(CrossSourceLinker::class);
+        $from = new DateTimeImmutable('today');
         $added = 0;
         $removed = 0;
         /** @var CrossSourceLinkResult $result */
-        foreach ($linker->link([(int) $this->venue->getId()], new DateTimeImmutable('today'), $apply) as $result) {
+        foreach ($linker->link($scanAll ? $linker->findPlaceIds($from) : [(int) $this->venue->getId()], $from, $apply) as $result) {
             $added += $result->added;
             $removed += $result->removed;
         }

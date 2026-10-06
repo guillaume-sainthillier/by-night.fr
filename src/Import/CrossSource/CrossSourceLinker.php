@@ -35,11 +35,20 @@ final readonly class CrossSourceLinker
     }
 
     /**
+     * The venues listed by several sources, and those of the linked events that are not over: one of them may have
+     * moved to another venue since, or its source left the venue to the other.
+     *
      * @return list<int> the venues to scan, for a progress bar
      */
     public function findPlaceIds(DateTimeImmutable $from): array
     {
-        return $this->finder->findPlaceIds($from);
+        $placeIds = array_values(array_unique([
+            ...$this->finder->findPlaceIds($from),
+            ...$this->linkRepository->findPlaceIdsOfLinkedEvents($from),
+        ]));
+        sort($placeIds);
+
+        return $placeIds;
     }
 
     /**
@@ -69,16 +78,17 @@ final readonly class CrossSourceLinker
                 }
             }
 
-            // The links this scan decides on: both events are at these venues and not over. A pair kept apart is
-            // never linked again
-            $scope = array_flip($chunk->eventIds);
+            // The links this scan decides on: both events are at these venues and not over, or one of them is and the
+            // other is at another venue, which no show spans. A pair kept apart is never linked again
+            $scope = $chunk->eventPlaces;
             /** @var array<string, int> $existing link ids by pair */
             $existing = [];
-            foreach ($this->linkRepository->findTouching($chunk->eventIds) as $link) {
+            foreach ($this->linkRepository->findTouching(array_keys($scope)) as $link) {
                 $key = self::key($link['eventId'], $link['linkedEventId']);
                 if ($link['keptApart']) {
                     unset($wanted[$key]);
-                } elseif (isset($scope[$link['eventId']], $scope[$link['linkedEventId']])) {
+                } elseif (isset($scope[$link['eventId']], $scope[$link['linkedEventId']])
+                    || $link['eventPlaceId'] !== $link['linkedEventPlaceId']) {
                     $existing[$key] = $link['id'];
                 }
             }

@@ -12,6 +12,7 @@ namespace App\Repository;
 
 use App\Entity\CrossSourceLink;
 use App\Entity\Event;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,11 +27,11 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
     }
 
     /**
-     * The links touching any of these events, those kept apart included.
+     * The links touching any of these events, those kept apart included, with the venue of both events.
      *
      * @param int[] $eventIds
      *
-     * @return list<array{id: int, eventId: int, linkedEventId: int, keptApart: bool}>
+     * @return list<array{id: int, eventId: int, linkedEventId: int, keptApart: bool, eventPlaceId: int|null, linkedEventPlaceId: int|null}>
      */
     public function findTouching(array $eventIds): array
     {
@@ -38,10 +39,13 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
             return [];
         }
 
-        /** @var list<array{id: int|string, eventId: int|string, linkedEventId: int|string, keptApart: bool|int|string}> $rows */
+        /** @var list<array{id: int|string, eventId: int|string, linkedEventId: int|string, keptApart: bool|int|string, eventPlaceId: int|string|null, linkedEventPlaceId: int|string|null}> $rows */
         $rows = $this
             ->createQueryBuilder('l')
             ->select('l.id, IDENTITY(l.event) AS eventId, IDENTITY(l.linkedEvent) AS linkedEventId, l.keptApart')
+            ->addSelect('IDENTITY(e.place) AS eventPlaceId, IDENTITY(le.place) AS linkedEventPlaceId')
+            ->join('l.event', 'e')
+            ->join('l.linkedEvent', 'le')
             ->where('l.event IN (:ids)')
             ->orWhere('l.linkedEvent IN (:ids)')
             ->setParameter('ids', array_values(array_unique($eventIds)))
@@ -53,7 +57,37 @@ final class CrossSourceLinkRepository extends ServiceEntityRepository
             'eventId' => (int) $row['eventId'],
             'linkedEventId' => (int) $row['linkedEventId'],
             'keptApart' => (bool) $row['keptApart'],
+            'eventPlaceId' => null !== $row['eventPlaceId'] ? (int) $row['eventPlaceId'] : null,
+            'linkedEventPlaceId' => null !== $row['linkedEventPlaceId'] ? (int) $row['linkedEventPlaceId'] : null,
         ], $rows);
+    }
+
+    /**
+     * The venues of the linked imported events that are not over, either side of a link not kept apart.
+     *
+     * @return list<int>
+     */
+    public function findPlaceIdsOfLinkedEvents(DateTimeImmutable $from): array
+    {
+        $placeIds = [];
+        foreach (['event', 'linkedEvent'] as $side) {
+            $ids = $this
+                ->createQueryBuilder('l')
+                ->select('DISTINCT IDENTITY(e.place) AS placeId')
+                ->join('l.' . $side, 'e')
+                ->where('l.keptApart = false')
+                ->andWhere('e.fromData IS NOT NULL')
+                ->andWhere('e.place IS NOT NULL')
+                ->andWhere('e.endDate >= :from')
+                ->setParameter('from', $from->format('Y-m-d'))
+                ->getQuery()
+                ->getSingleColumnResult();
+            foreach ($ids as $id) {
+                $placeIds[(int) $id] = (int) $id;
+            }
+        }
+
+        return array_values($placeIds);
     }
 
     /**
