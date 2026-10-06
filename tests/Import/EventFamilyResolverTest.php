@@ -260,6 +260,31 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         self::assertSame(['2026-10-03' => null], $this->datesBySource($this->reload($canonicalId)), 'The fossil date is not resurrected.');
     }
 
+    public function testALegacyLinkFollowsItsTargetIntoAFamily(): void
+    {
+        $olderId = $this->sibling('oa-1', '2026-10-03');
+        $newerId = $this->sibling('oa-2', '2026-10-10');
+
+        // A redirect stub from before the identity hash, onto the row that is about to join the family
+        $stubId = EventFactory::createOne([
+            'externalId' => null,
+            'externalOrigin' => null,
+            'identityHash' => null,
+            'name' => 'Atelier poterie',
+            'place' => $this->place,
+            'user' => $this->user,
+            'startDate' => new DateTimeImmutable('2020-01-01'),
+            'endDate' => new DateTimeImmutable('2020-01-01'),
+            'duplicateOf' => $this->reload($newerId),
+        ])->getId();
+
+        $this->resolve([$newerId]);
+
+        self::assertSame($olderId, $this->reload($newerId)->getDuplicateOf()?->getId());
+        self::assertSame($olderId, $this->reload($stubId)->getDuplicateOf()?->getId(), 'No redirect to a redirect: the stub follows its target.');
+        self::assertSame(['2026-10-03' => null, '2026-10-10' => $newerId], $this->datesBySource($this->reload($olderId)), 'The fossil date is not resurrected.');
+    }
+
     public function testACanonicalWithoutTimesheetsKeepsItsOwnDateInTheUnion(): void
     {
         // Imported by a parser that only sets a date range, no timesheet rows
