@@ -108,6 +108,12 @@ final readonly class EventFamilyResolver
         $wired = $this->wireFamilies($families, $dirty);
         $this->entityManager->flush();
 
+        // A canonical some member left may not belong to any family gathered: its own still lends it what it shows
+        $strays = array_values(array_filter(array_keys($dirty), static fn (int $id): bool => !$families->has($id)));
+        if ([] !== $strays) {
+            $this->gather($this->eventRepository->findBy(['id' => $strays]), $families);
+        }
+
         $this->materializeAll(array_keys($dirty), $families);
         $this->entityManager->flush();
 
@@ -124,11 +130,11 @@ final readonly class EventFamilyResolver
      * step: the rows sharing an identity hash, the rows linked across sources, then the
      * rows sharing their hash or linked to them, until no row is left to add.
      *
-     * @param Event[] $candidates
+     * @param Event[]       $candidates
+     * @param EventFamilies $families   the families gathered so far, to add to
      */
-    private function gather(array $candidates): EventFamilies
+    private function gather(array $candidates, EventFamilies $families = new EventFamilies()): EventFamilies
     {
-        $families = new EventFamilies();
         $added = array_values(array_filter($candidates, $families->add(...)));
 
         /** @var array<string, int> $firstByHash the first row met of each identity hash */

@@ -291,9 +291,27 @@ final class EventFamilyResolverCrossSourceTest extends AppKernelTestCase
         self::assertSame(['2026-12-04' => null], $this->datesBySource($this->reload($openAgenda)), 'It lends no date');
     }
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
+    public function testAFormerCanonicalLeftBehindKeepsTheDatesOfItsOwnFamily(): void
+    {
+        // A page of its own with a record of the same event lending it a date
+        $former = $this->event(OpenAgendaParser::getParserName(), 'agenda-hash', '2026-12-04');
+        $record = $this->event(OpenAgendaParser::getParserName(), 'agenda-hash', '2026-12-05');
+        $this->resolver->resolveForEvents([$record]);
+        self::assertSame(['2026-12-04' => null, '2026-12-05' => $record], $this->datesBySource($this->reload($former)));
+
+        // A row still pointing at it that nothing links to it any longer, gathered with a new row of its own event
+        $stray = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-06');
+        $strayRow = $this->reload($stray)->setDuplicateOf($this->reload($former), DuplicateReason::SameShow);
+        save($strayRow);
+        $newcomer = $this->event(FnacSpectaclesAwinParser::getParserName(), 'fnac-hash', '2026-12-07');
+
+        self::bootKernel();
+        self::getContainer()->get(EventFamilyResolver::class)->resolveForEvents([$newcomer]);
+
+        self::assertNotSame($former, $this->reload($stray)->getDuplicateOf()?->getId(), 'It joined its own family');
+        self::assertSame(['2026-12-04' => null, '2026-12-05' => $record], $this->datesBySource($this->reload($former)), 'Rebuilt with its own family');
+    }
+
     private function event(string $source, ?string $hash, string $date, ?string $startTime = null, ?string $hours = null, array $attributes = []): int
     {
         $event = EventFactory::createOne([
