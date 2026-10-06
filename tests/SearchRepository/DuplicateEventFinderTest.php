@@ -162,6 +162,20 @@ final class DuplicateEventFinderTest extends TestCase
     }
 
     /**
+     * A saved event carries its coordinates on itself, not on its place (EventDtoFactory).
+     */
+    public function testASavedEventIsSearchedAroundItsOwnCoordinates(): void
+    {
+        $dto = self::dto('Musicophotographie', 'Arsenal', null, null);
+        $dto->latitude = 49.1196;
+        $dto->longitude = 6.1695;
+
+        $this->finder->find($dto);
+
+        self::assertEquals(['lat' => 49.1196, 'lon' => 6.1695], $this->queries[0]['query']['bool']['filter'][1]['geo_distance']['place.city.location']);
+    }
+
+    /**
      * A draft about to be published is not its own duplicate.
      */
     public function testTheEventItselfIsLeftOut(): void

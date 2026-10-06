@@ -13,6 +13,9 @@
     {{ block('layout_header') }}
 {% endblock %}
 
+{# Where the form asks for the likely duplicates before publishing, none when it does not publish #}
+{% block duplicates_url path('app_event_new_duplicates') %}
+
 {% block body -%}
     <div class="row justify-content-center my-event" {{ load_page('personal_space_event') }}>
         <div class="col-lg-10 col-xl-8">
@@ -31,7 +34,9 @@
 
             {% block body_form %}
                 {% form_theme form 'personal-space/_event_form_theme.html.twig' %}
-                {{ form_start(form) }}
+                {# The publish button first asks for the events already online that this one likely repeats #}
+                {% set duplicates_url = block('duplicates_url')|trim %}
+                {{ form_start(form, {attr: duplicates_url ? {'data-duplicates-url': duplicates_url} : {}}) }}
                 {{ form_errors(form) }}
 
                 <twig:FormCard icon="lucide:file-text" title="1. Informations principales">

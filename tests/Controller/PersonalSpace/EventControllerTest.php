@@ -10,6 +10,7 @@
 
 namespace App\Tests\Controller\PersonalSpace;
 
+use App\Entity\Event;
 use App\Enum\EventStatus;
 use App\Factory\CommentFactory;
 use App\Factory\CountryFactory;
@@ -19,8 +20,13 @@ use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\RecountUpcomingEvents;
 use App\MessageHandler\RecountUpcomingEventsHandler;
+use App\SearchRepository\EventElasticaRepository;
 use App\Tests\AppWebTestCase;
+use ArrayObject;
 use DateTimeImmutable;
+use Elastica\Query;
+use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
+use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Response;
@@ -519,6 +525,113 @@ final class EventControllerTest extends AppWebTestCase
     }
 
     /**
+     * The publish button of a new event, or of a draft, first asks for the events already online it likely repeats; a
+     * published event has nothing left to publish.
+     */
+    public function testThePublishButtonAsksForTheLikelyDuplicates(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $draft = EventFactory::createOne(['user' => $user, 'draft' => true]);
+        $published = EventFactory::createOne(['user' => $user]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/nouvelle-soiree');
+        self::assertSame('/espace-perso/nouvelle-soiree/doublons', $crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $draft->getId()));
+        self::assertSame(\sprintf('/espace-perso/%d/doublons', $draft->getId()), $crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $published->getId()));
+        self::assertNull($crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
+    }
+
+    /**
+     * The form as filled in is searched, and nothing is saved.
+     */
+    public function testTheLikelyDuplicatesOfANewEventAreListed(): void
+    {
+        $client = self::createClient();
+        $twin = EventFactory::createOne(['name' => 'Soirée swing', 'fromData' => 'Open Agenda']);
+        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+
+        $queries = $this->stubDuplicateSearch([$twin]);
+        $crawler = $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing au Bikini')]);
+
+        self::assertResponseIsSuccessful();
+        $link = $crawler->filter('a.list-group-item');
+        self::assertCount(1, $link);
+        self::assertSame('_blank', $link->attr('target'), 'The form stays as filled in');
+        self::assertStringEndsWith(\sprintf('--%d', $twin->getId()), (string) $link->attr('href'));
+        self::assertStringContainsString('Soirée swing', $link->text());
+        self::assertStringContainsString("Source\u{a0}: Open Agenda", $link->text());
+
+        self::assertSame('Soirée swing au Bikini', $queries[0]['query']['bool']['must'][0]['multi_match']['query']);
+        self::assertSame(0, EventFactory::count(['name' => 'Soirée swing au Bikini']), 'Only searched');
+    }
+
+    public function testNoLikelyDuplicateAnswersNothing(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+
+        $this->stubDuplicateSearch([]);
+        $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing au Bikini')]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * The publish button of a draft's preview has no form: the draft is searched as saved, itself left out.
+     */
+    public function testTheLikelyDuplicatesOfADraftAreSearchedAsSaved(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $draft = EventFactory::createOne(['user' => $user, 'draft' => true, 'name' => 'Soirée swing']);
+        $mine = EventFactory::createOne(['user' => $user, 'name' => 'Soirée swing']);
+        $client->loginUser($user);
+
+        $queries = $this->stubDuplicateSearch([$mine]);
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/doublons', $draft->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('Publié par vous', $crawler->filter('a.list-group-item')->text());
+        self::assertEquals([['ids' => ['values' => [(string) $draft->getId()]]]], $queries[0]['query']['bool']['must_not']);
+    }
+
+    public function testTheDuplicatesOfAnotherMembersDraftAreNotShown(): void
+    {
+        $client = self::createClient();
+        $draft = EventFactory::createOne(['draft' => true]);
+        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+
+        $client->request('GET', \sprintf('/espace-perso/%d/doublons', $draft->getId()));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAMemberWhoCannotPublishCannotSearchTheDuplicates(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['verified' => false, 'enabled' => true]));
+
+        $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing')]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAVisitorCannotSearchTheDuplicates(): void
+    {
+        $client = self::createClient();
+
+        $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing')]);
+
+        self::assertResponseRedirects();
+        self::assertStringContainsString('/login', (string) $client->getResponse()->headers->get('Location'));
+    }
+
+    /**
      * @param string|null $button The name of the submit button to send the form with, none by default
      */
     private function newEventForm(KernelBrowser $client, string $name, ?string $button = null): Form
@@ -537,6 +650,53 @@ final class EventControllerTest extends AppWebTestCase
         $form['app_event[place][country]'] = 'FR';
 
         return $form;
+    }
+
+    /**
+     * The fields of the new event form, as the page sends them to search the likely duplicates.
+     *
+     * @return array<string, mixed>
+     */
+    private function newEventFields(string $name): array
+    {
+        $day = new DateTimeImmutable('+1 week')->format('Y-m-d');
+
+        return [
+            'name' => $name,
+            'dateRange' => ['from' => $day, 'to' => $day],
+            'place' => [
+                'name' => 'Le Bikini',
+                'street' => 'Rue Théodore Monod',
+                'city' => ['name' => 'Ramonville-Saint-Agne', 'postalCode' => '31520'],
+                'country' => 'FR',
+            ],
+        ];
+    }
+
+    /**
+     * Elasticsearch, which the tests have none of, finds the events given. Only for the next request: the client
+     * boots a new kernel for the one after.
+     *
+     * @param list<Event> $events
+     *
+     * @return ArrayObject<int, array<string, mixed>> the queries sent
+     */
+    private function stubDuplicateSearch(array $events): ArrayObject
+    {
+        /** @var ArrayObject<int, array<string, mixed>> $queries */
+        $queries = new ArrayObject();
+        $finder = $this->createStub(PaginatedFinderInterface::class);
+        $finder->method('find')->willReturnCallback(static function (Query $query) use ($events, $queries): array {
+            $queries[] = $query->toArray();
+
+            return $events;
+        });
+
+        $manager = $this->createStub(RepositoryManagerInterface::class);
+        $manager->method('getRepository')->willReturn(new EventElasticaRepository($finder));
+        self::getContainer()->set('fos_elastica.manager.orm', $manager);
+
+        return $queries;
     }
 
     /**

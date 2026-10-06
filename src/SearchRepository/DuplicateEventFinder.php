@@ -86,18 +86,21 @@ final readonly class DuplicateEventFinder
         }
 
         $place = $dto->place;
+        // The map sets the place's coordinates; a saved event carries its own (EventDtoFactory)
+        $latitude = $place?->latitude ?? $dto->latitude;
+        $longitude = $place?->longitude ?? $dto->longitude;
         $postalCode = $place?->city?->postalCode;
         $cityName = $place?->city?->name;
         // Nowhere to look around: the same name on the same day anywhere in France is no evidence
-        if ((null === $place?->latitude || null === $place->longitude) && ('' === (string) $postalCode && '' === (string) $cityName)) {
+        if ((null === $latitude || null === $longitude) && '' === (string) $postalCode && '' === (string) $cityName) {
             return null;
         }
 
         return new DuplicateSearch(
             name: $name,
             dates: $dates,
-            latitude: $place?->latitude,
-            longitude: $place?->longitude,
+            latitude: null !== $longitude ? $latitude : null,
+            longitude: null !== $latitude ? $longitude : null,
             postalCode: $postalCode,
             cityName: $cityName,
             excluded: $dto->entityId,
