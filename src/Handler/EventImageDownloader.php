@@ -10,6 +10,7 @@
 
 namespace App\Handler;
 
+use App\Doctrine\EventListener\EventPageCachePurgeListener;
 use App\Entity\Event;
 use App\Repository\EventRepository;
 use DateTimeInterface;
@@ -30,17 +31,24 @@ final readonly class EventImageDownloader
         private EntityManagerInterface $entityManager,
         private EventRepository $eventRepository,
         private EventHandler $eventHandler,
+        private EventPageCachePurgeListener $pageCachePurge,
     ) {
     }
 
     /**
      * @param int[] $eventIds
+     * @param int[] $pageEventIds the events whose page the import left to purge with their image
+     *                            (EventImageDownloadScheduler::defersPagePurge())
      */
-    public function downloadEvents(array $eventIds): void
+    public function downloadEvents(array $eventIds, array $pageEventIds = []): void
     {
         if ([] === $eventIds) {
             return;
         }
+
+        // With the download's flush, even when the image does not change (unreachable, or the same file): the page
+        // must still show what else the import changed
+        $this->pageCachePurge->purgeEventPages($pageEventIds);
 
         $this->download($this->eventRepository->findBy(['id' => $eventIds]));
     }

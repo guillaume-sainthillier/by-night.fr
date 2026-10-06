@@ -29,6 +29,9 @@ final class EventImageDownloadScheduler implements BatchResetInterface
     /** @var Event[] */
     private array $events = [];
 
+    /** @var array<int, true> the scheduled events already saved, by object id: their page purge waits for the image */
+    private array $deferredPagePurges = [];
+
     public function __construct(
         private readonly TransactionalMessageDispatcher $messageDispatcher,
     ) {
@@ -42,6 +45,19 @@ final class EventImageDownloadScheduler implements BatchResetInterface
         }
 
         $this->events[] = $event;
+        if (null !== $event->getId()) {
+            $this->deferredPagePurges[spl_object_id($event)] = true;
+        }
+    }
+
+    /**
+     * Whether the page of this event is purged once its new image is stored rather than now: the import would
+     * otherwise purge it twice, minutes apart, which Cloudflare's tag quota pays for (EventPageCachePurgeListener).
+     * A new event has no page to purge.
+     */
+    public function defersPagePurge(Event $event): bool
+    {
+        return isset($this->deferredPagePurges[spl_object_id($event)]);
     }
 
     /**
@@ -57,24 +73,29 @@ final class EventImageDownloadScheduler implements BatchResetInterface
         }
 
         $ids = [];
+        $pageIds = [];
         foreach ($this->events as $event) {
             $id = $event->getId();
             if (null !== $id) {
                 $ids[$id] = true;
+                if ($this->defersPagePurge($event)) {
+                    $pageIds[$id] = true;
+                }
             }
         }
 
-        $this->events = [];
+        $this->batchReset();
 
         if ([] === $ids) {
             return;
         }
 
-        $this->messageDispatcher->dispatch(new DownloadEventImages(array_keys($ids)));
+        $this->messageDispatcher->dispatch(new DownloadEventImages(array_keys($ids), array_keys($pageIds)));
     }
 
     public function batchReset(): void
     {
         $this->events = [];
+        $this->deferredPagePurges = [];
     }
 }

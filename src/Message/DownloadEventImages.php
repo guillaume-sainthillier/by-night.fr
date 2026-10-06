@@ -10,13 +10,24 @@
 
 namespace App\Message;
 
-final readonly class DownloadEventImages
+final class DownloadEventImages
 {
     /**
+     * The events whose page purge waits for their image (EventImageDownloadScheduler::defersPagePurge()). Declared
+     * with a default so that a message queued before it existed unserializes with none.
+     *
+     * @var int[]
+     */
+    public array $pageEventIds = [];
+
+    /**
      * @param int[] $eventIds
+     * @param int[] $pageEventIds
      */
     public function __construct(
-        public array $eventIds,
+        public readonly array $eventIds,
+        array $pageEventIds = [],
     ) {
+        $this->pageEventIds = $pageEventIds;
     }
 }

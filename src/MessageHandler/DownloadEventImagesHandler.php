@@ -24,6 +24,6 @@ final readonly class DownloadEventImagesHandler
 
     public function __invoke(DownloadEventImages $message): void
     {
-        $this->eventImageDownloader->downloadEvents($message->eventIds);
+        $this->eventImageDownloader->downloadEvents($message->eventIds, $message->pageEventIds);
     }
 }
