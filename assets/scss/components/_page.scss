@@ -5,3 +5,9 @@
         margin-top: 0;
     }
 }
+
+// The title of a page: scaled down on a phone like the .display-* titles (RFS), where Tabler's fixed h1 broke a long
+// one ("Rechercher des événements, lieux et membres") over three lines
+.page-header h1 {
+    @include font-size($h1-font-size);
+}
