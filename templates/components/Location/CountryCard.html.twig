@@ -23,7 +23,8 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-3">
+            {# The copy and the button side by side from xxl only: at 1280px the copy was squeezed onto six lines #}
+            <div class="d-flex flex-column flex-xxl-row align-items-sm-start align-items-xxl-center justify-content-between gap-3">
                 <p class="lead text-secondary mb-0">
                     {%- if cities|length > 2 -%}
                         De {{ cities[0] }} à {{ cities[1] }} en passant par {{ cities|slice(2)|join(', ', ' et ') }}&nbsp;:
@@ -47,7 +48,9 @@
             <div class="d-flex align-items-start gap-3">
                 <twig:Flag code="{{ country.id }}" size="{{ 32 }}" class="mt-1" />
                 <div class="min-w-0 flex-fill">
-                    <div class="d-flex align-items-start justify-content-between gap-1">
+                    {# The count goes under the name when both do not fit: beside it, it broke "La Réunion" in two and ran
+                       off a narrow card #}
+                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-1">
                         <h3 class="h2 mb-0">{{ country.displayName }}</h3>
                         <span class="badge bg-secondary-lt flex-shrink-0">
                             {{- '{count, plural, one {# sortie} other {# sorties}}'|trans({count: events}, 'messages+intl-icu') -}}
@@ -60,7 +63,8 @@
             </div>
         </div>
         <div class="card-footer d-flex align-items-center justify-content-between gap-3">
-            <span class="text-secondary small text-truncate">{{ country.headline ?? 'Concerts, expos & sorties' }}</span>
+            {# Wraps: cut off, most headlines lost their last words #}
+            <span class="text-secondary small">{{ country.headline ?? 'Concerts, expos & sorties' }}</span>
             <span class="small fw-bold text-primary flex-shrink-0"><twig:Icon name="lucide:arrow-right" /></span>
         </div>
     </a>

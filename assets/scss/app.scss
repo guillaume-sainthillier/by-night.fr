@@ -35,7 +35,6 @@
 @use 'components/scroll';
 @use 'components/social_icons';
 @use 'components/social_login';
-@use 'components/table';
 @use 'components/typeahead';
 @use 'components/typography';
 @use 'components/utilities';
@@ -96,9 +95,16 @@ h1 {
     display: flex;
     justify-content: center;
     align-content: center;
+    // Out of sight at the top of the page: scroll-to-top.js shows it once the page is scrolled down
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.3s,
+        visibility 0.3s;
 
-    &.hidden {
-        display: none;
+    &.is-visible {
+        opacity: 1;
+        visibility: visible;
     }
 
     .icon {

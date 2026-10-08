@@ -391,6 +391,43 @@ final class EventControllerTest extends AppWebTestCase
         self::assertNotNull($duplicate->getId());
     }
 
+    public function testOnAPhoneTheTicketsComeRightUnderTheTitle(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setFromData(FnacSpectaclesAwinParser::getParserName())->setSource('https://www.awin1.com/fnac');
+        save($event);
+        EventFactory::createOne([
+            'fromData' => CDiscountAwinParser::getParserName(),
+            'source' => 'https://www.awin1.com/cdiscount',
+            'duplicateOf' => $event,
+        ]);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        // On a phone, ahead of the poster and of the practical information, which would push them a screen down; every
+        // site of the family with them
+        self::assertSelectorExists('.event-layout > .event-layout-tickets.d-lg-none:first-child #event-tickets a.btn-primary');
+        self::assertSelectorCount(2, '#event-tickets .list-group a[rel="sponsored"]');
+        // In the sidebar layout, where they were: in the practical information
+        self::assertSelectorExists('.event-layout-aside #event-tickets-aside.d-none.d-lg-grid a.btn-primary');
+        self::assertSelectorCount(2, '.event-layout-aside #event-ticket-offers a[rel="sponsored"]');
+        // The id names one list only
+        self::assertSelectorCount(1, '#event-ticket-offers');
+    }
+
+    public function testAnEventWithoutTicketingHasNoTicketsBlock(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#event-tickets');
+        self::assertSelectorNotExists('#event-tickets-aside');
+    }
+
     public function testASingleSiteGetsTheButtonAlone(): void
     {
         $client = self::createClient();

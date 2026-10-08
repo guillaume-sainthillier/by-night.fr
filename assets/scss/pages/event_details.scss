@@ -1,8 +1,9 @@
 @use '../core' as *;
 
 #page-event {
-    // On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both rows
-    // beside them; the second row takes what the sidebar needs beyond the poster, so no gap opens under the poster
+    // On a phone: tickets, poster, practical information, then description and comments. From lg, the sidebar spans
+    // both rows beside them (the tickets go back to it, the phone's block is hidden: d-lg-none takes it out of the
+    // grid); the second row takes what the sidebar needs beyond the poster, so no gap opens under the poster
     .event-layout {
         display: grid;
         grid-template-columns: minmax(0, 1fr);

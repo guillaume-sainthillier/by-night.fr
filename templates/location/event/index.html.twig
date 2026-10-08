@@ -181,9 +181,22 @@
                 <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " full="{{ true }}" />
             {% endif %}
 
-            {# On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both
-               rows so the description follows the poster right away #}
+            {# On a phone: tickets, poster, practical information, then description and comments. From lg, the sidebar spans
+               both rows so the description follows the poster right away, and the tickets go back to its practical
+               information #}
             <div class="event-layout">
+                {# Right under the title on a phone only: there the poster and the practical information would push the
+                   booking, and the other ticketing sites of the family, a screen and a half down #}
+                {% if bestOffer %}
+                    <div class="event-layout-tickets d-lg-none">
+                        <div class="card card-layout mb-0" id="event-tickets">
+                            <div class="card-body d-grid gap-2">
+                                {{ include('location/event/_tickets.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
                 <div class="event-layout-media">
                     <div class="card card-layout overflow-visible mb-0">
                         <a class="image-gallery card-img-top d-block overflow-hidden" href="{{ original }}" title="{{ eventShortName }}">
@@ -385,30 +398,11 @@
                         {% endset %}
                         {% set directionsHere = directionsTo and not mapValue %}
                         {% if bestOffer or directionsHere or calendarUrl %}
-                            <div class="card-body d-grid gap-2">
-                                {% if bestOffer.affiliate ?? false %}
-                                    <a href="{{ bestOffer.url }}" class="btn btn-primary btn-lg" rel="sponsored">
-                                        <twig:Icon name="lucide:ticket" />
-                                        Réserver mes billets
-                                    </a>
-                                {% elseif bestOffer %}
-                                    <a href="{{ bestOffer.url }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener nofollow">
-                                        <twig:Icon name="lucide:ticket" />
-                                        Réserver
-                                    </a>
-                                {% endif %}
-                                {% if offers|length > 1 %}
-                                    <div class="list-group list-group-flush" id="event-ticket-offers">
-                                        {% for offer in offers %}
-                                            <a href="{{ offer.url }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 px-0"{% if offer.affiliate %} rel="sponsored"{% else %} target="_blank" rel="noopener nofollow"{% endif %}>
-                                                <span class="fw-medium">{{ offer.seller }}</span>
-                                                {% if offer.soldOut %}
-                                                    <span class="ms-auto text-secondary">Complet</span>
-                                                {% elseif offer.priceLabel %}
-                                                    <span class="ms-auto">{{ offer.priceLabel.label }}</span>
-                                                {% endif %}
-                                            </a>
-                                        {% endfor %}
+                            {# Holding the tickets only, it is empty on a phone, where they come under the title #}
+                            <div class="card-body {{ directionsHere or calendarUrl ? 'd-grid' : 'd-none d-lg-grid' }} gap-2">
+                                {% if bestOffer %}
+                                    <div class="d-none d-lg-grid gap-2" id="event-tickets-aside">
+                                        {{ include('location/event/_tickets.html.twig', {listId: 'event-ticket-offers'}) }}
                                     </div>
                                 {% endif %}
                                 {% if directionsHere %}

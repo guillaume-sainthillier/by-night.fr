@@ -142,6 +142,8 @@ final class LocationPageTest extends AppWebTestCase
         // The busiest gets the big card, with its cities
         self::assertSelectorTextSame('#neighbours .card-lg h3', 'Belgique');
         self::assertSelectorTextContains('#neighbours .card-lg p', 'De Bruxelles à Liège');
+        // The next one sits beside it, at its own height when alone
+        self::assertSelectorTextSame('#neighbours .col-lg-4 > a.card.h-auto:not(.flex-fill) h3', 'Suisse');
     }
 
     #[DataProvider('provideLocationAgendas')]

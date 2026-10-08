@@ -6,7 +6,8 @@
 {% props href, name, eyebrow = null, events = null, tone = 'primary' %}
 <a href="{{ href }}" {{ attributes.defaults({class: 'card card-layout card-link-pop text-reset h-100 mb-0'}) }}>
     <div class="card-body">
-        {% if eyebrow %}<div class="subheader text-truncate">{{ eyebrow }}</div>{% endif %}
+        {# Wraps: two cards share a phone's width, too narrow for "Pyrénées-Atlantiques (64)" #}
+        {% if eyebrow %}<div class="subheader">{{ eyebrow }}</div>{% endif %}
         <h3 class="card-title mb-0">{{ name }}</h3>
     </div>
     <div class="card-footer d-flex align-items-center justify-content-between gap-2 small fw-bold text-{{ tone }}">

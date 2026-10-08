@@ -1,6 +1,7 @@
-{# The small uppercase label above a title (Tabler's .page-pretitle, in the primary colour); "badge" puts it in a pill #}
+{# The small uppercase label above a title (Tabler's .page-pretitle, in the primary colour); "badge" puts it in a pill,
+   which wraps rather than overflow a phone's screen (a badge is nowrap) #}
 {% props icon = null, badge = false %}
-<div {{ attributes.defaults({class: badge ? 'badge bg-primary-lt mb-3' : 'page-pretitle text-primary mb-2'}) }}>
+<div {{ attributes.defaults({class: badge ? 'badge bg-primary-lt text-wrap mw-100 mb-3' : 'page-pretitle text-primary mb-2'}) }}>
     {% if icon %}<twig:Icon name="{{ icon }}" />{% endif %}
     {% block content %}{% endblock %}
 </div>
