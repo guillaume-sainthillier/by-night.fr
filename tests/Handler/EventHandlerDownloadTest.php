@@ -17,7 +17,11 @@ use App\Import\Cleaner;
 use App\Manager\TemporaryFilesManager;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
+use Stringable;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -172,6 +176,37 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
         $this->assertNull($event->getImageSystemHash());
     }
 
+    public function testABmpPosterIsNotKeptWithoutReportingAnError(): void
+    {
+        $image = imagecreatetruecolor(1, 1);
+        ob_start();
+        imagebmp($image);
+        $bmp = (string) ob_get_clean();
+        $client = new MockHttpClient(new MockResponse($bmp, ['http_code' => 200]));
+        $event = EventFactory::createOne(['url' => 'https://example.test/marche.bmp']);
+        $logger = new class extends AbstractLogger {
+            /** @var list<string> */
+            public array $levels = [];
+
+            public function log($level, string|Stringable $message, array $context = []): void
+            {
+                $this->levels[] = (string) $level;
+            }
+        };
+
+        $handler = $this->makeHandler($client, $logger);
+
+        try {
+            $handler->handleDownloads([$event]);
+        } finally {
+            $handler->reset();
+        }
+
+        $this->assertNull($event->getImageSystemFile());
+        // The source's data, nothing to fix: no Sentry issue (BY-NIGHTFR-6BN)
+        $this->assertSame([LogLevel::INFO], $logger->levels);
+    }
+
     public function testAnImageAnnouncedTooLargeIsNotDownloaded(): void
     {
         $client = new MockHttpClient(new MockResponse(self::largeGif(), [
@@ -267,11 +302,11 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
         }
     }
 
-    private function makeHandler(MockHttpClient $client): EventHandler
+    private function makeHandler(MockHttpClient $client, LoggerInterface $logger = new NullLogger()): EventHandler
     {
         return new EventHandler(
             self::getContainer()->get(Cleaner::class),
-            new NullLogger(),
+            $logger,
             $client,
             self::getContainer()->get(TemporaryFilesManager::class),
             self::getContainer()->get(UploadHandler::class),

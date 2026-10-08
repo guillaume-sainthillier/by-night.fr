@@ -10,9 +10,11 @@
 
 namespace App\MessageHandler;
 
+use App\Cdn\CdnPurgeQuotaExceededException;
 use App\Cdn\CloudflareCdnPurger;
 use App\Message\PurgeCdnCachePrefix;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Handler\Acknowledger;
 use Symfony\Component\Messenger\Handler\BatchHandlerInterface;
@@ -47,7 +49,8 @@ final class PurgeCdnCachePrefixHandler implements BatchHandlerInterface
                 $ack->ack();
             }
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), [
+            // A refusal for quota is retried once Cloudflare's quota has refilled
+            $this->logger->log($e instanceof CdnPurgeQuotaExceededException ? LogLevel::WARNING : LogLevel::ERROR, $e->getMessage(), [
                 'exception' => $e,
                 'extra' => [
                     'prefixes' => $prefixes,

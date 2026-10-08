@@ -66,7 +66,8 @@ abstract class OAuth implements Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_realname = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    // Google serves profile picture URLs longer than 255 characters, up to about a thousand
+    #[ORM\Column(length: 2048, nullable: true)]
     private ?string $google_profile_picture = null;
 
     #[ORM\Column(length: 255, nullable: true)]

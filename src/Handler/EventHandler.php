@@ -145,6 +145,12 @@ final readonly class EventHandler
                         continue;
                     }
 
+                    // A format the site does not serve (BMP...): the source's data, the event keeps no picture
+                    if ($e instanceof UnsupportedFileException) {
+                        $this->logger->info(\sprintf('Image %s is not supported: %s', $imageUrl, $e->getMessage()));
+                        continue;
+                    }
+
                     $this->logger->error($e->getMessage(), [
                         'exception' => $e,
                         'extra' => [

@@ -8,6 +8,8 @@ when@prod:
             send_default_pii: false
             #traces_sample_rate: 0.5
             release: 'v%env(APP_VERSION)%'
+            # Drops the Cloudflare purges refused for quota, which Messenger retries
+            before_send: App\Sentry\BeforeSend
             ignore_exceptions:
                 - 'Symfony\Component\ErrorHandler\Error\FatalError'
                 - 'Symfony\Component\Debug\Exception\FatalErrorException'

@@ -50,4 +50,20 @@ describe('image-previews listener', () => {
         expect(create).not.toHaveBeenCalled()
         expect(lightbox.destroy).not.toHaveBeenCalled()
     })
+
+    // Vitest fails the run on an unhandled rejection, as Sentry reported it (BY-NIGHTFR-6C4)
+    test('leaves the plain link when Fancybox cannot be fetched', async () => {
+        vi.resetModules()
+        vi.doMock('@/js/services/ui/FancyboxService', () => {
+            throw new Error('Unable to preload CSS for /build/FancyboxService.css')
+        })
+        const { default: listener } = await import('@/js/listeners/image-previews')
+
+        const cleanup = listener.connect({})
+        await vi.dynamicImportSettled()
+        cleanup()
+
+        expect(create).not.toHaveBeenCalled()
+        vi.doUnmock('@/js/services/ui/FancyboxService')
+    })
 })

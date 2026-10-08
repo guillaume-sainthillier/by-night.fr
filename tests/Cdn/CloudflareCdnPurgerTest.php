@@ -10,6 +10,7 @@
 
 namespace App\Tests\Cdn;
 
+use App\Cdn\CdnPurgeQuotaExceededException;
 use App\Cdn\CloudflareCdnPurger;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -107,20 +108,48 @@ final class CloudflareCdnPurgerTest extends TestCase
         $purger->purge(['/uploads/documents/a.jpg']);
     }
 
-    /**
-     * The throttled client is the single source of truth for the quota, so a 429 is an
-     * anomaly handled like any other HTTP error, not a signal to schedule around.
-     */
     public function testHttpErrorsSurfaceAsClientExceptions(): void
     {
-        $client = new MockHttpClient(new MockResponse('{"success":false,"errors":[{"code":10000,"message":"rate limited"}]}', [
-            'http_code' => 429,
+        $client = new MockHttpClient(new MockResponse('{"success":false,"errors":[{"code":10000,"message":"Authentication error"}]}', [
+            'http_code' => 403,
         ]), self::BASE_URI);
         $purger = $this->makePurger($client);
 
         $this->expectException(ClientExceptionInterface::class);
 
         $purger->purge(['/uploads/documents/a.jpg']);
+    }
+
+    /**
+     * The limiter follows the published quota, but Cloudflare counts the purges made by hand too: a refusal for quota
+     * is retried by Messenger when Cloudflare says, within the transport's max_retries.
+     */
+    public function testARefusalForQuotaIsRetriedWhenCloudflareSays(): void
+    {
+        $client = new MockHttpClient(new MockResponse('{"success":false,"errors":[{"code":10000,"message":"rate limited"}]}', [
+            'http_code' => 429,
+            'response_headers' => ['Retry-After' => '30'],
+        ]), self::BASE_URI);
+
+        try {
+            $this->makePurger($client)->purgeTags(['event-1']);
+            self::fail('A 429 must throw');
+        } catch (CdnPurgeQuotaExceededException $e) {
+            self::assertSame(30_000, $e->getRetryDelay());
+            self::assertFalse($e->forceRetry(), 'The transport\'s max_retries still bounds the retries');
+        }
+    }
+
+    public function testARefusalForQuotaWithoutRetryAfterIsRetriedAfterAMinute(): void
+    {
+        $client = new MockHttpClient(new MockResponse('', ['http_code' => 429]), self::BASE_URI);
+
+        try {
+            $this->makePurger($client)->purgeTags(['event-1']);
+            self::fail('A 429 must throw');
+        } catch (CdnPurgeQuotaExceededException $e) {
+            self::assertSame(CdnPurgeQuotaExceededException::DEFAULT_RETRY_DELAY_MS, $e->getRetryDelay());
+        }
     }
 
     private function makeClient(): MockHttpClient
