@@ -1,0 +1,6 @@
+{% set title = 'Erreur 503 (Indisponible)' %}
+{% set code = 503 %}
+{% set message = 'Un instant, on revient !' %}
+{% set description = 'La page que vous demandez est momentanément indisponible. Réessayez dans quelques minutes.' %}
+
+{{ include('bundles/TwigBundle/Exception/errorXXX.html.twig', {title: title, code: code, message: message, description: description}) }}
