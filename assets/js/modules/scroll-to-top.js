@@ -1,47 +1,28 @@
-import $ from 'jquery'
 import debounce from 'lodash/debounce'
 
+/** How far down the page the button shows, in pixels */
+export const SHOW_AFTER = 200
+
 /**
- * Show/hide the scroll-to-top button on window scroll. Runs once at App.start().
+ * Show the scroll-to-top button once the page is scrolled down, hide it back near the top. Runs once at App.start().
+ * The stylesheet hides it until `.is-visible`: shown from the start, it covered the bottom of the first screen.
  *
  * @type {Module}
  */
 export default () => {
-    const settings = {
-        min: 200,
-        inDelay: 300,
-        outDelay: 200,
-        containerID: 'toTop',
-        scrollSpeed: 400,
-        easingType: 'linear',
-    }
+    const toTop = document.getElementById('toTop')
 
-    const toTop = $(`#${settings.containerID}`)
-
-    if (!toTop.length) {
+    if (!toTop) {
         return
     }
 
-    toTop.click((e) => {
+    toTop.addEventListener('click', (e) => {
         e.preventDefault()
-        $('html, body').animate({ scrollTop: 0 }, settings.scrollSpeed, settings.easingType)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     })
 
-    let toTopHidden = true
-    $(window).scroll(
-        debounce(
-            function () {
-                const sd = $(this).scrollTop()
-                if (sd > settings.min && toTopHidden) {
-                    toTop.fadeIn(settings.inDelay)
-                    toTopHidden = false
-                } else if (sd <= settings.min && !toTopHidden) {
-                    toTop.fadeOut(settings.outDelay)
-                    toTopHidden = true
-                }
-            },
-            200,
-            { leading: true }
-        )
-    )
+    const update = () => toTop.classList.toggle('is-visible', window.scrollY > SHOW_AFTER)
+    window.addEventListener('scroll', debounce(update, 100, { leading: true, maxWait: 200 }), { passive: true })
+    // A page reloaded halfway down starts scrolled
+    update()
 }
