@@ -1,0 +1,22 @@
+diff --git a/src/class.rs b/src/class.rs
+index 84a12c9..cb83245 100644
+--- a/src/class.rs
++++ b/src/class.rs
+@@ -254,14 +254,9 @@ impl<T: RegisteredClass> ClassMetadata<T> {
+     /// Panics if the class entry has already been set in the class metadata.
+     /// This function should only be called once.
+     pub fn set_ce(&self, ce: &'static mut ClassEntry) {
+-        self.ce
+-            .compare_exchange(
+-                std::ptr::null_mut(),
+-                ce,
+-                Ordering::SeqCst,
+-                Ordering::Relaxed,
+-            )
+-            .expect("Class entry has already been set");
++        // A SAPI that restarts the module in the same process (FrankenPHP on workers/restart or
++        // opcache_reset()) runs MINIT again: the previous entry was freed with the module, keep the new one.
++        self.ce.store(ce, Ordering::SeqCst);
+     }
+ 
+     /// Retrieves a reference to the hashmap storing the classes property

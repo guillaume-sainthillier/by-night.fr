@@ -46,12 +46,31 @@ RUN apk add --no-cache --virtual .mjml-build-deps \
         clang-dev \
         libtool \
         openssl-dev \
-        curl
-RUN curl -fsSL https://github.com/php/pie/releases/download/1.4.5/pie.phar -o /usr/local/bin/pie \
-    && chmod +x /usr/local/bin/pie
-# No prebuilt .so exists for php8.5 + musl + ZTS, so PIE compiles it from source.
+        curl \
+        patch
+# No prebuilt .so exists for php8.5 + musl + ZTS, so it is compiled from source (what `pie install kcs/mjml`
+# does), with two patches until upstream fixes them (2026-10-08, still in ext-php-rs 0.16.1):
+# - ext-php-rs: a second MINIT in the same process panicked ("Class entry has already been set") and aborted
+#   FrankenPHP, which runs one on POST /frankenphp/workers/restart and on opcache_reset();
+# - mjml-php: a render error panicked instead of throwing (its exception class entry was never stored), and
+#   the class was \RenderException, not the Mjml\Exception\RenderException the stubs and mjml-bundle catch.
+COPY patches/ /usr/src/patches/
+RUN curl -fsSL https://static.crates.io/crates/ext-php-rs/ext-php-rs-0.15.7.crate -o /tmp/ext-php-rs.crate \
+    && echo "83b57e00633bee412187a6c91888906c34a4dc11901b7c978fdcf572591c59b1  /tmp/ext-php-rs.crate" | sha256sum -c - \
+    && mkdir /usr/src/ext-php-rs \
+    && tar xzf /tmp/ext-php-rs.crate -C /usr/src/ext-php-rs --strip-components=1 \
+    && patch -d /usr/src/ext-php-rs -p1 < /usr/src/patches/ext-php-rs-0.15.7-set-ce.patch \
+    && curl -fsSL https://github.com/alekitto/mjml-php/archive/refs/tags/v1.2.1.tar.gz -o /tmp/mjml.tar.gz \
+    && echo "869f030275281f830632d8fd114ee2fe53c086e4bcbf38f0f30da9fe58699ae6  /tmp/mjml.tar.gz" | sha256sum -c - \
+    && mkdir /usr/src/mjml \
+    && tar xzf /tmp/mjml.tar.gz -C /usr/src/mjml --strip-components=1 \
+    && patch -d /usr/src/mjml -p1 < /usr/src/patches/mjml-php-1.2.1.patch
 RUN --mount=type=cache,target=/root/.cargo/registry \
-    pie install kcs/mjml:^1.2
+    cd /usr/src/mjml \
+    && phpize \
+    && ./configure \
+    && make -j"$(nproc)" \
+    && make install
 
 # ── Runtime base ──
 FROM php_ext
