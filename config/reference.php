@@ -2475,6 +2475,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         storage?: scalar|Param|null, // Flysystem storage service ID. // Default: null
  *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for url loaders. // Default: null
  *         request_factory?: scalar|Param|null, // PSR-17 request factory service ID for url loaders. // Default: null
+ *         allowed_hosts?: list<scalar|Param|null>,
  *         default_placeholder?: scalar|Param|null, // Default placeholder name for this loader. Overrides the global default_placeholder. // Default: null
  *         default_transformer?: scalar|Param|null, // Default transformer name for this loader. Overrides the global default_transformer. // Default: null
  *         url_alias?: scalar|Param|null, // Public name of this loader in image URLs and public-cache keys, instead of its name (e.g. "p" for /image/glide/p/…). // Default: null

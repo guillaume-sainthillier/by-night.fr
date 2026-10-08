@@ -24,6 +24,11 @@ framework:
     exceptions:
         ApiPlatform\Validator\Exception\ValidationException:
             log_level: info
+        # A storage outage, not a bug: Picasso answers 503 when the uploads bucket cannot be read (OVH S3,
+        # 2026-10-07), as ElasticsearchUnavailableException does while Elasticsearch restarts. Symfony logs a
+        # 5xx as critical, which would reach Sentry for every thumbnail requested during the outage.
+        Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException:
+            log_level: warning
 
 when@test:
     framework:

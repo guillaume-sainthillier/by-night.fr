@@ -38,6 +38,12 @@ parameters:
         connect_timeout: 2
         timeout: 5
     s3.retries: 1
+    # The thumbs bucket gets no retry: PHP only reads it on a miss (the variant's size, a miss when that fails)
+    # and writes the render on kernel.terminate, after the visitor has the image, within what the request left
+    # of max_execution_time. A failed write costs nothing (the next request renders the variant again), whereas
+    # a retried stalled one held the worker twice as long, up to the fatal error (BY-NIGHTFR-6C6, 6C7, OVH S3
+    # outage of 2026-10-07): one attempt is 7 s at most.
+    s3.thumb_retries: 0
 
 services:
     # default configuration for services in *this* file
@@ -146,7 +152,7 @@ services:
                   key: '%env(APP_THUMB_S3_KEY)%'
                   secret: '%env(APP_THUMB_S3_SECRET)%'
               http: '%s3.http_options%'
-              retries: '%s3.retries%'
+              retries: '%s3.thumb_retries%'
 
     FOS\ElasticaBundle\Persister\AsyncPagerPersister: '@fos_elastica.async_pager_persister'
     FOS\ElasticaBundle\Persister\PersisterRegistry: '@fos_elastica.persister_registry'
