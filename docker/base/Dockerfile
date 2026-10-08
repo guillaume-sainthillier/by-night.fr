@@ -17,7 +17,7 @@
 #   docker push  guystlr/by-night-base:$(cat docker/base/VERSION)
 
 # ── PHP extensions (installed once, shared by the builder and the runtime base) ──
-FROM dunglas/frankenphp:1.12-php8.5-alpine AS php_ext
+FROM dunglas/frankenphp:1.13-php8.5-alpine AS php_ext
 
 # intl transitively installs icu-data-full (required for French date/number formatting).
 RUN IPE_GD_WITHOUTAVIF=1 \
