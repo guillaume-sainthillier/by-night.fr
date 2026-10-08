@@ -10,11 +10,15 @@
 
 namespace App\Tests\MessageHandler;
 
+use App\Cdn\CdnPurgeQuotaExceededException;
 use App\Cdn\CloudflareCdnPurger;
 use App\Message\PurgeCdnCacheTags;
 use App\MessageHandler\PurgeCdnCacheTagsHandler;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
+use Stringable;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Messenger\Handler\Acknowledger;
@@ -74,6 +78,28 @@ final class PurgeCdnCacheTagsHandlerTest extends TestCase
         foreach ([$first, $second] as $ack) {
             self::assertStringContainsString('Cloudflare purge failed', (string) $ack->getError()?->getMessage());
         }
+    }
+
+    public function testARefusalForQuotaIsLoggedAsAWarningAndRetried(): void
+    {
+        $logger = new class extends AbstractLogger {
+            /** @var list<string> */
+            public array $levels = [];
+
+            public function log($level, string|Stringable $message, array $context = []): void
+            {
+                $this->levels[] = (string) $level;
+            }
+        };
+        $client = new MockHttpClient(new MockResponse('', ['http_code' => 429]));
+        $handler = new PurgeCdnCacheTagsHandler(new CloudflareCdnPurger($client, $client, 'zone-123', 'https://cdn.example.test'), $logger);
+
+        $ack = new Acknowledger(PurgeCdnCacheTagsHandler::class);
+        $handler(new PurgeCdnCacheTags(['event-1']), $ack);
+        $handler->flush(true);
+
+        self::assertInstanceOf(CdnPurgeQuotaExceededException::class, $ack->getError());
+        self::assertSame([LogLevel::WARNING], $logger->levels);
     }
 
     /**

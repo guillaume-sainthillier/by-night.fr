@@ -21,7 +21,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * The request rate is not throttled here: the scoped HTTP clients (config/packages/http_client.yaml) are decorated
  * by Symfony's ThrottlingHttpClient, which waits for a token (config/packages/rate_limiter.yaml) before every
  * request, "cloudflare_purge" for tags and prefixes, "cloudflare_purge_files" for URLs: Cloudflare counts them
- * apart. This class only makes sure a request never carries more URLs than allowed.
+ * apart. This class only makes sure a request never carries more URLs than allowed, and turns a refusal for quota
+ * into a CdnPurgeQuotaExceededException, retried when Cloudflare says.
  */
 final readonly class CloudflareCdnPurger
 {
@@ -97,6 +98,10 @@ final readonly class CloudflareCdnPurger
         $response = $client->request('POST', \sprintf('zones/%s/purge_cache', $this->zoneId), [
             'json' => $body,
         ]);
+
+        if (429 === $response->getStatusCode()) {
+            throw new CdnPurgeQuotaExceededException($response->getHeaders(false)['retry-after'][0] ?? null);
+        }
 
         $data = $response->toArray();
         if (!($data['success'] ?? false)) {
