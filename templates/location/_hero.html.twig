@@ -35,10 +35,12 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="col-lg-5">
+                {# Not on a phone: under the copy it pushed the first events two screens down. Hidden, it still loads:
+                   "1px" makes the phone pick its smallest rendition #}
+                <div class="col-lg-5 d-none d-md-block">
                     <figure class="card shadow overflow-hidden border-0 m-0">
                         <div class="img-cover ratio ratio-4x3">
-                            <twig:Location:Picture location="{{ zone }}" width="{{ 720 }}" height="{{ 540 }}" sizes="(min-width: 992px) 40vw, 100vw" priority="{{ true }}" />
+                            <twig:Location:Picture location="{{ zone }}" width="{{ 720 }}" height="{{ 540 }}" sizes="(min-width: 992px) 40vw, (min-width: 768px) 100vw, 1px" priority="{{ true }}" />
                         </div>
                         {% if zone.heroCaption ?? null %}
                             <figcaption class="card-img-overlay card-img-overlay-dark d-flex align-items-end text-white fw-bold">{{ zone.heroCaption }}</figcaption>
