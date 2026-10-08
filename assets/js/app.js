@@ -126,6 +126,26 @@ class App {
                 environment: parameters.environment,
                 // No IP address: the member id set below is enough to follow up an error
                 sendDefaultPii: false,
+                // Errors of the ads scripts (AdSense Auto ads, its RUM script): nothing to fix on our side
+                denyUrls: [
+                    /pagead2\.googlesyndication\.com/,
+                    /tpc\.googlesyndication\.com/,
+                    /googleads\.g\.doubleclick\.net/,
+                    /\.adtrafficquality\.google/,
+                    /googletagmanager\.com/,
+                    /fundingchoicesmessages\.google\.com/,
+                ],
+                ignoreErrors: [
+                    // The same errors when they come without a stack: an Auto ads slot narrower than any ad size,
+                    // and the RUM script's "Error: int64"
+                    /No slot size for availableWidth/,
+                    /^(Error: )?int64$/,
+                    // A cross-document view transition (@view-transition) the browser skips or aborts: viewport
+                    // resized, page already shown. The navigation goes on, and the rejection happens before
+                    // App.start(), so no handler of ours can catch it
+                    /Skipping view transition because skipTransition\(\) was called/,
+                    /Transition was (aborted because of invalid state|skipped)/,
+                ],
             })
 
             Sentry.getCurrentScope().setUser(this.get('user'))
