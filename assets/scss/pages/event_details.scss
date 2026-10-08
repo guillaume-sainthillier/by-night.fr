@@ -1,8 +1,9 @@
 @use '../core' as *;
 
 #page-event {
-    // On a phone: poster, practical information, then description and comments. From lg, the sidebar spans both rows
-    // beside them; the second row takes what the sidebar needs beyond the poster, so no gap opens under the poster
+    // On a phone: tickets, poster, practical information, then description and comments. From lg, the sidebar spans
+    // both rows beside them; the second row takes what the sidebar needs beyond the poster, so no gap opens under the
+    // poster. The tickets head the sidebar column: the poster spans their row and the next one
     .event-layout {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
@@ -33,6 +34,18 @@
 
             .event-layout-main {
                 grid-area: main;
+            }
+
+            .event-layout-tickets {
+                grid-area: tickets;
+            }
+
+            &.event-layout-with-tickets {
+                grid-template-rows: auto auto 1fr;
+                grid-template-areas:
+                    'media tickets'
+                    'media aside'
+                    'main aside';
             }
         }
     }

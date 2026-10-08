@@ -391,6 +391,32 @@ final class EventControllerTest extends AppWebTestCase
         self::assertNotNull($duplicate->getId());
     }
 
+    public function testTheTicketsComeRightUnderTheTitle(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setFromData(FnacSpectaclesAwinParser::getParserName())->setSource('https://www.awin1.com/fnac');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        // Ahead of the poster and of the practical information, which would push them a screen down on a phone
+        self::assertSelectorExists('.event-layout.event-layout-with-tickets > .event-layout-tickets:first-child #event-tickets a[href="https://www.awin1.com/fnac"]');
+        self::assertSelectorNotExists('.event-layout-aside a[href="https://www.awin1.com/fnac"]');
+    }
+
+    public function testAnEventWithoutTicketingHasNoTicketsBlock(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#event-tickets');
+        self::assertSelectorNotExists('.event-layout-with-tickets');
+    }
+
     public function testASingleSiteGetsTheButtonAlone(): void
     {
         $client = self::createClient();
