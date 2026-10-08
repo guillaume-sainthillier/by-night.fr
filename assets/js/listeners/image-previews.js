@@ -15,11 +15,14 @@ export default {
         let lightbox = null
         let disconnected = false
 
-        import('@/js/services/ui/FancyboxService').then((fancybox) => {
-            // The element may have been unmounted while the chunk was loading
-            if (disconnected) return
-            lightbox = fancybox.create({ element })
-        })
+        import('@/js/services/ui/FancyboxService')
+            .then((fancybox) => {
+                // The element may have been unmounted while the chunk was loading
+                if (disconnected) return
+                lightbox = fancybox.create({ element })
+            })
+            // The chunk or its stylesheet could not be fetched (flaky network, blocker): the link opens the image
+            .catch(() => {})
 
         return () => {
             disconnected = true
