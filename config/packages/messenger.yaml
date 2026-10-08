@@ -37,6 +37,12 @@ framework:
                 dsn: '%env(MESSENGER_ELASTICA_TRANSPORT_DSN)%'
                 # Cap throughput so reindex bursts do not saturate CPU (see rate_limiter.yaml).
                 rate_limiter: messenger_elastica
+                # A restart of Elasticsearch takes a minute or two: the default retries (1, 2 then 4 s) give up on the
+                # pages of a populate long before, into the failed transport. 10 s, 30 s, 90 s, 4.5 then 13.5 min.
+                retry_strategy:
+                    max_retries: 5
+                    delay: 10000
+                    multiplier: 3
             sync: 'sync://'
 
         routing:
