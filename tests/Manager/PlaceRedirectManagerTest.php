@@ -51,7 +51,7 @@ final class PlaceRedirectManagerTest extends AppKernelTestCase
     {
         $toulouse = CityFactory::toulouse()->create();
         $bikini = PlaceFactory::createOne(['slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1']);
+        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
 
         $this->assertRedirects(
             '/toulouse/agenda/sortir-a/le-bikini',

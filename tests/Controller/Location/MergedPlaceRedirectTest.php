@@ -28,7 +28,7 @@ final class MergedPlaceRedirectTest extends AppWebTestCase
         $client = self::createClient();
         $toulouse = CityFactory::toulouse()->create();
         $bikini = PlaceFactory::createOne(['name' => 'Le Bikini', 'slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1']);
+        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
 
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini-1?type=concert');
 
@@ -42,7 +42,7 @@ final class MergedPlaceRedirectTest extends AppWebTestCase
         $toulouse = CityFactory::toulouse()->create();
         $bikini = PlaceFactory::createOne(['name' => 'Le Bikini', 'slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
         PlaceFactory::createOne(['name' => 'Le Bikini 1', 'slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
-        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1']);
+        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
 
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini-1');
 
@@ -56,11 +56,24 @@ final class MergedPlaceRedirectTest extends AppWebTestCase
         $toulouse = CityFactory::toulouse()->create();
         $albi = CityFactory::createOne(['name' => 'Albi', 'country' => $toulouse->getCountry()]);
         $bikini = PlaceFactory::createOne(['name' => 'Le Bikini', 'slug' => 'le-bikini', 'city' => $albi, 'country' => $albi->getCountry()]);
-        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1']);
+        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1', 'city' => $albi, 'country' => $albi->getCountry()]);
 
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini-1');
 
         // No place of that slug: back to the city page
         self::assertResponseRedirects('/toulouse');
+    }
+
+    public function testTheSlugOfAPlaceMergedIntoOneOfAnotherCityRedirectsFromItsOwnCity(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $blagnac = CityFactory::createOne(['name' => 'Blagnac', 'country' => $toulouse->getCountry()]);
+        $zenith = PlaceFactory::createOne(['name' => 'Zénith Toulouse Métropole', 'slug' => 'zenith-toulouse-metropole', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        PlaceLegacySlugFactory::createOne(['place' => $zenith, 'slug' => 'zenith', 'city' => $blagnac, 'country' => $blagnac->getCountry()]);
+
+        $client->request('GET', \sprintf('/%s/agenda/sortir-a/zenith', $blagnac->getSlug()));
+
+        self::assertResponseRedirects('/toulouse/agenda/sortir-a/zenith-toulouse-metropole', Response::HTTP_MOVED_PERMANENTLY);
     }
 }
