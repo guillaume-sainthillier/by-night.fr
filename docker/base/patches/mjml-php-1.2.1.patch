@@ -1,0 +1,101 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index b8b64cc..fccc661 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -12,3 +12,7 @@ mrml = "5"
+ 
+ [profile.release]
+ strip = "debuginfo"
++
++# ext-php-rs 0.15.7 patched for a second MINIT in the same process (by-night docker/base/patches).
++[patch.crates-io]
++ext-php-rs = { path = "../ext-php-rs" }
+diff --git a/src/exception.rs b/src/exception.rs
+index 195990c..ecff7a9 100644
+--- a/src/exception.rs
++++ b/src/exception.rs
+@@ -1,3 +1,14 @@
+-use ext_php_rs::zend::ClassEntry;
++use ext_php_rs::class::RegisteredClass;
++use ext_php_rs::prelude::*;
++use ext_php_rs::zend::{ce, ClassEntry};
+ 
+-pub static mut RENDER_EXCEPTION: Option<&'static ClassEntry> = None;
++#[php_class]
++#[php(name = "Mjml\\Exception\\RenderException")]
++#[php(extends(ce = ce::exception, stub = "Exception"))]
++pub struct RenderException {}
++
++/// The class entry registered by the latest MINIT, read at throw time so it stays valid when the SAPI
++/// restarts the module (FrankenPHP reboots all PHP threads on workers/restart and opcache_reset()).
++pub fn render_exception() -> &'static ClassEntry {
++    RenderException::get_metadata().ce()
++}
+diff --git a/src/lib.rs b/src/lib.rs
+index ff68d5d..3fb3b39 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -5,13 +5,9 @@ mod mjml;
+ mod php_stream;
+ 
+ use ext_php_rs::prelude::*;
+-use ext_php_rs::zend::ce;
++use crate::exception::RenderException;
+ use crate::mjml::{Email, Mjml};
+ 
+-#[php_class]
+-#[php(extends(ce = ce::exception, stub = "Exception"))]
+-struct RenderException {}
+-
+ #[php_module]
+ pub fn module(module: ModuleBuilder) -> ModuleBuilder {
+     module
+diff --git a/src/mjml.rs b/src/mjml.rs
+index 0ae47b5..77c75df 100644
+--- a/src/mjml.rs
++++ b/src/mjml.rs
+@@ -1,4 +1,4 @@
+-use crate::exception::RENDER_EXCEPTION;
++use crate::exception::render_exception;
+ use crate::php_stream::PhpStream;
+ use ext_php_rs::exception::{PhpException, PhpResult};
+ use ext_php_rs::zend::ce;
+@@ -156,17 +156,13 @@ impl Mjml {
+         let mjml = match mrml::parse_with_options(mjml, &self.parser_options) {
+             Ok(parsed) => parsed.element,
+             Err(e) => {
+-                return Err(PhpException::new(e.to_string(), 0, unsafe {
+-                    RENDER_EXCEPTION.expect("did not set exception ce")
+-                }));
++                return Err(PhpException::new(e.to_string(), 0, render_exception()));
+             }
+         };
+ 
+         let body = match mjml.render(&self.render_options) {
+             Ok(rendered) => Ok(rendered),
+-            Err(e) => Err(PhpException::new(e.to_string(), 0, unsafe {
+-                RENDER_EXCEPTION.expect("did not set exception ce")
+-            })),
++            Err(e) => Err(PhpException::new(e.to_string(), 0, render_exception())),
+         }?;
+ 
+         let mut email = Email {
+@@ -211,16 +207,12 @@ impl Mjml {
+     /// * `path` - The MJML file path to render
+     pub fn render_file(&self, path: String) -> PhpResult<Email> {
+         let mut stream = PhpStream::open(&path, "rb").map_err(|e| {
+-            PhpException::new(e.to_string(), 0, unsafe {
+-                RENDER_EXCEPTION.expect("did not set exception ce")
+-            })
++            PhpException::new(e.to_string(), 0, render_exception())
+         })?;
+ 
+         let mut template = String::new();
+         stream.read_to_string(&mut template).map_err(|e| {
+-            PhpException::new(e.to_string(), 0, unsafe {
+-                RENDER_EXCEPTION.expect("did not set exception ce")
+-            })
++            PhpException::new(e.to_string(), 0, render_exception())
+         })?;
+ 
+         self.render(template)
