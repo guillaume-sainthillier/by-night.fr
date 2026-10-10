@@ -19,6 +19,7 @@ use App\Factory\PlaceLegacySlugFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 
 final class PlaceCrudControllerTest extends AppWebTestCase
 {
@@ -46,6 +47,33 @@ final class PlaceCrudControllerTest extends AppWebTestCase
         self::assertSame(0, PlaceFactory::count(['id' => $metropoleId]));
         self::assertSame(3, EventFactory::count(['place' => $zenith]));
         self::assertSame($zenith->getId(), PlaceLegacySlugFactory::find(['slug' => 'zenith-toulouse-metropole'])->getPlace()->getId());
+    }
+
+    /**
+     * No URL indexed before the merge is lost: the page of the place merged away and the pages of its events, now in
+     * the city of the place kept, answer with a permanent redirect.
+     */
+    public function testTheUrlsOfAPlaceMergedIntoOneOfAnotherCityRedirectPermanently(): void
+    {
+        $client = $this->createAdminClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $blagnac = CityFactory::createOne(['name' => 'Blagnac', 'country' => $toulouse->getCountry()]);
+        $zenith = PlaceFactory::createOne(['name' => 'Zénith Toulouse Métropole', 'slug' => 'zenith-toulouse-metropole', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        $duplicate = PlaceFactory::createOne(['name' => 'Zénith', 'slug' => 'zenith', 'city' => $blagnac, 'country' => $blagnac->getCountry()]);
+        $event = EventFactory::createOne(['place' => $duplicate]);
+        $oldEventUrl = \sprintf('/%s/soiree/%s--%d', $blagnac->getSlug(), $event->getSlug(), $event->getId());
+
+        $client->request('POST', '/_administration/place/merge?' . http_build_query(['ids' => [$zenith->getId(), $duplicate->getId()]]), [
+            'target' => $zenith->getId(),
+            '_token' => $this->getCsrfToken($client),
+        ]);
+        self::assertResponseRedirects();
+
+        $client->request('GET', \sprintf('/%s/agenda/sortir-a/zenith', $blagnac->getSlug()));
+        self::assertResponseRedirects('/toulouse/agenda/sortir-a/zenith-toulouse-metropole', Response::HTTP_MOVED_PERMANENTLY);
+
+        $client->request('GET', $oldEventUrl);
+        self::assertResponseRedirects(\sprintf('/toulouse/soiree/%s--%d', $event->getSlug(), $event->getId()), Response::HTTP_MOVED_PERMANENTLY);
     }
 
     public function testTheMergeNeedsAValidToken(): void
@@ -88,6 +116,17 @@ final class PlaceCrudControllerTest extends AppWebTestCase
         self::assertSelectorTextContains('table', 'Zénith Toulouse');
         self::assertSelectorTextContains('table', 'Le Bikini');
         self::assertSelectorTextNotContains('table', 'Zénith de Paris');
+    }
+
+    /**
+     * The token of the merge form, as the page hands it out.
+     */
+    private function getCsrfToken(KernelBrowser $client): string
+    {
+        $places = PlaceFactory::createMany(2);
+        $crawler = $client->request('GET', '/_administration/place/merge', ['ids' => [$places[0]->getId(), $places[1]->getId()]]);
+
+        return (string) $crawler->filter('input[name="_token"]')->attr('value');
     }
 
     private function createAdminClient(): KernelBrowser
