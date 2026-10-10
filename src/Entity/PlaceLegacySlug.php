@@ -14,8 +14,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * The slug of a place merged into another one of its city: the agenda page it named
- * (/{location}/agenda/sortir-a/{slug}) redirects to the page of the place that took its events.
+ * The slug of a place merged into another one, in the location it had (its city, else its country): the agenda page
+ * it named there (/{location}/agenda/sortir-a/{slug}) redirects to the page of the place that took its events, which
+ * may be in another city (see PlaceMerger).
  */
 #[ORM\Entity]
 #[ORM\Index(name: 'place_legacy_slug_slug_idx', columns: ['slug'])]
@@ -30,6 +31,14 @@ class PlaceLegacySlug
 
         #[ORM\Column(type: Types::STRING, length: 255)]
         private string $slug,
+
+        #[ORM\ManyToOne(targetEntity: City::class)]
+        #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+        private ?City $city,
+
+        #[ORM\ManyToOne(targetEntity: Country::class)]
+        #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+        private ?Country $country,
     ) {
     }
 
@@ -48,5 +57,15 @@ class PlaceLegacySlug
     public function getSlug(): string
     {
         return $this->slug;
+    }
+
+    public function getCity(): ?City
+    {
+        return $this->city;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
     }
 }

@@ -1,0 +1,62 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'Fusionner des lieux' %}
+
+{% block content_title 'Fusionner des lieux' %}
+
+{% block main %}
+    <form method="post" action="{{ path('admin_place_merge', {ids: ids}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('place_merge') }}">
+
+        <p>
+            Choisissez le lieu qui reste : il reçoit les événements, les identités source et les slugs des autres lieux,
+            qui sont supprimés. Les pages des lieux supprimés redirigent vers la sienne.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table datagrid">
+                <thead>
+                    <tr>
+                        <th>Garder</th>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Slug</th>
+                        <th>Ville</th>
+                        <th>Région</th>
+                        <th>Adresse</th>
+                        <th class="text-end">Événements</th>
+                        <th class="text-end">À venir</th>
+                        <th class="text-end">Identités source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for place in places %}
+                        <tr>
+                            <td>
+                                <input class="form-check-input" type="radio" name="target" id="place-merge-target-{{ place.id }}" value="{{ place.id }}" {{ place is same as(target) ? 'checked' }} required>
+                            </td>
+                            <td>{{ place.id }}</td>
+                            <td>
+                                <label for="place-merge-target-{{ place.id }}">
+                                    <a href="{{ path('admin_place_detail', {entityId: place.id}) }}" target="_blank" rel="noreferrer">{{ place.name }}</a>
+                                </label>
+                            </td>
+                            <td><code>{{ place.slug }}</code></td>
+                            <td>{{ place.city ?? '—' }} {% if place.country %}<small class="text-muted">({{ place.country.id }})</small>{% endif %}</td>
+                            <td>{{ regions[loop.index0] ?? '—' }}</td>
+                            <td>{{ [place.street, place.cityPostalCode, place.cityName]|filter(v => v)|join(', ') ?: '—' }}</td>
+                            <td class="text-end">{{ eventCounts[place.id] ?? 0 }}</td>
+                            <td class="text-end">{{ place.upcomingEvents }}</td>
+                            <td class="text-end">{{ place.metadatas|length }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">Fusionner dans le lieu choisi</button>
+            <a class="btn btn-secondary" href="{{ path('admin_place_index') }}">Annuler</a>
+        </div>
+    </form>
+{% endblock %}

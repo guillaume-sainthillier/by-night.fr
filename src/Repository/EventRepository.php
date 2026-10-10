@@ -1263,6 +1263,31 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * Every event of these venues, past, draft or duplicate alike: what a merge of places moves (PlaceMerger).
+     *
+     * @param list<int> $placeIds
+     *
+     * @return array<int, int> number of events, by place id (the places without any left out)
+     */
+    public function countByPlaces(array $placeIds): array
+    {
+        if ([] === $placeIds) {
+            return [];
+        }
+
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('IDENTITY(e.place) AS place', 'COUNT(e.id) AS events')
+            ->where('e.place IN (:places)')
+            ->setParameter('places', $placeIds)
+            ->groupBy('e.place')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(intval(...), array_column($rows, 'events', 'place'));
+    }
+
+    /**
      * @param list<int> $ids
      *
      * @return array<int, list<string>> the types stored on these events, by id (the events without any left out):
