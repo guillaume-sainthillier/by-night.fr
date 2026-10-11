@@ -123,7 +123,7 @@
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
         "friendsofphp/php-cs-fixer": "^3.95.27",
         "phpstan/extension-installer": "^1.4.3",
-        "phpstan/phpstan": "^2.3.0",
+        "phpstan/phpstan": "^2.3.1",
         "phpstan/phpstan-doctrine": "^2.0.28",
         "phpstan/phpstan-strict-rules": "^2.1.0",
         "phpstan/phpstan-symfony": "^2.1.0",
