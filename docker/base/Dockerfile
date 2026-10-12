@@ -50,8 +50,10 @@ RUN apk add --no-cache --virtual .mjml-build-deps \
 RUN curl -fsSL https://github.com/php/pie/releases/download/1.4.5/pie.phar -o /usr/local/bin/pie \
     && chmod +x /usr/local/bin/pie
 # No prebuilt .so exists for php8.5 + musl + ZTS, so PIE compiles it from source.
+# 1.2.2 at least: earlier releases abort FrankenPHP on POST /frankenphp/workers/restart and opcache_reset()
+# (ext-php-rs < 0.16.2 panics when MINIT runs again) and on any MJML render error.
 RUN --mount=type=cache,target=/root/.cargo/registry \
-    pie install kcs/mjml:^1.2
+    pie install kcs/mjml:^1.2.2
 
 # ── Runtime base ──
 FROM php_ext
