@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.27-labs
+#syntax=docker/dockerfile:1.28-labs
 
 # Versions
 # The runtime base (PHP extensions + the MJML extension) is built separately, see
