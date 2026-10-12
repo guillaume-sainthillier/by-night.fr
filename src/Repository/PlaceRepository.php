@@ -346,8 +346,8 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The place a merged place's slug now leads to (see PlaceLegacySlug), in the location of its agenda page: places
-     * are merged within a city, and a slug is only unique there.
+     * The place a merged place's slug now leads to (see PlaceLegacySlug), from the location of its agenda page: a slug
+     * is only unique in a city (or among the city-less places of a country).
      */
     public function findOneByLegacySlug(string $slug, Location $location): ?Place
     {
@@ -366,9 +366,9 @@ final class PlaceRepository extends ServiceEntityRepository implements DtoFindab
             ->setMaxResults(1);
 
         if (null !== $city) {
-            $queryBuilder->andWhere('p.city = :city')->setParameter('city', $city->getId());
+            $queryBuilder->andWhere('l.city = :city')->setParameter('city', $city->getId());
         } else {
-            $queryBuilder->andWhere('p.country = :country AND p.city IS NULL')->setParameter('country', $country?->getId());
+            $queryBuilder->andWhere('l.country = :country AND l.city IS NULL')->setParameter('country', $country?->getId());
         }
 
         /* @var Place|null */

@@ -25,9 +25,13 @@ final class PlaceLegacySlugFactory extends PersistentObjectFactory
 
     protected function defaults(): array
     {
+        $country = CountryFactory::new();
+
         return [
             'place' => PlaceFactory::new(),
             'slug' => self::faker()->unique()->slug(3),
+            'city' => CityFactory::new(['country' => $country]),
+            'country' => $country,
         ];
     }
 }
