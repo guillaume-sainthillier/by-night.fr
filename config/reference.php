@@ -1799,6 +1799,41 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         in_app_exclude?: list<scalar|Param|null>,
  *         in_app_include?: list<scalar|Param|null>,
  *         send_default_pii?: bool|Param,
+ *         data_collection?: array{ // Opts into the data collection options, which replace legacy options such as "send_default_pii". An empty array applies the default of every option, null keeps the legacy options even if an earlier config file opted in.
+ *             user_info?: bool|Param,
+ *             cookies?: array{
+ *                 mode?: "off"|"denyList"|"allowList"|Param,
+ *                 terms?: list<scalar|Param|null>,
+ *             },
+ *             http_headers?: array{
+ *                 request?: array{
+ *                     mode?: "off"|"denyList"|"allowList"|Param,
+ *                     terms?: list<scalar|Param|null>,
+ *                 },
+ *                 response?: array{
+ *                     mode?: "off"|"denyList"|"allowList"|Param,
+ *                     terms?: list<scalar|Param|null>,
+ *                 },
+ *                 ...<string, mixed>
+ *             },
+ *             http_bodies?: list<"incomingRequest"|"outgoingRequest"|"incomingResponse"|"outgoingResponse"|Param>,
+ *             url_query_params?: array{
+ *                 mode?: "off"|"denyList"|"allowList"|Param,
+ *                 terms?: list<scalar|Param|null>,
+ *             },
+ *             gen_ai?: array{
+ *                 inputs?: bool|Param,
+ *                 outputs?: bool|Param,
+ *             },
+ *             database_query_data?: bool|Param,
+ *             queues?: bool|Param,
+ *             stack_frame_variables?: bool|array{
+ *                 mode?: "off"|"denyList"|"allowList"|Param,
+ *                 terms?: list<scalar|Param|null>,
+ *             },
+ *             frame_context_lines?: int|Param,
+ *             ...<string, mixed>
+ *         },
  *         max_value_length?: int|Param,
  *         transport?: scalar|Param|null,
  *         http_client?: scalar|Param|null,
@@ -2038,10 +2073,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type BabdevPagerfantaConfig = array{
  *     default_view?: scalar|Param|null, // Default: "default"
+ *     default_sequential_view?: scalar|Param|null, // The view to render pagers which the default view cannot render (i.e. cursor pagers with a numbered view), defaults to the "<default_view>_sequential" view when one exists // Default: null
  *     default_twig_template?: scalar|Param|null, // Default: "@BabDevPagerfanta/default.html.twig"
  *     exceptions_strategy?: array{
  *         out_of_range_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
  *         not_valid_current_page?: "to_http_not_found"|"custom"|Param, // Default: "to_http_not_found"
+ *         invalid_cursor?: "to_http_bad_request"|"custom"|Param, // Default: "to_http_bad_request"
  *     },
  * }
  * @psalm-type HulutiBreadcrumbsConfig = array{
