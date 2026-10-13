@@ -66,6 +66,9 @@ final class FeedbackTest extends AppApiTestCase
 
         $email = self::getMailerMessage();
         self::assertEmailHeaderSame($email, 'Subject', 'Feedback utilisateur - By Night');
+        self::assertEmailAddressContains($email, 'To', 'support@by-night.fr');
+        self::assertEmailAddressContains($email, 'Bcc', 'bcc@example.com');
+        self::assertEmailAddressContains($email, 'Reply-To', 'testuser@example.com');
         self::assertEmailHtmlBodyContains($email, 'testuser');
         self::assertEmailHtmlBodyContains($email, 'testuser@example.com');
         self::assertEmailHtmlBodyContains($email, 'This is my feedback message for email test.');

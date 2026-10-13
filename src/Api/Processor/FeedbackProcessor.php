@@ -17,7 +17,6 @@ use App\Api\Model\FeedbackOutput;
 use App\Entity\User;
 use App\Manager\MailerManager;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * @implements ProcessorInterface<FeedbackInput, FeedbackOutput>
@@ -27,8 +26,6 @@ final readonly class FeedbackProcessor implements ProcessorInterface
     public function __construct(
         private MailerManager $mailerManager,
         private Security $security,
-        #[Autowire(param: 'feedback_recipient_email')]
-        private string $feedbackRecipientEmail,
     ) {
     }
 
@@ -37,7 +34,7 @@ final readonly class FeedbackProcessor implements ProcessorInterface
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->mailerManager->sendFeedbackEmail($user, $data->message, $this->feedbackRecipientEmail);
+        $this->mailerManager->sendFeedbackEmail($user, $data->message);
 
         return new FeedbackOutput(
             success: true,
