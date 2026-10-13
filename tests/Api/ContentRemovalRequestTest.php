@@ -63,6 +63,9 @@ final class ContentRemovalRequestTest extends AppApiTestCase
 
         $email = self::getMailerMessage();
         self::assertEmailHeaderSame($email, 'Subject', 'Demande de suppression de contenu - By Night');
+        self::assertEmailAddressContains($email, 'To', 'support@by-night.fr');
+        self::assertEmailAddressContains($email, 'Bcc', 'bcc@example.com');
+        self::assertEmailAddressContains($email, 'Reply-To', 'copyright-owner@example.com');
         self::assertEmailHtmlBodyContains($email, 'Test Event for Email');
         self::assertEmailHtmlBodyContains($email, 'copyright-owner@example.com');
         self::assertEmailHtmlBodyContains($email, 'This event contains my copyrighted content');

@@ -35,8 +35,6 @@ final readonly class ContentRemovalRequestProcessor implements ProcessorInterfac
         private MailerManager $mailerManager,
         private EntityManagerInterface $entityManager,
         private ContentRemovalRequestRepository $contentRemovalRequestRepository,
-        #[Autowire(param: 'content_removal_recipient_email')]
-        private string $contentRemovalRecipientEmail,
         #[Autowire(service: 'limiter.content_removal_request')]
         private RateLimiterFactoryInterface $limiterFactory,
     ) {
@@ -77,10 +75,7 @@ final readonly class ContentRemovalRequestProcessor implements ProcessorInterfac
         $this->entityManager->persist($contentRemovalRequest);
         $this->entityManager->flush();
 
-        $this->mailerManager->sendContentRemovalRequestEmail(
-            $contentRemovalRequest,
-            $this->contentRemovalRecipientEmail,
-        );
+        $this->mailerManager->sendContentRemovalRequestEmail($contentRemovalRequest);
 
         return new ContentRemovalRequestOutput(success: true, message: self::SENT);
     }

@@ -14,6 +14,7 @@ use App\Entity\ContentRemovalRequest;
 use App\Entity\User;
 use App\Enum\ContentRemovalType;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -22,9 +23,13 @@ use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 final readonly class MailerManager
 {
+    private const string SUPPORT_EMAIL = 'support@by-night.fr';
+
     public function __construct(
         private MailerInterface $mailer,
         private UrlGeneratorInterface $urlGenerator,
+        #[Autowire(env: 'SUPPORT_BCC_EMAIL')]
+        private string $supportBccEmail,
     ) {
     }
 
@@ -50,10 +55,9 @@ final readonly class MailerManager
         $this->sendMail($email);
     }
 
-    public function sendFeedbackEmail(User $user, string $message, string $recipientEmail): void
+    public function sendFeedbackEmail(User $user, string $message): void
     {
-        $email = $this->createEmail('email/feedback')
-            ->to($recipientEmail)
+        $email = $this->createSupportEmail('email/feedback', $user->getEmail())
             ->subject('Feedback utilisateur - By Night')
             ->context([
                 'user' => $user,
@@ -63,10 +67,8 @@ final readonly class MailerManager
         $this->sendMail($email);
     }
 
-    public function sendContentRemovalRequestEmail(
-        ContentRemovalRequest $contentRemovalRequest,
-        string $recipientEmail,
-    ): void {
+    public function sendContentRemovalRequestEmail(ContentRemovalRequest $contentRemovalRequest): void
+    {
         $id = $contentRemovalRequest->getId();
 
         $context = [
@@ -83,9 +85,7 @@ final readonly class MailerManager
             $context['removeImagesUrl'] = $this->generateUrl('admin_content_removal_action_remove_images', ['id' => $id]);
         }
 
-        $email = $this->createEmail('email/content-removal-request')
-            ->to($recipientEmail)
-            ->replyTo($contentRemovalRequest->getEmail())
+        $email = $this->createSupportEmail('email/content-removal-request', $contentRemovalRequest->getEmail())
             ->subject('Demande de suppression de contenu - By Night')
             ->context($context);
 
@@ -148,6 +148,24 @@ final readonly class MailerManager
             ->textTemplate($template . '.txt.twig');
     }
 
+    /**
+     * An e-mail to the team: answering it writes back to the member or visitor who sent it.
+     */
+    private function createSupportEmail(string $template, ?string $replyTo): TemplatedEmail
+    {
+        $email = $this->createEmail($template)->to(self::SUPPORT_EMAIL);
+
+        if ('' !== $this->supportBccEmail) {
+            $email->bcc($this->supportBccEmail);
+        }
+
+        if (null !== $replyTo) {
+            $email->replyTo($replyTo);
+        }
+
+        return $email;
+    }
+
     private function generateUrl(string $route, array $params): string
     {
         return $this->urlGenerator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
@@ -155,7 +173,7 @@ final readonly class MailerManager
 
     private function sendMail(Email $email): void
     {
-        $email->from(new Address('support@by-night.fr', 'By Night'));
+        $email->from(new Address(self::SUPPORT_EMAIL, 'By Night'));
         $this->mailer->send($email);
     }
 }
