@@ -16,6 +16,7 @@ use App\Enum\EventStatus;
 use App\Form\DataTransformer\TagDtoArrayTransformer;
 use App\Form\DataTransformer\TagDtoTransformer;
 use App\Handler\DoctrineEventHandler;
+use App\Picture\ImageFormats;
 use App\Utils\HoursLabel;
 use Override;
 use Symfony\Component\Form\AbstractType;
@@ -69,6 +70,7 @@ final class EventType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'label' => 'Affiche / Flyer',
                 'required' => false,
+                'attr' => ['data-max-size' => ImageFormats::MAX_SIZE],
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
             ])
             // The default slot of the dates: the dates without times of their own take it (onSubmit)

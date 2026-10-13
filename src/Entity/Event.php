@@ -232,7 +232,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
-    #[Assert\File(maxSize: '6M')]
+    #[Assert\File(maxSize: ImageFormats::MAX_SIZE)]
     #[Assert\Image(mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $imageFile = null;
 
@@ -259,7 +259,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
-    #[Assert\Image(maxSize: '6M', mimeTypes: ImageFormats::MIME_TYPES)]
+    #[Assert\Image(maxSize: ImageFormats::MAX_SIZE, mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $imageSystemFile = null;
 
     #[ORM\Embedded(class: EmbeddedFile::class)]

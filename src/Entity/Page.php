@@ -64,7 +64,7 @@ class Page implements Stringable
 
     #[Vich\UploadableField(mapping: 'page_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
-    #[Assert\File(maxSize: '6M')]
+    #[Assert\File(maxSize: ImageFormats::MAX_SIZE)]
     #[Assert\Image(mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $imageFile = null;
 

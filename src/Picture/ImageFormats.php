@@ -29,6 +29,13 @@ final class ImageFormats
 
     public const array MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
 
+    /**
+     * The weight of an image, in bytes ("6M" for the File constraint). The forms also give it to their file field
+     * (data-max-size): the browser refuses a heavier one before sending the form, since a request over PHP's
+     * post_max_size reaches the form empty and the member loses everything filled in.
+     */
+    public const int MAX_SIZE = 6_000_000;
+
     public static function getExtension(?string $mimeType): ?string
     {
         return self::EXTENSIONS[$mimeType] ?? null;

@@ -11,6 +11,7 @@
 namespace App\Form\Type;
 
 use App\Entity\User;
+use App\Picture\ImageFormats;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -64,6 +65,7 @@ final class ProfileFormType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
+                'attr' => ['data-max-size' => ImageFormats::MAX_SIZE],
                 'delete_label' => "Supprimer l'image de profil",
                 'layout' => 'horizontal',
                 'help' => "Pour un meilleur rendu, préférez une image au format 1:1 (ex.\u{a0}: 1024\u{a0}×\u{a0}1024 pixels).",
