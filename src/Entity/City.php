@@ -62,7 +62,7 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
 
     #[Vich\UploadableField(mapping: 'city_image', fileNameProperty: 'heroImage.name', size: 'heroImage.size', mimeType: 'heroImage.mimeType', originalName: 'heroImage.originalName', dimensions: 'heroImage.dimensions')]
     #[Ignore]
-    #[Assert\File(maxSize: '6M')]
+    #[Assert\File(maxSize: ImageFormats::MAX_SIZE)]
     #[Assert\Image(mimeTypes: ImageFormats::MIME_TYPES)]
     private ?File $heroImageFile = null;
 

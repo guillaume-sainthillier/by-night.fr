@@ -18,6 +18,7 @@ import duplicateCheck from '@/js/listeners/duplicate-check'
 import emailVerify from '@/js/listeners/email-verify'
 import eventPublish from '@/js/listeners/event-publish'
 import feedback from '@/js/listeners/feedback'
+import fileMaxSize from '@/js/listeners/file-max-size'
 import filteredLink from '@/js/listeners/filtered-link'
 import formCollection from '@/js/listeners/form-collection'
 import formConfirm from '@/js/listeners/form-confirm'
@@ -89,6 +90,7 @@ class App {
             emailVerify,
             eventPublish,
             feedback,
+            fileMaxSize,
             filteredLink,
             formCollection,
             formConfirm,

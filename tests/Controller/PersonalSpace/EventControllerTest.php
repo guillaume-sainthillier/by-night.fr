@@ -20,6 +20,7 @@ use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\RecountUpcomingEvents;
 use App\MessageHandler\RecountUpcomingEventsHandler;
+use App\Picture\ImageFormats;
 use App\SearchRepository\EventElasticaRepository;
 use App\Tests\AppWebTestCase;
 use ArrayObject;
@@ -28,6 +29,7 @@ use Elastica\Query;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\DomCrawler\Field\FileFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
@@ -253,6 +255,46 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::find(['name' => 'Soirée swing au Bikini']);
         self::assertSame($user->getId(), $event->getUser()?->getId());
         self::assertFalse($event->isDraft());
+    }
+
+    /**
+     * The browser refuses a heavier poster before sending the form (assets/js/listeners/file-max-size.js): sent, it
+     * went over post_max_size and the member lost the whole form.
+     */
+    public function testThePosterFieldGivesTheBrowserTheMaximumWeight(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+
+        $crawler = $client->request('GET', '/espace-perso/nouvelle-soiree');
+
+        self::assertResponseIsSuccessful();
+        self::assertSame(
+            (string) ImageFormats::MAX_SIZE,
+            $crawler->filter('form[name="app_event"] input[type="file"][name="app_event[imageFile][file]"]')->attr('data-max-size'),
+        );
+    }
+
+    /**
+     * A poster over upload_max_filesize (docker/php.ini) reaches the form without its file: the form says why and
+     * keeps what the member filled in.
+     */
+    public function testAPosterTooHeavyForPhpKeepsTheForm(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $form = $this->newEventForm($client, 'Soirée swing au Bikini');
+        $poster = $form['app_event[imageFile][file]'];
+        self::assertInstanceOf(FileFormField::class, $poster);
+        $poster->setErrorCode(\UPLOAD_ERR_INI_SIZE);
+
+        $crawler = $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSelectorTextContains('form[name="app_event"]', 'Le fichier est trop volumineux');
+        self::assertSame('Soirée swing au Bikini', $crawler->filter('input[name="app_event[name]"]')->attr('value'));
+        self::assertSame(0, EventFactory::count(['name' => 'Soirée swing au Bikini']));
     }
 
     /**
