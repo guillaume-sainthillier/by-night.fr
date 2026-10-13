@@ -31,8 +31,8 @@ abstract class AbstractController extends BaseController
     }
 
     /**
-     * Renders an HTML fragment fetched by a widget's "Plus" button: it is not a page, so
-     * search engines must not index it.
+     * Renders what a widget's "Plus" button fetches (or the page the same URL shows outside
+     * AJAX): search engines must not index it.
      *
      * @param array<string, mixed> $parameters
      */

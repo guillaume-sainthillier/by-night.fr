@@ -1,11 +1,13 @@
 {# A page of the "Prochainement au même endroit" / "Le même jour" sections: their first page inline, the next ones as
-   fragments appended by Widgets.js, which moves the .more-content block under the cards #}
+   fragments appended by Widgets.js, which moves the .more-content block under the cards. more: false leaves that block
+   out (the page of its own, location/widget/events-page.html.twig, has links instead), and columnClass replaces the
+   width of the cards, sized for the sideways row of the event page on a phone #}
 {% for event in eventsData.events %}
-    <div class="col-10 col-sm-7 col-md-6 col-lg-3 scroll-item">
+    <div class="{{ columnClass ?? 'col-10 col-sm-7 col-md-6 col-lg-3' }} scroll-item">
         <twig:Event:Card event="{{ event }}" />
     </div>
 {% endfor %}
-{% if eventsData.hasNextLink %}
+{% if eventsData.hasNextLink and (more ?? true) %}
     {% set shown = eventsData.current %}
     {% set next = min(eventsData.paginator.maxPerPage, eventsData.count - shown) %}
     {# A button rather than a link: the fragment URL feeds the widget and must not be crawled #}
