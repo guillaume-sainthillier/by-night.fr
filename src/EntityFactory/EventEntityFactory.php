@@ -51,7 +51,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         $entity->setExternalOrigin($dto->externalOrigin);
         $entity->setIdentityHash($this->contentHasher->identity($dto));
 
-        $entity->setExternalUpdatedAt(null === $dto->externalUpdatedAt ? null : DateTimeImmutable::createFromInterface($dto->externalUpdatedAt));
+        $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
 
         // Sync timesheets from DTO. Sessions are indexed and the search listener only
         // watches the event row: a timesheet change alone must still mark it updated.
@@ -59,10 +59,10 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             $entity->setUpdatedAt(new DateTimeImmutable());
         }
 
-        $entity->setStartDate(null === $dto->startDate ? null : DateTimeImmutable::createFromInterface($dto->startDate));
-        $entity->setEndDate(null === $dto->endDate ? null : DateTimeImmutable::createFromInterface($dto->endDate));
-        $entity->setStartTime(null === $dto->startTime ? null : DateTimeImmutable::createFromInterface($dto->startTime));
-        $entity->setEndTime(null === $dto->endTime ? null : DateTimeImmutable::createFromInterface($dto->endTime));
+        $entity->setStartDate($dto->startDate);
+        $entity->setEndDate($dto->endDate);
+        $entity->setStartTime($dto->startTime);
+        $entity->setEndTime($dto->endTime);
 
         $entity->setAddress($dto->address);
         if (null !== $dto->createdAt) {
@@ -223,11 +223,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         /** @var array<string, true> $wantedKeys */
         $wantedKeys = [];
         foreach ($dto->timesheets as $timesheetDto) {
-            $startAt = null === $timesheetDto->startAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->startAt);
-            $endAt = null === $timesheetDto->endAt ? null : DateTimeImmutable::createFromInterface($timesheetDto->endAt);
-            $startTime = null === $timesheetDto->startTime ? null : DateTimeImmutable::createFromInterface($timesheetDto->startTime);
-            $endTime = null === $timesheetDto->endTime ? null : DateTimeImmutable::createFromInterface($timesheetDto->endTime);
-            $key = ObjectKey::timesheet($startAt, $endAt, $startTime, $endTime, $timesheetDto->hours);
+            $key = ObjectKey::timesheet($timesheetDto->startAt, $timesheetDto->endAt, $timesheetDto->startTime, $timesheetDto->endTime, $timesheetDto->hours);
             $wantedKeys[$key] = true;
 
             if (isset($existingKeys[$key])) {
@@ -235,10 +231,10 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
             }
 
             $timesheet = new EventTimesheet();
-            $timesheet->setStartAt($startAt);
-            $timesheet->setEndAt($endAt);
-            $timesheet->setStartTime($startTime);
-            $timesheet->setEndTime($endTime);
+            $timesheet->setStartAt($timesheetDto->startAt);
+            $timesheet->setEndAt($timesheetDto->endAt);
+            $timesheet->setStartTime($timesheetDto->startTime);
+            $timesheet->setEndTime($timesheetDto->endTime);
             $timesheet->setHours($timesheetDto->hours);
             $entity->addTimesheet($timesheet);
             $existingKeys[$key] = true;

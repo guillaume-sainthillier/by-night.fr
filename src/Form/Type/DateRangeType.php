@@ -109,7 +109,7 @@ final class DateRangeType extends AbstractType
             'placeholder' => null,
             'single_date_picker' => false,
             // DateType options (passed through to child fields)
-            'input' => 'datetime',
+            'input' => 'datetime_immutable',
             'model_timezone' => null,
             'view_timezone' => null,
         ]);

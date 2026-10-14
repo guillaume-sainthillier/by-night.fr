@@ -17,7 +17,6 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Enum\EventStatus;
 use App\Parser\AbstractParser;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use Override;
@@ -53,8 +52,8 @@ final class BikiniParser extends AbstractParser
     private function arrayToDto(array $data): object
     {
         // Timestamps: the times are those of the venue, not UTC (an end equal to the start is dropped by the Cleaner)
-        $startDate = DateTime::createFromFormat('U', (string) $data['startTime'])->setTimezone(new DateTimeZone('Europe/Paris'));
-        $endDate = DateTime::createFromFormat('U', (string) $data['endTime'])->setTimezone(new DateTimeZone('Europe/Paris'));
+        $startDate = DateTimeImmutable::createFromFormat('U', (string) $data['startTime'])->setTimezone(new DateTimeZone('Europe/Paris'));
+        $endDate = DateTimeImmutable::createFromFormat('U', (string) $data['endTime'])->setTimezone(new DateTimeZone('Europe/Paris'));
 
         $placeParts = explode("\n", (string) $data['place']['address']);
         $placeParts = array_map(trim(...), $placeParts);
