@@ -1,0 +1,77 @@
+{% extends app.request.xmlHttpRequest ? 'location/hinclude/details-events.html.twig' : 'layouts/full.html.twig' %}
+{# A next page of the "Prochainement au même endroit" (widget: 'next') / "Le même jour" (widget: 'similar') sections.
+   Widgets.js fetches it in AJAX and gets the cards alone; opened as is (an old link, a crawler), it is a page of its own,
+   kept out of the index: its events have their own pages #}
+{% set eventPath = path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
+{% set heading = 'next' == widget ? 'Prochainement ' ~ event.placeName|at_place : 'Le même jour ' ~ location.atName %}
+{% set page = eventsData ? eventsData.page : 1 %}
+{% set route = app.request.attributes.get('_route') %}
+{% set routeParams = app.request.attributes.get('_route_params') %}
+
+{% block title heading ~ (page > 1 ? ' - Page ' ~ page : '') %}
+
+{% block meta_robots %}
+    <meta name="robots" content="noindex, follow">
+{% endblock %}
+
+{% block breadcrumb %}
+    {% if location.isCountry %}
+        {% do menu.addItem(location.country.displayName, url('app_location_index', {location: location.country.slug})) %}
+    {% else %}
+        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {location: location.city.country.slug})) %}
+        {% do menu.addItem('Sortir ' ~ location.atName, url('app_location_index', {location: location.city.slug})) %}
+    {% endif %}
+    {% do menu.addItem(event.name, url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})) %}
+    {% do menu.addItem(heading, url(route, routeParams)) %}
+{% endblock %}
+
+{% block body %}
+    <twig:Section>
+        <twig:block name="header">
+            <div class="row align-items-md-end g-3 mb-4">
+                <div class="col-md">
+                    {% if 'next' == widget %}
+                        <twig:Section:Eyebrow icon="lucide:map-pin">Au même endroit</twig:Section:Eyebrow>
+                    {% else %}
+                        <twig:Section:Eyebrow icon="lucide:sparkles">Poursuivez vos sorties</twig:Section:Eyebrow>
+                    {% endif %}
+                    <h1 class="h1 text-start mb-0">{{ heading }}</h1>
+                </div>
+                <div class="col-md-5 col-lg-4 text-md-end">
+                    <a class="link-primary fw-semibold" href="{{ eventPath }}">
+                        <twig:Icon name="lucide:arrow-left" />
+                        {{ event.name }}
+                    </a>
+                </div>
+            </div>
+        </twig:block>
+        {% if eventsData and eventsData.count > 0 %}
+            <div class="row row-cards">
+                {{ include('location/hinclude/details-events.html.twig', {eventsData: eventsData, more: false, columnClass: 'col-12 col-sm-6 col-lg-3'}) }}
+            </div>
+            {# Links rather than the button of the event page, whose script only runs there; nofollow, as these pages are
+               not indexed #}
+            {% if page > 1 or eventsData.hasNextLink %}
+                <div class="d-flex justify-content-between gap-2 mt-4">
+                    {% if page > 1 %}
+                        <a class="btn" rel="nofollow" href="{{ path(route, routeParams|merge({page: page - 1})) }}">
+                            <twig:Icon name="lucide:chevron-left" />
+                            Précédentes
+                        </a>
+                    {% endif %}
+                    {% if eventsData.hasNextLink %}
+                        <a class="btn btn-primary ms-auto" rel="nofollow" href="{{ eventsData.hasNextLink }}">
+                            Suivantes
+                            <twig:Icon name="lucide:chevron-right" />
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info mb-0">
+                Pas d'autre sortie à voir ici pour l'instant.
+                <a href="{{ eventPath }}">Retour à l'événement</a>
+            </div>
+        {% endif %}
+    </twig:Section>
+{% endblock %}

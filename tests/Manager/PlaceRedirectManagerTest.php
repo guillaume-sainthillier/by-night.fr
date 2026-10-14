@@ -88,6 +88,24 @@ final class PlaceRedirectManagerTest extends AppKernelTestCase
         );
     }
 
+    public function testTheNextPagesOfTheLegacyUrlLeadToThePlaceItsQueryNames(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        PlaceFactory::createOne(['slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+
+        // "/toulouse/agenda/sortir-a//2?slug=le-bikini" arrives as "/toulouse/agenda/sortir-a/2?slug=le-bikini"
+        $this->assertRedirects(
+            '/toulouse/agenda/sortir-a/le-bikini',
+            Response::HTTP_MOVED_PERMANENTLY,
+            fn () => $this->createManager('/?slug=le-bikini')->getPlace('2', $this->locationOf($toulouse)),
+        );
+        $this->assertRedirects(
+            '/toulouse',
+            Response::HTTP_FOUND,
+            fn () => $this->createManager('/?slug=nowhere')->getPlace('2', $this->locationOf($toulouse)),
+        );
+    }
+
     /**
      * @param callable(): mixed $getPlace
      */

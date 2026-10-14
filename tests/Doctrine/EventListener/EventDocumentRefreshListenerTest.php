@@ -75,7 +75,9 @@ final class EventDocumentRefreshListenerTest extends AppKernelTestCase
         $eventId = (int) $timesheet->getEvent()?->getId();
         $this->transport()->reset();
 
-        $timesheet->setStartAt(new DateTimeImmutable('2026-12-24'))->setEndAt(new DateTimeImmutable('2026-12-24'));
+        // A day after its own: a fixed date is the factory's random one now and then (Faker seed 499442), a change of nothing
+        $day = $timesheet->getStartAt()?->modify('+1 day');
+        $timesheet->setStartAt($day)->setEndAt($day);
         save($timesheet);
         self::assertEquals([new RefreshEventDocuments(eventIds: [$eventId])], $this->sentRefreshes());
 

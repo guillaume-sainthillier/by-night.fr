@@ -42,14 +42,20 @@ final readonly class PlaceRedirectManager
         // "/agenda/sortir-a" without a place is not a page of its own. The sitemap used to link it with the place as
         // "?slug=…", so that parameter still leads to the place's own URL, in the place's own city
         if (null === $placeSlug) {
-            $legacySlug = $query?->getString('slug') ?? '';
-            $place = '' !== $legacySlug ? $this->findPlace($legacySlug, $location) : null;
+            $legacyPlace = $this->findLegacyPlace($location);
 
-            throw new RedirectException(null === $place ? $this->getLocationUrl($location) : $this->router->generate('app_agenda_by_place', ['location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()]));
+            throw new RedirectException(null === $legacyPlace ? $this->getLocationUrl($location) : $this->getPlaceUrl($legacyPlace));
         }
 
         $place = $this->findPlace($placeSlug, $location);
         if (null === $place) {
+            // Its next pages were "/agenda/sortir-a//2?slug=…": the empty segment is merged before the request gets here,
+            // which leaves the page number as the place's slug
+            $legacyPlace = $this->findLegacyPlace($location);
+            if (null !== $legacyPlace) {
+                throw new RedirectException($this->getPlaceUrl($legacyPlace));
+            }
+
             throw new RedirectException($this->getLocationUrl($location), Response::HTTP_FOUND);
         }
 
@@ -80,6 +86,21 @@ final readonly class PlaceRedirectManager
         return $place
             ?? $this->placeRepository->findOneByLegacySlug($slug, $location)
             ?? $this->placeRepository->findOneBy(['slug' => $slug]);
+    }
+
+    /**
+     * The place the legacy "?slug=…" parameter names, if any.
+     */
+    private function findLegacyPlace(Location $location): ?Place
+    {
+        $legacySlug = $this->requestStack->getCurrentRequest()?->query->getString('slug') ?? '';
+
+        return '' !== $legacySlug ? $this->findPlace($legacySlug, $location) : null;
+    }
+
+    private function getPlaceUrl(Place $place): string
+    {
+        return $this->router->generate('app_agenda_by_place', ['location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()]);
     }
 
     private function getLocationUrl(Location $location): string
