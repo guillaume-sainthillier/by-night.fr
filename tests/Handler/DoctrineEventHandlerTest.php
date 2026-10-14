@@ -36,7 +36,6 @@ use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Tests\AppKernelTestCase;
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Override;
@@ -71,8 +70,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'Test Concert 2025';
         $dto->description = 'This is a test concert happening in 2025';
-        $dto->startDate = new DateTime('+1 week');
-        $dto->endDate = new DateTime('+1 week +3 hours');
+        $dto->startDate = new DateTimeImmutable('+1 week');
+        $dto->endDate = new DateTimeImmutable('+1 week +3 hours');
         $dto->externalId = 'test-event-001';
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
@@ -119,8 +118,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             'externalOrigin' => 'test-parser',
             'place' => $place,
             'user' => $user,
-            'startDate' => new DateTime('+1 week'),
-            'endDate' => new DateTime('+1 week +2 hours'),
+            'startDate' => new DateTimeImmutable('+1 week'),
+            'endDate' => new DateTimeImmutable('+1 week +2 hours'),
         ]);
 
         $originalId = $existingEvent->getId();
@@ -131,8 +130,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->description = 'Updated description with more details';
         $dto->externalId = 'merge-test-001';
         $dto->externalOrigin = 'test-parser';
-        $dto->startDate = new DateTime('+1 week');
-        $dto->endDate = new DateTime('+1 week +3 hours');
+        $dto->startDate = new DateTimeImmutable('+1 week');
+        $dto->endDate = new DateTimeImmutable('+1 week +3 hours');
         $dto->parserVersion = '1.0';
 
         $placeDto = new PlaceDto();
@@ -159,8 +158,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto1 = new EventDto();
         $dto1->name = 'Duplicate Test Event';
         $dto1->description = 'This event should not be duplicated';
-        $dto1->startDate = new DateTime('+2 weeks');
-        $dto1->endDate = new DateTime('+2 weeks +1 hour');
+        $dto1->startDate = new DateTimeImmutable('+2 weeks');
+        $dto1->endDate = new DateTimeImmutable('+2 weeks +1 hour');
         $dto1->externalId = 'duplicate-test-001';
         $dto1->externalOrigin = 'test-parser';
         $dto1->parserVersion = '1.0';
@@ -178,8 +177,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto2 = new EventDto();
         $dto2->name = 'Duplicate Test Event Modified';
         $dto2->description = 'This is a modified version';
-        $dto2->startDate = new DateTime('+2 weeks');
-        $dto2->endDate = new DateTime('+2 weeks +2 hours');
+        $dto2->startDate = new DateTimeImmutable('+2 weeks');
+        $dto2->endDate = new DateTimeImmutable('+2 weeks +2 hours');
         $dto2->externalId = 'duplicate-test-001';
         $dto2->externalOrigin = 'test-parser';
         $dto2->parserVersion = '1.0';
@@ -211,8 +210,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $dto = new EventDto();
             $dto->name = 'Event Number ' . $i;
             $dto->description = 'Description for event ' . $i;
-            $dto->startDate = new DateTime(\sprintf('+%d weeks', $i));
-            $dto->endDate = new DateTime(\sprintf('+%d weeks +1 hour', $i));
+            $dto->startDate = new DateTimeImmutable(\sprintf('+%d weeks', $i));
+            $dto->endDate = new DateTimeImmutable(\sprintf('+%d weeks +1 hour', $i));
             $dto->externalId = 'multi-test-00' . $i;
             $dto->externalOrigin = 'test-parser';
             $dto->parserVersion = '1.0';
@@ -247,8 +246,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'AB'; // Too short (minimum 3 characters for non-affiliates)
         $dto->description = 'Short'; // Too short (minimum 10 characters)
-        $dto->startDate = new DateTime('+1 week');
-        $dto->endDate = new DateTime('+1 week +1 hour');
+        $dto->startDate = new DateTimeImmutable('+1 week');
+        $dto->endDate = new DateTimeImmutable('+1 week +1 hour');
         $dto->externalId = 'invalid-test-001';
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
@@ -274,8 +273,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'Concert at MSG';
         $dto->description = 'A concert at Madison Square Garden';
-        $dto->startDate = new DateTime('+1 month');
-        $dto->endDate = new DateTime('+1 month +3 hours');
+        $dto->startDate = new DateTimeImmutable('+1 month');
+        $dto->endDate = new DateTimeImmutable('+1 month +3 hours');
         $dto->externalId = 'place-assoc-test-001';
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
@@ -307,8 +306,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $dto = new EventDto();
             $dto->name = 'Batch Event ' . $i;
             $dto->description = \sprintf('This is batch event number %d with sufficient description length', $i);
-            $dto->startDate = new DateTime(\sprintf('+%d days', $i));
-            $dto->endDate = new DateTime(\sprintf('+%d days +2 hours', $i));
+            $dto->startDate = new DateTimeImmutable(\sprintf('+%d days', $i));
+            $dto->endDate = new DateTimeImmutable(\sprintf('+%d days +2 hours', $i));
             $dto->externalId = \sprintf('batch-test-%03d', $i);
             $dto->externalOrigin = 'test-parser';
             $dto->parserVersion = '1.0';
@@ -343,8 +342,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'Event with Contacts';
         $dto->description = 'This event has all contact information filled';
-        $dto->startDate = new DateTime('+3 weeks');
-        $dto->endDate = new DateTime('+3 weeks +4 hours');
+        $dto->startDate = new DateTimeImmutable('+3 weeks');
+        $dto->endDate = new DateTimeImmutable('+3 weeks +4 hours');
         $dto->externalId = 'contacts-test-001';
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
@@ -376,8 +375,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'Timestamp Test Event';
         $dto->description = 'Testing that timestamps are properly set on creation';
-        $dto->startDate = new DateTime('+4 weeks');
-        $dto->endDate = new DateTime('+4 weeks +1 hour');
+        $dto->startDate = new DateTimeImmutable('+4 weeks');
+        $dto->endDate = new DateTimeImmutable('+4 weeks +1 hour');
         $dto->externalId = 'timestamp-test-001';
         $dto->externalOrigin = 'test-parser';
         $dto->parserVersion = '1.0';
@@ -389,9 +388,9 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->place = $this->inFrance($placeDto);
 
         // Act: Insert the event
-        $beforeInsert = new DateTime();
+        $beforeInsert = new DateTimeImmutable();
         $this->handler->handleOne($dto);
-        $afterInsert = new DateTime();
+        $afterInsert = new DateTimeImmutable();
 
         // Assert: Verify timestamps are within expected range
         $event = $this->eventRepository->findOneBy(['externalId' => 'timestamp-test-001']);
@@ -417,25 +416,25 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         // Create timesheets
         $timesheet1 = new EventTimesheetDto();
-        $timesheet1->startAt = new DateTime('2024-06-15 10:00:00');
-        $timesheet1->endAt = new DateTime('2024-06-15 18:00:00');
+        $timesheet1->startAt = new DateTimeImmutable('2024-06-15 10:00:00');
+        $timesheet1->endAt = new DateTimeImmutable('2024-06-15 18:00:00');
         $timesheet1->hours = 'De 10h à 18h';
 
         $timesheet2 = new EventTimesheetDto();
-        $timesheet2->startAt = new DateTime('2024-06-16 12:00:00');
-        $timesheet2->endAt = new DateTime('2024-06-16 22:00:00');
+        $timesheet2->startAt = new DateTimeImmutable('2024-06-16 12:00:00');
+        $timesheet2->endAt = new DateTimeImmutable('2024-06-16 22:00:00');
         $timesheet2->hours = 'De 12h à 22h';
 
         $timesheet3 = new EventTimesheetDto();
-        $timesheet3->startAt = new DateTime('2024-06-17 14:00:00');
-        $timesheet3->endAt = new DateTime('2024-06-17 20:00:00');
+        $timesheet3->startAt = new DateTimeImmutable('2024-06-17 14:00:00');
+        $timesheet3->endAt = new DateTimeImmutable('2024-06-17 20:00:00');
         $timesheet3->hours = 'De 14h à 20h';
 
         $dto->timesheets = [$timesheet1, $timesheet2, $timesheet3];
 
         // startDate/endDate should be computed from timesheets
-        $dto->startDate = new DateTime('2024-06-15');
-        $dto->endDate = new DateTime('2024-06-17');
+        $dto->startDate = new DateTimeImmutable('2024-06-15');
+        $dto->endDate = new DateTimeImmutable('2024-06-17');
 
         $placeDto = new PlaceDto();
         $placeDto->name = 'Festival Grounds';
@@ -473,12 +472,12 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto1->externalId = 'timesheet-update-001';
         $dto1->externalOrigin = 'test-parser';
         $dto1->parserVersion = '1.0';
-        $dto1->startDate = new DateTime('2024-07-01');
-        $dto1->endDate = new DateTime('2024-07-02');
+        $dto1->startDate = new DateTimeImmutable('2024-07-01');
+        $dto1->endDate = new DateTimeImmutable('2024-07-02');
 
         $timesheet1 = new EventTimesheetDto();
-        $timesheet1->startAt = new DateTime('2024-07-01 10:00:00');
-        $timesheet1->endAt = new DateTime('2024-07-01 18:00:00');
+        $timesheet1->startAt = new DateTimeImmutable('2024-07-01 10:00:00');
+        $timesheet1->endAt = new DateTimeImmutable('2024-07-01 18:00:00');
         $timesheet1->hours = 'Original hours';
 
         $dto1->timesheets = [$timesheet1];
@@ -498,17 +497,17 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto2->externalId = 'timesheet-update-001';
         $dto2->externalOrigin = 'test-parser';
         $dto2->parserVersion = '1.0';
-        $dto2->startDate = new DateTime('2024-07-10');
-        $dto2->endDate = new DateTime('2024-07-12');
+        $dto2->startDate = new DateTimeImmutable('2024-07-10');
+        $dto2->endDate = new DateTimeImmutable('2024-07-12');
 
         $newTimesheet1 = new EventTimesheetDto();
-        $newTimesheet1->startAt = new DateTime('2024-07-10 09:00:00');
-        $newTimesheet1->endAt = new DateTime('2024-07-10 17:00:00');
+        $newTimesheet1->startAt = new DateTimeImmutable('2024-07-10 09:00:00');
+        $newTimesheet1->endAt = new DateTimeImmutable('2024-07-10 17:00:00');
         $newTimesheet1->hours = 'New hours day 1';
 
         $newTimesheet2 = new EventTimesheetDto();
-        $newTimesheet2->startAt = new DateTime('2024-07-12 11:00:00');
-        $newTimesheet2->endAt = new DateTime('2024-07-12 19:00:00');
+        $newTimesheet2->startAt = new DateTimeImmutable('2024-07-12 11:00:00');
+        $newTimesheet2->endAt = new DateTimeImmutable('2024-07-12 19:00:00');
         $newTimesheet2->hours = 'New hours day 2';
 
         $dto2->timesheets = [$newTimesheet1, $newTimesheet2];
@@ -617,8 +616,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
                 'pour tous les publics. Venez nombreux découvrir les artistes.',
                 $i
             );
-            $dto->startDate = new DateTime(\sprintf('+%d days', ($i % 30) + 1));
-            $dto->endDate = new DateTime(\sprintf('+%d days +3 hours', ($i % 30) + 1));
+            $dto->startDate = new DateTimeImmutable(\sprintf('+%d days', ($i % 30) + 1));
+            $dto->endDate = new DateTimeImmutable(\sprintf('+%d days +3 hours', ($i % 30) + 1));
             $dto->externalId = \sprintf('bench-50-event-%03d', $i);
             $dto->externalOrigin = 'benchmark-parser';
             $dto->parserVersion = '1.0';
@@ -833,7 +832,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         // Event 91 has no valid date, it is rejected
         $rejected = $this->makeEventWithPlace('91', 'Le Bikini', '12', 'slug-test-parser');
-        $rejected->endDate = new DateTime('-1 year');
+        $rejected->endDate = new DateTimeImmutable('-1 year');
         $this->handler->handleOne($rejected);
         $this->assertSame(0, EventFactory::count(['externalId' => '91']));
 
@@ -1115,8 +1114,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'Concert at ' . $placeName;
         $dto->description = 'A concert happening at this venue later this week, come along.';
-        $dto->startDate = new DateTime('+1 week');
-        $dto->endDate = new DateTime('+1 week +3 hours');
+        $dto->startDate = new DateTimeImmutable('+1 week');
+        $dto->endDate = new DateTimeImmutable('+1 week +3 hours');
         $dto->externalId = $eventExternalId;
         $dto->externalOrigin = 'slug-test-parser';
         $dto->parserVersion = '1.0';
@@ -1181,7 +1180,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $dtos = [];
         foreach (['history-1' => '+3 days', 'history-2' => '+4 days'] as $externalId => $date) {
-            $dto = $this->createSessionEventDto($externalId, new DateTime($date)->format('Y-m-d'));
+            $dto = $this->createSessionEventDto($externalId, new DateTimeImmutable($date)->format('Y-m-d'));
             $dto->fromData = 'Open Agenda';
             $dtos[] = $dto;
         }
@@ -1214,7 +1213,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         ];
         $dtos = [];
         foreach ($batch as [$externalId, $fromData, $date]) {
-            $dto = $this->createSessionEventDto($externalId, new DateTime($date)->format('Y-m-d'));
+            $dto = $this->createSessionEventDto($externalId, new DateTimeImmutable($date)->format('Y-m-d'));
             $dto->fromData = $fromData;
             $dtos[] = $dto;
         }
@@ -1229,7 +1228,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
         CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
 
-        $this->handler->handleManyCLI([$this->createSessionEventDto('sourceless-1', new DateTime('+3 days')->format('Y-m-d'))]);
+        $this->handler->handleManyCLI([$this->createSessionEventDto('sourceless-1', new DateTimeImmutable('+3 days')->format('Y-m-d'))]);
 
         $this->assertSame([], ParserHistoryFactory::first()->getFromData());
     }
@@ -1360,9 +1359,9 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $dto->description = $description;
 
             $afternoon = new EventTimesheetDto();
-            $afternoon->startAt = new DateTime('2026-10-03 14:00:00');
-            $afternoon->endAt = new DateTime('2026-10-03 16:00:00');
-            $afternoon->startTime = new DateTime($afternoonStart);
+            $afternoon->startAt = new DateTimeImmutable('2026-10-03 14:00:00');
+            $afternoon->endAt = new DateTimeImmutable('2026-10-03 16:00:00');
+            $afternoon->startTime = new DateTimeImmutable($afternoonStart);
             $dto->timesheets[] = $afternoon;
 
             return $dto;
@@ -1446,13 +1445,13 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto->externalOrigin = 'openagenda';
         $dto->parserVersion = '1.0';
         $dto->source = 'https://openagenda.com/atelier/events/' . $externalId;
-        $dto->startDate = new DateTime($date);
-        $dto->endDate = new DateTime($date);
+        $dto->startDate = new DateTimeImmutable($date);
+        $dto->endDate = new DateTimeImmutable($date);
 
         $timesheet = new EventTimesheetDto();
-        $timesheet->startAt = new DateTime($date . ' 20:30:00');
-        $timesheet->endAt = new DateTime($date . ' 22:30:00');
-        $timesheet->startTime = new DateTime('20:30');
+        $timesheet->startAt = new DateTimeImmutable($date . ' 20:30:00');
+        $timesheet->endAt = new DateTimeImmutable($date . ' 22:30:00');
+        $timesheet->startTime = new DateTimeImmutable('20:30');
         $dto->timesheets = [$timesheet];
 
         $placeDto = new PlaceDto();
@@ -1499,8 +1498,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->name = 'Concert de rattrapage';
         $dto->description = 'Une description suffisamment longue pour passer le firewall sans souci.';
-        $dto->startDate = new DateTime('+3 days');
-        $dto->endDate = new DateTime('+3 days +2 hours');
+        $dto->startDate = new DateTimeImmutable('+3 days');
+        $dto->endDate = new DateTimeImmutable('+3 days +2 hours');
         $dto->externalId = 'retry-001';
         $dto->externalOrigin = 'retry-test';
         $dto->parserVersion = '1.0';
@@ -1535,8 +1534,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             $dto = new EventDto();
             $dto->name = \sprintf('Festival %d', $i);
             $dto->description = \sprintf('Description %s du festival numéro %d, assez longue pour le firewall.', $version, $i);
-            $dto->startDate = new DateTime(\sprintf('+%d days', $i));
-            $dto->endDate = new DateTime(\sprintf('+%d days', $i + 1));
+            $dto->startDate = new DateTimeImmutable(\sprintf('+%d days', $i));
+            $dto->endDate = new DateTimeImmutable(\sprintf('+%d days', $i + 1));
             $dto->externalId = \sprintf('batch-load-%03d', $i);
             $dto->externalOrigin = 'batch-load-test';
             $dto->parserVersion = '1.0';
@@ -1545,8 +1544,8 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
             foreach ([0, 1] as $day) {
                 $timesheet = new EventTimesheetDto();
-                $timesheet->startAt = new DateTime(\sprintf('+%d days', $i + $day));
-                $timesheet->endAt = new DateTime(\sprintf('+%d days', $i + $day));
+                $timesheet->startAt = new DateTimeImmutable(\sprintf('+%d days', $i + $day));
+                $timesheet->endAt = new DateTimeImmutable(\sprintf('+%d days', $i + $day));
                 $timesheet->hours = '20h00';
                 $dto->timesheets[] = $timesheet;
             }

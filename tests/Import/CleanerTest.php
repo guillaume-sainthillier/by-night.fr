@@ -18,7 +18,7 @@ use App\Dto\TagDto;
 use App\Import\Cleaner;
 use App\Import\EventContentHasher;
 use App\Tests\AppKernelTestCase;
-use DateTime;
+use DateTimeImmutable;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -36,7 +36,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventSetsEndDateWhenNull(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->endDate = null;
 
         $this->cleaner->cleanEvent($dto);
@@ -48,7 +48,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventTrimsWhitespace(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->name = '  Test Event  ';
         $dto->description = '  Event Description  ';
 
@@ -61,7 +61,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventSetsNullForEmptyStrings(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->name = '   ';
         $dto->description = '';
 
@@ -74,7 +74,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventTruncatesLongFields(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->address = str_repeat('a', 300);
         $dto->category = TagDto::fromString(str_repeat('b', 150));
         $dto->themes = [TagDto::fromString(str_repeat('c', 150))];
@@ -92,7 +92,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventFitsTheEventColumns(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->name = str_repeat('é', 300);
         $dto->source = 'https://example.org/' . str_repeat('a', 300);
         $dto->imageUrl = 'https://example.org/' . str_repeat('b', 300) . '.jpg';
@@ -109,7 +109,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventKeepsLinksThatFit(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->source = 'https://openagenda.com/agendas/1/events/2';
         $dto->imageUrl = 'https://cdn.openagenda.com/main/a.jpg';
 
@@ -122,7 +122,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventNamesEachArtistOnceAsFirstSpelled(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->performers = ['Seth', ' SETH ', 'PETER HOOK &amp; THE  LIGHT', 'PLK', ''];
 
         $this->cleaner->cleanEvent($dto);
@@ -133,8 +133,8 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventReadsMidnightAsNoTime(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
-        $dto->startTime = new DateTime('2024-01-15 00:00');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
+        $dto->startTime = new DateTimeImmutable('2024-01-15 00:00');
 
         $this->cleaner->cleanEvent($dto);
 
@@ -165,7 +165,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventKeepsOnlyTheWebsitesThatCanBeLinked(?array $websites, ?array $expected): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->websiteContacts = $websites;
 
         $this->cleaner->cleanEvent($dto);
@@ -197,7 +197,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventCleansCoordinates(?float $input, ?float $expected): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->latitude = $input;
         $dto->longitude = $input;
 
@@ -231,7 +231,7 @@ final class CleanerTest extends AppKernelTestCase
     private function messyEvent(): EventDto
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->name = '  Le   Grand    Concert  ';
         $dto->description = "  Une   soirée   d'exception  ";
         $dto->address = str_repeat('a', 300);
@@ -245,8 +245,8 @@ final class CleanerTest extends AppKernelTestCase
 
         $timesheet = new EventTimesheetDto();
         $timesheet->hours = '  20h - 23h  ';
-        $timesheet->startAt = new DateTime('2024-01-15 20:00:00');
-        $timesheet->endAt = new DateTime('2024-01-15 23:00:00');
+        $timesheet->startAt = new DateTimeImmutable('2024-01-15 20:00:00');
+        $timesheet->endAt = new DateTimeImmutable('2024-01-15 23:00:00');
 
         $dto->timesheets = [$timesheet];
 
@@ -380,7 +380,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testTheTimesGivenWinOverAPlainSlotLabel(): void
     {
         $dto = new EventTimesheetDto();
-        $dto->startTime = new DateTime('20:30');
+        $dto->startTime = new DateTimeImmutable('20:30');
         $dto->hours = 'À 20h';
 
         $this->cleaner->cleanEventTimesheet($dto);
@@ -396,8 +396,8 @@ final class CleanerTest extends AppKernelTestCase
     public function testTheTimesOfASessionAreCleaned(?string $start, ?string $end, array $expected): void
     {
         $dto = new EventTimesheetDto();
-        $dto->startTime = null === $start ? null : new DateTime($start);
-        $dto->endTime = null === $end ? null : new DateTime($end);
+        $dto->startTime = null === $start ? null : new DateTimeImmutable($start);
+        $dto->endTime = null === $end ? null : new DateTimeImmutable($end);
 
         $this->cleaner->cleanEventTimesheet($dto);
 
@@ -423,7 +423,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testTheLabelOfAnEventWithoutTimesheetsBecomesItsTimes(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->hours = 'À 20h30';
 
         $this->cleaner->cleanEvent($dto);
@@ -436,8 +436,8 @@ final class CleanerTest extends AppKernelTestCase
     public function testTheTimesOfAnEventSpanItsSessions(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
-        $dto->startTime = new DateTime('09:00');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
+        $dto->startTime = new DateTimeImmutable('09:00');
         $dto->timesheets = [
             self::session('2024-01-16', '10:00', '12:00'),
             self::session('2024-01-15', '20:30', '23:00'),
@@ -454,7 +454,7 @@ final class CleanerTest extends AppKernelTestCase
     public function testTheSpanHasNoTimeWhenItsDayGivesNone(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->timesheets = [
             self::session('2024-01-15', null, null),
             self::session('2024-01-16', '20:00', null),
@@ -488,17 +488,17 @@ final class CleanerTest extends AppKernelTestCase
     public function testCleanEventCleansNestedTimesheets(): void
     {
         $dto = new EventDto();
-        $dto->startDate = new DateTime('2024-01-15');
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
 
         $timesheet1 = new EventTimesheetDto();
         $timesheet1->hours = str_repeat('a', 300);
-        $timesheet1->startAt = new DateTime('2024-01-15 10:00:00');
-        $timesheet1->endAt = new DateTime('2024-01-15 18:00:00');
+        $timesheet1->startAt = new DateTimeImmutable('2024-01-15 10:00:00');
+        $timesheet1->endAt = new DateTimeImmutable('2024-01-15 18:00:00');
 
         $timesheet2 = new EventTimesheetDto();
         $timesheet2->hours = '';
-        $timesheet2->startAt = new DateTime('2024-01-16 10:00:00');
-        $timesheet2->endAt = new DateTime('2024-01-16 18:00:00');
+        $timesheet2->startAt = new DateTimeImmutable('2024-01-16 10:00:00');
+        $timesheet2->endAt = new DateTimeImmutable('2024-01-16 18:00:00');
 
         $dto->timesheets = [$timesheet1, $timesheet2];
 
@@ -511,10 +511,10 @@ final class CleanerTest extends AppKernelTestCase
     private static function session(string $day, ?string $start, ?string $end): EventTimesheetDto
     {
         $timesheet = new EventTimesheetDto();
-        $timesheet->startAt = new DateTime($day);
-        $timesheet->endAt = new DateTime($day);
-        $timesheet->startTime = null === $start ? null : new DateTime($start);
-        $timesheet->endTime = null === $end ? null : new DateTime($end);
+        $timesheet->startAt = new DateTimeImmutable($day);
+        $timesheet->endAt = new DateTimeImmutable($day);
+        $timesheet->startTime = null === $start ? null : new DateTimeImmutable($start);
+        $timesheet->endTime = null === $end ? null : new DateTimeImmutable($end);
 
         return $timesheet;
     }

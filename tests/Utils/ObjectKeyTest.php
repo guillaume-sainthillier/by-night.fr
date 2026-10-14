@@ -11,7 +11,6 @@
 namespace App\Tests\Utils;
 
 use App\Utils\ObjectKey;
-use DateTime;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -65,7 +64,7 @@ final class ObjectKeyTest extends TestCase
 
         self::assertSame(
             ObjectKey::timesheet(new DateTimeImmutable('2026-10-03'), new DateTimeImmutable('2026-10-03'), $time, null, null),
-            ObjectKey::timesheet(new DateTime('2026-10-03 20:30'), new DateTime('2026-10-03 23:00'), $time, null, null),
+            ObjectKey::timesheet(new DateTimeImmutable('2026-10-03 20:30'), new DateTimeImmutable('2026-10-03 23:00'), $time, null, null),
         );
     }
 

@@ -15,7 +15,7 @@ use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
-use DateTime;
+use DateTimeImmutable;
 
 final class WidgetsControllerTest extends AppWebTestCase
 {
@@ -46,9 +46,9 @@ final class WidgetsControllerTest extends AppWebTestCase
         $client = self::createClient();
         $city = CityFactory::toulouse()->create();
         $place = PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $city, 'country' => $city->getCountry()]);
-        $event = EventFactory::createOne(['name' => 'Concert du soir', 'place' => $place, 'startDate' => new DateTime('+1 day'), 'endDate' => new DateTime('+1 day')]);
+        $event = EventFactory::createOne(['name' => 'Concert du soir', 'place' => $place, 'startDate' => new DateTimeImmutable('+1 day'), 'endDate' => new DateTimeImmutable('+1 day')]);
         // Two pages of the venue's next events (8 per page)
-        EventFactory::createMany(9, ['place' => $place, 'startDate' => new DateTime('+2 days'), 'endDate' => new DateTime('+2 days')]);
+        EventFactory::createMany(9, ['place' => $place, 'startDate' => new DateTimeImmutable('+2 days'), 'endDate' => new DateTimeImmutable('+2 days')]);
         $nextPage = \sprintf('/%s/soiree/%s--%d/prochaines-soirees/2', $event->getLocationSlug(), $event->getSlug(), $event->getId());
 
         $crawler = $client->request('GET', $nextPage);
