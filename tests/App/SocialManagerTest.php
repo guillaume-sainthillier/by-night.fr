@@ -13,7 +13,8 @@ namespace App\Tests\App;
 use App\App\SocialManager;
 use App\Factory\AppOAuthFactory;
 use App\Tests\AppKernelTestCase;
-use Doctrine\ORM\EntityManagerInterface;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 final class SocialManagerTest extends AppKernelTestCase
 {
@@ -22,7 +23,7 @@ final class SocialManagerTest extends AppKernelTestCase
         $socialManager = self::getContainer()->get(SocialManager::class);
 
         $created = $socialManager->getOrCreateAppOAuth();
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        save($created);
 
         self::assertSame(1, AppOAuthFactory::count());
         self::assertSame($created, $socialManager->getOrCreateAppOAuth());
