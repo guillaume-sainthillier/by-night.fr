@@ -29,10 +29,6 @@
         "tom-select": "^2.6.2",
         "vanilla-calendar-pro": "^3.4.0"
     },
-    "resolutions": {
-        "jquery": "3.7.1",
-        "@algolia/autocomplete-js/preact": "^11.0.0"
-    },
     "devDependencies": {
         "@biomejs/biome": "2.5.15",
         "@hotwired/stimulus": "^3.2.2",
@@ -61,7 +57,7 @@
         "lint": "biome check --write assets",
         "lint-ci": "biome check assets",
         "prettier": "prettier --write \"assets/**/*.{scss,md}\"",
-        "format": "yarn lint && yarn prettier",
+        "format": "pnpm lint && pnpm prettier",
         "test": "vitest run",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage"
@@ -71,5 +67,6 @@
         "*.{scss,md,yaml,yml}": "prettier --write",
         "*.php": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "*.twig": "vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php"
-    }
+    },
+    "packageManager": "pnpm@12.11.2"
 }

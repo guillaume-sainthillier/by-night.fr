@@ -1,6 +1,6 @@
 /**
  * Tests for the like listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'

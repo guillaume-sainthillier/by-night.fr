@@ -15,7 +15,7 @@ if [[ "${JOB}" =~ "phpunit" ]] || [[ "${JOB}" =~ "PHPUnit" ]]; then
     # Create database schema
     bin/console doctrine:schema:create --env=test --no-interaction
 
-    # CI never runs "yarn build": stub the Reprise manifests so tests that render a full page
+    # CI never runs "pnpm build": stub the Reprise manifests so tests that render a full page
     # (asset() / reprise_entry_*_tags()) do not fail on a missing file. The manifest can be an
     # empty array, but Reprise validates entrypoints.json and throws unless "isProd",
     # "publicPath" and "entryPoints" are present with the right types.

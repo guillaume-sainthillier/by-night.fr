@@ -1,6 +1,6 @@
 /**
  * Tests for the scroll-to-top module
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'

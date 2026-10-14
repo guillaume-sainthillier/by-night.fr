@@ -35,6 +35,6 @@ when@prod:
 
 when@test:
     reprise:
-        # CI never runs "yarn build" (see .laminas-ci/pre-run.sh): render nothing for a
+        # CI never runs "pnpm build" (see .laminas-ci/pre-run.sh): render nothing for a
         # missing entry instead of failing every test that renders a full page.
         strict_mode: false

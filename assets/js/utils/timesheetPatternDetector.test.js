@@ -1,6 +1,6 @@
 /**
  * Tests for timesheetPatternDetector
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { describe, expect, test } from 'vitest'

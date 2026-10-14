@@ -50,15 +50,17 @@ This workflow catches type errors, regressions, and style issues before they rea
 
 ### Development
 
+pnpm is the package manager: its version is pinned by `packageManager` in `package.json`, and `pnpm-workspace.yaml` lists the dependencies allowed to run install scripts (`allowBuilds`; pnpm fails the install on a new unlisted one).
+
 ```bash
 # Install dependencies
 composer install
-yarn install
+pnpm install
 
 # Build frontend assets
-yarn run dev          # Development build
-yarn run watch        # Watch mode
-yarn run build        # Production build
+pnpm dev              # Development build
+pnpm watch            # Watch mode
+pnpm build            # Production build
 
 # Start local services (requires Docker; compose refuses to start without BASE_IMAGE_TAG)
 export BASE_IMAGE_TAG=$(cat docker/base/VERSION)
@@ -73,8 +75,8 @@ vendor/bin/phpunit                                 # All tests
 vendor/bin/phpunit tests/Import/FirewallTest.php   # Single test file
 
 # JavaScript Tests (Vitest, vitest.config.mjs): assets/**/*.test.js next to the code they cover
-yarn test                                          # All tests
-yarn test assets/js/utils/plural.test.js           # Single test file
+pnpm test                                          # All tests
+pnpm test assets/js/utils/plural.test.js           # Single test file
 
 # Static Analysis
 vendor/bin/phpstan analyse                         # PHPStan (level 6)
@@ -82,8 +84,8 @@ vendor/bin/phpstan analyse                         # PHPStan (level 6)
 # Code Formatting
 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php  # PHP (Symfony ruleset)
 vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php  # Twig templates
-yarn lint                                          # Biome (lint + format) for JavaScript
-yarn prettier                                      # Prettier for SCSS/Markdown
+pnpm lint                                          # Biome (lint + format) for JavaScript
+pnpm prettier                                      # Prettier for SCSS/Markdown
 
 # Pre-commit Hook
 # Husky runs lint-staged on commit, which auto-formats changed files:
@@ -296,7 +298,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - One entry point per page (`app`, `admin`, and each `assets/js/pages/*.js` listed in `pages`)
 - JSX compiled for Preact with the automatic runtime (`importSource: 'preact'`), no `h` import needed
 - `@` aliases `assets/`
-- `yarn dev` / `yarn watch` build with sourcemaps and without minification; no PurgeCSS
+- `pnpm dev` / `pnpm watch` build with sourcemaps and without minification; no PurgeCSS
 - Sass uses the module system: every stylesheet starts with `@use '<path>/core' as *;` (`assets/scss/_core.scss` configures Tabler once with `@forward … with (…)` and forwards the site's tokens from `_variables.scss`); `ui/_tabler.scss` is the curated list of Tabler partials. Custom properties are written bare (`var(--primary)`, as in Tabler's sources): a PostCSS step in `vite.config.mjs` prefixes those of `assets/scss` with `--bs-`
 - `build.cssTarget` is Tabler's browser baseline (Chrome 123, Firefox 128, Safari 17.5): below it Lightning CSS would polyfill `light-dark()` and break the `data-bs-theme="dark"` islands
 

@@ -1,6 +1,6 @@
 /**
  * Tests for the password-meter listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { describe, expect, test } from 'vitest'

@@ -1,6 +1,6 @@
 /**
  * Tests for the cookie-settings listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { afterEach, describe, expect, test, vi } from 'vitest'

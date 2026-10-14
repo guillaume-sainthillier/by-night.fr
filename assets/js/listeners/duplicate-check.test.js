@@ -1,6 +1,6 @@
 /**
  * Tests for the duplicate-check listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { beforeEach, describe, expect, test, vi } from 'vitest'
