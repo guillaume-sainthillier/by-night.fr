@@ -1,6 +1,6 @@
 /**
  * Tests for the whole-day helpers and the timesheet generator built on them
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'

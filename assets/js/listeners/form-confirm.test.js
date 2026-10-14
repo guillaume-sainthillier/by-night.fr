@@ -1,6 +1,6 @@
 /**
  * Tests for the form-confirm listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { beforeEach, describe, expect, test, vi } from 'vitest'

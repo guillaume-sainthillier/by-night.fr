@@ -1,6 +1,6 @@
 /**
  * Tests for the calendar leaf lines
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { describe, expect, test } from 'vitest'

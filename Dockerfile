@@ -13,6 +13,10 @@ ARG BASE_IMAGE_TAG
 FROM ${BASE_IMAGE}:${BASE_IMAGE_TAG} AS php_base
 FROM node:24-alpine AS node_upstream
 
+# Node base with pnpm (it switches itself to the version pinned in package.json "packageManager")
+FROM node_upstream AS node_base
+RUN npm install --global pnpm@12
+
 # Composer install stage
 FROM php_base AS php_builder
 WORKDIR /app
@@ -25,18 +29,18 @@ RUN --mount=type=cache,target=.cache/composer \
     APP_ENV=prod COMPOSER_CACHE_DIR=.cache/composer composer install --no-interaction --no-dev --no-scripts --prefer-dist
 
 # Install node dependencies
-FROM node_upstream AS node_builder
+FROM node_base AS node_builder
 WORKDIR /app
 
 # Copy vendor directory from php_builder for Symfony UX packages
 # @symfony/stimulus-bridge needs to read controllers.json from vendor packages
 COPY --from=php_builder --link /app/vendor ./vendor
-COPY --link package.json yarn.lock ./
-RUN --mount=type=cache,target=.cache/yarn \
-    YARN_CACHE_FOLDER=.cache/yarn yarn install --frozen-lockfile --ignore-scripts
+COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN --mount=type=cache,target=/pnpm/store \
+    pnpm install --frozen-lockfile --ignore-scripts --store-dir /pnpm/store
 
 # Build assets
-FROM node_upstream AS node_assets_builder
+FROM node_base AS node_assets_builder
 WORKDIR /app
 
 ARG APP_VERSION=dev
@@ -47,10 +51,10 @@ COPY --from=node_builder --link /app/vendor ./vendor
 COPY --link assets ./assets
 COPY --link src ./src
 COPY --link templates ./templates
-COPY --link package.json vite.config.mjs yarn.lock ./
+COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml vite.config.mjs ./
 
 RUN mkdir -p public && \
-    yarn build
+    pnpm build
 
 FROM php_base
 

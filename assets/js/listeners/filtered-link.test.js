@@ -1,6 +1,6 @@
 /**
  * Tests for the filtered-link listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { describe, expect, test } from 'vitest'

@@ -111,7 +111,7 @@ export default defineConfig(({ mode }) => {
                 output: { strictExecutionOrder: true },
             },
 
-            // Dev build profile, used by `yarn dev` and `yarn watch`.
+            // Dev build profile, used by `pnpm dev` and `pnpm watch`.
             // Vite minifies and omits sourcemaps in build mode whatever the --mode,
             // so restore Encore's enableSourceMaps(!isProduction) behaviour explicitly.
             ...(isDev && {

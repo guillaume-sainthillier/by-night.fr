@@ -11,7 +11,7 @@
         },
       "jsx": "react"
     },
-    "exclude": ["node_modules", "public/build", "var", "vendor", ".yarn"],
+    "exclude": ["node_modules", "public/build", "var", "vendor"],
     "typeAcquisition": {
         "enable": true
     }

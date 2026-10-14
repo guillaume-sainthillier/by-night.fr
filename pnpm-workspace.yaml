@@ -1,0 +1,9 @@
+# Dependencies allowed to run install scripts (pnpm blocks them by default)
+allowBuilds:
+    # Ships prebuilt binaries; its install script is only a build-from-source fallback
+    '@parcel/watcher': false
+
+# Pinned versions (formerly Yarn "resolutions")
+overrides:
+    jquery: 3.7.1
+    '@algolia/autocomplete-js>preact': ^11.0.0

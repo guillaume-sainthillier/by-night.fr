@@ -1,6 +1,6 @@
 /**
  * Tests for the sync of the date rows with the event's default hours
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { beforeEach, describe, expect, test, vi } from 'vitest'

@@ -1,6 +1,6 @@
 /**
  * Tests for the view-transitions module
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'

@@ -1,6 +1,6 @@
 /**
  * Tests for the file-max-size listener
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { describe, expect, test } from 'vitest'

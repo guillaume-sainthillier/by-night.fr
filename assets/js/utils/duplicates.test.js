@@ -1,6 +1,6 @@
 /**
  * Tests for the likely duplicates check before publishing
- * Run: yarn test
+ * Run: pnpm test
  */
 
 import { afterEach, describe, expect, test, vi } from 'vitest'
