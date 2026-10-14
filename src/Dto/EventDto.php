@@ -27,7 +27,6 @@ use App\Reject\Reject;
 use App\Utils\ObjectKey;
 use App\Validator\Constraints\EventConstraint;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
@@ -64,15 +63,15 @@ final class EventDto implements ExternalIdentifiableInterface, DependencyRequira
     public ?EmbeddedFile $image;
 
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
-    public ?DateTimeInterface $startDate = null;
+    public ?DateTimeImmutable $startDate = null;
 
-    public ?DateTimeInterface $endDate = null;
+    public ?DateTimeImmutable $endDate = null;
 
     /** The time the first session starts (its date is not read), when the source gives one */
-    public ?DateTimeInterface $startTime = null;
+    public ?DateTimeImmutable $startTime = null;
 
     /** The time the last session ends (its date is not read), when the source gives one */
-    public ?DateTimeInterface $endTime = null;
+    public ?DateTimeImmutable $endTime = null;
 
     public ?string $fromData = null;
 

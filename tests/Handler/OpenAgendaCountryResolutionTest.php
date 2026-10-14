@@ -20,7 +20,7 @@ use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Tests\AppKernelTestCase;
-use DateTime;
+use DateTimeImmutable;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -96,8 +96,8 @@ final class OpenAgendaCountryResolutionTest extends AppKernelTestCase
         $event = new EventDto();
         $event->name = \sprintf('Événement %d', $i);
         $event->description = \sprintf('Description assez longue de l\'événement numéro %d pour passer le firewall.', $i);
-        $event->startDate = new DateTime(\sprintf('+%d days', 1 + $i % 20));
-        $event->endDate = new DateTime(\sprintf('+%d days +2 hours', 1 + $i % 20));
+        $event->startDate = new DateTimeImmutable(\sprintf('+%d days', 1 + $i % 20));
+        $event->endDate = new DateTimeImmutable(\sprintf('+%d days +2 hours', 1 + $i % 20));
         $event->externalId = (string) (5000 + $i);
         $event->externalOrigin = 'openagenda';
         $event->parserVersion = '1.0';

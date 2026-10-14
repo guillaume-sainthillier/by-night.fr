@@ -10,14 +10,14 @@
 
 namespace App\Contracts;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 
 interface ExternalDateFilterableInterface extends ExternalIdentifiableInterface
 {
     /**
      * Tells how to get the external updated date of an object (entity or dto).
      *
-     * @return DateTimeInterface the external last update date
+     * @return DateTimeImmutable the external last update date
      */
-    public function getExternalUpdatedAt(): ?DateTimeInterface;
+    public function getExternalUpdatedAt(): ?DateTimeImmutable;
 }

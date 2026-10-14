@@ -10,13 +10,13 @@
 
 namespace App\Dto;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 
 trait DtoExternalDateFilterableTrait
 {
-    public ?DateTimeInterface $externalUpdatedAt = null;
+    public ?DateTimeImmutable $externalUpdatedAt = null;
 
-    public function getExternalUpdatedAt(): ?DateTimeInterface
+    public function getExternalUpdatedAt(): ?DateTimeImmutable
     {
         return $this->externalUpdatedAt;
     }
