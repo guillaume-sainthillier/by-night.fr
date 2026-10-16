@@ -1,0 +1,50 @@
+{# The member's latest imports and exports (TransferController::history()), read again when one of them changes #}
+{# @var imports \App\Entity\EventImport[] #}
+{# @var exports \App\Entity\EventExport[] #}
+<div class="row row-cards">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Imports</h3>
+            </div>
+            {% if imports is empty %}
+                <div class="card-body text-secondary">Aucun import pour l’instant.</div>
+            {% else %}
+                <div class="list-group list-group-flush">
+                    {% for import in imports %}
+                        <a class="list-group-item list-group-item-action" href="{{ path('app_event_import_show', {id: import.id}) }}">
+                            <div class="row align-items-center g-3">
+                                <div class="col text-truncate">
+                                    <div class="fw-bold text-truncate">{{ import.originalName }}</div>
+                                    <div class="text-secondary small">
+                                        {{ import.createdAt|diff_date }}
+                                        {%- if import.eventCount > 0 %} · {{ '{count, plural, one {{count, number} événement} other {{count, number} événements}}'|trans({count: import.eventCount}, 'messages+intl-icu') }}{% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="badge bg-{{ import.status.color }}-lt">{{ import.status.label }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Exports</h3>
+            </div>
+            {% if exports is empty %}
+                <div class="card-body text-secondary">Aucun export pour l’instant.</div>
+            {% else %}
+                <div class="list-group list-group-flush">
+                    {% for export in exports %}
+                        {{ include('personal-space/transfers/_export_row.html.twig') }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

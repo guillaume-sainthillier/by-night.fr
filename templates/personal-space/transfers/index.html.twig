@@ -1,0 +1,105 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{% block title 'Importer et exporter mes événements' %}
+{% block page_title 'Importer et exporter' %}
+
+{% block breadcrumb_personal_space -%}
+    {% do menu.addItem('Import / export', url('app_event_transfers')) %}
+{%- endblock %}
+
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% block body -%}
+    {# The member's channel: every import and export of theirs tells the page when it changes (TransferNotifier) #}
+    <div {{ load_page('event_transfers', {hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)}), refreshUrl: path('app_event_transfers_history')}) }}>
+        <section class="row justify-content-center text-center pt-lg-3 mb-5">
+            <div class="col-lg-8">
+                <twig:Section:Eyebrow icon="lucide:arrow-left-right" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold mb-3">{{ block('page_title') }}</h1>
+                <p class="lead text-secondary mb-0">
+                    Publiez vos événements en une fois depuis un tableur, ou récupérez-les pour les modifier puis les importer à nouveau&nbsp;: ils sont mis à jour, jamais publiés deux fois.
+                </p>
+            </div>
+        </section>
+
+        <div class="row row-cards">
+            <div class="col-lg-7">
+                <twig:FormCard icon="lucide:upload" tone="teal" title="Importer des événements" description="Vérifiés d’abord, importés ensuite : rien n’est publié avant votre feu vert.">
+                    {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
+                        <ol class="list-unstyled mb-4">
+                            <li class="d-flex gap-3 mb-3">
+                                <span class="avatar avatar-sm bg-teal-lt flex-shrink-0">1</span>
+                                <div>
+                                    <div class="fw-bold">Téléchargez le modèle</div>
+                                    <div class="text-secondary small mb-2">Une ligne par date&nbsp;; les lignes d’une même référence forment un seul événement.</div>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'xlsx'}) }}"><twig:Icon name="lucide:file-spreadsheet" /> Modèle Excel</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'csv'}) }}"><twig:Icon name="lucide:file-text" /> Modèle CSV</a>
+                                </div>
+                            </li>
+                            <li class="d-flex gap-3">
+                                <span class="avatar avatar-sm bg-teal-lt flex-shrink-0">2</span>
+                                <div class="flex-fill">
+                                    <div class="fw-bold mb-2">Envoyez votre fichier</div>
+                                    {{ form_start(import_form) }}
+                                    {{ form_row(import_form.file) }}
+                                    <button type="submit" class="btn btn-teal">
+                                        <twig:Icon name="lucide:search-check" />
+                                        Vérifier le fichier
+                                    </button>
+                                    {{ form_end(import_form) }}
+                                </div>
+                            </li>
+                        </ol>
+
+                        <details>
+                            <summary class="text-secondary">Les colonnes du fichier</summary>
+                            <div class="table-responsive mt-3">
+                                <table class="table table-sm table-vcenter">
+                                    <tbody>
+                                        {% for column in columns %}
+                                            <tr>
+                                                <th class="text-nowrap">{{ column.label }}</th>
+                                                <td class="text-secondary small">{{ column.help }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    {% else %}
+                        <p class="text-secondary mb-0">
+                            Vérifiez votre adresse e-mail pour publier des événements, et les importer.
+                        </p>
+                    {% endif %}
+                </twig:FormCard>
+            </div>
+
+            <div class="col-lg-5">
+                <twig:FormCard icon="lucide:download" tone="blue" title="Exporter mes événements" description="Avec les colonnes de l’import : modifiez-les dans votre tableur, puis importez-les.">
+                    {{ form_start(export_form) }}
+                    {{ form_row(export_form.scope) }}
+                    {{ form_row(export_form.format) }}
+                    <button type="submit" class="btn btn-primary">
+                        <twig:Icon name="lucide:download" />
+                        Exporter
+                    </button>
+                    {{ form_end(export_form) }}
+                </twig:FormCard>
+            </div>
+        </div>
+
+        <section class="mt-5" id="historique">
+            <h2 class="text-start mb-3">Vos derniers imports et exports</h2>
+            <div data-transfer-refresh>
+                {{ include('personal-space/transfers/_history.html.twig') }}
+            </div>
+        </section>
+    </div>
+{%- endblock %}
+
+{% block js -%}
+    {{ reprise_entry_script_tags('event_transfers') }}
+{%- endblock %}

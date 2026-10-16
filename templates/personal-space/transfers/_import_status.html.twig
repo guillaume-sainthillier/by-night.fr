@@ -1,0 +1,221 @@
+{#
+    Where an import stands (TransferController::importStatus()): its progress while a worker is on it, then the
+    check's report and the button that imports, then what the import did with each event. The page reads it again
+    each time the import tells it it changed.
+#}
+{# @var import \App\Entity\EventImport #}
+{% set status = import.status.value %}
+{% set percent = import.eventCount > 0 ? (import.processedCount / import.eventCount * 100)|round : 0 %}
+
+{% if import.status.running %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="fw-bold">
+                    <span class="spinner-border spinner-border-sm text-teal me-1" role="status"></span>
+                    {{ import.status.label }}
+                </div>
+                {% if import.eventCount > 0 %}
+                    <div class="text-secondary">{{ import.processedCount|format_number(locale: 'fr') }} / {{ import.eventCount|format_number(locale: 'fr') }}</div>
+                {% endif %}
+            </div>
+            <div class="progress mb-2">
+                <div class="progress-bar bg-teal {{ import.eventCount == 0 ? 'progress-bar-indeterminate' }}" style="width: {{ import.eventCount > 0 ? percent : 100 }}%" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ percent }}&nbsp;%"></div>
+            </div>
+            <p class="text-secondary small mb-0">
+                {% if status == 'importing' %}
+                    Vous pouvez quitter la page&nbsp;: l’import continue, et son bilan vous attendra ici.
+                {% else %}
+                    Rien n’est enregistré pendant la vérification. Vous pouvez quitter la page, elle continue sans vous.
+                {% endif %}
+            </p>
+        </div>
+        {% if status in ['uploaded', 'checking'] %}
+            <div class="card-footer text-end">
+                <form method="post" action="{{ path('app_event_import_cancel', {id: import.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('event-import-cancel-' ~ import.id) }}">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Annuler la vérification</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if status == 'check_failed' %}
+    <div class="alert alert-danger">
+        <h4 class="alert-title">Le fichier n’a pas pu être vérifié</h4>
+        <div>{{ import.failureReason }}</div>
+        <a class="alert-link" href="{{ path('app_event_transfers') }}">Envoyer un autre fichier</a>
+    </div>
+{% elseif status == 'cancelled' %}
+    <div class="alert alert-secondary">Cet import a été annulé&nbsp;: aucun événement n’a été enregistré.</div>
+{% elseif status == 'failed' %}
+    <div class="alert alert-warning">
+        <h4 class="alert-title">L’import s’est interrompu</h4>
+        <div class="mb-2">{{ import.failureReason }}</div>
+        <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
+            <button type="submit" class="btn btn-warning">
+                <twig:Icon name="lucide:rotate-cw" />
+                Reprendre l’import
+            </button>
+        </form>
+    </div>
+{% endif %}
+
+{# The check's report: shown once it is done, and kept under the import's outcome #}
+{% if status in ['checked', 'importing', 'completed', 'failed'] %}
+    {% if status == 'checked' %}
+        <div class="row row-cards mb-4">
+            {% for tile in [
+                {label: 'Événements valides', count: import.validCount, icon: 'lucide:circle-check', tone: 'teal'},
+                {label: 'Événements en erreur', count: import.invalidCount, icon: 'lucide:circle-x', tone: 'danger'},
+                {label: 'Avertissements', count: import.warningCount, icon: 'lucide:triangle-alert', tone: 'yellow'},
+            ] %}
+                <div class="col-sm-4">
+                    <div class="card card-sm mb-0">
+                        <div class="card-body d-flex align-items-center justify-content-between gap-3">
+                            <div>
+                                <div class="subheader">{{ tile.label }}</div>
+                                <div class="h1 text-start mb-0">{{ tile.count|format_number(locale: 'fr') }}</div>
+                            </div>
+                            <span class="avatar bg-{{ tile.tone }}-lt"><twig:Icon name="{{ tile.icon }}" /></span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body d-flex flex-wrap align-items-center gap-2">
+                {% if import.validCount > 0 %}
+                    <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
+                        <button type="submit" class="btn btn-teal">
+                            <twig:Icon name="lucide:upload" />
+                            {{ '{count, plural, one {Importer l’événement valide} other {Importer les {count, number} événements valides}}'|trans({count: import.validCount}, 'messages+intl-icu') }}
+                        </button>
+                    </form>
+                {% endif %}
+                {% if import.errorFilePath %}
+                    <a class="btn btn-outline-danger" href="{{ path('app_event_import_file', {id: import.id, kind: 'erreurs'}) }}">
+                        <twig:Icon name="lucide:file-x" />
+                        Les lignes en erreur
+                    </a>
+                {% endif %}
+                {% if import.successFilePath and import.validCount > 0 %}
+                    <a class="btn btn-outline-secondary" href="{{ path('app_event_import_file', {id: import.id, kind: 'valides'}) }}">
+                        <twig:Icon name="lucide:file-check" />
+                        Les lignes valides
+                    </a>
+                {% endif %}
+                <form method="post" action="{{ path('app_event_import_cancel', {id: import.id}) }}" class="ms-auto">
+                    <input type="hidden" name="_token" value="{{ csrf_token('event-import-cancel-' ~ import.id) }}">
+                    <button type="submit" class="btn btn-ghost-secondary">Abandonner cet import</button>
+                </form>
+            </div>
+            <div class="card-footer text-secondary small">
+                {% if import.validCount > 0 %}
+                    Les événements valides seront importés en brouillon, sauf si la colonne «&nbsp;Brouillon&nbsp;» dit «&nbsp;non&nbsp;».
+                {% endif %}
+                {% if import.errorFilePath %}
+                    Corrigez les lignes en erreur dans leur fichier (la colonne «&nbsp;Erreurs&nbsp;» dit pourquoi), puis importez-le.
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if import.outcomes is not empty %}
+        <div class="row row-cards mb-4">
+            {% for tile in [
+                {label: 'Créés', count: import.createdCount, tone: 'teal'},
+                {label: 'Mis à jour', count: import.updatedCount, tone: 'blue'},
+                {label: 'Inchangés', count: import.unchangedCount, tone: 'secondary'},
+                {label: 'Non importés', count: import.failedCount, tone: 'danger'},
+            ] %}
+                <div class="col-6 col-md-3">
+                    <div class="card card-sm mb-0">
+                        <div class="card-body">
+                            <div class="subheader">{{ tile.label }}</div>
+                            <div class="h1 text-start mb-0 text-{{ tile.tone }}">{{ tile.count|format_number(locale: 'fr') }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if status == 'completed' %}
+            <div class="alert alert-success">
+                L’import est terminé. Les images sont téléchargées dans les minutes qui suivent.
+                <a class="alert-link" href="{{ path('app_event_list') }}">Voir mes événements</a>
+            </div>
+        {% endif %}
+
+        {% set labels = {created: 'Créé', updated: 'Mis à jour', unchanged: 'Inchangé', failed: 'Non importé'} %}
+        {% set tones = {created: 'teal', updated: 'blue', unchanged: 'secondary', failed: 'danger'} %}
+        <div class="card mb-4">
+            <div class="card-header"><h3 class="card-title">Événement par événement</h3></div>
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead>
+                        <tr><th>Ligne</th><th>Événement</th><th>Référence</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for outcome in import.outcomes %}
+                            <tr>
+                                <td class="text-secondary">{{ outcome.row }}</td>
+                                <td>
+                                    {% if outcome.id %}
+                                        <a href="{{ path('app_event_edit', {id: outcome.id}) }}">{{ outcome.name }}</a>
+                                    {% else %}
+                                        {{ outcome.name }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-secondary">{{ outcome.reference }}</td>
+                                <td class="text-end"><span class="badge bg-{{ tones[outcome.outcome] }}-lt">{{ labels[outcome.outcome] }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {% for list in [
+        {title: 'Erreurs', problems: import.errors, count: import.invalidCount, tone: 'danger'},
+        {title: 'Avertissements', problems: import.warnings, count: import.warningCount, tone: 'yellow'},
+    ] %}
+        {% if list.problems is not empty %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">{{ list.title }}</h3>
+                    {% if list.problems|length >= constant('App\\Entity\\EventImport::MAX_LISTED_PROBLEMS') %}
+                        <div class="card-subtitle ms-2">les {{ list.problems|length }} premiers, tous dans le fichier des lignes en erreur</div>
+                    {% endif %}
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr><th>Ligne</th><th>Référence</th><th>Colonne</th><th>Problème</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for problem in list.problems %}
+                                <tr>
+                                    <td class="text-secondary">{{ problem.row }}</td>
+                                    <td class="text-secondary">{{ problem.reference }}</td>
+                                    <td class="text-nowrap">{{ problem.column }}</td>
+                                    <td>
+                                        {{ problem.message }}
+                                        {% if problem.url is defined %}
+                                            <a href="{{ problem.url }}" target="_blank" rel="noopener">Voir l’événement</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}

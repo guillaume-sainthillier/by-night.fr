@@ -12,6 +12,7 @@ namespace App\Factory;
 
 use App\Entity\EventImport;
 use App\Enum\TransferFormat;
+use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -24,6 +25,14 @@ final class EventImportFactory extends PersistentObjectFactory
     public static function class(): string
     {
         return EventImport::class;
+    }
+
+    /**
+     * The counters have no setter (only the check and the import count): a test sets them as it needs.
+     */
+    protected function initialize(): static
+    {
+        return $this->instantiateWith(Instantiator::withConstructor()->alwaysForce());
     }
 
     protected function defaults(): array
