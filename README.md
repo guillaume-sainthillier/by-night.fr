@@ -82,6 +82,59 @@ volumes:
 The volume was created by hand and seeded from the last Encore release, so the URLs of
 that era still resolve. The same one-liner with any image tag adds that release's files.
 
+### Mercure hub
+
+The live progress of the members' imports and exports goes through a [Mercure](https://mercure.rocks) hub
+(protocol 1.0, `dunglas/mercure` image) running in its own container. Browsers reach it on the site's own origin,
+under `/.well-known/mercure`: the subscriber cookie the Twig `mercure()` function sets
+(`__Secure-mercure_access_token`, path `/.well-known/mercure`) is only sent there. The app publishes to the
+hub's internal URL (`MERCURE_URL`); both URLs end up in the publisher token's audience.
+
+Locally, `docker compose up -d mercure` starts it on port 3000, and the Apache vhost of `by-night.test` proxies
+the path to it (no compression, events flushed as they come):
+
+```apache
+<Location /.well-known/mercure>
+    ProxyPass http://127.0.0.1:3000/.well-known/mercure flushpackets=on
+    ProxyPassReverse http://127.0.0.1:3000/.well-known/mercure
+    RequestHeader set X-Forwarded-Proto https
+    SetEnv no-gzip 1
+</Location>
+```
+
+In production, the hub is a service of `/apps/by-night.fr/docker-compose.yaml`, routed by Traefik on the same
+host. Its alias must be unique on the shared `web` network, where several stacks run a service of the same name:
+
+```yaml
+services:
+    mercure:
+        image: dunglas/mercure:v1.1.2
+        restart: unless-stopped
+        environment:
+            SERVER_NAME: ':80'
+            GLOBAL_OPTIONS: |-
+                servers {
+                    trusted_proxies static private_ranges
+                }
+            MERCURE_TRUSTED_ISSUERS: 'https://by-night.fr'
+            MERCURE_PUBLISHER_JWT_KEY: '${MERCURE_JWT_SECRET}'
+            MERCURE_SUBSCRIBER_JWT_KEY: '${MERCURE_JWT_SECRET}'
+        volumes:
+            - mercure_data:/data
+            - mercure_config:/config
+        networks:
+            web:
+                aliases: [by-night-mercure]
+        labels:
+            traefik.enable: 'true'
+            traefik.http.routers.by-night-mercure.rule: 'Host(`by-night.fr`) && PathPrefix(`/.well-known/mercure`)'
+            traefik.http.services.by-night-mercure.loadbalancer.server.port: '80'
+```
+
+`app.env` then sets `MERCURE_URL=http://by-night-mercure/.well-known/mercure`,
+`MERCURE_PUBLIC_URL=https://by-night.fr/.well-known/mercure`, a random `MERCURE_JWT_SECRET` (the same as the hub's,
+at least 32 bytes) and `MERCURE_JWT_ISSUER=https://by-night.fr`.
+
 ## Setup
 
 ```bash
