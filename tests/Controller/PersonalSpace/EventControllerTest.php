@@ -473,6 +473,64 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSame([['20:00', '23:00', null], ['20:00', '23:00', 'Salle B']], $sessions);
     }
 
+    public function testASingleDateIsShownAsTheEventsOwn(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        $day = new DateTimeImmutable('+2 weeks')->format('Y-m-d');
+        EventTimesheetFactory::new()->on($day, 'Salle B')->create(['event' => $event, 'startTime' => new DateTimeImmutable('20:00'), 'endTime' => new DateTimeImmutable('23:00')]);
+
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        self::assertSame('single', $crawler->filter('[data-date-mode]')->attr('data-date-mode'));
+        $form = $crawler->filter('form[name="app_event"]')->form();
+        self::assertFalse($form->has('app_event[timesheets][0][startTime]'), 'No list of dates');
+        self::assertSame([$day, $day], [$form['app_event[dateRange][from]']->getValue(), $form['app_event[dateRange][to]']->getValue()]);
+        self::assertSame(['20:00', '23:00', 'Salle B'], [$form['app_event[startTime]']->getValue(), $form['app_event[endTime]']->getValue(), $form['app_event[hours]']->getValue()]);
+
+        // Saved as is, the date becomes the event's own
+        $client->submit($form);
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $event = EventFactory::find(['id' => $event->getId()]);
+        self::assertCount(0, $event->getTimesheets());
+        self::assertSame([$day, $day], [$event->getStartDate()?->format('Y-m-d'), $event->getEndDate()?->format('Y-m-d')]);
+        self::assertSame(['20:00', '23:00', 'Salle B'], [$event->getStartTime()?->format('H:i'), $event->getEndTime()?->format('H:i'), $event->getHours()]);
+    }
+
+    public function testSeveralDatesShowTheirList(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        foreach (['+2 weeks', '+3 weeks'] as $date) {
+            EventTimesheetFactory::new()->on($date)->create(['event' => $event]);
+        }
+
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        self::assertSame('multiple', $crawler->filter('[data-date-mode]')->attr('data-date-mode'));
+        self::assertSame('true', $crawler->filter('[data-date-mode-choice="multiple"]')->attr('aria-pressed'));
+    }
+
+    public function testTheHoursOfASingleDateTypedAsTextAreItsTimes(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $form = $this->newEventForm($client, 'Soirée swing du vendredi');
+        $form['app_event[hours]'] = 'de 21h à minuit';
+        $client->submit($form);
+
+        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $event = EventFactory::find(['name' => 'Soirée swing du vendredi']);
+        self::assertCount(0, $event->getTimesheets());
+        self::assertNull($event->getHours());
+        self::assertSame(['21:00', '00:00'], [$event->getStartTime()?->format('H:i'), $event->getEndTime()?->format('H:i')]);
+    }
+
     public function testCreatingADraftSavesItOffTheSite(): void
     {
         $client = self::createClient();

@@ -1,6 +1,7 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
 import $ from 'jquery'
 import TomSelect from 'tom-select'
+import initEventDateMode from '@/js/listeners/event-date-mode'
 import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 import initTimesheetRows from '@/js/listeners/timesheet-rows'
@@ -91,6 +92,7 @@ function initialize({ app }) {
 
     // Initialize event scheduler
     initEventScheduler(document.body, app)
+    initEventDateMode(document.body, app)
 
     // Initialize timesheet hours sync
     initTimesheetHoursSync(document.body)

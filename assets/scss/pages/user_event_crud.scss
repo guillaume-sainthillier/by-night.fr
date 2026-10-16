@@ -15,6 +15,13 @@
         }
     }
 
+    // "Une date" or "Plusieurs dates" (data-date-mode, set by event-date-mode.js): over the display utilities of the
+    // parts it hides
+    [data-date-mode='single'] .date-mode-multiple,
+    [data-date-mode='multiple'] .date-mode-single {
+        display: none !important;
+    }
+
     // The message of the empty date list
     .collection-wrapper:has(.collection-item) .timesheets-empty {
         display: none;
