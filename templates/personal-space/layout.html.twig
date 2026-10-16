@@ -33,7 +33,7 @@
 
 {% block modals %}
     {# Tells the member, on any page of their space, when an import or an export of theirs is done (listeners/transfer-toasts.js) #}
-    <div hidden data-transfer-toasts="{{ user_channel_hub(app.user) }}"></div>
+    <div hidden data-transfer-toasts="{{ user_channel_hub(app.user) }}" data-exports-url="{{ path('app_event_exports') }}"></div>
     <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

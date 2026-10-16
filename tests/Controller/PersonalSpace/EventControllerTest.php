@@ -82,6 +82,7 @@ final class EventControllerTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertStringEndsWith(rawurlencode('https://by-night.test/users/' . $user->getId()), (string) $crawler->filter('[data-transfer-toasts]')->attr('data-transfer-toasts'));
+        self::assertSame('/espace-perso/exports', $crawler->filter('[data-transfer-toasts]')->attr('data-exports-url'));
         self::assertSame('__Secure-mercure_access_token', ($client->getResponse()->headers->getCookies()[0] ?? null)?->getName());
     }
 

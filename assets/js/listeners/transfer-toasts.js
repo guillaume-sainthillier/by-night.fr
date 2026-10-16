@@ -18,22 +18,25 @@ const EXPORT_TOASTS = {
  * (still running, cancelled).
  *
  * @param {{'@id': string, status: string}} state the job's state (TransferNotifier)
- * @param {string} exportsUrl the export page, where an export is downloaded
+ * @param {string} exportsPath the export page's path: an export's IRI is under it, and it is downloaded there.
+ *   Compared by path: the worker writes the IRIs with APP_URL, which may not be the host the page is read on
  * @returns {{icon: string, message: string, url: string}|null}
  */
-export function transferToast(state, exportsUrl) {
-    const isExport = /\/exports\/\d+$/.test(state['@id'])
+export function transferToast(state, exportsPath) {
+    const path = new URL(state['@id'], 'https://localhost').pathname
+    const isExport = path.startsWith(`${exportsPath}/`)
     const toast = (isExport ? EXPORT_TOASTS : IMPORT_TOASTS)[state.status]
     if (!toast) {
         return null
     }
 
-    return { icon: toast[0], message: toast[1], url: isExport ? exportsUrl : state['@id'] }
+    return { icon: toast[0], message: toast[1], url: isExport ? exportsPath : path }
 }
 
 /**
- * On every page of the personal space (`[data-transfer-toasts]`, the hub's URL on the member's channel): a toast
- * when an import or an export of theirs is done, linking to it. Not on the import / export pages, which show it.
+ * On every page of the personal space (`[data-transfer-toasts]`, the hub's URL on the member's channel, and
+ * `data-exports-url`, the export page): a toast when an import or an export of theirs is done, linking to it. Not on
+ * the import / export pages, which show it.
  *
  * @type {Listener}
  */
@@ -46,7 +49,7 @@ export default {
 
         // One toast per job and status: updates repeat the whole state
         const told = new Set()
-        const exportsUrl = new URL('/espace-perso/exports', window.location.origin).href
+        const { exportsUrl } = element.dataset
 
         return followTransfers({
             hub: element.dataset.transferToasts,

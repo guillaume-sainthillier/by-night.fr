@@ -6,7 +6,7 @@
 import { describe, expect, test } from 'vitest'
 import { transferToast } from '@/js/listeners/transfer-toasts'
 
-const EXPORTS = 'https://by-night.test/espace-perso/exports'
+const EXPORTS = '/espace-perso/exports'
 
 describe('transferToast', () => {
     test('points a checked import to its report', () => {
@@ -15,7 +15,7 @@ describe('transferToast', () => {
         ).toEqual({
             icon: 'success',
             message: 'Votre fichier est vérifié : le bilan vous attend.',
-            url: 'https://by-night.test/espace-perso/imports/4',
+            url: '/espace-perso/imports/4',
         })
     })
 
@@ -23,6 +23,12 @@ describe('transferToast', () => {
         expect(
             transferToast({ '@id': 'https://by-night.test/espace-perso/exports/7', status: 'completed' }, EXPORTS)?.url
         ).toBe(EXPORTS)
+    })
+
+    test('tells an export by its path, whatever host the worker wrote it with', () => {
+        expect(
+            transferToast({ '@id': 'https://by-night.fr/espace-perso/exports/7', status: 'failed' }, EXPORTS)?.message
+        ).toBe('Votre export n’a pas pu être écrit.')
     })
 
     test.each([['checking'], ['importing'], ['cancelled']])('says nothing of an import %s', (status) => {
