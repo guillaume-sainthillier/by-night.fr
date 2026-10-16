@@ -10,7 +10,6 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\EventExport;
 use App\Entity\EventImport;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -18,18 +17,18 @@ use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
- * A member's imports and exports, and their files, are theirs alone: they hold their events' contacts and drafts.
- * Administrators included, as for the member's other private data.
+ * A member's event import and its report and its files (the member's spreadsheet, the rows the check kept and refused) are theirs alone: they hold their events' contacts and drafts. Administrators
+ * included, as for the member's other private data.
  *
- * @extends Voter<string, EventImport|EventExport>
+ * @extends Voter<string, EventImport>
  */
-final class TransferVoter extends Voter
+final class ImportVoter extends Voter
 {
-    public const string VIEW = 'transfer.view';
+    public const string VIEW = 'event_import.view';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return self::VIEW === $attribute && ($subject instanceof EventImport || $subject instanceof EventExport);
+        return self::VIEW === $attribute && $subject instanceof EventImport;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool

@@ -53,7 +53,7 @@ final readonly class EventImportRunner
     }
 
     /**
-     * Imports an import its member started (Importing, see TransferController).
+     * Imports an import its member started (Importing, see ImportController::run()).
      */
     public function run(EventImport $import): void
     {

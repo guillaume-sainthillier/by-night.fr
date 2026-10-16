@@ -8,16 +8,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\Controller\PersonalSpace;
+namespace App\Tests\Controller\PersonalSpace\Transfer;
 
-use App\Enum\EventExportScope;
 use App\Enum\EventImportStatus;
 use App\Enum\TransferFormat;
-use App\Factory\EventExportFactory;
 use App\Factory\EventImportFactory;
 use App\Factory\UserFactory;
 use App\Message\CheckEventImport;
-use App\Message\RunEventExport;
 use App\Message\RunEventImport;
 use App\Tests\AppWebTestCase;
 use League\Flysystem\FilesystemOperator;
@@ -26,37 +23,8 @@ use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
-final class TransferControllerTest extends AppWebTestCase
+final class ImportControllerTest extends AppWebTestCase
 {
-    public function testThePageSubscribesTheMemberToTheirChannel(): void
-    {
-        $client = self::createClient();
-        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
-        $client->loginUser($user);
-
-        $crawler = $client->request('GET', '/espace-perso/import-export');
-
-        self::assertResponseIsSuccessful();
-        self::assertSelectorExists('form[action="/espace-perso/imports"] input[type="file"]');
-        self::assertSelectorExists('form[action="/espace-perso/exports"]');
-        $cookie = $client->getResponse()->headers->getCookies()[0] ?? null;
-        self::assertSame('__Secure-mercure_access_token', $cookie?->getName());
-        self::assertSame('/.well-known/mercure', $cookie->getPath());
-        self::assertStringContainsString(
-            rawurlencode('https://by-night.test/users/' . $user->getId()),
-            (string) $crawler->filter('[data-page]')->attr('data-page-params'),
-        );
-    }
-
-    public function testAVisitorIsAskedToLogIn(): void
-    {
-        $client = self::createClient();
-        $client->request('GET', '/espace-perso/import-export');
-
-        self::assertResponseRedirects();
-        self::assertStringContainsString('/login', (string) $client->getResponse()->headers->get('Location'));
-    }
-
     public function testTheTemplateIsDownloaded(): void
     {
         $client = self::createClient();
@@ -102,36 +70,6 @@ final class TransferControllerTest extends AppWebTestCase
         self::assertSame(0, EventImportFactory::count(['user' => $user]));
         $client->followRedirect();
         self::assertSelectorTextContains('.alert-danger', 'Importez un fichier CSV ou Excel (XLSX).');
-    }
-
-    public function testAMemberRunsOneJobAtATime(): void
-    {
-        $client = self::createClient();
-        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
-        EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checking]);
-        $client->loginUser($user);
-
-        $client->submit($client->request('GET', '/espace-perso/import-export')->filter('form[action="/espace-perso/exports"]')->form());
-
-        self::assertSame(0, EventExportFactory::count(['user' => $user]));
-        $client->followRedirect();
-        self::assertSelectorTextContains('.alert-warning', 'déjà en cours');
-    }
-
-    public function testAnExportIsStartedWithItsScopeAndFormat(): void
-    {
-        $client = self::createClient();
-        $user = UserFactory::createOne();
-        $client->loginUser($user);
-
-        $client->submit($client->request('GET', '/espace-perso/import-export')->filter('form[action="/espace-perso/exports"]')->form(), [
-            'event_export[scope]' => 'upcoming',
-            'event_export[format]' => 'ics',
-        ]);
-
-        $export = EventExportFactory::find(['user' => $user]);
-        self::assertSame([EventExportScope::Upcoming, TransferFormat::Ics], [$export->getScope(), $export->getFormat()]);
-        self::assertEquals(new RunEventExport((int) $export->getId()), $this->transport()->getSent()[0]->getMessage());
     }
 
     public function testTheCheckedEventsAreImportedOnceWhateverTheClicks(): void
