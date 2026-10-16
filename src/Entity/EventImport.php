@@ -92,6 +92,14 @@ class EventImport
     #[ORM\Column(type: Types::INTEGER)]
     private int $failedCount = 0;
 
+    /** The events the member chose not to import (warned of on the check), by their first row */
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private int $skippedCount = 0;
+
+    /** @var list<int>|null the first rows of the events the member chose not to import */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $skippedRows = null;
+
     /** @var list<RowProblem> */
     #[ORM\Column(type: Types::JSON)]
     private array $errors = [];
@@ -263,6 +271,31 @@ class EventImport
         return $this->failedCount;
     }
 
+    public function getSkippedCount(): int
+    {
+        return $this->skippedCount;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function getSkippedRows(): array
+    {
+        return $this->skippedRows ?? [];
+    }
+
+    /**
+     * @param list<int> $rows the first rows of the events not to import
+     */
+    public function setSkippedRows(array $rows): self
+    {
+        $rows = array_values(array_unique(array_filter($rows, static fn (int $row): bool => $row > 1)));
+        sort($rows);
+        $this->skippedRows = [] === $rows ? null : $rows;
+
+        return $this;
+    }
+
     /**
      * @return list<RowProblem>
      */
@@ -344,6 +377,7 @@ class EventImport
         $this->updatedCount = 0;
         $this->unchangedCount = 0;
         $this->failedCount = 0;
+        $this->skippedCount = 0;
         $this->outcomes = [];
         $this->failureReason = null;
 
@@ -360,6 +394,7 @@ class EventImport
             'created' => ++$this->createdCount,
             'updated' => ++$this->updatedCount,
             'unchanged' => ++$this->unchangedCount,
+            'skipped' => ++$this->skippedCount,
             default => ++$this->failedCount,
         };
         $this->outcomes[] = $outcome;

@@ -71,6 +71,7 @@ final readonly class TransferNotifier
             'updated' => $import->getUpdatedCount(),
             'unchanged' => $import->getUnchangedCount(),
             'failed' => $import->getFailedCount(),
+            'skipped' => $import->getSkippedCount(),
         ];
     }
 

@@ -136,6 +136,24 @@ final class ImportControllerTest extends AppWebTestCase
         self::assertSame(EventImportStatus::Importing, $import->getStatus());
     }
 
+    public function testTheWarnedEventsUntickedAreLeftOut(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checked, 'validCount' => 3, 'warningCount' => 1,
+            'warnings' => [['row' => 4, 'reference' => 'JAZZ', 'column' => 'Nom', 'message' => 'Ressemble à un événement en ligne']]]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/imports/' . $import->getId());
+        $form = $crawler->filter('#import-run-form')->form();
+        $form['skip'][0]->tick();
+        $client->submit($form);
+
+        $saved = EventImportFactory::find(['id' => $import->getId()]);
+        self::assertSame([4], $saved->getSkippedRows());
+        self::assertSame(EventImportStatus::Importing, $saved->getStatus());
+    }
+
     public function testAnImportIsNotStartedWithoutTheTokenOfItsPage(): void
     {
         $client = self::createClient();

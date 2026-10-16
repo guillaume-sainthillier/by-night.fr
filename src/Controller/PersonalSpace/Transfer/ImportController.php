@@ -145,9 +145,19 @@ final class ImportController extends AbstractTransferController
     {
         $this->denyUnlessValidToken($request, 'event-import-run-' . $import->getId());
 
+        // A first run, not a resumed one: a resumed import keeps the choice it started with
+        $firstRun = EventImportStatus::Checked === $import->getStatus();
         if (0 === $import->getValidCount()) {
             $this->addFlash('error', 'Aucun événement valide à importer : corrigez le fichier des erreurs, puis importez-le.');
         } elseif ($importRepository->transition($import, [EventImportStatus::Checked, EventImportStatus::Failed], EventImportStatus::Importing)) {
+            // The status moved in the database (a conditional UPDATE): read it back before writing anything else
+            $this->getEntityManager()->refresh($import);
+            if ($firstRun) {
+                // The warned events the member unticked
+                $import->setSkippedRows(array_map(intval(...), $request->getPayload()->all('skip')));
+                $this->getEntityManager()->flush();
+            }
+
             $bus->dispatch(new RunEventImport((int) $import->getId()));
         }
 

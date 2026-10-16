@@ -89,7 +89,7 @@
         <div class="card mb-4">
             <div class="card-body d-flex flex-wrap align-items-center gap-2">
                 {% if import.validCount > 0 %}
-                    <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}">
+                    <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}" id="import-run-form">
                         <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
                         <button type="submit" class="btn btn-teal">
                             <twig:Icon name="lucide:upload" />
@@ -132,8 +132,8 @@
                 {label: 'Mis à jour', count: import.updatedCount, tone: 'blue'},
                 {label: 'Inchangés', count: import.unchangedCount, tone: 'secondary'},
                 {label: 'Non importés', count: import.failedCount, tone: 'danger'},
-            ] %}
-                <div class="col-6 col-md-3">
+            ]|merge(import.skippedCount > 0 ? [{label: 'Écartés', count: import.skippedCount, tone: 'secondary'}] : []) %}
+                <div class="col-6 col-md">
                     <div class="card card-sm mb-0">
                         <div class="card-body">
                             <div class="subheader">{{ tile.label }}</div>
@@ -184,8 +184,8 @@
             </form>
         {% endif %}
 
-        {% set labels = {created: 'Créé', updated: 'Mis à jour', unchanged: 'Inchangé', failed: 'Non importé'} %}
-        {% set tones = {created: 'teal', updated: 'blue', unchanged: 'secondary', failed: 'danger'} %}
+        {% set labels = {created: 'Créé', updated: 'Mis à jour', unchanged: 'Inchangé', failed: 'Non importé', skipped: 'Écarté'} %}
+        {% set tones = {created: 'teal', updated: 'blue', unchanged: 'secondary', failed: 'danger', skipped: 'secondary'} %}
         <div class="card mb-4">
             <div class="card-header"><h3 class="card-title">Événement par événement</h3></div>
             <div class="table-responsive">
@@ -215,8 +215,8 @@
     {% endif %}
 
     {% for list in [
-        {title: 'Erreurs', problems: import.errors, count: import.invalidCount, tone: 'danger'},
-        {title: 'Avertissements', problems: import.warnings, count: import.warningCount, tone: 'yellow'},
+        {title: 'Erreurs', problems: import.errors, count: import.invalidCount, tone: 'danger', skippable: false},
+        {title: 'Avertissements', problems: import.warnings, count: import.warningCount, tone: 'yellow', skippable: status == 'checked' and import.validCount > 0},
     ] %}
         {% if list.problems is not empty %}
             <div class="card mb-4">
@@ -229,11 +229,20 @@
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table">
                         <thead>
-                            <tr><th>Ligne</th><th>Référence</th><th>Colonne</th><th>Problème</th></tr>
+                            <tr>
+                                {% if list.skippable %}<th class="w-1">Ne pas importer</th>{% endif %}
+                                <th>Ligne</th><th>Référence</th><th>Colonne</th><th>Problème</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for problem in list.problems %}
                                 <tr>
+                                    {% if list.skippable %}
+                                        {# Joins the import's form above: the event of this row is left out #}
+                                        <td class="text-center">
+                                            <input class="form-check-input m-0" type="checkbox" name="skip[]" value="{{ problem.row }}" form="import-run-form" aria-label="{{ 'Ne pas importer l’événement de la ligne {row}'|trans({row: problem.row}, 'messages+intl-icu') }}">
+                                        </td>
+                                    {% endif %}
                                     <td class="text-secondary">{{ problem.row }}</td>
                                     <td class="text-secondary">{{ problem.reference }}</td>
                                     <td class="text-nowrap">{{ problem.column }}</td>
