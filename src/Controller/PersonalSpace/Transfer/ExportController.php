@@ -12,6 +12,7 @@ namespace App\Controller\PersonalSpace\Transfer;
 
 use App\Entity\EventExport;
 use App\Enum\EventExportScope;
+use App\Enum\PersonalEventFilter;
 use App\Enum\TransferFormat;
 use App\Form\Type\EventExportType;
 use App\Message\RunEventExport;
@@ -31,12 +32,20 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class ExportController extends AbstractTransferController
 {
+    /**
+     * The export page; from the member's list ("Exporter" by the table), with its search and status filter.
+     */
     #[Route(path: '/exports', name: 'app_event_exports', methods: ['GET'])]
-    public function index(EventExportRepository $exportRepository): Response
+    public function index(Request $request, EventExportRepository $exportRepository): Response
     {
+        $query = trim($request->query->getString('q'));
+        $filter = PersonalEventFilter::tryFrom($request->query->getString('status'));
+
         return $this->render('personal-space/transfers/export/index.html.twig', [
-            'form' => $this->createForm(EventExportType::class, null, ['action' => $this->generateUrl('app_event_export_new')]),
+            'form' => $this->createForm(EventExportType::class, ['searchQuery' => $query, 'statusFilter' => $filter?->value], ['action' => $this->generateUrl('app_event_export_new')]),
             'exports' => $exportRepository->findLatestByUser($this->getAppUser()),
+            'query' => '' === $query ? null : $query,
+            'filter' => $filter,
         ]);
     }
 
@@ -71,7 +80,12 @@ final class ExportController extends AbstractTransferController
         $scope = $form->get('scope')->getData();
         /** @var TransferFormat $format */
         $format = $form->get('format')->getData();
-        $export = new EventExport()->setUser($user)->setScope($scope)->setFormat($format);
+        $export = new EventExport()
+            ->setUser($user)
+            ->setScope($scope)
+            ->setFormat($format)
+            ->setSearchQuery($form->get('searchQuery')->getData())
+            ->setStatusFilter(PersonalEventFilter::tryFrom((string) $form->get('statusFilter')->getData()));
         $em = $this->getEntityManager();
         $em->persist($export);
         $em->flush();

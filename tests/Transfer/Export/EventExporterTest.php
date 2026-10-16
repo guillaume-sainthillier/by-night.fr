@@ -13,6 +13,7 @@ namespace App\Tests\Transfer\Export;
 use App\Entity\EventExport;
 use App\Enum\EventExportScope;
 use App\Enum\EventExportStatus;
+use App\Enum\PersonalEventFilter;
 use App\Enum\TransferFormat;
 use App\Factory\CountryFactory;
 use App\Factory\EventExportFactory;
@@ -49,6 +50,19 @@ final class EventExporterTest extends AppKernelTestCase
         self::assertSame([1, 1], [$export->getTotalCount(), $export->getExportedCount()]);
         $sheet = $this->readStored((string) $export->getFilePath(), TransferFormat::Xlsx);
         self::assertSame(['À venir'], array_map(static fn ($row): string => $row->get(EventColumn::Name), $sheet['rows']));
+    }
+
+    public function testAnExportFromTheListHoldsTheEventsItShows(): void
+    {
+        EventFactory::createOne(['user' => $this->user, 'name' => 'Soirée jazz', 'draft' => true]);
+        EventFactory::createOne(['user' => $this->user, 'name' => 'Soirée jazz en ligne', 'draft' => false]);
+        EventFactory::createOne(['user' => $this->user, 'name' => 'Théâtre', 'draft' => true]);
+        $export = EventExportFactory::createOne(['user' => $this->user, 'format' => TransferFormat::Csv, 'searchQuery' => 'jazz', 'statusFilter' => PersonalEventFilter::Hidden]);
+
+        self::getContainer()->get(EventExporter::class)->export($export);
+        refresh($export);
+
+        self::assertSame(['Soirée jazz'], array_map(static fn ($row): string => $row->get(EventColumn::Name), $this->readStored((string) $export->getFilePath())['rows']));
     }
 
     public function testAnEventOfSeveralSessionsIsOneRowPerSession(): void

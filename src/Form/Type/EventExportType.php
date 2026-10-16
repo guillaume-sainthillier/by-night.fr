@@ -14,6 +14,7 @@ use App\Enum\EventExportScope;
 use App\Enum\TransferFormat;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -35,6 +36,9 @@ final class EventExportType extends AbstractType
                 'label' => 'Format',
                 'choice_label' => static fn (TransferFormat $format): string => $format->getLabel(),
                 'data' => TransferFormat::Xlsx,
-            ]);
+            ])
+            // The search and the status filter of the list the export was started from ("Exporter" by the table)
+            ->add('searchQuery', HiddenType::class, ['required' => false])
+            ->add('statusFilter', HiddenType::class, ['required' => false]);
     }
 }

@@ -76,9 +76,9 @@
                             </a>
                         </div>
                     {% endif %}
-                    {# The list's events, in a spreadsheet or a calendar #}
+                    {# The list's events, its search and status filter kept, in a spreadsheet or a calendar #}
                     <div class="col-auto">
-                        <a href="{{ path('app_event_exports') }}" class="btn btn-outline-secondary">
+                        <a href="{{ path('app_event_exports', {q: q ?: null, status: filter ? filter.value : null}) }}" class="btn btn-outline-secondary" title="{{ 'Exporter les événements de cette liste'|trans }}">
                             <twig:Icon name="lucide:download" />
                             <span class="d-none d-sm-inline">Exporter</span>
                         </a>
