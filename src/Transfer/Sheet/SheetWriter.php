@@ -17,6 +17,7 @@ use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\CSV\Options as CsvOptions;
 use OpenSpout\Writer\CSV\Writer as CsvWriter;
 use OpenSpout\Writer\XLSX\Options as XlsxOptions;
+use OpenSpout\Writer\XLSX\Validation\ErrorStyle;
 use OpenSpout\Writer\XLSX\Validation\Rules\ListValidationRule;
 use OpenSpout\Writer\XLSX\Validation\ValidationDisplay;
 use OpenSpout\Writer\XLSX\Writer as XlsxWriter;
@@ -34,14 +35,16 @@ final class SheetWriter
     /**
      * @param list<string>                               $headers
      * @param iterable<list<string|int|float|bool|null>> $rows
+     * @param array<string, list<string>>                $suggestions values an XLSX column offers in a list, by
+     *                                                                EventColumn value, any other value still allowed
      *
      * @return int the rows written, the header left out
      */
-    public function write(string $path, TransferFormat $format, array $headers, iterable $rows): int
+    public function write(string $path, TransferFormat $format, array $headers, iterable $rows, array $suggestions = []): int
     {
         $writer = match ($format) {
             TransferFormat::Csv => new CsvWriter(new CsvOptions(FIELD_DELIMITER: ';')),
-            TransferFormat::Xlsx => new XlsxWriter(self::xlsxOptions($headers)),
+            TransferFormat::Xlsx => new XlsxWriter(self::xlsxOptions($headers, $suggestions)),
             TransferFormat::Ics => throw new InvalidArgumentException('A calendar is not a spreadsheet.'),
         };
 
@@ -61,10 +64,14 @@ final class SheetWriter
         return $count;
     }
 
+    /** Excel refuses a list written in the cell rule longer than this */
+    private const int MAX_LIST_LENGTH = 255;
+
     /**
-     * @param list<string> $headers
+     * @param list<string>                $headers
+     * @param array<string, list<string>> $suggestions
      */
-    private static function xlsxOptions(array $headers): XlsxOptions
+    private static function xlsxOptions(array $headers, array $suggestions): XlsxOptions
     {
         $options = new XlsxOptions();
         $options->setColumnWidth(18, ...range(1, max(1, \count($headers))));
@@ -77,9 +84,45 @@ final class SheetWriter
             $values = $lists[EventColumn::fromHeader($header)?->value ?? ''] ?? null;
             if (null !== $values) {
                 $options->addValidation($index, 2, $index, self::VALIDATED_ROWS + 1, new ListValidationRule($values), new ValidationDisplay(errorTitle: $header, error: 'Choisissez une valeur de la liste.'));
+
+                continue;
+            }
+
+            $offered = self::fitting($suggestions[EventColumn::fromHeader($header)?->value ?? ''] ?? []);
+            if ([] !== $offered) {
+                // A suggestion only: Excel says so but keeps another value
+                $options->addValidation($index, 2, $index, self::VALIDATED_ROWS + 1, new ListValidationRule($offered), new ValidationDisplay(errorStyle: ErrorStyle::Information, errorTitle: $header, error: 'Cette valeur n’est pas dans la liste : elle sera tout de même importée.'));
             }
         }
 
         return $options;
+    }
+
+    /**
+     * As many values as an Excel list holds, in their order: no comma (the list's separator), no empty one.
+     *
+     * @param list<string> $values
+     *
+     * @return list<non-empty-string>
+     */
+    private static function fitting(array $values): array
+    {
+        $fitting = [];
+        $length = 0;
+        foreach ($values as $value) {
+            $value = trim($value);
+            if ('' === $value || str_contains($value, ',') || \in_array($value, $fitting, true)) {
+                continue;
+            }
+
+            $length += mb_strlen($value) + 1;
+            if ($length > self::MAX_LIST_LENGTH) {
+                break;
+            }
+
+            $fitting[] = $value;
+        }
+
+        return $fitting;
     }
 }

@@ -10,17 +10,24 @@
 
 namespace App\Transfer\Sheet;
 
+use App\Entity\UpcomingCategory;
 use App\Enum\TransferFormat;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * The blank spreadsheet a member fills in: every column, and two examples, an event on two dates (two rows sharing
- * a reference) and an event on one.
+ * a reference) and an event on one. In Excel, "Catégorie" offers the site's busiest categories (any other is taken).
  */
 final readonly class EventSheetTemplate
 {
-    public function __construct(private SheetWriter $writer)
-    {
+    /** The categories offered: Excel's list holds 255 characters anyway */
+    private const int CATEGORIES = 40;
+
+    public function __construct(
+        private SheetWriter $writer,
+        private ?EntityManagerInterface $entityManager = null,
+    ) {
     }
 
     public function write(string $path, TransferFormat $format): void
@@ -30,7 +37,34 @@ final readonly class EventSheetTemplate
             $format,
             array_map(static fn (EventColumn $column): string => $column->getLabel(), EventColumn::cases()),
             array_map(self::row(...), $this->examples()),
+            TransferFormat::Xlsx === $format ? [EventColumn::Category->value => $this->categories()] : [],
         );
+    }
+
+    /**
+     * The categories of the most events to come in France, as last counted (app:events:count-upcoming).
+     *
+     * @return list<string>
+     */
+    private function categories(): array
+    {
+        if (null === $this->entityManager) {
+            return [];
+        }
+
+        /** @var list<string> $names */
+        $names = $this->entityManager->createQueryBuilder()
+            ->select('t.name')
+            ->from(UpcomingCategory::class, 'c')
+            ->join('c.tag', 't')
+            ->where('c.country = :country')
+            ->setParameter('country', 'FR')
+            ->orderBy('c.events', 'DESC')
+            ->setMaxResults(self::CATEGORIES)
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return $names;
     }
 
     /**
