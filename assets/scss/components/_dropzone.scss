@@ -20,6 +20,12 @@
     &.dropzone-dragover {
         border-style: solid;
     }
+
+    // Its field is visually hidden: reached with the keyboard, the dropzone shows the focus
+    &:has(input[type='file']:focus-visible) {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.25rem rgba($primary, 0.25);
+    }
 }
 
 .dropzone-placeholder {

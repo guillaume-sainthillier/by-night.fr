@@ -154,6 +154,22 @@ final class ImportControllerTest extends AppWebTestCase
         self::assertSame(EventImportStatus::Importing, $saved->getStatus());
     }
 
+    public function testTheReportListsTheEventsNotImportedFirstAndFoldsTheRest(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $outcomes = array_map(static fn (int $row): array => ['row' => $row, 'reference' => 'R' . $row, 'id' => null, 'name' => 'Événement ' . $row, 'outcome' => 30 === $row ? 'failed' : 'unchanged'], range(2, 31));
+        $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Completed, 'outcomes' => $outcomes]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/imports/' . $import->getId());
+
+        self::assertSame('Événement 30', trim($crawler->filter('table tbody:not(.collapse) tr')->first()->filter('td')->eq(1)->text()));
+        self::assertCount(20, $crawler->filter('table tbody:not(.collapse) tr'));
+        self::assertCount(10, $crawler->filter('#import-other-outcomes tr'));
+        self::assertSelectorTextContains('[data-bs-target="#import-other-outcomes"]', 'Voir les 10 autres événements');
+    }
+
     public function testAnImportIsNotStartedWithoutTheTokenOfItsPage(): void
     {
         $client = self::createClient();

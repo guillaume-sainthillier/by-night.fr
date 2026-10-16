@@ -184,32 +184,39 @@
             </form>
         {% endif %}
 
-        {% set labels = {created: 'Créé', updated: 'Mis à jour', unchanged: 'Inchangé', failed: 'Non importé', skipped: 'Écarté'} %}
-        {% set tones = {created: 'teal', updated: 'blue', unchanged: 'secondary', failed: 'danger', skipped: 'secondary'} %}
         <div class="card mb-4">
             <div class="card-header"><h3 class="card-title">Événement par événement</h3></div>
+            {# The events not imported first, then the file's order; the first ones shown, the others folded #}
+            {% set outcomes = import.outcomes|sort((a, b) => ((a.outcome == 'failed' ? 0 : 1) <=> (b.outcome == 'failed' ? 0 : 1)) ?: (a.row <=> b.row)) %}
+            {% set shown = 20 %}
             <div class="table-responsive">
                 <table class="table table-vcenter card-table">
                     <thead>
                         <tr><th>Ligne</th><th>Événement</th><th>Référence</th><th></th></tr>
                     </thead>
                     <tbody>
-                        {% for outcome in import.outcomes %}
-                            <tr>
-                                <td class="text-secondary">{{ outcome.row }}</td>
-                                <td>
-                                    {% if outcome.id %}
-                                        <a href="{{ path('app_event_edit', {id: outcome.id}) }}">{{ outcome.name }}</a>
-                                    {% else %}
-                                        {{ outcome.name }}
-                                    {% endif %}
-                                </td>
-                                <td class="text-secondary">{{ outcome.reference }}</td>
-                                <td class="text-end"><span class="badge bg-{{ tones[outcome.outcome] }}-lt">{{ labels[outcome.outcome] }}</span></td>
-                            </tr>
+                        {% for outcome in outcomes|slice(0, shown) %}
+                            {{ include('personal-space/transfers/import/_outcome.html.twig') }}
                         {% endfor %}
                     </tbody>
+                    {% if outcomes|length > shown %}
+                        <tbody class="collapse" id="import-other-outcomes">
+                            {% for outcome in outcomes|slice(shown) %}
+                                {{ include('personal-space/transfers/import/_outcome.html.twig') }}
+                            {% endfor %}
+                        </tbody>
+                    {% endif %}
                 </table>
+            </div>
+            {% if outcomes|length > shown %}
+                <div class="card-footer">
+                    <button type="button" class="btn btn-sm w-100 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-outcomes" aria-expanded="false" aria-controls="import-other-outcomes">
+                        <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre événement} other {Voir les {count, number} autres événements}}'|trans({count: outcomes|length - shown}, 'messages+intl-icu') }}</span>
+                        <span class="when-expanded">Masquer les autres événements</span>
+                        <twig:Icon name="lucide:chevron-down" class="ms-1" />
+                    </button>
+                </div>
+            {% endif %}
             </div>
         </div>
     {% endif %}

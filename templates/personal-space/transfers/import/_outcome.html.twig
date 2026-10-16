@@ -1,0 +1,16 @@
+{# What an import did with an event of the file, a row of its report #}
+{# @var outcome array{row: int, reference: ?string, id: ?int, name: string, outcome: string} #}
+{% set labels = {created: 'Créé', updated: 'Mis à jour', unchanged: 'Inchangé', failed: 'Non importé', skipped: 'Écarté'} %}
+{% set tones = {created: 'teal', updated: 'blue', unchanged: 'secondary', failed: 'danger', skipped: 'secondary'} %}
+<tr>
+    <td class="text-secondary">{{ outcome.row }}</td>
+    <td>
+        {% if outcome.id %}
+            <a href="{{ path('app_event_edit', {id: outcome.id}) }}">{{ outcome.name }}</a>
+        {% else %}
+            {{ outcome.name }}
+        {% endif %}
+    </td>
+    <td class="text-secondary">{{ outcome.reference }}</td>
+    <td class="text-end"><span class="badge bg-{{ tones[outcome.outcome] }}-lt">{{ labels[outcome.outcome] }}</span></td>
+</tr>
