@@ -483,6 +483,21 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The member's event they gave this reference (Event::$externalReference), whatever its case.
+     */
+    public function findOneByUserAndReference(User $user, string $reference): ?Event
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.user = :user')
+            ->andWhere('LOWER(e.externalReference) = :reference')
+            ->setParameter('user', $user->getId())
+            ->setParameter('reference', mb_strtolower($reference))
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * The event whose picture, from its member or its source, is stored under that file name.
      */
     public function findOneByImageName(string $name): ?Event

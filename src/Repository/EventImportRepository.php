@@ -70,6 +70,16 @@ final class EventImportRepository extends ServiceEntityRepository
     }
 
     /**
+     * Its status as saved now, whatever the entity says: a member may have cancelled it meanwhile.
+     */
+    public function findStatus(EventImport $import): ?EventImportStatus
+    {
+        $status = $this->getEntityManager()->getConnection()->fetchOne('SELECT status FROM event_import WHERE id = ?', [$import->getId()]);
+
+        return \is_string($status) ? EventImportStatus::from($status) : null;
+    }
+
+    /**
      * @return EventImport[] the ones a worker should be on but has not touched since then: its worker died
      */
     public function findStuckSince(DateTimeImmutable $since): array
