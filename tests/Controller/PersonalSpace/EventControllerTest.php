@@ -72,6 +72,20 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSame(0, EventFactory::count(['id' => $eventId]));
     }
 
+    public function testTheListListensToTheMembersChannelForTheirJobs(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringEndsWith(rawurlencode('https://by-night.test/users/' . $user->getId()), (string) $crawler->filter('[data-transfer-toasts]')->attr('data-transfer-toasts'));
+        self::assertSame('/espace-perso/exports', $crawler->filter('[data-transfer-toasts]')->attr('data-exports-url'));
+        self::assertSame('__Secure-mercure_access_token', ($client->getResponse()->headers->getCookies()[0] ?? null)?->getName());
+    }
+
     public function testTheStatusFilterKeepsTheEventsItsSwitchIsSetFor(): void
     {
         $client = self::createClient();
@@ -93,7 +107,7 @@ final class EventControllerTest extends AppWebTestCase
             $crawler = $client->request('GET', '/espace-perso/mes-soirees', ['status' => $status]);
 
             self::assertResponseIsSuccessful();
-            self::assertSame($names, $crawler->filter('tbody tr > td:first-child a')->each(static fn ($link) => $link->text()), $status);
+            self::assertSame($names, $crawler->filter('tbody tr > td:nth-child(2) a')->each(static fn ($link) => $link->text()), $status);
         }
     }
 

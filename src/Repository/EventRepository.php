@@ -484,13 +484,23 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The member's events an export of theirs covers, by id: page through them with findExportPage().
+     * The member's events an export of theirs covers, by id: page through them with findExportPage(). The search
+     * and the status filter are those of their list when the export was started from it (findAllByUserQueryBuilder()).
      */
-    public function createExportQueryBuilder(User $user, EventExportScope $scope): QueryBuilder
+    public function createExportQueryBuilder(User $user, EventExportScope $scope, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('e')
             ->where('e.user = :user')
             ->setParameter('user', $user->getId());
+
+        if (null !== $q && '' !== $q) {
+            $qb->andWhere('e.name LIKE :q OR e.placeName LIKE :q OR e.placeCity LIKE :q OR e.description LIKE :q')
+                ->setParameter('q', '%' . $q . '%');
+        }
+
+        if (null !== $filter) {
+            $qb->andWhere(self::personalEventCondition($filter));
+        }
 
         $today = new DateTimeImmutable('today');
 

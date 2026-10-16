@@ -13,6 +13,7 @@ namespace App\Tests\Controller\PersonalSpace\Transfer;
 use App\Enum\EventExportScope;
 use App\Enum\EventExportStatus;
 use App\Enum\EventImportStatus;
+use App\Enum\PersonalEventFilter;
 use App\Enum\TransferFormat;
 use App\Factory\EventExportFactory;
 use App\Factory\EventImportFactory;
@@ -51,6 +52,22 @@ final class ExportControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.list-group', 'Brouillons');
         self::assertSelectorTextNotContains('.list-group', 'Passés');
+    }
+
+    public function testAnExportStartedFromTheListKeepsItsSearchAndStatus(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/exports', ['q' => 'jazz', 'status' => 'hidden']);
+        self::assertSelectorTextContains('#export-list-filter', 'jazz');
+        self::assertSelectorTextContains('#export-list-filter', 'masqués');
+        $client->submit($crawler->filter('form[action="/espace-perso/exports"]')->form());
+
+        $export = EventExportFactory::find(['user' => $user]);
+        self::assertSame('jazz', $export->getSearchQuery());
+        self::assertSame(PersonalEventFilter::Hidden, $export->getStatusFilter());
     }
 
     public function testAMemberRunsOneJobAtATime(): void

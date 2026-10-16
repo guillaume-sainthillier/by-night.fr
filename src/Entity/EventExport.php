@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use App\Enum\EventExportScope;
 use App\Enum\EventExportStatus;
+use App\Enum\PersonalEventFilter;
 use App\Enum\TransferFormat;
 use App\Repository\EventExportRepository;
 use Doctrine\DBAL\Types\Types;
@@ -40,6 +41,14 @@ class EventExport
 
     #[ORM\Column(type: Types::STRING, length: 16, enumType: EventExportScope::class)]
     private EventExportScope $scope = EventExportScope::All;
+
+    /** The search of the member's list it was started from, if any */
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $searchQuery = null;
+
+    /** The status filter of the member's list it was started from, if any */
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true, enumType: PersonalEventFilter::class)]
+    private ?PersonalEventFilter $statusFilter = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $filePath = null;
@@ -97,6 +106,30 @@ class EventExport
     public function setScope(EventExportScope $scope): self
     {
         $this->scope = $scope;
+
+        return $this;
+    }
+
+    public function getSearchQuery(): ?string
+    {
+        return $this->searchQuery;
+    }
+
+    public function setSearchQuery(?string $searchQuery): self
+    {
+        $this->searchQuery = null === $searchQuery || '' === trim($searchQuery) ? null : mb_substr(trim($searchQuery), 0, 255);
+
+        return $this;
+    }
+
+    public function getStatusFilter(): ?PersonalEventFilter
+    {
+        return $this->statusFilter;
+    }
+
+    public function setStatusFilter(?PersonalEventFilter $statusFilter): self
+    {
+        $this->statusFilter = $statusFilter;
 
         return $this;
     }

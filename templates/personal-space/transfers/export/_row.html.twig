@@ -3,7 +3,12 @@
 <div class="list-group-item">
     <div class="row align-items-center g-3">
         <div class="col text-truncate">
-            <div class="fw-bold text-truncate">{{ export.scope.label }} · {{ export.format.label }}</div>
+            <div class="fw-bold text-truncate">
+                {{ export.scope.label }}
+                {%- if export.searchQuery %} · «&nbsp;{{ export.searchQuery }}&nbsp;»{% endif %}
+                {%- if export.statusFilter %} · {{ export.statusFilter.label|lower }}{% endif %}
+                · {{ export.format.label }}
+            </div>
             <div class="text-secondary small">
                 {{ export.createdAt|diff_date }}
                 {%- if export.totalCount > 0 %} · {{ '{count, plural, one {{count, number} événement} other {{count, number} événements}}'|trans({count: export.totalCount}, 'messages+intl-icu') }}{% endif %}

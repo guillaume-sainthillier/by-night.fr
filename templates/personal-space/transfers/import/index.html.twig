@@ -17,7 +17,7 @@
 
 {% block body -%}
     {# The member's channel: each import of theirs tells the page when it changes (TransferNotifier) #}
-    <div {{ load_page('event_transfers', {hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)}), refreshUrl: path('app_event_imports_history')}) }}>
+    <div {{ load_page('event_transfers', {hub: user_channel_hub(app.user), refreshUrl: path('app_event_imports_history')}) }}>
         <section class="row justify-content-center text-center pt-lg-3 mb-4">
             <div class="col-lg-8">
                 <twig:Section:Eyebrow icon="lucide:upload" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
@@ -39,22 +39,7 @@
                             <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'csv'}) }}"><twig:Icon name="lucide:file-text" /> CSV</a>
                         </div>
 
-                        {{ form_start(form) }}
-                        <div class="dropzone mb-2">
-                            <div class="dropzone-preview d-none"></div>
-                            <div class="dropzone-placeholder">
-                                <div class="dropzone-icon"><twig:Icon name="lucide:file-up" /></div>
-                                <div class="dropzone-text">Glissez-déposez votre fichier ou cliquez pour parcourir</div>
-                                <div class="dropzone-hint text-muted">{{ form.file.vars.help }}</div>
-                            </div>
-                            {{ form_widget(form.file, {attr: {'aria-label': form.file.vars.label}}) }}
-                        </div>
-                        {{ form_errors(form.file) }}
-                        <button type="submit" class="btn btn-teal mt-2">
-                            <twig:Icon name="lucide:search-check" />
-                            Vérifier le fichier
-                        </button>
-                        {{ form_end(form) }}
+                        {{ include('personal-space/transfers/import/_upload_form.html.twig') }}
                     </twig:FormCard>
                 {% else %}
                     <div class="alert alert-info mb-0">

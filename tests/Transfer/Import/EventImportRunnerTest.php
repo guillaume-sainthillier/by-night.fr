@@ -23,6 +23,7 @@ use DateTimeImmutable;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\refresh;
+use function Zenstruck\Foundry\Persistence\save;
 
 final class EventImportRunnerTest extends AppKernelTestCase
 {
@@ -114,6 +115,23 @@ final class EventImportRunnerTest extends AppKernelTestCase
         self::assertSame('Le Bikini', $saved->getPlaceName());
         self::assertFalse($saved->isDraft());
         self::assertSame(1, EventFactory::count(['user' => $this->user]));
+    }
+
+    public function testTheEventsTheMemberLeftOutAreSkipped(): void
+    {
+        $import = $this->check(self::HEADER
+            . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
+            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+        $import->setSkippedRows([3]);
+        save($import);
+        self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
+
+        self::getContainer()->get(EventImportRunner::class)->run($import);
+        refresh($import);
+
+        self::assertSame([1, 1], [$import->getCreatedCount(), $import->getSkippedCount()]);
+        self::assertSame('skipped', $import->getOutcomes()[1]['outcome']);
+        self::assertSame(['JAZZ'], array_map(static fn ($event) => $event->getExternalReference(), EventFactory::findBy(['user' => $this->user])));
     }
 
     public function testAnEventDeletedSinceTheCheckIsNotImported(): void

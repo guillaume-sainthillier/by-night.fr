@@ -19,7 +19,7 @@
     {# Followed live while a worker is on it: the import tells the member's channel each step, under its own IRI #}
     {% set params = {refreshUrl: path('app_event_import_status', {id: import.id}), iri: url('app_event_import_show', {id: import.id})} %}
     {% if import.status.running %}
-        {% set params = params|merge({hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)})}) %}
+        {% set params = params|merge({hub: user_channel_hub(app.user)}) %}
     {% endif %}
     <div class="row justify-content-center" {{ load_page('event_transfers', params) }}>
         <div class="col-lg-10">

@@ -24,6 +24,7 @@ use App\Transfer\Sheet\EventColumn;
 use App\Transfer\Sheet\EventSheetTemplate;
 use App\Transfer\TransferFiles;
 use App\Transfer\TransferNotifier;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,7 +45,7 @@ final class ImportController extends AbstractTransferController
     public function index(EventImportRepository $importRepository): Response
     {
         return $this->render('personal-space/transfers/import/index.html.twig', [
-            'form' => $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')]),
+            'form' => $this->getCreateForm(),
             'imports' => $importRepository->findLatestByUser($this->getAppUser()),
             'columns' => EventColumn::cases(),
         ]);
@@ -117,6 +118,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/show.html.twig', [
             'import' => $import,
+            'form' => $this->getCreateForm(),
         ]);
     }
 
@@ -129,6 +131,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/_status.html.twig', [
             'import' => $import,
+            'form' => $this->getCreateForm(),
         ]);
     }
 
@@ -142,9 +145,19 @@ final class ImportController extends AbstractTransferController
     {
         $this->denyUnlessValidToken($request, 'event-import-run-' . $import->getId());
 
+        // A first run, not a resumed one: a resumed import keeps the choice it started with
+        $firstRun = EventImportStatus::Checked === $import->getStatus();
         if (0 === $import->getValidCount()) {
             $this->addFlash('error', 'Aucun événement valide à importer : corrigez le fichier des erreurs, puis importez-le.');
         } elseif ($importRepository->transition($import, [EventImportStatus::Checked, EventImportStatus::Failed], EventImportStatus::Importing)) {
+            // The status moved in the database (a conditional UPDATE): read it back before writing anything else
+            $this->getEntityManager()->refresh($import);
+            if ($firstRun) {
+                // The warned events the member unticked
+                $import->setSkippedRows(array_map(intval(...), $request->getPayload()->all('skip')));
+                $this->getEntityManager()->flush();
+            }
+
             $bus->dispatch(new RunEventImport((int) $import->getId()));
         }
 
@@ -180,6 +193,17 @@ final class ImportController extends AbstractTransferController
         $name = pathinfo((string) $import->getOriginalName(), \PATHINFO_FILENAME);
 
         return $this->download($files, $path, $import->getFormat(), 'original' === $kind ? (string) $import->getOriginalName() : \sprintf('%s-%s.%s', $name, $kind, $import->getFormat()?->value));
+    }
+
+    /**
+     * The upload of a spreadsheet to check (app_event_import_new): on the import page, and on a report for the
+     * corrected file of its errors. None for those who may not import.
+     */
+    private function getCreateForm(): ?FormInterface
+    {
+        return $this->isGranted(EventVoter::CREATE)
+            ? $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')])
+            : null;
     }
 
     private function denyUnlessValidToken(Request $request, string $id): void

@@ -16,7 +16,7 @@
 
 {% block body -%}
     {# The member's channel: each export of theirs tells the page when it changes (TransferNotifier) #}
-    <div {{ load_page('event_transfers', {hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)}), refreshUrl: path('app_event_exports_history')}) }}>
+    <div {{ load_page('event_transfers', {hub: user_channel_hub(app.user), refreshUrl: path('app_event_exports_history')}) }}>
         <section class="row justify-content-center text-center pt-lg-3 mb-4">
             <div class="col-lg-8">
                 <twig:Section:Eyebrow icon="lucide:download" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
@@ -32,6 +32,14 @@
             <div class="col-lg-5">
                 <twig:FormCard icon="lucide:download" tone="blue" title="Nouvel export" description="Prêt en quelques instants, ci-contre.">
                     {{ form_start(form) }}
+                    {% if query or filter %}
+                        <div class="alert alert-info" id="export-list-filter">
+                            Les événements de votre liste
+                            {%- if query %}, recherche «&nbsp;{{ query }}&nbsp;»{% endif %}
+                            {%- if filter %}, {{ filter.label|lower }}{% endif %}.
+                            <a class="alert-link" href="{{ path('app_event_exports') }}">Tout exporter</a>
+                        </div>
+                    {% endif %}
                     {{ form_row(form.scope) }}
                     {{ form_row(form.format) }}
                     <button type="submit" class="btn btn-primary">

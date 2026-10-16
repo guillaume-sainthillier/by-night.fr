@@ -10,6 +10,7 @@ import '@/js/utils/css'
 
 import * as Sentry from '@sentry/browser'
 // Per-element listeners (connected on every mount)
+import bulkActions from '@/js/listeners/bulk-actions'
 import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
 import cookieSettings from '@/js/listeners/cookie-settings'
@@ -33,6 +34,7 @@ import passwordMeter from '@/js/listeners/password-meter'
 import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
 import tooltip from '@/js/listeners/tooltip'
+import transferToasts from '@/js/listeners/transfer-toasts'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
@@ -82,6 +84,7 @@ class App {
 
         this.#listeners = [
             pages,
+            bulkActions,
             citySwitcher,
             contentRemovalRequest,
             cookieSettings,
@@ -104,6 +107,7 @@ class App {
             passwordReveal,
             popup,
             tooltip,
+            transferToasts,
         ]
 
         this.#listeners.forEach((listener) => this.#tracked.set(listener, new Set()))

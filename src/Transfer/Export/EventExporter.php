@@ -57,7 +57,7 @@ final readonly class EventExporter
         $id = (int) $export->getId();
         $user = $export->getUser() ?? throw new LogicException('The export has no member.');
         $format = $export->getFormat() ?? throw new LogicException('The export has no format.');
-        $qb = $this->eventRepository->createExportQueryBuilder($user, $export->getScope());
+        $qb = $this->eventRepository->createExportQueryBuilder($user, $export->getScope(), $export->getSearchQuery(), $export->getStatusFilter());
         $export->setTotalCount((int) (clone $qb)->select('COUNT(e.id)')->getQuery()->getSingleScalarResult())->setExportedCount(0);
         $this->save($export);
 

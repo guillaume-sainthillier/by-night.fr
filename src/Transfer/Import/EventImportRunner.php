@@ -74,8 +74,21 @@ final readonly class EventImportRunner
             $local = $this->files->download($import->getSuccessFilePath() ?? throw new InvalidSheetException('Le fichier vérifié manque : vérifiez le fichier à nouveau.'), $format);
             $groups = $this->grouper->group($this->reader->read($local, $format)['rows']);
 
+            // The events the member chose not to import (warned of on the check) come out skipped
+            $skipped = array_flip($import->getSkippedRows());
             foreach (array_chunk($groups, self::CHUNK) as $chunk) {
-                array_push($outcomes, ...$this->importChunk($chunk, $user));
+                $chunkOutcomes = [];
+                foreach ($chunk as $i => $group) {
+                    if (isset($skipped[$group->first()->number])) {
+                        $chunkOutcomes[] = ['row' => $group->first()->number, 'reference' => $group->reference(), 'id' => null, 'name' => $group->first()->get(EventColumn::Name), 'outcome' => 'skipped'];
+                        unset($chunk[$i]);
+                    }
+                }
+
+                // In the file's order, the skipped ones among the others
+                $chunkOutcomes = [...$chunkOutcomes, ...$this->importChunk(array_values($chunk), $user)];
+                usort($chunkOutcomes, static fn (array $a, array $b): int => $a['row'] <=> $b['row']);
+                array_push($outcomes, ...$chunkOutcomes);
                 // Saving the events cleared the entity manager: the import is read again, its outcomes written over
                 $import = $this->progress($id, $outcomes);
                 $this->save($import);
