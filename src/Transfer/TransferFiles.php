@@ -89,10 +89,13 @@ final readonly class TransferFiles
         return null !== $path && $this->storage->fileExists($path);
     }
 
-    public function delete(?string $path): void
+    /**
+     * Removes a job's stored files: they share its directory.
+     */
+    public function deleteDirectoryOf(?string $path): void
     {
-        if (null !== $path) {
-            $this->storage->delete($path);
+        if (null !== $path && '.' !== \dirname($path)) {
+            $this->storage->deleteDirectory(\dirname($path));
         }
     }
 
