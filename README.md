@@ -135,6 +135,24 @@ services:
 `MERCURE_PUBLIC_URL=https://by-night.fr/.well-known/mercure`, a random `MERCURE_JWT_SECRET` (the same as the hub's,
 at least 32 bytes) and `MERCURE_JWT_ISSUER=https://by-night.fr`.
 
+### Members' imports and exports
+
+The members' event imports and exports run on their own Messenger transport, `transfers`
+(`MESSENGER_TRANSFERS_TRANSPORT_DSN`, set up by `deploy.sh`'s `messenger:setup-transports`), consumed by the
+`messenger-transfers` program of the worker (`docker/supervisord-worker.conf`). Their files live in
+`transfers.storage`, private objects under `private/transfers/` of the bucket, which `data.by-night.fr` never serves.
+After the first deploy, check that one is out of reach:
+
+```bash
+curl -sI https://data.by-night.fr/private/transfers/ | head -1
+```
+
+A daily host cron fails the jobs a worker left halfway and deletes those older than 30 days with their files:
+
+```bash
+docker compose exec -T worker /app/bin/console app:transfers:cleanup -vv
+```
+
 ## Setup
 
 ```bash
