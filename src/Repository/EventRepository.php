@@ -23,6 +23,7 @@ use App\Entity\UpcomingCategory;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Enum\DuplicateReason;
+use App\Enum\EventExportScope;
 use App\Enum\EventStatus;
 use App\Enum\PersonalEventFilter;
 use App\Manager\PreloadManager;
@@ -480,6 +481,43 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select('COUNT(e.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * The member's events an export of theirs covers, by id: page through them with findExportPage().
+     */
+    public function createExportQueryBuilder(User $user, EventExportScope $scope): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->where('e.user = :user')
+            ->setParameter('user', $user->getId());
+
+        $today = new DateTimeImmutable('today');
+
+        return match ($scope) {
+            EventExportScope::All => $qb,
+            EventExportScope::Upcoming => $qb->andWhere('e.endDate >= :today')->setParameter('today', $today),
+            EventExportScope::Past => $qb->andWhere('e.endDate < :today')->setParameter('today', $today),
+            EventExportScope::Drafts => $qb->andWhere('e.draft = true'),
+        };
+    }
+
+    /**
+     * A page of an export's events (createExportQueryBuilder()), after the id the previous page ended on.
+     *
+     * @return list<Event>
+     */
+    public function findExportPage(QueryBuilder $qb, int $afterId, int $size): array
+    {
+        return (clone $qb)
+            ->leftJoin('e.category', 'category')->addSelect('category')
+            ->leftJoin('e.placeCountry', 'placeCountry')->addSelect('placeCountry')
+            ->andWhere('e.id > :after')
+            ->setParameter('after', $afterId)
+            ->orderBy('e.id', SortDirection::Ascending)
+            ->setMaxResults($size)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
