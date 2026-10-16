@@ -65,17 +65,24 @@
 
             <div class="col-lg-5">
                 <twig:FormCard icon="lucide:columns-3" tone="secondary" title="Les colonnes" description="Trouvées par leur nom, dans n’importe quel ordre. Une colonne absente laisse la valeur de l’événement telle quelle.">
+                    {# The columns most files need; the others folded, the card would otherwise run far below the form #}
+                    {% set key_columns = columns|filter(column => column.required or column.value in ['reference', 'place', 'city']) %}
+                    {% set other_columns = columns|filter(column => column not in key_columns) %}
                     <dl class="mb-0">
-                        {% for column in columns %}
-                            <div class="py-2 {{ not loop.last ? 'border-bottom' }}">
-                                <dt class="fw-bold">
-                                    {{ column.label }}
-                                    {% if column.required %}<span class="badge bg-red-lt ms-1">obligatoire</span>{% endif %}
-                                </dt>
-                                <dd class="text-secondary small mb-0">{{ column.help }}</dd>
-                            </div>
+                        {% for column in key_columns %}
+                            {{ include('personal-space/transfers/import/_column.html.twig') }}
                         {% endfor %}
+                        <div class="collapse" id="import-other-columns">
+                            {% for column in other_columns %}
+                                {{ include('personal-space/transfers/import/_column.html.twig') }}
+                            {% endfor %}
+                        </div>
                     </dl>
+                    <button type="button" class="btn btn-link px-0 mt-2 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns">
+                        <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre colonne} other {Voir les {count, number} autres colonnes}}'|trans({count: other_columns|length}, 'messages+intl-icu') }}</span>
+                        <span class="when-expanded">Masquer les autres colonnes</span>
+                        <twig:Icon name="lucide:chevron-down" />
+                    </button>
                 </twig:FormCard>
             </div>
         </div>
