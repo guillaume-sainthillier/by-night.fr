@@ -15,6 +15,7 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Message Queue**: RabbitMQ via Symfony Messenger (`symfony/amqp-messenger`, transports in `config/packages/messenger.yaml`)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
 - **Frontend**: Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
+- **Real-time**: Mercure hub (protocol 1.0, own `mercure` container, `symfony/mercure-bundle`) on the site's origin under `/.well-known/mercure` (setup in the README). Members' updates are private, published with the resource's IRI as canonical topic and the member's channel as alternate (`App\Mercure\UserChannel::update()`); a page subscribes to the channel through the Twig bridge, which sets the subscriber cookie: `{{ mercure(user_channel(app.user), {subscribe: user_channel(app.user)}) }}`
 - **Error Tracking**: Sentry
 
 ## Backend Development Workflow
