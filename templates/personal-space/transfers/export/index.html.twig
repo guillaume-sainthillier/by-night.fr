@@ -16,7 +16,7 @@
 
 {% block body -%}
     {# The member's channel: each export of theirs tells the page when it changes (TransferNotifier) #}
-    <div {{ load_page('event_transfers', {hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)}), refreshUrl: path('app_event_exports_history')}) }}>
+    <div {{ load_page('event_transfers', {hub: user_channel_hub(app.user), refreshUrl: path('app_event_exports_history')}) }}>
         <section class="row justify-content-center text-center pt-lg-3 mb-4">
             <div class="col-lg-8">
                 <twig:Section:Eyebrow icon="lucide:download" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>

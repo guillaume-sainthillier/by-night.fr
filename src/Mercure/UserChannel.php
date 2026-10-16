@@ -12,6 +12,10 @@ namespace App\Mercure;
 
 use App\Entity\User;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Mercure\Authorization;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Jwt\Grant;
 use Symfony\Component\Mercure\Update;
 use Twig\Attribute\AsTwigFunction;
 
@@ -20,15 +24,18 @@ use Twig\Attribute\AsTwigFunction;
  * the resource's IRI as canonical topic and the channel as alternate topic, so a page subscribes once, to the channel,
  * and tells the resources apart by the payload's "@id".
  *
- * A page subscribes with the Twig bridge, which also sets the subscriber cookie granting that one topic:
- *
- *     {{ mercure(user_channel(app.user), {subscribe: user_channel(app.user)}) }}
+ * A page subscribes with user_channel_hub(), which gives the hub's URL matching the channel and sets the subscriber
+ * cookie granting that one topic (as the Twig mercure() bridge does), once per request: the personal space's layout
+ * and the page itself may both ask.
  */
 final readonly class UserChannel
 {
     public function __construct(
         #[Autowire('%env(APP_URL)%')]
         private string $appUrl,
+        private ?HubInterface $hub = null,
+        private ?Authorization $authorization = null,
+        private ?RequestStack $requestStack = null,
     ) {
     }
 
@@ -36,6 +43,21 @@ final readonly class UserChannel
     public function topic(User $user): string
     {
         return \sprintf('%s/users/%d', rtrim($this->appUrl, '/'), $user->getId());
+    }
+
+    /**
+     * The hub's URL subscribing to the member's channel; sets the cookie that lets them in, once per request.
+     */
+    #[AsTwigFunction(name: 'user_channel_hub')]
+    public function subscribeUrl(User $user): string
+    {
+        $topic = $this->topic($user);
+        $request = $this->requestStack?->getMainRequest();
+        if (null !== $request && null !== $this->authorization && !isset($request->attributes->get('_mercure_authorization_cookies', [])[''])) {
+            $this->authorization->setCookie($request, [new Grant([Grant::ACTION_SUBSCRIBE], [$topic])]);
+        }
+
+        return \sprintf('%s?match=%s', $this->hub?->getPublicUrl() ?? '', rawurlencode($topic));
     }
 
     /**

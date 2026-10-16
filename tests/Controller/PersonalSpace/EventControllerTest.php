@@ -72,6 +72,19 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSame(0, EventFactory::count(['id' => $eventId]));
     }
 
+    public function testTheListListensToTheMembersChannelForTheirJobs(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringEndsWith(rawurlencode('https://by-night.test/users/' . $user->getId()), (string) $crawler->filter('[data-transfer-toasts]')->attr('data-transfer-toasts'));
+        self::assertSame('__Secure-mercure_access_token', ($client->getResponse()->headers->getCookies()[0] ?? null)?->getName());
+    }
+
     public function testTheStatusFilterKeepsTheEventsItsSwitchIsSetFor(): void
     {
         $client = self::createClient();
