@@ -24,6 +24,7 @@ use App\Transfer\Sheet\EventColumn;
 use App\Transfer\Sheet\EventSheetTemplate;
 use App\Transfer\TransferFiles;
 use App\Transfer\TransferNotifier;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -117,6 +118,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/show.html.twig', [
             'import' => $import,
+            'form' => $this->correctedFileForm(),
         ]);
     }
 
@@ -129,6 +131,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/_status.html.twig', [
             'import' => $import,
+            'form' => $this->correctedFileForm(),
         ]);
     }
 
@@ -180,6 +183,16 @@ final class ImportController extends AbstractTransferController
         $name = pathinfo((string) $import->getOriginalName(), \PATHINFO_FILENAME);
 
         return $this->download($files, $path, $import->getFormat(), 'original' === $kind ? (string) $import->getOriginalName() : \sprintf('%s-%s.%s', $name, $kind, $import->getFormat()?->value));
+    }
+
+    /**
+     * The upload a report offers for the corrected file of its errors, to those who may import.
+     */
+    private function correctedFileForm(): ?FormView
+    {
+        return $this->isGranted(EventVoter::CREATE)
+            ? $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')])->createView()
+            : null;
     }
 
     private function denyUnlessValidToken(Request $request, string $id): void

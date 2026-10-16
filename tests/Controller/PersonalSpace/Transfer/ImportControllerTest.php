@@ -55,6 +55,19 @@ final class ImportControllerTest extends AppWebTestCase
         self::assertStringContainsString('/login', (string) $client->getResponse()->headers->get('Location'));
     }
 
+    public function testTheReportTakesTheCorrectedFile(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checked, 'errorFilePath' => 'imports/x/erreurs.csv', 'invalidCount' => 2]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/espace-perso/imports/' . $import->getId());
+
+        self::assertSelectorTextContains('.card-title', 'Importer le fichier corrigé');
+        self::assertSelectorExists('form[action="/espace-perso/imports"] .dropzone input[type="file"]');
+    }
+
     public function testTheTemplateIsDownloaded(): void
     {
         $client = self::createClient();

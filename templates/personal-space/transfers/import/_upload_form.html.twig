@@ -1,0 +1,18 @@
+{# The spreadsheet a member sends to be checked (EventImportType), dropped on the shared dropzone; "prompt" overrides its text #}
+{# @var form \Symfony\Component\Form\FormView #}
+{{ form_start(form) }}
+<div class="dropzone mb-2">
+    <div class="dropzone-preview d-none"></div>
+    <div class="dropzone-placeholder">
+        <div class="dropzone-icon"><twig:Icon name="lucide:file-up" /></div>
+        <div class="dropzone-text">{{ prompt|default('Glissez-déposez votre fichier ou cliquez pour parcourir') }}</div>
+        <div class="dropzone-hint text-muted">{{ form.file.vars.help }}</div>
+    </div>
+    {{ form_widget(form.file, {attr: {'aria-label': form.file.vars.label}}) }}
+</div>
+{{ form_errors(form.file) }}
+<button type="submit" class="btn btn-teal mt-2">
+    <twig:Icon name="lucide:search-check" />
+    Vérifier le fichier
+</button>
+{{ form_end(form) }}

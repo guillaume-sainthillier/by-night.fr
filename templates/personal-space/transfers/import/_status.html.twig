@@ -251,4 +251,17 @@
             </div>
         {% endif %}
     {% endfor %}
+
+    {# The rows the check refused, fixed by the member in their file, sent again from here: the rows already imported match their events #}
+    {% if import.errorFilePath and form and status in ['checked', 'completed', 'failed'] %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Importer le fichier corrigé</h3>
+                <p class="text-secondary small">
+                    Corrigez les lignes du <a href="{{ path('app_event_import_file', {id: import.id, kind: 'erreurs'}) }}">fichier des erreurs</a> (la colonne «&nbsp;Erreurs&nbsp;» dit pourquoi), puis déposez-le ici&nbsp;: il est vérifié à son tour.
+                </p>
+                {{ include('personal-space/transfers/import/_upload_form.html.twig', {prompt: 'Glissez-déposez le fichier corrigé ou cliquez pour parcourir'}) }}
+            </div>
+        </div>
+    {% endif %}
 {% endif %}
