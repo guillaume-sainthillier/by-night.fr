@@ -25,12 +25,42 @@ use function Zenstruck\Foundry\Persistence\refresh;
 
 final class ImportControllerTest extends AppWebTestCase
 {
+    public function testThePageSubscribesTheMemberToTheirChannel(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/imports');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('form[action="/espace-perso/imports"] input[type="file"]');
+        self::assertSelectorExists('form[action="/espace-perso/imports"] .dropzone input[type="file"][accept=".csv,.xlsx"][data-max-size="2000000"]');
+        self::assertSelectorExists('nav a.active[href="/espace-perso/imports"]');
+        $cookie = $client->getResponse()->headers->getCookies()[0] ?? null;
+        self::assertSame('__Secure-mercure_access_token', $cookie?->getName());
+        self::assertSame('/.well-known/mercure', $cookie->getPath());
+        self::assertStringContainsString(
+            rawurlencode('https://by-night.test/users/' . $user->getId()),
+            (string) $crawler->filter('[data-page]')->attr('data-page-params'),
+        );
+    }
+
+    public function testAVisitorIsAskedToLogIn(): void
+    {
+        $client = self::createClient();
+        $client->request('GET', '/espace-perso/imports');
+
+        self::assertResponseRedirects();
+        self::assertStringContainsString('/login', (string) $client->getResponse()->headers->get('Location'));
+    }
+
     public function testTheTemplateIsDownloaded(): void
     {
         $client = self::createClient();
         $client->loginUser(UserFactory::createOne());
 
-        $client->request('GET', '/espace-perso/import-export/modele.csv');
+        $client->request('GET', '/espace-perso/imports/modele.csv');
 
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/csv; charset=UTF-8');
@@ -43,7 +73,7 @@ final class ImportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/import-export')->filter('form[action="/espace-perso/imports"]')->form(), [
+        $client->submit($client->request('GET', '/espace-perso/imports')->filter('form[action="/espace-perso/imports"]')->form(), [
             'event_import[file]' => $this->upload("Nom;Date de début\nConcert;12/03/2027\n", 'mes-evenements.csv'),
         ]);
 
@@ -62,11 +92,11 @@ final class ImportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/import-export')->filter('form[action="/espace-perso/imports"]')->form(), [
+        $client->submit($client->request('GET', '/espace-perso/imports')->filter('form[action="/espace-perso/imports"]')->form(), [
             'event_import[file]' => $this->upload('%PDF-1.4', 'affiche.pdf'),
         ]);
 
-        self::assertResponseRedirects('/espace-perso/import-export');
+        self::assertResponseRedirects('/espace-perso/imports');
         self::assertSame(0, EventImportFactory::count(['user' => $user]));
         $client->followRedirect();
         self::assertSelectorTextContains('.alert-danger', 'Importez un fichier CSV ou Excel (XLSX).');

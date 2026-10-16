@@ -20,6 +20,7 @@ use App\Repository\EventExportRepository;
 use App\Repository\EventImportRepository;
 use App\Security\Voter\EventVoter;
 use App\Security\Voter\ImportVoter;
+use App\Transfer\Sheet\EventColumn;
 use App\Transfer\Sheet\EventSheetTemplate;
 use App\Transfer\TransferFiles;
 use App\Transfer\TransferNotifier;
@@ -33,12 +34,34 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * A member's import of events: the template, the upload, then its report page, which follows the check and the
- * import live and reads its state again here (status()) when the import tells it it changed or when it reconnects.
+ * A member's import of events: the page with the template and the upload, then each import's report, which follows
+ * the check and the import live and reads its state again here (status()) when the import tells it it changed or
+ * when it reconnects.
  */
 final class ImportController extends AbstractTransferController
 {
-    #[Route(path: '/import-export/modele.{format<csv|xlsx>}', name: 'app_event_import_template', methods: ['GET'])]
+    #[Route(path: '/imports', name: 'app_event_imports', methods: ['GET'])]
+    public function index(EventImportRepository $importRepository): Response
+    {
+        return $this->render('personal-space/transfers/import/index.html.twig', [
+            'form' => $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')]),
+            'imports' => $importRepository->findLatestByUser($this->getAppUser()),
+            'columns' => EventColumn::cases(),
+        ]);
+    }
+
+    /**
+     * The member's latest imports, which the page reads again when one of them changes.
+     */
+    #[Route(path: '/imports/historique', name: 'app_event_imports_history', methods: ['GET'])]
+    public function history(EventImportRepository $importRepository): Response
+    {
+        return $this->render('personal-space/transfers/import/_history.html.twig', [
+            'imports' => $importRepository->findLatestByUser($this->getAppUser()),
+        ]);
+    }
+
+    #[Route(path: '/imports/modele.{format<csv|xlsx>}', name: 'app_event_import_template', methods: ['GET'])]
     public function template(string $format, EventSheetTemplate $template, TransferFiles $files): Response
     {
         $format = TransferFormat::from($format);
@@ -60,11 +83,11 @@ final class ImportController extends AbstractTransferController
         if (!$form->isSubmitted() || !$form->isValid()) {
             $this->addFlash('error', $this->formErrors($form) ?: 'Le fichier n’a pas pu être envoyé.');
 
-            return $this->redirectToRoute('app_event_transfers');
+            return $this->redirectToRoute('app_event_imports');
         }
 
         if (!$this->hasNoJobRunning($user, $importRepository, $exportRepository)) {
-            return $this->redirectToRoute('app_event_transfers');
+            return $this->redirectToRoute('app_event_imports');
         }
 
         /** @var UploadedFile $file */
@@ -142,7 +165,7 @@ final class ImportController extends AbstractTransferController
             $notifier->importChanged($import);
         }
 
-        return $this->redirectToRoute('app_event_transfers');
+        return $this->redirectToRoute('app_event_imports');
     }
 
     #[Route(path: '/imports/{id<%patterns.id%>}/fichiers/{kind<original|valides|erreurs>}', name: 'app_event_import_file', methods: ['GET'])]

@@ -77,7 +77,7 @@ final class SheetReader
                     }
 
                     if (self::MAX_ROWS === \count($rows)) {
-                        throw new InvalidSheetException(\sprintf('Le fichier dépasse %d lignes : découpez-le en plusieurs imports.', self::MAX_ROWS));
+                        throw new InvalidSheetException(\sprintf('Le fichier dépasse %s lignes : découpez-le en plusieurs imports.', number_format(self::MAX_ROWS, thousands_separator: "\u{a0}")));
                     }
 
                     $rows[] = new SheetRow((int) $index, array_values($cells), $values);

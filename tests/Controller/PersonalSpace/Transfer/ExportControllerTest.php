@@ -23,6 +23,36 @@ use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 final class ExportControllerTest extends AppWebTestCase
 {
+    public function testThePageSubscribesTheMemberToTheirChannel(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/espace-perso/exports');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('form[action="/espace-perso/exports"] select[name="event_export[format]"]');
+        self::assertSelectorExists('nav a.active[href="/espace-perso/exports"]');
+        self::assertSame('__Secure-mercure_access_token', ($client->getResponse()->headers->getCookies()[0] ?? null)?->getName());
+        self::assertStringContainsString('/espace-perso/exports/historique', (string) $crawler->filter('[data-page]')->attr('data-page-params'));
+    }
+
+    public function testTheHistoryListsTheMembersExportsOnly(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        EventExportFactory::createOne(['user' => $user, 'scope' => EventExportScope::Drafts]);
+        EventExportFactory::createOne(['scope' => EventExportScope::Past]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/espace-perso/exports/historique');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.list-group', 'Brouillons');
+        self::assertSelectorTextNotContains('.list-group', 'Passés');
+    }
+
     public function testAMemberRunsOneJobAtATime(): void
     {
         $client = self::createClient();
@@ -30,7 +60,7 @@ final class ExportControllerTest extends AppWebTestCase
         EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checking]);
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/import-export')->filter('form[action="/espace-perso/exports"]')->form());
+        $client->submit($client->request('GET', '/espace-perso/exports')->filter('form[action="/espace-perso/exports"]')->form());
 
         self::assertSame(0, EventExportFactory::count(['user' => $user]));
         $client->followRedirect();
@@ -43,7 +73,7 @@ final class ExportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne();
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/import-export')->filter('form[action="/espace-perso/exports"]')->form(), [
+        $client->submit($client->request('GET', '/espace-perso/exports')->filter('form[action="/espace-perso/exports"]')->form(), [
             'event_export[scope]' => 'upcoming',
             'event_export[format]' => 'ics',
         ]);

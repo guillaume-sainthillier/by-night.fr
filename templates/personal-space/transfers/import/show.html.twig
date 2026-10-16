@@ -6,7 +6,7 @@
 {% block page_title 'Import de vos événements' %}
 
 {% block breadcrumb_personal_space -%}
-    {% do menu.addItem('Import / export', url('app_event_transfers')) %}
+    {% do menu.addItem('Importer', url('app_event_imports')) %}
     {% do menu.addItem(import.originalName, url('app_event_import_show', {id: import.id})) %}
 {%- endblock %}
 
@@ -34,7 +34,7 @@
             </div>
 
             <p class="text-center mt-4">
-                <a href="{{ path('app_event_transfers') }}"><twig:Icon name="lucide:arrow-left" /> Retour aux imports et exports</a>
+                <a href="{{ path('app_event_imports') }}"><twig:Icon name="lucide:arrow-left" /> Retour aux imports</a>
             </p>
         </div>
     </div>

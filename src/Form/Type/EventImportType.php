@@ -24,12 +24,16 @@ final class EventImportType extends AbstractType
 {
     public const string MAX_SIZE = '2M';
 
+    /** MAX_SIZE in bytes, decimal as the File constraint counts it */
+    public const int MAX_BYTES = 2_000_000;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('file', FileType::class, [
             'label' => 'Votre fichier',
-            'help' => \sprintf('CSV ou Excel (XLSX), %d lignes et 2 Mo au plus.', SheetReader::MAX_ROWS),
-            'attr' => ['accept' => '.csv,.xlsx'],
+            'help' => \sprintf('CSV ou Excel (XLSX), %s lignes et 2 Mo au plus.', number_format(SheetReader::MAX_ROWS, thousands_separator: "\u{a0}")),
+            // The dropzone and the browser's picker take these; the size is checked before sending (file-max-size.js)
+            'attr' => ['accept' => '.csv,.xlsx', 'data-max-size' => self::MAX_BYTES],
             'constraints' => [
                 new NotNull(message: 'Choisissez un fichier.'),
                 new File(

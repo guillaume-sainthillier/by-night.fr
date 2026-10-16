@@ -45,7 +45,7 @@
     <div class="alert alert-danger">
         <h4 class="alert-title">Le fichier n’a pas pu être vérifié</h4>
         <div>{{ import.failureReason }}</div>
-        <a class="alert-link" href="{{ path('app_event_transfers') }}">Envoyer un autre fichier</a>
+        <a class="alert-link" href="{{ path('app_event_imports') }}">Envoyer un autre fichier</a>
     </div>
 {% elseif status == 'cancelled' %}
     <div class="alert alert-secondary">Cet import a été annulé&nbsp;: aucun événement n’a été enregistré.</div>

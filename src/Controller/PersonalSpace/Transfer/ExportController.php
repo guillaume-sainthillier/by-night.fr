@@ -26,10 +26,31 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * A member's export of events: started from the import / export page, followed in its history, then downloaded.
+ * A member's export of events: started from its page, followed live in the page's history (read again here,
+ * history(), when an export changes), then downloaded.
  */
 final class ExportController extends AbstractTransferController
 {
+    #[Route(path: '/exports', name: 'app_event_exports', methods: ['GET'])]
+    public function index(EventExportRepository $exportRepository): Response
+    {
+        return $this->render('personal-space/transfers/export/index.html.twig', [
+            'form' => $this->createForm(EventExportType::class, null, ['action' => $this->generateUrl('app_event_export_new')]),
+            'exports' => $exportRepository->findLatestByUser($this->getAppUser()),
+        ]);
+    }
+
+    /**
+     * The member's latest exports, which the page reads again when one of them changes.
+     */
+    #[Route(path: '/exports/historique', name: 'app_event_exports_history', methods: ['GET'])]
+    public function history(EventExportRepository $exportRepository): Response
+    {
+        return $this->render('personal-space/transfers/export/_history.html.twig', [
+            'exports' => $exportRepository->findLatestByUser($this->getAppUser()),
+        ]);
+    }
+
     #[Route(path: '/exports', name: 'app_event_export_new', methods: ['POST'])]
     public function new(Request $request, EventImportRepository $importRepository, EventExportRepository $exportRepository, MessageBusInterface $bus): Response
     {
@@ -39,11 +60,11 @@ final class ExportController extends AbstractTransferController
         if (!$form->isSubmitted() || !$form->isValid()) {
             $this->addFlash('error', $this->formErrors($form) ?: 'L’export n’a pas pu être lancé.');
 
-            return $this->redirectToRoute('app_event_transfers');
+            return $this->redirectToRoute('app_event_exports');
         }
 
         if (!$this->hasNoJobRunning($user, $importRepository, $exportRepository)) {
-            return $this->redirectToRoute('app_event_transfers');
+            return $this->redirectToRoute('app_event_exports');
         }
 
         /** @var EventExportScope $scope */
@@ -58,7 +79,7 @@ final class ExportController extends AbstractTransferController
         $bus->dispatch(new RunEventExport((int) $export->getId()));
         $this->addFlash('success', 'Votre export est lancé : il sera prêt au téléchargement dans un instant, ci-dessous.');
 
-        return $this->redirectToRoute('app_event_transfers', ['_fragment' => 'historique']);
+        return $this->redirectToRoute('app_event_exports', ['_fragment' => 'historique']);
     }
 
     /**

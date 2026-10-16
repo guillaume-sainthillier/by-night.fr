@@ -120,7 +120,7 @@ final class SheetReaderTest extends TestCase
     public function testTooManyRowsAreTurnedDown(): void
     {
         $this->expectException(InvalidSheetException::class);
-        $this->expectExceptionMessage('Le fichier dépasse 1000 lignes');
+        $this->expectExceptionMessage("Le fichier dépasse 1\u{a0}000 lignes");
 
         $this->readCsv("Nom;Date de début\n" . str_repeat("Concert;12/03/2027\n", SheetReader::MAX_ROWS + 1));
     }

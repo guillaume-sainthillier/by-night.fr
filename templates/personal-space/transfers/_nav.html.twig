@@ -1,0 +1,11 @@
+{# Between the import and the export pages of the personal space; "active" names the page shown #}
+<nav class="nav nav-segmented nav-lg mb-0" aria-label="Importer ou exporter">
+    <a class="nav-link {{ active == 'import' ? 'active' }}" href="{{ path('app_event_imports') }}" {% if active == 'import' %}aria-current="page"{% endif %}>
+        <twig:Icon name="lucide:upload" />
+        Importer
+    </a>
+    <a class="nav-link {{ active == 'export' ? 'active' }}" href="{{ path('app_event_exports') }}" {% if active == 'export' %}aria-current="page"{% endif %}>
+        <twig:Icon name="lucide:download" />
+        Exporter
+    </a>
+</nav>
