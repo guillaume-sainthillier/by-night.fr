@@ -43,4 +43,5 @@ return [
     NotFloran\MjmlBundle\MjmlBundle::class => ['all' => true],
     Symfony\Reprise\RepriseBundle::class => ['all' => true],
     Silarhi\LlmsTxtBundle\LlmsTxtBundle::class => ['all' => true],
+    Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
 ];
