@@ -102,16 +102,19 @@ the path to it (no compression, events flushed as they come):
 </Location>
 ```
 
-In production, the hub is a service of `/apps/by-night.fr/docker-compose.yaml`, routed by Traefik on the same
-host. Its alias must be unique on the shared `web` network, where several stacks run a service of the same name:
+In production, the hub is a service of `/apps/by-night.fr/docker-compose.yaml`: Traefik routes
+`by-night.fr/.well-known/mercure` to it (above the app's router), and the app and the worker publish to it over the
+stack's own network, under an alias no other stack uses (the worker is not on `web`). Its JWT key is
+`MERCURE_JWT_SECRET` of the stack's `.env`, also copied into `app.env`: rotate both together.
 
 ```yaml
 services:
     mercure:
         image: dunglas/mercure:v1.1.2
-        restart: unless-stopped
+        container_name: '${APP_NAME}-mercure'
         environment:
             SERVER_NAME: ':80'
+            # Traefik is a trusted proxy: the hub takes its public URL (the tokens' audience) from X-Forwarded-*
             GLOBAL_OPTIONS: |-
                 servers {
                     trusted_proxies static private_ranges
@@ -119,21 +122,33 @@ services:
             MERCURE_TRUSTED_ISSUERS: 'https://by-night.fr'
             MERCURE_PUBLISHER_JWT_KEY: '${MERCURE_JWT_SECRET}'
             MERCURE_SUBSCRIBER_JWT_KEY: '${MERCURE_JWT_SECRET}'
+            # Restarts close the event streams within 5 s (pages reconnect) instead of write_timeout's 10 min
+            MERCURE_EXTRA_DIRECTIVES: 'drain_timeout 5s'
         volumes:
             - mercure_data:/data
             - mercure_config:/config
-        networks:
-            web:
-                aliases: [by-night-mercure]
         labels:
-            traefik.enable: 'true'
-            traefik.http.routers.by-night-mercure.rule: 'Host(`by-night.fr`) && PathPrefix(`/.well-known/mercure`)'
-            traefik.http.services.by-night-mercure.loadbalancer.server.port: '80'
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.${APP_NAME}-mercure.rule=(Host(`by-night.fr`) || Host(`www.by-night.fr`)) && PathPrefix(`/.well-known/mercure`)'
+            - 'traefik.http.routers.${APP_NAME}-mercure.priority=1000'
+            - 'traefik.http.routers.${APP_NAME}-mercure.entrypoints=websecure'
+            - 'traefik.http.routers.${APP_NAME}-mercure.tls=true'
+            - 'traefik.http.routers.${APP_NAME}-mercure.middlewares=sts,strip-www'
+            - 'traefik.http.routers.${APP_NAME}-mercure.service=${APP_NAME}-mercure'
+            - 'traefik.http.services.${APP_NAME}-mercure.loadbalancer.server.port=80'
+        stop_grace_period: 10s
+        restart: unless-stopped
+        mem_limit: 256m
+        networks:
+            default:
+                aliases: [by-night-mercure]
+            web:
 ```
 
 `app.env` then sets `MERCURE_URL=http://by-night-mercure/.well-known/mercure`,
-`MERCURE_PUBLIC_URL=https://by-night.fr/.well-known/mercure`, a random `MERCURE_JWT_SECRET` (the same as the hub's,
-at least 32 bytes) and `MERCURE_JWT_ISSUER=https://by-night.fr`.
+`MERCURE_PUBLIC_URL=https://by-night.fr/.well-known/mercure`, `MERCURE_JWT_SECRET` (the hub's, at least 32 bytes) and
+`MERCURE_JWT_ISSUER=https://by-night.fr`. Cloudflare streams the events (no cache: the hub answers `private,
+no-store`); its idle cut (~100 s) is above the hub's 40 s heartbeat.
 
 ### Members' imports and exports
 
