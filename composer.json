@@ -39,7 +39,7 @@
         "ext-zip": "*",
         "ext-zlib": "*",
         "api-platform/core": "^5.0.3",
-        "aws/aws-sdk-php": "^3.400.1",
+        "aws/aws-sdk-php": "^3.401.1",
         "babdev/pagerfanta-bundle": "^4.7",
         "beberlei/doctrineextensions": "^1.5",
         "doctrine/doctrine-bundle": "^3.3.2",
