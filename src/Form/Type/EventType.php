@@ -235,6 +235,19 @@ final class EventType extends AbstractType
             return;
         }
 
+        // A single date is the event's own: the form shows it as "Une date", without the list of dates
+        if (1 === \count($data->timesheets)) {
+            $timesheet = reset($data->timesheets);
+            $data->startDate = $timesheet->startAt ?? $data->startDate;
+            $data->endDate = $timesheet->endAt ?? $data->endDate;
+            $data->startTime = $timesheet->startTime;
+            $data->endTime = $timesheet->endTime;
+            $data->hours = $timesheet->hours ?? $data->hours;
+            $data->timesheets = [];
+
+            return;
+        }
+
         $slots = array_unique(array_map(self::slot(...), $data->timesheets));
         $shared = 1 === \count($slots) && '|' !== reset($slots) ? $data->timesheets[0] : null;
         $data->startTime = $shared?->startTime;
@@ -300,15 +313,11 @@ final class EventType extends AbstractType
 
     /**
      * The dates with neither times nor precisions of their own take the default slot; the default precisions are
-     * shown for them as they are (SessionHours). A default typed as text ("20h", "de 20h à 23h") is a slot.
+     * shown for them as they are (SessionHours). A default typed as text ("20h", "de 20h à 23h") is a slot, the one
+     * of the event itself when it has a single date ("Une date", no list of dates).
      */
     private function applyDefaultSlot(EventDto $data): void
     {
-        if ([] === $data->timesheets) {
-            // A single session: the event's times are its own
-            return;
-        }
-
         $typed = null === $data->startTime && null === $data->endTime ? HoursLabel::parse($data->hours) : null;
         if (null !== $typed) {
             [$data->startTime, $data->endTime] = $typed;
