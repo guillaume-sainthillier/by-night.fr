@@ -78,10 +78,10 @@
                             {% endfor %}
                         </div>
                     </dl>
-                    <button type="button" class="btn btn-link px-0 mt-2 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns">
+                    <button type="button" class="btn btn-sm w-100 mt-2 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns">
                         <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre colonne} other {Voir les {count, number} autres colonnes}}'|trans({count: other_columns|length}, 'messages+intl-icu') }}</span>
                         <span class="when-expanded">Masquer les autres colonnes</span>
-                        <twig:Icon name="lucide:chevron-down" />
+                        <twig:Icon name="lucide:chevron-down" class="ms-1" />
                     </button>
                 </twig:FormCard>
             </div>
