@@ -24,7 +24,7 @@ use App\Transfer\Sheet\EventColumn;
 use App\Transfer\Sheet\EventSheetTemplate;
 use App\Transfer\TransferFiles;
 use App\Transfer\TransferNotifier;
-use Symfony\Component\Form\FormView;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +45,7 @@ final class ImportController extends AbstractTransferController
     public function index(EventImportRepository $importRepository): Response
     {
         return $this->render('personal-space/transfers/import/index.html.twig', [
-            'form' => $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')]),
+            'form' => $this->getCreateForm(),
             'imports' => $importRepository->findLatestByUser($this->getAppUser()),
             'columns' => EventColumn::cases(),
         ]);
@@ -118,7 +118,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/show.html.twig', [
             'import' => $import,
-            'form' => $this->correctedFileForm(),
+            'form' => $this->getCreateForm(),
         ]);
     }
 
@@ -131,7 +131,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/_status.html.twig', [
             'import' => $import,
-            'form' => $this->correctedFileForm(),
+            'form' => $this->getCreateForm(),
         ]);
     }
 
@@ -196,12 +196,13 @@ final class ImportController extends AbstractTransferController
     }
 
     /**
-     * The upload a report offers for the corrected file of its errors, to those who may import.
+     * The upload of a spreadsheet to check (app_event_import_new): on the import page, and on a report for the
+     * corrected file of its errors. None for those who may not import.
      */
-    private function correctedFileForm(): ?FormView
+    private function getCreateForm(): ?FormInterface
     {
         return $this->isGranted(EventVoter::CREATE)
-            ? $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')])->createView()
+            ? $this->createForm(EventImportType::class, null, ['action' => $this->generateUrl('app_event_import_new')])
             : null;
     }
 
