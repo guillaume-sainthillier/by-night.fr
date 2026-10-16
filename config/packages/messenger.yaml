@@ -28,6 +28,13 @@ framework:
                 retry_strategy:
                     max_retries: 10
                     delay: 10000
+            # The members' imports and exports: a 1000-row check or import holds its worker a minute or two, which
+            # the Elasticsearch updates queued on "async" should not wait for. Not retried: a job that failed says so
+            # on its page (CheckFailed, Failed), and a stuck one is failed by app:transfers:cleanup.
+            transfers:
+                dsn: '%env(MESSENGER_TRANSFERS_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 0
             image:
                 dsn: '%env(MESSENGER_IMAGE_TRANSPORT_DSN)%'
                 retry_strategy:
@@ -55,6 +62,9 @@ framework:
             App\Message\RemoveImageThumbnails: async
             App\Message\RecountUpcomingEvents: async
             App\Message\DownloadEventImages: image
+            App\Message\CheckEventImport: transfers
+            App\Message\RunEventImport: transfers
+            App\Message\RunEventExport: transfers
             FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
             App\Elasticsearch\Message\RefreshElasticaIndex: elastica
             App\Elasticsearch\Message\InsertManyDocuments: async
@@ -75,3 +85,4 @@ when@test:
                 failed: 'in-memory://'
                 failed-event: 'in-memory://'
                 parser: 'in-memory://'
+                transfers: 'in-memory://'

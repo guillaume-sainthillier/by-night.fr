@@ -41,6 +41,7 @@ const pages = [
     'user',
     'personal_space_list',
     'personal_space_event',
+    'event_transfers',
 ]
 
 export default defineConfig(({ mode }) => {

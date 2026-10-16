@@ -1,0 +1,98 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{# @var form \Symfony\Component\Form\FormView #}
+{# @var columns \App\Transfer\Sheet\EventColumn[] #}
+
+{% block title 'Importer mes événements' %}
+{% block page_title 'Importer des événements' %}
+
+{% block breadcrumb_personal_space -%}
+    {% do menu.addItem('Importer', url('app_event_imports')) %}
+{%- endblock %}
+
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% block body -%}
+    {# The member's channel: each import of theirs tells the page when it changes (TransferNotifier) #}
+    <div {{ load_page('event_transfers', {hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)}), refreshUrl: path('app_event_imports_history')}) }}>
+        <section class="row justify-content-center text-center pt-lg-3 mb-4">
+            <div class="col-lg-8">
+                <twig:Section:Eyebrow icon="lucide:upload" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold mb-3">{{ block('page_title') }}</h1>
+                <p class="lead text-secondary mb-4">
+                    Publiez vos événements en une fois depuis un tableur. Ils sont vérifiés d’abord, importés ensuite&nbsp;: rien n’est publié avant votre feu vert.
+                </p>
+                {{ include('personal-space/transfers/_nav.html.twig', {active: 'import'}) }}
+            </div>
+        </section>
+
+        <div class="row row-cards">
+            <div class="col-lg-7">
+                {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
+                    <twig:FormCard icon="lucide:file-spreadsheet" tone="teal" title="Votre fichier" description="Une ligne par date ; les lignes d’une même référence forment un seul événement.">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="text-secondary small">Partez du modèle&nbsp;:</span>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'xlsx'}) }}"><twig:Icon name="lucide:file-spreadsheet" /> Excel</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'csv'}) }}"><twig:Icon name="lucide:file-text" /> CSV</a>
+                        </div>
+
+                        {{ form_start(form) }}
+                        <div class="dropzone mb-2">
+                            <div class="dropzone-preview d-none"></div>
+                            <div class="dropzone-placeholder">
+                                <div class="dropzone-icon"><twig:Icon name="lucide:file-up" /></div>
+                                <div class="dropzone-text">Glissez-déposez votre fichier ou cliquez pour parcourir</div>
+                                <div class="dropzone-hint text-muted">{{ form.file.vars.help }}</div>
+                            </div>
+                            {{ form_widget(form.file, {attr: {'aria-label': form.file.vars.label}}) }}
+                        </div>
+                        {{ form_errors(form.file) }}
+                        <button type="submit" class="btn btn-teal mt-2">
+                            <twig:Icon name="lucide:search-check" />
+                            Vérifier le fichier
+                        </button>
+                        {{ form_end(form) }}
+                    </twig:FormCard>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        Vérifiez votre adresse e-mail pour publier des événements, et les importer.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-5">
+                <twig:FormCard icon="lucide:columns-3" tone="secondary" title="Les colonnes" description="Trouvées par leur nom, dans n’importe quel ordre. Une colonne absente laisse la valeur de l’événement telle quelle.">
+                    {# The columns most files need; the others folded, the card would otherwise run far below the form #}
+                    {% set key_columns = columns|filter(column => column.required or column.value in ['reference', 'place', 'city']) %}
+                    {% set other_columns = columns|filter(column => column not in key_columns) %}
+                    <dl class="mb-0">
+                        {% for column in key_columns %}
+                            {{ include('personal-space/transfers/import/_column.html.twig') }}
+                        {% endfor %}
+                        <div class="collapse" id="import-other-columns">
+                            {% for column in other_columns %}
+                                {{ include('personal-space/transfers/import/_column.html.twig') }}
+                            {% endfor %}
+                        </div>
+                    </dl>
+                    <button type="button" class="btn btn-link px-0 mt-2 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns">
+                        <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre colonne} other {Voir les {count, number} autres colonnes}}'|trans({count: other_columns|length}, 'messages+intl-icu') }}</span>
+                        <span class="when-expanded">Masquer les autres colonnes</span>
+                        <twig:Icon name="lucide:chevron-down" />
+                    </button>
+                </twig:FormCard>
+            </div>
+        </div>
+
+        <section class="mt-5" id="historique" data-transfer-refresh>
+            {{ include('personal-space/transfers/import/_history.html.twig') }}
+        </section>
+    </div>
+{%- endblock %}
+
+{% block js -%}
+    {{ reprise_entry_script_tags('event_transfers') }}
+{%- endblock %}

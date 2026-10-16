@@ -1,0 +1,16 @@
+{# The member's latest imports (ImportController::history()), read again when one of them changes #}
+{# @var imports \App\Entity\EventImport[] #}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Vos derniers imports</h3>
+    </div>
+    {% if imports is empty %}
+        <div class="card-body text-secondary">Aucun import pour l’instant&nbsp;: votre premier fichier apparaîtra ici, avec son bilan.</div>
+    {% else %}
+        <div class="list-group list-group-flush">
+            {% for import in imports %}
+                {{ include('personal-space/transfers/import/_row.html.twig') }}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

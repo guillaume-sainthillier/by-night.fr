@@ -91,6 +91,62 @@ final readonly class MemberEventPublisher
         return $event;
     }
 
+    /**
+     * Saves a batch of a member's imported events (App\Transfer\Import\EventImportRunner) in one go through the
+     * pipeline, then gives each what only a member's event has: a new one is a draft unless the file says otherwise,
+     * and its author goes; a changed one keeps its draft state unless the file says otherwise. Both take the
+     * member's reference.
+     *
+     * @param list<array{dto: EventDto, new: bool, draft: ?bool, reference: ?string}> $items
+     *
+     * @return list<?int> the saved event of each item, null for one the pipeline turned down
+     */
+    public function saveImported(User $author, array $items): array
+    {
+        foreach ($items as $item) {
+            if (!$item['new'] && null !== $item['dto']->externalId) {
+                $item['dto']->externalUpdatedAt = new DateTimeImmutable();
+            }
+        }
+
+        $this->doctrineEventHandler->handleMany(array_column($items, 'dto'));
+
+        $author = $this->entityManager->getReference(User::class, $author->getId());
+        $ids = [];
+        $created = [];
+        foreach ($items as $item) {
+            $dto = $item['dto'];
+            if (null === $dto->entityId || !($dto->reject?->isValid() ?? true) || !($dto->place?->reject?->isValid() ?? true)) {
+                $ids[] = null;
+
+                continue;
+            }
+
+            $event = $this->getEvent($dto);
+            $draft = $item['new'] ? ($item['draft'] ?? true) : $item['draft'];
+            if (null !== $draft) {
+                $event->setDraft($draft);
+            }
+
+            if (null !== $item['reference']) {
+                $event->setExternalReference($item['reference']);
+            }
+
+            if ($item['new']) {
+                $created[] = $event;
+            }
+
+            $ids[] = $dto->entityId;
+        }
+
+        $this->entityManager->flush();
+        foreach ($created as $event) {
+            $this->eventParticipationManager->participate($author, $event, true);
+        }
+
+        return $ids;
+    }
+
     private function getEvent(EventDto $dto): Event
     {
         return $this->entityManager->getReference(Event::class, $dto->entityId ?? throw new LogicException('The event was not saved.'));

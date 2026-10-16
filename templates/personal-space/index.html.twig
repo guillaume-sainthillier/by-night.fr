@@ -32,6 +32,10 @@
                         Publier un événement
                     </a>
                 {% endif %}
+                <a class="btn btn-outline-secondary btn-lg" href="{{ path('app_event_imports') }}">
+                    <twig:Icon name="lucide:upload" />
+                    Importer
+                </a>
             </div>
         </section>
 
@@ -72,6 +76,13 @@
                             </a>
                         </div>
                     {% endif %}
+                    {# The list's events, in a spreadsheet or a calendar #}
+                    <div class="col-auto">
+                        <a href="{{ path('app_event_exports') }}" class="btn btn-outline-secondary">
+                            <twig:Icon name="lucide:download" />
+                            <span class="d-none d-sm-inline">Exporter</span>
+                        </a>
+                    </div>
                 </form>
             </div>
             {% if events|length > 0 %}

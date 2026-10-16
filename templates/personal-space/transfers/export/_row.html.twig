@@ -1,0 +1,31 @@
+{# An export of the member's events, in the history: its progress while it runs, its file once written #}
+{# @var export \App\Entity\EventExport #}
+<div class="list-group-item">
+    <div class="row align-items-center g-3">
+        <div class="col text-truncate">
+            <div class="fw-bold text-truncate">{{ export.scope.label }} · {{ export.format.label }}</div>
+            <div class="text-secondary small">
+                {{ export.createdAt|diff_date }}
+                {%- if export.totalCount > 0 %} · {{ '{count, plural, one {{count, number} événement} other {{count, number} événements}}'|trans({count: export.totalCount}, 'messages+intl-icu') }}{% endif %}
+            </div>
+        </div>
+        <div class="col-auto">
+            {% if export.status.value == 'completed' %}
+                <a class="btn btn-sm btn-primary" href="{{ path('app_event_export_file', {id: export.id}) }}">
+                    <twig:Icon name="lucide:download" />
+                    Télécharger
+                </a>
+            {% else %}
+                <span class="badge bg-{{ export.status.color }}-lt">{{ export.status.label }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% if export.status.running and export.totalCount > 0 %}
+        {% set percent = (export.exportedCount / export.totalCount * 100)|round %}
+        <div class="progress progress-sm mt-2">
+            <div class="progress-bar" style="width: {{ percent }}%" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ percent }}&nbsp;% exporté"></div>
+        </div>
+    {% elseif export.failureReason %}
+        <div class="text-danger small mt-2">{{ export.failureReason }}</div>
+    {% endif %}
+</div>

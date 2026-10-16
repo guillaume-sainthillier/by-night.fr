@@ -1,0 +1,31 @@
+# Mercure hub (protocol 1.0): its own container (`mercure` in docker-compose.yml), served on the site's origin under
+# /.well-known/mercure so the subscriber cookie set by the Twig mercure() function reaches it.
+# The app publishes to MERCURE_URL (internal), browsers subscribe on MERCURE_PUBLIC_URL; the bundle puts both in the
+# publisher token's "aud". MERCURE_JWT_ISSUER must equal the hub's MERCURE_TRUSTED_ISSUERS.
+mercure:
+    hubs:
+        default:
+            url: '%env(MERCURE_URL)%'
+            public_url: '%env(MERCURE_PUBLIC_URL)%'
+            jwt:
+                secret: '%env(MERCURE_JWT_SECRET)%'
+                publish: '*'
+                claims:
+                    iss: '%env(MERCURE_JWT_ISSUER)%'
+                    sub: 'by-night'
+                    client_id: 'by-night'
+            # The hub's default name, in every environment: the bundle drops the prefix in debug mode (for a hub in
+            # playground mode), which the dev hub would not read
+            cookie_name: '__Secure-mercure_access_token'
+
+when@test:
+    mercure:
+        hubs:
+            default:
+                # No hub in tests: every publish gets an empty 200; the updates stay readable on the traceable hub
+                # (mercure.hub.default.traceable, kernel.debug)
+                http_client: 'app.mercure_test_http_client'
+
+    services:
+        app.mercure_test_http_client:
+            class: Symfony\Component\HttpClient\MockHttpClient

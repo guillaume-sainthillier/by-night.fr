@@ -117,3 +117,19 @@
     background-color: $primary-strong;
     border-color: $primary-strong;
 }
+
+// A collapse toggle saying what its click does: Bootstrap puts .collapsed on it while its target is folded
+.btn-collapse-toggle {
+    &.collapsed .when-expanded,
+    &:not(.collapsed) .when-collapsed {
+        display: none;
+    }
+
+    .icon {
+        transition: transform 0.2s ease;
+    }
+
+    &:not(.collapsed) .icon {
+        transform: rotate(180deg);
+    }
+}

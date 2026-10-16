@@ -7,6 +7,9 @@ services:
         env_file:
             - .env
             - .env.local
+        environment:
+            &mercure_url # The hub on the compose network (.env points at its host port, for an app served outside Docker)
+            MERCURE_URL: 'http://mercure/.well-known/mercure'
         volumes:
             - ./:/app
         ports:
@@ -18,6 +21,29 @@ services:
         env_file:
             - .env
             - .env.local
+        environment: *mercure_url
+
+    # Mercure hub (protocol 1.0) for the live progress of imports and exports. Browsers reach it on the site's
+    # origin, /.well-known/mercure proxied to port 3000 (see README), so the subscriber cookie is sent to it.
+    mercure:
+        image: dunglas/mercure:v1.1.2
+        environment:
+            SERVER_NAME: ':80'
+            # Behind the local proxy: the hub takes its public URL (the tokens' audience) from X-Forwarded-*
+            GLOBAL_OPTIONS: |-
+                servers {
+                    trusted_proxies static private_ranges
+                }
+            MERCURE_TRUSTED_ISSUERS: '${MERCURE_JWT_ISSUER}'
+            MERCURE_PUBLISHER_JWT_KEY: '${MERCURE_JWT_SECRET}'
+            MERCURE_SUBSCRIBER_JWT_KEY: '${MERCURE_JWT_SECRET}'
+            # The debugger UI at /.well-known/mercure/debug/ (prod-safe, still needs a token)
+            MERCURE_EXTRA_DIRECTIVES: 'debugger'
+        ports:
+            - 3000:80
+        volumes:
+            - mercure_data:/data
+            - mercure_config:/config
 
     redis:
         image: redis:alpine
@@ -60,3 +86,5 @@ services:
 volumes:
     esdata:
     rabbitmq:
+    mercure_data:
+    mercure_config:

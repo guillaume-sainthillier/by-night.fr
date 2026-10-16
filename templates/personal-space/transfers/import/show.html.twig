@@ -1,0 +1,45 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{# @var import \App\Entity\EventImport #}
+
+{% block title %}Import de {{ import.originalName }}{% endblock %}
+{% block page_title 'Import de vos événements' %}
+
+{% block breadcrumb_personal_space -%}
+    {% do menu.addItem('Importer', url('app_event_imports')) %}
+    {% do menu.addItem(import.originalName, url('app_event_import_show', {id: import.id})) %}
+{%- endblock %}
+
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% block body -%}
+    {# Followed live while a worker is on it: the import tells the member's channel each step, under its own IRI #}
+    {% set params = {refreshUrl: path('app_event_import_status', {id: import.id}), iri: url('app_event_import_show', {id: import.id})} %}
+    {% if import.status.running %}
+        {% set params = params|merge({hub: mercure(user_channel(app.user), {subscribe: user_channel(app.user)})}) %}
+    {% endif %}
+    <div class="row justify-content-center" {{ load_page('event_transfers', params) }}>
+        <div class="col-lg-10">
+            <section class="text-center pt-lg-3 mb-4">
+                <twig:Section:Eyebrow icon="lucide:file-spreadsheet" badge="{{ true }}">{{ import.originalName }}</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold mb-2">{{ block('page_title') }}</h1>
+                <p class="text-secondary mb-0">Envoyé {{ import.createdAt|diff_date|lower }}.</p>
+            </section>
+
+            <div data-transfer-refresh aria-live="polite">
+                {{ include('personal-space/transfers/import/_status.html.twig') }}
+            </div>
+
+            <p class="text-center mt-4">
+                <a href="{{ path('app_event_imports') }}"><twig:Icon name="lucide:arrow-left" /> Retour aux imports</a>
+            </p>
+        </div>
+    </div>
+{%- endblock %}
+
+{% block js -%}
+    {{ reprise_entry_script_tags('event_transfers') }}
+{%- endblock %}
