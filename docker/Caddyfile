@@ -22,6 +22,10 @@
 
 # S3 reverse proxy CDN (data.by-night.fr)
 {$DATA_SERVER_NAME} {
+	# The members' imports and exports (transfers.storage): private objects, never served by this host, whatever
+	# the bucket's policy says
+	respond /private/* 404
+
 	reverse_proxy https://{$DATA_BUCKET_DOMAIN} {
 		header_up Host {$DATA_BUCKET_DOMAIN}
 	}
