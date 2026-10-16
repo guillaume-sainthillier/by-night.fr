@@ -84,12 +84,39 @@
                         </a>
                     </div>
                 </form>
+                {# The events picked in the table below (their checkboxes join it through form="event-bulk-form") #}
+                <form method="post" action="{{ path('app_event_bulk') }}" id="event-bulk-form" class="border-top pt-3 mt-3" hidden
+                      data-bulk-form
+                      data-confirm-title="{{ 'Supprimer ces événements ?'|trans }}"
+                      data-confirm-message="{{ 'Les événements sélectionnés seront supprimés, avec toutes les données rattachées.'|trans }}"
+                      data-confirm-button="{{ 'Supprimer'|trans }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('event-bulk') }}">
+                    <input type="hidden" name="_target_path" value="{{ app.request.requestUri }}">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="fw-bold me-auto" data-bulk-count aria-live="polite"></span>
+                        <button type="submit" name="action" value="publish" class="btn btn-sm btn-teal">
+                            <twig:Icon name="lucide:eye" />
+                            Publier
+                        </button>
+                        <button type="submit" name="action" value="draft" class="btn btn-sm">
+                            <twig:Icon name="lucide:eye-off" />
+                            Passer en brouillon
+                        </button>
+                        <button type="submit" name="action" value="delete" class="btn btn-sm btn-outline-danger">
+                            <twig:Icon name="lucide:trash-2" />
+                            Supprimer
+                        </button>
+                    </div>
+                </form>
             </div>
             {% if events|length > 0 %}
                 <div class="table-responsive">
                     <table class="table card-table table-vcenter table-mobile-md mb-0">
                         <thead>
                         <tr>
+                            <th class="w-1">
+                                <input class="form-check-input m-0 align-middle" type="checkbox" data-bulk-all="event-bulk-form" aria-label="{{ 'Sélectionner tous les événements de la page'|trans }}">
+                            </th>
                             <th class="w-25">Nom</th>
                             <th>Lieu</th>
                             <th>Ville</th>
@@ -105,6 +132,9 @@
                             {# "Annulé" has its own column: the line under the name only tells a postponed or sold-out event #}
                             {% set meta = [event.category ? event.category.name, event.status and not cancelled ? event.status.label]|filter(v => v) %}
                             <tr>
+                                <td data-label="{{ 'Sélection'|trans }}">
+                                    <input class="form-check-input m-0 align-middle" type="checkbox" name="ids[]" value="{{ event.id }}" form="event-bulk-form" data-bulk-item aria-label="{{ 'Sélectionner « {name} »'|trans({name: event.name}, 'messages+intl-icu') }}">
+                                </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="avatar avatar-md img-cover overflow-hidden flex-shrink-0 d-none d-sm-inline-flex">

@@ -93,7 +93,7 @@ final class EventControllerTest extends AppWebTestCase
             $crawler = $client->request('GET', '/espace-perso/mes-soirees', ['status' => $status]);
 
             self::assertResponseIsSuccessful();
-            self::assertSame($names, $crawler->filter('tbody tr > td:first-child a')->each(static fn ($link) => $link->text()), $status);
+            self::assertSame($names, $crawler->filter('tbody tr > td:nth-child(2) a')->each(static fn ($link) => $link->text()), $status);
         }
     }
 

@@ -14,8 +14,10 @@ use App\Controller\AbstractController as BaseController;
 use App\Dto\EventDto;
 use App\DtoFactory\EventDtoFactory;
 use App\Entity\Event;
+use App\Enum\EventBulkAction;
 use App\Enum\PersonalEventFilter;
 use App\Form\Type\EventType;
+use App\Manager\MemberEventBulkEditor;
 use App\Manager\MemberEventPublisher;
 use App\Repository\EventRepository;
 use App\SearchRepository\DuplicateEventFinder;
@@ -27,6 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class EventController extends BaseController
 {
@@ -55,6 +58,36 @@ final class EventController extends BaseController
             'filter' => $filter,
             'counts' => $eventRepository->countByUserAndFilter($user),
         ]);
+    }
+
+    /**
+     * Publishes, hides or deletes the member's events picked in their list, or those of an import's report, then
+     * goes back to that page ("_target_path", a path of the personal space).
+     */
+    #[Route(path: '/mes-soirees/lot', name: 'app_event_bulk', methods: ['POST'])]
+    public function bulk(Request $request, MemberEventBulkEditor $bulkEditor, TranslatorInterface $translator): Response
+    {
+        $payload = $request->getPayload();
+        if (!$this->isCsrfTokenValid('event-bulk', $payload->getString('_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
+
+        $target = $payload->getString('_target_path');
+        // A local page of the personal space only: never another site
+        $target = str_starts_with($target, '/espace-perso/') && !str_contains($target, '\\') ? $target : $this->generateUrl('app_event_list');
+
+        $action = EventBulkAction::tryFrom($payload->getString('action'));
+        $ids = array_map(intval(...), $payload->all('ids'));
+        if (null === $action || [] === $ids) {
+            $this->addFlash('warning', 'Choisissez au moins un événement, puis une action.');
+
+            return $this->redirect($target);
+        }
+
+        $count = $bulkEditor->apply($this->getAppUser(), $ids, $action);
+        $this->addFlash(0 === $count ? 'warning' : 'success', $translator->trans($action->getDoneMessage(), ['count' => $count], 'messages+intl-icu'));
+
+        return $this->redirect($target);
     }
 
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
