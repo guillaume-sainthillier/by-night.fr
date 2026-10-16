@@ -25,6 +25,12 @@ describe('oversizeMessage', () => {
         )
     })
 
+    test('says file, not image, for a spreadsheet', () => {
+        expect(oversizeMessage({ size: 2_500_000, type: 'text/csv' }, 2_000_000)).toBe(
+            'Ce fichier pèse 2,5 Mo, le maximum est de 2 Mo. Découpez-le en plusieurs fichiers.'
+        )
+    })
+
     test('refuses a file one byte over the maximum', () => {
         expect(oversizeMessage({ size: MAX_SIZE + 1 }, MAX_SIZE)).not.toBeNull()
     })

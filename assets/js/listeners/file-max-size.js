@@ -6,7 +6,7 @@ const megabytes = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
 /**
  * Why the file can't be sent, or null when it can.
  *
- * @param {{size: number}|undefined} file
+ * @param {{size: number, type?: string}|undefined} file
  * @param {number} maxSize in bytes
  * @returns {string|null}
  */
@@ -17,6 +17,11 @@ export function oversizeMessage(file, maxSize) {
 
     const size = megabytes.format(file.size / 1e6)
     const max = megabytes.format(maxSize / 1e6)
+
+    // A file that says it is no image (a spreadsheet to import): its own wording
+    if (file.type && !file.type.startsWith('image/')) {
+        return `Ce fichier pèse ${size} Mo, le maximum est de ${max} Mo. Découpez-le en plusieurs fichiers.`
+    }
 
     return `Cette image pèse ${size} Mo, le maximum est de ${max} Mo. Réduisez-la ou choisissez-en une autre.`
 }

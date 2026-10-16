@@ -44,6 +44,12 @@
 }
 
 .dropzone-preview {
+    // A file that is no image (a spreadsheet): its name and weight
+    .dropzone-file-name {
+        font-weight: $font-weight-bold;
+        overflow-wrap: anywhere;
+    }
+
     img {
         max-height: 200px;
         object-fit: contain;
