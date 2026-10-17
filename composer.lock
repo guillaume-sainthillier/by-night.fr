@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58c49e9be33722f29d49a3f4612cef11",
+    "content-hash": "0f2ffaf395b87b450d70857bbfd7614e",
     "packages": [
         {
             "name": "api-platform/core",
@@ -12372,16 +12372,16 @@
         },
         {
             "name": "symfony/ux-icons",
-            "version": "v3.5.1",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-icons.git",
-                "reference": "ae982db0d5a06a93db9932bf7938dc8b2f599beb"
+                "reference": "7df597be46d9fb681bdf34dcd5d6102f952db8f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/ae982db0d5a06a93db9932bf7938dc8b2f599beb",
-                "reference": "ae982db0d5a06a93db9932bf7938dc8b2f599beb",
+                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/7df597be46d9fb681bdf34dcd5d6102f952db8f4",
+                "reference": "7df597be46d9fb681bdf34dcd5d6102f952db8f4",
                 "shasum": ""
             },
             "require": {
@@ -12443,7 +12443,7 @@
                 "twig"
             ],
             "support": {
-                "source": "https://github.com/symfony/ux-icons/tree/v3.5.1"
+                "source": "https://github.com/symfony/ux-icons/tree/v3.6.0"
             },
             "funding": [
                 {
@@ -12463,7 +12463,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-18T12:02:28+00:00"
+            "time": "2026-10-07T05:37:39+00:00"
         },
         {
             "name": "symfony/ux-twig-component",
