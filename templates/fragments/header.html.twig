@@ -5,7 +5,7 @@
         </button>
         <a href="{{ path('app_index') }}" title="By Night&nbsp;: agenda des sorties, concerts et spectacles en France" class="navbar-brand site-brand flex-shrink-0">
             {# Loaded at once, but without taking the high fetch priority from the page's LCP picture #}
-            <img src="{{ asset('build/images/logo-icon.svg') }}" width="40" height="40" alt="">
+            <twig:Picasso:Image src="{{ asset('build/images/logo-icon.svg') }}" width="{{ 40 }}" height="{{ 40 }}" alt="" priority="{{ true }}" fetchPriority="auto" unoptimized="{{ true }}" />
             <span class="site-brand-text">
                 <span class="site-brand-name">By Night</span>
                 <span class="site-brand-tagline d-none d-sm-block">L'agenda de vos sorties</span>
@@ -26,7 +26,7 @@
             <div class="offcanvas-header">
                 <div class="site-brand">
                     {# Hidden until the menu opens: lazy #}
-                    <img src="{{ asset('build/images/logo-icon.svg') }}" width="36" height="36" alt="" loading="lazy">
+                    <twig:Picasso:Image src="{{ asset('build/images/logo-icon.svg') }}" width="{{ 36 }}" height="{{ 36 }}" alt="" placeholder="{{ false }}" unoptimized="{{ true }}" />
                     <span class="site-brand-name">By Night</span>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#navbar-main" aria-label="Fermer"></button>
