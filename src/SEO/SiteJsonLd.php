@@ -48,7 +48,7 @@ final readonly class SiteJsonLd
             'name' => 'By Night',
             'url' => $baseUrl,
             // schema.org wants an absolute URL, and asset() only yields the path now that assets are same-origin
-            'logo' => $this->urlHelper->getAbsoluteUrl($this->packages->getUrl('build/images/by-night.png')),
+            'logo' => $this->urlHelper->getAbsoluteUrl($this->packages->getUrl('build/images/logo.png')),
         ];
 
         $sameAs = $this->buildSameAsLinks();
