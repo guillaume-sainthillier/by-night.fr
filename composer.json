@@ -67,7 +67,7 @@
         "pagerfanta/twig": "^4",
         "presta/sitemap-bundle": "^4.3.1",
         "sentry/sentry-symfony": "^5.14.0",
-        "silarhi/cursor-pagination": "^2.1.1",
+        "silarhi/cursor-pagination": "^2.3.0",
         "silarhi/llms-txt-bundle": "^1.2",
         "silarhi/picasso-bundle": "^2.4.0",
         "smolblog/oauth2-twitter": "^1.2",
