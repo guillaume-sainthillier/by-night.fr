@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59689877f347310abf2d72a4970fca64",
+    "content-hash": "abc07a72608a619f47189b8118f1c16b",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v5.0.3",
+            "version": "v5.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "9bdc3405a74071608ebd62edb0a51bfc62c0d883"
+                "reference": "1eef9e4f1e899af2f8439ecafc3e91a705516159"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/9bdc3405a74071608ebd62edb0a51bfc62c0d883",
-                "reference": "9bdc3405a74071608ebd62edb0a51bfc62c0d883",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/1eef9e4f1e899af2f8439ecafc3e91a705516159",
+                "reference": "1eef9e4f1e899af2f8439ecafc3e91a705516159",
                 "shasum": ""
             },
             "require": {
@@ -222,9 +222,9 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v5.0.3"
+                "source": "https://github.com/api-platform/core/tree/v5.0.4"
             },
-            "time": "2026-10-09T14:54:01+00:00"
+            "time": "2026-10-16T14:57:02+00:00"
         },
         {
             "name": "aws/aws-crt-php",
