@@ -169,7 +169,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
                 [
                     'id' => $event['id'],
                     'slug' => $event['slug'],
-                    'location' => $event['city_slug'] ?? $event['country_slug'] ?? 'unknown',
+                    'location' => $event['city_slug'] ?? $event['country_slug'],
                 ],
                 $event['updatedAt'],
                 $isEventPast ? UrlConcrete::CHANGEFREQ_WEEKLY : UrlConcrete::CHANGEFREQ_DAILY,
