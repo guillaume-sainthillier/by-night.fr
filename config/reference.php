@@ -1457,7 +1457,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             token_handler?: Param|string|array{
  *                 id?: scalar|Param|null,
  *                 oidc_user_info?: Param|string|array{
- *                     base_uri?: scalar|Param|null, // Base URI of the userinfo endpoint on the OIDC server, or the OIDC server URI to use the discovery (require "discovery" to be configured).
+ *                     base_uri?: scalar|Param|null, // Base URI of the userinfo endpoint on the OIDC server, or the OIDC server URI to use the discovery (require "discovery" to be configured). The latter must end with a slash when it has a path, as the discovery path is resolved against it as a relative URL.
  *                     discovery?: array{ // Enable the OIDC discovery.
  *                         cache?: array{
  *                             id?: scalar|Param|null, // Cache service id to use to cache the OIDC discovery configuration.
@@ -2584,7 +2584,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     content_type?: scalar|Param|null, // The Content-Type served by the controller. "text/markdown" is more accurate, but browsers download it instead of showing it. // Default: "text/plain; charset=UTF-8"
  *     max_age?: int|Param, // The Cache-Control max-age of the controller responses, in seconds. // Default: 3600
  *     discovery?: array{
- *         link_header?: bool|Param, // Adds the file to the Link header of the HTML pages, through WebLink ("framework.web_link"). // Default: false
+ *         link_header?: bool|Param, // Adds the file to the Link header of the HTML pages, through WebLink: needs symfony/web-link and "framework.web_link". // Default: false
  *         rel?: scalar|Param|null, // The relation of the Link header and of the llms_txt_link() tag. // Default: "llms-txt"
  *     },
  * }
