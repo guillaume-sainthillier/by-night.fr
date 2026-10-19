@@ -38,7 +38,7 @@
         "ext-xmlreader": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "api-platform/core": "^5.0.3",
+        "api-platform/core": "^5.0.4",
         "aws/aws-sdk-php": "^3.401.3",
         "babdev/pagerfanta-bundle": "^4.7",
         "beberlei/doctrineextensions": "^1.5",
@@ -121,7 +121,7 @@
         "vich/uploader-bundle": "^3.0.0"
     },
     "require-dev": {
-        "api-platform/test": "5.0.3",
+        "api-platform/test": "5.0.4",
         "dama/doctrine-test-bundle": "^8.7.0",
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
         "friendsofphp/php-cs-fixer": "^3.95.27",
