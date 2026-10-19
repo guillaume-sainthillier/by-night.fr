@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "230d2a9561b81d0187794cb2ab4addfe",
+    "content-hash": "86179f1f22f7ee9618905b46c1d33083",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6079,16 +6079,16 @@
         },
         {
             "name": "silarhi/cursor-pagination",
-            "version": "2.1.1",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/cursor-pagination.git",
-                "reference": "82d181005a052d97923718c70165316b0ddcdb40"
+                "reference": "b7bc71b076140efd647bd491d0b639954627f2f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/cursor-pagination/zipball/82d181005a052d97923718c70165316b0ddcdb40",
-                "reference": "82d181005a052d97923718c70165316b0ddcdb40",
+                "url": "https://api.github.com/repos/silarhi/cursor-pagination/zipball/b7bc71b076140efd647bd491d0b639954627f2f2",
+                "reference": "b7bc71b076140efd647bd491d0b639954627f2f2",
                 "shasum": ""
             },
             "require": {
@@ -6099,12 +6099,13 @@
                 "doctrine/data-fixtures": "^2.2.1",
                 "ergebnis/composer-normalize": "^2.54.0",
                 "friendsofphp/php-cs-fixer": "^3.95.27",
-                "phpstan/phpstan": "^2.2.16",
-                "phpstan/phpstan-strict-rules": "^2.0.12",
-                "phpunit/phpunit": "^11.5.55 || ^12.0 || ^13.0",
-                "rector/rector": "^2.6.7",
-                "symfony/cache": "^7.4.13 || ^8.0",
-                "vimeo/psalm": "^5.26 || ^6.16.1"
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.3.1",
+                "phpstan/phpstan-strict-rules": "^2.1.0",
+                "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
+                "rector/rector": "^2.7.0",
+                "symfony/cache": "^7.4.20 || ^8.0",
+                "vimeo/psalm": "^5.26.1 || ^6.20.0"
             },
             "type": "library",
             "autoload": {
@@ -6127,14 +6128,15 @@
                 "cursor",
                 "cursor-pagination",
                 "doctrine",
+                "keyset",
                 "orm",
                 "pagination"
             ],
             "support": {
                 "issues": "https://github.com/silarhi/cursor-pagination/issues",
-                "source": "https://github.com/silarhi/cursor-pagination/tree/2.1.1"
+                "source": "https://github.com/silarhi/cursor-pagination/tree/2.4.0"
             },
-            "time": "2026-10-01T08:37:34+00:00"
+            "time": "2026-10-14T09:01:38+00:00"
         },
         {
             "name": "silarhi/llms-txt-bundle",
