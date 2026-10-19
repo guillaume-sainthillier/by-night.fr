@@ -172,10 +172,10 @@ importers:
     dependencies:
       '@algolia/autocomplete-js':
         specifier: ^1.19.12
-        version: 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.0)(search-insights@2.17.3)
+        version: 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.1)(search-insights@2.17.3)
       '@algolia/autocomplete-plugin-recent-searches':
         specifier: ^1.19.12
-        version: 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.0)(search-insights@2.17.3)
+        version: 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.1)(search-insights@2.17.3)
       '@algolia/autocomplete-theme-classic':
         specifier: ^1.19.12
         version: 1.19.12
@@ -217,10 +217,10 @@ importers:
         version: 15.8.1
       preact:
         specifier: ^11.0.1
-        version: 11.0.1(preact-render-to-string@6.8.0)
+        version: 11.0.1(preact-render-to-string@6.8.1)
       preact-render-to-string:
         specifier: ^6.8.0
-        version: 6.8.0(preact@11.0.1)
+        version: 6.8.1(preact@11.0.1)
       summernote:
         specifier: ^0.9.1
         version: 0.9.1
@@ -1688,8 +1688,8 @@ packages:
     resolution: {integrity: sha512-49cGhUbXj8Qenv0iTMxA1cFBzxXoctpC9Ujd77t1WcbJIr6nF/eI7g/8MgxrYldFRuAXvja7xQRwavoW7kgrxQ==}
     engines: {node: ^10 || ^12 || >=14}
 
-  preact-render-to-string@6.8.0:
-    resolution: {integrity: sha512-2qiMrReQz+MZ5+/bT27kbVnFE7QNCC2fku/Tnc2H5bFUS3I3ASbRy0q72XLZ+2p2KyDE5xMfvSEtkmVo6TRNyA==}
+  preact-render-to-string@6.8.1:
+    resolution: {integrity: sha512-EIaLVlarET55f737gG/g1bK1UfjAgT3Z7Ch1Z7UX4/TwHh1O7EI5sCtwhVP+cs0n37SyV2HjZCSRtrpMm4Bujw==}
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
@@ -2023,7 +2023,7 @@ snapshots:
       - algoliasearch
       - search-insights
 
-  '@algolia/autocomplete-js@1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.0)(search-insights@2.17.3)':
+  '@algolia/autocomplete-js@1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.1)(search-insights@2.17.3)':
     dependencies:
       '@algolia/autocomplete-core': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(search-insights@2.17.3)
       '@algolia/autocomplete-preset-algolia': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)
@@ -2031,7 +2031,7 @@ snapshots:
       '@algolia/client-search': 5.60.0
       algoliasearch: 5.60.0
       htm: 3.1.1
-      preact: 11.0.1(preact-render-to-string@6.8.0)
+      preact: 11.0.1(preact-render-to-string@6.8.1)
     transitivePeerDependencies:
       - preact-render-to-string
       - search-insights
@@ -2044,10 +2044,10 @@ snapshots:
       - '@algolia/client-search'
       - algoliasearch
 
-  '@algolia/autocomplete-plugin-recent-searches@1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.0)(search-insights@2.17.3)':
+  '@algolia/autocomplete-plugin-recent-searches@1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.1)(search-insights@2.17.3)':
     dependencies:
       '@algolia/autocomplete-core': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-js': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.0)(search-insights@2.17.3)
+      '@algolia/autocomplete-js': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)(preact-render-to-string@6.8.1)(search-insights@2.17.3)
       '@algolia/autocomplete-preset-algolia': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)
       '@algolia/autocomplete-shared': 1.19.12(@algolia/client-search@5.60.0)(algoliasearch@5.60.0)
       '@algolia/client-search': 5.60.0
@@ -3296,13 +3296,13 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
-  preact-render-to-string@6.8.0(preact@11.0.1):
+  preact-render-to-string@6.8.1(preact@11.0.1):
     dependencies:
-      preact: 11.0.1(preact-render-to-string@6.8.0)
+      preact: 11.0.1(preact-render-to-string@6.8.1)
 
-  preact@11.0.1(preact-render-to-string@6.8.0):
+  preact@11.0.1(preact-render-to-string@6.8.1):
     optionalDependencies:
-      preact-render-to-string: 6.8.0(preact@11.0.1)
+      preact-render-to-string: 6.8.1(preact@11.0.1)
 
   prettier@2.8.8: {}
 
