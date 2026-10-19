@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "230d2a9561b81d0187794cb2ab4addfe",
+    "content-hash": "1309d631f1871f328c1ce44c443aa13b",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6210,16 +6210,16 @@
         },
         {
             "name": "silarhi/picasso-bundle",
-            "version": "v2.4.0",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/picasso-bundle.git",
-                "reference": "c17e7a06d096125831b032edd97c8fb8d8c304e0"
+                "reference": "c3ccee8c85cdabe1bb6ecf3500ca3a6766930c3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/c17e7a06d096125831b032edd97c8fb8d8c304e0",
-                "reference": "c17e7a06d096125831b032edd97c8fb8d8c304e0",
+                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/c3ccee8c85cdabe1bb6ecf3500ca3a6766930c3f",
+                "reference": "c3ccee8c85cdabe1bb6ecf3500ca3a6766930c3f",
                 "shasum": ""
             },
             "require": {
@@ -6236,10 +6236,10 @@
                 "league/flysystem-bundle": "^2.1 || ^3.0",
                 "league/glide": "^2.3 || ^3.0 || ^4.0",
                 "phpstan/extension-installer": "^1.4.3",
-                "phpstan/phpstan": "^2.3.0",
+                "phpstan/phpstan": "^2.3.1",
                 "phpstan/phpstan-strict-rules": "^2.1.0",
                 "phpstan/phpstan-symfony": "^2.1.0",
-                "phpunit/phpunit": "^11.5.57 || ^12 || ^13",
+                "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
                 "psr/http-client": "^1.0.3",
                 "psr/http-factory": "^1.1",
                 "rector/rector": "^2.7.0",
@@ -6274,9 +6274,9 @@
             "description": "Responsive image component for Symfony, inspired by next/image",
             "support": {
                 "issues": "https://github.com/silarhi/picasso-bundle/issues",
-                "source": "https://github.com/silarhi/picasso-bundle/tree/v2.4.0"
+                "source": "https://github.com/silarhi/picasso-bundle/tree/v2.5.0"
             },
-            "time": "2026-10-08T10:57:28+00:00"
+            "time": "2026-10-12T10:52:57+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",
