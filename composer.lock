@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "abc07a72608a619f47189b8118f1c16b",
+    "content-hash": "4e6c2fe9cf231e452d394f5f328f77ff",
     "packages": [
         {
             "name": "api-platform/core",
@@ -8796,16 +8796,16 @@
         },
         {
             "name": "symfony/lock",
-            "version": "v8.1.8",
+            "version": "v8.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/lock.git",
-                "reference": "a57c18e351998f9964dff24713f7138a01d53703"
+                "reference": "2b3f8c256882bf6b8d69a0ca1557e9b7c810e548"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/lock/zipball/a57c18e351998f9964dff24713f7138a01d53703",
-                "reference": "a57c18e351998f9964dff24713f7138a01d53703",
+                "url": "https://api.github.com/repos/symfony/lock/zipball/2b3f8c256882bf6b8d69a0ca1557e9b7c810e548",
+                "reference": "2b3f8c256882bf6b8d69a0ca1557e9b7c810e548",
                 "shasum": ""
             },
             "require": {
@@ -8854,7 +8854,7 @@
                 "semaphore"
             ],
             "support": {
-                "source": "https://github.com/symfony/lock/tree/v8.1.8"
+                "source": "https://github.com/symfony/lock/tree/v8.1.9"
             },
             "funding": [
                 {
@@ -8874,7 +8874,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-18T16:00:27+00:00"
+            "time": "2026-10-04T15:24:21+00:00"
         },
         {
             "name": "symfony/mailer",

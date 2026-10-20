@@ -89,7 +89,7 @@
         "symfony/http-client": "~8.1.9",
         "symfony/http-foundation": "~8.1.9",
         "symfony/intl": "~8.1.5",
-        "symfony/lock": "8.1.8",
+        "symfony/lock": "8.1.9",
         "symfony/mailer": "~8.1.7",
         "symfony/mercure-bundle": "^0.6.1",
         "symfony/messenger": "~8.1.9",
