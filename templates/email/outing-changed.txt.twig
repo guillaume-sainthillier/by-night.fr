@@ -1,0 +1,18 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Une de vos sorties change : {{ event.name }}{% endblock %}
+
+{% block body %}
+Vous avez dit « J'y vais ! » à {{ event.name }}. Depuis, voici ce qui a changé :
+
+{% for sentence in sentences %}
+- {{ sentence }}
+{% endfor %}
+
+Voir l'événement : {{ eventUrl }}
+
+Les informations viennent de l'organisateur ou de l'agenda qui l'annonce : en cas de doute, vérifiez auprès de lui avant de vous déplacer.
+{% endblock %}
+
+{% block footer %}Vous recevez cet e-mail car vous avez dit « J'y vais ! » à cet événement sur By Night.
+Ne plus être prévenu des changements de mes sorties : {{ unsubscribeUrl }}{% endblock %}

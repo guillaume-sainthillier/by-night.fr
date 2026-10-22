@@ -1,0 +1,29 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}{{ headline }}&nbsp;: {{ event.name }}{% endblock %}
+{% block preheader %}{{ sentences|first }}{% endblock %}
+
+{% block icon 'info' %}
+{% block heading %}Une de vos sorties change{% endblock %}
+{% block subheading %}{{ event.name }}{% endblock %}
+
+{% block body %}
+    <mj-text>
+        Vous avez dit «&nbsp;J'y vais&nbsp;!&nbsp;» à <strong>{{ event.name }}</strong>. Depuis, voici ce qui a changé&nbsp;:
+    </mj-text>
+    {% for sentence in sentences %}
+        <mj-text padding="0 0 8px 16px">• {{ sentence }}</mj-text>
+    {% endfor %}
+    <mj-button href="{{ eventUrl }}">
+        Voir l'événement
+    </mj-button>
+    <mj-text mj-class="muted">
+        Les informations viennent de l'organisateur ou de l'agenda qui l'annonce&nbsp;: en cas de doute, vérifiez auprès
+        de lui avant de vous déplacer.
+    </mj-text>
+{% endblock %}
+
+{% block footer %}
+    Vous recevez cet e-mail car vous avez dit «&nbsp;J'y vais&nbsp;!&nbsp;» à cet événement sur By Night.
+    <a href="{{ unsubscribeUrl }}" style="color: #a0a2ab;">Ne plus être prévenu des changements de mes sorties</a>.
+{% endblock %}

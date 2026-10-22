@@ -15,6 +15,7 @@ use App\Factory\CityFactory;
 use App\Factory\UserFactory;
 use App\Form\Type\DeleteAccountFormType;
 use App\Tests\AppWebTestCase;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -119,6 +120,30 @@ final class ProfileControllerTest extends AppWebTestCase
         refresh($user);
         self::assertSame('toulouse', $user->getCity()?->getSlug());
         self::assertInputValueSame('profile_form[city][name]', 'Toulouse (France)');
+    }
+
+    public function testAMemberTurnsTheAlertsOfTheirOutingsOffThenOnAgain(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/profile/edit');
+        $form = $crawler->selectButton('Enregistrer les modifications')->form();
+        $alerts = $form['profile_form[outingAlerts]'];
+        self::assertInstanceOf(ChoiceFormField::class, $alerts);
+        self::assertTrue($alerts->hasValue(), 'on by default');
+        $alerts->untick();
+        $client->submit($form);
+
+        self::assertResponseIsSuccessful();
+        refresh($user);
+        self::assertFalse($user->isOutingAlerts());
+
+        $client->submitForm('Enregistrer les modifications', ['profile_form[outingAlerts]' => true]);
+
+        refresh($user);
+        self::assertTrue($user->isOutingAlerts());
     }
 
     public function testEmptyingTheCityRemovesIt(): void

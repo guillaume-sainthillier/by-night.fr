@@ -159,6 +159,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $calendarToken = null;
 
+    /** Whether the member hears by e-mail of the changes of their outings (OutingChangeNotifier) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $outingAlerts = true;
+
     private bool $sendToElasticsearch = false;
 
     public function __construct()
@@ -528,6 +532,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     public function renewCalendarToken(): self
     {
         $this->calendarToken = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
+
+        return $this;
+    }
+
+    public function isOutingAlerts(): bool
+    {
+        return $this->outingAlerts;
+    }
+
+    public function setOutingAlerts(bool $outingAlerts): self
+    {
+        $this->outingAlerts = $outingAlerts;
 
         return $this;
     }

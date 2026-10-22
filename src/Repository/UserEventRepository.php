@@ -82,6 +82,37 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
     }
 
     /**
+     * The members following these events, with their event, its venue and the member loaded: those going to them or
+     * interested in them, their author left out (publishing an event says "J'y vais" for them), and none of a duplicate
+     * (its page leads to its canonical's).
+     *
+     * @param list<int> $eventIds
+     *
+     * @return list<UserEvent>
+     */
+    public function findFollowersOfEvents(array $eventIds): array
+    {
+        if ([] === $eventIds) {
+            return [];
+        }
+
+        /* @var list<UserEvent> */
+        return $this
+            ->createQueryBuilder('ue')
+            ->addSelect('e', 'p', 'u')
+            ->join('ue.event', 'e')
+            ->join('ue.user', 'u')
+            ->leftJoin('e.place', 'p')
+            ->where('ue.event IN (:ids)')
+            ->andWhere('(ue.going = true OR ue.wish = true)')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('(e.user IS NULL OR e.user <> ue.user)')
+            ->setParameter('ids', $eventIds)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * The participations (going) and the interests (wish) of each event, which its counters store
      * (EventParticipationManager::recount()).
      *
