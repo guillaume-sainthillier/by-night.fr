@@ -24,6 +24,11 @@ framework:
     exceptions:
         ApiPlatform\Validator\Exception\ValidationException:
             log_level: info
+        # API Platform answers 400 to its InvalidArgumentException (api_platform.exception_to_status), such as the
+        # page of "?page=abc", which Pagination reads as 0 and refuses. Not an HttpException, Symfony would log it
+        # as critical: an error, as the other 400s.
+        ApiPlatform\Metadata\Exception\InvalidArgumentException:
+            log_level: error
         # A storage outage, not a bug: Picasso answers 503 when the uploads bucket cannot be read (OVH S3,
         # 2026-10-07), as ElasticsearchUnavailableException does while Elasticsearch restarts. Symfony logs a
         # 5xx as critical, which would reach Sentry for every thumbnail requested during the outage.
