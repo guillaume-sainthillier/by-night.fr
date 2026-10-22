@@ -114,6 +114,16 @@ jobs:
                   # `git diff HEAD^1 HEAD` is exactly what the PR changes.
                   fetch-depth: 2
 
+            # Pull public Docker Hub images through Google's mirror: every pull through Docker Hub
+            # counts against the account's quota, shared with docker-php and the servers. The
+            # private base image isn't on the mirror, so Docker falls back to Docker Hub for it.
+            - name: Use the mirror.gcr.io registry mirror
+              run: |
+                  config=$(sudo cat /etc/docker/daemon.json 2> /dev/null | grep . || echo '{}')
+                  jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' <<< "$config" | sudo tee /etc/docker/daemon.json > /dev/null
+                  sudo systemctl restart docker
+                  docker info --format 'Registry mirrors: {{.RegistryConfig.Mirrors}}'
+
             # The base image is private. Without credentials (fork PRs) the pull below
             # fails and the base is built locally instead.
             - name: Login to Docker Hub
