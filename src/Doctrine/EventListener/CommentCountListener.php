@@ -12,8 +12,8 @@ namespace App\Doctrine\EventListener;
 
 use App\Entity\Comment;
 use App\Entity\Event;
+use App\Repository\CommentRepository;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -36,6 +36,10 @@ final class CommentCountListener implements ResetInterface
 
     /** @var array<int, Event> */
     private array $events = [];
+
+    public function __construct(private readonly CommentRepository $commentRepository)
+    {
+    }
 
     public function onFlush(OnFlushEventArgs $args): void
     {
@@ -81,21 +85,30 @@ final class CommentCountListener implements ResetInterface
             return;
         }
 
-        $entityManager = $args->getObjectManager();
-        $connection = $entityManager->getConnection();
-        $ids = array_keys($events);
+        $counts = $this->commentRepository->countByEvents(array_keys($events));
 
-        $connection->executeStatement(
-            // Without an alias on the updated table, which SQLite (the tests) refuses
-            'UPDATE `event` SET comment_count = (SELECT COUNT(*) FROM comment c WHERE c.event_id = `event`.id AND c.parent_id IS NULL AND c.approved = 1) WHERE id IN (:ids)',
-            ['ids' => $ids],
-            ['ids' => ArrayParameterType::INTEGER],
-        );
+        // One UPDATE per count: a flush usually touches a single event
+        $byCount = [];
+        foreach ($events as $id => $event) {
+            $byCount[$counts[$id] ?? 0][] = $id;
+        }
+
+        $entityManager = $args->getObjectManager();
+        foreach ($byCount as $count => $ids) {
+            $entityManager
+                ->createQueryBuilder()
+                ->update(Event::class, 'e')
+                ->set('e.commentCount', ':count')
+                ->where('e.id IN (:ids)')
+                ->setParameter('count', $count)
+                ->setParameter('ids', $ids)
+                ->getQuery()
+                ->execute();
+        }
 
         // The page answering this request reads the new count (the header of a comment just posted)
-        $counts = $connection->fetchAllKeyValue('SELECT id, comment_count FROM `event` WHERE id IN (:ids)', ['ids' => $ids], ['ids' => ArrayParameterType::INTEGER]);
         foreach ($events as $id => $event) {
-            $this->setCount($entityManager, $event, (int) ($counts[$id] ?? 0));
+            $this->setCount($entityManager, $event, $counts[$id] ?? 0);
         }
     }
 
