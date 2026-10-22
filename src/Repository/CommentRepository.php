@@ -93,7 +93,7 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
 
     /**
      * The comments of each event as findAllByEventQueryBuilder() lists them (approved, replies left out), which its
-     * counter stores (CommentCountListener).
+     * counter stores (CommentCountManager::recount()).
      *
      * @param list<int> $eventIds
      *

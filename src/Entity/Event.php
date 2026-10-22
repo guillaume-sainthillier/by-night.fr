@@ -359,7 +359,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $interests = null;
 
-    /** The approved comments, replies left out, as the event page lists them: kept by CommentCountListener */
+    /** The approved comments, replies left out, as the event page lists them: kept by CommentCountManager */
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     private int $commentCount = 0;
 
