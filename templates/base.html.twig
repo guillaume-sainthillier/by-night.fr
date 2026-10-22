@@ -20,6 +20,9 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta name="title" content="{{- block('title') -}}">
     <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords '' %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
     <meta name="description" content="{% block meta_description 'Découvrez des milliers de concerts, spectacles, expos et sorties partout en France avec By Night.' %}">
+    {% for name, content in site_verification_metas %}
+        <meta name="{{ name }}" content="{{ content }}">
+    {% endfor %}
 
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2.0">
