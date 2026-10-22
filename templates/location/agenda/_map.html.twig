@@ -1,0 +1,40 @@
+{# @var events \Pagerfanta\PagerfantaInterface<\App\Entity\Event> the page's events #}
+{# @var dateRange \App\Search\DateRange the days the page lists #}
+{# The map of the events the page lists, above them, opened on demand (assets/js/pages/agenda.js): the events come in
+   the page itself, so the map follows the list, its filters and its pages, and has no URL of its own. The venues are
+   loaded with the events (EventRepository, "events:agenda:list"), so reading their coordinates costs no query. #}
+{% set mapEvents = [] %}
+{% for event in events.currentPageResults %}
+    {% set venue = event.place %}
+    {% set lat = venue.latitude ?? event.latitude %}
+    {% set lng = venue.longitude ?? event.longitude %}
+    {# (0, 0) is the coordinate of a venue never geocoded #}
+    {% if lat is not null and lng is not null and (lat != 0 or lng != 0) %}
+        {% set session = event.sessionFor(dateRange.from, dateRange.to) %}
+        {% set mapEvents = mapEvents|merge([{
+            name: event.name,
+            url: path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}),
+            date: session and session.startAt|date('Y-m-d') >= 'today'|date('Y-m-d') ? session.startAt|date('Y-m-d') : null,
+            venue: venue.id ?? null,
+            venueName: event.placeName,
+            lat: lat,
+            lng: lng,
+        }]) %}
+    {% endif %}
+{% endfor %}
+
+{% if mapEvents %}
+    <div class="mb-4" {{ load_page('agenda_map', {events: mapEvents}) }}>
+        {# Shown from the start, so that the list does not move when the script comes #}
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-sm" data-map-toggle aria-expanded="false" aria-controls="carte" data-open-label="Voir sur la carte" data-close-label="Masquer la carte">
+                <twig:Icon name="lucide:map" />
+                <span data-map-label>Voir sur la carte</span>
+            </button>
+        </div>
+        <div class="card mt-3" id="carte" data-map hidden>
+            {# Leaflet needs a box with a height #}
+            <div class="rounded" data-map-canvas style="height: min(60vh, 480px)"></div>
+        </div>
+    </div>
+{% endif %}

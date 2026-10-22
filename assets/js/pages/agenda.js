@@ -1,6 +1,7 @@
 import { Offcanvas } from '@tabler/core/dist/js/tabler.esm'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
+import { groupByVenue } from '@/js/utils/venues'
 
 /**
  * The bottom bar of the phone's filters (location/agenda/_filters.html.twig): its button counts the events on show,
@@ -80,4 +81,77 @@ function initialize() {
     initSliders(markDirty)
 }
 
+/** The hash of a page whose map is open: a link to it opens the map too, and no search engine reads it as a page */
+const MAP_HASH = '#carte'
+
+/**
+ * The map of the events the page lists (location/agenda/_map.html.twig), shown above them on demand. Leaflet and the
+ * tiles are only fetched when the visitor opens it.
+ *
+ * @type {Page}
+ */
+function initializeMap({ container, events = [] }) {
+    const button = container.querySelector('[data-map-toggle]')
+    const panel = container.querySelector('[data-map]')
+    const venues = groupByVenue(events)
+    if (!button || !panel) {
+        return
+    }
+    // The page places the same events (location/agenda/_map.html.twig): this only guards against a coordinate it reads otherwise
+    if (venues.length === 0) {
+        button.hidden = true
+        return
+    }
+
+    let map = null
+    let disconnected = false
+
+    const setOpen = (open) => {
+        panel.hidden = !open
+        button.setAttribute('aria-expanded', String(open))
+        button.querySelector('[data-map-label]').textContent = open
+            ? button.dataset.closeLabel
+            : button.dataset.openLabel
+        const url = new URL(window.location.href)
+        url.hash = open ? MAP_HASH : ''
+        window.history.replaceState(window.history.state, '', url)
+    }
+
+    const open = async () => {
+        setOpen(true)
+        if (map) {
+            map.refresh()
+            return
+        }
+
+        button.disabled = true
+        try {
+            const { create } = await import('@/js/services/ui/MapService')
+            if (!disconnected) {
+                map = create({ element: panel.querySelector('[data-map-canvas]'), venues })
+            }
+        } catch {
+            // The chunk could not be fetched (flaky network, blocker): the list is still there
+            setOpen(false)
+            button.hidden = true
+        } finally {
+            button.disabled = false
+        }
+    }
+
+    const toggle = () => (panel.hidden ? open() : setOpen(false))
+    button.addEventListener('click', toggle)
+
+    if (window.location.hash === MAP_HASH) {
+        open()
+    }
+
+    return () => {
+        disconnected = true
+        button.removeEventListener('click', toggle)
+        map?.destroy()
+    }
+}
+
 window.App.registerPage('agenda', initialize)
+window.App.registerPage('agenda_map', initializeMap)
