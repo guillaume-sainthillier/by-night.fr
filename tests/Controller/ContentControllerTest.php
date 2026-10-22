@@ -36,6 +36,23 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertAnySelectorTextContains('p', '2 rue Kellermann, 59100 Roubaix');
         self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
         self::assertSelectorExists('a[href="/cookie"]');
+        self::assertSelectorExists('a[href="/confidentialite"]');
+    }
+
+    public function testThePrivacyPolicySaysWhatTheSocialLoginsShare(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/confidentialite');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Politique de confidentialité');
+        self::assertSelectorExists('footer a[href="/confidentialite"]');
+        // Google's brand verification wants the Google user data named, its use limited, and a way to revoke the access
+        self::assertSelectorTextContains('#connexion-reseaux-sociaux', 'Google');
+        self::assertSelectorExists('a[href="https://developers.google.com/terms/api-services-user-data-policy"]');
+        self::assertSelectorExists('a[href="https://myaccount.google.com/connections"]');
+        self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
     }
 
     public function testFontsAreSelfHosted(): void

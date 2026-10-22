@@ -36,6 +36,12 @@ final class ContentController extends BaseController
         return $this->render('content/legal-mentions.html.twig');
     }
 
+    #[Route(path: '/confidentialite', name: 'app_privacy_policy', options: ['llms_txt' => new LlmsTxtEntry(title: 'Politique de confidentialité', description: 'Les données personnelles que By Night collecte, dont celles reçues de Google, Facebook et X à la connexion, leur usage, leur durée de conservation et vos droits.', section: Section::OPTIONAL)], methods: ['GET'])]
+    public function privacyPolicy(): Response
+    {
+        return $this->render('content/privacy-policy.html.twig');
+    }
+
     #[Route(path: '/a-propos', name: 'app_about', options: ['llms_txt' => new LlmsTxtEntry(title: 'À propos de By Night', description: 'By Night est votre guide de sorties en France. Depuis 2013, nous référençons concerts, spectacles, expos et événements pour vous aider à trouver votre prochaine sortie.')], methods: ['GET'])]
     public function about(AppContext $appContext, EventRepository $eventRepository): Response
     {

@@ -68,7 +68,7 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringNotContainsString('/soiree/', $content);
         self::assertStringNotContainsString('/sortir-a/', $content);
         // The legal pages come last, in the section an assistant may skip
-        self::assertStringEndsWith("## Optional\n\n- [Politique de cookies](https://by-night.test/cookie): Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.\n- [Mentions légales](https://by-night.test/mentions-legales): Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.\n", $content);
+        self::assertStringEndsWith("## Optional\n\n- [Politique de cookies](https://by-night.test/cookie): Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.\n- [Mentions légales](https://by-night.test/mentions-legales): Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.\n- [Politique de confidentialité](https://by-night.test/confidentialite): Les données personnelles que By Night collecte, dont celles reçues de Google, Facebook et X à la connexion, leur usage, leur durée de conservation et vos droits.\n", $content);
     }
 
     public function testLeavesTheAgendasOutWhileNothingIsToCome(): void
