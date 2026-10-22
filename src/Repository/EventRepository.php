@@ -1193,6 +1193,54 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The best of the events a search found: those with a picture first, then the most followed, then in the order of
+     * the search. Drafts and duplicates are left out, as the index may lag behind.
+     *
+     * @param list<int> $ids the events found, in the order of the search
+     *
+     * @return list<Event>
+     */
+    public function findMostFollowedAmong(array $ids, int $limit): array
+    {
+        if ([] === $ids) {
+            return [];
+        }
+
+        /** @var list<array{id: int|string, hasImage: bool|int|string, participations: int|string|null}> $rows */
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('e.id, e.hasImage, e.participations')
+            ->where('e.id IN (:ids)')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+            ->getQuery()
+            ->getScalarResult();
+
+        $ranks = array_flip($ids);
+        usort($rows, static fn (array $a, array $b): int => [(bool) $b['hasImage'], (int) $b['participations'], $ranks[(int) $a['id']]]
+            <=> [(bool) $a['hasImage'], (int) $a['participations'], $ranks[(int) $b['id']]]);
+        $best = array_map(static fn (array $row): int => (int) $row['id'], \array_slice($rows, 0, $limit));
+        if ([] === $best) {
+            return [];
+        }
+
+        /** @var Event[] $events */
+        $events = $this
+            ->createQueryBuilder('e')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $best, ArrayParameterType::INTEGER)
+            ->getQuery()
+            ->getResult();
+
+        $order = array_flip($best);
+        usort($events, static fn (Event $a, Event $b): int => $order[$a->getId()] <=> $order[$b->getId()]);
+        $this->loadAllEager($events, ['view' => 'events:agenda:list']);
+
+        return $events;
+    }
+
+    /**
      * The cities of a country with the most events to come.
      *
      * @return list<array{0: City, events: int|string}> each city, and its number of events to come
