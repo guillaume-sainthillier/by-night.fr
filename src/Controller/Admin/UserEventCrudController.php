@@ -53,7 +53,7 @@ final class UserEventCrudController extends AbstractCrudController
         }
 
         return [
-            $id,
+            $id->hideOnForm(),
             $createdAt->hideOnForm(),
             $updatedAt->hideOnForm(),
             $participe,

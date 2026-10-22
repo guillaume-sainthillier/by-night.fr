@@ -19,7 +19,8 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * The members' calendars (UserEvent) and the counters of the events they follow (Event::$participations and
  * $interests). The counters are recounted from the calendars as flushed, never moved by one: a missed or doubled update
- * cannot leave them wrong for good.
+ * cannot leave them wrong for good. Every flush that changes a calendar recounts its events (UserEventCountListener),
+ * the back office's included.
  */
 final readonly class EventParticipationManager
 {
@@ -43,13 +44,11 @@ final readonly class EventParticipationManager
 
         $userEvent->setGoing($going);
         $this->entityManager->flush();
-
-        $this->recount([$event]);
-        $this->entityManager->flush();
     }
 
     /**
-     * Sets the counters of the events from their calendars as flushed. Does not flush.
+     * Stores the counters of the events from their calendars as flushed, and sets them on the entities as loaded, so
+     * the next flush does not write them again. Runs its own UPDATEs: callable from a postFlush listener.
      *
      * @param iterable<Event> $events
      */
@@ -62,11 +61,47 @@ final readonly class EventParticipationManager
             }
         }
 
+        if ([] === $byId) {
+            return;
+        }
+
         $counts = $this->userEventRepository->countByEvents(array_keys($byId));
+
+        // One UPDATE per pair of counts: a flush usually touches a single event
+        $byCounts = [];
         foreach ($byId as $id => $event) {
+            $participations = $counts[$id]['participations'] ?? 0;
+            $interests = $counts[$id]['interests'] ?? 0;
+            $byCounts[$participations . ':' . $interests] ??= ['participations' => $participations, 'interests' => $interests, 'ids' => []];
+            $byCounts[$participations . ':' . $interests]['ids'][] = $id;
+        }
+
+        foreach ($byCounts as $group) {
+            $this->entityManager
+                ->createQueryBuilder()
+                ->update(Event::class, 'e')
+                ->set('e.participations', ':participations')
+                ->set('e.interests', ':interests')
+                ->where('e.id IN (:ids)')
+                ->setParameter('participations', $group['participations'])
+                ->setParameter('interests', $group['interests'])
+                ->setParameter('ids', $group['ids'])
+                ->getQuery()
+                ->execute();
+        }
+
+        // The response to this request reads the new counters (the "J'y vais" button)
+        $unitOfWork = $this->entityManager->getUnitOfWork();
+        foreach ($byId as $id => $event) {
+            $participations = $counts[$id]['participations'] ?? 0;
+            $interests = $counts[$id]['interests'] ?? 0;
             $event
-                ->setParticipations($counts[$id]['participations'] ?? 0)
-                ->setInterests($counts[$id]['interests'] ?? 0);
+                ->setParticipations($participations)
+                ->setInterests($interests);
+            if ($unitOfWork->isInIdentityMap($event)) {
+                $unitOfWork->setOriginalEntityProperty(spl_object_id($event), 'participations', $participations);
+                $unitOfWork->setOriginalEntityProperty(spl_object_id($event), 'interests', $interests);
+            }
         }
     }
 }
