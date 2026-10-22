@@ -13,6 +13,9 @@ const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">Op
 /** Close enough to see the streets around a venue, and no closer than the tiles go */
 const VENUE_ZOOM = 15
 
+/** Narrow enough for the map of a phone, whose popups the map pans into sight */
+const POPUP_WIDTH = 260
+
 const dayFormat = new Intl.DateTimeFormat('fr', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
 
 /**
@@ -81,7 +84,7 @@ export function create({ element, venues }) {
 
     const markers = venues.map((venue) =>
         L.marker([venue.lat, venue.lng], { icon: createIcon(venue), title: venue.name || '' })
-            .bindPopup(() => createPopup(venue))
+            .bindPopup(() => createPopup(venue), { maxWidth: POPUP_WIDTH })
             .addTo(map)
     )
 
