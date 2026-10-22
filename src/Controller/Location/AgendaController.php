@@ -24,12 +24,14 @@ use App\Manager\TagRedirectManager;
 use App\Repository\EventRepository;
 use App\Routing\AgendaTypeSlugRequirement;
 use App\Routing\AgendaUrlGenerator;
+use App\Routing\DatePageSlugRequirement;
 use App\Search\AgendaFacets;
 use App\Search\AgendaSection;
 use App\Search\SearchEvent;
 use App\SearchRepository\AgendaFacetsLoader;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\ResultWindow;
+use App\SEO\DatePageIndexingPolicy;
 use App\Stats\LocationPortalProvider;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,6 +55,7 @@ final class AgendaController extends BaseController
     // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
     #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', methods: ['GET'])]
+    #[Route(path: '/{dateSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_date', requirements: ['dateSlug' => new DatePageSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{typeSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['typeSlug' => new AgendaTypeSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{placeSlug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
     #[Route(path: '/agenda/tag/{tagSlug<%patterns.slug%>}--{tagId<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_agenda_by_tag', requirements: ['tagId' => '\d+'], methods: ['GET'])]
@@ -67,23 +70,28 @@ final class AgendaController extends BaseController
         AgendaUrlGenerator $agendaUrlGenerator,
         AgendaFacetsLoader $agendaFacetsLoader,
         LocationPortalProvider $locationPortalProvider,
+        DatePageIndexingPolicy $datePageIndexingPolicy,
         int $page = 1,
         ?string $typeSlug = null,
         ?string $placeSlug = null,
         ?string $tagSlug = null,
         ?int $tagId = null,
         ?string $legacyTag = null,
+        ?string $dateSlug = null,
     ): Response {
         $location = $appContext->getLocation();
+        $currentRoute = $request->attributes->getString('_route');
         // The page of the location itself: "/toulouse", "/toulouse/2"
-        $isLocationPage = 'app_location_index' === $request->attributes->getString('_route');
+        $isLocationPage = 'app_location_index' === $currentRoute;
+        // The page of a date shortcut of the location: "/toulouse/ce-week-end"
+        $datePage = null !== $dateSlug ? DateRangePreset::fromPageSlug($dateSlug) : null;
 
         $type = null !== $typeSlug ? AgendaType::fromSlug($typeSlug) : null;
         $place = null;
         $tag = null;
 
         // The venue of the URL, else a redirect to its own URL or to the location's page
-        if ('app_agenda_by_place' === $request->attributes->getString('_route')) {
+        if ('app_agenda_by_place' === $currentRoute) {
             $place = $placeRedirectManager->getPlace($placeSlug, $location);
         }
 
@@ -102,7 +110,8 @@ final class AgendaController extends BaseController
 
         // Search for events
         $search = $this->createSearch($location, $type, $place, $tag);
-        [$formAction, $formQuery] = $agendaUrlGenerator->formTarget($location->getSlug(), $type, $place, $tag);
+        $search->setWhen($datePage);
+        [$formAction, $formQuery] = $agendaUrlGenerator->formTarget($location->getSlug(), $type, $place, $tag, $datePage);
 
         // Create and submit the form
         $form = $this->createForm(SearchType::class, $search, [
@@ -112,8 +121,15 @@ final class AgendaController extends BaseController
         $form->submit($request->query->all(), false);
 
         // The parameters of the page's route but its page number, the type and the category of a venue included
-        [, $routeParams] = $agendaUrlGenerator->route($location->getSlug(), $type, $place, $tag);
+        [$route, $routeParams] = $agendaUrlGenerator->route($location->getSlug(), $type, $place, $tag, $search->getPreset());
         $filters = $this->buildFilters($request, $search);
+
+        // The location's agenda and its date pages are one page told apart by its date shortcut: each period has a
+        // single URL, "/toulouse?when=this_weekend" being "/toulouse/ce-week-end", and the date page with other dates
+        // the location's agenda with them
+        if ($route !== $currentRoute) {
+            return $this->redirect($agendaUrlGenerator->generate($location->getSlug(), $type, $place, $tag, [...$filters, 'page' => $page > 1 ? $page : null]), Response::HTTP_MOVED_PERMANENTLY);
+        }
 
         // Execute search
         /** @var EventElasticaRepository $repository */
@@ -138,7 +154,7 @@ final class AgendaController extends BaseController
         if ($page > $events->getNbPages()) {
             $lastPage = $events->getNbPages();
 
-            return $this->redirectToRoute($request->attributes->getString('_route'), [...$routeParams, ...$filters, 'page' => $lastPage > 1 ? $lastPage : null]);
+            return $this->redirect($agendaUrlGenerator->generate($location->getSlug(), $type, $place, $tag, [...$filters, 'page' => $lastPage > 1 ? $lastPage : null]));
         }
 
         $dateRange = $search->getDateRange();
@@ -154,6 +170,8 @@ final class AgendaController extends BaseController
             'tag' => $tag?->getName(),
             'tagEntity' => $tag,
             'type' => $type,
+            'datePage' => $datePage,
+            'datePagesIndexable' => $datePageIndexingPolicy->isIndexable($location),
             'events' => $events,
             'sections' => $sections,
             'facets' => $facets,

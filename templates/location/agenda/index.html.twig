@@ -5,22 +5,31 @@
 {# The page of the location itself ("/toulouse/"), its agenda without a type, a venue or a category #}
 {% set isLocationPage = app.current_route == 'app_location_index' %}
 {% set zone = location.isCity ? location.city : location.country %}
+{# The days of a date page, "du vendredi 23 au dimanche 25 octobre" or "jeudi 22 octobre": its title stays the same
+   from one week to the next, its text says which days #}
+{% if datePage %}
+    {% set dateDays = dateRange.from == dateRange.to
+        ? dateRange.from|format_date(pattern: 'EEEE d MMMM', locale: 'fr')
+        : 'du ' ~ dateRange.from|format_date(pattern: dateRange.from|date('m') == dateRange.to|date('m') ? 'EEEE d' : 'EEEE d MMMM', locale: 'fr') ~ ' au ' ~ dateRange.to|format_date(pattern: 'EEEE d MMMM', locale: 'fr') %}
+{% endif %}
 
 {%- block title -%}
 {% if isLocationPage %}Agenda des sorties {{ location.atName }} : concerts, spectacles, expos et soirées
+{% elseif datePage %}Que faire {{ datePage.pageLabel }} {{ location.atName }} ? Concerts, spectacles et soirées
 {% elseif placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}{% if place %}, {{ place.cityName -}}{% endif %}
 {% elseif tag is not null %}{{- tag|ucfirst -}}
 {% else %}{{ type.label ?? 'Événements' }}{% endif %}
-{% if placeName is null and not isLocationPage %} {{ location.atName }}{% endif %}
+{% if placeName is null and not isLocationPage and not datePage %} {{ location.atName }}{% endif %}
 {% if page > 1 %} (Page {{ page }}){% endif %}
 {%- endblock -%}
 
 {%- block page_title -%}
 {% if isLocationPage %}Que faire {{ location.atName }}&nbsp;?
+{% elseif datePage %}Que faire {{ datePage.pageLabel }} {{ location.atName }}&nbsp;?
 {% elseif placeName is not null %}{{ type.label ?? 'Sortir' }} {{ placeName|at_place -}}, {{ place.cityName -}}
 {% elseif tag is not null %}{{- tag|ucfirst -}}
 {% else %}{{ type.label ?? 'Événements' }}{% endif %}
-{% if placeName is null and not isLocationPage %} {{ location.atName }}{% endif %}
+{% if placeName is null and not isLocationPage and not datePage %} {{ location.atName }}{% endif %}
 {%- endblock -%}
 
 {% block breadcrumb %}
@@ -37,6 +46,8 @@
         {% do menu.addItem(tag|ucfirst, url('app_agenda_by_tag', {tagSlug: tagEntity.slug, tagId: tagEntity.id, location: location.slug})) %}
     {% elseif type is not null %}
         {% do menu.addItem(type.label, url('app_agenda_by_type', {typeSlug: type.slug, location: location.slug})) %}
+    {% elseif datePage %}
+        {% do menu.addItem(datePage.pageLabel|ucfirst, url('app_agenda_by_date', {dateSlug: datePage.pageSlug, location: location.slug})) %}
     {% endif %}
     {% if page > 1 %}
         {% do menu.addItem('Page ' ~ page, url(app.current_route, routeParams|merge({page: page}))) %}
@@ -48,6 +59,8 @@
 {% block meta_description -%}
     {% if isLocationPage %}
         Que faire {{ location.atName }}&nbsp;? Retrouvez l'agenda complet des concerts, spectacles, expos, soirées et sorties en famille. Des milliers d'événements à découvrir.
+    {% elseif datePage %}
+        Que faire {{ datePage.pageLabel }} {{ location.atName }}&nbsp;? {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }} {{ dateDays }}&nbsp;: concerts, spectacles, expos, soirées et sorties en famille.
     {% else %}
     {{ block('title')|striptags }}.
     {% if location.isCountry %} Retrouvez l'agenda complet des concerts, spectacles, soirées et sorties {{ location.country.atDisplayName }}. Découvrez les événements à ne pas manquer.{% endif %}
@@ -57,10 +70,10 @@
 
 {% block metas %}
     {% if events.hasPreviousPage() %}
-        <link rel="prev" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getPreviousPage() > 1 ? events.getPreviousPage() : null})) }}" />
+        <link rel="prev" href="{{ absolute_url(agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: filters|merge({page: events.getPreviousPage() > 1 ? events.getPreviousPage() : null}))) }}" />
     {% endif %}
     {% if events.hasNextPage() %}
-        <link rel="next" href="{{ url(app.current_route, routeParams|merge(filters)|merge({page: events.getNextPage()})) }}" />
+        <link rel="next" href="{{ absolute_url(agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: filters|merge({page: events.getNextPage()}))) }}" />
     {% endif %}
 {% endblock %}
 
@@ -71,14 +84,15 @@
 {% endblock %}
 
 {% block meta_robots %}
-    {% if events.nbResults == 0 %}
+    {# A date page is only worth indexing in a busy location (DatePageIndexingPolicy) #}
+    {% if events.nbResults == 0 or (datePage and not datePagesIndexable) %}
         <meta name="robots" content="noindex, follow">
     {% endif %}
 {% endblock %}
 
 {% block body %}
-    {# The agenda of the whole location, with the filters of the page #}
-    {% set agenda = path('app_location_index', {location: location.slug}|merge(filters)) %}
+    {# The agenda of the whole location, with the filters of the page: its date page, for a shortcut that has one #}
+    {% set agenda = agenda_path(location.slug, filters: filters) %}
     {# The page without its type, its venue or its category: each keeps the others, and the other filters #}
     {% set withoutType = agenda_path(location.slug, place: place, tag: tagEntity, filters: filters) %}
     {% set withoutPlace = agenda_path(location.slug, type: type, tag: tagEntity, filters: filters) %}
@@ -95,16 +109,16 @@
         {% set active = active|merge([{label: tag|ucfirst, href: withoutTag}]) %}
     {% endif %}
     {% if search.term %}
-        {% set active = active|merge([{label: '« ' ~ search.term ~ ' »', href: path(app.current_route, routeParams|merge(filters|filter((value, key) => key != 'term')))}]) %}
+        {% set active = active|merge([{label: '« ' ~ search.term ~ ' »', href: agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: filters|filter((value, key) => key != 'term'))}]) %}
     {% endif %}
     {% if search.price %}
-        {% set active = active|merge([{label: search.price.label, href: path(app.current_route, routeParams|merge(unpricedFilters))}]) %}
+        {% set active = active|merge([{label: search.price.label, href: agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: unpricedFilters)}]) %}
     {% endif %}
     {# The period: its shortcut ("Ce week-end"), else the dates picked; none for "Tous les jours". A shortcut gets no chip
        of its own: the date shortcuts that head the agenda show it #}
     {% set preset = search.preset %}
     {% if preset is null or preset.value != 'anytime' %}
-        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: path(app.current_route, routeParams|merge(undatedFilters)), shortcut: preset is not null}]) %}
+        {% set active = active|merge([{label: preset ? preset.label : dateRange.label, href: agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: undatedFilters), shortcut: preset is not null}]) %}
     {% endif %}
     {% set removable = active|filter(filter => not (filter.shortcut ?? false)) %}
 
@@ -166,10 +180,18 @@
                             <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
                         {% endif %}
                         {# The title says it on a phone, where the date shortcuts must come into sight #}
-                        <p class="text-secondary mb-0 d-none d-md-block">
-                            Concerts, spectacles, expositions, marchés, festivals et soirées&nbsp;: toutes les sorties
-                            {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
-                        </p>
+                        {% if datePage %}
+                            {# Said on a phone too: it is what the page is about, the days it lists #}
+                            <p class="text-secondary mb-0">
+                                {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
+                                {{ location.atName }} {{ dateDays }}&nbsp;: concerts, spectacles, expositions, marchés, festivals et soirées.
+                            </p>
+                        {% else %}
+                            <p class="text-secondary mb-0 d-none d-md-block">
+                                Concerts, spectacles, expositions, marchés, festivals et soirées&nbsp;: toutes les sorties
+                                {{ placeName ? placeName|at_place : location.atName }}, jour après jour.
+                            </p>
+                        {% endif %}
 
                         <div class="mt-3 mt-md-4">
                             {{ include('location/agenda/_dates.html.twig', {withFilters: true}) }}
@@ -209,7 +231,7 @@
                                 <div class="d-flex flex-wrap gap-2 mt-2" id="agenda-wider">
                                     {% for option in wider %}
                                         {% set when = option.preset.value == 'anytime' ? {} : {when: option.preset.value} %}
-                                        <twig:Chip href="{{ path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) }}" class="btn-sm" rel="nofollow">
+                                        <twig:Chip href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: undatedFilters|merge(when)) }}" class="btn-sm" rel="nofollow">
                                             {{ option.preset.label }}
                                             <span class="chip-count">{{ option.count }}</span>
                                         </twig:Chip>
@@ -249,7 +271,7 @@
                                     {% set dayFilters = undatedFilters|merge({dateRange: {from: day, to: day}}) %}
                                     {# Not followed, as the date chips: its dates change every day, and the page it leads to
                                        passes them on to all its links #}
-                                    <a class="small text-secondary" href="{{ path(app.current_route, routeParams|merge(dayFilters)) }}" title="Toutes les sorties de ce jour" rel="nofollow">
+                                    <a class="small text-secondary" href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: dayFilters) }}" title="Toutes les sorties de ce jour" rel="nofollow">
                                         {{ '{count, plural, one {# sortie ce jour-là} other {# sorties ce jour-là}}'|trans({count: facets.dates[day]}, 'messages+intl-icu') }}
                                     </a>
                                 {% endif %}

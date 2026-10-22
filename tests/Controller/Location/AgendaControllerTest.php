@@ -145,8 +145,9 @@ final class AgendaControllerTest extends AppWebTestCase
         $client = self::createClient();
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse?term=jazz&when=this_weekend&range=not-a-number');
+        $crawler = $client->request('GET', '/toulouse/ce-week-end?term=jazz&range=not-a-number');
 
+        // A type page has no date page of its own: the shortcut stays in its query string
         $query = $this->queryOf($crawler->filter('#agenda-filters a[href^="/toulouse/agenda/sortir/"]')->first()->attr('href'));
         self::assertSame('this_weekend', $query['when'] ?? null);
         self::assertArrayNotHasKey('dateRange', $query);
