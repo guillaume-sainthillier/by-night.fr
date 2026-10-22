@@ -23,12 +23,40 @@ final class ClientErrorLoggingTest extends AppWebTestCase
         self::assertSame(0, $this->countLoggedErrors('/api/tags', 422));
     }
 
+    /**
+     * A page that is not a number reads as page 0, which API Platform's Pagination refuses: a 400, which
+     * Sentry got as "fatal" (BY-NIGHTFR-6D0), its exception being no HttpException.
+     */
+    public function testAPageThatIsNotANumberIsLoggedAsTheOther400s(): void
+    {
+        self::assertSame(['ERROR'], $this->loggedErrorLevels('/api/search?q=concert&page=abc', 400));
+    }
+
     public function testANotFoundPageIsStillLoggedAsAnError(): void
     {
-        self::assertSame(1, $this->countLoggedErrors('/wp-admin/setup-config.php', 404));
+        self::assertSame(['ERROR'], $this->loggedErrorLevels('/wp-admin/setup-config.php', 404));
+    }
+
+    /**
+     * @return list<string> the levels of the records of the "error" level and above
+     */
+    private function loggedErrorLevels(string $uri, int $statusCode): array
+    {
+        return array_map(
+            static fn (array $log): string => $log['priorityName'],
+            array_values(array_filter($this->getLogs($uri, $statusCode), static fn (array $log): bool => $log['priority'] >= 400)),
+        );
     }
 
     private function countLoggedErrors(string $uri, int $statusCode): int
+    {
+        return \count($this->loggedErrorLevels($uri, $statusCode));
+    }
+
+    /**
+     * @return list<array{priority: int, priorityName: string}>
+     */
+    private function getLogs(string $uri, int $statusCode): array
     {
         $client = self::createClient();
         $client->enableProfiler();
@@ -40,6 +68,6 @@ final class ClientErrorLoggingTest extends AppWebTestCase
         $collector = $profile->getCollector('logger');
         self::assertInstanceOf(LoggerDataCollector::class, $collector);
 
-        return $collector->countErrors();
+        return $collector->getProcessedLogs();
     }
 }
