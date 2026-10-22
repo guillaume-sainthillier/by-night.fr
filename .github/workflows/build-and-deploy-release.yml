@@ -41,15 +41,17 @@ jobs:
             - name: Check if base image already exists
               id: exists
               run: |
-                  if docker manifest inspect "guystlr/by-night-base:${{ steps.version.outputs.tag }}" > /dev/null 2>&1; then
-                      echo "exists=true" >> "$GITHUB_OUTPUT"
-                  else
-                      echo "exists=false" >> "$GITHUB_OUTPUT"
-                  fi
+                  .github/scripts/image-exists.sh "guystlr/by-night-base:${{ steps.version.outputs.tag }}"
 
             - name: Set up Docker Buildx
               if: steps.exists.outputs.exists == 'false'
               uses: docker/setup-buildx-action@v4
+              with:
+                  # Pull Docker Hub images through Google's mirror: every pull through Docker Hub
+                  # counts against the account's quota, shared with docker-php and the servers.
+                  buildkitd-config-inline: |
+                      [registry."docker.io"]
+                        mirrors = ["mirror.gcr.io"]
 
             - name: Build and push base image
               if: steps.exists.outputs.exists == 'false'
@@ -75,6 +77,12 @@ jobs:
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v4
+              with:
+                  # Pull Docker Hub images through Google's mirror: every pull through Docker Hub
+                  # counts against the account's quota, shared with docker-php and the servers.
+                  buildkitd-config-inline: |
+                      [registry."docker.io"]
+                        mirrors = ["mirror.gcr.io"]
 
             - name: Extract version info
               id: version
