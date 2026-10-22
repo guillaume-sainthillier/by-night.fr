@@ -70,6 +70,15 @@ describe('DatepickerService', () => {
         expect(Calendar.mock.instances[0].options.selectedDates).toEqual(['2026-10-09'])
     })
 
+    // BY-NIGHTFR-6D1: "?dateRange[from]=undefined" crashed the agenda with "RangeError: Invalid time value"
+    test('ignores the dates the server could not read', () => {
+        create({ element: input, fromInput: field('undefined'), toInput: field('undefined') })
+        create({ element: field(), fromInput: from, toInput: field('{{63316*63316}}') })
+
+        expect(input.value).toBe('')
+        expect(Calendar.mock.instances.map((calendar) => calendar.options.selectedDates)).toEqual([[], ['2026-10-09']])
+    })
+
     test('opens below a field of a panel fixed to the screen, wherever there is room otherwise', () => {
         vi.stubGlobal('getComputedStyle', (element) => ({ position: element.position }))
 

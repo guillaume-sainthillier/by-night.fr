@@ -4,6 +4,7 @@ import 'vanilla-calendar-pro/styles/layout/core.css'
 import 'vanilla-calendar-pro/styles/layout/months.css'
 import 'vanilla-calendar-pro/styles/themes/light/core.css'
 import 'vanilla-calendar-pro/styles/themes/light/months.css'
+import { formatDay, parseDay } from '@/js/utils/days'
 import { isTouchDevice } from '@/js/utils/utils'
 import '@/scss/lazy-components/_datepicker.scss'
 
@@ -60,6 +61,18 @@ export function formatRangeLabel(start, end) {
     return `Du ${formatDate(start)} au ${formatDate(end)}`
 }
 
+/**
+ * The day of a hidden input. The server sends back a value it could not read as a date as it came
+ * ("?dateRange[from]=undefined"), and searches without it: no day then.
+ *
+ * @param {HTMLInputElement|null} input
+ * @returns {string|null} YYYY-MM-DD
+ */
+function dayOf(input) {
+    const day = parseDay(input?.value)
+    return day ? formatDay(day) : null
+}
+
 export function create({ element, fromInput, toInput, singleDate = false, onApply = null } = {}) {
     const input = resolveElement(element)
     const from = resolveElement(fromInput)
@@ -92,10 +105,10 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
 
     // Initialize with existing values
     const selectedDates = []
-    if (from?.value) {
-        const start = from.value
+    const start = dayOf(from)
+    if (start) {
         // No end: a range open from its start ("À partir du 3 oct. 2026"), not that day alone
-        const end = to?.value || null
+        const end = dayOf(to)
         if (singleDate) {
             selectedDates.push(start)
             input.value = formatDate(start)
