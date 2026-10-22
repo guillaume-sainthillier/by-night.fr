@@ -1,22 +1,33 @@
-<div id="fb-root"></div>
-<script>
-    window.fbAsyncInit = function () {
-        FB.init({{ {
-            appId: facebook_app_id,
-            version: facebook_graph_api_version,
-            xfbml: true,
-            autoLogAppEvents: true,
-        }|json_encode|raw }});
-    };
-</script>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js"></script>
-<div id="fb-container" class="widget">
+{# Click to load: the Facebook SDK only loads, and only reaches Meta, once the visitor asks for the page (facebook-page.js) #}
+<div id="fb-container" class="widget"
+     data-facebook-page="{{ {
+         appId: facebook_app_id,
+         version: facebook_graph_api_version,
+         xfbml: false,
+         autoLogAppEvents: false,
+     }|json_encode }}"
+>
+    <div class="card" data-facebook-page-placeholder>
+        <div class="card-body text-center">
+            <span class="avatar bg-blue-lt mb-2"><twig:Icon name="fa7-brands:facebook-f" /></span>
+            <h2 class="h3 mb-1">By Night sur Facebook</h2>
+            <p class="small text-secondary mb-3">
+                Afficher la page charge le module de Facebook : Meta reçoit alors votre adresse IP et peut déposer ses
+                propres cookies.
+            </p>
+            <button type="button" class="btn w-100" data-facebook-page-load>Afficher la page Facebook</button>
+            <a class="d-inline-block small link-secondary mt-2" href="https://www.facebook.com/by.night.fr/" target="_blank" rel="noopener">
+                Ouvrir la page sur facebook.com
+            </a>
+        </div>
+    </div>
     <div class="fb-page"
          data-href="https://www.facebook.com/by.night.fr/"
          data-small-header="false"
          data-adapt-container-width="true"
          data-hide-cover="false"
          data-show-facepile="false"
+         hidden
     >
         <blockquote cite="https://www.facebook.com/by.night.fr/" class="fb-xfbml-parse-ignore">
             <a href="https://www.facebook.com/by.night.fr/">By Night</a>

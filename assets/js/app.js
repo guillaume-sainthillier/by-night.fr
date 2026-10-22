@@ -18,6 +18,7 @@ import dropzone from '@/js/listeners/dropzone'
 import duplicateCheck from '@/js/listeners/duplicate-check'
 import emailVerify from '@/js/listeners/email-verify'
 import eventPublish from '@/js/listeners/event-publish'
+import facebookPage from '@/js/listeners/facebook-page'
 import feedback from '@/js/listeners/feedback'
 import fileMaxSize from '@/js/listeners/file-max-size'
 import filteredLink from '@/js/listeners/filtered-link'
@@ -92,6 +93,7 @@ class App {
             duplicateCheck,
             emailVerify,
             eventPublish,
+            facebookPage,
             feedback,
             fileMaxSize,
             filteredLink,
