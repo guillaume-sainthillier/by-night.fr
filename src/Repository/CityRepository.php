@@ -204,9 +204,10 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     }
 
     /**
-     * Cities with at least one published event ending on or after $from, with that event count.
+     * Cities with at least one published event ending on or after $from, with that event count and the count of events to
+     * come UpcomingEventCounter last stored (DatePageIndexingPolicy).
      *
-     * @return CursorPagination<array{slug: string, nb: int|string}>
+     * @return CursorPagination<array{slug: string, nb: int|string, upcoming: int|string}>
      */
     public function findAllSitemap(DateTimeInterface $from, int $batchSize): CursorPagination
     {
