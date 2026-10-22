@@ -10,15 +10,19 @@
 
 namespace App\Manager;
 
+use App\App\Location;
 use App\Entity\ContentRemovalRequest;
+use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\ContentRemovalType;
+use App\Search\DateRange;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 final readonly class MailerManager
@@ -28,6 +32,7 @@ final readonly class MailerManager
     public function __construct(
         private MailerInterface $mailer,
         private UrlGeneratorInterface $urlGenerator,
+        private TranslatorInterface $translator,
         #[Autowire(env: 'SUPPORT_BCC_EMAIL')]
         private string $supportBccEmail,
     ) {
@@ -51,6 +56,35 @@ final readonly class MailerManager
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
             ]);
+
+        $this->sendMail($email);
+    }
+
+    /**
+     * The weekend selection of the member's city, which a mailbox offers to unsubscribe from in one click (RFC 8058).
+     *
+     * @param list<Event> $events
+     */
+    public function sendWeekendDigestEmail(User $user, Location $location, DateRange $weekend, array $events, string $unsubscribeUrl): void
+    {
+        $email = $this->createEmail('email/weekend-digest')
+            ->to($user->getEmail())
+            ->subject($this->translator->trans(
+                "Ce week-end {at}\u{a0}: {count, plural, one {# sortie} other {# sorties}} à ne pas manquer",
+                ['at' => $location->getAtName(), 'count' => \count($events)],
+                'messages+intl-icu',
+            ))
+            ->context([
+                'user' => $user,
+                'location' => $location,
+                'weekend' => $weekend,
+                'events' => $events,
+                'unsubscribeUrl' => $unsubscribeUrl,
+            ]);
+
+        $email->getHeaders()
+            ->addTextHeader('List-Unsubscribe', '<' . $unsubscribeUrl . '>')
+            ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
 
         $this->sendMail($email);
     }

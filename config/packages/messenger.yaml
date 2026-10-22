@@ -65,6 +65,8 @@ framework:
             App\Message\CheckEventImport: transfers
             App\Message\RunEventImport: transfers
             App\Message\RunEventExport: transfers
+            # A search and an e-mail per member who asked for it, once a week: a fraction of a second each on the async worker
+            App\Message\SendWeekendDigest: async
             FOS\ElasticaBundle\Message\AsyncPersistPage: elastica
             App\Elasticsearch\Message\RefreshElasticaIndex: elastica
             App\Elasticsearch\Message\InsertManyDocuments: async

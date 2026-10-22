@@ -10,22 +10,12 @@
 
 namespace App\Tests\Digest;
 
-use App\Digest\WeekendDigestSelector;
 use App\Entity\Event;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
-use App\Repository\EventRepository;
 use App\Search\DateRange;
-use App\SearchRepository\EventElasticaRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
-use Elastica\Index;
-use Elastica\Query;
-use Elastica\Response;
-use Elastica\Result;
-use Elastica\ResultSet;
-use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
-use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 /**
@@ -33,6 +23,8 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
  */
 final class WeekendDigestSelectorTest extends AppKernelTestCase
 {
+    use StubsWeekendSearch;
+
     public function testThePicturesComeFirstThenTheMostFollowedThenTheAgendaOrder(): void
     {
         $plain = $this->event('No picture, followed', ['participations' => 90]);
@@ -40,7 +32,7 @@ final class WeekendDigestSelectorTest extends AppKernelTestCase
         $followed = $this->event('Picture, followed', ['participations' => 12, 'image' => $this->picture()]);
         $fetched = $this->event('Fetched picture', ['imageSystem' => $this->picture()]);
 
-        $selection = $this->selector([$plain, $first, $fetched, $followed])->select(CityFactory::toulouse()->create(), $this->weekend());
+        $selection = $this->weekendSelector([$plain, $first, $fetched, $followed])->select(CityFactory::toulouse()->create(), $this->weekend());
 
         self::assertSame(
             ['Picture, followed', 'Picture, first in the agenda', 'Fetched picture', 'No picture, followed'],
@@ -57,29 +49,14 @@ final class WeekendDigestSelectorTest extends AppKernelTestCase
             $this->event('Three'),
         ];
 
-        $selection = $this->selector($events)->select(CityFactory::toulouse()->create(), $this->weekend(), 2);
+        $selection = $this->weekendSelector($events)->select(CityFactory::toulouse()->create(), $this->weekend(), 2);
 
         self::assertSame(['One', 'Two'], array_map(static fn (Event $event): ?string => $event->getName(), $selection));
     }
 
     public function testNothingFoundIsAnEmptySelection(): void
     {
-        self::assertSame([], $this->selector([])->select(CityFactory::toulouse()->create(), $this->weekend()));
-    }
-
-    /**
-     * @param list<Event> $found what Elasticsearch finds, in the order of the agenda
-     */
-    private function selector(array $found): WeekendDigestSelector
-    {
-        $results = array_map(static fn (Event $event): Result => new Result(['_id' => (string) $event->getId()]), $found);
-        $index = $this->createStub(Index::class);
-        $index->method('search')->willReturn(new ResultSet(new Response([]), new Query(), $results));
-
-        $manager = $this->createStub(RepositoryManagerInterface::class);
-        $manager->method('getRepository')->willReturn(new EventElasticaRepository($this->createStub(PaginatedFinderInterface::class)));
-
-        return new WeekendDigestSelector($index, $manager, self::getContainer()->get(EventRepository::class));
+        self::assertSame([], $this->weekendSelector([])->select(CityFactory::toulouse()->create(), $this->weekend()));
     }
 
     /**
