@@ -23,16 +23,6 @@ function initialize() {
                 .css('border', 0)
                 .appendTo($('#googleMap').empty())
         })
-
-    $('[data-copy-url]')
-        .off('click')
-        .on('click', function () {
-            const toastManager = window.App.get('toastManager')
-            navigator.clipboard.writeText($(this).data('copy-url')).then(
-                () => toastManager.createToast('success', 'Lien copié !'),
-                () => toastManager.createToast('error', 'Impossible de copier le lien')
-            )
-        })
 }
 
 window.App.registerPage('event_details', initialize)
