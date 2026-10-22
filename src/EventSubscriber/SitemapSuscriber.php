@@ -12,11 +12,13 @@ namespace App\EventSubscriber;
 
 use App\Controller\Location\AgendaController;
 use App\Enum\AgendaType;
+use App\Enum\DateRangePreset;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use App\Repository\PageRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\UserRepository;
+use App\SEO\DatePageIndexingPolicy;
 use App\SEO\EventIndexingPolicy;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -53,6 +55,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly ClockInterface $clock,
         private readonly EventIndexingPolicy $eventIndexingPolicy,
+        private readonly DatePageIndexingPolicy $datePageIndexingPolicy,
         private readonly CityRepository $cityRepository,
         private readonly PlaceRepository $placeRepository,
         private readonly EventRepository $eventRepository,
@@ -126,6 +129,15 @@ final class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($cities as $city) {
             $this->addUrl($section, 'app_location_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+
+            // The date pages of a busy city only: the others are not indexed
+            if ($this->datePageIndexingPolicy->isBusy((int) $city['upcoming'])) {
+                foreach (DateRangePreset::cases() as $preset) {
+                    if (null !== $preset->getPageSlug()) {
+                        $this->addUrl($section, 'app_agenda_by_date', ['dateSlug' => $preset->getPageSlug(), 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+                    }
+                }
+            }
 
             if ((int) $city['nb'] < self::CATEGORY_PAGES_MIN_EVENTS) {
                 continue;

@@ -211,7 +211,8 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     public function findAllSitemap(DateTimeInterface $from, int $batchSize): CursorPagination
     {
         $queryBuilder = parent::createQueryBuilder('c')
-            ->select('c.slug, COUNT(e.id) AS nb')
+            // The count UpcomingEventCounter stored, which the date pages are judged on (DatePageIndexingPolicy)
+            ->select('c.slug, COUNT(e.id) AS nb, MAX(c.upcomingEvents) AS upcoming')
             ->join(Place::class, 'p', Join::ON, 'p.city = c')
             ->join(Event::class, 'e', Join::ON, 'e.place = p')
             ->where('e.endDate >= :from')
