@@ -38,6 +38,7 @@ final class CommentController extends BaseController
             $commentRepository,
             $page,
             self::COMMENTS_PER_PAGE,
+            nbResults: $event->getCommentCount(),
         );
 
         return $this->render('comment/list.html.twig', [
@@ -71,6 +72,7 @@ final class CommentController extends BaseController
                 $commentRepository,
                 1,
                 self::COMMENTS_PER_PAGE,
+                nbResults: $event->getCommentCount(),
             );
 
             return new JsonResponse([

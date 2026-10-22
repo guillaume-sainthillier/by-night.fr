@@ -15,6 +15,8 @@ use App\Entity\Event;
 use App\Entity\UserEvent;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Repository\CommentRepository;
+use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use App\Utils\PaginateTrait;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
@@ -59,6 +61,52 @@ final class PaginateTraitTest extends AppKernelTestCase
         // The query itself, limited to the page, then COUNT(DISTINCT id) without ORDER BY (CountWalker)
         self::assertMatchesRegularExpression('/^SELECT e0_\.id AS id_0,.* ORDER BY e0_\.name ASC LIMIT 2$/', $sqls[0]);
         self::assertMatchesRegularExpression('/^SELECT count\(DISTINCT e0_\.id\) AS \w+ FROM \W?event\W? e0_ INNER JOIN place p1_ .* WHERE p1_\.id = \?$/i', $sqls[1]);
+    }
+
+    public function testIdsFirstSortsTheIdsAloneThenLoadsTheirRowsInOrder(): void
+    {
+        $place = PlaceFactory::createOne();
+        foreach (['Delta', 'Alpha', 'Echo', 'Charlie', 'Bravo'] as $name) {
+            EventFactory::createOne(['place' => $place, 'name' => $name]);
+        }
+        EventFactory::createOne(['name' => 'Ailleurs']);
+
+        $queryBuilder = $this->entityManager()
+            ->createQueryBuilder()
+            ->select('e')
+            ->from(Event::class, 'e')
+            ->join('e.place', 'p')
+            ->where('p = :place')
+            ->setParameter('place', $place)
+            ->orderBy('e.name');
+
+        $queries = $this->queries();
+        $queries->reset();
+
+        $pager = $this->paginator()->createIdsFirstPaginator($queryBuilder, self::getContainer()->get(EventRepository::class), 1, 3);
+
+        self::assertSame(['Alpha', 'Bravo', 'Charlie'], array_map(static fn (Event $event): ?string => $event->getName(), iterator_to_array($pager->getCurrentPageResults())));
+        self::assertSame(5, $pager->getNbResults());
+
+        $sqls = array_column($queries->getData()['default'] ?? [], 'sql');
+        // The ids alone are sorted, then the rows of the page are read by id
+        self::assertMatchesRegularExpression('/^SELECT e0_\.id AS id_0 FROM \W?event\W? e0_ INNER JOIN place p1_ .* ORDER BY e0_\.name ASC LIMIT 3$/', $sqls[0]);
+        self::assertMatchesRegularExpression('/^SELECT e0_\.id AS id_0,.* WHERE e0_\.id IN \(/', $sqls[1]);
+    }
+
+    public function testAStoredCountOfZeroRunsNoQuery(): void
+    {
+        $event = EventFactory::createOne();
+        $queryBuilder = self::getContainer()->get(CommentRepository::class)->findAllByEventQueryBuilder($event);
+
+        $queries = $this->queries();
+        $queries->reset();
+
+        $pager = $this->paginator()->createMultipleEagerLoadingPaginator($queryBuilder, self::getContainer()->get(CommentRepository::class), 1, 10, nbResults: 0);
+
+        self::assertSame([], iterator_to_array($pager->getCurrentPageResults()));
+        self::assertSame(0, $pager->getNbResults());
+        self::assertSame([], $queries->getData()['default'] ?? []);
     }
 
     public function testRefusesAToManyJoinWithoutFetchJoinCollection(): void
@@ -112,6 +160,24 @@ final class PaginateTraitTest extends AppKernelTestCase
         };
 
         return $paginator->createQueryBuilderPaginator($queryBuilder, 1, $limit, $fetchJoinCollection);
+    }
+
+    private function paginator(): object
+    {
+        return new class {
+            use PaginateTrait {
+                createIdsFirstPaginator as public;
+                createMultipleEagerLoadingPaginator as public;
+            }
+        };
+    }
+
+    private function queries(): BacktraceDebugDataHolder
+    {
+        $queries = self::getContainer()->get('doctrine.debug_data_holder');
+        self::assertInstanceOf(BacktraceDebugDataHolder::class, $queries);
+
+        return $queries;
     }
 
     private function entityManager(): EntityManagerInterface

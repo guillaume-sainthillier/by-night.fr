@@ -66,13 +66,13 @@ final readonly class WidgetsManager
 
     public function getSimilarEventsData(Event $event, Location $location, int $page = 1): EventsWidgetData
     {
-        $paginator = $this->createMultipleEagerLoadingPaginator(
+        // Sorted by name, which no index serves: the ids first
+        $paginator = $this->createIdsFirstPaginator(
             $this->eventRepository->findAllSimilarsQueryBuilder($event),
             $this->eventRepository,
             $page,
             self::WIDGET_ITEM_LIMIT,
             ['view' => 'events:widget:similar-events'],
-            fetchJoinCollection: false,
         );
 
         $hasNextLink = $paginator->hasNextPage() ? $this->urlGenerator->generate('app_widget_similar_events', [
