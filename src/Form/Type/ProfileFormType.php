@@ -55,6 +55,14 @@ final class ProfileFormType extends AbstractType
                 'label' => 'Ma ville',
                 'help' => "La ville de vos sorties\u{a0}: le menu et la page d'accueil vous la proposent.",
             ])
+            ->add('weekendDigest', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Recevoir la sélection du week-end',
+                'help' => 'Chaque jeudi, les sorties du week-end dans votre ville et autour, par e-mail. Un clic suffit pour vous désinscrire.',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Afficher un lien vers mes réseaux sociaux',
