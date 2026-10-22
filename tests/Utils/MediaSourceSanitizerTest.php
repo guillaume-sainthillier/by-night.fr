@@ -28,9 +28,13 @@ final class MediaSourceSanitizerTest extends TestCase
      */
     public static function provideAcceptedFrames(): iterable
     {
-        yield 'protocol-relative youtube' => ['//www.youtube.com/embed/abc', 'https://www.youtube.com/embed/abc'];
+        yield 'protocol-relative youtube' => ['//www.youtube.com/embed/abc', 'https://www.youtube-nocookie.com/embed/abc'];
         yield 'http vimeo' => ['http://player.vimeo.com/video/1', 'https://player.vimeo.com/video/1'];
-        yield 'upper-cased scheme and host' => ['HTTP://WWW.YOUTUBE.COM/embed/abc', 'https://WWW.YOUTUBE.COM/embed/abc'];
+        yield 'upper-cased scheme and host' => ['HTTP://WWW.DAILYMOTION.COM/embed/video/x1', 'https://WWW.DAILYMOTION.COM/embed/video/x1'];
+        yield 'youtube without www' => ['https://youtube.com/embed/abc', 'https://www.youtube-nocookie.com/embed/abc'];
+        yield 'upper-cased youtube' => ['HTTP://WWW.YOUTUBE.COM/embed/abc', 'https://www.youtube-nocookie.com/embed/abc'];
+        yield 'youtube with a query and a fragment' => ['https://m.youtube.com/embed/abc?start=10&rel=0#t', 'https://www.youtube-nocookie.com/embed/abc?start=10&rel=0#t'];
+        yield 'youtube page other than a player' => ['https://www.youtube.com/watch?v=abc', 'https://www.youtube.com/watch?v=abc'];
         yield 'bare player host' => ['https://youtube-nocookie.com/embed/abc', 'https://youtube-nocookie.com/embed/abc'];
         yield 'google maps' => ['https://www.google.com/maps/embed?pb=1', 'https://www.google.com/maps/embed?pb=1'];
         yield 'trailing spaces' => ['https://www.dailymotion.com/embed/video/x1  ', 'https://www.dailymotion.com/embed/video/x1'];
@@ -81,7 +85,7 @@ final class MediaSourceSanitizerTest extends TestCase
 
     private function frameSource(string $src): ?string
     {
-        $html = new HtmlFormatter()->format(\sprintf('<iframe src="%s"></iframe>', htmlspecialchars($src, \ENT_QUOTES)));
+        $html = new HtmlFormatter()->sanitize(\sprintf('<iframe src="%s"></iframe>', htmlspecialchars($src, \ENT_QUOTES)));
         if (1 !== preg_match('~<iframe[^>]*\ssrc="([^"]*)"~', $html, $matches)) {
             return null;
         }

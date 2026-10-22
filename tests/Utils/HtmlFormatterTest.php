@@ -211,8 +211,25 @@ final class HtmlFormatterTest extends TestCase
     public function testSanitizeKeepsVideoPlayersInsertedByTheEditor(): void
     {
         self::assertSame(
-            '<iframe frameborder="0" src="https://www.youtube.com/embed/Wu1EPoy4IH8" width="640" height="360"></iframe>',
+            '<iframe frameborder="0" src="https://www.youtube-nocookie.com/embed/Wu1EPoy4IH8" width="640" height="360"></iframe>',
             $this->formatter->sanitize('<iframe frameborder="0" src="//www.youtube.com/embed/Wu1EPoy4IH8" width="640" height="360" class="note-video-clip"></iframe>')
+        );
+    }
+
+    public function testFormatDefersYoutubePlayersUntilAClick(): void
+    {
+        $html = $this->formatter->format('<p>Teaser</p><iframe src="https://www.youtube.com/embed/Wu1EPoy4IH8?start=10&amp;rel=0" width="640"></iframe>');
+
+        self::assertStringNotContainsString('<iframe', $html);
+        self::assertStringStartsWith('<p>Teaser</p><div class="ratio ratio-16x9 my-3" data-video-facade="https://www.youtube-nocookie.com/embed/Wu1EPoy4IH8?start&#61;10&amp;rel&#61;0">', $html);
+        self::assertStringContainsString('data-video-facade-play', $html);
+    }
+
+    public function testFormatKeepsOtherPlayersAsFrames(): void
+    {
+        self::assertSame(
+            '<iframe src="https://player.vimeo.com/video/1"></iframe>',
+            $this->formatter->format('<iframe src="https://player.vimeo.com/video/1"></iframe>')
         );
     }
 

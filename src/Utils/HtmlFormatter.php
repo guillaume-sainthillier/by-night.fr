@@ -111,7 +111,28 @@ final class HtmlFormatter
 
     public function format(?string $html): string
     {
-        return $this->sanitize($this->linkifyUrls($this->rewriteAnchors((string) $html)));
+        return $this->deferVideoPlayers($this->sanitize($this->linkifyUrls($this->rewriteAnchors((string) $html))));
+    }
+
+    /**
+     * A YouTube player is only loaded once the visitor asks for it (assets/js/listeners/video-facade.js): until
+     * then, a placeholder stands in its place and nothing reaches Google. Runs on sanitized markup, whose
+     * YouTube frames all come from youtube-nocookie.com (MediaSourceSanitizer) with an encoded src.
+     */
+    public function deferVideoPlayers(string $html): string
+    {
+        return (string) preg_replace_callback(
+            '~<iframe\b[^>]*\ssrc="(https://(?:www\.)?youtube-nocookie\.com/embed/[^"]*)"[^>]*>.*?</iframe>~is',
+            static fn (array $matches): string => \sprintf(
+                '<div class="ratio ratio-16x9 my-3" data-video-facade="%s">'
+                . '<div class="d-flex flex-column align-items-center justify-content-center gap-2 bg-light rounded text-secondary text-center p-3">'
+                . '<button type="button" class="btn" data-video-facade-play>Lire la vidéo YouTube</button>'
+                . '<span class="small">La lecture charge le lecteur de YouTube : Google reçoit alors votre adresse IP.</span>'
+                . '</div></div>',
+                $matches[1],
+            ),
+            $html
+        );
     }
 
     /**

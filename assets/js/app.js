@@ -36,6 +36,7 @@ import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
 import tooltip from '@/js/listeners/tooltip'
 import transferToasts from '@/js/listeners/transfer-toasts'
+import videoFacade from '@/js/listeners/video-facade'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
@@ -110,6 +111,7 @@ class App {
             popup,
             tooltip,
             transferToasts,
+            videoFacade,
         ]
 
         this.#listeners.forEach((listener) => this.#tracked.set(listener, new Set()))
