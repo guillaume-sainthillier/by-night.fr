@@ -15,8 +15,10 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Manager\PreloadManager;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<UserEvent>
@@ -49,6 +51,32 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
             ->join('ue.event', 'e')
             ->where('ue.user = :user')
             ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * A member's outings ending on or after a day, as their calendar feed lists them: the published events they go to
+     * or are interested in (a "J'y vais" taken back keeps its row, neither), with their sessions, soonest first.
+     *
+     * @return list<UserEvent>
+     */
+    public function findCalendarFeed(User $user, DateTimeInterface $since): array
+    {
+        /* @var list<UserEvent> */
+        return $this
+            ->createQueryBuilder('ue')
+            ->addSelect('e', 't')
+            ->join('ue.event', 'e')
+            ->leftJoin('e.timesheets', 't')
+            ->where('ue.user = :user')
+            ->andWhere('(ue.going = true OR ue.wish = true)')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.endDate >= :since')
+            ->orderBy('e.startDate', SortDirection::Ascending)
+            ->addOrderBy('e.id', SortDirection::Ascending)
+            ->setParameter('user', $user->getId())
+            ->setParameter('since', $since->format('Y-m-d'))
             ->getQuery()
             ->getResult();
     }
