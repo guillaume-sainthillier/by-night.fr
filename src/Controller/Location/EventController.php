@@ -70,6 +70,7 @@ final class EventController extends BaseController
             $commentRepository,
             1,
             CommentController::COMMENTS_PER_PAGE,
+            nbResults: $event->getCommentCount(),
         );
 
         $commentForm = null;

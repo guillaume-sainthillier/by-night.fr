@@ -92,6 +92,36 @@ final class CommentRepository extends ServiceEntityRepository implements Multipl
     }
 
     /**
+     * The comments of each event as findAllByEventQueryBuilder() lists them (approved, replies left out), which its
+     * counter stores (CommentCountManager::recount()).
+     *
+     * @param list<int> $eventIds
+     *
+     * @return array<int, int> by event id; an event without comments is left out
+     */
+    public function countByEvents(array $eventIds): array
+    {
+        $counts = [];
+        foreach (array_chunk($eventIds, 1_000) as $chunk) {
+            /** @var list<array{event: int|string, comments: int|string}> $rows */
+            $rows = $this
+                ->createQueryBuilder('c')
+                ->select('IDENTITY(c.event) AS event', 'COUNT(c.id) AS comments')
+                ->where('c.event IN (:ids) AND c.parent IS NULL AND c.approved = true')
+                ->groupBy('c.event')
+                ->setParameter('ids', $chunk)
+                ->getQuery()
+                ->getArrayResult();
+
+            foreach ($rows as $row) {
+                $counts[(int) $row['event']] = (int) $row['comments'];
+            }
+        }
+
+        return $counts;
+    }
+
+    /**
      * @return int the number of a member's comments and answers the moderation let through
      */
     public function countApprovedByUser(User $user): int

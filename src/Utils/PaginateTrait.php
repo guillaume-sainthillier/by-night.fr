@@ -11,6 +11,8 @@
 namespace App\Utils;
 
 use App\Contracts\MultipleEagerLoaderInterface;
+use App\Pagination\IdsFirstQueryAdapter;
+use App\Pagination\KnownCountAdapter;
 use App\Pagination\MultipleEagerLoadingAdapter;
 use App\Pagination\PageFirstPagerfanta;
 use Doctrine\ORM\Query\Expr\Join;
@@ -38,6 +40,7 @@ trait PaginateTrait
      *
      * @param MultipleEagerLoaderInterface<TPaginateObject> $multipleEagerLoader
      * @param bool                                          $fetchJoinCollection see createQueryAdapter(): pass false only when the query builder joins no to-many association
+     * @param int<0, max>|null                              $nbResults           the number of results when a counter column stores it: no COUNT query then, nor any query when it is 0
      *
      * @return PagerfantaInterface<TPaginateObject>
      */
@@ -48,8 +51,12 @@ trait PaginateTrait
         int $limit,
         array $options = [],
         bool $fetchJoinCollection = true,
+        ?int $nbResults = null,
     ): PagerfantaInterface {
         $adapter = $this->createQueryAdapter($query, $fetchJoinCollection);
+        if (null !== $nbResults) {
+            $adapter = new KnownCountAdapter($adapter, $nbResults);
+        }
 
         return $this->createMultipleEagerLoadingPaginatorFromAdapter($adapter, $multipleEagerLoader, $page, $limit, $options);
     }
@@ -93,6 +100,28 @@ trait PaginateTrait
         $this->assertNoToManyJoin($queryBuilder);
 
         return new QueryAdapter($queryBuilder, fetchJoinCollection: false, useOutputWalkers: false);
+    }
+
+    /**
+     * Like createMultipleEagerLoadingPaginator() without fetchJoinCollection, for a query sorted on a column no index
+     * serves: MySQL sorts the page's ids rather than every selected column (TEXT ones included), see IdsFirstQueryAdapter.
+     *
+     * @template TPaginateObject of object
+     *
+     * @param MultipleEagerLoaderInterface<TPaginateObject> $multipleEagerLoader
+     *
+     * @return PagerfantaInterface<TPaginateObject>
+     */
+    protected function createIdsFirstPaginator(
+        QueryBuilder $query,
+        MultipleEagerLoaderInterface $multipleEagerLoader,
+        int $page,
+        int $limit,
+        array $options = [],
+    ): PagerfantaInterface {
+        $this->assertNoToManyJoin($query);
+
+        return $this->createMultipleEagerLoadingPaginatorFromAdapter(new IdsFirstQueryAdapter($query), $multipleEagerLoader, $page, $limit, $options);
     }
 
     /**

@@ -23,7 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * without any ON DELETE rule, so removing the account alone is refused by the database.
  *
  * All of it or nothing, in one transaction: the account is deleted in the same flush as what references it
- * (Doctrine deletes the rows referencing a member before the member), then the counters are written.
+ * (Doctrine deletes the rows referencing a member before the member), and the counters are written once it is flushed.
  */
 final readonly class UserRemover
 {
@@ -32,7 +32,6 @@ final readonly class UserRemover
         private EventRepository $eventRepository,
         private UserEventRepository $userEventRepository,
         private CommentRepository $commentRepository,
-        private EventParticipationManager $eventParticipationManager,
     ) {
     }
 
@@ -47,10 +46,9 @@ final readonly class UserRemover
                 }
             }
 
-            // Loaded with their events, which the recount writes to: one query rather than one per favourite
-            $followed = [];
+            // Loaded with their events, which the recount writes to (UserEventCountListener): one query, not one per
+            // favourite
             foreach ($this->userEventRepository->findByUserWithEvents($user) as $userEvent) {
-                $followed[] = $userEvent->getEvent();
                 $this->entityManager->remove($userEvent);
             }
 
@@ -59,10 +57,6 @@ final readonly class UserRemover
             }
 
             $this->entityManager->remove($user);
-            $this->entityManager->flush();
-
-            // The events deleted with the account have lost their id: only the ones left are recounted
-            $this->eventParticipationManager->recount(array_filter($followed));
             $this->entityManager->flush();
         });
     }

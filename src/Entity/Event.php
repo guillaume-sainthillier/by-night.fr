@@ -48,6 +48,8 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_start_date_idx', columns: ['start_date'])]
 #[ORM\Index(name: 'event_place_upcoming_idx', columns: ['place_id', 'duplicate_of_id', 'draft', 'end_date'])]
 #[ORM\Index(name: 'event_place_start_date_idx', columns: ['place_id', 'start_date'])]
+// The other events of the same day (EventRepository::findAllSimilarsQueryBuilder()): their count reads the index alone
+#[ORM\Index(name: 'event_similar_idx', columns: ['start_date', 'draft', 'duplicate_of_id', 'place_id'])]
 #[ORM\Index(name: 'event_upcoming_idx', columns: ['duplicate_of_id', 'draft', 'end_date', 'participations', 'place_id'])]
 #[ORM\Index(name: 'event_popular_idx', columns: ['duplicate_of_id', 'draft', 'has_image', 'end_date', 'start_date', 'participations', 'place_id'])]
 #[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
@@ -356,6 +358,10 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $interests = null;
+
+    /** The approved comments, replies left out, as the event page lists them: kept by CommentCountManager */
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private int $commentCount = 0;
 
     #[ORM\Column(type: Types::STRING, length: 256, nullable: true)]
     private ?string $source = null;
@@ -1142,6 +1148,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setInterests(?int $interests): self
     {
         $this->interests = $interests;
+
+        return $this;
+    }
+
+    public function getCommentCount(): int
+    {
+        return $this->commentCount;
+    }
+
+    public function setCommentCount(int $commentCount): self
+    {
+        $this->commentCount = $commentCount;
 
         return $this;
     }
