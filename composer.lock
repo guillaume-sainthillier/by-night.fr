@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6937723be881cf888cef757dc8d0178b",
+    "content-hash": "9d3597b355b75073a34f7652643bb4dd",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6286,16 +6286,16 @@
         },
         {
             "name": "silarhi/ux-icons-js-bundle",
-            "version": "v0.2.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/ux-icons-js-bundle.git",
-                "reference": "7572bc5df6067d5a97f09ef7202fb6db94543d3c"
+                "reference": "74613593dc9b427361dd76c55d971d7d6dff772c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/ux-icons-js-bundle/zipball/7572bc5df6067d5a97f09ef7202fb6db94543d3c",
-                "reference": "7572bc5df6067d5a97f09ef7202fb6db94543d3c",
+                "url": "https://api.github.com/repos/silarhi/ux-icons-js-bundle/zipball/74613593dc9b427361dd76c55d971d7d6dff772c",
+                "reference": "74613593dc9b427361dd76c55d971d7d6dff772c",
                 "shasum": ""
             },
             "require": {
@@ -6340,8 +6340,9 @@
                     "email": "guillaume@silarhi.fr"
                 }
             ],
-            "description": "Render Symfony UX Icons in JavaScript, React and Vue, with the same attributes and configuration as ux_icon() — the PHP companion to @silarhi/ux-icons-js",
+            "description": "Render Symfony UX Icons in JavaScript, React, Preact and Vue, with the same attributes and configuration as ux_icon() — the PHP companion to @silarhi/ux-icons-js",
             "keywords": [
+                "Preact",
                 "icons",
                 "react",
                 "svg",
@@ -6351,9 +6352,9 @@
             ],
             "support": {
                 "issues": "https://github.com/silarhi/ux-icons-js-bundle/issues",
-                "source": "https://github.com/silarhi/ux-icons-js-bundle/tree/v0.2.0"
+                "source": "https://github.com/silarhi/ux-icons-js-bundle/tree/v0.3.1"
             },
-            "time": "2026-10-20T11:16:41+00:00"
+            "time": "2026-10-23T21:06:54+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",

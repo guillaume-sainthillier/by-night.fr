@@ -198,8 +198,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       '@silarhi/ux-icons-js':
-        specifier: ^0.3.0
-        version: 0.3.0(preact@11.0.1)
+        specifier: ^0.3.1
+        version: 0.3.1(preact@11.0.1)
       '@tabler/core':
         specifier: ^1.7.0
         version: 1.7.0(vanilla-calendar-pro@3.4.0)
@@ -963,10 +963,10 @@ packages:
   '@silarhi/app-js@0.2.1':
     resolution: {integrity: sha512-XZtQLxpbBAcSK4aD37e23m7TPrCkZmHDBKwGsRTaFuyPfvYGAeAflN258ZRb70m1QKJmeULtbTBFfBALWrLCNA==}
 
-  '@silarhi/ux-icons-js@0.3.0':
-    resolution: {integrity: sha512-+fEqo48CcHN7In+XBLdz9jeHnuq53hGnhO9iPxuuVNvOJNyRdYV7n4F24alPlRm67rgHU9hGbVjr62xIwIgGmA==}
+  '@silarhi/ux-icons-js@0.3.1':
+    resolution: {integrity: sha512-9owsAK1WHuDA8ZSlFUBOovUMLy3iaZrDL3acBKouTcggX2Ud+cgSjznEedW0mgkRcsVXe2R0iEhsWb7rfrnZIA==}
     peerDependencies:
-      preact: ^10.0
+      preact: ^10.0 || ^11.0
       react: ^18.0 || ^19.0
       vue: ^3.0
     peerDependenciesMeta:
@@ -2309,7 +2309,7 @@ snapshots:
 
   '@silarhi/app-js@0.2.1': {}
 
-  '@silarhi/ux-icons-js@0.3.0(preact@11.0.1)':
+  '@silarhi/ux-icons-js@0.3.1(preact@11.0.1)':
     optionalDependencies:
       preact: 11.0.1(preact-render-to-string@6.8.1)
 
