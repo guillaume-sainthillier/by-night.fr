@@ -39,17 +39,16 @@ final class EventVisitStatRepository extends ServiceEntityRepository
      * Replaces the audience of a day with $stats: a day read again (today, every hour) overwrites what was read before.
      * The events that no longer exist are left out.
      *
-     * @param array<int, array{visitors: int, ticketClicks: int}> $stats               by event id
-     * @param bool                                                $fromGoogleAnalytics read from Google Analytics, not Umami
+     * @param array<int, array{visitors: int, ticketClicks: int}> $stats by event id
      *
      * @return int the events written
      */
-    public function replaceDay(DateTimeImmutable $day, array $stats, bool $fromGoogleAnalytics = false): int
+    public function replaceDay(DateTimeImmutable $day, array $stats): int
     {
         $connection = $this->getEntityManager()->getConnection();
         $day = $day->setTime(0, 0);
 
-        return $connection->transactional(static function () use ($connection, $day, $stats, $fromGoogleAnalytics): int {
+        return $connection->transactional(static function () use ($connection, $day, $stats): int {
             $connection->executeStatement('DELETE FROM event_visit_stat WHERE day = :day', ['day' => $day], ['day' => Types::DATE_IMMUTABLE]);
 
             $written = 0;
@@ -63,18 +62,16 @@ final class EventVisitStatRepository extends ServiceEntityRepository
                 $params = [];
                 $types = [];
                 foreach ($existing as $i => $id) {
-                    $values[] = "(:event$i, :day, :visitors$i, :clicks$i, :fromGoogleAnalytics)";
+                    $values[] = "(:event$i, :day, :visitors$i, :clicks$i)";
                     $params["event$i"] = (int) $id;
                     $params["visitors$i"] = $stats[(int) $id]['visitors'];
                     $params["clicks$i"] = $stats[(int) $id]['ticketClicks'];
                 }
                 $params['day'] = $day;
                 $types['day'] = Types::DATE_IMMUTABLE;
-                $params['fromGoogleAnalytics'] = $fromGoogleAnalytics;
-                $types['fromGoogleAnalytics'] = Types::BOOLEAN;
 
                 $written += $connection->executeStatement(
-                    'INSERT INTO event_visit_stat (event_id, day, visitors, ticket_clicks, from_google_analytics) VALUES ' . implode(', ', $values),
+                    'INSERT INTO event_visit_stat (event_id, day, visitors, ticket_clicks) VALUES ' . implode(', ', $values),
                     $params,
                     $types,
                 );
@@ -134,15 +131,5 @@ final class EventVisitStatRepository extends ServiceEntityRepository
         }
 
         return $daily;
-    }
-
-    /**
-     * The first day read from Umami, null before the first sync: Google Analytics' days all come before it.
-     */
-    public function findFirstUmamiDay(): ?DateTimeImmutable
-    {
-        $day = $this->getEntityManager()->getConnection()->fetchOne('SELECT MIN(day) FROM event_visit_stat WHERE from_google_analytics = :no', ['no' => false], ['no' => Types::BOOLEAN]);
-
-        return \is_string($day) ? new DateTimeImmutable(substr($day, 0, 10)) : null;
     }
 }
