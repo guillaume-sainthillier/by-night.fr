@@ -273,7 +273,7 @@
                                     {% set dayFilters = undatedFilters|merge({dateRange: {from: day, to: day}}) %}
                                     {# Not followed, as the date chips: its dates change every day, and the page it leads to
                                        passes them on to all its links #}
-                                    <a class="small text-secondary" href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: dayFilters) }}" title="Toutes les sorties de ce jour" rel="nofollow">
+                                    <a class="small text-secondary tap-target" href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: dayFilters) }}" title="Toutes les sorties de ce jour" rel="nofollow">
                                         {{ '{count, plural, one {# sortie ce jour-là} other {# sorties ce jour-là}}'|trans({count: facets.dates[day]}, 'messages+intl-icu') }}
                                     </a>
                                 {% endif %}

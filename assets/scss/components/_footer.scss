@@ -4,3 +4,14 @@
 #footer .site-brand {
     color: $ink;
 }
+
+// The links of the columns and of the partner sites are 24px targets (WCAG 2.5.8): a column's link takes its whole
+// line (24px), a partner's at least as much (its line is 21px, the rows move apart by 3px)
+#footer nav a {
+    display: inline-block;
+}
+
+#footer .list-inline-item a {
+    display: inline-block;
+    min-height: 1.5rem;
+}
