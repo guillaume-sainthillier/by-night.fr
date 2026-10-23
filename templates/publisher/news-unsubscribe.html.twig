@@ -1,0 +1,53 @@
+{% extends 'layouts/full.html.twig' %}
+
+{#
+    The unsubscribe link of the publishers' news: asks first (a GET), unsubscribes on the button (a POST to the same
+    signed URL), and tells the member where to subscribe again.
+#}
+
+{% block title 'Nouveautés pour les organisateurs' %}
+{% block meta_robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block breadcrumb -%}
+    {% do menu.addItem('Nouveautés pour les organisateurs', app.request.uri) %}
+{%- endblock %}
+
+{% block body %}
+    <div class="container-lg py-4 py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+                <div class="card card-lg mb-0">
+                    <div class="card-body p-4 p-md-5 text-center">
+                        {% if subscribed %}
+                            <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
+                                <twig:Icon name="lucide:mail" />
+                            </span>
+                            <h1 class="mb-2">Ne plus recevoir nos nouveautés&nbsp;?</h1>
+                            <p class="text-secondary mb-4">
+                                Une fois par mois au plus, By Night écrit aux organisateurs ce qui change pour leurs événements. Vous ne recevrez plus ces e-mails, les autres (vos liens de connexion, vos rappels) continueront d'arriver.
+                            </p>
+                            <form method="post" action="{{ app.request.uri }}">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <twig:Icon name="lucide:check" />
+                                    Me désinscrire
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="avatar avatar-lg rounded-circle bg-teal-lt mb-3">
+                                <twig:Icon name="lucide:check" />
+                            </span>
+                            <h1 class="mb-2">{{ unsubscribed ? 'C\'est noté' : 'Vous êtes déjà désinscrit' }}</h1>
+                            <p class="text-secondary mb-4">
+                                Vous ne recevrez plus nos nouveautés pour les organisateurs. Changé d'avis&nbsp;? Réabonnez-vous depuis votre profil, à tout moment.
+                            </p>
+                            <a class="btn w-100" href="{{ path('app_user_edit') }}">
+                                <twig:Icon name="lucide:user" />
+                                Mon profil
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
