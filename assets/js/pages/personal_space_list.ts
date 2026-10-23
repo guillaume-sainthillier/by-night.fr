@@ -1,31 +1,31 @@
 import $ from 'jquery'
+import type { Page } from '@/js/types'
 
-/** @type {Page} */
-function initialize() {
-    $('.draft').change(function () {
-        const self = $(this)
+const initialize: Page = () => {
+    $('.draft').change((event) => {
+        const self = $(event.currentTarget)
 
-        self.attr('disabled', true)
+        self.prop('disabled', true)
         $.ajax({
             url: self.data('href'),
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ draft: !self.prop('checked') }),
         }).done(() => {
-            self.attr('disabled', false)
+            self.prop('disabled', false)
         })
     })
 
-    $('.cancel').change(function () {
-        const self = $(this)
-        self.attr('disabled', true)
+    $('.cancel').change((event) => {
+        const self = $(event.currentTarget)
+        self.prop('disabled', true)
         $.ajax({
             url: self.data('href'),
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ cancel: self.prop('checked') }),
         }).done(() => {
-            self.attr('disabled', false)
+            self.prop('disabled', false)
         })
     })
 }

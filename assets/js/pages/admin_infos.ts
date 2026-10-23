@@ -1,7 +1,7 @@
 import SocialLogin from '@/js/components/SocialLogin'
+import type { Page } from '@/js/types'
 
-/** @type {Page} */
-function initialize() {
+const initialize: Page = () => {
     new SocialLogin().init()
 }
 

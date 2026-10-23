@@ -1,10 +1,10 @@
-import { Tab } from '@tabler/core/dist/js/tabler.esm'
+import { Tab } from '@tabler/core'
 import $ from 'jquery'
 import { iconHtml } from '@/js/components/icons'
 import Loader2Icon from '@/js/icons/lucide/Loader2'
+import type { Page } from '@/js/types'
 
-/** @type {Page} */
-function initialize({ app }) {
+const initialize: Page = ({ app }) => {
     init()
 
     function init() {
@@ -15,27 +15,31 @@ function initialize({ app }) {
     // A link to a tab opens it: "Mes sorties" leads to the past ones as #passes
     function initTabFromHash() {
         const { hash } = window.location
-        const trigger = hash && document.querySelector(`[data-bs-toggle="tab"][href="${CSS.escape(hash)}"]`)
+        const trigger =
+            hash && document.querySelector<HTMLElement>(`[data-bs-toggle="tab"][href="${CSS.escape(hash)}"]`)
         if (trigger) {
-            Tab.getOrCreateInstance(trigger).show()
+            const tab = Tab.getOrCreateInstance(trigger)
+            if (tab instanceof Tab) {
+                tab.show()
+            }
         }
     }
 
     function initLoadMoreEvents() {
-        $('.user-events-container').each(function () {
-            const container = $(this)
+        $('.user-events-container').each((_index, element) => {
+            const container = $(element)
             bindLoadMore(container)
         })
     }
 
-    function bindLoadMore(container) {
+    function bindLoadMore(container: JQuery) {
         container
             .find('.load-more')
             .off('click')
-            .on('click', function (e) {
+            .on('click', (e) => {
                 e.preventDefault()
 
-                const loadMore = $(this)
+                const loadMore = $(e.currentTarget)
                 const btn = loadMore.find('.btn')
 
                 // Add spinner to button
@@ -43,7 +47,7 @@ function initialize({ app }) {
                 btn.html(`${iconHtml(Loader2Icon, 'icon-spin')} ${originalText}`)
                 btn.prop('disabled', true)
 
-                $.get(loadMore.data('url'), (html) => {
+                $.get(loadMore.data('url'), (html: string) => {
                     // Remove the load-more button
                     loadMore.remove()
 

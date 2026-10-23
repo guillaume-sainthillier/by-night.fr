@@ -1,9 +1,9 @@
 import $ from 'jquery'
 import CommentApp from '@/js/components/CommentApp'
 import Widgets from '@/js/components/Widgets'
+import type { Page } from '@/js/types'
 
-/** @type {Page} */
-function initialize() {
+const initialize: Page = () => {
     new Widgets().init()
 
     new CommentApp().init()
@@ -11,10 +11,10 @@ function initialize() {
     // Google Maps loads on demand: the frame replaces the placeholder of the map card
     $('#loadMap')
         .off('click')
-        .on('click', function () {
+        .on('click', (event) => {
             $('<iframe>')
                 .attr({
-                    src: $(this).data('map'),
+                    src: $(event.currentTarget).data('map'),
                     title: 'Plan',
                     loading: 'lazy',
                     referrerpolicy: 'no-referrer-when-downgrade',
@@ -26,9 +26,9 @@ function initialize() {
 
     $('[data-copy-url]')
         .off('click')
-        .on('click', function () {
+        .on('click', (event) => {
             const toastManager = window.App.get('toastManager')
-            navigator.clipboard.writeText($(this).data('copy-url')).then(
+            navigator.clipboard.writeText($(event.currentTarget).data('copy-url')).then(
                 () => toastManager.createToast('success', 'Lien copié !'),
                 () => toastManager.createToast('error', 'Impossible de copier le lien')
             )

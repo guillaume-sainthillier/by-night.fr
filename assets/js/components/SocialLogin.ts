@@ -2,22 +2,30 @@ import $ from 'jquery'
 import { loadIntoDialog } from '@/js/utils/dialog'
 import { popup } from '@/js/utils/utils'
 
+/**
+ * What templates/security/connect-success.html.twig sends back from the login popup
+ */
+interface Connected {
+    user: { username: string }
+    target: Element
+}
+
 export default class SocialLogin {
     init() {
         this.initOnOff()
 
-        // Default actions
+        // Default actions. jQuery passes the checkbox triggered along as its element (trigger() unwraps a collection)
         $('body')
-            .on('wantConnect', (_event, checkbox) => {
+            .on('wantConnect', (_event, checkbox: HTMLElement) => {
                 this.launchSocialConnect(checkbox)
             })
-            .on('wantDisconnect', (_event, checkbox) => {
+            .on('wantDisconnect', (_event, checkbox: HTMLElement) => {
                 this.launchSocialDisconnect(checkbox)
             })
-            .on('hasDisconnected', (_event, checkbox) => {
+            .on('hasDisconnected', (_event, checkbox: HTMLElement) => {
                 this.onDisconnectedSocial(checkbox)
             })
-            .on('hasConnected', (_event, ui) => {
+            .on('hasConnected', (_event, ui: Connected) => {
                 const checkbox = ui.target
                 const { user } = ui
 
@@ -29,11 +37,11 @@ export default class SocialLogin {
     }
 
     initOnOff() {
-        $('.config-block input:checkbox').each(function () {
-            $(this)
+        $('.config-block input:checkbox').each((_index, element) => {
+            $(element)
                 .off('change')
-                .change(function () {
-                    const checkbox = $(this)
+                .change((event) => {
+                    const checkbox = $(event.currentTarget)
                     $(checkbox).prop('checked', !$(checkbox).prop('checked'))
                     if ($(checkbox).prop('checked')) {
                         // Disconnect
@@ -47,11 +55,11 @@ export default class SocialLogin {
     }
 
     // Deps: ['app/App']
-    launchSocialConnect(checkbox) {
+    launchSocialConnect(checkbox: HTMLElement) {
         popup($(checkbox).data('href-connect'), checkbox)
     }
 
-    launchSocialDisconnect(checkbox) {
+    launchSocialDisconnect(checkbox: HTMLElement) {
         const dialog = $('#dialog_details').modal('loading').modal('show')
 
         loadIntoDialog(dialog, $(checkbox).data('href-disconnect'), () => {
@@ -59,9 +67,9 @@ export default class SocialLogin {
             dialog
                 .find('form')
                 .off('submit')
-                .submit(function () {
+                .submit((event) => {
                     dialog.modal('loading')
-                    $.post($(this).attr('action')).done(() => {
+                    $.post($(event.currentTarget).attr('action') ?? '').done(() => {
                         dialog.modal('hide')
                         $('body').trigger('hasDisconnected', $(checkbox))
                     })
@@ -70,24 +78,19 @@ export default class SocialLogin {
         })
     }
 
-    onDisconnectedSocial(checkbox) {
+    onDisconnectedSocial(checkbox: HTMLElement) {
         const configBlock = $(checkbox).closest('.config-block')
 
         $(checkbox).prop('checked', false)
         configBlock.find('.username').text('')
     }
 
-    /**
-     *
-     * @param {jQuery} checkbox
-     * @returns {undefined}
-     */
-    initModalCheckbox(checkbox) {
+    initModalCheckbox(checkbox: JQuery) {
         $(checkbox)
             .off('click')
-            .click(function () {
-                const alert = $(this).closest('.modal-body').find('.alert')
-                if ($(this).prop('checked')) {
+            .click((event) => {
+                const alert = $(event.currentTarget).closest('.modal-body').find('.alert')
+                if ($(event.currentTarget).prop('checked')) {
                     alert.removeClass('hidden')
                 } else {
                     alert.addClass('hidden')

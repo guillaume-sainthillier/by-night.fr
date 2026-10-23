@@ -1,13 +1,18 @@
+import type { Page } from '@/js/types'
 import { coalesce, followTransfers } from '@/js/utils/transfers'
 
 /**
  * The import / export page and an import's report: their jobs' fragment (`[data-transfer-refresh]`) is read again
  * from `refreshUrl` when the member's channel says a job changed. Without `hub` (a job already done), nothing to
  * follow.
- *
- * @type {Page}
  */
-function initialize({ app, container, hub, refreshUrl, iri = null }) {
+const initialize: Page<{ hub?: string; refreshUrl?: string; iri?: string | null }> = ({
+    app,
+    container,
+    hub,
+    refreshUrl,
+    iri = null,
+}) => {
     const target = container.querySelector('[data-transfer-refresh]')
     if (!hub || !refreshUrl || !target) {
         return undefined

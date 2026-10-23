@@ -1,13 +1,39 @@
 import { useEffect, useMemo, useState } from 'preact/hooks'
+import type CollectionManager from '@/js/services/form/CollectionManager'
 import { dom, findAll } from '@/js/utils/dom'
 import { plural } from '@/js/utils/plural'
-import TimesheetGenerator from '@/js/utils/TimesheetGenerator'
+import TimesheetGenerator, { type Timesheet } from '@/js/utils/TimesheetGenerator'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
 
 const weekdayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
 // Hoisted outside component - never changes
 const generator = new TimesheetGenerator()
+
+type Pattern = 'daily' | 'weekdays'
+
+interface Errors {
+    dates?: string
+    weekdays?: string
+}
+
+interface DateRange {
+    startDate: string | null
+    endDate: string | null
+}
+
+export interface EventSchedulerProps {
+    /** The ids of the event's start and end date fields, which the period follows */
+    startDateFieldId: string
+    endDateFieldId: string
+    /** The id of the timesheets collection the dates are generated into */
+    timesheetsCollectionId: string
+    /** The id of the "Générer les dates" button, outside this component */
+    generateButtonId: string
+    collectionManager: CollectionManager
+    /** Whether to preselect the recurrence of the timesheets already there */
+    detectExisting: boolean
+}
 
 export default function EventScheduler({
     startDateFieldId,
@@ -16,11 +42,11 @@ export default function EventScheduler({
     generateButtonId,
     collectionManager,
     detectExisting,
-}) {
-    const [pattern, setPattern] = useState('daily')
+}: EventSchedulerProps) {
+    const [pattern, setPattern] = useState<Pattern>('daily')
     const [selectedWeekdays, setSelectedWeekdays] = useState(() => new Set([1, 2, 3, 4, 5]))
-    const [errors, setErrors] = useState({})
-    const [dateRange, setDateRange] = useState({ startDate: null, endDate: null })
+    const [errors, setErrors] = useState<Errors>({})
+    const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null })
 
     // Derived state - no need to store in useState (rule 5.4)
     const isMultiDay = dateRange.startDate && dateRange.endDate && dateRange.startDate !== dateRange.endDate
@@ -51,10 +77,10 @@ export default function EventScheduler({
         const collection = dom(`#${timesheetsCollectionId}`)
         if (!collection) return
 
-        const existingTimesheets = []
+        const existingTimesheets: Timesheet[] = []
         for (const item of findAll('.collection-item', collection)) {
-            const startAtInput = item.querySelector('input[id*="from"]')
-            const endAtInput = item.querySelector('input[id*="to"]')
+            const startAtInput = item.querySelector<HTMLInputElement>('input[id*="from"]')
+            const endAtInput = item.querySelector<HTMLInputElement>('input[id*="to"]')
 
             if (startAtInput?.value && endAtInput?.value) {
                 existingTimesheets.push({
@@ -70,7 +96,7 @@ export default function EventScheduler({
             const detection = detectPattern(existingTimesheets)
             if (detection.mode === 'pattern') {
                 setPattern(detection.config.pattern || 'daily')
-                if (detection.config.weekdays) {
+                if (detection.config.pattern === 'weekdays') {
                     setSelectedWeekdays(new Set(detection.config.weekdays))
                 }
             }
@@ -81,8 +107,8 @@ export default function EventScheduler({
 
     // Listen to main event startDate/endDate field changes
     useEffect(() => {
-        const startDateField = dom(`#${startDateFieldId}`)
-        const endDateField = dom(`#${endDateFieldId}`)
+        const startDateField = dom<HTMLInputElement>(`#${startDateFieldId}`)
+        const endDateField = dom<HTMLInputElement>(`#${endDateFieldId}`)
 
         if (!startDateField || !endDateField) return
 
@@ -111,11 +137,11 @@ export default function EventScheduler({
     }, [startDateFieldId, endDateFieldId])
 
     // Validate and generate
-    const handleGenerate = (e) => {
+    const handleGenerate = (e: Event) => {
         e.preventDefault()
 
         const { startDate, endDate } = dateRange
-        const newErrors = {}
+        const newErrors: Errors = {}
 
         // Validate
         if (!startDate || !endDate) {
@@ -129,7 +155,7 @@ export default function EventScheduler({
         }
 
         setErrors(newErrors)
-        if (Object.keys(newErrors).length > 0) return
+        if (Object.keys(newErrors).length > 0 || !startDate || !endDate) return
 
         // Generate timesheets
         try {
@@ -171,7 +197,7 @@ export default function EventScheduler({
     })
 
     // Toggle weekday - functional setState (rule 5.5)
-    const toggleWeekday = (day) => {
+    const toggleWeekday = (day: number) => {
         setSelectedWeekdays((prev) => {
             const next = new Set(prev)
             if (next.has(day)) {
@@ -197,7 +223,7 @@ export default function EventScheduler({
                                 value="daily"
                                 className="form-selectgroup-input"
                                 checked={pattern === 'daily'}
-                                onChange={(e) => setPattern(e.target.value)}
+                                onChange={() => setPattern('daily')}
                             />
                             <span className="form-selectgroup-label">Tous les jours</span>
                         </label>
@@ -208,7 +234,7 @@ export default function EventScheduler({
                                 value="weekdays"
                                 className="form-selectgroup-input"
                                 checked={pattern === 'weekdays'}
-                                onChange={(e) => setPattern(e.target.value)}
+                                onChange={() => setPattern('weekdays')}
                             />
                             <span className="form-selectgroup-label">Certains jours</span>
                         </label>

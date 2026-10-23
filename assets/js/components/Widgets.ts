@@ -1,17 +1,16 @@
 import $ from 'jquery'
 
 export default class Widgets {
-    init(selector) {
+    init(selector?: JQuery.Selector | Element | JQuery) {
         $(document).ready(() => {
             this.initMoreWidgets($('.widget', selector || document))
         })
     }
 
     // Deps: ['scrollable']
-    initMoreWidgets(elems) {
-        const self = this
-        elems.each(function () {
-            const container = $(this)
+    initMoreWidgets(elems: JQuery) {
+        elems.each((_index, element) => {
+            const container = $(element)
             const containerActions = container.find('.more-container')
             const moreContentLink = container.find('.more-content')
             const scrollArea = container.find('.scroll-area')
@@ -27,7 +26,8 @@ export default class Widgets {
                 containerActions.remove()
             } else {
                 const newMoreContentLink = moreContentLink.clone()
-                containerActions.html(newMoreContentLink)
+                // What html() does with a collection
+                containerActions.empty().append(newMoreContentLink)
                 moreContentLink.remove()
 
                 // The block is either the button itself or a wrapper (progress, counter) around it
@@ -41,13 +41,13 @@ export default class Widgets {
                             '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
                         )
                     const scrollAreaLastItem = containerBody.find('.scroll-item').last()
-                    $.get(newMoreContentLink.data('href')).done((content) => {
+                    $.get(newMoreContentLink.data('href')).done((content: string) => {
                         newMoreContentLink.remove()
                         containerBody.append(content)
-                        self.initMoreWidgets(container)
+                        this.initMoreWidgets(container)
                         window.App.mount(container[0])
                         if (scrollAreaLastItem.next().length > 0) {
-                            self.scrollTo(scrollAreaLastItem.next(), scrollArea, () => {})
+                            this.scrollTo(scrollAreaLastItem.next(), scrollArea, () => {})
                         }
                     })
 
@@ -58,15 +58,15 @@ export default class Widgets {
         })
     }
 
-    scrollTo(elem, container, callback) {
-        let options
+    scrollTo(elem: JQuery, container: JQuery, callback: () => void) {
+        let options: JQuery.PlainObject<number>
         // A row of cards scrolls sideways on a phone (.row-scroll-mobile) and wraps on wider screens
         if (container.hasClass('scroll-area-horizontal') || container[0].scrollWidth > container[0].clientWidth) {
             options = {
-                scrollLeft: $(container).scrollLeft() + elem.position().left - $(container).position().left + 1,
+                scrollLeft: ($(container).scrollLeft() ?? 0) + elem.position().left - $(container).position().left + 1,
             }
         } else {
-            options = { scrollTop: $(container).scrollTop() + elem.position().top }
+            options = { scrollTop: ($(container).scrollTop() ?? 0) + elem.position().top }
         }
 
         $(container).animate(options, 800, callback)

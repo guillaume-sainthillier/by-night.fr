@@ -1,6 +1,7 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
 import $ from 'jquery'
 import TomSelect from 'tom-select'
+import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
 import initEventDateMode from '@/js/listeners/event-date-mode'
 import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
@@ -11,32 +12,39 @@ import { create as createTags } from '@/js/services/ui/TagsService'
 import { create as createTimepicker } from '@/js/services/ui/TimepickerService'
 import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
+import type { Page } from '@/js/types'
 
-function initDatepickers(container = document) {
-    container.querySelectorAll('input.shorcuts_date').forEach((el) => {
+const inputById = (id: string | undefined): HTMLInputElement | null => {
+    const input = id ? document.getElementById(id) : null
+
+    return input instanceof HTMLInputElement ? input : null
+}
+
+function initDatepickers(container: ParentNode = document) {
+    container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
-            fromInput: document.getElementById(el.dataset.from),
-            toInput: document.getElementById(el.dataset.to),
+            fromInput: inputById(el.dataset.from),
+            toInput: inputById(el.dataset.to),
             singleDate: el.dataset.singleDate === 'true',
         })
     })
 }
 
 // The hours of the event and of each date (TimeType fields)
-function initTimepickers(container = document) {
-    container.querySelectorAll('input[type="time"]').forEach((el) => {
+function initTimepickers(container: ParentNode = document) {
+    container.querySelectorAll<HTMLInputElement>('input[type="time"]').forEach((el) => {
         createTimepicker({ element: el })
     })
 }
 
-function initTagInputs(container = document) {
-    container.querySelectorAll('.js-tags-input:not(.tomselected)').forEach((el) => {
+function initTagInputs(container: ParentNode = document) {
+    container.querySelectorAll<HTMLInputElement>('.js-tags-input:not(.tomselected)').forEach((el) => {
         createTags({
             element: el,
             url: el.dataset.tagsUrl,
             allowNew: el.dataset.tagsAllowNew === 'true',
-            maxItems: parseInt(el.dataset.tagsMaxItems, 10) || null,
+            maxItems: parseInt(el.dataset.tagsMaxItems ?? '', 10) || null,
             separator: el.dataset.tagsSeparator || ',',
             placeholder: el.getAttribute('placeholder') || '',
             valueField: 'name',
@@ -45,11 +53,14 @@ function initTagInputs(container = document) {
     })
 }
 
-function initCategoryInputs(container = document) {
-    container.querySelectorAll('.js-category-input').forEach((el) => {
+function initCategoryInputs(container: ParentNode = document) {
+    container.querySelectorAll<HTMLInputElement>('.js-category-input').forEach((el) => {
+        const url = el.dataset.autocompleteUrl
+        if (!url) return
+
         createAutocomplete({
             element: el,
-            url: el.dataset.autocompleteUrl,
+            url,
             valueField: 'name',
             labelField: 'name',
             placeholder: el.getAttribute('placeholder') || '',
@@ -57,8 +68,8 @@ function initCategoryInputs(container = document) {
     })
 }
 
-function initWysiwygs(container = document) {
-    container.querySelectorAll('textarea.wysiwyg').forEach((el) => {
+function initWysiwygs(container: ParentNode = document) {
+    container.querySelectorAll<HTMLTextAreaElement>('textarea.wysiwyg').forEach((el) => {
         createWysiwyg({ element: el })
     })
 }
@@ -68,9 +79,10 @@ function initWysiwygs(container = document) {
 function initStatusMessage() {
     const status = document.getElementById('app_event_status')
     const message = document.getElementById('app_event_statusMessage')
-    if (!status || !message) return
+    if (!(status instanceof HTMLSelectElement) || !(message instanceof HTMLInputElement)) return
 
-    const row = message.closest('.form-group')
+    const row = message.closest<HTMLElement>('.form-group')
+    if (!row) return
     const toggle = () => {
         const scheduled = status.value === ''
         row.hidden = scheduled
@@ -81,8 +93,25 @@ function initStatusMessage() {
     status.addEventListener('change', toggle)
 }
 
-/** @type {Page} */
-function initialize({ app }) {
+/** An option of the place name's list: a prediction of the Places API, split on its first comma */
+interface PlaceNameOption {
+    main_text: string
+    secondary_text: string
+    _raw: google.maps.places.PlacePrediction
+}
+
+/** An option of the address' list */
+interface AddressOption {
+    description: string
+    _raw?: google.maps.places.PlacePrediction
+}
+
+type Escape = (text: string) => string
+
+/** The parts of an address, from the Places API (New) or from the geocoder */
+type AddressComponent = google.maps.places.AddressComponent | google.maps.GeocoderAddressComponent
+
+const initialize: Page = ({ app }) => {
     initDatepickers()
     initTimepickers()
     initTagInputs()
@@ -112,17 +141,20 @@ function initialize({ app }) {
 
     initGMap()
 
-    const eventAddress = document.getElementById('app_event_address')
-    const eventPlaceName = document.getElementById('app_event_place_name')
-    const eventPlaceLatitude = document.getElementById('app_event_place_latitude')
-    const eventPlaceLongitude = document.getElementById('app_event_place_longitude')
-    const eventPlaceStreet = document.getElementById('app_event_place_street')
-    const eventPlaceCityName = document.getElementById('app_event_place_city_name')
-    const eventPlaceCityPostalCode = document.getElementById('app_event_place_city_postalCode')
-    const eventPlaceCountry = document.getElementById('app_event_place_country')
+    const eventAddress = document.querySelector<HTMLInputElement>('#app_event_address')
+    const eventPlaceName = document.querySelector<HTMLInputElement>('#app_event_place_name')
+    const $eventAddress = $('#app_event_address')
+    const $eventPlaceName = $('#app_event_place_name')
+    const eventPlaceLatitude = $('#app_event_place_latitude')
+    const eventPlaceLongitude = $('#app_event_place_longitude')
+    const eventPlaceStreet = $('#app_event_place_street')
+    const eventPlaceCityName = $('#app_event_place_city_name')
+    const eventPlaceCityPostalCode = $('#app_event_place_city_postalCode')
+    const eventPlaceCountry = $('#app_event_place_country')
 
     async function initGMap() {
         const mapEl = document.getElementById('map')
+        if (!mapEl || !eventAddress || !eventPlaceName) return
 
         // Configure the Google Maps API loader
         setOptions({
@@ -142,7 +174,7 @@ function initialize({ app }) {
             center: defaultCenter,
             zoom: 12,
             mapId: mapEl.dataset.mapId,
-            mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
         })
 
         const marker = new AdvancedMarkerElement({
@@ -155,9 +187,13 @@ function initialize({ app }) {
         let placeSessionToken = new AutocompleteSessionToken()
         let addressSessionToken = new AutocompleteSessionToken()
 
-        async function fetchPredictions(query, types, sessionToken) {
+        async function fetchPredictions(
+            query: string,
+            types: string[],
+            sessionToken: google.maps.places.AutocompleteSessionToken
+        ): Promise<google.maps.places.AutocompleteSuggestion[]> {
             try {
-                const request = {
+                const request: google.maps.places.AutocompleteRequest = {
                     input: query,
                     region: 'fr', // Bias results towards France
                     language: 'fr',
@@ -175,7 +211,7 @@ function initialize({ app }) {
             }
         }
 
-        async function fetchPlaceDetails(placePrediction) {
+        async function fetchPlaceDetails(placePrediction: google.maps.places.PlacePrediction) {
             // Convert prediction to Place and fetch details
             // The session token is automatically included from the original prediction
             const place = placePrediction.toPlace()
@@ -185,44 +221,44 @@ function initialize({ app }) {
             return place
         }
 
-        function updateMap(lat, lng) {
+        function updateMap(lat: number, lng: number) {
             map.setCenter({ lat, lng })
             marker.position = { lat, lng }
-            $(eventPlaceLatitude).val(lat)
-            $(eventPlaceLongitude).val(lng)
+            eventPlaceLatitude.val(lat)
+            eventPlaceLongitude.val(lng)
         }
 
-        function assignAddressComponents(components) {
+        function assignAddressComponents(components: AddressComponent[] | null | undefined) {
             if (!components) return
-            let city = '',
-                postalCode = '',
-                streetNumber = '',
-                route = '',
-                country = ''
+            let city: string | undefined = '',
+                postalCode: string | undefined = '',
+                streetNumber: string | undefined = '',
+                route: string | undefined = '',
+                country: string | undefined = ''
             for (const c of components) {
                 // New API uses longText/shortText, old geocoder uses long_name/short_name
-                const longValue = c.longText || c.long_name
-                const shortValue = c.shortText || c.short_name
+                const longValue = 'longText' in c ? c.longText || undefined : c.long_name
+                const shortValue = 'shortText' in c ? c.shortText || undefined : c.short_name
                 if (c.types.includes('locality')) city = longValue
                 else if (c.types.includes('postal_code')) postalCode = longValue
                 else if (c.types.includes('street_number')) streetNumber = longValue
                 else if (c.types.includes('route')) route = longValue
                 else if (c.types.includes('country')) country = shortValue
             }
-            $(eventPlaceCityName).val(city)
-            $(eventPlaceCityPostalCode).val(postalCode)
-            $(eventPlaceStreet).val(`${streetNumber} ${route}`.trim())
-            $(eventPlaceCountry).val(country).trigger('refresh')
+            eventPlaceCityName.val(city ?? '')
+            eventPlaceCityPostalCode.val(postalCode ?? '')
+            eventPlaceStreet.val(`${streetNumber} ${route}`.trim())
+            eventPlaceCountry.val(country ?? '').trigger('refresh')
         }
 
-        async function reverseGeocode(lat, lng) {
-            const geocoder = new window.google.maps.Geocoder()
+        async function reverseGeocode(lat: number, lng: number) {
+            const geocoder = new google.maps.Geocoder()
             try {
                 const { results } = await geocoder.geocode({ location: { lat, lng } })
                 if (!results?.[0]) return
                 const r = results[0]
                 addressSelect.addOption({ description: r.formatted_address })
-                $(eventAddress).val(r.formatted_address).trigger('refresh')
+                $eventAddress.val(r.formatted_address).trigger('refresh')
                 let city = '',
                     postalCode = '',
                     streetNumber = '',
@@ -235,10 +271,10 @@ function initialize({ app }) {
                     if (c.types.includes('route')) route = c.long_name
                     if (c.types.includes('country')) country = c.short_name
                 }
-                $(eventPlaceCityName).val(city)
-                $(eventPlaceCityPostalCode).val(postalCode)
-                $(eventPlaceStreet).val(`${streetNumber} ${route}`.trim())
-                $(eventPlaceCountry).val(country).trigger('refresh')
+                eventPlaceCityName.val(city)
+                eventPlaceCityPostalCode.val(postalCode)
+                eventPlaceStreet.val(`${streetNumber} ${route}`.trim())
+                eventPlaceCountry.val(country).trigger('refresh')
             } catch (e) {
                 console.error('Reverse geocode failed:', e)
             }
@@ -248,100 +284,106 @@ function initialize({ app }) {
         const placeNameSelect = new TomSelect(eventPlaceName, {
             valueField: 'main_text',
             labelField: 'main_text',
-            searchField: 'main_text',
+            searchField: ['main_text'],
             plugins: tomSelectFr.plugins,
             maxItems: 1,
             create: true,
             createFilter: () => true,
             loadThrottle: 250,
-            load(query, callback) {
+            load(query: string, callback: TomLoadCallback) {
                 fetchPredictions(query, ['establishment'], placeSessionToken)
                     .then((suggestions) =>
                         callback(
-                            suggestions.map((s) => {
+                            suggestions.flatMap((s): PlaceNameOption[] => {
                                 const pred = s.placePrediction
+                                if (!pred) return []
                                 const fullText = pred.text.text
                                 // Split on first comma to get main/secondary text
                                 const parts = fullText.split(',')
-                                return {
-                                    main_text: parts[0].trim(),
-                                    secondary_text: parts.slice(1).join(',').trim(),
-                                    _raw: pred,
-                                }
-                            })
+                                return [
+                                    {
+                                        main_text: parts[0].trim(),
+                                        secondary_text: parts.slice(1).join(',').trim(),
+                                        _raw: pred,
+                                    },
+                                ]
+                            }),
+                            []
                         )
                     )
-                    .catch(() => callback())
+                    .catch(() => callback([], []))
             },
             render: {
-                option(data, escape) {
+                option(data: TomOption, escape: Escape) {
                     return `<div>
                     <strong>${escape(data.main_text)}</strong>
                     <small class="text-muted ms-2">${escape(data.secondary_text ?? '')}</small>
                 </div>`
                 },
-                item(data, escape) {
+                item(data: TomOption, escape: Escape) {
                     return `<div>${escape(data.main_text)}</div>`
                 },
                 ...tomSelectFr.render,
             },
-            async onChange(value) {
+            async onChange(value: string | number) {
                 if (!value) return
-                const option = this.options[value]
-                if (!option?._raw) return
-                const place = await fetchPlaceDetails(option._raw)
+                const prediction: PlaceNameOption['_raw'] | undefined = placeNameSelect.options[value]?._raw
+                if (!prediction) return
+                const place = await fetchPlaceDetails(prediction)
                 // Reset session token after fetching details
                 placeSessionToken = new AutocompleteSessionToken()
                 if (place.formattedAddress) {
                     addressSelect.addOption({ description: place.formattedAddress })
-                    $(eventAddress).val(place.formattedAddress).trigger('refresh')
+                    $eventAddress.val(place.formattedAddress).trigger('refresh')
                 }
                 if (place.location) updateMap(place.location.lat(), place.location.lng())
                 assignAddressComponents(place.addressComponents)
             },
         })
         // Setup refresh event for placeNameSelect
-        $(eventPlaceName).on('refresh', () => {
-            placeNameSelect.setValue($(eventPlaceName).val(), true)
+        $eventPlaceName.on('refresh', () => {
+            placeNameSelect.setValue(eventPlaceName.value, true)
         })
 
         // Address autocomplete
         const addressSelect = new TomSelect(eventAddress, {
             valueField: 'description',
             labelField: 'description',
-            searchField: 'description',
+            searchField: ['description'],
             plugins: tomSelectFr.plugins,
             maxItems: 1,
             create: true,
             createFilter: () => true,
             loadThrottle: 250,
-            load(query, callback) {
+            load(query: string, callback: TomLoadCallback) {
                 // Places API (New) has no 'address' collection — use Table B address types instead
                 fetchPredictions(query, ['street_address', 'premise', 'subpremise', 'route'], addressSessionToken)
                     .then((suggestions) =>
                         callback(
-                            suggestions.map((s) => ({
-                                description: s.placePrediction.text.text,
-                                _raw: s.placePrediction,
-                            }))
+                            suggestions.flatMap(({ placePrediction }): AddressOption[] =>
+                                placePrediction
+                                    ? [{ description: placePrediction.text.text, _raw: placePrediction }]
+                                    : []
+                            ),
+                            []
                         )
                     )
-                    .catch(() => callback())
+                    .catch(() => callback([], []))
             },
             render: {
-                option(data, escape) {
+                option(data: TomOption, escape: Escape) {
                     return `<div>${escape(data.description)}</div>`
                 },
-                item(data, escape) {
+                item(data: TomOption, escape: Escape) {
                     return `<div>${escape(data.description)}</div>`
                 },
                 ...tomSelectFr.render,
             },
-            async onChange(value) {
+            async onChange(value: string | number) {
                 if (!value) return
-                const option = this.options[value]
-                if (!option?._raw) return
-                const place = await fetchPlaceDetails(option._raw)
+                const prediction: AddressOption['_raw'] = addressSelect.options[value]?._raw
+                if (!prediction) return
+                const place = await fetchPlaceDetails(prediction)
                 // Reset session token after fetching details
                 addressSessionToken = new AutocompleteSessionToken()
                 if (place.location) updateMap(place.location.lat(), place.location.lng())
@@ -349,20 +391,22 @@ function initialize({ app }) {
             },
         })
         // Setup refresh event for addressSelect
-        $(eventAddress).on('refresh', () => {
-            addressSelect.setValue($(eventAddress).val(), true)
+        $eventAddress.on('refresh', () => {
+            addressSelect.setValue(eventAddress.value, true)
         })
 
         // Marker drag -> reverse geocode
         marker.addEventListener('gmp-dragend', () => {
-            const { lat, lng } = marker.position
+            const { position } = marker
+            if (!position) return
+            const { lat, lng } = position instanceof google.maps.LatLng ? position.toJSON() : position
             updateMap(lat, lng)
             reverseGeocode(lat, lng)
         })
 
         // Pre-populate map in edit mode
-        const lat = parseFloat($(eventPlaceLatitude).val())
-        const lng = parseFloat($(eventPlaceLongitude).val())
+        const lat = parseFloat(String(eventPlaceLatitude.val()))
+        const lng = parseFloat(String(eventPlaceLongitude.val()))
         if (!Number.isNaN(lat) && !Number.isNaN(lng) && (lat !== 0 || lng !== 0)) {
             map.setCenter({ lat, lng })
             marker.position = { lat, lng }

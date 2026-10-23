@@ -1,4 +1,4 @@
-import { autocomplete } from '@algolia/autocomplete-js'
+import { type AutocompleteSource, autocomplete } from '@algolia/autocomplete-js'
 import { Fragment, h, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
@@ -18,6 +18,56 @@ import { splitHighlights } from '@/js/utils/highlight'
 import { plural } from '@/js/utils/plural'
 import { searchPageHref } from '@/js/utils/searchPage'
 
+type HighlightedAttribute = 'label' | 'shortDescription'
+
+/** The marks of the query in a hit's fields */
+type Highlights = Partial<Record<HighlightedAttribute, { value: string }>>
+
+/**
+ * A hit of the global search (App\Api\ApiResource\SearchResult), from /api/search or /api/search/suggestions
+ */
+type SearchResult = {
+    id: string
+    type: string
+    category: string
+    label: string
+    shortDescription: string
+    description?: string | null
+    url: string
+    highlightResult?: Highlights | null
+}
+
+/** API Platform's collection (JSON-LD) */
+type SearchCollection = {
+    member?: SearchResult[]
+}
+
+/**
+ * An item the panel lists: a hit, or a recent search as the plugin stores it, which may be the query submitted
+ * without a hit ({ id, label })
+ */
+type Item = { id: string; label: string } & Partial<SearchResult>
+
+/** An item marked by the plugin, against the query typed now */
+type DisplayedItem = Item & { _highlightResult?: Highlights }
+
+export interface AutocompleteInitOptions {
+    autocompleteSelector?: string
+    container?: JQuery.Selector | Element | Document | JQuery
+    searchPlaceholder?: string
+    inputPlaceholder?: string
+    globalSearchUrl?: string | null
+    suggestionsUrl?: string | null
+    searchPageUrl?: string | null
+    enableHotkeys?: boolean
+}
+
+export interface GlobalAutocomplete {
+    show: () => void
+    unload: () => void
+    teardown: () => void
+}
+
 export default function init({
     autocompleteSelector = '#autocomplete',
     container = document,
@@ -27,21 +77,25 @@ export default function init({
     suggestionsUrl = null,
     searchPageUrl = null,
     enableHotkeys = true,
-}) {
+}: AutocompleteInitOptions): GlobalAutocomplete | undefined {
     const $autocomplete = $(autocompleteSelector, container)
     if ($autocomplete.length === 0 || !$autocomplete.is(':visible')) {
         return
     }
 
-    const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
+    const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin<Item>({
         key: `${autocompleteSelector}-v2`,
 
         transformSource({ source, onRemove }) {
             return {
                 ...source,
                 getItems(params) {
-                    // The plugin also saves the query submitted without a hit ({ id, label }): nothing to open
-                    return source.getItems(params).filter((item) => item.url)
+                    const items = source.getItems(params)
+                    // The plugin's source answers at once, with a flat list. It also saves the query submitted without
+                    // a hit ({ id, label }): nothing to open
+                    return Array.isArray(items)
+                        ? items.filter((item): item is Item => !Array.isArray(item) && Boolean(item.url))
+                        : items
                 },
                 getItemUrl({ item }) {
                     return item.url
@@ -69,17 +123,14 @@ export default function init({
         },
     })
 
-    const { addItem: addRecentSearchItem } = recentSearchesPlugin.data
+    const addRecentSearchItem = (item: Item) => recentSearchesPlugin.data?.addItem(item)
 
     /**
      * One source per type of hit, in the order of the API. Among the suggestions of the empty panel, the categories
      * and the cities are chips: shortcuts, not searches to come back to.
-     *
-     * @param {Object[]} results
-     * @param {boolean} suggestions
      */
-    const toSources = (results, suggestions = false) => {
-        const sources = []
+    const toSources = (results: SearchResult[], suggestions = false): AutocompleteSource<Item>[] => {
+        const sources: AutocompleteSource<Item>[] = []
         for (const [type, items] of Object.entries(groupBy(results, 'type'))) {
             const asChips = suggestions && CHIP_TYPES.includes(type)
             sources.push({
@@ -116,8 +167,8 @@ export default function init({
     }
 
     // Fetched on the first opening only, and again after a failure
-    let suggestions = null
-    const loadSuggestions = () => {
+    let suggestions: Promise<SearchResult[]> | null = null
+    const loadSuggestions = (): Promise<SearchResult[]> => {
         if (!suggestionsUrl) {
             return Promise.resolve([])
         }
@@ -132,7 +183,7 @@ export default function init({
                 dataType: 'json',
             })
         )
-            .then((response) => response.member || [])
+            .then((response: SearchCollection) => response.member || [])
             .catch((error) => {
                 console.error('Search suggestions error:', error)
                 suggestions = null
@@ -143,7 +194,7 @@ export default function init({
         return suggestions
     }
 
-    const { destroy } = autocomplete({
+    const { destroy } = autocomplete<Item>({
         container: $autocomplete[0],
         placeholder: inputPlaceholder,
         openOnFocus: true,
@@ -248,7 +299,7 @@ export default function init({
             }
 
             const request = $.ajax({
-                url: globalSearchUrl,
+                url: globalSearchUrl ?? undefined,
                 method: 'GET',
                 data: { q: query },
                 headers: {
@@ -257,9 +308,9 @@ export default function init({
                 dataType: 'json',
             })
 
-            const results = new Promise((resolve, reject) => {
+            const results = new Promise<SearchResult[]>((resolve, reject) => {
                 request
-                    .then((response) => {
+                    .then((response: SearchCollection) => {
                         setContext({ error: null })
                         // Extract results from API Platform's 'member' array
                         resolve(response.member || [])
@@ -291,7 +342,7 @@ export default function init({
         const offcanvasEl = $autocomplete.closest('.offcanvas-lg, .offcanvas')[0]
         if (offcanvasEl) {
             const instance = Offcanvas.getInstance(offcanvasEl)
-            if (instance) {
+            if (instance instanceof Offcanvas) {
                 instance.hide()
             }
         }
@@ -327,19 +378,19 @@ export default function init({
 
 const CHIP_TYPES = ['tags', 'cities']
 
-const TYPE_ICONS = {
+const TYPE_ICONS: Partial<Record<string, typeof SearchIcon>> = {
     events: DramaIcon,
     cities: CrosshairIcon,
     users: UserIcon,
     tags: TagsIcon,
 }
 
-function TypeIcon({ type, className = '' }) {
-    const IconComponent = TYPE_ICONS[type] || SearchIcon
+function TypeIcon({ type, className = '' }: { type?: string; className?: string }) {
+    const IconComponent = (type && TYPE_ICONS[type]) || SearchIcon
     return <IconComponent className={`icon ${className}`} />
 }
 
-function HighlightedText({ item, attribute }) {
+function HighlightedText({ item, attribute }: { item: DisplayedItem; attribute: HighlightedAttribute }) {
     // A recent search is marked by the plugin, against the query typed now
     const highlightedValue =
         item._highlightResult?.[attribute]?.value || item.highlightResult?.[attribute]?.value || item[attribute] || ''
@@ -360,7 +411,7 @@ function HighlightedText({ item, attribute }) {
     )
 }
 
-function Chip({ item }) {
+function Chip({ item }: { item: Item }) {
     return (
         <a href={item.url} className="aa-ItemLink aa-Chip">
             {item.label}
@@ -379,7 +430,7 @@ function Chip({ item }) {
     )
 }
 
-function ResultItem({ item, onRemove }) {
+function ResultItem({ item, onRemove }: { item: DisplayedItem; onRemove?: (id: string) => void }) {
     return (
         <a href={item.url} className="aa-ItemLink">
             <div className="aa-ItemContent">

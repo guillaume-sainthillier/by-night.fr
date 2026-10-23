@@ -1,15 +1,16 @@
-import { Offcanvas } from '@tabler/core/dist/js/tabler.esm'
+import { Offcanvas } from '@tabler/core'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
+import type { Page } from '@/js/types'
 
 /**
  * The bottom bar of the phone's filters (location/agenda/_filters.html.twig): its button counts the events on show,
  * which closing the panel shows again, until a field of the form changes; it then says "Rechercher", and sends it.
  */
-function initFiltersBar() {
-    const button = document.querySelector('[data-filters-submit]')
+function initFiltersBar(): () => void {
+    const button = document.querySelector<HTMLButtonElement>('[data-filters-submit]')
     const form = button?.form
-    if (!form) {
+    if (!button || !form) {
         return () => {}
     }
 
@@ -17,7 +18,7 @@ function initFiltersBar() {
     const markDirty = () => {
         if (!dirty) {
             dirty = true
-            button.textContent = button.dataset.dirtyLabel
+            button.textContent = button.dataset.dirtyLabel ?? ''
         }
     }
 
@@ -25,7 +26,10 @@ function initFiltersBar() {
         if (!dirty) {
             event.preventDefault()
             const panel = document.getElementById('agenda-filters')
-            Offcanvas.getOrCreateInstance(panel).hide()
+            const offcanvas = panel && Offcanvas.getOrCreateInstance(panel)
+            if (offcanvas instanceof Offcanvas) {
+                offcanvas.hide()
+            }
         }
     })
     form.addEventListener('input', markDirty)
@@ -34,17 +38,23 @@ function initFiltersBar() {
     return markDirty
 }
 
-function initDatepickers(markDirty, container = document) {
-    container.querySelectorAll('input.shorcuts_date').forEach((el) => {
+const inputById = (id: string | undefined): HTMLInputElement | null => {
+    const input = id ? document.getElementById(id) : null
+
+    return input instanceof HTMLInputElement ? input : null
+}
+
+function initDatepickers(markDirty: () => void, container: ParentNode = document) {
+    container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
-            fromInput: document.getElementById(el.dataset.from),
-            toInput: document.getElementById(el.dataset.to),
+            fromInput: inputById(el.dataset.from),
+            toInput: inputById(el.dataset.to),
             singleDate: el.dataset.singleDate === 'true',
             // The dates picked replace the shortcut of the chips (SearchType's "when"), which the form would send again
             onApply: () => {
                 const when = el.form?.elements.namedItem('when')
-                if (when) {
+                if (when instanceof HTMLInputElement) {
                     when.value = ''
                 }
                 markDirty()
@@ -62,8 +72,8 @@ const RADIUS_SCALE = {
     snap: true,
 }
 
-function initSliders(markDirty, container = document) {
-    container.querySelectorAll('input[data-slider]').forEach((el) => {
+function initSliders(markDirty: () => void, container: ParentNode = document) {
+    container.querySelectorAll<HTMLInputElement>('input[data-slider]').forEach((el) => {
         createSlider({
             element: el,
             unit: el.dataset.slider,
@@ -73,8 +83,7 @@ function initSliders(markDirty, container = document) {
     })
 }
 
-/** @type {Page} */
-function initialize() {
+const initialize: Page = () => {
     const markDirty = initFiltersBar()
     initDatepickers(markDirty)
     initSliders(markDirty)

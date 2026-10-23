@@ -13,11 +13,11 @@ export default defineConfig({
 
     test: {
         environment: 'node',
-        include: ['assets/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+        include: ['assets/**/*.{test,spec}.{ts,tsx}'],
         coverage: {
             provider: 'v8',
-            include: ['assets/**/*.{js,jsx,ts,tsx}'],
-            exclude: ['assets/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+            include: ['assets/**/*.{ts,tsx}'],
+            exclude: ['assets/**/*.{test,spec}.{ts,tsx}'],
             reportsDirectory: 'coverage',
         },
     },

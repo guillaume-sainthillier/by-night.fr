@@ -106,7 +106,7 @@ export default defineConfig(({ mode }) => {
                     app: `${assets}/js/app.ts`,
                     // EasyAdmin back office, see DashboardController::configureAssets()
                     admin: `${assets}/js/admin.ts`,
-                    ...Object.fromEntries(pages.map((page) => [page, `${assets}/js/pages/${page}.js`])),
+                    ...Object.fromEntries(pages.map((page) => [page, `${assets}/js/pages/${page}.ts`])),
                 },
                 // Rolldown does not keep side-effect import order across chunks by default;
                 // jquery-global.ts must run before Bootstrap and the jQuery plugins evaluate.
