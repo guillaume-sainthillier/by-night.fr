@@ -29,6 +29,7 @@ picasso:
         event_image: { type: vich, url_alias: vich }
         user_image: { type: vich }
         page_image: { type: vich }
+        publisher_image: { type: vich }
         city_image: { type: vich }
         country_image: { type: vich }
 

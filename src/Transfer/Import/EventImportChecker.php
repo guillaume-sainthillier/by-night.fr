@@ -77,11 +77,12 @@ final readonly class EventImportChecker
             $this->save($import);
 
             $user = $import->getUser() ?? throw new InvalidSheetException('L’import n’a plus de membre.');
+            $publisher = $import->getPublisher() ?? throw new InvalidSheetException('L’import n’a plus d’organisateur.');
             $kept = [];
             $turnedDown = [];
             $searchUp = true;
             foreach ($groups as $i => $group) {
-                $mapped = $this->withDuplicateWarnings($this->mapper->map($group, $user), $searchUp);
+                $mapped = $this->withDuplicateWarnings($this->mapper->map($group, $user, $publisher), $searchUp);
                 $import->addCheckedEvent(
                     array_map(static fn (RowProblem $problem): array => $problem->toArray(), $mapped->errors),
                     array_map(static fn (RowProblem $problem): array => $problem->toArray(), $mapped->warnings),

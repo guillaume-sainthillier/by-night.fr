@@ -71,7 +71,7 @@ final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_event_list'));
+        return new RedirectResponse($this->urlGenerator->generate('app_personal_space_events'));
     }
 
     protected function getLoginUrl(Request $request): string

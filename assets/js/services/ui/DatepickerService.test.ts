@@ -81,6 +81,38 @@ describe('DatepickerService', () => {
         expect(Calendar.mock.instances[0].options.selectedDates).toEqual(['2026-10-09'])
     })
 
+    test('looking back, no day after maxDate and its month shown last', () => {
+        create({ element: input(element), fromInput: input(field()), toInput: input(field()), maxDate: '2026-10-23' })
+
+        const options = Calendar.mock.instances[0].options
+        expect(options.dateMax).toBe('2026-10-23')
+        expect([options.selectedMonth, options.selectedYear]).toEqual([8, 2026])
+        expect(options.enableJumpToSelectedDate).toBe(false)
+    })
+
+    test('looking back, older dates picked are shown first', () => {
+        create({
+            element: input(element),
+            fromInput: input(field('2026-03-10')),
+            toInput: input(field('2026-03-20')),
+            maxDate: '2026-10-23',
+        })
+
+        expect([
+            Calendar.mock.instances[0].options.selectedMonth,
+            Calendar.mock.instances[0].options.selectedYear,
+        ]).toEqual([2, 2026])
+    })
+
+    test('without maxDate, the calendar opens as before', () => {
+        create({ element: input(element), fromInput: input(from), toInput: input(to) })
+
+        const options = Calendar.mock.instances[0].options
+        expect(options.dateMax).toBeUndefined()
+        expect(options.selectedMonth).toBeUndefined()
+        expect(options.enableJumpToSelectedDate).toBe(true)
+    })
+
     // BY-NIGHTFR-6D1: "?dateRange[from]=undefined" crashed the agenda with "RangeError: Invalid time value"
     test('ignores the dates the server could not read', () => {
         create({ element: input(element), fromInput: input(field('undefined')), toInput: input(field('undefined')) })

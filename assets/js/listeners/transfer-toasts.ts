@@ -30,25 +30,25 @@ interface TransferToast {
  * What to say of a job's update: its icon, message and the page to see it on, or null when there is nothing to say
  * (still running, cancelled).
  *
- * @param state the job's state (TransferNotifier)
- * @param exportsPath the export page's path: an export's IRI is under it, and it is downloaded there.
- *   Compared by path: the worker writes the IRIs with APP_URL, which may not be the host the page is read on
+ * @param state the job's state (TransferNotifier). Its IRI is on the pages of its publisher: an import's report
+ *   (…/imports/{id}), or an export (…/exports/{id}), downloaded from the export page. Read by path: the worker writes
+ *   the IRIs with APP_URL, which may not be the host the page is read on
  */
-export function transferToast(state: ToastedState, exportsPath: string): TransferToast | null {
+export function transferToast(state: ToastedState): TransferToast | null {
     const path = new URL(state['@id'], 'https://localhost').pathname
-    const isExport = path.startsWith(`${exportsPath}/`)
-    const toast = (isExport ? EXPORT_TOASTS : IMPORT_TOASTS)[state.status]
+    const exportsPath = path.match(/^(.*\/exports)\/\d+$/)?.[1]
+    const toast = (exportsPath ? EXPORT_TOASTS : IMPORT_TOASTS)[state.status]
     if (!toast) {
         return null
     }
 
-    return { icon: toast[0], message: toast[1], url: isExport ? exportsPath : path }
+    return { icon: toast[0], message: toast[1], url: exportsPath ?? path }
 }
 
 /**
- * On every page of the personal space (`[data-transfer-toasts]`, the hub's URL on the member's channel, and
- * `data-exports-url`, the export page): a toast when an import or an export of theirs is done, linking to it. Not on
- * the import / export pages, which show it.
+ * On every page of the personal space (`[data-transfer-toasts]`, the hub's URL on the member's channel): a toast when
+ * an import or an export of theirs is done, whatever their publisher, linking to it. Not on the import / export pages,
+ * which show it.
  */
 export default {
     selector: '[data-transfer-toasts]',
@@ -59,9 +59,9 @@ export default {
 
         // One toast per job and status: updates repeat the whole state
         const told = new Set<string>()
-        const { exportsUrl, transferToasts: hub } = element.dataset
-        // Both are written by the template
-        if (!hub || exportsUrl === undefined) {
+        const hub = element.dataset.transferToasts
+        // Written by the template
+        if (!hub) {
             return undefined
         }
 
@@ -72,7 +72,7 @@ export default {
                     return
                 }
 
-                const toast = transferToast(state, exportsUrl)
+                const toast = transferToast(state)
                 const key = `${state['@id']}|${state.status}`
                 if (!toast || told.has(key)) {
                     return

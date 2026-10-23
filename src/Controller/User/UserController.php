@@ -13,6 +13,7 @@ namespace App\Controller\User;
 use App\Controller\AbstractController as BaseController;
 use App\Manager\UserRedirectManager;
 use App\Repository\EventRepository;
+use App\Repository\PublisherRepository;
 use App\Stats\MemberProfileProvider;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,7 +27,7 @@ final class UserController extends BaseController
 
     #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
     #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
-    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, MemberProfileProvider $memberProfileProvider, ?int $id = null, ?string $slug = null, ?string $username = null): Response
+    public function index(UserRedirectManager $userRedirectManager, EventRepository $eventRepository, PublisherRepository $publisherRepository, MemberProfileProvider $memberProfileProvider, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $user = $userRedirectManager->getUser($id, $slug, $username, 'app_user_index');
 
@@ -51,6 +52,7 @@ final class UserController extends BaseController
 
         return $this->render('user/index.html.twig', [
             'user' => $user,
+            'publishers' => $publisherRepository->findByOwner($user),
             'nextEvents' => $nextEvents,
             'previousEvents' => $previousEvents,
             'favoriteEventsCount' => $profile->favoriteEvents,

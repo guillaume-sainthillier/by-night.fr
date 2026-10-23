@@ -26,15 +26,15 @@ final class EventBulkTest extends AppWebTestCase
         $someoneElses = EventFactory::createOne(['draft' => true]);
         $client->loginUser($user);
 
-        $form = $client->request('GET', '/espace-perso/mes-soirees')->filter('#event-bulk-form')->form();
-        $client->request('POST', '/espace-perso/mes-soirees/lot', [
+        $form = $client->request('GET', self::organizerPath($user))->filter('#event-bulk-form')->form();
+        $client->request('POST', self::organizerPath($user, 'evenements/lot'), [
             '_token' => $form['_token']->getValue(),
-            '_target_path' => '/espace-perso/mes-soirees?status=hidden',
+            '_target_path' => self::organizerPath($user) . '?status=hidden',
             'action' => 'publish',
             'ids' => [$drafts[0]->getId(), $drafts[1]->getId(), $someoneElses->getId()],
         ]);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees?status=hidden');
+        self::assertResponseRedirects(self::organizerPath($user) . '?status=hidden');
         self::assertSame(0, EventFactory::count(['user' => $user, 'draft' => true]));
         self::assertTrue(EventFactory::find(['id' => $someoneElses->getId()])->isDraft());
         $client->followRedirect();
@@ -47,12 +47,12 @@ final class EventBulkTest extends AppWebTestCase
         $user = UserFactory::createOne();
         [$kept, $deleted] = EventFactory::createMany(2, ['user' => $user, 'draft' => false]);
         $client->loginUser($user);
-        $token = $client->request('GET', '/espace-perso/mes-soirees')->filter('#event-bulk-form input[name="_token"]')->attr('value');
+        $token = $client->request('GET', self::organizerPath($user))->filter('#event-bulk-form input[name="_token"]')->attr('value');
         $keptId = $kept->getId();
         $deletedId = $deleted->getId();
 
-        $client->request('POST', '/espace-perso/mes-soirees/lot', ['_token' => $token, 'action' => 'draft', 'ids' => [$keptId]]);
-        $client->request('POST', '/espace-perso/mes-soirees/lot', ['_token' => $token, 'action' => 'delete', 'ids' => [$deletedId]]);
+        $client->request('POST', self::organizerPath($user, 'evenements/lot'), ['_token' => $token, 'action' => 'draft', 'ids' => [$keptId]]);
+        $client->request('POST', self::organizerPath($user, 'evenements/lot'), ['_token' => $token, 'action' => 'delete', 'ids' => [$deletedId]]);
 
         self::assertTrue(EventFactory::find(['id' => $keptId])->isDraft());
         self::assertSame(0, EventFactory::count(['id' => $deletedId]));
@@ -65,7 +65,7 @@ final class EventBulkTest extends AppWebTestCase
         $event = EventFactory::createOne(['user' => $user, 'draft' => true]);
         $client->loginUser($user);
 
-        $client->request('POST', '/espace-perso/mes-soirees/lot', ['_token' => 'forged', 'action' => 'publish', 'ids' => [$event->getId()]]);
+        $client->request('POST', self::organizerPath($user, 'evenements/lot'), ['_token' => 'forged', 'action' => 'publish', 'ids' => [$event->getId()]]);
 
         self::assertResponseStatusCodeSame(403);
         self::assertTrue(EventFactory::find(['id' => $event->getId()])->isDraft());
@@ -76,13 +76,13 @@ final class EventBulkTest extends AppWebTestCase
         $client = self::createClient();
         $user = UserFactory::createOne();
         $client->loginUser($user);
-        $token = $client->request('GET', '/espace-perso/mes-soirees')->filter('#event-bulk-form input[name="_token"]')->attr('value');
+        $token = $client->request('GET', self::organizerPath($user))->filter('#event-bulk-form input[name="_token"]')->attr('value');
 
-        $client->request('POST', '/espace-perso/mes-soirees/lot', ['_token' => $token, '_target_path' => 'https://evil.example/espace-perso/', 'action' => 'publish', 'ids' => [1]]);
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $client->request('POST', self::organizerPath($user, 'evenements/lot'), ['_token' => $token, '_target_path' => 'https://evil.example/espace-perso/', 'action' => 'publish', 'ids' => [1]]);
+        self::assertResponseRedirects(self::organizerPath($user));
 
-        $client->request('POST', '/espace-perso/mes-soirees/lot', ['_token' => $token, '_target_path' => '//evil.example/x', 'action' => 'publish', 'ids' => [1]]);
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        $client->request('POST', self::organizerPath($user, 'evenements/lot'), ['_token' => $token, '_target_path' => '//evil.example/x', 'action' => 'publish', 'ids' => [1]]);
+        self::assertResponseRedirects(self::organizerPath($user));
     }
 
     public function testTheReportOfAnImportPublishesItsEvents(): void
@@ -97,11 +97,11 @@ final class EventBulkTest extends AppWebTestCase
         ]]);
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/imports/' . $import->getId());
+        $crawler = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()));
         self::assertSelectorTextContains('#import-bulk-form', 'Les 2 événements importés');
         $client->submit($crawler->filter('#import-bulk-form')->selectButton('Publier')->form());
 
-        self::assertResponseRedirects('/espace-perso/imports/' . $import->getId());
+        self::assertResponseRedirects(self::organizerPath($user, 'imports/' . $import->getId()));
         self::assertSame(0, EventFactory::count(['user' => $user, 'draft' => true]));
     }
 }

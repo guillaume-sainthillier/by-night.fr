@@ -17,6 +17,7 @@ use App\Form\Type\ProfileFormType;
 use App\Manager\UserRemover;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
+use App\Repository\PublisherRepository;
 use App\Security\EmailVerifier;
 use App\Security\PasswordManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,10 +52,12 @@ final class ProfileController extends AbstractController
     }
 
     #[Route(path: '/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, PasswordManager $passwordManager, EventRepository $eventRepository, CommentRepository $commentRepository): Response
+    public function edit(Request $request, PasswordManager $passwordManager, EventRepository $eventRepository, CommentRepository $commentRepository, PublisherRepository $publisherRepository): Response
     {
         $user = $this->getAppUser();
-        $form = $this->createForm(ProfileFormType::class, $user);
+        $form = $this->createForm(ProfileFormType::class, $user, [
+            'publisher' => null !== $publisherRepository->findOneByOwner($user),
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getEntityManager();

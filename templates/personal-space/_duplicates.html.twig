@@ -26,7 +26,7 @@
                     <div class="text-secondary small">
                         {%- if event.fromData -%}
                             Source&nbsp;: {{ event.fromData }}
-                        {%- elseif app.user and event.user and event.user.id == app.user.id -%}
+                        {%- elseif app.user and event.publisher and event.publisher.managedBy(app.user) -%}
                             Publié par vous
                         {%- else -%}
                             Publié par un membre

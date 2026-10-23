@@ -77,7 +77,19 @@
                     <div>{{ event.prices }}</div>
                 </div>
             {% endif %}
-            {% if event.user %}
+            {% if event.publisher %}
+                <div class="detail-item">
+                    <twig:Icon name="lucide:megaphone" />
+                    <div>
+                        Par
+                        <a class="one-line"
+                           href="{{ path('app_publisher_index', {slug: event.publisher.slug}) }}"
+                           title="Les événements de {{ event.publisher.name }}">
+                            {{ event.publisher.name }}
+                        </a>
+                    </div>
+                </div>
+            {% elseif event.user %}
                 <div class="detail-item">
                     <twig:Icon name="lucide:user" />
                     <div>

@@ -33,3 +33,11 @@ framework:
                 headers:
                     Accept: 'application/json'
                 rate_limiter: 'sowprog_api'
+
+            # Umami's API (App\Analytics\UmamiClient): https://analytics.silarhi.fr/ in production, which the worker
+            # reaches (unlike the "web" network). A day's metrics of every page take a while: no default 30 s idle timeout.
+            umami.client:
+                base_uri: '%env(UMAMI_API_URL)%'
+                headers:
+                    Accept: 'application/json'
+                timeout: 120

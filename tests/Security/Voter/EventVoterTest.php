@@ -14,6 +14,7 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserFactory;
 use App\Security\Voter\EventVoter;
 use App\Tests\AppKernelTestCase;
@@ -75,6 +76,19 @@ final class EventVoterTest extends AppKernelTestCase
         $event = EventFactory::createOne();
 
         self::assertFalse($this->isGranted(UserFactory::createOne(['verified' => true]), $attribute, $event));
+    }
+
+    /**
+     * The event is its publisher's: the member who manages it changes it, not its author.
+     */
+    #[DataProvider('provideOwnerAttributes')]
+    public function testThePublisherOfTheEventDecidesWhoChangesIt(string $attribute): void
+    {
+        $owner = UserFactory::createOne(['verified' => true]);
+        $event = EventFactory::createOne(['publisher' => PublisherFactory::createOne(['owner' => $owner])]);
+
+        self::assertTrue($this->isGranted($owner, $attribute, $event));
+        self::assertFalse($this->isGranted($event->getUser(), $attribute, $event));
     }
 
     #[DataProvider('provideOwnerAttributes')]

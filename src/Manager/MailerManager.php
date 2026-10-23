@@ -11,9 +11,11 @@
 namespace App\Manager;
 
 use App\Entity\ContentRemovalRequest;
+use App\Entity\Publisher;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Enum\ContentRemovalType;
+use App\Enum\PublisherNewsEdition;
 use App\Outing\OutingChange;
 use App\Outing\OutingChangeWording;
 use App\Outing\OutingState;
@@ -155,6 +157,30 @@ final readonly class MailerManager
             'Votre demande de suppression a été examinée - By Night',
             'email/content-removal-rejected',
         );
+    }
+
+    /**
+     * An edition of the publishers' news. It carries the one-click unsubscribe headers (RFC 8058) the large mailbox
+     * providers ask of a bulk sender: their "Unsubscribe" button posts to $unsubscribeUrl.
+     *
+     * @param string|null $to another address than the member's, to preview the edition
+     */
+    public function sendPublisherNews(User $user, ?Publisher $publisher, PublisherNewsEdition $edition, string $unsubscribeUrl, ?string $to = null): void
+    {
+        $email = $this->createEmail($edition->getTemplate())
+            ->to($to ?? $user->getEmail())
+            ->subject($edition->getSubject())
+            ->context([
+                'user' => $user,
+                'publisher' => $publisher,
+                'unsubscribeUrl' => $unsubscribeUrl,
+            ]);
+
+        $email->getHeaders()
+            ->addTextHeader('List-Unsubscribe', '<' . $unsubscribeUrl . '>')
+            ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+
+        $this->sendMail($email);
     }
 
     private function sendRequesterNotification(

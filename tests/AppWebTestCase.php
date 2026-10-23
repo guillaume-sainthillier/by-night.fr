@@ -10,6 +10,8 @@
 
 namespace App\Tests;
 
+use App\Entity\User;
+use App\Factory\PublisherFactory;
 use LogicException;
 use Override;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -30,6 +32,17 @@ abstract class AppWebTestCase extends WebTestCase
     protected static function createClient(array $options = [], array $server = []): KernelBrowser
     {
         return parent::createClient($options, $server + self::siteServerParameters());
+    }
+
+    /**
+     * The path of an organizer page of the member's personal space (/espace-perso/organisateurs/{publisher}/{page}),
+     * on their first publisher, created if they have none.
+     */
+    protected static function organizerPath(User $member, string $page = 'evenements'): string
+    {
+        $publisher = PublisherFactory::repository()->findBy(['owner' => $member], ['id' => 'ASC'], 1)[0] ?? PublisherFactory::createOne(['owner' => $member]);
+
+        return \sprintf('/espace-perso/organisateurs/%s/%s', $publisher->getSlug(), $page);
     }
 
     /**

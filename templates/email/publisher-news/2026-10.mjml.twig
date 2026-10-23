@@ -1,0 +1,68 @@
+{% extends 'email/publisher-news/layout.mjml.twig' %}
+
+{# The news of October 2026, for the publishers logged in within 6 months (PublisherNewsAudience::Active) #}
+
+{% block email_title %}Les nouveautés d'octobre{% endblock %}
+{% block preheader %}Vos pages organisateur, l'audience de vos événements, l'import depuis un tableur et les actions groupées.{% endblock %}
+
+{% block heading %}Les nouveautés d'octobre{% endblock %}
+{% block subheading %}Ce qui a changé ce mois-ci pour les organisateurs{% endblock %}
+
+{% block intro %}
+    <mj-text>
+        Un mois chargé pour l'espace des organisateurs&nbsp;: vos événements ont désormais leur page, vous mesurez leur
+        audience et vous les gérez par dizaines. Voici ce qui a changé.
+    </mj-text>
+{% endblock %}
+
+{% block features %}
+    {% set publisher_text %}
+        Vos événements appartiennent maintenant à une page organisateur{% if publisher %}, <strong>{{ publisher.name }}</strong>{% endif %}&nbsp;:
+        un lieu, un collectif ou vous-même. Sa page publique réunit votre programmation avec votre logo, une couverture,
+        votre présentation et vos liens, et vos événements la signent. Vous en gérez plusieurs&nbsp;? Passez de l'une
+        à l'autre depuis le menu.
+    {% endset %}
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Page organisateur',
+        title: 'Une page publique pour votre programmation',
+        text: publisher_text,
+        url: url('app_personal_space_publisher'),
+        link: 'Compléter ma page',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Statistiques',
+        title: "L'audience de vos événements",
+        text: 'Pour chaque événement, les visiteurs de sa page et les clics vers votre billetterie, sur la période de votre choix, en courbe et jour par jour.',
+        url: url('app_personal_space_events'),
+        link: 'Voir mes événements',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Import et export',
+        title: 'Vos événements depuis un tableur',
+        text: "Importez un fichier Excel ou CSV : il est vérifié avant l'import, vous corrigez les lignes refusées depuis le rapport, et un message vous prévient quand c'est fini. L'export reprend les événements de votre liste, filtres compris.",
+        url: url('app_personal_space_imports'),
+        link: 'Importer des événements',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Gestion',
+        title: 'Plusieurs événements à la fois',
+        text: "Cochez des événements de votre liste pour les publier, les masquer ou les supprimer d'un coup.",
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Publication',
+        title: 'Un formulaire plus simple',
+        text: "Une date ou plusieurs ? Le formulaire le demande d'abord. Les horaires se saisissent séance par séance, et un avertissement vous évite de publier un événement déjà en ligne.",
+        url: url('app_personal_space_event_new'),
+        link: 'Publier un événement',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Côté visiteurs',
+        title: 'Plus de chemins vers vos événements',
+        text: "La recherche trouve vos événements même avec une faute de frappe et favorise ceux de la ville du visiteur. Leur page compare les billetteries du moins cher au plus cher, et « J'y vais » les ajoute aux sorties du visiteur.",
+    }) }}
+{% endblock %}

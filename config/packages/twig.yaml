@@ -15,6 +15,7 @@ twig:
         event_seo: '@App\SEO\EventSEO'
         app_context: '@App\App\AppContext'
         site_verification_metas: '%env(json:SITE_VERIFICATION_METAS)%'
+        umami_website_id: '%env(UMAMI_WEBSITE_ID)%'
 
 when@test:
     twig:

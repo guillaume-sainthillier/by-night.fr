@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
@@ -43,6 +44,17 @@ final class UserControllerTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('meta[name="robots"]');
+    }
+
+    public function testTheProfileLeadsToThePublishersTheMemberRuns(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['username' => 'fan']);
+        PublisherFactory::createOne(['name' => 'Le Bikini', 'owner' => $user]);
+
+        $client->request('GET', $this->profilePath($user));
+
+        self::assertSelectorTextContains('a[href="/organisateurs/le-bikini"]', 'Le Bikini');
     }
 
     public function testTheProfileIsAProfilePageAboutTheMember(): void
