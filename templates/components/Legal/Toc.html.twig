@@ -4,7 +4,7 @@
 {% if sections|length > 1 %}
     <nav {{ attributes.defaults({class: 'card d-none d-lg-block', 'aria-labelledby': 'sur-cette-page'}) }}>
         <div class="card-body">
-            <h2 class="subheader mb-2" id="sur-cette-page">Sur cette page</h2>
+            <div class="subheader mb-2" id="sur-cette-page">Sur cette page</div>
             <ul class="legal-toc list-unstyled vstack gap-2 mb-0 small" data-toc>
                 {% for section in sections %}
                     <li>

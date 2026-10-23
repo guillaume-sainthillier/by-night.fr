@@ -180,6 +180,9 @@ $-headings-line-height: 1.2;
     // Icons
     $icon-size: 1.125em,
 
+    // Badges: the small text step (14px) instead of Tabler's 0.857em (13.71px next to the body text)
+    $badge-font-size: 0.875rem,
+
     //Buttons
     // One radius for every action button, whatever its size ($border-radius); the pills (.btn-pill) are the filter
     // chips and toggles
