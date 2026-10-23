@@ -168,6 +168,45 @@ A daily host cron fails the jobs a worker left halfway and deletes those older t
 docker compose exec -T worker /app/bin/console app:transfers:cleanup -vv
 ```
 
+### Event audience (Umami)
+
+The event pages' visitors and ticketing clicks are shown to their authors (`/espace-perso/{id}/statistiques`). They
+come from the self-hosted Umami (`analytics.silarhi.fr`, container `analytics` on the shared `web` network): no
+cookie, so no consent and every visitor counted.
+
+- **Tracker**: `base.html.twig` loads `/a/script.js` when `UMAMI_WEBSITE_ID` is set; the script posts its hits next to
+  itself, to `/a/api/send`. Traefik sends those two exact paths (never the dashboard or the API) straight to the Umami
+  container, without going through the app: the `analytics-tracker` router and its `/a` strip middleware, labels of
+  the Umami service in `/apps/analytics.silarhi.fr/docker-compose.yaml`, priority 2000 (above by-night's routers).
+  The sites it answers for are `TRACKER_HOSTS` in that directory's `.env`, a Traefik rule (``Host(`by-night.fr`)``):
+  another site behind this Traefik joins by adding its host there, then `docker compose up -d app`. Umami reads the
+  visitor's IP from `CF-Connecting-IP`, which Traefik passes on. The ticketing links carry
+  `data-umami-event="ticket-click"`.
+- **API**: `UMAMI_API_URL=https://analytics.silarhi.fr/` (the worker is not on the `web` network, so not
+  `http://analytics:3000`), read as `by-night-api`, a view-only user of the "BY NIGHT" team, which holds the by-night
+  website only (`UMAMI_USERNAME`, `UMAMI_PASSWORD`, `UMAMI_WEBSITE_ID` in `app.env`).
+- **Sync**: an hourly host cron copies today and yesterday into `event_visit_stat` (a day read again is replaced):
+
+```bash
+docker compose exec -T worker /app/bin/console app:events:sync-visits -vv
+```
+
+Once, after the first sync: the 90 days before Umami's first day are filled from Google Analytics
+(`app:events:import-ga4-visits`, flagged `from_google_analytics`: GA4 only counted the visitors who accepted its
+cookies, and no ticketing clicks; the statistics page says so). It needs a Google Cloud service account with the
+Google Analytics Data API enabled, added as Viewer on the GA4 property (316503959), and its JSON key on the server:
+
+```bash
+docker compose exec -T worker /app/bin/console app:events:import-ga4-visits --key-file=/tmp/ga4-key.json --dry-run -vv
+docker compose exec -T worker /app/bin/console app:events:import-ga4-visits --key-file=/tmp/ga4-key.json -vv
+```
+
+Then delete the key (and the service account) and the command.
+
+Umami's event-data values stop at the top 100, so the sync pages through `metrics?type=path` (the visitors of each
+`/soiree/` page) and `events?event=ticket-click` (one row per click), and finds the event by the `--{id}` ending
+the path.
+
 ## Setup
 
 ```bash

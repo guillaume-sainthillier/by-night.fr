@@ -10,12 +10,15 @@
 
 namespace App\Controller\PersonalSpace;
 
+use App\Analytics\AudienceQuery;
+use App\Analytics\EventAudienceReport;
 use App\Controller\AbstractController as BaseController;
 use App\Dto\EventDto;
 use App\DtoFactory\EventDtoFactory;
 use App\Entity\Event;
 use App\Enum\EventBulkAction;
 use App\Enum\PersonalEventFilter;
+use App\Form\Type\AudienceQueryType;
 use App\Form\Type\EventType;
 use App\Manager\MemberEventBulkEditor;
 use App\Manager\MemberEventPublisher;
@@ -36,7 +39,7 @@ final class EventController extends BaseController
     private const int EVENT_PER_PAGE = 50;
 
     #[Route(path: '/mes-soirees', name: 'app_event_list', methods: ['GET'])]
-    public function index(Request $request, EventRepository $eventRepository): Response
+    public function index(Request $request, EventRepository $eventRepository, EventAudienceReport $audienceReport): Response
     {
         $user = $this->getAppUser();
         $page = $request->query->getInt('page', 1);
@@ -57,6 +60,7 @@ final class EventController extends BaseController
             'q' => $q,
             'filter' => $filter,
             'counts' => $eventRepository->countByUserAndFilter($user),
+            'audience' => $audienceReport->lastDaysByEvent($events->getCurrentPageResults()),
         ]);
     }
 
@@ -158,6 +162,29 @@ final class EventController extends BaseController
         return $this->render('personal-space/edit.html.twig', [
             'form' => $form,
             'event' => $event,
+        ]);
+    }
+
+    /**
+     * The visitors of the event's page and the clicks on its ticketing links, day by day (EventVisitSync).
+     */
+    #[Route(path: '/{id<%patterns.id%>}/statistiques', name: 'app_event_stats', methods: ['GET'])]
+    #[IsGranted(EventVoter::EDIT, subject: 'event')]
+    public function stats(Request $request, Event $event, EventAudienceReport $audienceReport): Response
+    {
+        // A shortcut ("?period=") or dates picked ("?dateRange[from]="), the last 30 days without either
+        $query = new AudienceQuery();
+        $form = $this->createForm(AudienceQueryType::class, $query);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $query = new AudienceQuery();
+        }
+
+        return $this->render('personal-space/stats.html.twig', [
+            'event' => $event,
+            'form' => $form,
+            'query' => $query,
+            'audience' => $audienceReport->forEvent($event, $query->getDateRange()),
         ]);
     }
 
