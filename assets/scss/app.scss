@@ -54,6 +54,9 @@
 :host,
 [data-bs-theme='light'] {
     --body-bg: #{$body-bg};
+    // The placeholders and the dropdown items' icons: gray-500 since Tabler 1.7, which made the placeholders read as
+    // typed values
+    --tertiary: #{$gray-400};
 }
 
 h1,
