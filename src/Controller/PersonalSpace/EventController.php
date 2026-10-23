@@ -10,6 +10,7 @@
 
 namespace App\Controller\PersonalSpace;
 
+use App\Analytics\AudienceQuery;
 use App\Analytics\EventAudienceReport;
 use App\Controller\AbstractController as BaseController;
 use App\Dto\EventDto;
@@ -17,6 +18,7 @@ use App\DtoFactory\EventDtoFactory;
 use App\Entity\Event;
 use App\Enum\EventBulkAction;
 use App\Enum\PersonalEventFilter;
+use App\Form\Type\AudienceQueryType;
 use App\Form\Type\EventType;
 use App\Manager\MemberEventBulkEditor;
 use App\Manager\MemberEventPublisher;
@@ -168,11 +170,21 @@ final class EventController extends BaseController
      */
     #[Route(path: '/{id<%patterns.id%>}/statistiques', name: 'app_event_stats', methods: ['GET'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
-    public function stats(Event $event, EventAudienceReport $audienceReport): Response
+    public function stats(Request $request, Event $event, EventAudienceReport $audienceReport): Response
     {
+        // A shortcut ("?period=") or dates picked ("?dateRange[from]="), the last 30 days without either
+        $query = new AudienceQuery();
+        $form = $this->createForm(AudienceQueryType::class, $query);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $query = new AudienceQuery();
+        }
+
         return $this->render('personal-space/stats.html.twig', [
             'event' => $event,
-            'audience' => $audienceReport->forEvent($event),
+            'form' => $form,
+            'query' => $query,
+            'audience' => $audienceReport->forEvent($event, $query->getDateRange()),
         ]);
     }
 

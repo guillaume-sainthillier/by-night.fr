@@ -12,6 +12,7 @@ namespace App\Analytics;
 
 use App\Entity\Event;
 use App\Repository\EventVisitStatRepository;
+use App\Search\DateRange;
 use DateTimeImmutable;
 
 /**
@@ -29,21 +30,23 @@ final readonly class EventAudienceReport
     ) {
     }
 
-    public function forEvent(Event $event): EventAudience
+    /**
+     * The days of $range one by one (today at most), and the visitors since the first one counted.
+     */
+    public function forEvent(Event $event, DateRange $range): EventAudience
     {
         $id = (int) $event->getCanonicalEvent()->getId();
-        $today = new DateTimeImmutable('today');
-        $daily = $this->eventVisitStatRepository->findDaily($id, $today->modify(\sprintf('-%d days', self::DAYS - 1)));
+        $to = $range->to ?? new DateTimeImmutable('today');
+        $daily = $this->eventVisitStatRepository->findDaily($id, $range);
 
         $days = [];
-        for ($i = self::DAYS - 1; $i >= 0; --$i) {
-            $day = $today->modify("-$i days");
-            $days[] = ['day' => $day, ...$daily[$day->format('Y-m-d')] ?? self::NONE];
+        for ($day = $range->from; $day <= $to; $day = $day->modify('+1 day')) {
+            $days[] = ['day' => $day, ...$daily[$day->format('Y-m-d')] ?? self::NONE + ['fromGoogleAnalytics' => false]];
         }
 
         $total = $this->eventVisitStatRepository->findTotalsByEvents([$id], new DateTimeImmutable('2000-01-01'))[$id] ?? self::NONE;
 
-        return new EventAudience($days, $total, $this->eventVisitStatRepository->findLastGoogleAnalyticsDay($id));
+        return new EventAudience(new DateRange($range->from, $to), $days, $total);
     }
 
     /**

@@ -10,47 +10,62 @@
 
 namespace App\Analytics;
 
+use App\Search\DateRange;
 use DateTimeImmutable;
 
 /**
- * The audience of an event page shown to its author: its last days one by one, and what they add up to.
+ * The audience of an event page shown to its author: the days of a period one by one, what they add up to, and the
+ * visitors since the first one counted.
  */
 final readonly class EventAudience
 {
     /**
-     * @param list<array{day: DateTimeImmutable, visitors: int, ticketClicks: int}> $days                 oldest first, today last
-     * @param array{visitors: int, ticketClicks: int}                               $total                since the first visit counted
-     * @param ?DateTimeImmutable                                                    $googleAnalyticsUntil the last day read from Google
-     *                                                                                                    Analytics (only the visitors who
-     *                                                                                                    accepted its cookies), if any
+     * @param DateRange                                                                                        $range the period shown
+     * @param list<array{day: DateTimeImmutable, visitors: int, ticketClicks: int, fromGoogleAnalytics: bool}> $days  each day of the period, oldest first
+     * @param array{visitors: int, ticketClicks: int}                                                          $total since the first visit counted
      */
     public function __construct(
+        public DateRange $range,
         public array $days,
         public array $total,
-        public ?DateTimeImmutable $googleAnalyticsUntil = null,
     ) {
     }
 
     /**
-     * What the last $count days add up to, today included.
+     * What the days of the period add up to.
      *
      * @return array{visitors: int, ticketClicks: int}
      */
-    public function last(int $count): array
+    public function sum(): array
     {
-        $days = \array_slice($this->days, -$count);
-
         return [
-            'visitors' => array_sum(array_column($days, 'visitors')),
-            'ticketClicks' => array_sum(array_column($days, 'ticketClicks')),
+            'visitors' => array_sum(array_column($this->days, 'visitors')),
+            'ticketClicks' => array_sum(array_column($this->days, 'ticketClicks')),
         ];
     }
 
     /**
-     * The most visitors of a day, to scale the chart (1 when there is none).
+     * The share of the period's visitors who clicked a ticketing link, null without visitors.
      */
-    public function peakVisitors(): int
+    public function clickRate(): ?float
     {
-        return max(1, ...array_column($this->days, 'visitors'));
+        $sum = $this->sum();
+
+        return $sum['visitors'] > 0 ? $sum['ticketClicks'] / $sum['visitors'] : null;
+    }
+
+    /**
+     * The last day of the period read from Google Analytics (only the visitors who accepted its cookies), if any.
+     */
+    public function googleAnalyticsUntil(): ?DateTimeImmutable
+    {
+        $days = array_filter($this->days, static fn (array $day): bool => $day['fromGoogleAnalytics']);
+
+        return [] === $days ? null : end($days)['day'];
+    }
+
+    public function chart(): AudienceChart
+    {
+        return new AudienceChart($this->days);
     }
 }

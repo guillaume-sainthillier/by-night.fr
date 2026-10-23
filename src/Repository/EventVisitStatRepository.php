@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\Entity\EventVisitStat;
+use App\Search\DateRange;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
@@ -111,21 +112,25 @@ final class EventVisitStatRepository extends ServiceEntityRepository
     }
 
     /**
-     * The audience of an event day by day since $since (that day included), the days without any left out.
+     * The audience of an event day by day in $range, the days without any left out.
      *
-     * @return array<string, array{visitors: int, ticketClicks: int}> by day (Y-m-d)
+     * @return array<string, array{visitors: int, ticketClicks: int, fromGoogleAnalytics: bool}> by day (Y-m-d)
      */
-    public function findDaily(int $eventId, DateTimeImmutable $since): array
+    public function findDaily(int $eventId, DateRange $range): array
     {
         $rows = $this->getEntityManager()->getConnection()->fetchAllAssociative(
-            'SELECT day, visitors, ticket_clicks FROM event_visit_stat WHERE event_id = :id AND day >= :since ORDER BY day',
-            ['id' => $eventId, 'since' => $since->setTime(0, 0)],
-            ['since' => Types::DATE_IMMUTABLE],
+            'SELECT day, visitors, ticket_clicks, from_google_analytics FROM event_visit_stat WHERE event_id = :id AND day BETWEEN :from AND :to ORDER BY day',
+            ['id' => $eventId, 'from' => $range->from, 'to' => $range->to ?? new DateTimeImmutable('today')],
+            ['from' => Types::DATE_IMMUTABLE, 'to' => Types::DATE_IMMUTABLE],
         );
 
         $daily = [];
         foreach ($rows as $row) {
-            $daily[substr((string) $row['day'], 0, 10)] = ['visitors' => (int) $row['visitors'], 'ticketClicks' => (int) $row['ticket_clicks']];
+            $daily[substr((string) $row['day'], 0, 10)] = [
+                'visitors' => (int) $row['visitors'],
+                'ticketClicks' => (int) $row['ticket_clicks'],
+                'fromGoogleAnalytics' => (bool) $row['from_google_analytics'],
+            ];
         }
 
         return $daily;
@@ -137,16 +142,6 @@ final class EventVisitStatRepository extends ServiceEntityRepository
     public function findFirstUmamiDay(): ?DateTimeImmutable
     {
         $day = $this->getEntityManager()->getConnection()->fetchOne('SELECT MIN(day) FROM event_visit_stat WHERE from_google_analytics = :no', ['no' => false], ['no' => Types::BOOLEAN]);
-
-        return \is_string($day) ? new DateTimeImmutable(substr($day, 0, 10)) : null;
-    }
-
-    /**
-     * The last day of an event read from Google Analytics, null when none was.
-     */
-    public function findLastGoogleAnalyticsDay(int $eventId): ?DateTimeImmutable
-    {
-        $day = $this->getEntityManager()->getConnection()->fetchOne('SELECT MAX(day) FROM event_visit_stat WHERE event_id = :id AND from_google_analytics = :yes', ['id' => $eventId, 'yes' => true], ['yes' => Types::BOOLEAN]);
 
         return \is_string($day) ? new DateTimeImmutable(substr($day, 0, 10)) : null;
     }

@@ -49,7 +49,6 @@ final class EventVisitBackfillTest extends AppKernelTestCase
         self::assertSame(11, $stat->getVisitors());
         self::assertSame(0, $stat->getTicketClicks(), 'GA4 cannot tell a ticketing link among the outbound clicks');
         self::assertTrue($stat->isFromGoogleAnalytics());
-        self::assertEquals(new DateTimeImmutable('2026-10-20'), $this->repository()->findLastGoogleAnalyticsDay((int) $id));
         self::assertEquals(new DateTimeImmutable('2026-10-23'), $this->repository()->findFirstUmamiDay());
     }
 

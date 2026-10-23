@@ -15,17 +15,18 @@ use App\Factory\EventVisitStatFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 
 final class EventStatsTest extends AppWebTestCase
 {
-    public function testTheAuthorSeesTheVisitorsAndTicketingClicksOfTheirEvent(): void
+    public function testTheAuthorSeesTheVisitorsAndTicketingClicksOfTheLast30Days(): void
     {
         $client = self::createClient();
         $event = EventFactory::createOne(['name' => 'Concert de jazz']);
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('today'), 'visitors' => 12, 'ticketClicks' => 3]);
-        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-10 days'), 'visitors' => 30, 'ticketClicks' => 1]);
-        // Over before the 30 days: only in the total
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-10 days'), 'visitors' => 28, 'ticketClicks' => 1]);
+        // Before the 30 days: only in the total
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-60 days'), 'visitors' => 100, 'ticketClicks' => 9]);
         $client->loginUser($event->getUser());
 
@@ -33,9 +34,62 @@ final class EventStatsTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Concert de jazz');
-        $tiles = $crawler->filter('#event-stats .row-cards .h1')->each(static fn ($node): string => $node->text());
-        self::assertSame(['12', '42', '142', '4'], $tiles);
+        self::assertSame(['40', '4', "10,0\u{a0}%", '140'], $this->tiles($crawler));
+        self::assertSelectorTextSame('#event-stats-periods .active', '30 derniers jours');
         self::assertCount(30, $crawler->filter('#event-stats details tbody tr'));
+        self::assertSelectorExists('#event-stats-chart path[data-series="visitors"]');
+        self::assertSelectorExists('#event-stats-chart path[data-series="ticketClicks"]');
+        self::assertCount(30, $crawler->filter('#event-stats-chart rect title'));
+    }
+
+    public function testAShortcutShowsItsDays(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('today'), 'visitors' => 12, 'ticketClicks' => 3]);
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-10 days'), 'visitors' => 28, 'ticketClicks' => 1]);
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques?period=last_7_days', $event->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSame('12', $this->tiles($crawler)[0]);
+        self::assertSelectorTextSame('#event-stats-periods .active', '7 derniers jours');
+        self::assertCount(7, $crawler->filter('#event-stats details tbody tr'));
+    }
+
+    public function testTheDatesPickedWinOverTheShortcut(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        $from = new DateTimeImmutable('-12 days');
+        $to = new DateTimeImmutable('-8 days');
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-10 days'), 'visitors' => 28, 'ticketClicks' => 1]);
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('today'), 'visitors' => 12, 'ticketClicks' => 3]);
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()), [
+            'period' => 'last_7_days',
+            'dateRange' => ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')],
+        ]);
+
+        self::assertResponseIsSuccessful();
+        self::assertSame('28', $this->tiles($crawler)[0]);
+        self::assertSelectorNotExists('#event-stats-periods .active');
+        self::assertCount(5, $crawler->filter('#event-stats details tbody tr'));
+        self::assertSelectorTextContains('#event-stats .card-title', 'Du ');
+    }
+
+    public function testAnUnknownShortcutShowsTheLast30Days(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        $client->loginUser($event->getUser());
+
+        $client->request('GET', \sprintf('/espace-perso/%d/statistiques?period=forever', $event->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextSame('#event-stats-periods .active', '30 derniers jours');
     }
 
     public function testAnEventWithoutVisitsSaysSo(): void
@@ -47,12 +101,13 @@ final class EventStatsTest extends AppWebTestCase
         $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('#event-stats .empty-title', 'Pas encore de visite');
+        self::assertSelectorTextContains('#event-stats .empty-title', 'Pas de visite sur cette période');
+        self::assertSelectorNotExists('#event-stats-chart');
         self::assertSelectorNotExists('#event-stats details');
         self::assertSelectorNotExists('#event-stats-google-analytics');
     }
 
-    public function testTheDaysReadFromGoogleAnalyticsAreSaidToCountFewerVisitors(): void
+    public function testTheDaysReadFromGoogleAnalyticsAreShadedAndSaidToCountFewerVisitors(): void
     {
         $client = self::createClient();
         $event = EventFactory::createOne();
@@ -60,13 +115,26 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-2 days'), 'visitors' => 10, 'ticketClicks' => 1]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#event-stats-google-analytics', 'Google Analytics');
-        // Every day up to the last one read from Google Analytics is paler, not the last two days and today
-        self::assertCount(27, $crawler->filter('#event-stats .bg-primary.opacity-50'));
-        self::assertCount(30, $crawler->filter('#event-stats .bg-primary.rounded-top'));
+        self::assertSelectorExists('#event-stats-chart rect[data-google-analytics]');
+    }
+
+    public function testTheShadeIsLeftOutOfAPeriodWithoutGoogleAnalyticsDays(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-60 days'), 'visitors' => 4, 'ticketClicks' => 0, 'fromGoogleAnalytics' => true]);
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-2 days'), 'visitors' => 10, 'ticketClicks' => 1]);
+        $client->loginUser($event->getUser());
+
+        $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#event-stats-google-analytics');
+        self::assertSelectorNotExists('#event-stats-chart rect[data-google-analytics]');
     }
 
     public function testAnotherMemberCannotSeeThem(): void
@@ -91,7 +159,7 @@ final class EventStatsTest extends AppWebTestCase
         $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
 
         self::assertResponseIsSuccessful();
-        self::assertSame('7', $crawler->filter('#event-stats .row-cards .h1')->first()->text());
+        self::assertSame('7', $this->tiles($crawler)[0]);
     }
 
     public function testTheListShowsTheAudienceOfTheLast30Days(): void
@@ -110,5 +178,13 @@ final class EventStatsTest extends AppWebTestCase
         $cell = $crawler->filter(\sprintf('a[href="/espace-perso/%d/statistiques"].text-reset', $event->getId()));
         self::assertSame('21 visiteurs 1 clic billetterie', $cell->text());
         self::assertSame('0 visiteur', $crawler->filter(\sprintf('a[href="/espace-perso/%d/statistiques"].text-reset', $quiet->getId()))->text());
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function tiles(Crawler $crawler): array
+    {
+        return $crawler->filter('#event-stats .row-cards .h1')->each(static fn (Crawler $node): string => $node->text());
     }
 }
