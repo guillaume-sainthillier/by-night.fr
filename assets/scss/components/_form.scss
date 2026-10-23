@@ -68,8 +68,6 @@ Icon input
     .form-select:not(:first-child):invalid,
     .form-control.is-invalid:not(:first-child),
     .form-select.is-invalid:not(:first-child),
-    .ts-wrapper:not(:first-child) .ts-control,
-    .ts-wrapper:not(:first-child).multi.has-items .ts-control,
     .collection-item:not(:first-child) .ts-wrapper .ts-control {
         padding-left: 2.5rem;
     }

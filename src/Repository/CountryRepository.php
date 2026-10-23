@@ -44,6 +44,23 @@ final class CountryRepository extends ServiceEntityRepository implements DtoFind
     }
 
     /**
+     * The events to come and the countries they are in, as last counted by UpcomingEventCounter.
+     *
+     * @return array{events: int, countries: int}
+     */
+    public function getUpcomingTotals(): array
+    {
+        $totals = $this
+            ->createQueryBuilder('c')
+            ->select('COALESCE(SUM(c.upcomingEvents), 0) AS events', 'COUNT(c.id) AS countries')
+            ->where('c.upcomingEvents > 0')
+            ->getQuery()
+            ->getSingleResult();
+
+        return ['events' => (int) $totals['events'], 'countries' => (int) $totals['countries']];
+    }
+
+    /**
      * @return list<string> the slugs of every country
      */
     public function findSlugs(): array

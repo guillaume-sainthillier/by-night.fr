@@ -1,4 +1,4 @@
-// Curated subset of what `@use '@tabler/core/scss/tabler'` pulls in (Tabler 1.6.1: scss/tabler.scss,
+// Curated subset of what `@use '@tabler/core/scss/tabler'` pulls in (Tabler 1.7.0: scss/tabler.scss,
 // scss/_core.scss and scss/_extends.scss). Every partial Tabler ships is listed here, the unused ones commented
 // out, so a Tabler upgrade can be diffed against those files. Bootstrap is part of Tabler since 1.5
 // (scss/bootstrap/), it is no longer a dependency of its own.
@@ -81,6 +81,7 @@
 @forward '@tabler/core/scss/ui/datagrid';
 @forward '@tabler/core/scss/ui/empty';
 @forward '@tabler/core/scss/ui/grid';
+// @forward '@tabler/core/scss/ui/hover-gallery';
 @forward '@tabler/core/scss/ui/icons';
 // @forward '@tabler/core/scss/ui/images';
 @forward '@tabler/core/scss/ui/forms';
@@ -91,17 +92,22 @@
 @forward '@tabler/core/scss/ui/forms/form-custom';
 @forward '@tabler/core/scss/ui/forms/form-check';
 // @forward '@tabler/core/scss/ui/forms/form-otp';
+// @forward '@tabler/core/scss/ui/forms/form-number-input';
 @forward '@tabler/core/scss/ui/forms/validation';
 // @forward '@tabler/core/scss/ui/forms/strength';
 // @forward '@tabler/core/scss/ui/legend';
 @forward '@tabler/core/scss/ui/lists';
 // @forward '@tabler/core/scss/ui/loaders';
 // @forward '@tabler/core/scss/ui/login';
+// @forward '@tabler/core/scss/ui/mockup-browser';
 @forward '@tabler/core/scss/ui/modals';
 @forward '@tabler/core/scss/ui/nav';
+// @forward '@tabler/core/scss/ui/nav-overflow';
 // @forward '@tabler/core/scss/ui/stars';
 @forward '@tabler/core/scss/ui/pagination';
 // @forward '@tabler/core/scss/ui/popovers';
+// @forward '@tabler/core/scss/ui/pricing';
+// @forward '@tabler/core/scss/ui/shape';
 @forward '@tabler/core/scss/ui/progress';
 // @forward '@tabler/core/scss/ui/ribbons';
 // @forward '@tabler/core/scss/ui/markdown';
@@ -113,13 +119,16 @@
 // @forward '@tabler/core/scss/ui/switch-icon';
 @forward '@tabler/core/scss/ui/tables';
 // @forward '@tabler/core/scss/ui/tags';
+// @forward '@tabler/core/scss/ui/text-shimmer';
 // @forward '@tabler/core/scss/ui/toasts';
 // @forward '@tabler/core/scss/ui/toolbar';
 // @forward '@tabler/core/scss/ui/tracking';
 // @forward '@tabler/core/scss/ui/timeline';
 @forward '@tabler/core/scss/ui/type';
+@forward '@tabler/core/scss/ui/kbd'; // the search's shortcut hint (kbd left ui/type in 1.7)
 @forward '@tabler/core/scss/ui/charts';
 // @forward '@tabler/core/scss/ui/sparkline';
+// @forward '@tabler/core/scss/ui/vector-map';
 @forward '@tabler/core/scss/ui/offcanvas';
 @forward '@tabler/core/scss/ui/chat';
 // @forward '@tabler/core/scss/ui/signature';

@@ -1,6 +1,14 @@
 {# One article of a legal page: a card whose heading carries its number, with the anchor "Sur cette page" links to
-   (Legal:Toc). Without a title, the card holds the text alone. #}
+   (Legal:Toc). Without a title, the card holds the text alone.
+   A table goes in the "table" block, below the text and outside the card body, as a Tabler card-table: edge to edge,
+   without the padding of the text. Text that follows the table goes in the "after" block, in a card body of its own.
+   <twig:Legal:Section id="x" title="…">
+       <p>…</p>
+       <twig:block name="table"><table class="table card-table">…</table></twig:block>
+       <twig:block name="after"><p>…</p></twig:block>
+   </twig:Legal:Section> #}
 {% props id, title = null, number = null %}
+{% set after %}{% block after %}{% endblock %}{% endset %}
 <section {{ attributes.defaults({class: 'card legal-section', id: id}) }}>
     <div class="card-body p-4 p-lg-5">
         {% if title %}
@@ -15,4 +23,10 @@
             {% block content %}{% endblock %}
         </div>
     </div>
+    {% block table %}{% endblock %}
+    {% if after|trim is not empty %}
+        <div class="card-body p-4 p-lg-5">
+            <div class="legal-content">{{ after }}</div>
+        </div>
+    {% endif %}
 </section>
