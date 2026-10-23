@@ -10,6 +10,7 @@
 
 namespace App\Tests\Controller\Location;
 
+use App\Entity\Event;
 use App\SearchRepository\EventElasticaRepository;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
@@ -18,22 +19,25 @@ use FOS\ElasticaBundle\Paginator\PartialResultsInterface;
 
 /**
  * The page of a location lists its agenda, which Elasticsearch searches: the tests have no index of their own, so the
- * search finds nothing and counts nothing, or the aggregations given (and as many hits as given, none of them listed). Call it once the client is created, before the
+ * search finds nothing and counts nothing, or the events and the aggregations given (and as many hits as given, when
+ * the count matters more than the events listed). Call it once the client is created, before the
  * request, and only for one request: the client boots a new kernel for the next one.
  */
 trait StubsAgendaSearch
 {
     /**
      * @param array<string, mixed> $aggregations the "aggregations" of the Elasticsearch response
-     * @param int                  $hits         how many events the search counts
+     * @param list<Event>          $events       the events found, a single page of them
+     * @param int|null             $hits         how many events the search counts, when not the events given
      */
-    private function stubAgendaSearch(array $aggregations = [], int $hits = 0): void
+    private function stubAgendaSearch(array $aggregations = [], array $events = [], ?int $hits = null): void
     {
-        $empty = new readonly class($aggregations, $hits) implements PaginatorAdapterInterface, PartialResultsInterface {
+        $empty = new readonly class($aggregations, $events, $hits ?? \count($events)) implements PaginatorAdapterInterface, PartialResultsInterface {
             /**
              * @param array<string, mixed> $aggregations
+             * @param list<Event>          $events
              */
-            public function __construct(private array $aggregations, private int $hits)
+            public function __construct(private array $aggregations, private array $events, private int $hits)
             {
             }
 
@@ -49,7 +53,7 @@ trait StubsAgendaSearch
 
             public function toArray(): array
             {
-                return [];
+                return $this->events;
             }
 
             public function getAggregations(): array

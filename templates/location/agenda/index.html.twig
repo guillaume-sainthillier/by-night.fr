@@ -257,6 +257,8 @@
                     </div>
                 {% endif %}
 
+                {{ include('location/agenda/_map.html.twig') }}
+
                 {% for section in sections %}
                     {% set day = section.day|date('Y-m-d') %}
                     {% set days = ((section.day|date('U') - 'today'|date('U')) / 86400)|round %}
