@@ -1,0 +1,17 @@
+{# The legal pages, one pill each, the current one filled: shown under the heading of each (layouts/legal.html.twig) #}
+{% props current = null %}
+{% set pages = [
+    {route: 'app_legal_mentions', label: 'Mentions légales', icon: 'lucide:landmark'},
+    {route: 'app_terms', label: 'CGU', icon: 'lucide:file-text'},
+    {route: 'app_privacy_policy', label: 'Confidentialité', icon: 'lucide:shield'},
+    {route: 'app_main_cookie', label: 'Cookies', icon: 'lucide:cookie'},
+    {route: 'app_transparency', label: 'Transparence', icon: 'lucide:scale'},
+] %}
+<nav {{ attributes.defaults({class: 'hstack flex-wrap gap-2', 'aria-label': 'Documents juridiques'}) }}>
+    {% for page in pages %}
+        <a class="btn btn-pill btn-sm text-nowrap {{ page.route == current ? 'btn-primary' }}" href="{{ path(page.route) }}"{% if page.route == current %} aria-current="page"{% endif %}>
+            <twig:Icon name="{{ page.icon }}" />
+            {{ page.label }}
+        </a>
+    {% endfor %}
+</nav>

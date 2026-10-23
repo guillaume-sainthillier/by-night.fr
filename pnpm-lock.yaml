@@ -196,7 +196,7 @@ importers:
         version: 11.8.0
       '@tabler/core':
         specifier: ^1.6.1
-        version: 1.6.1(vanilla-calendar-pro@3.4.0)
+        version: 1.7.0(vanilla-calendar-pro@3.4.0)
       '@tarekraafat/autocomplete.js':
         specifier: ^10.2.10
         version: 10.2.10
@@ -260,7 +260,7 @@ importers:
         version: 9.1.7
       knip:
         specifier: ^6.42.0
-        version: 6.42.0
+        version: 6.42.1
       lint-staged:
         specifier: '>=17.6.0'
         version: 17.6.0
@@ -1095,8 +1095,8 @@ packages:
       vite:
         optional: true
 
-  '@tabler/core@1.6.1':
-    resolution: {integrity: sha512-lgmR9gcxRp5JlLxcmRi9Rz85JrEvH6Bz71KnlcPVSa97wtwQNjgSs3g3fxwbAlulHyRMghhIV04QUuW3pqDsIg==}
+  '@tabler/core@1.7.0':
+    resolution: {integrity: sha512-f3a18Binkl4soRdzjaf7DhJFCuJXRJ45H1mJxmCFeHvqI2QIAZ6Djq2dVtYc1jJJgYYeIyVc+Rws8dK1yQp+Uw==}
     engines: {node: '>=20'}
     peerDependencies:
       vanilla-calendar-pro: ^3.3.2
@@ -1477,8 +1477,8 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  knip@6.42.0:
-    resolution: {integrity: sha512-lNypqHwi38RJQG8pVuItqzCDPMOfPbBExyFh8aM4yMJRHVU7t5OQAtEK4tDkaB3rLHetOcVMhRFAgv5Vn2CM0A==}
+  knip@6.42.1:
+    resolution: {integrity: sha512-gKJVsiT4LJQ0lfc8uSHOCzkOY8adAXNFGarIeODZbJOkBnQRVsG3e0UZFnO4LMwjA82A5tBWX/VgoeTYcjdKiQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -2723,7 +2723,7 @@ snapshots:
       - unloader
       - webpack
 
-  '@tabler/core@1.6.1(vanilla-calendar-pro@3.4.0)':
+  '@tabler/core@1.7.0(vanilla-calendar-pro@3.4.0)':
     dependencies:
       '@popperjs/core': 2.11.8
     optionalDependencies:
@@ -3068,7 +3068,7 @@ snapshots:
 
   json5@2.2.3: {}
 
-  knip@6.42.0:
+  knip@6.42.1:
     dependencies:
       formatly: 0.11.4
       get-tsconfig: 4.14.3

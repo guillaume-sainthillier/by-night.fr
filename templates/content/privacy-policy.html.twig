@@ -1,4 +1,4 @@
-{% extends 'layouts/simple.html.twig' %}
+{% extends 'layouts/legal.html.twig' %}
 
 {% block breadcrumb %}
     {% do menu.addItem('Politique de confidentialité', url('app_privacy_policy')) %}
@@ -8,169 +8,285 @@
 {% block page_title 'Politique de confidentialité' %}
 {% block meta_description 'Les données personnelles que By Night collecte, dont celles reçues de Google, Facebook et X à la connexion, leur usage, leurs destinataires, leur durée de conservation et vos droits.' %}
 
-{% block body %}
-    <p class="text-muted">Dernière mise à jour : 22 octobre 2026</p>
+{% set legal_lead = 'Les données personnelles que By Night collecte, ce qu\'il en fait, combien de temps il les garde et comment exercer vos droits.' %}
+{% set legal_updated = '2026-10-23' %}
+{% set legal_sections = [
+    {id: 'responsable', title: 'Responsable du traitement', number: 1},
+    {id: 'donnees-collectees', title: 'Données collectées', number: 2},
+    {id: 'connexion-reseaux-sociaux', title: 'Connexion avec Google, Facebook ou X', number: 3},
+    {id: 'traitements', title: 'Finalités, bases légales et durées', number: 4},
+    {id: 'destinataires', title: 'Destinataires', number: 5},
+    {id: 'securite', title: 'Sécurité', number: 6},
+    {id: 'droits', title: 'Vos droits', number: 7},
+    {id: 'modifications', title: 'Modifications', number: 8},
+] %}
 
-    <p>
-        By Night (<a href="{{ url('app_index') }}">by-night.fr</a>) est un agenda gratuit des sorties en France : concerts,
-        spectacles, expositions, festivals… Vous pouvez le consulter sans compte ; un compte vous permet de publier vos
-        événements, d'enregistrer des favoris et de commenter. Cette page explique quelles données personnelles nous
-        collectons pour cela, ce que nous en faisons et comment exercer vos droits.
-    </p>
+{# The retention periods: the account's go with DeleteAccountFormType, the transfers' with app:transfers:cleanup (30
+   days), the server logs with the Loki retention of the production server (120 days), the error reports with the
+   self-hosted Sentry (SENTRY_EVENT_RETENTION_DAYS, 90 days), the e-mails with config/packages/mailer.yaml (Mailjet) #}
+{% block legal_content %}
+    <twig:Legal:Section id="responsable" title="{{ legal_sections[0].title }}" number="{{ 1 }}">
+        <p>
+            By Night (<a href="{{ url('app_index') }}">by-night.fr</a>) est un agenda gratuit des sorties en France :
+            concerts, spectacles, expositions, festivals… Vous pouvez le consulter sans compte ; un compte vous permet de
+            publier vos événements, d'enregistrer des favoris et de commenter. Cette page explique quelles données
+            personnelles nous collectons pour cela, ce que nous en faisons et comment exercer vos droits.
+        </p>
+        <p>
+            Le responsable du traitement est ARNOVA, SAS au capital de 1 000 €, immatriculée au RCS de Paris sous le
+            numéro 942 070 392, dont le siège est situé 200 rue de la Croix Nivert, 75015 Paris, éditrice du site (voir
+            les <a href="{{ path('app_legal_mentions', {_fragment: 'editeur'}) }}">mentions légales</a>). Pour toute
+            question sur vos données, écrivez à <a href="mailto:support@by-night.fr">support@by-night.fr</a> ou par
+            courrier à cette adresse. By Night ne vend ni ne loue vos données.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Responsable du traitement</h2>
-    <p>
-        Le responsable du traitement est l'éditeur du site, présenté dans les
-        <a href="{{ path('app_legal_mentions') }}">mentions légales</a>. Pour toute question sur vos données, écrivez à
-        <a href="mailto:support@by-night.fr">support@by-night.fr</a>. By Night ne vend ni ne loue vos données.
-    </p>
+    <twig:Legal:Section id="donnees-collectees" title="{{ legal_sections[1].title }}" number="{{ 2 }}">
+        <ul>
+            <li>
+                <strong>Votre compte</strong> : nom d'utilisateur, adresse e-mail et mot de passe (conservé sous une forme
+                hachée, illisible), ainsi que, si vous les renseignez, vos prénom, nom, ville, description, site web et
+                photo de profil.
+            </li>
+            <li>
+                <strong>Votre connexion avec Google, Facebook ou X</strong>, si vous la choisissez : voir la section
+                <a href="#connexion-reseaux-sociaux">ci-dessous</a>.
+            </li>
+            <li>
+                <strong>Votre activité</strong> : les événements que vous publiez, importez ou exportez, vos favoris et vos
+                commentaires.
+            </li>
+            <li>
+                <strong>La sélection du week-end</strong>, si vous la demandez depuis votre compte : votre ville, la date de
+                votre demande et la dernière semaine envoyée. Elle vous est envoyée chaque jeudi par e-mail ; vous pouvez
+                vous désinscrire à tout moment par le lien de chaque envoi ou depuis votre compte.
+            </li>
+            <li>
+                <strong>Vos messages</strong> : les avis que vous nous envoyez depuis votre espace, les e-mails que vous
+                écrivez à support@by-night.fr, et les demandes de retrait de contenu (adresse e-mail, message, pages
+                concernées).
+            </li>
+            <li>
+                <strong>Les journaux techniques</strong> : à chaque page demandée, nos serveurs enregistrent votre adresse
+                IP, la date et l'heure, l'adresse de la page, la page d'où vous venez, votre navigateur et la réponse du
+                serveur. Ils servent à faire fonctionner le site, à le protéger des abus et à diagnostiquer les pannes.
+            </li>
+            <li>
+                <strong>La sécurité</strong> : le formulaire d'inscription est protégé contre les inscriptions automatisées
+                par Google reCAPTCHA ; le formulaire de signalement compte les envois de chaque adresse IP pour en limiter
+                le nombre ; les erreurs techniques sont transmises à notre outil de suivi des erreurs (Sentry), sans votre
+                adresse IP, pour être corrigées.
+            </li>
+            <li>
+                <strong>Les contenus de tiers</strong> : la page Facebook de By Night, sur les agendas, et les vidéos
+                YouTube intégrées à certaines descriptions d'événements ne sont chargées que si vous cliquez pour les
+                afficher. Facebook (Meta) ou Google reçoit alors votre adresse IP et les informations de votre navigateur,
+                et peut déposer ses propres cookies, notamment si vous êtes connecté à votre compte chez eux. Il en va de
+                même pour la carte Google Maps d'un événement, chargée quand vous cliquez sur « Afficher la carte ».
+            </li>
+            <li>
+                <strong>La mesure d'audience et la publicité</strong> : le site mesure sa fréquentation avec Google
+                Analytics, chargé par Google Tag Manager, et affiche des publicités Google AdSense. Le bandeau de
+                consentement, fourni par Google, vous permet d'accepter ou de refuser ces usages : sans votre accord, aucun
+                cookie de mesure d'audience ou de publicité n'est déposé et seules des publicités limitées peuvent
+                s'afficher. Vous pouvez changer d'avis à tout moment depuis le lien « Gérer mes cookies » en bas de
+                page. Les cookies déposés sont décrits dans notre
+                <a href="{{ path('app_main_cookie') }}">politique de cookies</a>.
+            </li>
+        </ul>
+    </twig:Legal:Section>
 
-    <h2>Données collectées</h2>
-    <ul>
-        <li>
-            <strong>Votre compte</strong> : nom d'utilisateur, adresse e-mail et mot de passe (conservé sous une forme
-            hachée, illisible), ainsi que, si vous les renseignez, vos prénom, nom, ville, description, site web et
-            photo de profil.
-        </li>
-        <li>
-            <strong>Votre connexion avec Google, Facebook ou X</strong>, si vous la choisissez : voir la section
-            <a href="#connexion-reseaux-sociaux">ci-dessous</a>.
-        </li>
-        <li>
-            <strong>Votre activité</strong> : les événements que vous publiez, importez ou exportez, vos favoris et vos
-            commentaires.
-        </li>
-        <li>
-            <strong>La sélection du week-end</strong>, si vous la demandez depuis votre compte : votre ville, la date de
-            votre demande et la dernière semaine envoyée. Elle vous est envoyée chaque jeudi par e-mail ; vous pouvez
-            vous désinscrire à tout moment par le lien de chaque envoi ou depuis votre compte.
-        </li>
-        <li>
-            <strong>Vos messages</strong> : les avis que vous nous envoyez depuis votre espace, et les demandes de
-            retrait de contenu (adresse e-mail, message, pages concernées).
-        </li>
-        <li>
-            <strong>La sécurité</strong> : le formulaire d'inscription est protégé contre les inscriptions automatisées
-            par Google reCAPTCHA, et les erreurs techniques sont transmises à Sentry pour être corrigées.
-        </li>
-        <li>
-            <strong>La mesure d'audience et la publicité</strong> : le site mesure sa fréquentation avec Google
-            Analytics, chargé par Google Tag Manager, et affiche des publicités Google AdSense. Le bandeau de
-            consentement, fourni par Google, vous permet d'accepter ou de refuser ces usages : sans votre accord, aucun
-            cookie de mesure d'audience ou de publicité n'est déposé et seules des publicités limitées peuvent
-            s'afficher. Vous pouvez changer d'avis à tout moment depuis le lien « Gérer mes cookies » en bas de
-            page. Les cookies déposés sont décrits dans notre
-            <a href="{{ path('app_main_cookie') }}">politique de cookies</a>.
-        </li>
-    </ul>
+    <twig:Legal:Section id="connexion-reseaux-sociaux" title="{{ legal_sections[2].title }}" number="{{ 3 }}">
+        <p>
+            Vous pouvez créer votre compte ou vous connecter avec votre compte Google, Facebook ou X au lieu d'un mot de
+            passe. Le réseau choisi vous demande alors votre accord, puis nous transmet les seules informations
+            suivantes :
+        </p>
+        <ul>
+            <li>
+                <strong>Google</strong> (autorisations « email » et « profile ») : votre identifiant Google, votre adresse
+                e-mail, vos prénom et nom et l'adresse de votre photo de profil.
+            </li>
+            <li>
+                <strong>Facebook</strong> (autorisations « public_profile » et « email ») : votre identifiant Facebook,
+                votre adresse e-mail, vos prénom et nom et l'adresse de votre photo de profil.
+            </li>
+            <li>
+                <strong>X</strong> (autorisations « users.read », « users.email », « tweet.read » et « offline.access ») :
+                votre identifiant X, votre nom, votre nom d'utilisateur, votre adresse e-mail et l'adresse de votre photo de
+                profil. X exige l'autorisation « tweet.read » pour lire un profil : By Night ne lit pas vos publications.
+            </li>
+        </ul>
+        <p>
+            Avec ces informations, le réseau nous remet des jetons de connexion. Nous conservons le tout dans votre compte,
+            et nous nous en servons uniquement pour :
+        </p>
+        <ul>
+            <li>créer votre compte By Night ou vous reconnaître lorsque vous vous connectez à nouveau ;</li>
+            <li>pré-remplir votre nom d'utilisateur, vos prénom, nom et adresse e-mail ;</li>
+            <li>afficher votre photo de profil tant que vous n'en avez pas choisi une autre.</li>
+        </ul>
+        <p>
+            By Night ne publie rien en votre nom, ne lit ni vos contacts, ni vos publications, ni aucune autre donnée de
+            votre compte, et ne demande aucune autre autorisation. Ces informations ne sont jamais vendues, ni utilisées
+            pour de la publicité, ni pour établir un profil, ni pour entraîner un modèle d'intelligence artificielle, et ne
+            sont partagées avec personne d'autre que les prestataires techniques nommés plus bas, pour le seul
+            fonctionnement du site.
+        </p>
+        <p>
+            L'utilisation et le transfert à toute autre application des informations reçues des API Google respectent les
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="nofollow">règles relatives aux données utilisateur des services d'API Google</a>
+            (Google API Services User Data Policy), y compris leurs exigences d'utilisation limitée (Limited Use).
+        </p>
+        <p>
+            Vous pouvez dissocier un réseau à tout moment depuis l'onglet « Réseaux sociaux » de
+            <a href="{{ path('app_user_edit') }}">votre compte</a> : ses informations et ses jetons sont alors effacés de
+            By Night. Vous pouvez aussi retirer l'accès de By Night depuis
+            <a href="https://myaccount.google.com/connections" rel="nofollow">votre compte Google</a>, les
+            <a href="https://www.facebook.com/settings?tab=business_tools" rel="nofollow">paramètres de Facebook</a> ou
+            <a href="https://x.com/settings/connected_apps" rel="nofollow">ceux de X</a>.
+        </p>
+    </twig:Legal:Section>
 
-    <h2 id="connexion-reseaux-sociaux">Connexion avec Google, Facebook ou X</h2>
-    <p>
-        Vous pouvez créer votre compte ou vous connecter avec votre compte Google, Facebook ou X au lieu d'un mot de
-        passe. Le réseau choisi vous demande alors votre accord, puis nous transmet les seules informations
-        suivantes :
-    </p>
-    <ul>
-        <li>
-            <strong>Google</strong> (autorisations « email » et « profile ») : votre identifiant Google, votre adresse
-            e-mail, vos prénom et nom et l'adresse de votre photo de profil.
-        </li>
-        <li>
-            <strong>Facebook</strong> (autorisations « public_profile » et « email ») : votre identifiant Facebook,
-            votre adresse e-mail, vos prénom et nom et l'adresse de votre photo de profil.
-        </li>
-        <li>
-            <strong>X</strong> (autorisations « users.read », « users.email », « tweet.read » et « offline.access ») :
-            votre identifiant X, votre nom, votre nom d'utilisateur, votre adresse e-mail et l'adresse de votre photo de
-            profil. X exige l'autorisation « tweet.read » pour lire un profil : By Night ne lit pas vos publications.
-        </li>
-    </ul>
-    <p>
-        Avec ces informations, le réseau nous remet des jetons de connexion. Nous conservons le tout dans votre compte,
-        et nous nous en servons uniquement pour :
-    </p>
-    <ul>
-        <li>créer votre compte By Night ou vous reconnaître lorsque vous vous connectez à nouveau ;</li>
-        <li>pré-remplir votre nom d'utilisateur, vos prénom, nom et adresse e-mail ;</li>
-        <li>afficher votre photo de profil tant que vous n'en avez pas choisi une autre.</li>
-    </ul>
-    <p>
-        By Night ne publie rien en votre nom, ne lit ni vos contacts, ni vos publications, ni aucune autre donnée de
-        votre compte, et ne demande aucune autre autorisation. Ces informations ne sont jamais vendues, ni utilisées
-        pour de la publicité, ni pour établir un profil, ni pour entraîner un modèle d'intelligence artificielle, et ne
-        sont partagées avec personne d'autre que les prestataires techniques nommés plus bas, pour le seul
-        fonctionnement du site.
-    </p>
-    <p>
-        L'utilisation et le transfert à toute autre application des informations reçues des API Google respectent les
-        <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="nofollow">règles relatives aux données utilisateur des services d'API Google</a>
-        (Google API Services User Data Policy), y compris leurs exigences d'utilisation limitée (Limited Use).
-    </p>
-    <p>
-        Vous pouvez dissocier un réseau à tout moment depuis l'onglet « Réseaux sociaux » de
-        <a href="{{ path('app_user_edit') }}">votre compte</a> : ses informations et ses jetons sont alors effacés de
-        By Night. Vous pouvez aussi retirer l'accès de By Night depuis
-        <a href="https://myaccount.google.com/connections" rel="nofollow">votre compte Google</a>, les
-        <a href="https://www.facebook.com/settings?tab=business_tools" rel="nofollow">paramètres de Facebook</a> ou
-        <a href="https://x.com/settings/connected_apps" rel="nofollow">ceux de X</a>.
-    </p>
+    <twig:Legal:Section id="traitements" title="{{ legal_sections[3].title }}" number="{{ 4 }}">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Traitement</th>
+                        <th>Base légale</th>
+                        <th>Durée de conservation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Votre compte, votre profil et vos connexions avec Google, Facebook ou X</td>
+                        <td>Exécution des <a href="{{ path('app_terms') }}">conditions d'utilisation</a></td>
+                        <td>
+                            Tant que le compte existe. Une connexion avec un réseau et ses jetons sont effacés dès que vous
+                            la dissociez.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Vos événements, favoris et commentaires</td>
+                        <td>Exécution des conditions d'utilisation</td>
+                        <td>
+                            Tant que le compte existe. À sa suppression, favoris et commentaires sont effacés, et vos
+                            événements supprimés ou conservés sans lien avec vous, à votre choix.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Les fichiers de vos imports et exports d'événements</td>
+                        <td>Exécution des conditions d'utilisation</td>
+                        <td>30 jours, puis effacés automatiquement.</td>
+                    </tr>
+                    <tr>
+                        <td>La sélection du week-end par e-mail</td>
+                        <td>Votre consentement, que vous pouvez retirer à tout moment</td>
+                        <td>
+                            La date de votre demande est effacée dès que vous vous désinscrivez ; la dernière semaine envoyée,
+                            tant que le compte existe.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Vos avis et vos e-mails à support@by-night.fr</td>
+                        <td>Intérêt légitime : vous répondre</td>
+                        <td>
+                            Ils ne sont pas enregistrés sur le site : ils nous parviennent par e-mail et sont conservés 3 ans
+                            après notre dernier échange.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Les demandes de retrait de contenu</td>
+                        <td>Obligation légale (traitement des signalements) et intérêt légitime : garder la preuve des retraits</td>
+                        <td>5 ans après leur traitement, durée pendant laquelle un retrait peut être contesté en justice.</td>
+                    </tr>
+                    <tr>
+                        <td>Les journaux techniques des serveurs (adresse IP, page demandée, navigateur)</td>
+                        <td>Intérêt légitime : faire fonctionner et protéger le site</td>
+                        <td>120 jours, puis effacés automatiquement.</td>
+                    </tr>
+                    <tr>
+                        <td>Le comptage des signalements par adresse IP</td>
+                        <td>Intérêt légitime : protéger le formulaire des abus</td>
+                        <td>1 heure.</td>
+                    </tr>
+                    <tr>
+                        <td>Les rapports d'erreurs (sans adresse IP)</td>
+                        <td>Intérêt légitime : corriger les erreurs</td>
+                        <td>90 jours, puis effacés automatiquement.</td>
+                    </tr>
+                    <tr>
+                        <td>La protection de l'inscription (Google reCAPTCHA)</td>
+                        <td>Intérêt légitime : empêcher les inscriptions automatisées</td>
+                        <td>Durée fixée par Google ; By Night ne conserve ni le résultat du contrôle ni les données transmises.</td>
+                    </tr>
+                    <tr>
+                        <td>La mesure d'audience et la publicité personnalisée</td>
+                        <td>Votre consentement, que vous pouvez retirer à tout moment</td>
+                        <td>
+                            Celle des cookies, indiquée dans la <a href="{{ path('app_main_cookie') }}">politique de
+                                cookies</a>.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </twig:Legal:Section>
 
-    <h2>Finalités et bases légales</h2>
-    <p>
-        Vos données servent à gérer votre compte, à afficher votre profil et vos publications, à répondre à vos
-        messages, à vous envoyer la sélection du week-end si vous l'avez demandée, à protéger le site et à en mesurer la
-        fréquentation. Ces traitements reposent sur l'exécution du
-        service que vous utilisez (compte, connexion avec un réseau social, publications), sur l'intérêt légitime de By
-        Night (réponse à vos messages, sécurité) et, pour la sélection du week-end, la mesure d'audience et la publicité
-        personnalisée, sur votre consentement.
-    </p>
+    <twig:Legal:Section id="destinataires" title="{{ legal_sections[4].title }}" number="{{ 5 }}">
+        <p>
+            Vos données ne sont accessibles qu'à ARNOVA et à ses prestataires techniques, dans la limite de ce qui est
+            nécessaire à leur mission :
+        </p>
+        <ul>
+            <li>OVH (hébergement des serveurs et des fichiers, en France), où sont aussi installés nos journaux techniques et notre outil de suivi des erreurs (Sentry) ;</li>
+            <li>Cloudflare (diffusion des pages et protection du site) ;</li>
+            <li>Mailjet (envoi des e-mails : confirmation d'adresse, mot de passe oublié, suite donnée à un signalement, sélection du week-end) ;</li>
+            <li>Google (reCAPTCHA, cartes, vidéos YouTube, mesure d'audience et publicité) ;</li>
+            <li>Meta (page Facebook, si vous l'affichez) ;</li>
+            <li>Google, Meta et X pour la connexion avec ces réseaux, si vous la choisissez.</li>
+        </ul>
+        <p>
+            Certains de ces prestataires sont établis hors de l'Union européenne, notamment aux États-Unis (Cloudflare,
+            Google, Meta, X) ; ces transferts sont encadrés par les garanties prévues par le RGPD (décision d'adéquation
+            « Data Privacy Framework » ou clauses contractuelles types de la Commission européenne).
+        </p>
+        <p>
+            Votre nom d'utilisateur, votre photo de profil, votre description et vos publications (événements,
+            commentaires) sont visibles par tous sur votre profil public. Votre adresse e-mail ne l'est jamais.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Destinataires</h2>
-    <p>
-        Vos données ne sont accessibles qu'à l'éditeur du site et à ses prestataires techniques, dans la limite de ce
-        qui est nécessaire à leur mission : OVH (hébergement), Cloudflare (diffusion des pages), Mailjet (envoi des
-        e-mails), Sentry (suivi des erreurs) et Google (reCAPTCHA, cartes, mesure d'audience et publicité).
-        Certains de ces prestataires sont établis hors de l'Union européenne, notamment aux États-Unis ; ces
-        transferts sont encadrés par les garanties prévues par le RGPD (décision d'adéquation ou clauses
-        contractuelles types de la Commission européenne).
-    </p>
-    <p>
-        Votre nom d'utilisateur, votre photo de profil, votre description et vos publications (événements,
-        commentaires) sont visibles par tous sur votre profil public. Votre adresse e-mail ne l'est jamais.
-    </p>
+    <twig:Legal:Section id="securite" title="{{ legal_sections[5].title }}" number="{{ 6 }}">
+        <p>
+            Le site n'est accessible qu'en HTTPS, les mots de passe sont hachés et l'accès aux serveurs et à la base de
+            données est réservé à l'éditeur. En cas de violation de données présentant un risque pour vous, nous la
+            notifions à la CNIL dans les 72 heures et vous en informons si ce risque est élevé.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Durée de conservation</h2>
-    <p>
-        Les données de votre compte sont conservées tant que votre compte existe. Lorsque vous le supprimez, vos
-        informations personnelles, vos connexions aux réseaux sociaux et leurs jetons, vos favoris et vos commentaires
-        sont effacés ; vos événements sont, à votre choix, supprimés ou conservés sans lien avec votre compte. Les
-        fichiers de vos imports et exports sont effacés au bout de 30 jours. Les avis sont conservés le temps d'y
-        répondre, et les demandes de retrait le temps de les traiter puis pour garder la trace des retraits effectués.
-    </p>
+    <twig:Legal:Section id="droits" title="{{ legal_sections[6].title }}" number="{{ 7 }}">
+        <p>
+            Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos
+            données, du droit de vous opposer à leur traitement, du droit de retirer votre consentement à tout moment et
+            du droit de définir des directives sur le sort de vos données après votre décès. Vous pouvez modifier vos
+            informations depuis <a href="{{ path('app_user_edit') }}">votre compte</a>, exporter vos événements depuis
+            <a href="{{ path('app_event_exports') }}">votre espace</a>, et supprimer votre compte depuis l'onglet
+            « Supprimer le compte ». Pour exercer vos autres droits, écrivez à
+            <a href="mailto:support@by-night.fr">support@by-night.fr</a> : nous vous répondons dans un délai d'un mois,
+            sans vous demander de pièce d'identité sauf doute raisonnable sur votre identité.
+        </p>
+        <p>
+            Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL
+            (<a href="https://www.cnil.fr/fr/plaintes" rel="nofollow">www.cnil.fr</a>).
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Sécurité</h2>
-    <p>
-        Le site n'est accessible qu'en HTTPS, les mots de passe sont hachés et l'accès aux serveurs et à la base de
-        données est réservé à l'éditeur.
-    </p>
-
-    <h2>Vos droits</h2>
-    <p>
-        Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos
-        données, du droit de vous opposer à leur traitement et du droit de retirer votre consentement à tout moment.
-        Vous pouvez modifier vos informations depuis <a href="{{ path('app_user_edit') }}">votre compte</a>, exporter
-        vos événements depuis <a href="{{ path('app_event_exports') }}">votre espace</a>, et supprimer votre compte depuis
-        l'onglet « Supprimer le compte ». Pour exercer vos autres droits, écrivez à
-        <a href="mailto:support@by-night.fr">support@by-night.fr</a>.
-    </p>
-    <p>
-        Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL
-        (<a href="https://www.cnil.fr" rel="nofollow">www.cnil.fr</a>).
-    </p>
-
-    <h2>Modifications</h2>
-    <p>
-        Nous pouvons modifier cette politique pour suivre l'évolution du site ou de la loi. La date de dernière mise à
-        jour figure en haut de cette page.
-    </p>
+    <twig:Legal:Section id="modifications" title="{{ legal_sections[7].title }}" number="{{ 8 }}">
+        <p>
+            Nous pouvons modifier cette politique pour suivre l'évolution du site ou de la loi. La date de dernière mise
+            à jour figure en haut de cette page.
+        </p>
+    </twig:Legal:Section>
 {% endblock %}

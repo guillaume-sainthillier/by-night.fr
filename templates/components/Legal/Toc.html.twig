@@ -1,0 +1,20 @@
+{# "Sur cette page": the sections of a legal page ({id, title, number?}). Hidden below two sections, where there is
+   nothing to jump to. The entry being read is marked (listeners/toc.js). #}
+{% props sections = [] %}
+{% if sections|length > 1 %}
+    <nav {{ attributes.defaults({class: 'card d-none d-lg-block', 'aria-labelledby': 'sur-cette-page'}) }}>
+        <div class="card-body">
+            <h2 class="subheader mb-2" id="sur-cette-page">Sur cette page</h2>
+            <ul class="legal-toc list-unstyled vstack gap-2 mb-0 small" data-toc>
+                {% for section in sections %}
+                    <li>
+                        <a class="link-secondary" href="#{{ section.id }}">
+                            {%- if section.number ?? false %}<span class="font-monospace me-1">{{ '%02d'|format(section.number) }}</span>{% endif -%}
+                            {{ section.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+{% endif %}

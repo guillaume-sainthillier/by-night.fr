@@ -1,0 +1,7 @@
+{# Under the social login buttons: the first login with a network creates the account (UserSocialAuthenticator)
+   without the sign-up form's terms checkbox, so the terms are accepted here #}
+<p {{ attributes.defaults({class: 'small text-secondary text-center mb-0'}) }}>
+    Avec Google, Facebook ou X, une première connexion crée votre compte&nbsp;: vous acceptez alors nos
+    <a class="link-secondary text-decoration-underline" href="{{ path('app_terms') }}" target="_blank">conditions générales d'utilisation</a>
+    et notre <a class="link-secondary text-decoration-underline" href="{{ path('app_privacy_policy') }}" target="_blank">politique de confidentialité</a>.
+</p>

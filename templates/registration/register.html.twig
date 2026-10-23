@@ -64,6 +64,7 @@
                 <div class="card card-lg mb-3">
                     <div class="card-body p-4 p-md-5">
                         <twig:Auth:SocialButtons title="Inscrivez-vous avec" />
+                        <twig:Auth:TermsNotice class="mt-2" />
 
                         <div class="hr-text">ou avec votre adresse e-mail</div>
 
@@ -81,6 +82,10 @@
                             <div class="col-sm-6">{{ form_row(form.lastname, {attr: form.lastname.vars.attr|merge({placeholder: 'Martin'})}) }}</div>
                         </div>
                         {{ form_row(form.plainPassword) }}
+                        {{ form_row(form.agreeTerms, {
+                            label: 'J\'accepte les <a href="' ~ path('app_terms') ~ '" target="_blank">conditions générales d\'utilisation</a> de By Night.',
+                            label_html: true,
+                        }) }}
                         {{ form_widget(form.captcha) }}
 
                         {{ form_rest(form) }}
@@ -91,6 +96,10 @@
                         <p class="text-center text-secondary mt-4 mb-0">
                             Vous avez déjà un compte&nbsp;?
                             <a class="fw-bold" href="{{ path('app_login') }}" title="Connectez-vous à votre compte">Se connecter</a>
+                        </p>
+                        <p class="text-center small text-secondary mt-3 mb-0">
+                            Vos données sont traitées par ARNOVA pour gérer votre compte, comme l'explique notre
+                            <a class="link-secondary text-decoration-underline" href="{{ path('app_privacy_policy') }}" target="_blank">politique de confidentialité</a>.
                         </p>
                     </div>
                 </div>
