@@ -29,6 +29,7 @@ use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
 use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
 use Serializable;
+use SortDirection;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
@@ -130,7 +131,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
      * @var Collection<int, WebauthnKey>
      */
     #[ORM\OneToMany(targetEntity: WebauthnKey::class, mappedBy: 'user', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
-    #[ORM\OrderBy(['createdAt' => 'ASC'])]
+    #[ORM\OrderBy(['createdAt' => SortDirection::Ascending])]
     private Collection $webauthnKeys;
 
     /** The city the member goes out in, chosen on their profile: the location of the pages whose URL has none */
