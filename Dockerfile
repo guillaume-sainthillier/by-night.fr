@@ -51,7 +51,7 @@ COPY --from=node_builder --link /app/vendor ./vendor
 COPY --link assets ./assets
 COPY --link src ./src
 COPY --link templates ./templates
-COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml vite.config.mjs ./
+COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json vite.config.ts ./
 
 RUN mkdir -p public && \
     pnpm build

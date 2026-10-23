@@ -77,7 +77,7 @@ final class DashboardController extends AbstractDashboardController
     {
         return parent::configureAssets()
             ->useCustomIconSet()
-            // assets/js/admin.js (live preview of App\Admin\Field\VichImageField uploads)
+            // assets/js/admin.ts (live preview of App\Admin\Field\VichImageField uploads)
             ->addRepriseEntry('admin')
         ;
     }
