@@ -81,6 +81,17 @@ final class ProfileFormType extends AbstractType
                     'height' => 200,
                 ],
             ]);
+
+        // The news are only sent to the members who run a publisher
+        if ($options['publisher']) {
+            $builder->add('publisherNews', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Recevoir les nouveautés pour les organisateurs',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ]);
+        }
     }
 
     /**
@@ -90,6 +101,8 @@ final class ProfileFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'publisher' => false,
         ]);
+        $resolver->setAllowedTypes('publisher', 'bool');
     }
 }

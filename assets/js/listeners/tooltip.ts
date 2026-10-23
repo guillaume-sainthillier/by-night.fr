@@ -1,0 +1,16 @@
+import $ from 'jquery'
+import type { Listener } from '@/js/types'
+
+/**
+ * Activate a Bootstrap tooltip on each tooltip-toggle element. Disposes it on
+ * disconnect.
+ */
+export default {
+    selector: '[data-bs-toggle="tooltip"]',
+    connect(element) {
+        const $element = $(element)
+        $element.tooltip()
+
+        return () => $element.tooltip('dispose')
+    },
+} satisfies Listener

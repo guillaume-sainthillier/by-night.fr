@@ -14,9 +14,13 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\UserDto;
 use App\Entity\Event;
+use App\Entity\Publisher;
+use App\Entity\PublisherNewsDelivery;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Entity\UserOAuth;
+use App\Enum\PublisherNewsAudience;
+use App\Enum\PublisherNewsEdition;
 use App\Manager\PreloadManager;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -65,6 +69,34 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->where('u.enabled = true')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * The members an edition of the publishers' news is for, by id: the owners of a publisher whose account is open
+     * and who did not opt out, of the edition's audience (the last login before or after $dormantSince), who have
+     * not had it yet.
+     *
+     * @return list<int>
+     */
+    public function findPublisherNewsRecipientIds(PublisherNewsEdition $edition, DateTimeImmutable $dormantSince): array
+    {
+        $qb = $this
+            ->createQueryBuilder('u')
+            ->select('u.id')
+            ->where('u.enabled = true')
+            ->andWhere('u.publisherNews = true')
+            ->andWhere(\sprintf('EXISTS (SELECT p.id FROM %s p WHERE p.owner = u)', Publisher::class))
+            ->andWhere(\sprintf('NOT EXISTS (SELECT d.id FROM %s d WHERE d.user = u AND d.edition = :edition)', PublisherNewsDelivery::class))
+            ->setParameter('edition', $edition->value)
+            ->setParameter('since', $dormantSince)
+            ->orderBy('u.id');
+
+        $qb->andWhere(match ($edition->getAudience()) {
+            PublisherNewsAudience::Dormant => '(u.lastLogin IS NULL OR u.lastLogin < :since)',
+            PublisherNewsAudience::Active => 'u.lastLogin >= :since',
+        });
+
+        return array_map(intval(...), $qb->getQuery()->getSingleColumnResult());
     }
 
     /**

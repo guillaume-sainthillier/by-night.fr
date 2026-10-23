@@ -41,13 +41,24 @@ final readonly class TransferNotifier
 
     public function importChanged(EventImport $import): void
     {
-        $iri = $this->urlGenerator->generate('app_event_import_show', ['id' => $import->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        // A job without a publisher (from before publishers, its member had none) has no page to follow it on
+        $publisher = $import->getPublisher();
+        if (null === $publisher) {
+            return;
+        }
+
+        $iri = $this->urlGenerator->generate('app_event_import_show', ['publisher' => $publisher->getSlug(), 'id' => $import->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         $this->publish($import->getUser(), $iri, self::IMPORT_EVENT, self::importState($import));
     }
 
     public function exportChanged(EventExport $export): void
     {
-        $iri = $this->urlGenerator->generate('app_event_export_show', ['id' => $export->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $publisher = $export->getPublisher();
+        if (null === $publisher) {
+            return;
+        }
+
+        $iri = $this->urlGenerator->generate('app_event_export_show', ['publisher' => $publisher->getSlug(), 'id' => $export->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         $this->publish($export->getUser(), $iri, self::EXPORT_EVENT, self::exportState($export));
     }
 

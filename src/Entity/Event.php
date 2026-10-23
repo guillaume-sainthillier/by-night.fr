@@ -53,7 +53,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_upcoming_idx', columns: ['duplicate_of_id', 'draft', 'end_date', 'participations', 'place_id'])]
 #[ORM\Index(name: 'event_popular_idx', columns: ['duplicate_of_id', 'draft', 'has_image', 'end_date', 'start_date', 'participations', 'place_id'])]
 #[ORM\UniqueConstraint(name: 'event_external_id_unique', columns: ['external_id', 'external_origin'])]
-#[ORM\UniqueConstraint(name: 'event_user_external_reference_unique', columns: ['user_id', 'external_reference'])]
+#[ORM\UniqueConstraint(name: 'event_publisher_external_reference_unique', columns: ['publisher_id', 'external_reference'])]
 #[ORM\Index(name: 'event_from_data_idx', columns: ['from_data'])]
 #[ORM\Index(name: 'event_identity_hash_idx', columns: ['identity_hash'])]
 #[ORM\Index(name: 'event_image_name_idx', columns: ['image_name'])]
@@ -83,8 +83,8 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?string $externalOrigin = null;
 
     /**
-     * The member's own key for their event (their ticketing's id, a row of their spreadsheet), unique among their
-     * events: an import matches the event by it. Unlike externalId, which belongs to the source it was imported from.
+     * The publisher's own key for its event (its ticketing's id, a row of its spreadsheet), unique among its events: an
+     * import matches the event by it. Unlike externalId, which belongs to the source it was imported from.
      */
     #[ORM\Column(type: Types::STRING, length: 100, nullable: true)]
     private ?string $externalReference = null;
@@ -301,9 +301,15 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $url = null;
 
+    /** The member who wrote it */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn]
     private ?User $user = null;
+
+    /** Who publishes it: the members who manage it edit it. Null for an imported event */
+    #[ORM\ManyToOne(targetEntity: Publisher::class)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private ?Publisher $publisher = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
     #[Groups(['elasticsearch:event:details'])]
@@ -1268,6 +1274,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPublisher(): ?Publisher
+    {
+        return $this->publisher;
+    }
+
+    public function setPublisher(?Publisher $publisher): self
+    {
+        $this->publisher = $publisher;
 
         return $this;
     }

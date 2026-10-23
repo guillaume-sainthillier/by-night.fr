@@ -31,12 +31,12 @@ final class ImportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/imports');
+        $crawler = $client->request('GET', self::organizerPath($user, 'imports'));
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('form[action="/espace-perso/imports"] input[type="file"]');
-        self::assertSelectorExists('form[action="/espace-perso/imports"] .dropzone input[type="file"][accept=".csv,.xlsx"][data-max-size="2000000"]');
-        self::assertSelectorExists('nav a.active[href="/espace-perso/imports"]');
+        self::assertSelectorExists('form[action$="/imports"] input[type="file"]');
+        self::assertSelectorExists('form[action$="/imports"] .dropzone input[type="file"][accept=".csv,.xlsx"][data-max-size="2000000"]');
+        self::assertSelectorExists('nav a.active[href$="/imports"]');
         $cookie = $client->getResponse()->headers->getCookies()[0] ?? null;
         self::assertSame('__Secure-mercure_access_token', $cookie?->getName());
         self::assertSame('/.well-known/mercure', $cookie->getPath());
@@ -62,18 +62,19 @@ final class ImportControllerTest extends AppWebTestCase
         $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checked, 'errorFilePath' => 'imports/x/erreurs.csv', 'invalidCount' => 2]);
         $client->loginUser($user);
 
-        $client->request('GET', '/espace-perso/imports/' . $import->getId());
+        $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()));
 
         self::assertSelectorTextContains('.card-title', 'Importer le fichier corrigé');
-        self::assertSelectorExists('form[action="/espace-perso/imports"] .dropzone input[type="file"]');
+        self::assertSelectorExists('form[action$="/imports"] .dropzone input[type="file"]');
     }
 
     public function testTheTemplateIsDownloaded(): void
     {
         $client = self::createClient();
-        $client->loginUser(UserFactory::createOne());
+        $member = UserFactory::createOne();
+        $client->loginUser($member);
 
-        $client->request('GET', '/espace-perso/imports/modele.csv');
+        $client->request('GET', self::organizerPath($member, 'imports/modele.csv'));
 
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/csv; charset=UTF-8');
@@ -86,12 +87,12 @@ final class ImportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/imports')->filter('form[action="/espace-perso/imports"]')->form(), [
+        $client->submit($client->request('GET', self::organizerPath($user, 'imports'))->filter('form[action$="/imports"]')->form(), [
             'event_import[file]' => $this->upload("Nom;Date de début\nConcert;12/03/2027\n", 'mes-evenements.csv'),
         ]);
 
         $import = EventImportFactory::find(['user' => $user]);
-        self::assertResponseRedirects('/espace-perso/imports/' . $import->getId());
+        self::assertResponseRedirects(self::organizerPath($user, 'imports/' . $import->getId()));
         self::assertSame(['mes-evenements.csv', TransferFormat::Csv, EventImportStatus::Uploaded], [$import->getOriginalName(), $import->getFormat(), $import->getStatus()]);
         self::assertStringContainsString('Concert', $this->storage()->read((string) $import->getFilePath()));
         $sent = $this->transport()->getSent();
@@ -105,11 +106,11 @@ final class ImportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/imports')->filter('form[action="/espace-perso/imports"]')->form(), [
+        $client->submit($client->request('GET', self::organizerPath($user, 'imports'))->filter('form[action$="/imports"]')->form(), [
             'event_import[file]' => $this->upload('%PDF-1.4', 'affiche.pdf'),
         ]);
 
-        self::assertResponseRedirects('/espace-perso/imports');
+        self::assertResponseRedirects(self::organizerPath($user, 'imports'));
         self::assertSame(0, EventImportFactory::count(['user' => $user]));
         $client->followRedirect();
         self::assertSelectorTextContains('.alert-danger', 'Importez un fichier CSV ou Excel (XLSX).');
@@ -123,7 +124,7 @@ final class ImportControllerTest extends AppWebTestCase
         $client->loginUser($user);
         // One container for both clicks (the client still empties the transport between requests)
         $client->disableReboot();
-        $form = $client->request('GET', '/espace-perso/imports/' . $import->getId())->selectButton('Importer les 3 événements valides')->form();
+        $form = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()))->selectButton('Importer les 3 événements valides')->form();
 
         $client->submit($form);
         $sent = $this->transport()->getSent();
@@ -144,7 +145,7 @@ final class ImportControllerTest extends AppWebTestCase
             'warnings' => [['row' => 4, 'reference' => 'JAZZ', 'column' => 'Nom', 'message' => 'Ressemble à un événement en ligne']]]);
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/imports/' . $import->getId());
+        $crawler = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()));
         $form = $crawler->filter('#import-run-form')->form();
         $form['skip'][0]->tick();
         $client->submit($form);
@@ -162,7 +163,7 @@ final class ImportControllerTest extends AppWebTestCase
         $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Completed, 'outcomes' => $outcomes]);
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/imports/' . $import->getId());
+        $crawler = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()));
 
         self::assertSame('Événement 30', trim($crawler->filter('table tbody:not(.collapse) tr')->first()->filter('td')->eq(1)->text()));
         self::assertCount(20, $crawler->filter('table tbody:not(.collapse) tr'));
@@ -177,7 +178,7 @@ final class ImportControllerTest extends AppWebTestCase
         $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checked, 'validCount' => 3]);
         $client->loginUser($user);
 
-        $client->request('POST', '/espace-perso/imports/' . $import->getId() . '/importer', ['_token' => 'forged']);
+        $client->request('POST', self::organizerPath($user, 'imports/' . $import->getId() . '/importer'), ['_token' => 'forged']);
 
         self::assertResponseStatusCodeSame(403);
         refresh($import);
@@ -189,9 +190,9 @@ final class ImportControllerTest extends AppWebTestCase
      */
     public static function provideOtherMembersPages(): iterable
     {
-        yield 'report' => ['/espace-perso/imports/%d'];
-        yield 'status' => ['/espace-perso/imports/%d/statut'];
-        yield 'file' => ['/espace-perso/imports/%d/fichiers/original'];
+        yield 'report' => ['imports/%d'];
+        yield 'status' => ['imports/%d/statut'];
+        yield 'file' => ['imports/%d/fichiers/original'];
     }
 
     #[DataProvider('provideOtherMembersPages')]
@@ -199,10 +200,15 @@ final class ImportControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $import = EventImportFactory::createOne();
-        $client->loginUser(UserFactory::createOne());
+        $member = UserFactory::createOne();
+        $client->loginUser($member);
 
-        $client->request('GET', \sprintf($url, $import->getId()));
+        // At its own URL: the other member does not manage its publisher
+        $client->request('GET', self::organizerPath($import->getUser(), \sprintf($url, $import->getId())));
+        self::assertResponseStatusCodeSame(403);
 
+        // Through the member's own publisher: theirs is not
+        $client->request('GET', self::organizerPath($member, \sprintf($url, $import->getId())));
         self::assertResponseStatusCodeSame(403);
     }
 
@@ -214,7 +220,7 @@ final class ImportControllerTest extends AppWebTestCase
         $this->storage()->write('imports/x/erreurs.csv', "Nom;Erreurs\nConcert;Date de début : la date de début manque.\n");
         $client->loginUser($user);
 
-        $client->request('GET', '/espace-perso/imports/' . $import->getId() . '/fichiers/erreurs');
+        $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId() . '/fichiers/erreurs'));
 
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('saison-erreurs.csv', (string) $client->getResponse()->headers->get('Content-Disposition'));
@@ -242,7 +248,7 @@ final class ImportControllerTest extends AppWebTestCase
         $import = EventImportFactory::createOne(['user' => $user, 'status' => $status, 'eventCount' => 4, 'processedCount' => 2]);
         $client->loginUser($user);
 
-        $client->request('GET', '/espace-perso/imports/' . $import->getId() . '/statut');
+        $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId() . '/statut'));
 
         self::assertResponseIsSuccessful();
         self::assertStringContainsString($expected, (string) $client->getInternalResponse()->getContent());

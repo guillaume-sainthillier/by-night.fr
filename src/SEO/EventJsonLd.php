@@ -102,8 +102,9 @@ final readonly class EventJsonLd
             $schema['performer'] = array_map(static fn (string $name): array => ['@type' => 'PerformingGroup', 'name' => $name], $performers);
         }
 
-        if ($event->getUser() instanceof User) {
-            $schema['organizer'] = $this->buildOrganizerSchema($event);
+        $organizer = $this->buildOrganizerSchema($event);
+        if (null !== $organizer) {
+            $schema['organizer'] = $organizer;
         }
 
         return $schema;
@@ -245,11 +246,32 @@ final readonly class EventJsonLd
     }
 
     /**
-     * @return array<string, mixed>
+     * Its publisher, else the member who wrote it; none for an imported event.
+     *
+     * @return array<string, mixed>|null
      */
-    private function buildOrganizerSchema(Event $event): array
+    private function buildOrganizerSchema(Event $event): ?array
     {
+        $publisher = $event->getPublisher();
+        if (null !== $publisher) {
+            $organizer = [
+                '@type' => 'Organization',
+                'name' => $publisher->getName(),
+                'url' => $this->urlGenerator->generate('app_publisher_index', ['slug' => $publisher->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL),
+            ];
+            // Its own site and its pages on the networks: the same organization elsewhere
+            $sameAs = array_values(array_filter([$publisher->getWebsite(), ...array_column($publisher->getNetworkLinks(), 'url')]));
+            if ([] !== $sameAs) {
+                $organizer['sameAs'] = $sameAs;
+            }
+
+            return $organizer;
+        }
+
         $user = $event->getUser();
+        if (!$user instanceof User) {
+            return null;
+        }
 
         return [
             '@type' => 'Person',

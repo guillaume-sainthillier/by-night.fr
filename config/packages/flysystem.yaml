@@ -29,6 +29,13 @@ flysystem:
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'uploads/pages'
 
+        publishers.storage:
+            visibility: public
+            aws:
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(S3_BUCKET_NAME)%'
+                prefix: 'uploads/publishers'
+
         countries.storage:
             visibility: public
             aws:
@@ -75,6 +82,8 @@ when@test:
             events.storage:
                 memory: ~
             pages.storage:
+                memory: ~
+            publishers.storage:
                 memory: ~
             countries.storage:
                 memory: ~

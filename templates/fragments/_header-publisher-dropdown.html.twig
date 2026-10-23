@@ -1,0 +1,58 @@
+{#
+    The publisher of the organizer page (/espace-perso/organisateurs/{publisher}/…), next to the member's menu, as
+    immobilus shows its active profile: its logo and name as toggle, its name as header, its pages, then the member's
+    other publishers on the same page (publisher_switch_url()) and the creation of another one. None elsewhere.
+
+    @param show_name whether the toggle shows its name on wide screens (not in the phone header)
+#}
+{% set currentPublisher = current_publisher() %}
+{% if currentPublisher %}
+    {% set route = app.current_route %}
+    {% set others = managed_publishers()|filter(publisher => publisher.id != currentPublisher.id) %}
+    <li class="nav-item dropdown publisher-switcher">
+        <a href="#" class="nav-link d-flex align-items-center lh-1 active" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-label="Page organisateur {{ currentPublisher.name }}">
+            <twig:Publisher:Avatar publisher="{{ currentPublisher }}" size="{{ 32 }}" class="avatar-sm" />
+            {% if show_name %}
+                <span class="d-none d-xl-block ps-2">{{ currentPublisher.name }}</span>
+            {% endif %}
+        </a>
+        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
+            {# Who it is, in its own case: Tabler's .dropdown-header is small capitals #}
+            <div class="publisher-switcher-identity px-3 pt-2 pb-1">
+                <div class="fw-bold">{{ currentPublisher.name }}</div>
+                <div class="small text-secondary">Page organisateur</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            {% for link in [
+                {route: 'app_event_list', label: 'Événements', icon: 'lucide:list-checks', routes: ['app_event_list', 'app_event_new', 'app_event_edit']},
+                {route: 'app_event_imports', label: 'Importer', icon: 'lucide:upload', routes: ['app_event_imports', 'app_event_import_show']},
+                {route: 'app_event_exports', label: 'Exporter', icon: 'lucide:download', routes: ['app_event_exports']},
+                {route: 'app_publisher_edit', label: 'Modifier la page', icon: 'lucide:pencil', routes: ['app_publisher_edit']},
+            ] %}
+                {% set isCurrent = route in link.routes %}
+                <a class="dropdown-item{{ isCurrent ? ' active' }}" href="{{ path(link.route) }}"{% if isCurrent %} aria-current="page"{% endif %}>
+                    <twig:Icon name="{{ link.icon }}" />
+                    {{ link.label }}
+                </a>
+            {% endfor %}
+            <a class="dropdown-item" href="{{ path('app_publisher_index', {slug: currentPublisher.slug}) }}">
+                <twig:Icon name="lucide:external-link" />
+                Voir la page publique
+            </a>
+            <div class="dropdown-divider"></div>
+            {% if others %}
+                <span class="dropdown-header">Changer de page organisateur</span>
+                {% for publisher in others %}
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ publisher_switch_url(publisher) }}">
+                        <twig:Publisher:Avatar publisher="{{ publisher }}" size="{{ 24 }}" class="avatar-xs" />
+                        {{ publisher.name }}
+                    </a>
+                {% endfor %}
+            {% endif %}
+            <a class="dropdown-item" href="{{ path('app_publisher_new', {suite: 'evenements'}) }}">
+                <twig:Icon name="lucide:plus" />
+                Créer une page organisateur
+            </a>
+        </div>
+    </li>
+{% endif %}

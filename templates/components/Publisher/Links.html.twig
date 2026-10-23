@@ -1,0 +1,19 @@
+{# @var publisher \App\Entity\Publisher #}
+{# The publisher's website and social networks, as icons: big on its page, small next to its name on an event #}
+{% props publisher, small = false, withWebsite = true %}
+{% set website = withWebsite ? publisher.website|ensure_protocol : null %}
+{% if website or publisher.networkLinks %}
+    {% set linkClass = small ? 'btn btn-icon btn-sm' : 'social' %}
+    <div {{ attributes.defaults({class: 'd-flex flex-wrap gap-2'}) }}>
+        {% if website %}
+            <a class="{{ linkClass }}" href="{{ website }}" rel="nofollow ugc noopener" target="_blank" title="Le site de {{ publisher.name }}" aria-label="Le site de {{ publisher.name }}">
+                <twig:Icon name="lucide:globe" />
+            </a>
+        {% endif %}
+        {% for link in publisher.networkLinks %}
+            <a class="{{ linkClass }} social-{{ link.network.value }}" href="{{ link.url }}" rel="nofollow ugc noopener" target="_blank" title="{{ publisher.name }} sur {{ link.network.label }}" aria-label="{{ publisher.name }} sur {{ link.network.label }}">
+                <twig:Icon name="{{ link.network.icon }}" />
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}

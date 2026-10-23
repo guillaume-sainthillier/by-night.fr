@@ -12,6 +12,7 @@ namespace App\Transfer\Import;
 
 use App\Dto\EventDto;
 use App\Entity\EventImport;
+use App\Entity\Publisher;
 use App\Entity\User;
 use App\Enum\EventImportStatus;
 use App\Manager\MemberEventPublisher;
@@ -64,6 +65,8 @@ final readonly class EventImportRunner
 
         $id = (int) $import->getId();
         $user = $import->getUser() ?? throw new LogicException('The import has no member.');
+        // Only its id is read: saving the events clears the entity manager
+        $publisher = $import->getPublisher() ?? throw new LogicException('The import has no publisher.');
         $import->startImport();
         $this->save($import);
 
@@ -86,7 +89,7 @@ final readonly class EventImportRunner
                 }
 
                 // In the file's order, the skipped ones among the others
-                $chunkOutcomes = [...$chunkOutcomes, ...$this->importChunk(array_values($chunk), $user)];
+                $chunkOutcomes = [...$chunkOutcomes, ...$this->importChunk(array_values($chunk), $user, $publisher)];
                 usort($chunkOutcomes, static fn (array $a, array $b): int => $a['row'] <=> $b['row']);
                 array_push($outcomes, ...$chunkOutcomes);
                 // Saving the events cleared the entity manager: the import is read again, its outcomes written over
@@ -115,12 +118,12 @@ final readonly class EventImportRunner
      *
      * @return list<array{row: int, reference: ?string, id: ?int, name: string, outcome: string}>
      */
-    private function importChunk(array $groups, User $user): array
+    private function importChunk(array $groups, User $user, Publisher $publisher): array
     {
         $outcomes = [];
         $toSave = [];
         foreach ($groups as $group) {
-            $mapped = $this->mapper->map($group, $user);
+            $mapped = $this->mapper->map($group, $user, $publisher);
             if (!$mapped->isValid()) {
                 $outcomes[] = self::outcome($mapped, null, 'failed');
             } elseif (!$mapped->changed && null !== $mapped->eventId) {
@@ -135,13 +138,13 @@ final readonly class EventImportRunner
         }
 
         try {
-            $ids = $this->memberEventPublisher->saveImported($user, array_map(self::item(...), $toSave));
+            $ids = $this->memberEventPublisher->saveImported($user, $publisher, array_map(self::item(...), $toSave));
         } catch (Throwable $e) {
             $this->logger->warning('A batch of the event import failed, its events are saved one by one: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
             $ids = [];
             foreach ($toSave as $mapped) {
                 try {
-                    $ids[] = $this->memberEventPublisher->saveImported($user, [self::item($this->mapper->map($mapped->group, $user))])[0];
+                    $ids[] = $this->memberEventPublisher->saveImported($user, $publisher, [self::item($this->mapper->map($mapped->group, $user, $publisher))])[0];
                 } catch (Throwable $e) {
                     $this->logger->error('An event of an import could not be saved: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
                     $ids[] = null;

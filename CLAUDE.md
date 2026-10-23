@@ -14,9 +14,10 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ via Symfony Messenger (`symfony/amqp-messenger`, transports in `config/packages/messenger.yaml`)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
-- **Frontend**: Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
-- **Real-time**: Mercure hub (protocol 1.0, own `mercure` container, `symfony/mercure-bundle`) on the site's origin under `/.well-known/mercure` (setup in the README). Members' updates are private, published with the resource's IRI as canonical topic and the member's channel as alternate (`App\Mercure\UserChannel::update()`); a page subscribes to the channel with `{{ user_channel_hub(app.user) }}` (the hub's URL; sets the subscriber cookie once per request, as the Twig `mercure()` bridge would, which throws when asked twice). Every personal-space page listens for its jobs and toasts when one is done (`assets/js/listeners/transfer-toasts.js`)
+- **Frontend**: TypeScript (strict), Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
+- **Real-time**: Mercure hub (protocol 1.0, own `mercure` container, `symfony/mercure-bundle`) on the site's origin under `/.well-known/mercure` (setup in the README). Members' updates are private, published with the resource's IRI as canonical topic and the member's channel as alternate (`App\Mercure\UserChannel::update()`); a page subscribes to the channel with `{{ user_channel_hub(app.user) }}` (the hub's URL; sets the subscriber cookie once per request, as the Twig `mercure()` bridge would, which throws when asked twice). Every personal-space page listens for its jobs and toasts when one is done (`assets/js/listeners/transfer-toasts.ts`)
 - **Error Tracking**: Sentry
+- **Audience**: self-hosted Umami (cookieless, no consent), tracker same-origin at `/a/script.js` + `/a/api/send`, routed by Traefik straight to the Umami container (not through the app); GA4 (Tag Manager, after consent) stays for the site-wide analysis. Event authors see their pages' visitors and ticketing clicks (`/espace-perso/{id}/statistiques`, `App\Analytics\EventAudienceReport`: a period of shortcuts looking back, `AudiencePeriod`, or dates picked, `AudienceQuery`; a line chart drawn server side as SVG, `AudienceChart`), copied hourly from Umami's API into `event_visit_stat` by `app:events:sync-visits` (`App\Analytics\EventVisitSync`; setup in the README)
 
 ## Backend Development Workflow
 
@@ -75,9 +76,9 @@ docker compose up -d
 vendor/bin/phpunit                                 # All tests
 vendor/bin/phpunit tests/Import/FirewallTest.php   # Single test file
 
-# JavaScript Tests (Vitest, vitest.config.mjs): assets/**/*.test.js next to the code they cover
+# JavaScript Tests (Vitest, vitest.config.ts): assets/**/*.test.ts next to the code they cover
 pnpm test                                          # All tests
-pnpm test assets/js/utils/plural.test.js           # Single test file
+pnpm test assets/js/utils/plural.test.ts           # Single test file
 
 # Static Analysis
 vendor/bin/phpstan analyse                         # PHPStan (level 6)
@@ -85,7 +86,8 @@ vendor/bin/phpstan analyse                         # PHPStan (level 6)
 # Code Formatting
 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php  # PHP (Symfony ruleset)
 vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php  # Twig templates
-pnpm lint                                          # Biome (lint + format) for JavaScript
+pnpm typecheck                                     # TypeScript (tsc, strict, no emit)
+pnpm lint                                          # Biome (lint + format) for TypeScript
 pnpm prettier                                      # Prettier for SCSS/Markdown
 
 # Pre-commit Hook
@@ -201,13 +203,21 @@ The system imports events through a multi-stage pipeline:
 5. **Families** (`App\Import\EventFamilyResolver`, after every batch): rows proven to be the same event share one page. Proof is a shared identity hash (`EventContentHasher::identity()`, one source: OpenAgenda's one-record-per-session) or a `CrossSourceLink` (several sources selling the same show). One member is the canonical page, the others redirect to it (`duplicateOf`, with a `DuplicateReason`; a link without a reason was made by hand and is left alone) and lend it their dates. Its page offers every ticketing site of the family, cheapest first (`App\Ticketing\EventTicketOffers`)
     - Cross-source links are written by `bin/console app:events:link-cross-source --apply` (nightly host cron, after the imports; previews without `--apply`): same resolved place, a session day in common, titles naming the same show (`App\Import\CrossSource\EventTitleComparator`), and every two events of a show agreeing, or the whole show stays unlinked. Links of events already over are kept; a link whose events no longer share a venue is taken back (the venues of linked events are scanned too). `--keep-apart=<event id>` parts a false match for good, with the other records of the event (its identity hash): the links stay, flagged `keptApart`, and no record of either side is linked to the other again. A duplicate's change purges its canonical's page, which lists its offer (`EventPageCachePurgeListener`)
 
+### Publishers
+
+A member's event belongs to a **publisher** (`App\Entity\Publisher`: a venue, a collective, a member in their own name), not to the member: `Event::$user` is only its author, `Event::$publisher` its owner. The members who manage a publisher (`Publisher::isManagedBy()`, for now its single `owner`) and the administrators edit and delete its events (`EventVoter`). A member may run several publishers: every organizer page of the personal space is a publisher's, under `/espace-perso/organisateurs/{publisher}/…` (events, imports, exports, its page), as immobilus scopes its profiles by URL, never by session. `PublisherContextSubscriber` (kernel.request, after the firewall) resolves `{publisher}` (404 unknown, 403 not managed, `PublisherVoter::EDIT`) into `App\App\PublisherContext` and sets it as a router context parameter, so `path('app_event_list')` stays on the same publisher without naming it; a link from outside those pages names it. On those pages the navbar shows the publisher next to the member's menu, as immobilus shows its active profile (`fragments/_header-publisher-dropdown.html.twig`): its pages, then the member's other publishers on the same page (`publisher_switch_url()`, `App\Twig\PublisherExtension`) and the creation of another one; nowhere else. The former slugless URLs (`/espace-perso/mes-soirees`, `/nouvelle-soiree`, `/imports`, `/exports`, `/page-organisateur`, `/{id}`) are the entries the site links to (`app_personal_space_*`): they lead to the member's first publisher, or to `/espace-perso/nouvelle-page-organisateur` (named after the member) when they have none, which also creates another one. Imports and exports are a publisher's (`EventImport/EventExport::$publisher`, one job at a time per member still); `Version20261022162404` gave a publisher to every member who had published, named after them. Imported events have none. Deleting the account deletes its publishers. A member deletes a publisher from its page (`app_publisher_delete`, `App\Manager\PublisherRemover`, its name typed again; not from the back office): its events move to another publisher of its owner, which takes its URL (`PublisherLegacySlug`, 301; the URLs that led to it follow), or are deleted with it; a moved event whose reference the other already uses loses it. Its imports and exports go with their files (once the transaction is committed), never while one runs. A member's only publisher can only be deleted once it has no events. Its public page is `/organisateurs/{slug}` (`PublisherController`, the slug is kept on rename), listed in the `publishers` sitemap section once it has an event to come; event cards, the event page and the JSON-LD `organizer` (with `sameAs`) show the publisher, else the author, and a member's page links to the publishers they run.
+
+- **Its page's content** is edited by its owner at `/espace-perso/page-organisateur` (`App\Controller\PersonalSpace\PublisherController`, `PublisherType`, `PublisherVoter::EDIT`; creates the member's publisher if they have none): presentation, website, social links (`App\Enum\PublisherNetwork`, stored as `Publisher::$socialLinks` JSON by network, `PublisherSocialLinksType` refuses a link to another host), logo and cover (`publisher_image` Vich mapping, `publishers.storage`, Picasso loader of the same name). The icons of the links show next to "Organisé par" on its events (`<twig:Publisher:Links>`); `<twig:Publisher:Avatar>` shows the logo, else the initials
+- **Incentives** (`App\Stats\PublisherProfileProvider`, over its events online: published, not folded into another): key figures (events, to come, "J'y vais" and favourites, cities), its venues and categories (the member stats queries of `EventRepository` take any base query), distinctions (`App\Enum\PublisherDistinction`, thresholds sized on the dev data for a few dozen publishers each), and for its owner only a completion card (`App\Stats\PublisherCompletion`, `App\Enum\PublisherPageStep`: logo, presentation, links, cover, an event to come, equal weights) In tests, `EventFactory`, `EventImportFactory` and `EventExportFactory` give what has a `user` that member's publisher (`PublisherFactory::forTheMember()`, pass `'publisher'` to choose), and `AppWebTestCase::organizerPath($member, 'evenements')` builds the URL of an organizer page of their first one
+- **News** (`bin/console app:publishers:send-news <edition>…`, by hand or by the daily host cron, which lists the editions in order under one `--limit`): e-mails to the owners of a publisher telling what changed on the site. An edition is a case of `App\Enum\PublisherNewsEdition` (its subject and audience) and its two templates `templates/email/publisher-news/<value>.{mjml,txt}.twig` (they extend the `layout` of that directory and include `_feature.mjml.twig`). Its audience (`PublisherNewsAudience`) is the members who logged in within 6 months (the monthly news) or those who did not (a single "what changed", `2026-10-retour`), never both, among the enabled ones who did not opt out (`User::$publisherNews`, a switch on the profile shown to publishers only). Each delivery is recorded (`PublisherNewsDelivery`, one per member and edition) as soon as the e-mail left, so a run again, after a crash or with `--limit` to stay under the mail provider's daily cap, sends to the members still without it. Without `--send` it only counts; `--to=<address> --as=<member's e-mail>` previews it, recording nothing. The e-mails carry `List-Unsubscribe` + `List-Unsubscribe-Post` (RFC 8058) to a signed URL that needs no login (`PublisherNewsController`): a GET only asks (mailboxes' link checkers open links), a POST unsubscribes
+
 ### Members' Event Import / Export
 
-`/espace-perso/imports` and `/espace-perso/exports` (`App\Controller\PersonalSpace\Transfer\ImportController` / `ExportController`, a page each with its history fragment; `ImportVoter`/`ExportVoter` keep each job to its member; templates under `personal-space/transfers/{import,export}/`; the upload is the shared `.dropzone`, which takes what its field's `accept` allows) let a member import their events from a spreadsheet and export them; both run on a worker (`transfers` transport, `messenger-transfers` program) and their pages follow them live through the member's Mercure channel (`TransferNotifier`), reading their server-rendered fragment again on each update (`assets/js/pages/event_transfers.js`).
+`/espace-perso/organisateurs/{publisher}/imports` and `…/exports` (`App\Controller\PersonalSpace\Transfer\ImportController` / `ExportController`, a page each with its history fragment; `ImportVoter`/`ExportVoter` keep each job to its member, and a job is only reached on its publisher's pages; templates under `personal-space/transfers/{import,export}/`; the upload is the shared `.dropzone`, which takes what its field's `accept` allows) let a member import their events from a spreadsheet and export them; both run on a worker (`transfers` transport, `messenger-transfers` program) and their pages follow them live through the member's Mercure channel (`TransferNotifier`), reading their server-rendered fragment again on each update (`assets/js/pages/event_transfers.ts`).
 
-- **Columns** (`App\Transfer\Sheet\EventColumn`): one list for the template, the exports and the imports, found by header (case, accents). Rows sharing an ID, or without one a "Référence externe" (`Event::$externalReference`, unique per member), are one event, a row per session; a row with neither is refused (it would be created twice next time). CSV (`;`, UTF-8 BOM; reads `,`/tab and Windows-1252) and XLSX through OpenSpout, 1000 rows at most
+- **Columns** (`App\Transfer\Sheet\EventColumn`): one list for the template, the exports and the imports, found by header (case, accents). Rows sharing an ID, or without one a "Référence externe" (`Event::$externalReference`, unique per publisher), are one event, a row per session; a row with neither is refused (it would be created twice next time). CSV (`;`, UTF-8 BOM; reads `,`/tab and Windows-1252) and XLSX through OpenSpout, 1000 rows at most
 - **Check** (`EventImportChecker`, `CheckEventImport`): nothing written. Each event is read by `EventRowMapper` into what the event form would send (a new `MemberEventPublisher::createDto()`, or `EventDtoFactory` over the member's event) and judged as the form is (validator + `DoctrineEventHandler::judge()`); possible duplicates are warnings. It stores two files next to the upload in the private `transfers.storage`: the rows it kept and the rows it refused with an "Erreurs" column
-- **Import** (`EventImportRunner`, `RunEventImport`): reads the check's kept rows (what was checked is what is imported), maps them again, saves them in batches with `MemberEventPublisher::saveImported()` (new events are drafts unless "Brouillon" says "non", their author goes). An unchanged event is skipped; a run again (resumed after a crash) finds its events by ID/reference. A column the file lacks is left alone; an empty "Image (URL)" keeps the picture, one of our data host's (an export's) too
+- **Import** (`EventImportRunner`, `RunEventImport`): reads the check's kept rows (what was checked is what is imported), maps them again, saves them in batches with `MemberEventPublisher::saveImported()` (new events are the member's publisher's and drafts unless "Brouillon" says "non", their author goes). An unchanged event is skipped; a run again (resumed after a crash) finds its events by ID/reference. A column the file lacks is left alone; an empty "Image (URL)" keeps the picture, one of our data host's (an export's) too
 - **Export** (`EventExporter`, `RunEventExport`): the member's events of a scope, as the import's columns (CSV/XLSX, so export → edit → import updates them) or as a calendar (ICS, `EventCalendarWriter`)
 - A member runs one job at a time; starting an import is a conditional UPDATE (`EventImportRepository::transition()`). `app:transfers:cleanup` (daily host cron) fails the jobs stuck for 2 h and deletes those older than 30 days with their files
 
@@ -225,7 +235,7 @@ Entity providers (`src/EntityProvider/`) find existing entities matching DTOs.
 
 - **Firewall** (`src/Import/Firewall.php`): Validates and filters event data (with the rest of the import-pipeline services — `Cleaner`, `EventContentHasher`, `EventChangeDetector`, `EventPublicationGuard` — in the `App\Import` namespace)
 - **DoctrineEventHandler**: Main orchestrator for event persistence
-- **Login return** (`src/Security/LoginTargetPath.php`): a "log in to…" link passes `?_target_path=` (a local path, optionally with a fragment) to the login, sign-up or social login, which keep it in the firewall's target-path session entry and lead back to it. `#participer` makes the event page record the "J'y vais" clicked before the login (`assets/js/listeners/like.js`)
+- **Login return** (`src/Security/LoginTargetPath.php`): a "log in to…" link passes `?_target_path=` (a local path, optionally with a fragment) to the login, sign-up or social login, which keep it in the firewall's target-path session entry and lead back to it. `#participer` makes the event page record the "J'y vais" clicked before the login (`assets/js/listeners/like.ts`)
 - **Images**: Handled by the `silarhi/picasso-bundle` (`config/packages/picasso.yaml` — Glide transformer, blur placeholders, thumbnails cached in `thumbs.storage`). Render images with the `<twig:Picasso:Image>` component; per-entity picture services live in `src/Picture/` (e.g. `EventProfilePicture`, `UserProfilePicture`)
 
 ### Routing
@@ -253,36 +263,36 @@ Elasticsearch indexes defined in `config/packages/fos_elastica.yaml`:
 
 ### JavaScript Application Structure
 
-The frontend uses a modular listener-based architecture with dependency injection. Typedefs (`Listener`, `Module`, `Page`, `Cleanup`) live in `assets/js/types.js`.
+The frontend uses a modular listener-based architecture with dependency injection. Types (`Listener`, `Module`, `Page`, `Cleanup`) live in `assets/js/types.ts`.
 
-**Main App** (`assets/js/app.js`, exposed as `window.App`):
+**Main App** (`assets/js/app.ts`, exposed as `window.App`):
 
-- `start(parameters)` boots the application with configuration from Twig templates: initializes Sentry, the dependency injection container (`Container.js`) and its services, runs every module once, then mounts the whole document
+- `start(parameters)` boots the application with configuration from Twig templates: initializes Sentry, the dependency injection container (`Container.ts`) and its services, runs every module once, then mounts the whole document
 - `mount(container)` connects every listener to its matching elements inside `container`; call it after inserting HTML by AJAX. Bookkeeping is per element, so an element already connected is skipped
 - `unmount(container)` runs the cleanups of every connected element the container covers (and of those already removed from the DOM)
-- Stimulus controllers (`assets/controllers/`) are loaded too, through `assets/stimulus_bootstrap.js`
+- Stimulus controllers (`assets/controllers/`) are loaded too, through `assets/stimulus_bootstrap.ts`
 
 **Building Blocks**:
 
 1. **Modules** (`assets/js/modules/`): Functions run once at `start()`, bound to `document`/`window`, never to elements inside `body`
-    - `autocomplete.js` - Algolia autocomplete search
-    - `scroll-to-top.js` - Scroll behavior
+    - `autocomplete.ts` - Algolia autocomplete search
+    - `scroll-to-top.ts` - Scroll behavior
 
-2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects registered in `app.js`; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
-    - `form-collection.js` - Dynamic form field addition/removal
-    - `form-errors.js` - Client-side form validation
-    - `like.js` - Event favoriting
-    - `popup.js` - Modal interactions
-    - `pages.js` - Runs the page initializers declared by `data-page` markers (see below)
+2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects registered in `app.ts`; a listener is typed `Listener<E>`, `E` being the element its selector matches; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
+    - `form-collection.ts` - Dynamic form field addition/removal
+    - `form-errors.ts` - Client-side form validation
+    - `like.ts` - Event favoriting
+    - `popup.ts` - Modal interactions
+    - `pages.ts` - Runs the page initializers declared by `data-page` markers (see below)
     - etc.
 
-3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/listeners/image-previews.js`)
-    - `DatepickerService.js` - Date and date range picker (vanilla-calendar-pro)
-    - `SliderService.js` - Range sliders (nouislider)
-    - `TagsService.js` - Tag inputs (tom-select)
-    - `WysiwygService.js` - Rich text editor (summernote)
-    - `AutocompleteService.js` - Autocomplete inputs (@tarekraafat/autocomplete.js)
-    - `FancyboxService.js` - Image lightbox (fancybox)
+3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/listeners/image-previews.ts`)
+    - `DatepickerService.ts` - Date and date range picker (vanilla-calendar-pro)
+    - `SliderService.ts` - Range sliders (nouislider)
+    - `TagsService.ts` - Tag inputs (tom-select)
+    - `WysiwygService.ts` - Rich text editor (summernote)
+    - `AutocompleteService.ts` - Autocomplete inputs (@tarekraafat/autocomplete.js)
+    - `FancyboxService.ts` - Image lightbox (fancybox)
 
 **Page-Specific Scripts** (`assets/js/pages/`):
 
@@ -290,32 +300,33 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - Each registers its initializer with `window.App.registerPage('agenda', initialize)`
 - A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the `pages` listener calls the initializer with `{app, container, ...params}` once the entry has loaded; the initializer may return a cleanup
 
-**Dependency Injection** (`assets/js/services/Container.js`):
+**Dependency Injection** (`assets/js/services/Container.ts`):
 
 - Simple DI container with lazy instantiation
-- Services registered in `assets/js/services.js`
-- Access via `di.get('serviceName')` or `window.App.get('serviceName')`
+- Services registered in `assets/js/services.ts`, typed with the `App.start()` parameters in its `Registry`
+- Access via `app.get('serviceName')` or `window.App.get('serviceName')`, which returns the registered type
 
 **Key Services**:
 
 - `modalManager` - Bootstrap modal wrapper
 - `toastManager` - Toast notifications
-- `formManager` - Form field visibility/disabled/required state management
 - `collectionManager` - Dynamic form collections (add/remove form fields)
 
-**Vite Configuration** (`vite.config.mjs`):
+**Vite Configuration** (`vite.config.ts`):
 
 - `@symfony/reprise` plugin: writes `public/build/entrypoints.json` + `manifest.json`, read by the `reprise_entry_link_tags()` / `reprise_entry_script_tags()` Twig functions; registers the Stimulus controllers (`assets/controllers.json`) and copies `assets/images` to `public/build/images`
-- One entry point per page (`app`, `admin`, and each `assets/js/pages/*.js` listed in `pages`)
+- One entry point per page (`app`, `admin`, and each `assets/js/pages/*.ts` listed in `pages`)
 - JSX compiled for Preact with the automatic runtime (`importSource: 'preact'`), no `h` import needed
 - `@` aliases `assets/`
 - `pnpm dev` / `pnpm watch` build with sourcemaps and without minification; no PurgeCSS
-- Sass uses the module system: every stylesheet starts with `@use '<path>/core' as *;` (`assets/scss/_core.scss` configures Tabler once with `@forward … with (…)` and forwards the site's tokens from `_variables.scss`); `ui/_tabler.scss` is the curated list of Tabler partials. Custom properties are written bare (`var(--primary)`, as in Tabler's sources): a PostCSS step in `vite.config.mjs` prefixes those of `assets/scss` with `--bs-`
+- Sass uses the module system: every stylesheet starts with `@use '<path>/core' as *;` (`assets/scss/_core.scss` configures Tabler once with `@forward … with (…)` and forwards the site's tokens from `_variables.scss`); `ui/_tabler.scss` is the curated list of Tabler partials. Custom properties are written bare (`var(--primary)`, as in Tabler's sources): a PostCSS step in `vite.config.ts` prefixes those of `assets/scss` with `--bs-`
 - `build.cssTarget` is Tabler's browser baseline (Chrome 123, Firefox 128, Safari 17.5): below it Lightning CSS would polyfill `light-dark()` and break the `data-bs-theme="dark"` islands
 
 **Code Style**:
 
-- Biome (`biome.json`) lints and formats JavaScript: 120 char width, single quotes, 4 space indent, no semicolons
+- TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`, jQuery plugins on `JQuery` in `jquery-plugins.d.ts`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`)
+- Icons (`assets/js/icons/`) are generated TSX: `pnpm icon:svg` (svgr), then delete the ones nothing imports (Knip)
+- Biome (`biome.json`) lints and formats TypeScript: 120 char width, single quotes, 4 space indent, no semicolons
 - Prettier only for non-JS files (SCSS, Markdown, YAML)
 
 ## Key Directories
@@ -335,7 +346,8 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 ### Frontend
 
-- `assets/js/app.js` - Main application entry point
+- `assets/js/app.ts` - Main application entry point
+- `assets/types/` - Type shims for untyped third-party code
 - `assets/js/pages/` - Page-specific entry points (agenda, event_details, etc.)
 - `assets/js/modules/` - One-time modules run at boot
 - `assets/js/listeners/` - Per-element listeners, connected on every mount

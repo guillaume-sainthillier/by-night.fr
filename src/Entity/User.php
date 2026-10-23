@@ -164,6 +164,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
     private ?string $weekendDigestSentWeek = null;
 
+    /** Whether the member, when they run a publisher, gets the news By Night sends them (app:publishers:send-news) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $publisherNews = true;
+
     private bool $sendToElasticsearch = false;
 
     public function __construct()
@@ -463,6 +467,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     public function setShowSocials(bool $showSocials): self
     {
         $this->showSocials = $showSocials;
+
+        return $this;
+    }
+
+    public function isPublisherNews(): bool
+    {
+        return $this->publisherNews;
+    }
+
+    public function setPublisherNews(bool $publisherNews): self
+    {
+        $this->publisherNews = $publisherNews;
 
         return $this;
     }
