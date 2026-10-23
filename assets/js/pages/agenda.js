@@ -85,7 +85,7 @@ function initialize() {
 const MAP_HASH = '#carte'
 
 /**
- * The map of the events the page lists (location/agenda/_map.html.twig), shown above them on demand. Leaflet and the
+ * The map of the events the page lists (location/agenda/_map.html.twig), shown above them on demand. MapLibre and the
  * tiles are only fetched when the visitor opens it.
  *
  * @type {Page}

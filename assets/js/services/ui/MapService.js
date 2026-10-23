@@ -1,36 +1,44 @@
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import { LngLatBounds, MapLibreMap, Marker, NavigationControl, Popup, setWorkerUrl } from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import { plural } from '@/js/utils/plural'
 
 /**
- * OpenStreetMap's own tiles: free with the attribution on the map and the site's Referer (no Referrer-Policy hides it),
- * for a map a visitor opens by hand, which is what https://operations.osmfoundation.org/policies/tiles/ allows. Move
- * to a tile provider of our own if the agenda's map ever loads on its own.
+ * OpenFreeMap's vector styles: free for any use, without a key or a quota (https://openfreemap.org), the attribution
+ * coming with the style. Positron's greys leave the markers in sight; Dark is for a map inside a dark theme.
  */
-const TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+const STYLES = {
+    light: 'https://tiles.openfreemap.org/styles/positron',
+    dark: 'https://tiles.openfreemap.org/styles/dark',
+}
 
-/** Close enough to see the streets around a venue, and no closer than the tiles go */
-const VENUE_ZOOM = 15
+/** Close enough to see the streets around a venue (MapLibre's 512 px tiles: Leaflet's 15) */
+const VENUE_ZOOM = 14
 
 /** Narrow enough for the map of a phone, whose popups the map pans into sight */
-const POPUP_WIDTH = 260
+const POPUP_WIDTH = '260px'
 
 const dayFormat = new Intl.DateTimeFormat('fr', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+
+// MapLibre looks for its worker next to its own module, which the bundle does not keep: the build ships it as a file
+setWorkerUrl(workerUrl)
 
 /**
  * The marker of a venue: its number of events in a disc.
  *
  * @param {import('@/js/utils/venues').MapVenue} venue
+ * @returns {HTMLElement}
  */
-function createIcon(venue) {
-    return L.divIcon({
-        className: '',
-        html: `<span class="avatar avatar-sm rounded-circle bg-primary text-white shadow fw-bold">${venue.events.length}</span>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
-    })
+function createMarker(venue) {
+    const marker = document.createElement('span')
+    marker.className = 'avatar avatar-sm rounded-circle bg-primary text-white shadow fw-bold'
+    marker.style.cursor = 'pointer'
+    marker.textContent = String(venue.events.length)
+    if (venue.name) {
+        marker.title = venue.name
+    }
+
+    return marker
 }
 
 /**
@@ -41,6 +49,11 @@ function createIcon(venue) {
  */
 function createPopup(venue) {
     const popup = document.createElement('div')
+    // The page's text rather than the map's own (MapLibre sets a 12 px Helvetica on the whole map), in the colours of a
+    // light theme whatever the page's: MapLibre's popup stays white on the dark map too
+    popup.dataset.bsTheme = 'light'
+    popup.style.font = 'var(--bs-body-font-size) / var(--bs-body-line-height) var(--bs-body-font-family)'
+    popup.style.color = 'var(--bs-body-color)'
 
     const title = document.createElement('div')
     title.className = 'fw-bold mb-1'
@@ -73,30 +86,54 @@ function createPopup(venue) {
 }
 
 /**
+ * The style of the theme the map sits in: the page's, or a dark card's.
+ *
+ * @param {HTMLElement} element
+ */
+function styleOf(element) {
+    return element.closest('[data-bs-theme]')?.getAttribute('data-bs-theme') === 'dark' ? STYLES.dark : STYLES.light
+}
+
+/**
  * A map of the venues, framed on all of them.
  *
  * @param {{element: HTMLElement, venues: import('@/js/utils/venues').MapVenue[]}} options
  */
 export function create({ element, venues }) {
-    // The wheel scrolls the page: the map zooms with its buttons, a pinch or a double click
-    const map = L.map(element, { scrollWheelZoom: false })
-    L.tileLayer(TILES, { attribution: ATTRIBUTION, maxZoom: 19 }).addTo(map)
+    const map = new MapLibreMap({
+        container: element,
+        style: styleOf(element),
+        // The wheel scrolls the page: the map zooms with its buttons, a pinch or a double click
+        scrollZoom: false,
+        // A flat map, north up: nothing to tilt or turn
+        dragRotate: false,
+        pitchWithRotate: false,
+        touchPitch: false,
+        attributionControl: { compact: true },
+    })
+    map.touchZoomRotate.disableRotation()
+    map.addControl(new NavigationControl({ showCompass: false }), 'top-left')
 
-    const markers = venues.map((venue) =>
-        L.marker([venue.lat, venue.lng], { icon: createIcon(venue), title: venue.name || '' })
-            .bindPopup(() => createPopup(venue), { maxWidth: POPUP_WIDTH })
-            .addTo(map)
-    )
+    const bounds = new LngLatBounds()
+    for (const venue of venues) {
+        // Opened by a click on a marker, which is no keyboard stop: no focus to move into it
+        const popup = new Popup({ maxWidth: POPUP_WIDTH, offset: 18, focusAfterOpen: false }).setDOMContent(
+            createPopup(venue)
+        )
+        new Marker({ element: createMarker(venue) }).setLngLat([venue.lng, venue.lat]).setPopup(popup).addTo(map)
+        bounds.extend([venue.lng, venue.lat])
+    }
 
-    if (markers.length === 1) {
-        map.setView(markers[0].getLatLng(), VENUE_ZOOM)
+    if (venues.length === 1) {
+        map.jumpTo({ center: bounds.getCenter(), zoom: VENUE_ZOOM })
     } else {
-        map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [24, 24], maxZoom: VENUE_ZOOM })
+        // Room for a marker's disc and the zoom buttons around the venues at the edges
+        map.fitBounds(bounds, { padding: 56, maxZoom: VENUE_ZOOM, animate: false })
     }
 
     return {
         // The map was laid out while hidden, or its box changed size
-        refresh: () => map.invalidateSize(),
+        refresh: () => map.resize(),
         destroy: () => map.remove(),
     }
 }
