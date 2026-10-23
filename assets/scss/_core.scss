@@ -181,10 +181,18 @@ $-headings-line-height: 1.2;
     $icon-size: 1.125em,
 
     //Buttons
+    // One radius for every action button, whatever its size ($border-radius); the pills (.btn-pill) are the filter
+    // chips and toggles
+    $btn-border-radius-sm: var(--border-radius),
+    $btn-border-radius-lg: var(--border-radius),
     $btn-padding-y-sm: 0.25rem,
     $btn-padding-x-sm: 0.5rem,
     $btn-font-size-sm: 0.875rem,
-    $btn-border-radius-sm: 0.25rem,
+    // .btn-lg is a taller button, not a bigger text: the body size, 48px high (the fields' 1.25rem stays theirs)
+    $btn-font-size-lg: 1rem,
+    $btn-padding-y-lg: 0.6875rem,
+    // Their buttons sit in the same rows: the .form-control-lg fields take the buttons' radius too
+    $input-border-radius-lg: var(--border-radius),
 
     // Forms
     $form-label-font-size: 1rem,

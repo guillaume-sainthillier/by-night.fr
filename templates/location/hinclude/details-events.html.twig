@@ -18,7 +18,7 @@
         <div class="progress progress-sm mx-auto mb-3 more-progress" role="progressbar" aria-label="Sorties affichées" aria-valuenow="{{ shown }}" aria-valuemin="0" aria-valuemax="{{ eventsData.count }}">
             <div class="progress-bar" style="width: {{ (shown / eventsData.count * 100)|round }}%"></div>
         </div>
-        <button type="button" class="btn btn-primary btn-pill">
+        <button type="button" class="btn btn-primary">
             <twig:Icon name="lucide:circle-plus" />
             {{ '{count, plural, one {Voir la sortie suivante} other {Voir les # sorties suivantes}}'|trans({count: next}, 'messages+intl-icu') }}
         </button>
