@@ -195,7 +195,7 @@ importers:
         specifier: ^11.8.0
         version: 11.8.0
       '@tabler/core':
-        specifier: ^1.6.1
+        specifier: ^1.7.0
         version: 1.7.0(vanilla-calendar-pro@3.4.0)
       '@tarekraafat/autocomplete.js':
         specifier: ^10.2.10
