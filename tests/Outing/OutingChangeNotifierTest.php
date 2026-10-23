@@ -16,6 +16,7 @@ use App\Entity\UserEvent;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\CheckOutingChanges;
@@ -94,6 +95,21 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     {
         $author = UserFactory::createOne();
         [$event] = $this->outing(member: $author, event: ['user' => $author]);
+        $event->setStatus(EventStatus::Cancelled);
+        save($event);
+
+        $this->notifier()->notify([(int) $event->getId()]);
+
+        self::assertEmailCount(0);
+    }
+
+    /**
+     * The member managing the event's publisher edits it (EventVoter): the changes are theirs, created by another or not.
+     */
+    public function testTheMemberManagingThePublisherHearsNothing(): void
+    {
+        $manager = UserFactory::createOne();
+        [$event] = $this->outing(member: $manager, event: ['publisher' => PublisherFactory::createOne(['owner' => $manager])]);
         $event->setStatus(EventStatus::Cancelled);
         save($event);
 

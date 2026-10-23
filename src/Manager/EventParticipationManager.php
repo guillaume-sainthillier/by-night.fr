@@ -44,8 +44,9 @@ final readonly class EventParticipationManager
         }
 
         $userEvent->setGoing($going);
-        // What they will be told changed, from now on (OutingChangeNotifier); never the author, who made the changes
-        if ($going && $event->getUser() !== $user) {
+        // What they will be told changed, from now on (OutingChangeNotifier); never the author or the member managing its
+        // publisher, who make the changes
+        if ($going && $event->getUser() !== $user && !($event->getPublisher()?->isManagedBy($user) ?? false)) {
             $userEvent->setKnownState(OutingState::fromEvent($event));
         }
 

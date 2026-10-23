@@ -12,6 +12,7 @@ namespace App\Tests\Manager;
 
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Manager\EventParticipationManager;
@@ -83,6 +84,16 @@ final class EventParticipationManagerTest extends AppKernelTestCase
         $this->getManager()->participate($author, $event, true);
 
         self::assertNull(UserEventFactory::find(['user' => $author, 'event' => $event])->getKnownState());
+    }
+
+    public function testTheMemberManagingThePublisherGoingRecordsNothing(): void
+    {
+        $manager = UserFactory::createOne();
+        $event = EventFactory::createOne(['publisher' => PublisherFactory::createOne(['owner' => $manager])]);
+
+        $this->getManager()->participate($manager, $event, true);
+
+        self::assertNull(UserEventFactory::find(['user' => $manager, 'event' => $event])->getKnownState());
     }
 
     public function testAnEventNobodyFollowsCountsNobody(): void

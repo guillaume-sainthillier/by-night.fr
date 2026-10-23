@@ -83,8 +83,9 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
 
     /**
      * The members following these events, with their event, its venue and the member loaded: those going to them or
-     * interested in them, their author left out (publishing an event says "J'y vais" for them), and none of a duplicate
-     * (its page leads to its canonical's).
+     * interested in them, their author and the member managing their publisher left out (publishing an event says "J'y
+     * vais" for them, and they make its changes: Publisher::isManagedBy()), and none of a duplicate (its page leads to
+     * its canonical's).
      *
      * @param list<int> $eventIds
      *
@@ -103,10 +104,12 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
             ->join('ue.event', 'e')
             ->join('ue.user', 'u')
             ->leftJoin('e.place', 'p')
+            ->leftJoin('e.publisher', 'pub')
             ->where('ue.event IN (:ids)')
             ->andWhere('(ue.going = true OR ue.wish = true)')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('(e.user IS NULL OR e.user <> ue.user)')
+            ->andWhere('(pub.id IS NULL OR pub.owner <> ue.user)')
             ->setParameter('ids', $eventIds)
             ->getQuery()
             ->getResult();
