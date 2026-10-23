@@ -10,7 +10,6 @@ public/build
 public/sitemap
 docker-compose.*
 Dockerfile
-jsconfig.json
 LICENSE
 phpstan-baseline.neon
 phpstan.dist.neon
