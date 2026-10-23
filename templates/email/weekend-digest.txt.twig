@@ -9,13 +9,13 @@
 {% block body %}
 Bonjour {{ user.firstname ?: user.username }},
 
-Voici notre sélection des sorties du week-end {{ location.atName }} et autour, du {{ weekend.from|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }} au {{ weekend.to|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }}.
+Voici notre sélection des sorties du week-end {{ location.atName }} et autour, du {{ weekend.from|format_date(pattern: 'EEEE d MMMM') }} au {{ weekend.to|format_date(pattern: 'EEEE d MMMM') }}.
 {% for event in events %}
 {% set session = event.sessionFor(weekend.from, weekend.to) %}
 
 {{ event.name }}
 {% if session %}
-{{ session.startAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr')|capitalize }}{{ session_hours(session) ? ' · ' ~ session_hours(session) }}
+{{ session.startAt|format_date(pattern: 'EEEE d MMMM')|capitalize }}{{ session_hours(session) ? ' · ' ~ session_hours(session) }}
 {% endif %}
 {% if event.placeName %}
 {{ event.placeName }}{{ event.placeCity ? ', ' ~ event.placeCity }}

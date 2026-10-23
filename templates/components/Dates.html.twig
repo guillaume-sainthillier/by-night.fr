@@ -4,9 +4,9 @@
 #}
 {% props from, to = null %}
 {% if to == null or from|date('Y-m-d') == to|date('Y-m-d') %}
-    <time datetime="{{ from|date('Y-m-d') }}" class="text-nowrap">{{ from|format_date(pattern: 'EEEE d MMMM y', locale: 'fr')|capitalize }}</time>
+    <time datetime="{{ from|date('Y-m-d') }}" class="text-nowrap">{{ from|format_date(pattern: 'EEEE d MMMM y')|capitalize }}</time>
 {% else %}
-    Du&nbsp;<time datetime="{{ from|date('Y-m-d') }}" class="text-nowrap">{{ from|format_date(pattern: from|date('Y') == to|date('Y') ? 'EEE d MMM' : 'EEE d MMM y', locale: 'fr') }}</time>
+    Du&nbsp;<time datetime="{{ from|date('Y-m-d') }}" class="text-nowrap">{{ from|format_date(pattern: from|date('Y') == to|date('Y') ? 'EEE d MMM' : 'EEE d MMM y') }}</time>
     au
-    <time datetime="{{ to|date('Y-m-d') }}" class="text-nowrap">{{ to|format_date(pattern: 'EEE d MMM y', locale: 'fr') }}</time>
+    <time datetime="{{ to|date('Y-m-d') }}" class="text-nowrap">{{ to|format_date(pattern: 'EEE d MMM y') }}</time>
 {% endif %}

@@ -16,7 +16,7 @@
                     {{ import.status.label }}
                 </div>
                 {% if import.eventCount > 0 %}
-                    <div class="text-secondary">{{ import.processedCount|format_number(locale: 'fr') }} / {{ import.eventCount|format_number(locale: 'fr') }}</div>
+                    <div class="text-secondary">{{ import.processedCount|format_number() }} / {{ import.eventCount|format_number() }}</div>
                 {% endif %}
             </div>
             <div class="progress mb-2">
@@ -77,7 +77,7 @@
                         <div class="card-body d-flex align-items-center justify-content-between gap-3">
                             <div>
                                 <div class="subheader">{{ tile.label }}</div>
-                                <div class="h1 text-start mb-0">{{ tile.count|format_number(locale: 'fr') }}</div>
+                                <div class="h1 text-start mb-0">{{ tile.count|format_number() }}</div>
                             </div>
                             <span class="avatar bg-{{ tile.tone }}-lt"><twig:Icon name="{{ tile.icon }}" /></span>
                         </div>
@@ -137,7 +137,7 @@
                     <div class="card card-sm mb-0">
                         <div class="card-body">
                             <div class="subheader">{{ tile.label }}</div>
-                            <div class="h1 text-start mb-0 text-{{ tile.tone }}">{{ tile.count|format_number(locale: 'fr') }}</div>
+                            <div class="h1 text-start mb-0 text-{{ tile.tone }}">{{ tile.count|format_number() }}</div>
                         </div>
                     </div>
                 </div>

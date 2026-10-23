@@ -4,7 +4,7 @@
 #}
 {% props date = null, tone = 'secondary' %}
 <span {{ attributes.defaults({class: 'avatar avatar-xl flex-column date-leaf bg-' ~ tone ~ '-lt'}) }}>
-    <span class="subheader text-reset">{{ date ? date|format_date(pattern: 'EEEE', locale: 'fr')|ucfirst }}</span>
+    <span class="subheader text-reset">{{ date ? date|format_date(pattern: 'EEEE')|ucfirst }}</span>
     <span class="h2 m-0">{{ date ? date|date('j') : '–' }}</span>
-    <span class="small">{{ date ? date|format_date(pattern: 'MMM', locale: 'fr')|trim('.') }}</span>
+    <span class="small">{{ date ? date|format_date(pattern: 'MMM')|trim('.') }}</span>
 </span>
