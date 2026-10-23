@@ -1,22 +1,12 @@
-import Swal from 'sweetalert2'
+import Swal, { type SweetAlertOptions } from 'sweetalert2'
 
 export default class ModalManager {
-    constructor(di) {
-        this._di = di
-    }
-
-    createLoading() {}
-
-    showLoading() {}
-
-    hideLoading() {}
-
     hideModals() {
         Swal.close()
     }
 
-    createError(params) {
-        params = {
+    createError(params: SweetAlertOptions) {
+        return Swal.fire({
             icon: 'error',
             showCloseButton: true,
             showCancelButton: false,
@@ -24,13 +14,14 @@ export default class ModalManager {
             focusConfirm: true,
             heightAuto: false,
             ...params,
-        }
-
-        return Swal.fire(params)
+        })
     }
 
-    createConfirm(params) {
-        params = {
+    /**
+     * Resolves to true when confirmed, undefined when dismissed.
+     */
+    createConfirm(params: SweetAlertOptions): Promise<true | undefined> {
+        return Swal.fire({
             icon: 'warning',
             showCloseButton: true,
             showCancelButton: true,
@@ -39,10 +30,8 @@ export default class ModalManager {
             heightAuto: false,
             cancelButtonText: 'Annuler',
             ...params,
-        }
-
-        return Swal.fire(params).then((result) => {
-            return result?.value
+        }).then((result) => {
+            return result.isConfirmed || undefined
         })
     }
 }

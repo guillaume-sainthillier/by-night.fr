@@ -103,13 +103,13 @@ export default defineConfig(({ mode }) => {
             // entrypoints.json entry consumed by reprise_entry_*_tags().
             rollupOptions: {
                 input: {
-                    app: `${assets}/js/app.js`,
+                    app: `${assets}/js/app.ts`,
                     // EasyAdmin back office, see DashboardController::configureAssets()
-                    admin: `${assets}/js/admin.js`,
+                    admin: `${assets}/js/admin.ts`,
                     ...Object.fromEntries(pages.map((page) => [page, `${assets}/js/pages/${page}.js`])),
                 },
                 // Rolldown does not keep side-effect import order across chunks by default;
-                // jquery-global.js must run before Bootstrap and the jQuery plugins evaluate.
+                // jquery-global.ts must run before Bootstrap and the jQuery plugins evaluate.
                 output: { strictExecutionOrder: true },
             },
 

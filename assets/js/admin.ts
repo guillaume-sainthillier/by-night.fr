@@ -4,13 +4,15 @@
 /**
  * No client-side validation: the server validates the upload (Assert\Image + maxSize on the entities).
  *
- * @param {HTMLElement} field the [data-image-preview] wrapper rendered by admin/form/vich_image_theme.html.twig
- * @param {File|undefined} file
+ * @param field the [data-image-preview] wrapper rendered by admin/form/vich_image_theme.html.twig
  */
-function previewImage(field, file) {
-    const current = field.querySelector('[data-image-preview-current]')
-    const preview = field.querySelector('[data-image-preview-new]')
-    const image = preview.querySelector('img')
+function previewImage(field: HTMLElement, file: File | undefined) {
+    const current = field.querySelector<HTMLElement>('[data-image-preview-current]')
+    const preview = field.querySelector<HTMLElement>('[data-image-preview-new]')
+    const image = preview?.querySelector('img')
+    if (!preview || !image) {
+        return
+    }
 
     if (image.src.startsWith('blob:')) {
         URL.revokeObjectURL(image.src)
@@ -29,8 +31,8 @@ function previewImage(field, file) {
 // Delegated so it also covers fields added later (e.g. inside collection entries)
 document.addEventListener('change', (event) => {
     const input = event.target
-    const field = input instanceof HTMLInputElement ? input.closest('[data-image-preview]') : null
-    if (!field) {
+    const field = input instanceof HTMLInputElement ? input.closest<HTMLElement>('[data-image-preview]') : null
+    if (!(input instanceof HTMLInputElement) || !field) {
         return
     }
 

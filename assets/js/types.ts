@@ -1,25 +1,20 @@
 /**
- * Shared JSDoc typedefs for the App lifecycle.
- *
- * No runtime exports — this file exists so IDEs and JSDoc tooling resolve
- * `Listener`, `Module`, `Page`, `Cleanup` etc. globally.
- *
- * @module types
+ * Shared types for the App lifecycle: `Listener`, `Module`, `Page`, `Cleanup`.
  */
+import type { App } from '@/js/app'
 
 /**
  * Cleanup callback returned by a listener `connect` or a page initializer.
  * Run when the element (or the page's marker element) is unmounted.
- *
- * @typedef {() => void} Cleanup
  */
+export type Cleanup = () => void
 
 /**
  * Context passed to a listener's `connect` alongside the matched element.
- *
- * @typedef {Object} ConnectContext
- * @property {App} app
  */
+interface ConnectContext {
+    app: App
+}
 
 /**
  * Per-element listener. `App.mount(container)` calls `connect` once per
@@ -33,39 +28,44 @@
  * mounts: the boot-time `mount(document)`, or a manual `mount(container)`
  * after an AJAX insert).
  *
- * @typedef {Object} Listener
- * @property {string} selector
- * @property {(element: Element, ctx: ConnectContext) => Cleanup | void} connect
+ * `E` is the element type the selector guarantees (`'form.foo'` → `HTMLFormElement`).
+ * `connect` is declared as a method so that a `Listener<HTMLFormElement>` can sit
+ * in the app's `Listener[]`: the selector, not the type system, decides the element.
  */
+export interface Listener<E extends Element = HTMLElement> {
+    selector: string
+    connect(element: E, ctx: ConnectContext): Cleanup | undefined
+}
 
 /**
  * Context passed to one-time modules during `App.start()`.
- *
- * @typedef {Object} ModuleContext
- * @property {App} app
  */
+interface ModuleContext {
+    app: App
+}
 
 /**
  * One-time module. Runs once when `App.start()` is called; binds to
  * `document`/`window` — never to elements inside `body`. Return value is
  * ignored — modules are forever-mounted.
- *
- * @typedef {(ctx: ModuleContext) => void | Promise<void>} Module
  */
+export type Module = (ctx: ModuleContext) => void | Promise<void>
 
 /**
  * Base context passed to a registered page initializer. The params object from
  * `App.loadPage()` is spread alongside `app` and `container`.
  *
  * Reserved keys: `app`, `container` — page params must not shadow them.
- *
- * @typedef {Object} PageContextBase
- * @property {App} app
- * @property {Element} container
  */
+export interface PageContext {
+    app: App
+    container: HTMLElement
+}
 
 /**
- * Page initializer. Receives `{ app, container, ...params }`.
- *
- * @typedef {(ctx: PageContextBase & Object<string, *>) => Cleanup | void | Promise<Cleanup | void>} Page
+ * Page initializer. Receives `{ app, container, ...params }`, `P` being the
+ * params the template passes to `load_page()`.
  */
+export type Page<P extends object = Record<string, never>> = (
+    ctx: PageContext & P
+) => Cleanup | undefined | Promise<Cleanup | undefined>

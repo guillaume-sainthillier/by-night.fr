@@ -15,6 +15,13 @@ import $ from 'jquery'
  *
  * Inline <script type="module"> blocks in Twig templates also rely on window.$.
  */
+declare global {
+    interface Window {
+        $: JQueryStatic
+        jQuery: JQueryStatic
+    }
+}
+
 window.$ = window.jQuery = $
 
 export default $

@@ -1,7 +1,7 @@
 import '@/scss/app.scss'
 
 // Symfony UX Stimulus
-import '@/stimulus_bootstrap.js'
+import '@/stimulus_bootstrap'
 
 import $ from 'jquery'
 import '@/js/vendors'
@@ -42,9 +42,12 @@ import videoFacade from '@/js/listeners/video-facade'
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
 import viewTransitions from '@/js/modules/view-transitions'
-import registerServices from '@/js/services'
+import registerServices, { type Parameters, type Registry } from '@/js/services'
 import Container from '@/js/services/Container'
+import type { Cleanup, Listener, Module, Page, PageContext } from '@/js/types'
 import { findAllSelf } from '@/js/utils/dom'
+
+type AnyPage = (ctx: PageContext & Record<string, unknown>) => ReturnType<Page>
 
 /**
  * Application entry point.
@@ -59,28 +62,23 @@ import { findAllSelf } from '@/js/utils/dom'
  * `unmount(container)` tears down every connected element the container
  * covers, no matter which mount call connected it.
  *
- * See `types.js` for `Listener`, `Module`, `Page`, `Cleanup`.
+ * See `types.ts` for `Listener`, `Module`, `Page`, `Cleanup`.
  */
-class App {
-    #di = null
+export class App {
+    #di: Container<Registry> | null = null
 
-    /** @type {Module[]} */
-    #modules = []
+    #modules: Module[] = []
 
-    /** @type {Listener[]} */
-    #listeners = []
+    // Each listener's element type is decided by its selector (see Listener)
+    #listeners: Listener<Element>[] = []
 
-    /** @type {Map<Listener, Set<Element>>} */
-    #tracked = new Map()
+    #tracked = new Map<Listener<Element>, Set<Element>>()
 
-    /** @type {WeakMap<Element, Map<Listener, Cleanup>>} */
-    #cleanups = new WeakMap()
+    #cleanups = new WeakMap<Element, Map<Listener<Element>, Cleanup>>()
 
-    /** @type {Object<string, Page>} */
-    #pages = {}
+    #pages: Record<string, AnyPage> = {}
 
-    /** @type {Object<string, Array<() => void>>} */
-    #pageResolvers = {}
+    #pageResolvers: Record<string, Array<() => void>> = {}
 
     constructor() {
         this.#modules = [autocomplete, scrollToTop, viewTransitions]
@@ -119,7 +117,7 @@ class App {
         this.#listeners.forEach((listener) => this.#tracked.set(listener, new Set()))
     }
 
-    handleError(error) {
+    handleError(error: unknown): never {
         Sentry.captureException(error)
         throw error
     }
@@ -128,16 +126,18 @@ class App {
      * Boot the app. Initializes the DI container, runs every module exactly
      * once, then mounts the whole document.
      */
-    start(parameters) {
-        this.#di = new Container(parameters)
+    start(parameters: Parameters) {
+        const di = new Container<Registry>(parameters)
+        this.#di = di
 
         if (parameters.dsn) {
             Sentry.init({
                 dsn: parameters.dsn,
                 release: parameters.release,
                 environment: parameters.environment,
-                // No IP address: the member id set below is enough to follow up an error
-                sendDefaultPii: false,
+                // No IP address: the member id set below is enough to follow up an error. Sentry 11 dropped
+                // sendDefaultPii, and infers the IP unless userInfo is off
+                dataCollection: { userInfo: false },
                 // Errors of the ads scripts (AdSense Auto ads, its RUM script): nothing to fix on our side
                 denyUrls: [
                     /pagead2\.googlesyndication\.com/,
@@ -160,10 +160,10 @@ class App {
                 ],
             })
 
-            Sentry.getCurrentScope().setUser(this.get('user'))
+            Sentry.getCurrentScope().setUser(parameters.user)
         }
 
-        registerServices(this.#di)
+        registerServices(di)
 
         this.#modules.forEach((module) => module({ app: this }))
 
@@ -173,17 +173,15 @@ class App {
     /**
      * Connect every listener to its matching elements within `container`.
      * Elements already connected are skipped, so overlapping mounts are safe.
-     *
-     * @param {Element | Document} container
      */
-    mount(container) {
+    mount(container: Element | Document) {
         if (!this.#di) {
             // Not started yet: the boot-time mount(document) will cover this container
             return
         }
 
         this.#listeners.forEach((listener) => {
-            const tracked = this.#tracked.get(listener)
+            const tracked = this.#trackedBy(listener)
 
             findAllSelf(listener.selector, container).forEach((element) => {
                 if (tracked.has(element)) {
@@ -207,12 +205,10 @@ class App {
      * Disconnect every connected element that `container` covers: the
      * container itself, its descendants, and — as a safety net — any element
      * that already left the DOM (removed by JS without an unmount call).
-     *
-     * @param {Element | Document} container
      */
-    unmount(container) {
+    unmount(container: Element | Document) {
         this.#listeners.forEach((listener) => {
-            this.#tracked.get(listener).forEach((element) => {
+            this.#trackedBy(listener).forEach((element) => {
                 if (element.isConnected && element !== container && !container.contains(element)) {
                     return
                 }
@@ -221,16 +217,22 @@ class App {
         })
     }
 
-    /**
-     * @param {Listener} listener
-     * @param {Element} element
-     */
-    #disconnect(listener, element) {
-        this.#tracked.get(listener).delete(element)
+    #trackedBy(listener: Listener<Element>): Set<Element> {
+        let tracked = this.#tracked.get(listener)
+        if (!tracked) {
+            tracked = new Set()
+            this.#tracked.set(listener, tracked)
+        }
+
+        return tracked
+    }
+
+    #disconnect(listener: Listener<Element>, element: Element) {
+        this.#trackedBy(listener).delete(element)
 
         const cleanups = this.#cleanups.get(element)
         const cleanup = cleanups?.get(listener)
-        if (!cleanup) {
+        if (!cleanups || !cleanup) {
             return
         }
 
@@ -242,11 +244,7 @@ class App {
         }
     }
 
-    /**
-     * @param {Element} element
-     * @returns {Map<Listener, Cleanup>}
-     */
-    #cleanupsFor(element) {
+    #cleanupsFor(element: Element): Map<Listener<Element>, Cleanup> {
         let cleanups = this.#cleanups.get(element)
         if (!cleanups) {
             cleanups = new Map()
@@ -260,16 +258,16 @@ class App {
      * Register a page initializer keyed by id. Resolves any pending
      * `loadPage(id, …)` calls that arrived before the initializer was known.
      *
-     * @param {string} pageId
-     * @param {Page} initializer
+     * `P` is what the page expects from `load_page()`: the params come from the
+     * template's JSON, so nothing checks them at runtime.
      */
-    registerPage(pageId, initializer) {
+    registerPage<P extends object>(pageId: string, initializer: Page<P>) {
         if (this.#pages[pageId]) {
             console.warn(`Page initializer for ${pageId} already exists.`)
             return
         }
 
-        this.#pages[pageId] = initializer
+        this.#pages[pageId] = (ctx) => initializer(ctx as PageContext & P)
 
         const resolvers = this.#pageResolvers[pageId]
         if (resolvers) {
@@ -285,15 +283,15 @@ class App {
      *
      * Note: `params` must not contain `app` or `container` keys — those are
      * framework-reserved.
-     *
-     * @param {string} pageId
-     * @param {Object} params
-     * @param {Element} container
-     * @returns {Promise<Cleanup | void>}
      */
-    async loadPage(pageId, params, container) {
-        if (this.#pages[pageId]) {
-            return this.#pages[pageId]({ app: this, container, ...params })
+    async loadPage(
+        pageId: string,
+        params: Record<string, unknown>,
+        container: HTMLElement
+    ): Promise<Cleanup | undefined> {
+        const page = this.#pages[pageId]
+        if (page) {
+            return page({ ...params, app: this, container })
         }
 
         return new Promise((resolve) => {
@@ -301,18 +299,28 @@ class App {
         })
     }
 
-    get(key) {
+    get<K extends keyof Registry>(key: K): Registry[K] {
+        if (!this.#di) {
+            throw new Error('App.get() called before App.start().')
+        }
+
         return this.#di.get(key)
     }
 
-    loadingButtons(container) {
+    loadingButtons(container: JQuery.Selector | Element | JQuery) {
         $('.btn-submit', container)
-            .attr('disabled', true)
+            .prop('disabled', true)
             .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
     }
 
-    resetButtons(container) {
-        $('.btn-submit', container).attr('disabled', false).find('.spinner-border').remove()
+    resetButtons(container: JQuery.Selector | Element | JQuery) {
+        $('.btn-submit', container).prop('disabled', false).find('.spinner-border').remove()
+    }
+}
+
+declare global {
+    interface Window {
+        App: App
     }
 }
 

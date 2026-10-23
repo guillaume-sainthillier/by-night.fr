@@ -5,9 +5,6 @@
         "assets/**/controllers/**/*.{js,jsx,ts,tsx}",
         "assets/**/icons/**/*.{js,jsx,ts,tsx}"
     ],
-    "ignore": [
-        "assets/js/types.js"
-    ],
     "paths": {
         "@/*": [
             "assets/*"

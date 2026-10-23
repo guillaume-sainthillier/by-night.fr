@@ -1,14 +1,14 @@
-import Swal from 'sweetalert2'
+import Swal, { type SweetAlertIcon, type SweetAlertOptions } from 'sweetalert2'
 
 export default class ToastManager {
-    createToast(icon, message, params) {
+    createToast(icon: SweetAlertIcon, message: string, params?: SweetAlertOptions) {
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
             showCloseButton: true,
             timer: 3000,
-            ...(params || {}),
+            ...params,
         })
 
         return Toast.fire({
