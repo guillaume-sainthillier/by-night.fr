@@ -1,0 +1,10 @@
+{#
+ # A feature of a publishers' news edition: a label, a title, its text (plain, or markup captured with
+ # {% set %}…{% endset %}) and an optional link (url, link).
+ #}
+<mj-text mj-class="label">{{ label }}</mj-text>
+<mj-text padding="0 0 8px 0" font-size="18px" font-weight="700" color="#191c22" line-height="1.35">{{ title }}</mj-text>
+<mj-text padding="0 0 {{ url is defined ? '8px' : '24px' }} 0">{{ text }}</mj-text>
+{% if url is defined %}
+    <mj-text padding="0 0 24px 0"><a href="{{ url }}" style="font-weight: 600;">{{ link }}&nbsp;→</a></mj-text>
+{% endif %}
