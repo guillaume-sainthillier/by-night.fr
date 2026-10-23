@@ -1,7 +1,7 @@
 {% set isGranted = attribute(oAuth, service ~ 'AccessToken') != null %}
 {% set inputId = 'social-' ~ service %}
 
-{# A connection to a network. SocialLogin (assets/js/components/SocialLogin.js) flips the switch and writes the account
+{# A connection to a network. SocialLogin (assets/js/components/SocialLogin.ts) flips the switch and writes the account
    name in .username; the CSS shows the connected or the disconnected texts from the switch's state. #}
 <div class="config-block card form-panel mb-0">
     <div class="card-body d-flex align-items-center gap-3">

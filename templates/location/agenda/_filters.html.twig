@@ -74,7 +74,7 @@
                 </div>
                 {# The links of the type, category and venue lists are SEO pages that keep the dates and the keywords; a
                    visitor keeps the venue, the category and the type of the page too (data-filtered-href,
-                   assets/js/listeners/filtered-link.js; agenda_path(), AgendaUrlGenerator), which each count keeps
+                   assets/js/listeners/filtered-link.ts; agenda_path(), AgendaUrlGenerator), which each count keeps
                    (EventElasticaRepository::getFacets()) #}
                 {% set narrowed = place or tagEntity or type %}
                 {% set groups = [{key: 'all', type: null, label: 'Toutes les sorties', icon: 'lucide:calendar-days', tone: 'secondary', href: agenda, filteredHref: place or tagEntity ? withoutType : null}] %}

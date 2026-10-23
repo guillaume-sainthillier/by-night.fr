@@ -497,7 +497,13 @@
                             {% endif %}
                             {% if event.source %}
                                 <div class="small text-secondary">
-                                    Source&nbsp;: <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
+                                    Source&nbsp;:
+                                    {% if event.affiliate %}
+                                        <a href="{{ event.source }}" target="_blank" rel="sponsored noopener">{{ event.fromData }}</a>
+                                        (<a class="link-secondary" href="{{ path('app_transparency', {_fragment: 'liens'}) }}">lien affilié</a>)
+                                    {% else %}
+                                        <a href="{{ event.source }}" target="_blank" rel="nofollow">{{ event.fromData }}</a>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                             <button type="button"

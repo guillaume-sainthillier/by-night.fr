@@ -1,6 +1,6 @@
 {# @var events \Pagerfanta\PagerfantaInterface<\App\Entity\Event> the page's events #}
 {# @var dateRange \App\Search\DateRange the days the page lists #}
-{# The map of the events the page lists, above them, opened on demand (assets/js/pages/agenda.js): the events come in
+{# The map of the events the page lists, above them, opened on demand (assets/js/pages/agenda.ts): the events come in
    the page itself, so the map follows the list, its filters and its pages, and has no URL of its own. The venues are
    loaded with the events (EventRepository, "events:agenda:list"), so reading their coordinates costs no query. #}
 {% set mapEvents = [] %}

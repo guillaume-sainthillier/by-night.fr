@@ -1,4 +1,4 @@
-{% extends 'layouts/simple.html.twig' %}
+{% extends 'layouts/legal.html.twig' %}
 
 {% block breadcrumb %}
     {% do menu.addItem('Mentions légales', url('app_legal_mentions')) %}
@@ -6,92 +6,92 @@
 
 {% block title 'Mentions légales' %}
 {% block page_title 'Mentions légales' %}
-{% block meta_description 'Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.' %}
+{% block meta_description 'Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.' %}
 
-{% block body %}
-    <p class="text-muted">Dernière mise à jour : 22 septembre 2026</p>
+{% set legal_lead = 'Qui édite By Night, qui l\'héberge, et les règles qui s\'appliquent à son contenu.' %}
+{% set legal_updated = '2026-10-23' %}
+{% set legal_sections = [
+    {id: 'editeur', title: 'Éditeur et hébergeur'},
+    {id: 'utilisation', title: 'Utilisation du site', number: 1},
+    {id: 'informations', title: 'Informations publiées', number: 2},
+    {id: 'signaler', title: 'Signaler un contenu', number: 3},
+    {id: 'propriete', title: 'Propriété intellectuelle', number: 4},
+    {id: 'donnees', title: 'Données personnelles', number: 5},
+    {id: 'droit', title: 'Droit applicable', number: 6},
+] %}
 
-    <h2>Éditeur</h2>
-    <p>
-        Le site <a href="{{ url('app_index') }}">by-night.fr</a> (« By Night ») est édité à titre non professionnel
-        par une personne physique. Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans
-        l'économie numérique, son identité et ses coordonnées ont été communiquées à l'hébergeur du site et ne sont
-        pas rendues publiques.
-    </p>
-    <p>Pour toute question, écrivez à <a href="mailto:support@by-night.fr">support@by-night.fr</a>.</p>
+{% block legal_content %}
+    <twig:Legal:Identity id="editeur" />
 
-    <h2>Hébergeur</h2>
-    <p>
-        OVH SAS, au capital de 50 000 000 €, RCS Lille Métropole 424 761 419<br />
-        2 rue Kellermann, 59100 Roubaix, France<br />
-        Téléphone : 1007 depuis la France, +33 9 72 10 10 07 depuis l'étranger
-    </p>
+    <twig:Legal:Section id="utilisation" title="{{ legal_sections[1].title }}" number="{{ 1 }}">
+        <p>
+            By Night (<a href="{{ url('app_index') }}">by-night.fr</a>) est un agenda gratuit des sorties en France. Il
+            rassemble des événements diffusés par des sources partenaires (agendas ouverts, offices de tourisme,
+            billetteries…) et des événements publiés par ses membres. La consultation est libre ; un compte est
+            nécessaire pour publier un événement, commenter ou enregistrer des favoris, selon les
+            <a href="{{ path('app_terms') }}">conditions générales d'utilisation</a>.
+        </p>
+        <p>
+            Le site peut être interrompu pour maintenance ou à la suite d'une panne. ARNOVA ne peut être tenue pour
+            responsable d'une indisponibilité, même prolongée.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Utilisation du site</h2>
-    <p>
-        By Night est un agenda gratuit des sorties en France. Il rassemble des événements diffusés par des sources
-        partenaires (agendas ouverts, offices de tourisme, billetteries…) et des événements publiés par ses membres.
-        La consultation est libre ; un compte est nécessaire pour publier un événement, commenter ou enregistrer des
-        favoris.
-    </p>
-    <p>
-        Le site peut être interrompu pour maintenance ou à la suite d'une panne. By Night ne peut être tenu pour
-        responsable d'une indisponibilité, même prolongée.
-    </p>
+    <twig:Legal:Section id="informations" title="{{ legal_sections[2].title }}" number="{{ 2 }}">
+        <p>
+            Les informations sur les événements (dates, horaires, lieux, tarifs…) proviennent de la source indiquée sur
+            chaque page d'événement ou du membre qui l'a publié. Elles peuvent changer sans que By Night en soit
+            informé : vérifiez-les auprès de l'organisateur ou de la billetterie avant de vous déplacer. ARNOVA ne peut
+            être tenue pour responsable d'une erreur, d'un report ou d'une annulation.
+        </p>
+        <p>
+            Le site affiche des publicités, et les liens vers certaines billetteries sont des liens d'affiliation :
+            ARNOVA perçoit une commission sur les achats effectués depuis ces liens, sans surcoût pour vous. La page
+            <a href="{{ path('app_transparency') }}">Transparence</a> explique comment le site est financé, comment les
+            événements et les offres de billets sont classés, et comment ces liens sont signalés. Les sites vers lesquels
+            mènent les liens de By Night ne sont pas sous son contrôle et engagent la seule responsabilité de leurs
+            éditeurs.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Informations publiées</h2>
-    <p>
-        Les informations sur les événements (dates, horaires, lieux, tarifs…) proviennent de la source indiquée sur
-        chaque page d'événement ou du membre qui l'a publié. Elles peuvent changer sans que By Night en soit informé :
-        vérifiez-les auprès de l'organisateur ou de la billetterie avant de vous déplacer. By Night ne peut être tenu
-        pour responsable d'une erreur, d'un report ou d'une annulation.
-    </p>
-    <p>
-        Chaque membre est responsable des événements et des commentaires qu'il publie, qui doivent respecter la loi et
-        les droits des tiers. By Night peut retirer sans préavis tout contenu illicite, injurieux, discriminatoire,
-        trompeur ou sans rapport avec l'objet du site, et suspendre le compte de son auteur.
-    </p>
-    <p>
-        Le site affiche des publicités, et certains liens vers des billetteries sont des liens d'affiliation : By Night
-        peut percevoir une commission sur les achats effectués depuis ces liens, sans surcoût pour vous. Les sites
-        vers lesquels mènent les liens de By Night ne sont pas sous son contrôle et engagent la seule responsabilité de
-        leurs éditeurs.
-    </p>
+    <twig:Legal:Section id="signaler" title="{{ legal_sections[3].title }}" number="{{ 3 }}">
+        <p>
+            Pour demander le retrait d'un événement ou de son image, utilisez le bouton « Signaler ce contenu » sur la
+            page de l'événement. Pour tout autre contenu que vous estimez illicite (un commentaire, un profil…), écrivez
+            à <a href="mailto:support@by-night.fr">support@by-night.fr</a>. La procédure, ce que doit contenir votre
+            signalement et la suite qui lui est donnée sont décrits dans les
+            <a href="{{ path('app_terms', {_fragment: 'signalement'}) }}">conditions générales d'utilisation</a>.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Signaler un contenu</h2>
-    <p>
-        Pour demander le retrait d'un événement ou d'une image qui vous concerne, utilisez le lien « Signaler ce
-        contenu » sur la page de l'événement. Votre demande est examinée et vous êtes informé par e-mail de la suite
-        qui lui est donnée.
-    </p>
-    <p>
-        Pour signaler tout autre contenu que vous estimez illicite, écrivez à
-        <a href="mailto:support@by-night.fr">support@by-night.fr</a> en indiquant l'adresse de la page, le contenu en
-        cause et les raisons pour lesquelles il devrait être retiré.
-    </p>
+    <twig:Legal:Section id="propriete" title="{{ legal_sections[4].title }}" number="{{ 4 }}">
+        <p>
+            La structure du site, sa présentation et les textes rédigés pour By Night sont protégés par le droit
+            d'auteur. Leur reproduction, totale ou partielle, sans autorisation constitue une contrefaçon sanctionnée par
+            les articles L.335-2 et suivants du Code de la propriété intellectuelle.
+        </p>
+        <p>
+            Les descriptions et les images des événements restent la propriété de leurs auteurs. Elles sont reprises de
+            la source indiquée sur chaque page d'événement, ou publiées par des membres qui déclarent en détenir les
+            droits et accordent à By Night la licence décrite dans les
+            <a href="{{ path('app_terms', {_fragment: 'licence'}) }}">conditions générales d'utilisation</a>.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Propriété intellectuelle</h2>
-    <p>
-        La structure du site, sa présentation et les textes rédigés pour By Night sont protégés par le droit d'auteur.
-        Leur reproduction, totale ou partielle, sans autorisation constitue une contrefaçon sanctionnée par les
-        articles L.335-2 et suivants du Code de la propriété intellectuelle.
-    </p>
-    <p>
-        Les descriptions et les images des événements restent la propriété de leurs auteurs. Elles sont reprises de la
-        source indiquée sur chaque page d'événement, ou publiées par des membres qui déclarent en détenir les droits.
-        En publiant un contenu sur By Night, vous l'autorisez à l'afficher sur le site.
-    </p>
+    <twig:Legal:Section id="donnees" title="{{ legal_sections[5].title }}" number="{{ 5 }}">
+        <p>
+            Les données que By Night collecte, l'usage qui en est fait, leurs destinataires, leur durée de conservation
+            et vos droits sont détaillés dans notre <a href="{{ path('app_privacy_policy') }}">politique de
+                confidentialité</a>, et les cookies dans notre <a href="{{ path('app_main_cookie') }}">politique de
+                cookies</a>.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Données personnelles</h2>
-    <p>
-        Les données que By Night collecte, l'usage qui en est fait, leurs destinataires, leur durée de conservation et
-        vos droits sont détaillés dans notre <a href="{{ path('app_privacy_policy') }}">politique de confidentialité</a>,
-        et les cookies dans notre <a href="{{ path('app_main_cookie') }}">politique de cookies</a>.
-    </p>
-
-    <h2>Droit applicable</h2>
-    <p>
-        Les présentes mentions légales sont régies par le droit français. En cas de litige, et à défaut de solution
-        amiable, les tribunaux français sont compétents.
-    </p>
+    <twig:Legal:Section id="droit" title="{{ legal_sections[6].title }}" number="{{ 6 }}">
+        <p>
+            Les présentes mentions légales sont régies par le droit français. En cas de litige, et à défaut de solution
+            amiable, les tribunaux de Paris, ressort du siège d'ARNOVA, sont compétents, sous réserve des règles
+            impératives qui permettent à un consommateur de saisir le tribunal de son domicile.
+        </p>
+    </twig:Legal:Section>
 {% endblock %}

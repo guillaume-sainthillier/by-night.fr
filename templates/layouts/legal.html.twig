@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{# The legal pages (mentions légales, CGU, confidentialité, cookies, transparence), as on offre-parrainages.fr: a
+   heading with its lead, the date of the last change and the tabs between the pages, then the articles as numbered
+   cards (Legal:Section) beside a question box and a sticky "Sur cette page".
+   A page sets, outside its blocks: legal_lead (text), legal_updated ('Y-m-d') and legal_sections ([{id, title,
+   number?}], in the order of its sections), and fills legal_content. #}
+
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    <div class="page-header legal-header">
+        <div class="{{ block('container_class') }}">
+            <twig:Section:Eyebrow icon="lucide:scale">Informations juridiques</twig:Section:Eyebrow>
+            <h1 class="text-start">{% block page_title block('title') %}</h1>
+            {% if legal_lead is defined %}
+                <p class="lead text-secondary mt-2 mb-0">{{ legal_lead }}</p>
+            {% endif %}
+            {% if legal_updated is defined %}
+                <p class="mt-3 mb-0 small text-secondary hstack gap-1">
+                    <twig:Icon name="lucide:clock" />
+                    Dernière mise à jour&nbsp;: <time datetime="{{ legal_updated }}">{{ legal_updated|format_date('long') }}</time>
+                </p>
+            {% endif %}
+            <twig:Legal:Tabs class="mt-4" current="{{ app.current_route }}" />
+        </div>
+    </div>
+{% endblock %}
+
+{% block layout_body %}
+    <div class="{{ block('container_class') }}">
+        <div class="row g-4 g-xl-5">
+            <div class="col-lg-8 vstack gap-4">
+                {% block legal_content %}{% endblock %}
+            </div>
+            {# Only "Sur cette page" sticks: with the question box, the column would outgrow a short screen #}
+            <aside class="col-lg-4 vstack gap-3">
+                <twig:Legal:Contact />
+                <div class="legal-aside sticky-lg-top">
+                    <twig:Legal:Toc sections="{{ legal_sections ?? [] }}" />
+                </div>
+            </aside>
+        </div>
+    </div>
+{% endblock %}

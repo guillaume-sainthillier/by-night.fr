@@ -15,9 +15,18 @@ use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Repository\CityRepository;
+use App\Repository\CountryRepository;
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
+use App\Stats\AdvertiserFiguresProvider;
 use App\Tests\AppWebTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
+use Psr\Log\NullLogger;
+use RuntimeException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class ContentControllerTest extends AppWebTestCase
 {
@@ -32,8 +41,10 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Mentions légales');
         // The LCEN requires the host's name, address and phone number, and a way to reach the publisher
-        self::assertAnySelectorTextContains('p', 'OVH SAS');
-        self::assertAnySelectorTextContains('p', '2 rue Kellermann, 59100 Roubaix');
+        self::assertSelectorTextContains('#editeur', 'OVH SAS');
+        self::assertSelectorTextContains('#editeur', '2 rue Kellermann, 59100 Roubaix');
+        self::assertSelectorTextContains('#editeur', 'RCS Paris 942 070 392');
+        self::assertSelectorTextContains('#editeur', 'Guillaume Sainthillier');
         self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
         self::assertSelectorExists('a[href="/cookie"]');
         self::assertSelectorExists('a[href="/confidentialite"]');
@@ -53,6 +64,124 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertSelectorExists('a[href="https://developers.google.com/terms/api-services-user-data-policy"]');
         self::assertSelectorExists('a[href="https://myaccount.google.com/connections"]');
         self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
+    }
+
+    public function testTheLegalPagesShareTheirTabs(): void
+    {
+        $client = self::createClient();
+
+        foreach (['/mentions-legales', '/conditions-generales-d-utilisation', '/confidentialite', '/cookie', '/transparence'] as $url) {
+            $client->request('GET', $url);
+
+            self::assertResponseIsSuccessful();
+            self::assertSelectorCount(5, 'nav[aria-label="Documents juridiques"] a');
+            self::assertSelectorExists(\sprintf('nav[aria-label="Documents juridiques"] a[aria-current="page"][href="%s"]', $url));
+            // "Sur cette page" lists every section of the page
+            self::assertSame(
+                $client->getCrawler()->filter('.legal-section')->count(),
+                $client->getCrawler()->filter('[data-toc] a')->count(),
+            );
+        }
+    }
+
+    public function testTheTermsCoverTheAccountTheLicenceAndTheNotices(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/conditions-generales-d-utilisation');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', "Conditions générales d'utilisation");
+        foreach (['#compte', '#licence', '#moderation', '#signalement', '#sources'] as $section) {
+            self::assertSelectorExists($section);
+        }
+        self::assertSelectorTextContains('#signalement', 'Signaler ce contenu');
+        self::assertSelectorExists('#signalement a[href="mailto:support@by-night.fr"]');
+        self::assertSelectorExists('footer a[href="/conditions-generales-d-utilisation"]');
+    }
+
+    public function testTheTransparencyPageSaysHowTheSiteEarnsMoney(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/transparence');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Transparence');
+        self::assertSelectorTextContains('#financement', 'AdSense');
+        self::assertSelectorTextContains('#financement', 'Awin');
+        self::assertSelectorTextContains('#billets', "le lien de réservation de l'organisateur n'est pas affiché");
+        self::assertSelectorExists('footer a[href="/transparence"]');
+        // The anchors the ticket links and the source line of an event page point to
+        foreach (['#editeur', '#financement', '#classement', '#billets', '#liens', '#sites'] as $section) {
+            self::assertSelectorExists($section);
+        }
+        self::assertSelectorTextContains('#financement', 'Kwanko');
+        self::assertSelectorTextContains('#financement', 'Sponsorisé');
+        self::assertSelectorTextContains('#sites', 'Offre-Parrainages.fr');
+        // What no partnership buys, as the advertisers' page promises it
+        self::assertSelectorTextContains('#engagements', 'Aucun classement acheté');
+        self::assertSelectorExists('#engagements a[href="/annonceurs"]');
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=86400, stale-if-error=86400, stale-while-revalidate=86400');
+    }
+
+    public function testTheAdvertisersPageShowsTheFiguresTheFormatsAndTheContact(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $member = UserFactory::createOne();
+        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many(3)->create(['user' => $member, 'place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()])]);
+        self::counter()->refresh();
+
+        $client->request('GET', '/annonceurs');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Faites connaître vos événements');
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=86400, stale-if-error=86400, stale-while-revalidate=86400');
+        // Counted from the database
+        self::assertSelectorTextContains('#chiffres', '3 Événements à venir');
+        self::assertSelectorTextContains('#chiffres', '1 Ville couverte');
+        self::assertSelectorTextContains('#chiffres', '1 Pays ou territoire');
+        self::assertSelectorTextContains('#chiffres', '1 Membre');
+        self::assertSelectorTextContains('#sources', 'Open Agenda');
+        // Each format says how it is labelled
+        self::assertSelectorCount(3, '#formats article');
+        self::assertSelectorTextContains('#formats', 'Sponsorisé');
+        self::assertSelectorTextContains('#formats', 'Lien affilié');
+        // The free ways in, to the real pages
+        self::assertSelectorExists('#gratuit a[href="/inscription"]');
+        self::assertSelectorExists('#gratuit a[href="/espace-perso/imports"]');
+        self::assertSelectorTextContains('#gratuit', 'OpenAgenda');
+        self::assertSelectorTextContains('#engagements', 'Aucun classement acheté');
+        self::assertSelectorExists('#engagements a[href="/transparence"]');
+        self::assertSelectorExists('#contact a[href="mailto:support@by-night.fr?subject=Partenariat%20annonceur"]');
+        self::assertSelectorExists('footer a[href="/annonceurs"]');
+    }
+
+    public function testTheAdvertisersPageHidesTheFiguresItCannotCount(): void
+    {
+        $client = self::createClient();
+        $cache = new class extends ArrayAdapter implements CacheInterface {
+            public function get(string $key, callable $callback, ?float $beta = null, ?array &$metadata = null): mixed
+            {
+                throw new RuntimeException('Redis is down');
+            }
+        };
+        self::getContainer()->set(AdvertiserFiguresProvider::class, new AdvertiserFiguresProvider(
+            self::getContainer()->get(CountryRepository::class),
+            self::getContainer()->get(CityRepository::class),
+            self::getContainer()->get(EventRepository::class),
+            self::getContainer()->get(UserRepository::class),
+            $cache,
+            new NullLogger(),
+            [],
+        ));
+
+        $client->request('GET', '/annonceurs');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#chiffres');
+        self::assertSelectorExists('#formats');
     }
 
     public function testFontsAreSelfHosted(): void

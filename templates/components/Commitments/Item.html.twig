@@ -1,0 +1,6 @@
+{# One commitment of a <twig:Commitments> list: a check, the title in bold, then the text #}
+{% props title = null %}
+<li {{ attributes.defaults({class: 'd-flex gap-3'}) }}>
+    <span class="avatar avatar-xs rounded-circle bg-primary text-white flex-shrink-0 mt-1"><twig:Icon name="lucide:check" /></span>
+    <p class="mb-0">{% if title %}<strong>{{ title }}&nbsp;:</strong> {% endif %}{% block content %}{% endblock %}</p>
+</li>

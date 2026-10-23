@@ -34,6 +34,15 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
  */
 final class SitemapSuscriberTest extends AppKernelTestCase
 {
+    public function testAppSectionListsTheContentPages(): void
+    {
+        $urls = $this->collectSection('app');
+
+        foreach (['/a-propos', '/en-savoir-plus', '/transparence', '/annonceurs'] as $path) {
+            self::assertContains($path, $urls);
+        }
+    }
+
     public function testEventsSectionOnlyListsEventsStillWorthIndexing(): void
     {
         $place = $this->createPlace(CityFactory::toulouse()->create(), 'Le Bikini');

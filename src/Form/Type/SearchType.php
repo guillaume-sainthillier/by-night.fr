@@ -43,7 +43,7 @@ final class SearchType extends AbstractType
             ->add('range', NumberType::class, [
                 'html5' => true,
                 'label' => 'Rayon (km)',
-                // assets/js/pages/agenda.js turns it into a slider snapping to 5, 10, 25, 50 and 100 km
+                // assets/js/pages/agenda.ts turns it into a slider snapping to 5, 10, 25, 50 and 100 km
                 'attr' => [
                     'placeholder' => "Dans quel rayon cherchez-vous\u{a0}?",
                     'min' => 5,

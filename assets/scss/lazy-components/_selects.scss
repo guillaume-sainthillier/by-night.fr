@@ -2,7 +2,7 @@
 @use 'tom-select-bootstrap5';
 @use '@tabler/core/scss/vendor/tom-select';
 
-// A select with a value keeps the white of the other fields (Tabler 1.6 gives it the page background)
+// A select with a value keeps the white of the other fields (Tabler, 1.7 still, gives it the page background)
 .ts-wrapper.full .ts-control {
     background-color: $input-bg;
 }
