@@ -9,8 +9,8 @@
    from one week to the next, its text says which days #}
 {% if datePage %}
     {% set dateDays = dateRange.from == dateRange.to
-        ? dateRange.from|format_date(pattern: 'EEEE d MMMM', locale: 'fr')
-        : 'du ' ~ dateRange.from|format_date(pattern: dateRange.from|date('m') == dateRange.to|date('m') ? 'EEEE d' : 'EEEE d MMMM', locale: 'fr') ~ ' au ' ~ dateRange.to|format_date(pattern: 'EEEE d MMMM', locale: 'fr') %}
+        ? dateRange.from|format_date(pattern: 'EEEE d MMMM')
+        : 'du ' ~ dateRange.from|format_date(pattern: dateRange.from|date('m') == dateRange.to|date('m') ? 'EEEE d' : 'EEEE d MMMM') ~ ' au ' ~ dateRange.to|format_date(pattern: 'EEEE d MMMM') %}
 {% endif %}
 
 {%- block title -%}
