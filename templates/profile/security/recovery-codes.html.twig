@@ -1,0 +1,42 @@
+{% extends 'profile/security/_layout.html.twig' %}
+
+{% block title 'Codes de secours' %}
+{% block breadcrumb %}
+    {{ parent() }}
+    {% do menu.addItem('Codes de secours', url('app_user_security_recovery_codes')) %}
+{% endblock %}
+{% block page_title 'Codes de secours' %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card">
+                {{ form_start(form) }}
+                <div class="card-body">
+                    <p>
+                        Si vous perdez votre téléphone ou votre clé d’accès, chacun de ces codes vous connecte une fois à la
+                        place du second facteur. Conservez-les hors de ce navigateur&nbsp;: gestionnaire de mots de passe,
+                        fichier téléchargé ou papier.
+                    </p>
+                    {% if app.user.backupCodeEnabled %}
+                        <div class="alert alert-warning" role="alert">Une fois enregistrés, ces codes remplacent vos codes de secours actuels.</div>
+                    {% endif %}
+                    <ol class="row row-cols-2 row-cols-md-5 g-2 list-unstyled font-monospace fs-3 my-4" aria-label="Vos codes de secours">
+                        {% for code in codes %}
+                            <li class="col text-center"><span class="d-block border rounded py-2">{{ code }}</span></li>
+                        {% endfor %}
+                    </ol>
+                    <a href="{{ path('app_user_security_recovery_codes_download') }}" class="btn btn-outline-secondary mb-4">
+                        <twig:Icon name="lucide:download" /> Télécharger les codes
+                    </a>
+                    {{ form_widget(form) }}
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ path('app_user_edit', {_fragment: 'security'}) }}" class="btn btn-link">Annuler</a>
+                    <button type="submit" class="btn btn-primary">Enregistrer les codes</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

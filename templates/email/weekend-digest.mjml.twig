@@ -1,0 +1,75 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{# @var user \App\Entity\User #}
+{# @var location \App\App\Location the member's city #}
+{# @var weekend \App\Search\DateRange #}
+{# @var events \App\Entity\Event[] #}
+{# @var unsubscribeUrl string #}
+
+{# Every link says where the visit comes from; the pages' canonical URLs leave the query string out #}
+{% set utm = {utm_source: 'newsletter', utm_medium: 'email', utm_campaign: 'weekend'} %}
+{# TODO: the city's own weekend page (/{city}/ce-week-end) once the date pages are merged #}
+{% set agendaUrl = url('app_location_index', {location: location.slug, when: 'this_weekend'}|merge(utm)) %}
+
+{% block email_title %}Ce week-end {{ location.atName }}{% endblock %}
+{% block preheader %}{{ events|slice(0, 3)|map(event => event.name)|join(', ') }}…{% endblock %}
+
+{% block heading %}Ce week-end {{ location.atName }}{% endblock %}
+{% block subheading -%}
+    Du {{ weekend.from|format_date(pattern: 'EEEE d MMMM') }} au {{ weekend.to|format_date(pattern: 'EEEE d MMMM') }}
+{%- endblock %}
+
+{% block body %}
+    <mj-text>Bonjour {{ user.firstname ?: user.username }},</mj-text>
+    <mj-text>Voici notre sélection des sorties du week-end {{ location.atName }} et autour.</mj-text>
+    <mj-divider />
+{% endblock %}
+
+{% block body_sections %}
+    {% for event in events %}
+        {% set eventUrl = url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}|merge(utm)) %}
+        {% set session = event.sessionFor(weekend.from, weekend.to) %}
+        {% set picture = event_picture(event) %}
+        <mj-section padding="0 24px 20px 24px">
+            <mj-column width="38%" vertical-align="top">
+                <mj-image
+                    src="{{ absolute_url(picasso_image_url(picture.src ?? '', width: 400, height: 280, fit: 'crop', format: 'jpg', loader: picture.loader, context: picture.context)) }}"
+                    href="{{ eventUrl }}"
+                    alt="{{ event.name }}"
+                    border-radius="8px"
+                    padding="0 0 8px 0"
+                />
+            </mj-column>
+            <mj-column width="62%" vertical-align="top">
+                <mj-text font-size="17px" font-weight="700" line-height="1.35" padding="0 0 6px 12px">
+                    <a href="{{ eventUrl }}" style="color: #191c22; text-decoration: none;">{{ event.name }}</a>
+                </mj-text>
+                <mj-text mj-class="muted" padding="0 0 0 12px">
+                    {% if session %}
+                        {{ session.startAt|format_date(pattern: 'EEEE d MMMM')|capitalize }}
+                        {%- if session.endAt and session.endAt|date('Y-m-d') != session.startAt|date('Y-m-d') %} au {{ session.endAt|format_date(pattern: 'EEEE d MMMM') }}{% endif %}
+                        {%- set hours = session_hours(session) %}
+                        {%- if hours %} · {{ hours }}{% endif %}
+                        <br />
+                    {% endif %}
+                    {% if event.placeName %}
+                        {{ event.placeName }}{% if event.placeCity %}, {{ event.placeCity }}{% endif %}
+                    {% endif %}
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    {% endfor %}
+
+    <mj-section padding="0 24px 8px 24px">
+        <mj-column>
+            <mj-button href="{{ agendaUrl }}">Voir toutes les sorties du week-end</mj-button>
+        </mj-column>
+    </mj-section>
+{% endblock %}
+
+{% block footer %}
+    Vous recevez cet e-mail car vous avez demandé la sélection du week-end sur By Night.
+    <br /><a href="{{ unsubscribeUrl }}" style="color: #a0a2ab;">Se désinscrire</a>
+    &nbsp;·&nbsp;
+    <a href="{{ url('app_user_edit') }}" style="color: #a0a2ab;">Gérer mes préférences</a>
+{% endblock %}

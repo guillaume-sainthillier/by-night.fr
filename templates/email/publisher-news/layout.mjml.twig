@@ -1,0 +1,29 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{#
+ # Every edition of the publishers' news (App\Enum\PublisherNewsEdition) extends this layout: the badge, a greeting,
+ # then its features (include 'email/publisher-news/_feature.mjml.twig' in the block "features"), a button to the
+ # personal space and the unsubscribe link. Context: user, publisher (their first one, null if they deleted it since),
+ # unsubscribeUrl.
+ #}
+
+{% block icon 'sparkles' %}
+
+{% block body %}
+    <mj-text>Bonjour {{ user.username }},</mj-text>
+    {% block intro %}{% endblock %}
+    <mj-divider />
+    {% block features %}{% endblock %}
+    <mj-button href="{{ url('app_personal_space_events') }}">
+        {% block cta 'Voir mon espace organisateur' %}
+    </mj-button>
+    {% block outro %}{% endblock %}
+    <mj-text mj-class="muted" padding="0">
+        Une idée, une question sur ces nouveautés&nbsp;? Répondez à cet e-mail, nous lisons tout.
+    </mj-text>
+{% endblock %}
+
+{% block footer %}
+    Vous recevez cet e-mail car vous publiez des événements sur By Night.
+    <a href="{{ unsubscribeUrl }}" style="color: #6f727a; text-decoration: underline;">Ne plus recevoir ces nouveautés</a>
+{% endblock %}

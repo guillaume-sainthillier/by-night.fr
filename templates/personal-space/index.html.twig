@@ -36,6 +36,10 @@
                     <twig:Icon name="lucide:upload" />
                     Importer
                 </a>
+                <a class="btn btn-outline-secondary btn-lg" href="{{ path('app_publisher_edit') }}">
+                    <twig:Icon name="lucide:megaphone" />
+                    Ma page organisateur
+                </a>
             </div>
         </section>
 
@@ -46,7 +50,7 @@
                         <div class="card-body d-flex align-items-center justify-content-between gap-3">
                             <div>
                                 <div class="subheader">{{ tile.label }}</div>
-                                <div class="h1 text-start mb-0 {{ tile.tone == 'teal' ? 'text-teal' }}">{{ tile.count|format_number(locale: 'fr') }}</div>
+                                <div class="h1 text-start mb-0 {{ tile.tone == 'teal' ? 'text-teal' }}">{{ tile.count|format_number() }}</div>
                             </div>
                             <span class="avatar bg-{{ tile.tone }}-lt d-none d-sm-inline-flex">
                                 <twig:Icon name="{{ tile.icon }}" />
@@ -121,6 +125,7 @@
                             <th>Lieu</th>
                             <th>Ville</th>
                             <th>Date</th>
+                            <th class="text-nowrap">{{ 'Audience ({days} j)'|trans({days: constant('App\\Analytics\\EventAudienceReport::DAYS')}, 'messages+intl-icu') }}</th>
                             <th class="w-1 text-center">Visible</th>
                             <th class="w-1 text-center">Annulé</th>
                             <th class="w-1 text-end">Actions</th>
@@ -157,6 +162,16 @@
                                 <td data-label="Date">
                                     <twig:Dates from="{{ event.startDate }}" to="{{ event.endDate }}" />
                                 </td>
+                                {# The visitors of its page and the clicks on its ticketing links (EventAudienceReport) #}
+                                {% set eventAudience = audience[event.id] %}
+                                <td data-label="{{ 'Audience ({days} j)'|trans({days: constant('App\\Analytics\\EventAudienceReport::DAYS')}, 'messages+intl-icu') }}">
+                                    <a href="{{ path('app_event_stats', {id: event.id}) }}" class="text-reset text-nowrap" title="Voir les statistiques">
+                                        <span class="fw-semibold">{{ '{count, plural, one {# visiteur} other {# visiteurs}}'|trans({count: eventAudience.visitors}, 'messages+intl-icu') }}</span>
+                                        {% if eventAudience.ticketClicks > 0 %}
+                                            <span class="d-block small text-secondary">{{ '{count, plural, one {# clic billetterie} other {# clics billetterie}}'|trans({count: eventAudience.ticketClicks}, 'messages+intl-icu') }}</span>
+                                        {% endif %}
+                                    </a>
+                                </td>
                                 <td class="text-md-center" data-label="Visible">
                                     <div class="form-check form-switch form-check-single d-inline-block ps-0">
                                         <input class="form-check-input draft" data-href="{{ path('api_event_draft', {id: event.id}) }}" type="checkbox" role="switch" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}" aria-label="Visible sur l'agenda&nbsp;: {{ event.name }}">
@@ -171,6 +186,9 @@
                                     <div class="btn-group">
                                         <a class="btn btn-icon d-inline-flex" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement" aria-label="Voir l'événement">
                                             <twig:Icon name="lucide:eye" class="text-secondary" />
+                                        </a>
+                                        <a class="btn btn-icon d-inline-flex" href="{{ path('app_event_stats', {id: event.id}) }}" data-bs-toggle="tooltip" title="Statistiques" aria-label="Statistiques de l'événement">
+                                            <twig:Icon name="lucide:chart-column" class="text-blue" />
                                         </a>
                                         <a class="btn btn-icon d-inline-flex" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement" aria-label="Modifier l'événement">
                                             <twig:Icon name="lucide:pencil" class="text-teal" />

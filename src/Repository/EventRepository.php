@@ -18,6 +18,7 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Entity\Publisher;
 use App\Entity\Tag;
 use App\Entity\UpcomingCategory;
 use App\Entity\User;
@@ -117,6 +118,10 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->preloadManager
             ->preloadEntities(User::class, array_map(static fn (Event $entity) => $entity->getUser()?->getId(), $entities));
 
+        $loadPublishers = fn () => $this
+            ->preloadManager
+            ->preloadEntities(Publisher::class, array_map(static fn (Event $entity) => $entity->getPublisher()?->getId(), $entities));
+
         if (\in_array($view, [
             'events:widget:next-events',
             'events:widget:similar-events',
@@ -126,6 +131,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         ], true)) {
             $loadTimesheets();
             $loadUsers();
+            $loadPublishers();
             $loadPictureLenders();
         }
 
@@ -484,14 +490,12 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The member's events an export of theirs covers, by id: page through them with findExportPage(). The search
-     * and the status filter are those of their list when the export was started from it (findAllByUserQueryBuilder()).
+     * The publisher's events an export covers, by id: page through them with findExportPage(). The search and the
+     * status filter are those of its list when the export was started from it (findAllByPublisherQueryBuilder()).
      */
-    public function createExportQueryBuilder(User $user, EventExportScope $scope, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder
+    public function createExportQueryBuilder(Publisher $publisher, EventExportScope $scope, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('e')
-            ->where('e.user = :user')
-            ->setParameter('user', $user->getId());
+        $qb = $this->createPublisherQueryBuilder($publisher);
 
         if (null !== $q && '' !== $q) {
             $qb->andWhere('e.name LIKE :q OR e.placeName LIKE :q OR e.placeCity LIKE :q OR e.description LIKE :q')
@@ -531,14 +535,28 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The member's event they gave this reference (Event::$externalReference), whatever its case.
+     * @return list<string> the references the publisher gave its events (Event::$externalReference)
      */
-    public function findOneByUserAndReference(User $user, string $reference): ?Event
+    public function findReferencesOf(Publisher $publisher): array
     {
         return $this->createQueryBuilder('e')
-            ->where('e.user = :user')
+            ->select('e.externalReference')
+            ->where('e.publisher = :publisher')
+            ->andWhere('e.externalReference IS NOT NULL')
+            ->setParameter('publisher', $publisher->getId())
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+
+    /**
+     * The publisher's event it gave this reference (Event::$externalReference), whatever its case.
+     */
+    public function findOneByPublisherAndReference(Publisher $publisher, string $reference): ?Event
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.publisher = :publisher')
             ->andWhere('LOWER(e.externalReference) = :reference')
-            ->setParameter('user', $user->getId())
+            ->setParameter('publisher', $publisher->getId())
             ->setParameter('reference', mb_strtolower($reference))
             ->setMaxResults(1)
             ->getQuery()
@@ -604,7 +622,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * What the members published themselves, imports aside: their events and how many members they come from.
+     * What the members published themselves, imports aside: their events and how many publishers they come from.
      *
      * @return array{events: int, organizers: int}
      */
@@ -612,8 +630,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         $totals = $this
             ->createQueryBuilder('e')
-            ->select('COUNT(e.id) AS events', 'COUNT(DISTINCT IDENTITY(e.user)) AS organizers')
-            ->where('e.user IS NOT NULL')
+            ->select('COUNT(e.id) AS events', 'COUNT(DISTINCT IDENTITY(e.publisher)) AS organizers')
+            ->where('e.publisher IS NOT NULL')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->getQuery()
@@ -652,12 +670,13 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         );
     }
 
-    public function findAllByUserQueryBuilder(User $user, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder
+    /**
+     * The publisher's events, drafts included, the newest first: its list in the personal space.
+     */
+    public function findAllByPublisherQueryBuilder(Publisher $publisher, ?string $q = null, ?PersonalEventFilter $filter = null): QueryBuilder
     {
         $qb = $this
-            ->createQueryBuilder('e')
-            ->where('e.user = :user')
-            ->setParameter('user', $user->getId())
+            ->createPublisherQueryBuilder($publisher)
             ->orderBy('e.id', SortDirection::Descending);
 
         if ($q) {
@@ -673,18 +692,33 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * How many events the user created ("total"), and how many of them each filter of their list keeps (keyed by the
+     * How many events the publishers the member manages have ("total"), and how many of them each filter keeps (keyed
+     * by the filter's value), in one query: what their profile counts.
+     *
+     * @return array<string, int>
+     */
+    public function countManagedByAndFilter(User $user): array
+    {
+        return $this->countByFilter($this->createManagedByQueryBuilder($user));
+    }
+
+    /**
+     * How many events the publisher has ("total"), and how many of them each filter of its list keeps (keyed by the
      * filter's value), in one query.
      *
      * @return array<string, int>
      */
-    public function countByUserAndFilter(User $user): array
+    public function countByPublisherAndFilter(Publisher $publisher): array
     {
-        $qb = $this
-            ->createQueryBuilder('e')
-            ->select('COUNT(e.id) AS total')
-            ->where('e.user = :user')
-            ->setParameter('user', $user->getId());
+        return $this->countByFilter($this->createPublisherQueryBuilder($publisher));
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function countByFilter(QueryBuilder $events): array
+    {
+        $qb = $events->select('COUNT(e.id) AS total');
 
         foreach (PersonalEventFilter::cases() as $filter) {
             // Not aliased by the bare value: "hidden" is a DQL keyword
@@ -700,6 +734,43 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         }
 
         return $counts;
+    }
+
+    /**
+     * Those of the given events that are the publisher's.
+     *
+     * @param list<int> $ids
+     *
+     * @return list<Event>
+     */
+    public function findByPublisherAndIds(Publisher $publisher, array $ids): array
+    {
+        return $this->createPublisherQueryBuilder($publisher)
+            ->andWhere('e.id IN (:ids)')
+            ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The publisher's events, drafts and those folded into another one's page included.
+     */
+    private function createPublisherQueryBuilder(Publisher $publisher): QueryBuilder
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.publisher = :publisher')
+            ->setParameter('publisher', $publisher->getId());
+    }
+
+    /**
+     * The events of the publishers the member manages (Publisher::isManagedBy()).
+     */
+    private function createManagedByQueryBuilder(User $user): QueryBuilder
+    {
+        return $this->createQueryBuilder('e')
+            ->join('e.publisher', 'publisher')
+            ->where('publisher.owner = :manager')
+            ->setParameter('manager', $user->getId());
     }
 
     /**
@@ -781,8 +852,26 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function findUserCities(User $user): array
     {
+        return $this->findCitiesOf($this->createUserCalendarQueryBuilder($user));
+    }
+
+    /**
+     * The cities of the venues of a publisher's events online, the busiest first.
+     *
+     * @return list<array{name: string, slug: string, events: int, firstYear: int, lastYear: int}>
+     */
+    public function findPublisherCities(Publisher $publisher): array
+    {
+        return $this->findCitiesOf($this->createPublisherOnlineQueryBuilder($publisher));
+    }
+
+    /**
+     * @return list<array{name: string, slug: string, events: int, firstYear: int, lastYear: int}>
+     */
+    private function findCitiesOf(QueryBuilder $events): array
+    {
         /** @var list<array{name: string, slug: string, events: int|string, first: string, last: string}> $rows */
-        $rows = $this->createUserCalendarQueryBuilder($user)
+        $rows = $events
             ->select('c.name', 'c.slug', 'COUNT(e.id) AS events', 'MIN(e.startDate) AS first', 'MAX(e.startDate) AS last')
             ->join('e.place', 'p')
             ->join('p.city', 'c')
@@ -808,8 +897,26 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function findUserPlaces(User $user, int $limit = 5): array
     {
+        return $this->findPlacesOf($this->createUserCalendarQueryBuilder($user), $limit);
+    }
+
+    /**
+     * The venues of a publisher's events online, the busiest first.
+     *
+     * @return list<array{name: string, slug: string, locationSlug: string, cityName: string|null, events: int}>
+     */
+    public function findPublisherPlaces(Publisher $publisher, int $limit = 5): array
+    {
+        return $this->findPlacesOf($this->createPublisherOnlineQueryBuilder($publisher), $limit);
+    }
+
+    /**
+     * @return list<array{name: string, slug: string, locationSlug: string, cityName: string|null, events: int}>
+     */
+    private function findPlacesOf(QueryBuilder $events, int $limit): array
+    {
         /** @var list<array{name: string, slug: string, cityName: string|null, citySlug: string|null, countrySlug: string|null, events: int|string}> $rows */
-        $rows = $this->createUserCalendarQueryBuilder($user)
+        $rows = $events
             ->select('p.name', 'p.slug', 'c.name AS cityName', 'c.slug AS citySlug', 'co.slug AS countrySlug', 'COUNT(e.id) AS events')
             ->join('e.place', 'p')
             ->leftJoin('p.city', 'c')
@@ -839,8 +946,26 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function findUserCategories(User $user): array
     {
+        return $this->findCategoriesOf($this->createUserCalendarQueryBuilder($user));
+    }
+
+    /**
+     * The categories of a publisher's events online, the busiest first.
+     *
+     * @return list<array{id: int, name: string, events: int, firstYear: int, lastYear: int}>
+     */
+    public function findPublisherCategories(Publisher $publisher): array
+    {
+        return $this->findCategoriesOf($this->createPublisherOnlineQueryBuilder($publisher));
+    }
+
+    /**
+     * @return list<array{id: int, name: string, events: int, firstYear: int, lastYear: int}>
+     */
+    private function findCategoriesOf(QueryBuilder $events): array
+    {
         /** @var list<array{id: int|string, name: string, events: int|string, first: string, last: string}> $rows */
-        $rows = $this->createUserCalendarQueryBuilder($user)
+        $rows = $events
             ->select('t.id', 't.name', 'COUNT(e.id) AS events', 'MIN(e.startDate) AS first', 'MAX(e.startDate) AS last')
             ->join('e.category', 't')
             ->groupBy('t.id')
@@ -901,19 +1026,13 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     /**
      * How a member fills their calendar: the published events they added $aheadDays or more before they started, and
-     * the free ones.
-     *
-     * An event is free when its price text starts with "Gratuit", "Entrée gratuite", "Entrée libre" or is "Free", with
-     * no amount in euros: "4 € - gratuit pour les moins de 18 ans" is not. The price is free text from the sources.
+     * the free ones (isFree()).
      *
      * @return array{addedAhead: int, free: int}
      */
     public function countUserCalendarHabits(User $user, int $aheadDays): array
     {
-        $isFree = \sprintf(
-            "(%s OR LOWER(e.prices) = 'free') AND e.prices NOT LIKE '%%€%%'",
-            implode(' OR ', array_map(static fn (string $prefix): string => \sprintf("LOWER(e.prices) LIKE '%s%%'", $prefix), self::FREE_PRICE_PREFIXES)),
-        );
+        $isFree = self::isFree();
 
         /** @var array{addedAhead: int|string|null, free: int|string|null} $row SUM() is NULL without any event */
         $row = $this->createUserCalendarQueryBuilder($user)
@@ -930,6 +1049,48 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * What a publisher's events online add up to: how many, to come, free, the "J'y vais" and the favourites they got,
+     * the year of the first one, and the months of the last year they took place in.
+     *
+     * @return array{events: int, upcoming: int, free: int, participations: int, interests: int, firstYear: int|null, activeMonths: int}
+     */
+    public function getPublisherTotals(Publisher $publisher, DateTimeImmutable $today = new DateTimeImmutable('today')): array
+    {
+        /** @var array{events: int|string, upcoming: int|string|null, free: int|string|null, participations: int|string|null, interests: int|string|null, first: string|null} $row SUM() and MIN() are NULL without any event */
+        $row = $this->createPublisherOnlineQueryBuilder($publisher)
+            ->select(
+                'COUNT(e.id) AS events',
+                'SUM(CASE WHEN e.endDate >= :today THEN 1 ELSE 0 END) AS upcoming',
+                \sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS free', self::isFree()),
+                'SUM(e.participations) AS participations',
+                'SUM(e.interests) AS interests',
+                'MIN(e.startDate) AS first',
+            )
+            ->setParameter('today', $today->format('Y-m-d'))
+            ->getQuery()
+            ->getSingleResult();
+
+        /** @var list<DateTimeInterface|string> $days as DateTime objects or strings, depending on the platform */
+        $days = $this->createPublisherOnlineQueryBuilder($publisher)
+            ->select('DISTINCT e.startDate AS day')
+            ->andWhere('e.startDate BETWEEN :from AND :today')
+            ->setParameter('from', $today->modify('-1 year')->format('Y-m-d'))
+            ->setParameter('today', $today->format('Y-m-d'))
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return [
+            'events' => (int) $row['events'],
+            'upcoming' => (int) $row['upcoming'],
+            'free' => (int) $row['free'],
+            'participations' => (int) $row['participations'],
+            'interests' => (int) $row['interests'],
+            'firstYear' => null === $row['first'] ? null : (int) substr($row['first'], 0, 4),
+            'activeMonths' => \count(array_unique(array_map(static fn (DateTimeInterface|string $day): string => $day instanceof DateTimeInterface ? $day->format('Y-m') : substr($day, 0, 7), $days))),
+        ];
+    }
+
+    /**
      * @return int the number of venues of a member's published events
      */
     public function countUserPlaces(User $user): int
@@ -939,6 +1100,31 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->join('e.place', 'p')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * A publisher's events online, as its page lists them: published, and not folded into another one's page.
+     */
+    private function createPublisherOnlineQueryBuilder(Publisher $publisher): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.publisher = :publisher')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->setParameter('publisher', $publisher->getId());
+    }
+
+    /**
+     * The DQL condition of a free event: its price text starts with "Gratuit", "Entrée gratuite", "Entrée libre" or is
+     * "Free", with no amount in euros ("4 € - gratuit pour les moins de 18 ans" is not). The price is free text.
+     */
+    private static function isFree(): string
+    {
+        return \sprintf(
+            "(%s OR LOWER(e.prices) = 'free') AND e.prices NOT LIKE '%%€%%'",
+            implode(' OR ', array_map(static fn (string $prefix): string => \sprintf("LOWER(e.prices) LIKE '%s%%'", $prefix), self::FREE_PRICE_PREFIXES)),
+        );
     }
 
     /**
@@ -978,6 +1164,19 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('e.endDate', $isNext ? SortDirection::Ascending : SortDirection::Descending)
             ->setParameter('user', $user->getId())
             ->setParameter('start_date', date('Y-m-d'));
+    }
+
+    /**
+     * The publisher's events online, to come (the soonest to end first) or over (the latest first): its page lists them.
+     */
+    public function findPublisherEventsQueryBuilder(Publisher $publisher, bool $upcoming): QueryBuilder
+    {
+        return $this
+            ->createPublisherOnlineQueryBuilder($publisher)
+            ->andWhere('e.endDate ' . ($upcoming ? '>=' : '<') . ' :today')
+            ->orderBy('e.endDate', $upcoming ? SortDirection::Ascending : SortDirection::Descending)
+            ->addOrderBy('e.id', SortDirection::Ascending)
+            ->setParameter('today', date('Y-m-d'));
     }
 
     /**
@@ -1188,6 +1387,54 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         usort($events, static fn (Event $a, Event $b): int => $ranks[$a->getId()] <=> $ranks[$b->getId()]);
 
         $this->loadAllEager($events, ['view' => 'events:portal:list']);
+
+        return $events;
+    }
+
+    /**
+     * The best of the events a search found: those with a picture first, then the most followed, then in the order of
+     * the search. Drafts and duplicates are left out, as the index may lag behind.
+     *
+     * @param list<int> $ids the events found, in the order of the search
+     *
+     * @return list<Event>
+     */
+    public function findMostFollowedAmong(array $ids, int $limit): array
+    {
+        if ([] === $ids) {
+            return [];
+        }
+
+        /** @var list<array{id: int|string, hasImage: bool|int|string, participations: int|string|null}> $rows */
+        $rows = $this
+            ->createQueryBuilder('e')
+            ->select('e.id, e.hasImage, e.participations')
+            ->where('e.id IN (:ids)')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('e.draft = false')
+            ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+            ->getQuery()
+            ->getScalarResult();
+
+        $ranks = array_flip($ids);
+        usort($rows, static fn (array $a, array $b): int => [(bool) $b['hasImage'], (int) $b['participations'], $ranks[(int) $a['id']]]
+            <=> [(bool) $a['hasImage'], (int) $a['participations'], $ranks[(int) $b['id']]]);
+        $best = array_map(static fn (array $row): int => (int) $row['id'], \array_slice($rows, 0, $limit));
+        if ([] === $best) {
+            return [];
+        }
+
+        /** @var Event[] $events */
+        $events = $this
+            ->createQueryBuilder('e')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', $best, ArrayParameterType::INTEGER)
+            ->getQuery()
+            ->getResult();
+
+        $order = array_flip($best);
+        usort($events, static fn (Event $a, Event $b): int => $order[$a->getId()] <=> $order[$b->getId()]);
+        $this->loadAllEager($events, ['view' => 'events:agenda:list']);
 
         return $events;
     }

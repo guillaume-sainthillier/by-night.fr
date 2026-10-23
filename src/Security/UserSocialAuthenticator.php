@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorTokenInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -132,6 +133,11 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
     {
+        // The network vouched for the member, their second factor is still to come (see UserFormAuthenticator)
+        if ($token instanceof TwoFactorTokenInterface) {
+            return new RedirectResponse($this->router->generate('2fa_login'));
+        }
+
         return new RedirectResponse(
             $this->router->generate('login_social_success', [
                 'service' => $request->attributes->getString('service'),

@@ -202,6 +202,10 @@ $-headings-line-height: 1.2;
     $input-btn-line-height-lg: $-line-height-base,
     $input-btn-padding-y-lg: 0.5rem,
     $input-btn-font-size-lg: 1.25rem,
+    // Tabler 1.7 sizes the slots of the OTP input from $input-height, a calc() that assumes a rem line-height: with the
+    // unitless one above it is invalid CSS, and the slots collapse to their border. The height of an input instead
+    // (line-height × 1rem, its two .5625rem paddings, its two borders)
+    $otp-size: calc(#{$-line-height-base * 1rem} + #{0.5625rem * 2} + 2px),
 
     $headings-line-height: $-headings-line-height,
     $h1-line-height: $-headings-line-height,

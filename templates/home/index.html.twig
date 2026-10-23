@@ -60,15 +60,15 @@
 
             <div class="row g-4 text-center mt-4 pt-4 border-top">
                 <div class="col-6 col-md-3">
-                    <div class="h1 mb-0">{{ totals.events|format_number(locale: 'fr') }}</div>
+                    <div class="h1 mb-0">{{ totals.events|format_number() }}</div>
                     <div class="subheader">sorties à venir</div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="h1 mb-0 text-primary">{{ totals.cities|format_number(locale: 'fr') }}</div>
+                    <div class="h1 mb-0 text-primary">{{ totals.cities|format_number() }}</div>
                     <div class="subheader">villes animées</div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="h1 mb-0">{{ totals.places|format_number(locale: 'fr') }}</div>
+                    <div class="h1 mb-0">{{ totals.places|format_number() }}</div>
                     <div class="subheader">lieux et salles</div>
                 </div>
                 <div class="col-6 col-md-3">

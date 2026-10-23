@@ -58,4 +58,48 @@
             sur <a href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug, _fragment: 'passes'}) }}">votre profil public</a>.
         </p>
     {% endif %}
+
+    {# The outings as a calendar the member's app subscribes to (OutingCalendarController): it follows their changes #}
+    {% set webcalUrl = 'webcal://' ~ calendarUrl|split('://', 2)|last %}
+    <div class="card mt-4" id="calendrier">
+        <div class="card-body">
+            <h2 class="h3 text-start mb-2">
+                <twig:Icon name="lucide:calendar-sync" />
+                Ajouter à mon calendrier
+            </h2>
+            <p class="text-secondary">
+                Vos sorties s'ajoutent à votre agenda et le suivent&nbsp;: un nouveau «&nbsp;J'y vais&nbsp;!&nbsp;», une date
+                qui change ou un événement annulé s'y retrouvent d'eux-mêmes.
+            </p>
+            <div class="btn-list mb-3">
+                <a class="btn btn-primary" href="https://calendar.google.com/calendar/render?cid={{ webcalUrl|url_encode }}" target="_blank" rel="noopener noreferrer">
+                    <twig:Icon name="lucide:calendar-plus" />
+                    Google Agenda
+                </a>
+                <a class="btn" href="{{ webcalUrl }}">
+                    <twig:Icon name="lucide:calendar-plus" />
+                    Apple Calendrier
+                </a>
+                <a class="btn" href="https://outlook.live.com/calendar/0/addfromweb?url={{ calendarUrl|url_encode }}&amp;name={{ 'Mes sorties By Night'|url_encode }}" target="_blank" rel="noopener noreferrer">
+                    <twig:Icon name="lucide:calendar-plus" />
+                    Outlook
+                </a>
+            </div>
+            <label class="form-label" for="calendar-url">Ou copiez l'adresse dans votre application de calendrier</label>
+            <div class="input-group mb-2">
+                <input class="form-control" id="calendar-url" type="text" value="{{ calendarUrl }}" readonly>
+                <button type="button" class="btn" data-copy-url="{{ calendarUrl }}">
+                    <twig:Icon name="lucide:copy" />
+                    Copier
+                </button>
+            </div>
+            <p class="text-secondary small mb-0">
+                Cette adresse est personnelle&nbsp;: qui la connaît voit vos sorties. Partagée par erreur&nbsp;?
+            </p>
+            <form method="post" action="{{ path('app_outing_calendar_renew') }}" class="d-inline" data-confirm-message="Les calendriers abonnés à l'adresse actuelle ne recevront plus vos sorties." data-confirm-title="Changer d'adresse&nbsp;?" data-confirm-button="Changer l'adresse">
+                <input type="hidden" name="_token" value="{{ csrf_token(renewCalendarToken) }}">
+                <button type="submit" class="btn btn-link btn-sm px-0">Changer l'adresse</button>
+            </form>
+        </div>
+    </div>
 {%- endblock %}

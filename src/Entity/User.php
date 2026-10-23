@@ -15,6 +15,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Picture\ImageFormats;
 use App\Repository\UserRepository;
+use App\Security\TwoFactor\Webauthn\WebauthnTwoFactorProvider;
 use App\Utils\ObjectKey;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
@@ -24,7 +25,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
 use Serializable;
+use SortDirection;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
@@ -32,8 +37,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 #[Vich\Uploadable]
 #[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cette adresse e-mail')]
@@ -43,8 +50,9 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Table(name: '`user`')]
 #[ORM\Index(name: 'user_image_name_idx', columns: ['image_name'])]
 #[ORM\Index(name: 'user_image_system_name_idx', columns: ['image_system_name'])]
+#[ORM\UniqueConstraint(name: 'user_calendar_token_unique', columns: ['calendar_token'])]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate, GoogleTwoFactorInterface, BackupCodeInterface, PreferredProviderInterface
 {
     use EntityTimestampableTrait;
 
@@ -109,6 +117,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
     private Collection $userEvents;
 
+    /** The secret of the authenticator app: null while the TOTP second factor is off */
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true)]
+    private ?string $googleAuthenticatorSecret = null;
+
+    /**
+     * The recovery codes not used yet, each usable once in place of the second factor
+     *
+     * @var list<string>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $backupCodes = null;
+
+    /**
+     * @var Collection<int, WebauthnKey>
+     */
+    #[ORM\OneToMany(targetEntity: WebauthnKey::class, mappedBy: 'user', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => SortDirection::Ascending])]
+    private Collection $webauthnKeys;
+
     /** The city the member goes out in, chosen on their profile: the location of the pages whose URL has none */
     #[ORM\ManyToOne(targetEntity: City::class)]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
@@ -151,12 +178,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $verified = false;
 
+    /** Whether the member asked for the weekend selection of their city by e-mail: never without their consent */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $weekendDigest = false;
+
+    /** When the member last asked for the weekend selection: the proof of their consent */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $weekendDigestSince = null;
+
+    /** The ISO week ("2026-W43") of the last weekend selection sent to the member, which a second run skips */
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
+    private ?string $weekendDigestSentWeek = null;
+
+    /**
+     * The secret of the address of the member's outings as a calendar (OutingCalendarController): whoever has it reads
+     * them, so the member can change it. Made the first time the member's outings show it.
+     */
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $calendarToken = null;
+
+    /** Whether the member hears by e-mail of the changes of their outings (OutingChangeNotifier) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $outingAlerts = true;
+
+    /** Whether the member, when they run a publisher, gets the news By Night sends them (app:publishers:send-news) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $publisherNews = true;
+
     private bool $sendToElasticsearch = false;
 
     public function __construct()
     {
         $this->lastLogin = new DateTimeImmutable();
         $this->userEvents = new ArrayCollection();
+        $this->webauthnKeys = new ArrayCollection();
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
@@ -454,6 +509,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
+    public function isPublisherNews(): bool
+    {
+        return $this->publisherNews;
+    }
+
+    public function setPublisherNews(bool $publisherNews): self
+    {
+        $this->publisherNews = $publisherNews;
+
+        return $this;
+    }
+
     public function getWebsite(): ?string
     {
         return $this->website;
@@ -505,6 +572,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
                 $userEvent->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCalendarToken(): ?string
+    {
+        return $this->calendarToken;
+    }
+
+    /**
+     * A new address for the member's outings as a calendar: the former one no longer answers.
+     */
+    public function renewCalendarToken(): self
+    {
+        $this->calendarToken = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
+
+        return $this;
+    }
+
+    public function isOutingAlerts(): bool
+    {
+        return $this->outingAlerts;
+    }
+
+    public function setOutingAlerts(bool $outingAlerts): self
+    {
+        $this->outingAlerts = $outingAlerts;
 
         return $this;
     }
@@ -640,10 +734,176 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
+    public function isWeekendDigest(): bool
+    {
+        return $this->weekendDigest;
+    }
+
+    /**
+     * Asking for it again dates the consent anew; giving it up forgets the date.
+     */
+    public function setWeekendDigest(bool $weekendDigest): self
+    {
+        if ($weekendDigest !== $this->weekendDigest) {
+            $this->weekendDigestSince = $weekendDigest ? new DateTimeImmutable() : null;
+        }
+
+        $this->weekendDigest = $weekendDigest;
+
+        return $this;
+    }
+
+    public function getWeekendDigestSince(): ?DateTimeImmutable
+    {
+        return $this->weekendDigestSince;
+    }
+
+    public function getWeekendDigestSentWeek(): ?string
+    {
+        return $this->weekendDigestSentWeek;
+    }
+
+    public function setWeekendDigestSentWeek(?string $weekendDigestSentWeek): self
+    {
+        $this->weekendDigestSentWeek = $weekendDigestSentWeek;
+
+        return $this;
+    }
+
+    /**
+     * The weekend selection is the one of the member's city: they choose it in the same form.
+     */
+    #[Assert\Callback]
+    public function validateWeekendDigest(ExecutionContextInterface $context): void
+    {
+        if ($this->weekendDigest && null === $this->city) {
+            $context
+                ->buildViolation('Veuillez choisir votre ville pour recevoir la sélection du week-end.')
+                ->atPath('city')
+                ->addViolation();
+        }
+    }
+
     public function setSalt(?string $salt): self
     {
         $this->salt = $salt;
 
         return $this;
+    }
+
+    public function isGoogleAuthenticatorEnabled(): bool
+    {
+        return null !== $this->googleAuthenticatorSecret && '' !== $this->googleAuthenticatorSecret;
+    }
+
+    public function getGoogleAuthenticatorUsername(): string
+    {
+        return $this->email ?? $this->username ?? '';
+    }
+
+    public function getGoogleAuthenticatorSecret(): ?string
+    {
+        return $this->googleAuthenticatorSecret;
+    }
+
+    public function setGoogleAuthenticatorSecret(?string $googleAuthenticatorSecret): self
+    {
+        $this->googleAuthenticatorSecret = $googleAuthenticatorSecret;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getBackupCodes(): ?array
+    {
+        return $this->backupCodes;
+    }
+
+    /**
+     * @param list<string>|null $backupCodes
+     */
+    public function setBackupCodes(?array $backupCodes): self
+    {
+        $this->backupCodes = $backupCodes;
+
+        return $this;
+    }
+
+    public function isBackupCodeEnabled(): bool
+    {
+        return [] !== ($this->backupCodes ?? []);
+    }
+
+    public function isBackupCode(string $code): bool
+    {
+        return \in_array($code, $this->backupCodes ?? [], true);
+    }
+
+    /**
+     * Re-indexed: the codes must stay a JSON list, not become an object once one is gone
+     */
+    public function invalidateBackupCode(string $code): void
+    {
+        $this->backupCodes = array_values(array_filter(
+            $this->backupCodes ?? [],
+            static fn (string $backupCode): bool => $backupCode !== $code,
+        ));
+    }
+
+    /**
+     * @return Collection<int, WebauthnKey>
+     */
+    public function getWebauthnKeys(): Collection
+    {
+        return $this->webauthnKeys;
+    }
+
+    public function addWebauthnKey(WebauthnKey $webauthnKey): self
+    {
+        if (!$this->webauthnKeys->contains($webauthnKey)) {
+            $this->webauthnKeys[] = $webauthnKey;
+            $webauthnKey->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWebauthnKey(WebauthnKey $webauthnKey): self
+    {
+        $this->webauthnKeys->removeElement($webauthnKey);
+
+        return $this;
+    }
+
+    public function isWebauthnAuthenticatorEnabled(): bool
+    {
+        return !$this->webauthnKeys->isEmpty();
+    }
+
+    /**
+     * The account the passkeys are bound to: its handle is the id, never the e-mail, which can change
+     */
+    public function getWebauthnUser(): PublicKeyCredentialUserEntity
+    {
+        return PublicKeyCredentialUserEntity::create(
+            $this->getUserIdentifier(),
+            (string) $this->getId(),
+            $this->getUsername(),
+        );
+    }
+
+    public function hasSecondFactor(): bool
+    {
+        return $this->isGoogleAuthenticatorEnabled() || $this->isWebauthnAuthenticatorEnabled();
+    }
+
+    /**
+     * The 2FA form opens on the passkey when there is one (App\Security\TwoFactor\TwoFactorProviderSelectionListener)
+     */
+    public function getPreferredTwoFactorProvider(): ?string
+    {
+        return $this->isWebauthnAuthenticatorEnabled() ? WebauthnTwoFactorProvider::ALIAS : null;
     }
 }

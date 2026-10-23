@@ -65,6 +65,8 @@ jobs:
               run: pnpm install --frozen-lockfile
             - name: Biome
               run: pnpm lint-ci
+            - name: TypeScript
+              run: pnpm typecheck
             - name: Knip
               run: pnpm knip
 

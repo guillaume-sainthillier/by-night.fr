@@ -62,7 +62,7 @@ final class LoginSocialController extends AbstractController
             'userInformation' => [
                 'name' => $user->getUserIdentifier(),
             ],
-            'targetPath' => $targetPath ?? $this->generateUrl('app_event_list'),
+            'targetPath' => $targetPath ?? $this->generateUrl('app_personal_space_events'),
         ]);
     }
 }

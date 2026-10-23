@@ -1,0 +1,9 @@
+<twig:Event:ListGridVertical events="{{ events }}" stretched="{{ true }}" />
+
+{% if events.hasNextPage %}
+    <div class="load-more text-center my-3" data-url="{{ path(isNext ? 'app_publisher_events_next' : 'app_publisher_events_previous', {slug: publisher.slug, page: events.nextPage}) }}">
+        <button type="button" class="btn btn-outline-primary">
+            Plus d'événements
+        </button>
+    </div>
+{% endif %}

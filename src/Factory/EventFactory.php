@@ -24,6 +24,15 @@ final class EventFactory extends PersistentObjectFactory
         return Event::class;
     }
 
+    /**
+     * A member's event is their publisher's, as MemberEventPublisher makes it: give 'publisher' to pick another, or
+     * null for none.
+     */
+    protected function initialize(): static
+    {
+        return $this->beforeInstantiate(static fn (array $parameters, string $class, self $factory): array => PublisherFactory::forTheMember($parameters, $factory->isPersisting()));
+    }
+
     protected function defaults(): array
     {
         $startDate = self::faker()->dateTimeBetween('now', '+3 months');

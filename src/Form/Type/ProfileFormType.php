@@ -55,6 +55,21 @@ final class ProfileFormType extends AbstractType
                 'label' => 'Ma ville',
                 'help' => "La ville de vos sorties\u{a0}: le menu et la page d'accueil vous la proposent.",
             ])
+            ->add('weekendDigest', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Recevoir la sélection du week-end',
+                'help' => 'Chaque jeudi, les sorties du week-end dans votre ville et autour, par e-mail. Un clic suffit pour vous désinscrire.',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ])
+            ->add('outingAlerts', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Me prévenir par e-mail quand une de mes sorties change',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Afficher un lien vers mes réseaux sociaux',
@@ -73,6 +88,17 @@ final class ProfileFormType extends AbstractType
                     'height' => 200,
                 ],
             ]);
+
+        // The news are only sent to the members who run a publisher
+        if ($options['publisher']) {
+            $builder->add('publisherNews', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Recevoir les nouveautés pour les organisateurs',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ]);
+        }
     }
 
     /**
@@ -82,6 +108,8 @@ final class ProfileFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'publisher' => false,
         ]);
+        $resolver->setAllowedTypes('publisher', 'bool');
     }
 }

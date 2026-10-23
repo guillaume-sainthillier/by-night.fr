@@ -17,6 +17,7 @@ use App\EventSubscriber\SitemapSuscriber;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
@@ -125,6 +126,19 @@ final class SitemapSuscriberTest extends AppKernelTestCase
         UserEventFactory::createOne(['user' => $retired, 'event' => $this->createEvent($place, -60)]);
 
         self::assertSame([\sprintf('/membres/active--%d', $active->getId())], $this->collectSection('users'));
+    }
+
+    public function testPublishersSectionOnlyListsPublishersWithUpcomingEventsOnline(): void
+    {
+        $place = $this->createPlace(CityFactory::toulouse()->create(), 'Le Bikini');
+        $active = PublisherFactory::createOne(['name' => 'Le Bikini']);
+        $retired = PublisherFactory::createOne(['name' => 'Le Ramier']);
+        $drafting = PublisherFactory::createOne(['name' => 'Le Metronum']);
+        EventFactory::createMany(2, ['publisher' => $active, 'place' => $place] + $this->dates(10));
+        EventFactory::createOne(['publisher' => $retired, 'place' => $place] + $this->dates(-60));
+        EventFactory::createOne(['publisher' => $drafting, 'place' => $place, 'draft' => true] + $this->dates(10));
+
+        self::assertSame(['/organisateurs/le-bikini'], $this->collectSection('publishers'));
     }
 
     public function testTagsSectionOnlyListsTagsOfPublishedUpcomingEvents(): void

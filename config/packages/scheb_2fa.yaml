@@ -1,0 +1,28 @@
+# See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/current/configuration.html
+# 2FA is opt-in: a member turns it on from the "Sécurité" tab of their account (App\Controller\User\SecurityController).
+# The second factor is a code of an authenticator app (TOTP), one of the recovery codes, or a passkey
+# (App\Security\TwoFactor\Webauthn).
+scheb_two_factor:
+    backup_codes:
+        enabled: true
+
+    google:
+        enabled: true
+        issuer: 'By Night'
+        template: security/2fa-login.html.twig
+
+    # The logins of the main firewall, by the form and by a social network alike. A remember-me login (RememberMeToken)
+    # and an impersonation (SwitchUserToken) never ask for a second factor
+    security_tokens:
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+
+    # Only when someone logs in: a member already logged in who is authenticated again (a network connected from their
+    # account, their roles reloaded) is not asked again
+    two_factor_condition: App\Security\TwoFactor\LoginTwoFactorCondition
+
+    ip_whitelist: ~
+
+when@dev:
+    scheb_two_factor:
+        ip_whitelist:
+            - !php/const Symfony\Component\HttpFoundation\IpUtils::PRIVATE_SUBNETS

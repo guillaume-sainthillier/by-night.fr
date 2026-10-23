@@ -16,6 +16,7 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserFactory;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
@@ -81,7 +82,7 @@ final class EventControllerTest extends AppWebTestCase
         $client->request('GET', $this->eventUrl($event));
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists(\sprintf('.event-header a[href="/espace-perso/%d"]', $event->getId()));
+        self::assertSelectorExists(\sprintf('.event-header a[href="/espace-perso/organisateurs/%s/evenements/%d"]', $event->getPublisher()?->getSlug(), $event->getId()));
     }
 
     public function testAnotherMemberDoesNotSeeTheLinkToEditTheEvent(): void
@@ -301,7 +302,7 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSelectorExists('#event');
         self::assertSelectorExists('#event-draft-notice');
         self::assertSelectorExists(\sprintf('#event-draft-notice button[data-publish-href="/api/events/%d/draft"]', $event->getId()));
-        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-duplicates-href="/espace-perso/%d/doublons"]', $event->getId()), 'It asks first for the events already online it likely repeats');
+        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-duplicates-href="/espace-perso/organisateurs/%s/evenements/%d/doublons"]', $event->getPublisher()?->getSlug(), $event->getId()), 'It asks first for the events already online it likely repeats');
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]', 'A preview stays out of the index');
     }
 
@@ -330,6 +331,30 @@ final class EventControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('#event');
         self::assertSelectorNotExists('#event-draft-notice');
+    }
+
+    public function testThePageLeadsToThePublisherOfTheEvent(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setPublisher(PublisherFactory::createOne(['name' => 'Le Bikini']));
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorTextContains('a[href="/organisateurs/le-bikini"]', 'Organisé par');
+    }
+
+    public function testThePageLeadsToThePublishersNetworks(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setPublisher(PublisherFactory::createOne(['name' => 'Le Bikini', 'socialLinks' => ['facebook' => 'https://www.facebook.com/lebikini']]));
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorExists('a[href="https://www.facebook.com/lebikini"][title="Le Bikini sur Facebook"]');
     }
 
     public function testAnUpcomingEventIsIndexable(): void
@@ -389,6 +414,9 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSelectorTextContains('#event-ticket-offers a:first-child', 'CDiscount');
         self::assertSelectorTextContains('#event-ticket-offers a:last-child', 'Fnac Spectacles');
         self::assertNotNull($duplicate->getId());
+        // Umami counts a click on any of them for the event's author (EventVisitSync)
+        self::assertSelectorCount(6, 'a[data-umami-event="ticket-click"]');
+        self::assertSelectorExists('a.btn-primary[data-umami-event="ticket-click"][data-umami-event-seller="CDiscount"]');
     }
 
     public function testTheAffiliateLinksAreLabelled(): void

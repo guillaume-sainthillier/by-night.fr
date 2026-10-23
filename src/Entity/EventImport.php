@@ -34,9 +34,15 @@ class EventImport
     /** The problems listed on the page; the error file holds them all */
     public const int MAX_LISTED_PROBLEMS = 200;
 
+    /** The member who started it, told when it is done */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
+
+    /** The publisher its events go to: its page lists the job */
+    #[ORM\ManyToOne(targetEntity: Publisher::class)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    private ?Publisher $publisher = null;
 
     #[ORM\Column(type: Types::STRING, length: 16, enumType: EventImportStatus::class)]
     private EventImportStatus $status = EventImportStatus::Uploaded;
@@ -124,6 +130,18 @@ class EventImport
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPublisher(): ?Publisher
+    {
+        return $this->publisher;
+    }
+
+    public function setPublisher(Publisher $publisher): self
+    {
+        $this->publisher = $publisher;
 
         return $this;
     }

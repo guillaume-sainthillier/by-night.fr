@@ -57,6 +57,11 @@
                 commentaires.
             </li>
             <li>
+                <strong>La sélection du week-end</strong>, si vous la demandez depuis votre compte : votre ville, la date de
+                votre demande et la dernière semaine envoyée. Elle vous est envoyée chaque jeudi par e-mail ; vous pouvez
+                vous désinscrire à tout moment par le lien de chaque envoi ou depuis votre compte.
+            </li>
+            <li>
                 <strong>Vos messages</strong> : les avis que vous nous envoyez depuis votre espace, les e-mails que vous
                 écrivez à support@by-night.fr, et les demandes de retrait de contenu (adresse e-mail, message, pages
                 concernées).
@@ -87,6 +92,11 @@
                 s'afficher. Vous pouvez changer d'avis à tout moment depuis le lien « Gérer mes cookies » en bas de
                 page. Les cookies déposés sont décrits dans notre
                 <a href="{{ path('app_main_cookie') }}">politique de cookies</a>.
+            </li>
+            <li>
+                <strong>La mesure d'audience sans cookie</strong> : Umami, installé sur nos propres serveurs, compte les
+                visiteurs de chaque page et les clics sur les liens de billetterie, sans cookie ni conservation de votre
+                adresse IP. Ces chiffres, sans rien qui vous identifie, sont montrés à l'organisateur de l'événement.
             </li>
         </ul>
     </twig:Legal:Section>
@@ -177,6 +187,14 @@
                             <td>30 jours, puis effacés automatiquement.</td>
                         </tr>
                         <tr>
+                            <td>La sélection du week-end par e-mail</td>
+                            <td>Votre consentement, que vous pouvez retirer à tout moment</td>
+                            <td>
+                                La date de votre demande est effacée dès que vous vous désinscrivez ; la dernière semaine envoyée,
+                                tant que le compte existe.
+                            </td>
+                        </tr>
+                        <tr>
                             <td>Vos avis et vos e-mails à support@by-night.fr</td>
                             <td>Intérêt légitime : vous répondre</td>
                             <td>
@@ -231,7 +249,7 @@
         <ul>
             <li>OVH (hébergement des serveurs et des fichiers, en France), où sont aussi installés nos journaux techniques et notre outil de suivi des erreurs (Sentry) ;</li>
             <li>Cloudflare (diffusion des pages et protection du site) ;</li>
-            <li>Mailjet (envoi des e-mails : confirmation d'adresse, mot de passe oublié, suite donnée à un signalement) ;</li>
+            <li>Mailjet (envoi des e-mails : confirmation d'adresse, mot de passe oublié, suite donnée à un signalement, sélection du week-end) ;</li>
             <li>Google (reCAPTCHA, cartes, vidéos YouTube, mesure d'audience et publicité) ;</li>
             <li>Meta (page Facebook, si vous l'affichez) ;</li>
             <li>Google, Meta et X pour la connexion avec ces réseaux, si vous la choisissez.</li>
@@ -261,7 +279,7 @@
             données, du droit de vous opposer à leur traitement, du droit de retirer votre consentement à tout moment et
             du droit de définir des directives sur le sort de vos données après votre décès. Vous pouvez modifier vos
             informations depuis <a href="{{ path('app_user_edit') }}">votre compte</a>, exporter vos événements depuis
-            <a href="{{ path('app_event_exports') }}">votre espace</a>, et supprimer votre compte depuis l'onglet
+            <a href="{{ path('app_personal_space_exports') }}">votre espace</a>, et supprimer votre compte depuis l'onglet
             « Supprimer le compte ». Pour exercer vos autres droits, écrivez à
             <a href="mailto:support@by-night.fr">support@by-night.fr</a> : nous vous répondons dans un délai d'un mois,
             sans vous demander de pièce d'identité sauf doute raisonnable sur votre identité.

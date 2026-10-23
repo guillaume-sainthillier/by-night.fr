@@ -19,6 +19,7 @@ use App\Dto\TagDto;
 use App\DtoFactory\EventDtoFactory;
 use App\Entity\Country;
 use App\Entity\Event;
+use App\Entity\Publisher;
 use App\Entity\User;
 use App\Handler\DoctrineEventHandler;
 use App\Manager\MemberEventPublisher;
@@ -70,13 +71,13 @@ final class EventRowMapper
     ) {
     }
 
-    public function map(EventRowGroup $group, User $user): MappedEvent
+    public function map(EventRowGroup $group, User $user, Publisher $publisher): MappedEvent
     {
         $first = $group->first();
         $reference = $group->reference();
         $errors = $group->errors;
 
-        $event = [] === $errors ? $this->findEvent($group, $user, $errors) : null;
+        $event = [] === $errors ? $this->findEvent($group, $publisher, $errors) : null;
         $dto = null === $event ? $this->memberEventPublisher->createDto($user) : $this->eventDtoFactory->create($event);
         $before = null === $event ? null : self::signature($dto);
         $draft = null;
@@ -104,21 +105,21 @@ final class EventRowMapper
     }
 
     /**
-     * The member's event the rows update: by its ID, else by their reference. Null for a new event.
+     * The publisher's event the rows update: by its ID, else by their reference. Null for a new event.
      *
      * @param list<RowProblem> $errors
      */
-    private function findEvent(EventRowGroup $group, User $user, array &$errors): ?Event
+    private function findEvent(EventRowGroup $group, Publisher $publisher, array &$errors): ?Event
     {
         $reference = $group->reference();
-        $byReference = null === $reference ? null : $this->eventRepository->findOneByUserAndReference($user, $reference);
+        $byReference = null === $reference ? null : $this->eventRepository->findOneByPublisherAndReference($publisher, $reference);
         $id = $group->id();
         if (null === $id) {
             return $byReference;
         }
 
         $event = $this->eventRepository->find($id);
-        if (null === $event || $event->getUser()?->getId() !== $user->getId()) {
+        if (null === $event || $event->getPublisher()?->getId() !== $publisher->getId()) {
             $errors[] = RowProblem::at($group->first(), EventColumn::Id, \sprintf('L’événement %d n’est pas l’un des vôtres : laissez la colonne vide pour en créer un.', $id));
 
             return null;

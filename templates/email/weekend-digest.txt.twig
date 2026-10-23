@@ -1,0 +1,31 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% set utm = {utm_source: 'newsletter', utm_medium: 'email', utm_campaign: 'weekend'} %}
+{# TODO: the city's own weekend page (/{city}/ce-week-end) once the date pages are merged #}
+{% set agendaUrl = url('app_location_index', {location: location.slug, when: 'this_weekend'}|merge(utm)) %}
+
+{% block heading %}Ce week-end {{ location.atName }}{% endblock %}
+
+{% block body %}
+Bonjour {{ user.firstname ?: user.username }},
+
+Voici notre sélection des sorties du week-end {{ location.atName }} et autour, du {{ weekend.from|format_date(pattern: 'EEEE d MMMM') }} au {{ weekend.to|format_date(pattern: 'EEEE d MMMM') }}.
+{% for event in events %}
+{% set session = event.sessionFor(weekend.from, weekend.to) %}
+
+{{ event.name }}
+{% if session %}
+{{ session.startAt|format_date(pattern: 'EEEE d MMMM')|capitalize }}{{ session_hours(session) ? ' · ' ~ session_hours(session) }}
+{% endif %}
+{% if event.placeName %}
+{{ event.placeName }}{{ event.placeCity ? ', ' ~ event.placeCity }}
+{% endif %}
+{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}|merge(utm)) }}
+{% endfor %}
+
+Toutes les sorties du week-end : {{ agendaUrl }}
+{% endblock %}
+
+{% block footer %}Vous recevez cet e-mail car vous avez demandé la sélection du week-end sur By Night.
+Se désinscrire : {{ unsubscribeUrl }}
+Gérer mes préférences : {{ url('app_user_edit') }}{% endblock %}

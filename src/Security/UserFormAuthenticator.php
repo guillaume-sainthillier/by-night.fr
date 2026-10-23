@@ -11,6 +11,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorTokenInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,12 +67,17 @@ final class UserFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
     {
+        // The password was right, the second factor is still to come: its form, which keeps LoginTargetPath for after
+        if ($token instanceof TwoFactorTokenInterface) {
+            return new RedirectResponse($this->urlGenerator->generate('2fa_login'));
+        }
+
         // The page the member logged in from (LoginTargetPath), or the one that needed the login
         if ($targetPath = $this->loginTargetPath->pull($request->getSession())) {
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_event_list'));
+        return new RedirectResponse($this->urlGenerator->generate('app_personal_space_events'));
     }
 
     protected function getLoginUrl(Request $request): string

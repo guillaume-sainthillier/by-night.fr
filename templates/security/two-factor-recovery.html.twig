@@ -1,0 +1,35 @@
+{% extends 'layouts/full.html.twig' %}
+
+{% block title 'Récupérer l’accès à votre compte' %}
+
+{% block meta_robots %}
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block body %}
+    <div class="container-tight py-4 py-lg-5">
+        <div class="card card-md mb-0">
+            <div class="card-body">
+                <h1 class="text-start mb-3">Récupérer l’accès à votre compte</h1>
+                {% if isValid %}
+                    <p>
+                        Ce lien désactive la double authentification de votre compte&nbsp;: l’application d’authentification,
+                        les codes de secours et les clés d’accès. Vous vous connecterez ensuite sans second facteur.
+                    </p>
+                    <form method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token(constant('App\\Controller\\TwoFactorRecoveryController::CSRF_TOKEN_ID')) }}">
+                        <button type="submit" class="btn btn-warning w-100">Désactiver la double authentification</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-danger mb-0" role="alert">
+                        Ce lien n’est plus valable&nbsp;: il a expiré, a déjà servi, ou votre compte a changé depuis.
+                        Connectez-vous pour en demander un nouveau.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <p class="text-center text-secondary mt-3">
+            <a href="{{ path('app_login') }}">Retour à la connexion</a>
+        </p>
+    </div>
+{% endblock %}

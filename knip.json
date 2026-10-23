@@ -1,14 +1,11 @@
 {
     "$schema": "https://unpkg.com/knip@5/schema.json",
     "entry": [
-        "assets/js/app.js",
-        "assets/js/admin.js",
-        "assets/js/pages/*.js",
-        "assets/**/controllers/**/*.{js,jsx}",
-        "assets/**/icons/**/*.{js,jsx}"
+        "assets/js/pages/*.ts",
+        "assets/**/controllers/**/*.{ts,tsx}"
     ],
     "ignore": [
-        "assets/js/types.js"
+        "assets/js/icons/**"
     ],
     "paths": {
         "@/*": [
@@ -20,7 +17,6 @@
         "unresolved": "off"
     },
     "ignoreDependencies": [
-        "es6-promise",
         "glob-all",
         "@fontsource-variable/epilogue"
     ]

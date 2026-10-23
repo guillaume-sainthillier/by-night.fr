@@ -15,8 +15,10 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Manager\PreloadManager;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<UserEvent>
@@ -49,6 +51,66 @@ final class UserEventRepository extends ServiceEntityRepository implements Multi
             ->join('ue.event', 'e')
             ->where('ue.user = :user')
             ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * A member's outings ending on or after a day, as their calendar feed lists them: the published events they go to
+     * or are interested in (a "J'y vais" taken back keeps its row, neither), with their sessions, soonest first.
+     *
+     * @return list<UserEvent>
+     */
+    public function findCalendarFeed(User $user, DateTimeInterface $since): array
+    {
+        /* @var list<UserEvent> */
+        return $this
+            ->createQueryBuilder('ue')
+            ->addSelect('e', 't')
+            ->join('ue.event', 'e')
+            ->leftJoin('e.timesheets', 't')
+            ->where('ue.user = :user')
+            ->andWhere('(ue.going = true OR ue.wish = true)')
+            ->andWhere('e.draft = false')
+            ->andWhere('e.endDate >= :since')
+            ->orderBy('e.startDate', SortDirection::Ascending)
+            ->addOrderBy('e.id', SortDirection::Ascending)
+            ->setParameter('user', $user->getId())
+            ->setParameter('since', $since->format('Y-m-d'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * The members following these events, with their event, its venue and the member loaded: those going to them or
+     * interested in them, their author and the member managing their publisher left out (publishing an event says "J'y
+     * vais" for them, and they make its changes: Publisher::isManagedBy()), and none of a duplicate (its page leads to
+     * its canonical's).
+     *
+     * @param list<int> $eventIds
+     *
+     * @return list<UserEvent>
+     */
+    public function findFollowersOfEvents(array $eventIds): array
+    {
+        if ([] === $eventIds) {
+            return [];
+        }
+
+        /* @var list<UserEvent> */
+        return $this
+            ->createQueryBuilder('ue')
+            ->addSelect('e', 'p', 'u')
+            ->join('ue.event', 'e')
+            ->join('ue.user', 'u')
+            ->leftJoin('e.place', 'p')
+            ->leftJoin('e.publisher', 'pub')
+            ->where('ue.event IN (:ids)')
+            ->andWhere('(ue.going = true OR ue.wish = true)')
+            ->andWhere('e.duplicateOf IS NULL')
+            ->andWhere('(e.user IS NULL OR e.user <> ue.user)')
+            ->andWhere('(pub.id IS NULL OR pub.owner <> ue.user)')
+            ->setParameter('ids', $eventIds)
             ->getQuery()
             ->getResult();
     }

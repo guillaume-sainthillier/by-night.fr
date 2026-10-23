@@ -94,6 +94,14 @@ _______     __  _   _ _____ _____ _    _ _______
         {{ include('fragments/_google-tags.html.twig') }}
     {% endif %}
 
+    {# Umami, without cookies: no consent needed, so it counts every visitor. On the site's own origin: Traefik sends
+       /a/script.js and /a/api/send (where the script posts, next to itself) straight to the Umami container (README);
+       only where a website id is set. Its event pages' visitors and ticketing clicks are shown to their authors
+       (app:events:sync-visits) #}
+    {% if umami_website_id %}
+        <script defer src="/a/script.js" data-website-id="{{ umami_website_id }}"></script>
+    {% endif %}
+
     {{ site_json_ld() }}
     {% block json_ld '' %}
     {% block head_js_layout '' %}
@@ -147,19 +155,17 @@ _______     __  _   _ _____ _____ _    _ _______
 </button>
 
 <!-- JS -->
-{{ reprise_entry_script_tags('app') }}
-{# A module script so it runs after the app entry module (deferred, document order), once window.$ and window.App exist. #}
-<script type="module">
-    $(document).ready(function () {
-    App.start({{ {
+{# A classic script: it runs at once, before the app entry module (deferred), which reads it to boot (assets/js/app.ts) #}
+<script>
+    window.appParameters = {{ {
         environment: app.environment,
         locale: app.request.locale,
         release: 'v' ~ app_version,
         dsn: sentry_dsn,
         user: (app.user ? {id: app.user.id} : null),
-    }|json_encode|raw }});
-  });
+    }|json_encode|raw }};
 </script>
+{{ reprise_entry_script_tags('app') }}
 {%- block js -%}{%- endblock -%}
 <!-- ./JS -->
 </body>

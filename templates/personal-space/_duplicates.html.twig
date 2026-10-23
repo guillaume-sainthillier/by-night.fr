@@ -1,6 +1,6 @@
 {#
     The published events a member's event likely repeats (EventController::renderDuplicates()), in the dialog asking to
-    confirm its publication (assets/js/utils/duplicates.js). Each opens in a new tab: the form stays as filled in.
+    confirm its publication (assets/js/utils/duplicates.ts). Each opens in a new tab: the form stays as filled in.
 #}
 {# @var duplicates \App\Entity\Event[] #}
 <p class="text-secondary">
@@ -26,7 +26,7 @@
                     <div class="text-secondary small">
                         {%- if event.fromData -%}
                             Source&nbsp;: {{ event.fromData }}
-                        {%- elseif app.user and event.user and event.user.id == app.user.id -%}
+                        {%- elseif app.user and event.publisher and event.publisher.managedBy(app.user) -%}
                             Publié par vous
                         {%- else -%}
                             Publié par un membre

@@ -18,6 +18,36 @@ framework:
             limit: 10
             interval: '1 hour'
             cache_pool: 'cache.rate_limiter'
+        # Each code submitted while turning on the authenticator app (App\Controller\User\SecurityController): per
+        # member, counted before the code is checked
+        two_factor_totp_verification:
+            policy: 'token_bucket'
+            limit: 5
+            rate: { interval: '15 minutes', amount: 5 }
+            cache_pool: 'cache.rate_limiter'
+        # The second factor of a login (App\Security\TwoFactor\TwoFactorThrottlingListener): only failures count, per
+        # member whatever the IP, and per IP
+        two_factor_check_user:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '15 minutes'
+            cache_pool: 'cache.rate_limiter'
+        two_factor_check_ip:
+            policy: 'sliding_window'
+            limit: 20
+            interval: '15 minutes'
+            cache_pool: 'cache.rate_limiter'
+        # Each recovery link e-mails the member (App\Controller\TwoFactorRecoveryController): per member and per IP
+        two_factor_recovery_user:
+            policy: 'sliding_window'
+            limit: 3
+            interval: '1 hour'
+            cache_pool: 'cache.rate_limiter'
+        two_factor_recovery_ip:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 hour'
+            cache_pool: 'cache.rate_limiter'
         messenger_parser:
             policy: 'token_bucket'
             limit: '%env(int:MESSENGER_PARSER_RATE_LIMIT)%'
@@ -81,3 +111,24 @@ framework:
                 interval: '36 seconds'
                 amount: 5
             cache_pool: 'cache.rate_limiter'
+
+when@test:
+    framework:
+        rate_limiter:
+            # The 2FA limiters are keyed by member id, which the rolled-back tests hand out again: kept in memory with
+            # the kernel (the test client reboots it on each request, unless disableReboot()), no test inherits the
+            # failures of another
+            two_factor_totp_verification:
+                storage_service: rate_limiter.storage.test
+            two_factor_check_user:
+                storage_service: rate_limiter.storage.test
+            two_factor_check_ip:
+                storage_service: rate_limiter.storage.test
+            two_factor_recovery_user:
+                storage_service: rate_limiter.storage.test
+            two_factor_recovery_ip:
+                storage_service: rate_limiter.storage.test
+
+    services:
+        rate_limiter.storage.test:
+            class: Symfony\Component\RateLimiter\Storage\InMemoryStorage

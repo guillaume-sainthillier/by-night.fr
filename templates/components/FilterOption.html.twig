@@ -19,5 +19,5 @@
             {% if description %}<span class="d-block small text-secondary text-truncate">{{ description }}</span>{% endif %}
         {% endblock %}
     </span>
-    {% if count is not null %}<span class="badge bg-secondary-lt">{{ count|format_number(locale: 'fr') }}</span>{% endif %}
+    {% if count is not null %}<span class="badge bg-secondary-lt">{{ count|format_number() }}</span>{% endif %}
 </a>

@@ -22,11 +22,11 @@
                             <twig:Icon name="lucide:calendar-days" />
                             {%- set lastDay = session.endAt ?? session.startAt %}
                             {%- if session.startAt|date('Y-m-d') < 'now'|date('Y-m-d') %}
-                                Jusqu'au {{ lastDay|format_date(pattern: 'd MMM', locale: 'fr') }}
+                                Jusqu'au {{ lastDay|format_date(pattern: 'd MMM') }}
                             {%- elseif lastDay|date('Y-m-d') > session.startAt|date('Y-m-d') %}
-                                {{ session.startAt|format_date(pattern: 'd MMM', locale: 'fr') }} – {{ lastDay|format_date(pattern: 'd MMM', locale: 'fr') }}
+                                {{ session.startAt|format_date(pattern: 'd MMM') }} – {{ lastDay|format_date(pattern: 'd MMM') }}
                             {%- else %}
-                                {{ session.startAt|format_date(pattern: 'EEE d MMM', locale: 'fr') }}
+                                {{ session.startAt|format_date(pattern: 'EEE d MMM') }}
                             {%- endif -%}
                         </span>
                     {% endif %}

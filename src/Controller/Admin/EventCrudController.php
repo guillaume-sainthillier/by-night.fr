@@ -115,6 +115,7 @@ final class EventCrudController extends AbstractCrudController
         $panel1 = FormField::addFieldset('Informations');
         $id = IdField::new('id', 'ID');
         $user = AssociationField::new('user')->autocomplete();
+        $publisher = AssociationField::new('publisher', 'Organisateur')->autocomplete();
         $createdAt = DateTimeField::new('createdAt');
         $updatedAt = DateTimeField::new('updatedAt');
         $externalId = TextField::new('externalId');
@@ -293,6 +294,7 @@ final class EventCrudController extends AbstractCrudController
             $externalOrigin,
             $externalUpdatedAt,
             $user,
+            $publisher,
             $userEvents,
             $comments,
             $fromData,
