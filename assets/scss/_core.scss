@@ -51,6 +51,8 @@ $-headings-line-height: 1.2;
     $navbar-toggler-padding-y: 0,
     // 1.25rem since 1.5
     $card-spacer-y: 1rem,
+    // $card-cap-padding-y (0.75rem below) up to 1.6, a fixed 1rem since 1.7
+    $list-group-item-padding-y: 0.75rem,
     // Round (pill) since 1.5
     $avatar-border-radius: var(--border-radius),
     // Half-transparent since 1.5
