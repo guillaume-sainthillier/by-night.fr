@@ -71,20 +71,6 @@ final class AudienceChartTest extends TestCase
         self::assertSame(100.0, $labels[5]['left']);
     }
 
-    public function testTheGoogleAnalyticsDaysAreShaded(): void
-    {
-        $chart = new AudienceChart([
-            $this->day('2026-10-01', 1, fromGoogleAnalytics: true),
-            $this->day('2026-10-02', 1, fromGoogleAnalytics: true),
-            $this->day('2026-10-03', 5),
-            $this->day('2026-10-04', 5),
-            $this->day('2026-10-05', 5),
-        ]);
-
-        self::assertSame(['x' => 0.0, 'width' => 375.0], $chart->googleAnalyticsSpan());
-        self::assertNull(new AudienceChart([$this->day('2026-10-01', 1)])->googleAnalyticsSpan());
-    }
-
     /**
      * @return array{day: DateTimeImmutable, visitors: int, ticketClicks: int, fromGoogleAnalytics: bool}
      */

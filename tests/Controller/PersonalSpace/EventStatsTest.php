@@ -107,7 +107,7 @@ final class EventStatsTest extends AppWebTestCase
         self::assertSelectorNotExists('#event-stats-google-analytics');
     }
 
-    public function testTheDaysReadFromGoogleAnalyticsAreShadedAndSaidToCountFewerVisitors(): void
+    public function testTheDaysReadFromGoogleAnalyticsAreSaidToCountFewerVisitors(): void
     {
         $client = self::createClient();
         $event = EventFactory::createOne();
@@ -119,11 +119,9 @@ final class EventStatsTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#event-stats-google-analytics', 'Google Analytics');
-        self::assertSelectorExists('#event-stats-chart rect[data-google-analytics]');
-        self::assertSelectorTextContains('[data-legend-google-analytics]', 'Google Analytics');
     }
 
-    public function testTheShadeIsLeftOutOfAPeriodWithoutGoogleAnalyticsDays(): void
+    public function testTheNoteIsLeftOutOfAPeriodWithoutGoogleAnalyticsDays(): void
     {
         $client = self::createClient();
         $event = EventFactory::createOne();
@@ -135,8 +133,6 @@ final class EventStatsTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('#event-stats-google-analytics');
-        self::assertSelectorNotExists('#event-stats-chart rect[data-google-analytics]');
-        self::assertSelectorNotExists('[data-legend-google-analytics]');
     }
 
     public function testAnotherMemberCannotSeeThem(): void

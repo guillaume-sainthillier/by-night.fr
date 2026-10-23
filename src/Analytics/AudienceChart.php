@@ -101,25 +101,6 @@ final readonly class AudienceChart
         ], array_keys($this->days));
     }
 
-    /**
-     * Where the days read from Google Analytics lie, to shade them: from and to (SVG units), null without any.
-     *
-     * @return array{x: float, width: float}|null
-     */
-    public function googleAnalyticsSpan(): ?array
-    {
-        $indexes = array_keys(array_filter($this->days, static fn (array $day): bool => $day['fromGoogleAnalytics']));
-        if ([] === $indexes) {
-            return null;
-        }
-
-        $half = self::WIDTH / max(1, \count($this->days) - 1) / 2;
-        $from = max(0.0, $this->x(min($indexes)) - $half);
-        $to = min((float) self::WIDTH, $this->x(max($indexes)) + $half);
-
-        return ['x' => $from, 'width' => $to - $from];
-    }
-
     private function x(int $i): float
     {
         $count = \count($this->days);

@@ -97,10 +97,6 @@
                     <div class="ms-auto d-flex align-items-center gap-3 small text-secondary" aria-hidden="true">
                         <span class="d-inline-flex align-items-center gap-1"><span class="d-inline-block rounded-pill bg-primary" style="width: 1rem; height: 3px"></span>Visiteurs</span>
                         <span class="d-inline-flex align-items-center gap-1"><span class="d-inline-block rounded-pill bg-teal" style="width: 1rem; height: 3px"></span>Clics billetterie</span>
-                        {# The shaded days, explained under the chart (#event-stats-google-analytics) #}
-                        {% if googleAnalyticsUntil %}
-                            <span class="d-inline-flex align-items-center gap-1" data-legend-google-analytics><span class="d-inline-block rounded-1 bg-secondary-lt border" style="width: 0.75rem; height: 0.75rem"></span>Google Analytics (partiel)</span>
-                        {% endif %}
                     </div>
                 </div>
                 <div class="card-body">
@@ -117,11 +113,6 @@
                             </div>
                             <div class="flex-grow-1 min-w-0">
                                 <svg class="d-block w-100" style="height: 14rem; overflow: visible" viewBox="0 0 {{ constant('App\\Analytics\\AudienceChart::WIDTH') }} {{ constant('App\\Analytics\\AudienceChart::HEIGHT') }}" preserveAspectRatio="none" id="event-stats-chart">
-                                    {% set span = chart.googleAnalyticsSpan %}
-                                    {% if span %}
-                                        {# The days read from Google Analytics: only the visitors who accepted its cookies #}
-                                        <rect class="text-secondary" fill="currentColor" fill-opacity="0.08" x="{{ span.x }}" y="0" width="{{ span.width }}" height="{{ constant('App\\Analytics\\AudienceChart::HEIGHT') }}" data-google-analytics />
-                                    {% endif %}
                                     {% for tick in chart.ticks %}
                                         {% set y = constant('App\\Analytics\\AudienceChart::HEIGHT') * (1 - tick.bottom / 100) %}
                                         <line class="text-secondary" stroke="currentColor" stroke-opacity="0.2" x1="0" x2="{{ constant('App\\Analytics\\AudienceChart::WIDTH') }}" y1="{{ y }}" y2="{{ y }}" vector-effect="non-scaling-stroke" {% if not loop.first %}stroke-dasharray="4 4"{% endif %} />
@@ -191,7 +182,7 @@
                         </p>
                         {% if googleAnalyticsUntil %}
                             <p class="mb-2" id="event-stats-google-analytics">
-                                {{ "Jusqu'au {day} (zone grisée), les visiteurs viennent de Google Analytics, qui ne comptait que ceux ayant accepté ses cookies : ils sont plus bas qu'ensuite, et les clics billetterie n'y sont pas."|trans({day: googleAnalyticsUntil|format_date('long', locale: 'fr')}, 'messages+intl-icu') }}
+                                {{ "Jusqu'au {day}, les visiteurs viennent de Google Analytics, qui ne comptait que ceux ayant accepté ses cookies : ils sont plus bas qu'ensuite, et les clics billetterie n'y sont pas."|trans({day: googleAnalyticsUntil|format_date('long', locale: 'fr')}, 'messages+intl-icu') }}
                             </p>
                         {% endif %}
                         <p class="mb-0">
