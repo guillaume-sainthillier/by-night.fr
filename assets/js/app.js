@@ -18,6 +18,7 @@ import dropzone from '@/js/listeners/dropzone'
 import duplicateCheck from '@/js/listeners/duplicate-check'
 import emailVerify from '@/js/listeners/email-verify'
 import eventPublish from '@/js/listeners/event-publish'
+import facebookPage from '@/js/listeners/facebook-page'
 import feedback from '@/js/listeners/feedback'
 import fileMaxSize from '@/js/listeners/file-max-size'
 import filteredLink from '@/js/listeners/filtered-link'
@@ -33,8 +34,10 @@ import pages from '@/js/listeners/pages'
 import passwordMeter from '@/js/listeners/password-meter'
 import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
+import toc from '@/js/listeners/toc'
 import tooltip from '@/js/listeners/tooltip'
 import transferToasts from '@/js/listeners/transfer-toasts'
+import videoFacade from '@/js/listeners/video-facade'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
@@ -92,6 +95,7 @@ class App {
             duplicateCheck,
             emailVerify,
             eventPublish,
+            facebookPage,
             feedback,
             fileMaxSize,
             filteredLink,
@@ -106,8 +110,10 @@ class App {
             passwordMeter,
             passwordReveal,
             popup,
+            toc,
             tooltip,
             transferToasts,
+            videoFacade,
         ]
 
         this.#listeners.forEach((listener) => this.#tracked.set(listener, new Set()))

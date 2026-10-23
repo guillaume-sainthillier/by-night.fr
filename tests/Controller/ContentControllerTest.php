@@ -32,8 +32,10 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Mentions légales');
         // The LCEN requires the host's name, address and phone number, and a way to reach the publisher
-        self::assertAnySelectorTextContains('p', 'OVH SAS');
-        self::assertAnySelectorTextContains('p', '2 rue Kellermann, 59100 Roubaix');
+        self::assertSelectorTextContains('#editeur', 'OVH SAS');
+        self::assertSelectorTextContains('#editeur', '2 rue Kellermann, 59100 Roubaix');
+        self::assertSelectorTextContains('#editeur', 'RCS Paris 942 070 392');
+        self::assertSelectorTextContains('#editeur', 'Guillaume Sainthillier');
         self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
         self::assertSelectorExists('a[href="/cookie"]');
         self::assertSelectorExists('a[href="/confidentialite"]');
@@ -53,6 +55,54 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertSelectorExists('a[href="https://developers.google.com/terms/api-services-user-data-policy"]');
         self::assertSelectorExists('a[href="https://myaccount.google.com/connections"]');
         self::assertSelectorExists('a[href="mailto:support@by-night.fr"]');
+    }
+
+    public function testTheLegalPagesShareTheirTabs(): void
+    {
+        $client = self::createClient();
+
+        foreach (['/mentions-legales', '/conditions-generales-d-utilisation', '/confidentialite', '/cookie', '/transparence'] as $url) {
+            $client->request('GET', $url);
+
+            self::assertResponseIsSuccessful();
+            self::assertSelectorCount(5, 'nav[aria-label="Documents juridiques"] a');
+            self::assertSelectorExists(\sprintf('nav[aria-label="Documents juridiques"] a[aria-current="page"][href="%s"]', $url));
+            // "Sur cette page" lists every section of the page
+            self::assertSame(
+                $client->getCrawler()->filter('.legal-section')->count(),
+                $client->getCrawler()->filter('[data-toc] a')->count(),
+            );
+        }
+    }
+
+    public function testTheTermsCoverTheAccountTheLicenceAndTheNotices(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/conditions-generales-d-utilisation');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', "Conditions générales d'utilisation");
+        foreach (['#compte', '#licence', '#moderation', '#signalement', '#sources'] as $section) {
+            self::assertSelectorExists($section);
+        }
+        self::assertSelectorTextContains('#signalement', 'Signaler ce contenu');
+        self::assertSelectorExists('#signalement a[href="mailto:support@by-night.fr"]');
+        self::assertSelectorExists('footer a[href="/conditions-generales-d-utilisation"]');
+    }
+
+    public function testTheTransparencyPageSaysHowTheSiteEarnsMoney(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/transparence');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Transparence');
+        self::assertSelectorTextContains('#financement', 'AdSense');
+        self::assertSelectorTextContains('#financement', 'Awin');
+        self::assertSelectorTextContains('#billets', "le lien de réservation de l'organisateur n'est pas affiché");
+        self::assertSelectorExists('footer a[href="/transparence"]');
     }
 
     public function testFontsAreSelfHosted(): void

@@ -1,0 +1,17 @@
+{# The question box beside the legal pages: the site's own address, answered by its publisher #}
+{% props email = 'support@by-night.fr' %}
+<div {{ attributes.defaults({class: 'card'}) }}>
+    <div class="card-body vstack gap-3">
+        <div class="hstack gap-3">
+            <span class="avatar rounded-3 bg-primary-lt flex-shrink-0"><twig:Icon name="lucide:mail" class="fs-3" /></span>
+            <div>
+                <h2 class="mb-0 fs-5 fw-bold text-start">Une question&#8239;?</h2>
+                <p class="mb-0 small text-secondary">Sur vos données, un contenu ou ces conditions</p>
+            </div>
+        </div>
+        <a class="btn btn-primary" href="mailto:{{ email }}">
+            <twig:Icon name="lucide:mail" />
+            {{ email }}
+        </a>
+    </div>
+</div>
