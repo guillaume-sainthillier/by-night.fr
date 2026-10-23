@@ -18,8 +18,8 @@ export type Parameters = {
 export const services = defineServices({
     toastManager: () => new ToastManager(),
     modalManager: () => new ModalManager(),
-    // Symfony form collections (templates/form/fields.html.twig): its buttons' listener is registered by app.ts. Reads
-    // the container: its return type stops the inference from looping through ServiceMap
+    // Symfony form collections (templates/form/fields.html.twig), whose buttons listeners/form-collection.ts hands to
+    // it. Reads the container: its return type stops the inference from looping through ServiceMap
     collectionManager: (container): CollectionManager =>
         new CollectionManager({
             app: container.get('app'),
