@@ -125,7 +125,8 @@
                         {{ form_row(form.city) }}
                         <div class="card form-panel mb-0">
                             <div class="card-body">
-                                {{ form_row(form.weekendDigest, {row_class: 'mb-0'}) }}
+                                {{ form_row(form.weekendDigest, {row_class: 'mb-3'}) }}
+                                {{ form_row(form.outingAlerts, {row_class: 'mb-0', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
                             </div>
                         </div>
 

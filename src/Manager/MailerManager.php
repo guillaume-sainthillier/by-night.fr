@@ -15,11 +15,17 @@ use App\Entity\ContentRemovalRequest;
 use App\Entity\Event;
 use App\Entity\Publisher;
 use App\Entity\User;
+use App\Entity\UserEvent;
 use App\Enum\ContentRemovalType;
 use App\Enum\PublisherNewsEdition;
+use App\Outing\OutingChange;
+use App\Outing\OutingChangeWording;
+use App\Outing\OutingState;
 use App\Search\DateRange;
+use LogicException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -35,6 +41,7 @@ final readonly class MailerManager
         private MailerInterface $mailer,
         private UrlGeneratorInterface $urlGenerator,
         private TranslatorInterface $translator,
+        private UriSigner $uriSigner,
         #[Autowire(env: 'SUPPORT_BCC_EMAIL')]
         private string $supportBccEmail,
     ) {
@@ -81,6 +88,38 @@ final readonly class MailerManager
                 'location' => $location,
                 'weekend' => $weekend,
                 'events' => $events,
+                'unsubscribeUrl' => $unsubscribeUrl,
+            ]);
+
+        $email->getHeaders()
+            ->addTextHeader('List-Unsubscribe', '<' . $unsubscribeUrl . '>')
+            ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+
+        $this->sendMail($email);
+    }
+
+    /**
+     * Tells a member going to an event what changed in it (OutingChangeNotifier). It can be turned off in one click,
+     * from the e-mail or the mail app (RFC 8058).
+     *
+     * @param non-empty-list<OutingChange> $changes the most serious first
+     * @param OutingState                  $known   what the member knew of the event
+     */
+    public function sendOutingChangedEmail(UserEvent $outing, array $changes, OutingState $known): void
+    {
+        $user = $outing->getUser() ?? throw new LogicException('The outing has no member.');
+        $event = $outing->getEvent() ?? throw new LogicException('The outing has no event.');
+        $now = OutingState::fromEvent($event);
+        $unsubscribeUrl = $this->uriSigner->sign($this->generateUrl('app_outing_alerts_unsubscribe', ['id' => $user->getId()]));
+
+        $email = $this->createEmail('email/outing-changed')
+            ->to((string) $user->getEmail())
+            ->subject($changes[0]->getSubject() . "\u{a0}: " . $event->getName())
+            ->context([
+                'event' => $event,
+                'eventUrl' => $this->generateUrl('app_event_details', ['slug' => $event->getSlug(), 'id' => $event->getId(), 'location' => $event->getLocationSlug()]),
+                'headline' => $changes[0]->getSubject(),
+                'sentences' => array_map(static fn (OutingChange $change): string => OutingChangeWording::sentence($change, $known, $now), $changes),
                 'unsubscribeUrl' => $unsubscribeUrl,
             ]);
 

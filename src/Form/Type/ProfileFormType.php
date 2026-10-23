@@ -63,6 +63,13 @@ final class ProfileFormType extends AbstractType
                     'class' => 'checkbox-switch',
                 ],
             ])
+            ->add('outingAlerts', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Me prévenir par e-mail quand une de mes sorties change',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Afficher un lien vers mes réseaux sociaux',

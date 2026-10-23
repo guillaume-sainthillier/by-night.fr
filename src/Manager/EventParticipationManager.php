@@ -13,6 +13,7 @@ namespace App\Manager;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserEvent;
+use App\Outing\OutingState;
 use App\Repository\UserEventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -43,6 +44,12 @@ final readonly class EventParticipationManager
         }
 
         $userEvent->setGoing($going);
+        // What they will be told changed, from now on (OutingChangeNotifier); never the author or the member managing its
+        // publisher, who make the changes
+        if ($going && $event->getUser() !== $user && !($event->getPublisher()?->isManagedBy($user) ?? false)) {
+            $userEvent->setKnownState(OutingState::fromEvent($event));
+        }
+
         $this->entityManager->flush();
     }
 

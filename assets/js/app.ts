@@ -14,6 +14,7 @@ import bulkActions from '@/js/listeners/bulk-actions'
 import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
 import cookieSettings from '@/js/listeners/cookie-settings'
+import copyUrl from '@/js/listeners/copy-url'
 import dropzone from '@/js/listeners/dropzone'
 import duplicateCheck from '@/js/listeners/duplicate-check'
 import emailVerify from '@/js/listeners/email-verify'
@@ -89,6 +90,7 @@ export class App {
             citySwitcher,
             contentRemovalRequest,
             cookieSettings,
+            copyUrl,
             dropzone,
             duplicateCheck,
             emailVerify,

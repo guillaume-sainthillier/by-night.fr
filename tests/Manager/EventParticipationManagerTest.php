@@ -10,11 +10,14 @@
 
 namespace App\Tests\Manager;
 
+use App\Enum\EventStatus;
 use App\Factory\EventFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Manager\EventParticipationManager;
 use App\Tests\AppKernelTestCase;
+use DateTimeImmutable;
 
 use function Zenstruck\Foundry\Persistence\refresh;
 
@@ -50,6 +53,47 @@ final class EventParticipationManagerTest extends AppKernelTestCase
         refresh($event);
         self::assertSame(0, $event->getParticipations());
         self::assertSame(1, UserEventFactory::count(['user' => $user, 'event' => $event, 'going' => false]));
+    }
+
+    /**
+     * What the member is told changed starts from the event as they saw it when they said "J'y vais".
+     */
+    public function testGoingRecordsWhatTheMemberKnowsOfTheEvent(): void
+    {
+        $user = UserFactory::createOne();
+        $event = EventFactory::new()->withDates(new DateTimeImmutable('2026-12-05'))->create(['status' => EventStatus::SoldOut]);
+
+        $this->getManager()->participate($user, $event, true);
+
+        $known = UserEventFactory::find(['user' => $user, 'event' => $event])->getKnownState();
+        self::assertNotNull($known);
+        self::assertSame('2026-12-05', $known->start);
+        self::assertSame('2026-12-05', $known->end);
+        self::assertSame($event->getPlace()?->getId(), $known->place);
+        self::assertSame('sold_out', $known->status);
+    }
+
+    /**
+     * Publishing an event says "J'y vais" for its author, who is never told the changes they make.
+     */
+    public function testTheAuthorGoingRecordsNothing(): void
+    {
+        $author = UserFactory::createOne();
+        $event = EventFactory::createOne(['user' => $author]);
+
+        $this->getManager()->participate($author, $event, true);
+
+        self::assertNull(UserEventFactory::find(['user' => $author, 'event' => $event])->getKnownState());
+    }
+
+    public function testTheMemberManagingThePublisherGoingRecordsNothing(): void
+    {
+        $manager = UserFactory::createOne();
+        $event = EventFactory::createOne(['publisher' => PublisherFactory::createOne(['owner' => $manager])]);
+
+        $this->getManager()->participate($manager, $event, true);
+
+        self::assertNull(UserEventFactory::find(['user' => $manager, 'event' => $event])->getKnownState());
     }
 
     public function testAnEventNobodyFollowsCountsNobody(): void
