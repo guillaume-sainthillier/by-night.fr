@@ -43,7 +43,7 @@ final readonly class EventAudienceReport
 
         $total = $this->eventVisitStatRepository->findTotalsByEvents([$id], new DateTimeImmutable('2000-01-01'))[$id] ?? self::NONE;
 
-        return new EventAudience($days, $total);
+        return new EventAudience($days, $total, $this->eventVisitStatRepository->findLastGoogleAnalyticsDay($id));
     }
 
     /**

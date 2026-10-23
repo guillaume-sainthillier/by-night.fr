@@ -22,7 +22,7 @@ final class Version20261023132810 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE TABLE event_visit_stat (day DATE NOT NULL, visitors INT DEFAULT 0 NOT NULL, ticket_clicks INT DEFAULT 0 NOT NULL, id INT AUTO_INCREMENT NOT NULL, event_id INT NOT NULL, INDEX event_visit_stat_day_idx (day), UNIQUE INDEX event_visit_stat_unique (event_id, day), INDEX IDX_A70EDBCC71F7E88B (event_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('CREATE TABLE event_visit_stat (day DATE NOT NULL, visitors INT DEFAULT 0 NOT NULL, ticket_clicks INT DEFAULT 0 NOT NULL, from_google_analytics TINYINT DEFAULT 0 NOT NULL, id INT AUTO_INCREMENT NOT NULL, event_id INT NOT NULL, INDEX event_visit_stat_day_idx (day), UNIQUE INDEX event_visit_stat_unique (event_id, day), INDEX IDX_A70EDBCC71F7E88B (event_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE event_visit_stat ADD CONSTRAINT FK_A70EDBCC71F7E88B FOREIGN KEY (event_id) REFERENCES `event` (id) ON DELETE CASCADE');
     }
 

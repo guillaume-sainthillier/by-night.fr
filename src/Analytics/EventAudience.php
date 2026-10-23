@@ -18,12 +18,16 @@ use DateTimeImmutable;
 final readonly class EventAudience
 {
     /**
-     * @param list<array{day: DateTimeImmutable, visitors: int, ticketClicks: int}> $days  oldest first, today last
-     * @param array{visitors: int, ticketClicks: int}                               $total since the first visit counted
+     * @param list<array{day: DateTimeImmutable, visitors: int, ticketClicks: int}> $days                 oldest first, today last
+     * @param array{visitors: int, ticketClicks: int}                               $total                since the first visit counted
+     * @param ?DateTimeImmutable                                                    $googleAnalyticsUntil the last day read from Google
+     *                                                                                                    Analytics (only the visitors who
+     *                                                                                                    accepted its cookies), if any
      */
     public function __construct(
         public array $days,
         public array $total,
+        public ?DateTimeImmutable $googleAnalyticsUntil = null,
     ) {
     }
 

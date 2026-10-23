@@ -18,7 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * The audience of an event page on a day (Paris time), read from Umami by `app:events:sync-visits`
  * (App\Analytics\EventVisitSync): its visitors, a visitor counted once a day, and the clicks on its ticketing links.
- * Shown to the event's author in their personal space.
+ * Shown to the event's author in their personal space. The days before Umami were read once from Google Analytics
+ * (`app:events:import-ga4-visits`), which only saw the visitors who accepted its cookies.
  */
 #[ORM\Entity(repositoryClass: EventVisitStatRepository::class)]
 #[ORM\UniqueConstraint(name: 'event_visit_stat_unique', columns: ['event_id', 'day'])]
@@ -40,6 +41,9 @@ class EventVisitStat
 
         #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
         private int $ticketClicks = 0,
+
+        #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+        private bool $fromGoogleAnalytics = false,
     ) {
     }
 
@@ -61,5 +65,10 @@ class EventVisitStat
     public function getTicketClicks(): int
     {
         return $this->ticketClicks;
+    }
+
+    public function isFromGoogleAnalytics(): bool
+    {
+        return $this->fromGoogleAnalytics;
     }
 }

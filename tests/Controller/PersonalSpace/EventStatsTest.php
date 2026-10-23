@@ -49,6 +49,24 @@ final class EventStatsTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#event-stats .empty-title', 'Pas encore de visite');
         self::assertSelectorNotExists('#event-stats details');
+        self::assertSelectorNotExists('#event-stats-google-analytics');
+    }
+
+    public function testTheDaysReadFromGoogleAnalyticsAreSaidToCountFewerVisitors(): void
+    {
+        $client = self::createClient();
+        $event = EventFactory::createOne();
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-3 days'), 'visitors' => 4, 'ticketClicks' => 0, 'fromGoogleAnalytics' => true]);
+        EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-2 days'), 'visitors' => 10, 'ticketClicks' => 1]);
+        $client->loginUser($event->getUser());
+
+        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#event-stats-google-analytics', 'Google Analytics');
+        // Every day up to the last one read from Google Analytics is paler, not the last two days and today
+        self::assertCount(27, $crawler->filter('#event-stats .bg-primary.opacity-50'));
+        self::assertCount(30, $crawler->filter('#event-stats .bg-primary.rounded-top'));
     }
 
     public function testAnotherMemberCannotSeeThem(): void

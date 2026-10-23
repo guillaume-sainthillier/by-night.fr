@@ -73,7 +73,8 @@
                         <div class="d-flex align-items-end gap-1" style="height: 10rem" aria-hidden="true">
                             {% for row in audience.days %}
                                 <div class="flex-fill d-flex flex-column justify-content-end h-100" title="{{ row.day|format_date('medium', locale: 'fr') }} : {{ row.visitors }}">
-                                    <div class="bg-primary rounded-top" style="height: {{ max(row.visitors > 0 ? 2 : 0, (row.visitors / peak * 100)|round) }}%"></div>
+                                    {# A day read from Google Analytics is paler: it only counted the visitors who accepted its cookies #}
+                                    <div class="bg-primary rounded-top {{ audience.googleAnalyticsUntil and row.day <= audience.googleAnalyticsUntil ? 'opacity-50' }}" style="height: {{ max(row.visitors > 0 ? 2 : 0, (row.visitors / peak * 100)|round) }}%"></div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -126,6 +127,11 @@
                             <strong>Visiteurs</strong>&nbsp;: les personnes qui ont ouvert la page de l'événement, chacune comptée une fois par jour.
                             <strong>Clics billetterie</strong>&nbsp;: les clics sur ses liens de réservation.
                         </p>
+                        {% if audience.googleAnalyticsUntil %}
+                            <p class="mb-2" id="event-stats-google-analytics">
+                                {{ "Jusqu'au {day}, les visiteurs viennent de Google Analytics, qui ne comptait que ceux ayant accepté ses cookies : ils sont plus bas qu'ensuite, et les clics billetterie n'y sont pas."|trans({day: audience.googleAnalyticsUntil|format_date('long', locale: 'fr')}, 'messages+intl-icu') }}
+                            </p>
+                        {% endif %}
                         <p class="mb-0">
                             Mesuré sans cookie et mis à jour toutes les heures. Les robots ne sont pas comptés, ni les visiteurs qui bloquent toute mesure d'audience&nbsp;: les chiffres réels peuvent être un peu plus élevés.
                         </p>
