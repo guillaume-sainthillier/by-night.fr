@@ -302,7 +302,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 - `modalManager` - Bootstrap modal wrapper
 - `toastManager` - Toast notifications
-- `collectionManager` - Symfony form collections: `@silarhi/app-js/form`'s `CollectionManager` (its add/remove buttons reach it through `listeners/form-collection.ts`, which builds it on the pages with a collection only; `collection.add`/`added`/`remove`/`removed` events, bubbling, typed in `assets/types/collection-events.d.ts`)
+- `collectionManager` - Symfony form collections: `@silarhi/app-js/form`'s `CollectionManager` (built in `app.ts`, which lists its listener for the add/remove buttons; `collection.add`/`added`/`remove`/`removed` events, bubbling, typed in `assets/types/collection-events.d.ts`)
 
 **Vite Configuration** (`vite.config.ts`):
 
