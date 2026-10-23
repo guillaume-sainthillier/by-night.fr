@@ -29,7 +29,7 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
     {
         $this->publisher(new DateTimeImmutable('-1 year'));
 
-        $tester = $this->execute(['edition' => '2026-10-retour']);
+        $tester = $this->execute(['editions' => ['2026-10-retour']]);
 
         $tester->assertCommandIsSuccessful();
         self::assertStringContainsString('1 e-mail(s) to send', $tester->getDisplay());
@@ -39,7 +39,7 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
 
     public function testAnUnknownEditionIsRefused(): void
     {
-        $tester = $this->execute(['edition' => '1999-01']);
+        $tester = $this->execute(['editions' => ['1999-01']]);
 
         self::assertSame(Command::INVALID, $tester->getStatusCode());
         self::assertStringContainsString('2026-10-retour', $tester->getDisplay());
@@ -54,7 +54,7 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
         $this->publisher(new DateTimeImmutable('-1 year'), ['publisherNews' => false]);
         $this->publisher(new DateTimeImmutable('-1 year'), ['enabled' => false]);
 
-        $this->execute(['edition' => '2026-10-retour', '--send' => true])->assertCommandIsSuccessful();
+        $this->execute(['editions' => ['2026-10-retour'], '--send' => true])->assertCommandIsSuccessful();
 
         self::assertEmailCount(1);
         $email = self::getMailerMessage();
@@ -68,7 +68,7 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
         self::assertSame(1, PublisherNewsDeliveryFactory::count(['user' => $dormant->getId(), 'edition' => '2026-10-retour']));
 
         // A run again goes on where the previous one stopped: nobody is left
-        $tester = $this->execute(['edition' => '2026-10-retour', '--send' => true]);
+        $tester = $this->execute(['editions' => ['2026-10-retour'], '--send' => true]);
         $tester->assertCommandIsSuccessful();
         self::assertStringContainsString('0 e-mail(s) sent', $tester->getDisplay());
     }
@@ -79,7 +79,7 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
         $this->publisher(new DateTimeImmutable('-1 year'));
         $active = $this->publisher(new DateTimeImmutable('-1 month'));
 
-        $this->execute(['edition' => '2026-10', '--send' => true])->assertCommandIsSuccessful();
+        $this->execute(['editions' => ['2026-10'], '--send' => true])->assertCommandIsSuccessful();
 
         self::assertEmailCount(1);
         self::assertEmailAddressContains(self::getMailerMessage(), 'To', (string) $active->getEmail());
@@ -91,10 +91,29 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
         $this->publisher(new DateTimeImmutable('-1 month'));
         $this->publisher(new DateTimeImmutable('-1 month'));
 
-        $this->execute(['edition' => '2026-10', '--send' => true, '--limit' => 1])->assertCommandIsSuccessful();
+        $this->execute(['editions' => ['2026-10'], '--send' => true, '--limit' => 1])->assertCommandIsSuccessful();
 
         self::assertEmailCount(1);
         self::assertSame(1, PublisherNewsDeliveryFactory::count());
+    }
+
+    #[RequiresPhpExtension('mjml')]
+    public function testTheNextEditionStartsWithWhatTheLimitLeaves(): void
+    {
+        $this->publisher(new DateTimeImmutable('-1 year'));
+        $active = $this->publisher(new DateTimeImmutable('-1 month'));
+        $this->publisher(new DateTimeImmutable('-1 month'));
+
+        // The comeback takes 1 of the 2 e-mails of the day, the monthly news the other
+        $this->execute(['editions' => ['2026-10-retour', '2026-10'], '--send' => true, '--limit' => 2])->assertCommandIsSuccessful();
+
+        self::assertEmailCount(2);
+        self::assertSame(1, PublisherNewsDeliveryFactory::count(['edition' => '2026-10-retour']));
+        self::assertSame(1, PublisherNewsDeliveryFactory::count(['user' => $active->getId(), 'edition' => '2026-10']));
+
+        // The next day, the one left
+        $this->execute(['editions' => ['2026-10-retour', '2026-10'], '--send' => true, '--limit' => 2])->assertCommandIsSuccessful();
+        self::assertSame(2, PublisherNewsDeliveryFactory::count(['edition' => '2026-10']));
     }
 
     #[RequiresPhpExtension('mjml')]
@@ -102,7 +121,7 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
     {
         $member = $this->publisher(new DateTimeImmutable('-1 month'));
 
-        $this->execute(['edition' => '2026-10', '--to' => 'me@example.com', '--as' => $member->getEmail()])->assertCommandIsSuccessful();
+        $this->execute(['editions' => ['2026-10'], '--to' => 'me@example.com', '--as' => $member->getEmail()])->assertCommandIsSuccessful();
 
         self::assertEmailCount(1);
         $email = self::getMailerMessage();
