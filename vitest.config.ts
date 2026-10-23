@@ -5,8 +5,9 @@ import { defineConfig } from 'vitest/config'
 // which writes entrypoints.json and manifest.json into public/build/.
 export default defineConfig({
     resolve: {
-        // Same "@" alias as vite.config.ts
+        // Same aliases as vite.config.ts
         alias: {
+            '@icons': fileURLToPath(new URL('./assets/js/icons/index.js', import.meta.url)),
             '@': fileURLToPath(new URL('./assets', import.meta.url)),
         },
     },

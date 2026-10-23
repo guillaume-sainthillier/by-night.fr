@@ -1,19 +1,23 @@
 import { type AutocompleteSource, autocomplete } from '@algolia/autocomplete-js'
+import type { UXIconData } from '@silarhi/ux-icons-js'
 import { Fragment, h, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
+import {
+    LucideChevronRightIcon,
+    LucideCrosshairIcon,
+    LucideDramaIcon,
+    LucideSearchIcon,
+    LucideTagsIcon,
+    LucideTrash2Icon,
+    LucideTriangleAlertIcon,
+    LucideUserIcon,
+} from '@icons'
 import { Offcanvas } from '@tabler/core'
 import hotkeys from 'hotkeys-js'
 import $ from 'jquery'
 import groupBy from 'lodash/groupBy'
-import ChevronRightIcon from '@/js/icons/lucide/ChevronRight'
-import CrosshairIcon from '@/js/icons/lucide/Crosshair'
-import DramaIcon from '@/js/icons/lucide/Drama'
-import SearchIcon from '@/js/icons/lucide/Search'
-import TagsIcon from '@/js/icons/lucide/Tags'
-import Trash2Icon from '@/js/icons/lucide/Trash2'
-import TriangleAlertIcon from '@/js/icons/lucide/TriangleAlert'
-import UserIcon from '@/js/icons/lucide/User'
+import { Icon } from '@/js/components/Icon'
 import { splitHighlights } from '@/js/utils/highlight'
 import { plural } from '@/js/utils/plural'
 import { searchPageHref } from '@/js/utils/searchPage'
@@ -243,7 +247,7 @@ export default function init({
                 return render(
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                            <TriangleAlertIcon className="icon-3x text-danger" />
+                            <Icon icon={LucideTriangleAlertIcon} class="icon-3x text-danger" />
                             <h2 className="mt-4 h5 text-danger">Erreur de recherche</h2>
                             <p className="text-muted">
                                 Une erreur est survenue lors de la recherche. Veuillez réessayer dans quelques instants.
@@ -260,7 +264,7 @@ export default function init({
                 return render(
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                            <SearchIcon width="40" height="40" className="text-muted" />
+                            <Icon icon={LucideSearchIcon} width="40" height="40" class="text-muted" />
                             <p className="mt-3 mb-0 text-muted">
                                 Le nom d'un événement, d'une ville ou d'un membre&nbsp;: quelques lettres suffisent.
                             </p>
@@ -277,7 +281,7 @@ export default function init({
             return render(
                 <div className="aa-PanelLayout">
                     <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                        <SearchIcon width="40" height="40" className="text-muted" />
+                        <Icon icon={LucideSearchIcon} width="40" height="40" class="text-muted" />
                         <h2 className="mt-4 display-4">
                             Aucun résultat pour <strong>«&nbsp;{state.query}&nbsp;»</strong>.
                         </h2>
@@ -378,16 +382,15 @@ export default function init({
 
 const CHIP_TYPES = ['tags', 'cities']
 
-const TYPE_ICONS: Partial<Record<string, typeof SearchIcon>> = {
-    events: DramaIcon,
-    cities: CrosshairIcon,
-    users: UserIcon,
-    tags: TagsIcon,
+const TYPE_ICONS: Partial<Record<string, UXIconData>> = {
+    events: LucideDramaIcon,
+    cities: LucideCrosshairIcon,
+    users: LucideUserIcon,
+    tags: LucideTagsIcon,
 }
 
 function TypeIcon({ type, className = '' }: { type?: string; className?: string }) {
-    const IconComponent = (type && TYPE_ICONS[type]) || SearchIcon
-    return <IconComponent className={`icon ${className}`} />
+    return <Icon icon={(type && TYPE_ICONS[type]) || LucideSearchIcon} class={`icon ${className}`.trim()} />
 }
 
 function HighlightedText({ item, attribute }: { item: DisplayedItem; attribute: HighlightedAttribute }) {
@@ -462,7 +465,7 @@ function ResultItem({ item, onRemove }: { item: DisplayedItem; onRemove?: (id: s
                             onRemove(item.id)
                         }}
                     >
-                        <Trash2Icon width="20" height="20" />
+                        <Icon icon={LucideTrash2Icon} width="20" height="20" />
                     </button>
                 )}
                 <button
@@ -471,7 +474,7 @@ function ResultItem({ item, onRemove }: { item: DisplayedItem; onRemove?: (id: s
                     title="Sélectionner"
                     aria-label="Sélectionner"
                 >
-                    <ChevronRightIcon width="20" height="20" />
+                    <Icon icon={LucideChevronRightIcon} width="20" height="20" />
                 </button>
             </div>
         </a>

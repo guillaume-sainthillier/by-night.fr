@@ -5,6 +5,9 @@ import prefixCustomProperties from 'postcss-prefix-custom-properties'
 import { defineConfig } from 'vite'
 
 const assets = fileURLToPath(new URL('./assets', import.meta.url))
+// The icons of assets/icons and of the ux_icons sets, with the attributes <twig:Icon> gives them: dumped by
+// silarhi/ux-icons-js-bundle on cache warmup (or `bin/console ux-icons-js:dump`), see silarhi_ux_icons_js.yaml
+const icons = fileURLToPath(new URL('./assets/js/icons/index.js', import.meta.url))
 const scss = fileURLToPath(new URL('./assets/scss/', import.meta.url))
 
 // Tabler's Sass sources write custom properties bare (--primary, var(--btn-bg)), and so do ours: its own build adds
@@ -75,7 +78,6 @@ export default defineConfig(({ mode }) => {
         ],
 
         // JSX is compiled for Preact with the automatic runtime, as the Babel config did.
-        // The generated icons in assets/js/icons rely on it: they use JSX without importing h.
         oxc: {
             jsx: {
                 runtime: 'automatic',
@@ -90,7 +92,10 @@ export default defineConfig(({ mode }) => {
         },
 
         resolve: {
-            alias: [{ find: '@', replacement: assets }],
+            alias: [
+                { find: '@icons', replacement: icons },
+                { find: '@', replacement: assets },
+            ],
         },
 
         build: {

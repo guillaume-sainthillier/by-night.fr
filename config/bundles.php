@@ -44,4 +44,5 @@ return [
     Symfony\Reprise\RepriseBundle::class => ['all' => true],
     Silarhi\LlmsTxtBundle\LlmsTxtBundle::class => ['all' => true],
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
+    Silarhi\UxIconsJsBundle\SilarhiUxIconsJsBundle::class => ['all' => true],
 ];

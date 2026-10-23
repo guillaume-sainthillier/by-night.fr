@@ -1,0 +1,4 @@
+silarhi_ux_icons_js:
+    # Committed, so that Vite, tsc and the Docker node stage find the icons without running PHP. Dumped again on every
+    # cache warmup (each container rebuild in dev) and by ux:icons:import / ux:icons:lock; CI fails on a stale dump
+    dump_directory: '%kernel.project_dir%/assets/js/icons'

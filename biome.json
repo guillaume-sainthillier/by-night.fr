@@ -1,6 +1,6 @@
 {
     "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
-    "files": { "includes": ["assets/**"] },
+    "files": { "includes": ["assets/**", "!assets/js/icons"] },
     "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
     "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 4, "lineEnding": "lf", "lineWidth": 120 },
     "linter": {
