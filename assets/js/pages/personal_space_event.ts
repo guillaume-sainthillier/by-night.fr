@@ -139,8 +139,6 @@ const initialize: Page = ({ app }) => {
         })
     }
 
-    initGMap()
-
     const eventAddress = document.querySelector<HTMLInputElement>('#app_event_address')
     const eventPlaceName = document.querySelector<HTMLInputElement>('#app_event_place_name')
     const $eventAddress = $('#app_event_address')
@@ -151,6 +149,10 @@ const initialize: Page = ({ app }) => {
     const eventPlaceCityName = $('#app_event_place_city_name')
     const eventPlaceCityPostalCode = $('#app_event_place_city_postalCode')
     const eventPlaceCountry = $('#app_event_place_country')
+
+    // Below the fields it reads: called above them, it met them in their temporal dead zone (a ReferenceError the
+    // async function turned into a rejection, so the map and the address search never started)
+    initGMap()
 
     async function initGMap() {
         const mapEl = document.getElementById('map')
