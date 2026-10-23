@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * A link whose href is the SEO page crawlers follow ("Concerts à Toulouse"), and whose data-filtered-href is the page a

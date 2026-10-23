@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 import { confirmPublication } from '@/js/utils/duplicates'
 
 /**

@@ -1,5 +1,5 @@
+import type { Page } from '@silarhi/app-js'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
-import type { Page } from '@/js/types'
 import { formatDay } from '@/js/utils/days'
 
 const inputById = (id: string | undefined): HTMLInputElement | null => {

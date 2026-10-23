@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * Submit the form designated by `data-target` when the element is clicked.
@@ -22,4 +22,4 @@ export default {
 
         return () => elem.removeEventListener('click', onClick)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

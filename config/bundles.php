@@ -46,4 +46,5 @@ return [
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
     Scheb\TwoFactorBundle\SchebTwoFactorBundle::class => ['all' => true],
     Webauthn\Bundle\WebauthnBundle::class => ['all' => true],
+    Silarhi\UxIconsJsBundle\SilarhiUxIconsJsBundle::class => ['all' => true],
 ];

@@ -2842,6 +2842,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *     },
  * }
+ * @psalm-type SilarhiUxIconsJsConfig = array{
+ *     dump_directory?: scalar|Param|null, // The directory where the JavaScript module is dumped. // Default: "%kernel.project_dir%/var/icons"
+ *     dump_typescript?: bool|Param, // Whether TypeScript types are dumped alongside the icons. Disable this if you do not use TypeScript (e.g. in production when using AssetMapper). // Default: true
+ *     scan_directories?: list<scalar|Param|null>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2875,6 +2880,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     mercure?: MercureConfig,
  *     scheb_two_factor?: SchebTwoFactorConfig,
  *     webauthn?: WebauthnConfig,
+ *     silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2912,6 +2918,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mercure?: MercureConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         webauthn?: WebauthnConfig,
+ *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2947,6 +2954,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mercure?: MercureConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         webauthn?: WebauthnConfig,
+ *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2985,6 +2993,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mercure?: MercureConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         webauthn?: WebauthnConfig,
+ *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 import { popup } from '@/js/utils/utils'
 
 /**

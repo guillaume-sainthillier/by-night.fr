@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * Activate a Bootstrap tooltip on each tooltip-toggle element. Disposes it on
@@ -13,4 +13,4 @@ export default {
 
         return () => $element.tooltip('dispose')
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

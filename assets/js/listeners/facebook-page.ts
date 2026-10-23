@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 const SDK_URL = 'https://connect.facebook.net/fr_FR/sdk.js'
 
@@ -91,4 +91,4 @@ export default {
 
         return () => button.removeEventListener('click', onClick)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

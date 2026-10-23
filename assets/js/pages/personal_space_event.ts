@@ -1,4 +1,5 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
+import type { Page } from '@silarhi/app-js'
 import $ from 'jquery'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
@@ -12,7 +13,6 @@ import { create as createTags } from '@/js/services/ui/TagsService'
 import { create as createTimepicker } from '@/js/services/ui/TimepickerService'
 import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
-import type { Page } from '@/js/types'
 
 const inputById = (id: string | undefined): HTMLInputElement | null => {
     const input = id ? document.getElementById(id) : null
@@ -139,8 +139,6 @@ const initialize: Page = ({ app }) => {
         })
     }
 
-    initGMap()
-
     const eventAddress = document.querySelector<HTMLInputElement>('#app_event_address')
     const eventPlaceName = document.querySelector<HTMLInputElement>('#app_event_place_name')
     const $eventAddress = $('#app_event_address')
@@ -151,6 +149,10 @@ const initialize: Page = ({ app }) => {
     const eventPlaceCityName = $('#app_event_place_city_name')
     const eventPlaceCityPostalCode = $('#app_event_place_city_postalCode')
     const eventPlaceCountry = $('#app_event_place_country')
+
+    // Below the fields it reads: called above them, it met them in their temporal dead zone (a ReferenceError the
+    // async function turned into a rejection, so the map and the address search never started)
+    initGMap()
 
     async function initGMap() {
         const mapEl = document.getElementById('map')

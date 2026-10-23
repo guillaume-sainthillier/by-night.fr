@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "40b9e4d0b70ed397a6ed39e2b0d4ef8c",
+    "content-hash": "ab51a2324e5b954a4d9ff85e4f12661e",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6914,6 +6914,78 @@
                 "source": "https://github.com/silarhi/picasso-bundle/tree/v2.5.0"
             },
             "time": "2026-10-12T10:52:57+00:00"
+        },
+        {
+            "name": "silarhi/ux-icons-js-bundle",
+            "version": "v0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silarhi/ux-icons-js-bundle.git",
+                "reference": "74613593dc9b427361dd76c55d971d7d6dff772c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silarhi/ux-icons-js-bundle/zipball/74613593dc9b427361dd76c55d971d7d6dff772c",
+                "reference": "74613593dc9b427361dd76c55d971d7d6dff772c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": ">=8.2",
+                "symfony/console": "^6.4 || ^7.0 || ^8.0",
+                "symfony/filesystem": "^6.4 || ^7.0 || ^8.0",
+                "symfony/finder": "^6.4 || ^7.0 || ^8.0",
+                "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/ux-icons": "^2.36.1 || ^3.5"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.54.0",
+                "friendsofphp/php-cs-fixer": "^3.95.27",
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.3.1",
+                "phpstan/phpstan-strict-rules": "^2.1.0",
+                "phpstan/phpstan-symfony": "^2.1.0",
+                "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
+                "rector/rector": "^2.7.0",
+                "symfony/asset-mapper": "^6.4 || ^7.0 || ^8.0",
+                "symfony/error-handler": "^6.4 || ^7.0 || ^8.0",
+                "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
+                "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0"
+            },
+            "suggest": {
+                "symfony/asset-mapper": "Maps the dumped icons as \"var/icons\" in the importmap"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Silarhi\\UxIconsJsBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guillaume Sainthillier",
+                    "email": "guillaume@silarhi.fr"
+                }
+            ],
+            "description": "Render Symfony UX Icons in JavaScript, React, Preact and Vue, with the same attributes and configuration as ux_icon() — the PHP companion to @silarhi/ux-icons-js",
+            "keywords": [
+                "Preact",
+                "icons",
+                "react",
+                "svg",
+                "symfony",
+                "symfony-bundle",
+                "vue"
+            ],
+            "support": {
+                "issues": "https://github.com/silarhi/ux-icons-js-bundle/issues",
+                "source": "https://github.com/silarhi/ux-icons-js-bundle/tree/v0.3.1"
+            },
+            "time": "2026-10-23T21:06:54+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",

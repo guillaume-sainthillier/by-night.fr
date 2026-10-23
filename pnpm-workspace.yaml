@@ -3,6 +3,11 @@ allowBuilds:
     # Ships prebuilt binaries; its install script is only a build-from-source fallback
     '@parcel/watcher': false
 
+# Our own packages, installed as soon as they are released: pnpm holds back any version younger than a day, even
+# with --frozen-lockfile (CI, the Docker build)
+minimumReleaseAgeExclude:
+    - '@silarhi/*'
+
 # Pinned versions (formerly Yarn "resolutions")
 overrides:
     jquery: 3.7.1

@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * The header's city switcher (fragments/header.html.twig): the field of its dropdown suggests the cities as one types,

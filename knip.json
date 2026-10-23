@@ -2,8 +2,10 @@
     "$schema": "https://unpkg.com/knip@5/schema.json",
     "entry": [
         "assets/js/pages/*.ts",
-        "assets/**/controllers/**/*.{ts,tsx}",
-        "assets/**/icons/**/*.{ts,tsx}"
+        "assets/**/controllers/**/*.{ts,tsx}"
+    ],
+    "ignore": [
+        "assets/js/icons/**"
     ],
     "paths": {
         "@/*": [

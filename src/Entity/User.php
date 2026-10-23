@@ -37,6 +37,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 use Webauthn\PublicKeyCredentialUserEntity;
@@ -49,6 +50,7 @@ use Webauthn\PublicKeyCredentialUserEntity;
 #[ORM\Table(name: '`user`')]
 #[ORM\Index(name: 'user_image_name_idx', columns: ['image_name'])]
 #[ORM\Index(name: 'user_image_system_name_idx', columns: ['image_system_name'])]
+#[ORM\UniqueConstraint(name: 'user_calendar_token_unique', columns: ['calendar_token'])]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate, GoogleTwoFactorInterface, BackupCodeInterface, PreferredProviderInterface
 {
@@ -175,6 +177,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $verified = false;
+
+    /** Whether the member asked for the weekend selection of their city by e-mail: never without their consent */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $weekendDigest = false;
+
+    /** When the member last asked for the weekend selection: the proof of their consent */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $weekendDigestSince = null;
+
+    /** The ISO week ("2026-W43") of the last weekend selection sent to the member, which a second run skips */
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
+    private ?string $weekendDigestSentWeek = null;
+
+    /**
+     * The secret of the address of the member's outings as a calendar (OutingCalendarController): whoever has it reads
+     * them, so the member can change it. Made the first time the member's outings show it.
+     */
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $calendarToken = null;
+
+    /** Whether the member hears by e-mail of the changes of their outings (OutingChangeNotifier) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $outingAlerts = true;
+
+    /** Whether the member, when they run a publisher, gets the news By Night sends them (app:publishers:send-news) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $publisherNews = true;
 
     private bool $sendToElasticsearch = false;
 
@@ -480,6 +509,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
+    public function isPublisherNews(): bool
+    {
+        return $this->publisherNews;
+    }
+
+    public function setPublisherNews(bool $publisherNews): self
+    {
+        $this->publisherNews = $publisherNews;
+
+        return $this;
+    }
+
     public function getWebsite(): ?string
     {
         return $this->website;
@@ -531,6 +572,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
                 $userEvent->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCalendarToken(): ?string
+    {
+        return $this->calendarToken;
+    }
+
+    /**
+     * A new address for the member's outings as a calendar: the former one no longer answers.
+     */
+    public function renewCalendarToken(): self
+    {
+        $this->calendarToken = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
+
+        return $this;
+    }
+
+    public function isOutingAlerts(): bool
+    {
+        return $this->outingAlerts;
+    }
+
+    public function setOutingAlerts(bool $outingAlerts): self
+    {
+        $this->outingAlerts = $outingAlerts;
 
         return $this;
     }
@@ -664,6 +732,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         $this->verified = $verified;
 
         return $this;
+    }
+
+    public function isWeekendDigest(): bool
+    {
+        return $this->weekendDigest;
+    }
+
+    /**
+     * Asking for it again dates the consent anew; giving it up forgets the date.
+     */
+    public function setWeekendDigest(bool $weekendDigest): self
+    {
+        if ($weekendDigest !== $this->weekendDigest) {
+            $this->weekendDigestSince = $weekendDigest ? new DateTimeImmutable() : null;
+        }
+
+        $this->weekendDigest = $weekendDigest;
+
+        return $this;
+    }
+
+    public function getWeekendDigestSince(): ?DateTimeImmutable
+    {
+        return $this->weekendDigestSince;
+    }
+
+    public function getWeekendDigestSentWeek(): ?string
+    {
+        return $this->weekendDigestSentWeek;
+    }
+
+    public function setWeekendDigestSentWeek(?string $weekendDigestSentWeek): self
+    {
+        $this->weekendDigestSentWeek = $weekendDigestSentWeek;
+
+        return $this;
+    }
+
+    /**
+     * The weekend selection is the one of the member's city: they choose it in the same form.
+     */
+    #[Assert\Callback]
+    public function validateWeekendDigest(ExecutionContextInterface $context): void
+    {
+        if ($this->weekendDigest && null === $this->city) {
+            $context
+                ->buildViolation('Veuillez choisir votre ville pour recevoir la sélection du week-end.')
+                ->atPath('city')
+                ->addViolation();
+        }
     }
 
     public function setSalt(?string $salt): self

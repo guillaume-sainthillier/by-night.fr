@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * The rules a password meets, in order. The patterns are PasswordRequirements::RULES, read with the flags the server
@@ -71,4 +71,4 @@ export default {
 
         return () => input.removeEventListener('input', update)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

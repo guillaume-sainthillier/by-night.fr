@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import type { SweetAlertIcon } from 'sweetalert2'
-import type { Listener } from '@/js/types'
 import { followTransfers, type TransferState } from '@/js/utils/transfers'
 
 type ToastsByStatus = Partial<Record<string, [SweetAlertIcon, string]>>
@@ -86,4 +86,4 @@ export default {
             },
         })
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

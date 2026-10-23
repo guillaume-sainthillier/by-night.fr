@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * The passkey ceremonies of `form.js-webauthn`: on submit, ask the browser for a passkey with the options of

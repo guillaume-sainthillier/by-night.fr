@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * Show or hide what was typed in a password field (components/PasswordInput.html.twig).
@@ -31,4 +31,4 @@ export default {
             input.form?.removeEventListener('submit', hide)
         }
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

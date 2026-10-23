@@ -132,6 +132,18 @@
                             </div>
                         </div>
 
+                        {# Every e-mail the member may turn on or off, in one place; the organizers' news for organizers only #}
+                        <h3 class="h4 mt-4 mb-3">E-mails</h3>
+                        <div class="card form-panel mb-0">
+                            <div class="card-body">
+                                {{ form_row(form.weekendDigest, {row_class: 'mb-3'}) }}
+                                {{ form_row(form.outingAlerts, {row_class: form.publisherNews is defined ? 'mb-3' : 'mb-0', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
+                                {% if form.publisherNews is defined %}
+                                    {{ form_row(form.publisherNews, {row_class: 'mb-0', help: 'Une fois par mois au plus, ce qui change sur By Night pour vos événements et votre page organisateur.'}) }}
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-top pt-4 mt-4">
                             <p class="text-secondary small mb-0">
                                 Votre photo, votre nom d'utilisateur et votre présentation figurent sur

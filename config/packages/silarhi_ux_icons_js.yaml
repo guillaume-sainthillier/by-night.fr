@@ -1,0 +1,10 @@
+silarhi_ux_icons_js:
+    # Committed (index.js, index.d.ts), so the frontend builds and type-checks without PHP (CI, Docker). Dumped again on
+    # every cache rebuild: commit the changes after adding an icon or changing the ux_icons attributes
+    dump_directory: '%kernel.project_dir%/assets/js/icons'
+
+when@prod:
+    silarhi_ux_icons_js:
+        # The image ships the built assets: its cache warmup must not write into assets/
+        dump_directory: '%kernel.project_dir%/var/icons'
+        dump_typescript: false

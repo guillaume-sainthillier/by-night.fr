@@ -209,6 +209,7 @@ A member's event belongs to a **publisher** (`App\Entity\Publisher`: a venue, a 
 
 - **Its page's content** is edited by its owner at `/espace-perso/page-organisateur` (`App\Controller\PersonalSpace\PublisherController`, `PublisherType`, `PublisherVoter::EDIT`; creates the member's publisher if they have none): presentation, website, social links (`App\Enum\PublisherNetwork`, stored as `Publisher::$socialLinks` JSON by network, `PublisherSocialLinksType` refuses a link to another host), logo and cover (`publisher_image` Vich mapping, `publishers.storage`, Picasso loader of the same name). The icons of the links show next to "Organisé par" on its events (`<twig:Publisher:Links>`); `<twig:Publisher:Avatar>` shows the logo, else the initials
 - **Incentives** (`App\Stats\PublisherProfileProvider`, over its events online: published, not folded into another): key figures (events, to come, "J'y vais" and favourites, cities), its venues and categories (the member stats queries of `EventRepository` take any base query), distinctions (`App\Enum\PublisherDistinction`, thresholds sized on the dev data for a few dozen publishers each), and for its owner only a completion card (`App\Stats\PublisherCompletion`, `App\Enum\PublisherPageStep`: logo, presentation, links, cover, an event to come, equal weights) In tests, `EventFactory`, `EventImportFactory` and `EventExportFactory` give what has a `user` that member's publisher (`PublisherFactory::forTheMember()`, pass `'publisher'` to choose), and `AppWebTestCase::organizerPath($member, 'evenements')` builds the URL of an organizer page of their first one
+- **News** (`bin/console app:publishers:send-news <edition>…`, by hand or by the daily host cron, which lists the editions in order under one `--limit`): e-mails to the owners of a publisher telling what changed on the site. An edition is a case of `App\Enum\PublisherNewsEdition` (its subject and audience) and its two templates `templates/email/publisher-news/<value>.{mjml,txt}.twig` (they extend the `layout` of that directory and include `_feature.mjml.twig`). Its audience (`PublisherNewsAudience`) is the members who logged in within 6 months (the monthly news) or those who did not (a single "what changed", `2026-10-retour`), never both, among the enabled ones who did not opt out (`User::$publisherNews`, a switch on the profile shown to publishers only). Each delivery is recorded (`PublisherNewsDelivery`, one per member and edition) as soon as the e-mail left, so a run again, after a crash or with `--limit` to stay under the mail provider's daily cap, sends to the members still without it. Without `--send` it only counts; `--to=<address> --as=<member's e-mail>` previews it, recording nothing. The e-mails carry `List-Unsubscribe` + `List-Unsubscribe-Post` (RFC 8058) to a signed URL that needs no login (`PublisherNewsController`): a GET only asks (mailboxes' link checkers open links), a POST unsubscribes
 
 ### Members' Event Import / Export
 
@@ -262,11 +263,12 @@ Elasticsearch indexes defined in `config/packages/fos_elastica.yaml`:
 
 ### JavaScript Application Structure
 
-The frontend uses a modular listener-based architecture with dependency injection. Types (`Listener`, `Module`, `Page`, `Cleanup`) live in `assets/js/types.ts`.
+The frontend uses a modular listener-based architecture with dependency injection, on top of `@silarhi/app-js` (`App`, its service container, and the `Listener`, `Module`, `Page`, `Cleanup` types; also its DOM helpers `findOne`, `findAll`, `on`, `trigger`, `appendHTML`).
 
 **Main App** (`assets/js/app.ts`, exposed as `window.App`):
 
-- `start(parameters)` boots the application with configuration from Twig templates: initializes Sentry, the dependency injection container (`Container.ts`) and its services, runs every module once, then mounts the whole document
+- Boots from `window.appParameters`, which `templates/base.html.twig` sets in a classic script before the entry: initializes Sentry, runs every module once (`app.start()`), then mounts the whole document. Without them (the error pages) the app does not start
+- Errors caught in a module, a listener or a page go to its `onError` handler (`reportError`)
 - `mount(container)` connects every listener to its matching elements inside `container`; call it after inserting HTML by AJAX. Bookkeeping is per element, so an element already connected is skipped
 - `unmount(container)` runs the cleanups of every connected element the container covers (and of those already removed from the DOM)
 - Stimulus controllers (`assets/controllers/`) are loaded too, through `assets/stimulus_bootstrap.ts`
@@ -278,11 +280,10 @@ The frontend uses a modular listener-based architecture with dependency injectio
     - `scroll-to-top.ts` - Scroll behavior
 
 2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects registered in `app.ts`; a listener is typed `Listener<E>`, `E` being the element its selector matches; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
-    - `form-collection.ts` - Dynamic form field addition/removal
+    - `form-confirm.ts` - Confirmation before a form is sent
     - `form-errors.ts` - Client-side form validation
     - `like.ts` - Event favoriting
     - `popup.ts` - Modal interactions
-    - `pages.ts` - Runs the page initializers declared by `data-page` markers (see below)
     - etc.
 
 3. **UI Services** (`assets/js/services/ui/`): Heavy third-party widgets wrapped as services exporting a `create()` function, imported only by the page entry points that need them (statically, or via dynamic `import()` as in `assets/js/listeners/image-previews.ts`)
@@ -297,19 +298,19 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 - Separate entry points for each major page (agenda, event_details, profile, etc.), included only on their routes to reduce bundle size
 - Each registers its initializer with `window.App.registerPage('agenda', initialize)`
-- A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the `pages` listener calls the initializer with `{app, container, ...params}` once the entry has loaded; the initializer may return a cleanup
+- A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the app's built-in `data-page` listener calls the initializer (after every other listener) with `{app, container, ...params}` once the entry has loaded; the initializer may return a cleanup
 
-**Dependency Injection** (`assets/js/services/Container.ts`):
+**Dependency Injection** (the `@silarhi/app-js` container):
 
-- Simple DI container with lazy instantiation
-- Services registered in `assets/js/services.ts`, typed with the `App.start()` parameters in its `Registry`
-- Access via `app.get('serviceName')` or `window.App.get('serviceName')`, which returns the registered type
+- Lazy: each service is built by its factory on first `get()`, then shared
+- Services registered in `assets/js/services.ts` (`defineServices()`), typed by declaration merging into the package's `ServiceMap` (and the parameters into `ParameterMap`)
+- Access via `app.get('serviceName')` or `window.App.get('serviceName')`, which returns the registered type; parameters via `app.getParameter('locale')`
 
 **Key Services**:
 
 - `modalManager` - Bootstrap modal wrapper
 - `toastManager` - Toast notifications
-- `collectionManager` - Dynamic form collections (add/remove form fields)
+- `collectionManager` - Symfony form collections: `@silarhi/app-js/form`'s `CollectionManager` (a service like the others; `collectionListener('collectionManager')` in `app.ts` hands it the add/remove buttons; `collection.add`/`added`/`remove`/`removed` events, bubbling, typed in `assets/types/collection-events.d.ts`)
 
 **Vite Configuration** (`vite.config.ts`):
 
@@ -324,7 +325,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 **Code Style**:
 
 - TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`, jQuery plugins on `JQuery` in `jquery-plugins.d.ts`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`)
-- Icons (`assets/js/icons/`) are generated TSX: `pnpm icon:svg` (svgr), then delete the ones nothing imports (Knip)
+- Icons are the SVG files of `assets/icons/`, rendered by `<twig:Icon>` in Twig and, in TypeScript, from the dump `silarhi/ux-icons-js-bundle` writes into `assets/js/icons/index.js` with the `ux_icons` attributes, on every cache rebuild or with `bin/console ux-icons-js:dump` (`lucide:trash-2` is `LucideTrash2Icon`): `renderIcon()` of `@silarhi/ux-icons-js` for HTML strings, `UXIcon` of `@silarhi/ux-icons-js/preact` in the Preact components, never drawn by hand. The dump is committed, so the frontend builds without PHP: commit it again after adding an SVG or changing `ux_icons` (prod dumps to `var/icons` instead, see `config/packages/silarhi_ux_icons_js.yaml`). A `class` replaces the configured `icon` class, as in Twig
 - Biome (`biome.json`) lints and formats TypeScript: 120 char width, single quotes, 4 space indent, no semicolons
 - Prettier only for non-JS files (SCSS, Markdown, YAML)
 
@@ -351,7 +352,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 - `assets/js/modules/` - One-time modules run at boot
 - `assets/js/listeners/` - Per-element listeners, connected on every mount
 - `assets/controllers/` - Stimulus controllers
-- `assets/js/services/` - DI container and service classes
+- `assets/js/services/` - Service classes
 - `assets/js/services/ui/` - Heavy third-party widgets (datepicker, selects, wysiwyg, ...) loaded only where needed
 - `assets/js/components/` - Reusable UI components (Widgets, CommentApp, etc.)
 - `assets/js/utils/` - Utility functions (DOM helpers, CSS helpers, etc.)

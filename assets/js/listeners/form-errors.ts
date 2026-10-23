@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * Keep static material labels positioned when their field has errors.

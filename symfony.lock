@@ -430,6 +430,9 @@
     "silarhi/picasso-bundle": {
         "version": "v1.3.1"
     },
+    "silarhi/ux-icons-js-bundle": {
+        "version": "v0.2.0"
+    },
     "stof/doctrine-extensions-bundle": {
         "version": "1.15",
         "recipe": {

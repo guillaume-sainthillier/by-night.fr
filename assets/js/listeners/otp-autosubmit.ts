@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * Submit the form of an OTP input (components/OtpInput.html.twig) once its last digit is typed: Tabler's OtpInput

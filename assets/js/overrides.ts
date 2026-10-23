@@ -1,7 +1,7 @@
+import { renderIcon } from '@silarhi/ux-icons-js'
 import { Modal } from '@tabler/core'
 import $ from 'jquery'
-import { iconHtml } from '@/js/components/icons'
-import Loader2Icon from '@/js/icons/lucide/Loader2'
+import { LucideLoader2Icon } from '@/js/icons'
 
 /**
  * Helpers added to Bootstrap's Modal for #dialog_details, also reachable through its jQuery plugin
@@ -20,7 +20,9 @@ declare module '@tabler/core' {
 
 Modal.prototype.loading = function () {
     this.setTitle('By Night')
-    this.setBody(`<h3 class="text-center">${iconHtml(Loader2Icon, 'text-primary icon-spin icon-3x')}</h3>`)
+    this.setBody(
+        `<h3 class="text-center">${renderIcon(LucideLoader2Icon, { class: 'icon text-primary icon-spin icon-3x' })}</h3>`
+    )
     this.hideButtons()
 }
 
