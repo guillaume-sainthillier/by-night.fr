@@ -14,9 +14,11 @@ use App\App\AppContext;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
 use App\Repository\EventRepository;
+use App\Stats\AdvertiserFiguresProvider;
 use Silarhi\LlmsTxtBundle\Model\Section;
 use Silarhi\LlmsTxtBundle\Routing\LlmsTxtEntry;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class ContentController extends BaseController
@@ -70,6 +72,17 @@ final class ContentController extends BaseController
         return $this->render('content/plus.html.twig', [
             'posters' => $eventRepository->findHighlights(new Location(), self::POSTERS),
             'members' => $eventRepository->getMemberTotals(),
+        ]);
+    }
+
+    /** A day in Cloudflare, as long as its figures are kept (AdvertiserFiguresProvider) */
+    #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
+    #[Route(path: '/annonceurs', name: 'app_advertisers', options: ['llms_txt' => new LlmsTxtEntry(title: 'Annonceurs et partenaires', description: "Organisateurs, salles, billetteries et marques : les chiffres de By Night, les formats de partenariat proposés et leur signalement, les solutions gratuites (publication par un compte membre, import d'un agenda) et ce que By Night ne fait pas.")], methods: ['GET'])]
+    public function advertisers(AdvertiserFiguresProvider $figures): Response
+    {
+        return $this->render('content/advertisers.html.twig', [
+            // Null when the database or the cache is down: the page hides its figures
+            'figures' => $figures->get(),
         ]);
     }
 }

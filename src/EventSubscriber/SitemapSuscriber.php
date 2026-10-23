@@ -225,6 +225,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
             'app_privacy_policy',
             'app_terms',
             'app_transparency',
+            'app_advertisers',
         ];
 
         foreach ($staticRoutes as $route) {

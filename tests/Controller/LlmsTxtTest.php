@@ -56,6 +56,7 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringContainsString("## Pages\n\n- [À propos de By Night](https://by-night.test/a-propos): By Night est votre guide de sorties en France.", $content);
         self::assertStringContainsString('- [Accueil](https://by-night.test/): Découvrez des milliers', $content);
         self::assertStringContainsString('- [Recherche](https://by-night.test/recherche/): Trouvez des événements', $content);
+        self::assertStringContainsString('- [Annonceurs et partenaires](https://by-night.test/annonceurs): Organisateurs, salles, billetteries et marques', $content);
         // The busiest first
         $events = LlmsTxtSubscriber::CITY_MIN_EVENTS;
         self::assertStringContainsString(\sprintf("## Agendas par pays\n\n- [France](https://by-night.test/france): %d sorties à venir\n- [Belgique](https://by-night.test/belgique): 1 sortie à venir\n", 2 * $events - 1), $content);

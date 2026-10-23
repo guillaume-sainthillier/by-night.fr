@@ -15,9 +15,18 @@ use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Repository\CityRepository;
+use App\Repository\CountryRepository;
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
+use App\Stats\AdvertiserFiguresProvider;
 use App\Tests\AppWebTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
+use Psr\Log\NullLogger;
+use RuntimeException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class ContentControllerTest extends AppWebTestCase
 {
@@ -103,6 +112,65 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertSelectorTextContains('#financement', 'Awin');
         self::assertSelectorTextContains('#billets', "le lien de réservation de l'organisateur n'est pas affiché");
         self::assertSelectorExists('footer a[href="/transparence"]');
+    }
+
+    public function testTheAdvertisersPageShowsTheFiguresTheFormatsAndTheContact(): void
+    {
+        $client = self::createClient();
+        $toulouse = CityFactory::toulouse()->create();
+        $member = UserFactory::createOne();
+        EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many(3)->create(['user' => $member, 'place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()])]);
+        self::counter()->refresh();
+
+        $client->request('GET', '/annonceurs');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Faites connaître vos événements');
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=86400, stale-if-error=86400, stale-while-revalidate=86400');
+        // Counted from the database
+        self::assertSelectorTextContains('#chiffres', '3 Événements à venir');
+        self::assertSelectorTextContains('#chiffres', '1 Ville couverte');
+        self::assertSelectorTextContains('#chiffres', '1 Pays ou territoire');
+        self::assertSelectorTextContains('#chiffres', '1 Membre');
+        self::assertSelectorTextContains('#sources', 'Open Agenda');
+        // Each format says how it is labelled
+        self::assertSelectorCount(3, '#formats article');
+        self::assertSelectorTextContains('#formats', 'Sponsorisé');
+        self::assertSelectorTextContains('#formats', 'Lien affilié');
+        // The free ways in, to the real pages
+        self::assertSelectorExists('#gratuit a[href="/inscription"]');
+        self::assertSelectorExists('#gratuit a[href="/espace-perso/imports"]');
+        self::assertSelectorTextContains('#gratuit', 'OpenAgenda');
+        self::assertSelectorTextContains('#engagements', 'Aucun classement acheté');
+        self::assertSelectorExists('#engagements a[href="/transparence"]');
+        self::assertSelectorExists('#contact a[href="mailto:support@by-night.fr?subject=Partenariat%20annonceur"]');
+        self::assertSelectorExists('footer a[href="/annonceurs"]');
+    }
+
+    public function testTheAdvertisersPageHidesTheFiguresItCannotCount(): void
+    {
+        $client = self::createClient();
+        $cache = new class extends ArrayAdapter implements CacheInterface {
+            public function get(string $key, callable $callback, ?float $beta = null, ?array &$metadata = null): mixed
+            {
+                throw new RuntimeException('Redis is down');
+            }
+        };
+        self::getContainer()->set(AdvertiserFiguresProvider::class, new AdvertiserFiguresProvider(
+            self::getContainer()->get(CountryRepository::class),
+            self::getContainer()->get(CityRepository::class),
+            self::getContainer()->get(EventRepository::class),
+            self::getContainer()->get(UserRepository::class),
+            $cache,
+            new NullLogger(),
+            [],
+        ));
+
+        $client->request('GET', '/annonceurs');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#chiffres');
+        self::assertSelectorExists('#formats');
     }
 
     public function testFontsAreSelfHosted(): void
