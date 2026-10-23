@@ -1,0 +1,161 @@
+{% extends 'layouts/legal.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Transparence', url('app_transparency')) %}
+{%- endblock %}
+
+{% block title 'Transparence : comment By Night est financé' %}
+{% block page_title 'Transparence' %}
+{% block meta_description 'Qui édite By Night, comment le site est financé (publicité, liens affiliés vers des billetteries), comment les événements et les offres de billets sont classés et comment les liens rémunérés sont signalés.' %}
+
+{% set legal_lead = 'Qui édite le site, comment il est financé, comment les événements et les billets sont classés, et comment repérer un lien rémunéré.' %}
+{% set legal_updated = '2026-10-23' %}
+{% set legal_sections = [
+    {id: 'editeur', title: 'Qui édite By Night ?', number: 1},
+    {id: 'financement', title: 'Comment le site est-il financé ?', number: 2},
+    {id: 'classement', title: 'Comment les événements sont-ils classés ?', number: 3},
+    {id: 'billets', title: 'Comment les offres de billets sont-elles choisies ?', number: 4},
+    {id: 'liens', title: 'Comment repérer un lien rémunéré ?', number: 5},
+    {id: 'sites', title: 'Les liens vers nos autres sites', number: 6},
+] %}
+
+{# How the site earns money and orders what it shows (loi n° 2023-451 du 9 juin 2023, art. L. 111-7 du Code de la
+   consommation). Keep the ranking sections in step with EventElasticaRepository (agenda and search), EventRepository
+   (findHighlights, the header's suggestions), EventFamilyResolver::elect() with AffiliateParsers::pageRank(), and
+   EventTicketOffers / TicketOffer::compare(); the labels with location/event/_tickets.html.twig and the source line
+   of the event page; the partner sites with fragments/footer.html.twig. #}
+{% block legal_content %}
+    <twig:Legal:Section id="editeur" title="{{ legal_sections[0].title }}" number="{{ 1 }}">
+        <p>
+            By Night est édité par <strong>ARNOVA</strong>, SAS au capital de 1 000 €, 200 rue de la Croix Nivert, 75015
+            Paris (RCS Paris 942 070 392). Les informations complètes sur l'éditeur et l'hébergeur figurent dans les
+            <a href="{{ path('app_legal_mentions', {_fragment: 'editeur'}) }}">mentions légales</a>.
+        </p>
+        <p>
+            Consulter l'agenda, créer un compte et publier un événement sont gratuits, pour les visiteurs comme pour les
+            organisateurs. By Night ne vend pas de billets : il renvoie vers les billetteries et les organisateurs.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="financement" title="{{ legal_sections[1].title }}" number="{{ 2 }}">
+        <p>By Night est financé de deux façons :</p>
+        <ul>
+            <li>
+                <strong>La publicité.</strong> Des annonces Google AdSense s'affichent sur les pages. Elles sont choisies
+                par Google, selon vos choix de cookies (voir la <a href="{{ path('app_main_cookie') }}">politique de
+                    cookies</a>) : By Night ne choisit ni les annonceurs ni les annonces affichées, et Google les signale
+                comme des annonces.
+            </li>
+            <li>
+                <strong>Les liens affiliés vers des billetteries.</strong> Les événements de Fnac Spectacles, Billets Réduc
+                et CDiscount (par la plateforme d'affiliation Awin) et de SeeTickets (par Kwanko) sont importés de leurs
+                catalogues, et leurs liens de réservation sont des liens d'affiliation : quand vous achetez un billet après
+                avoir suivi l'un d'eux, la billetterie verse une commission à ARNOVA. Le prix que vous payez est le même que
+                sur le site de la billetterie.
+            </li>
+        </ul>
+        <p>
+            CDiscount revend les spectacles de Ticketmaster France : By Night lit aussi le catalogue public de
+            Ticketmaster pour compléter leurs dates, leurs photos et leurs lieux, mais Ticketmaster ne lui verse rien et
+            aucun lien du site ne mène à Ticketmaster.
+        </p>
+        <p>
+            Aucun organisateur, lieu ou billetterie ne paie pour qu'un événement figure sur By Night ou y soit mieux
+            placé : il n'existe ni mise en avant payante, ni compte « premium ».
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="classement" title="{{ legal_sections[2].title }}" number="{{ 3 }}">
+        <p>
+            Aucun classement ne tient compte d'une rémunération, ni du fait qu'un événement vienne d'une billetterie
+            affiliée, d'un agenda partenaire ou d'un membre. Seuls comptent les dates, la distance, les mots recherchés et
+            l'intérêt des membres :
+        </p>
+        <ul>
+            <li>
+                <strong>Agenda d'une ville, d'un pays ou d'un lieu</strong> (et ses pages par univers, thème ou catégorie) :
+                les événements qui ont une date dans la période choisie, du plus proche dans le temps au plus lointain,
+                selon la fin de leur prochaine séance. À date égale, sur l'agenda d'une ville, le plus proche de son centre
+                passe devant. Les filtres (dates, distance, catégorie, prix maximum) choisissent les événements affichés,
+                sans changer leur ordre.
+            </li>
+            <li>
+                <strong>Recherche</strong> (page « Rechercher » et barre de recherche) : tous les mots saisis doivent se
+                retrouver dans l'événement. Les résultats sont classés par pertinence : un mot trouvé dans le nom de
+                l'événement compte le plus, puis le nom du lieu et sa ville, puis les thèmes, puis la description ; une
+                faute de frappe dans le nom compte très peu. Quand la recherche porte sur une ville, ses événements et ceux
+                des environs voient leur pertinence multipliée jusqu'à trois, de moins en moins avec la distance. À
+                pertinence égale, la date la plus proche passe devant.
+            </li>
+            <li>
+                <strong>« À l'affiche » et suggestions de la barre de recherche</strong> : des événements des jours qui
+                viennent, classés par nombre de membres qui ont cliqué sur « J'y vais », puis par date (« À l'affiche »),
+                ou par date puis par nombre de « J'y vais » (suggestions de la semaine).
+            </li>
+            <li>
+                <strong>Événements du même lieu ou du même jour</strong>, sur une page d'événement : par date pour les
+                prochains événements du lieu, par ordre alphabétique pour les autres sorties du jour en ville.
+            </li>
+        </ul>
+        <p>
+            <strong>Un même événement diffusé par plusieurs sources</strong> n'apparaît qu'une fois : ses pages sont
+            réunies en une seule. La page conservée est en priorité celle d'un agenda partenaire, d'un office de tourisme
+            ou de l'organisateur, qui en donnent la description la plus complète, puis, à défaut, celle d'une billetterie
+            dans cet ordre : Fnac Spectacles, Billets Réduc, SeeTickets, CDiscount. Ce choix ne change pas la place de
+            l'événement dans l'agenda.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="billets" title="{{ legal_sections[3].title }}" number="{{ 4 }}">
+        <p>
+            Quand un événement est vendu par plusieurs billetteries, sa page les propose toutes, une offre par billetterie
+            (son prix le plus bas), dans cet ordre :
+        </p>
+        <ul>
+            <li>d'abord les offres disponibles dont le prix est connu, de la moins chère à la plus chère ;</li>
+            <li>puis les offres sans prix connu, puis les offres complètes ;</li>
+            <li>à égalité, par ordre alphabétique de la billetterie.</li>
+        </ul>
+        <p>
+            Le bouton de réservation mène à la première de cette liste. <strong>Quand au moins une billetterie
+                affiliée a encore des billets en vente, le lien de réservation de l'organisateur n'est pas affiché</strong> :
+            seules les billetteries affiliées sont proposées. Le lien de l'organisateur, qui ne rapporte rien à By Night,
+            n'est proposé que si aucune billetterie affiliée ne vend l'événement, et n'est plus affiché une fois
+            l'événement passé. Vous pouvez toujours retrouver l'organisateur et son site depuis la description de
+            l'événement ou une recherche.
+        </p>
+        <p>
+            Les prix et les disponibilités sont ceux que chaque billetterie transmet à son dernier import et peuvent avoir
+            changé : seul compte le prix affiché par la billetterie au moment de l'achat.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="liens" title="{{ legal_sections[4].title }}" number="{{ 5 }}">
+        <ul>
+            <li>
+                <strong>Sous les boutons de réservation</strong>, la mention « Lien affilié » signale que les liens vers les
+                billetteries rapportent une commission à By Night, avec un lien vers cette page.
+            </li>
+            <li>
+                <strong>Sur la ligne « Source »</strong> d'une page d'événement importé d'une billetterie, la même mention
+                accompagne le lien vers la billetterie.
+            </li>
+            <li>
+                <strong>Pour les moteurs de recherche</strong>, ces liens portent l'attribut <code>rel="sponsored"</code>,
+                qui les déclare comme liens rémunérés.
+            </li>
+            <li><strong>Les publicités</strong> sont signalées comme telles par Google, qui les affiche.</li>
+        </ul>
+        <p>Les autres liens du site (sources, sites des organisateurs et des lieux) ne sont pas rémunérés.</p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="sites" title="{{ legal_sections[5].title }}" number="{{ 6 }}">
+        <p>
+            Le pied de page de By Night renvoie, sous « Nos sites partenaires », vers d'autres sites liés à son éditeur :
+            Offre-Parrainages.fr et Avis-Banque.fr, édités par ARNOVA ; parrainages-boursorama.fr, autre site de
+            parrainage de son dirigeant ; et le site et le blog de SILARHI, la société de développement web de son dirigeant. Personne ne
+            paie By Night pour ces liens, mais les sites de parrainage sont eux-mêmes financés par des primes de
+            parrainage et des liens affiliés, comme ils l'expliquent sur leurs propres pages.
+        </p>
+    </twig:Legal:Section>
+{% endblock %}

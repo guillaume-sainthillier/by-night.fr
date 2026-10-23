@@ -1,0 +1,65 @@
+{# The publisher of the site and its host, as the legal notice (LCEN art. 6) requires them: the one place they are
+   written. ARNOVA's figures come from the public registry (arnova.fr's src/config/company.ts): copy them, never type
+   them from memory. #}
+{% props id = 'editeur' %}
+<section {{ attributes.defaults({class: 'card legal-section', id: id}) }}>
+    <div class="card-body p-4 p-lg-5">
+        <h2 class="legal-section-title">
+            <span class="legal-section-number"><twig:Icon name="lucide:landmark" /></span>
+            Éditeur et hébergeur
+        </h2>
+        <div class="datagrid">
+            <div class="datagrid-item">
+                <div class="datagrid-title">Éditeur</div>
+                <div class="datagrid-content fw-bold">ARNOVA</div>
+                <div class="small text-secondary">SAS au capital de 1 000 €</div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">Directeur de la publication</div>
+                <div class="datagrid-content fw-bold">Guillaume Sainthillier</div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">Siège social</div>
+                <div class="datagrid-content">200 rue de la Croix Nivert, 75015 Paris, France</div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">Immatriculation</div>
+                <div class="datagrid-content font-monospace">SIRET 942 070 392 00017</div>
+                <div class="small text-secondary">RCS Paris 942 070 392</div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">TVA intracommunautaire</div>
+                <div class="datagrid-content font-monospace">FR79942070392</div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">Contact</div>
+                <div class="datagrid-content">
+                    <a href="https://arnova.fr" target="_blank" rel="noopener">arnova.fr</a> —
+                    <a href="mailto:contact@arnova.fr">contact@arnova.fr</a>
+                </div>
+                <div class="small text-secondary">
+                    Questions sur le site&nbsp;: <a href="mailto:support@by-night.fr">support@by-night.fr</a>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="datagrid">
+            <div class="datagrid-item">
+                <div class="datagrid-title">Hébergeur</div>
+                <div class="datagrid-content">
+                    <a href="https://www.ovhcloud.com" target="_blank" rel="noopener noreferrer">OVH SAS</a>, 2 rue Kellermann, 59100 Roubaix, France
+                </div>
+                <div class="small text-secondary">
+                    SAS au capital de 50 000 000 €, RCS Lille Métropole 424 761 419 — téléphone&nbsp;: 1007 depuis la France, +33 9 72 10 10 07 depuis l'étranger
+                </div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">Réseau de diffusion (CDN)</div>
+                <div class="datagrid-content">
+                    <a href="https://www.cloudflare.com" target="_blank" rel="noopener noreferrer">Cloudflare, Inc.</a>
+                </div>
+                <div class="small text-secondary">101 Townsend Street, San Francisco, CA 94107, États-Unis</div>
+            </div>
+        </div>
+    </div>
+</section>

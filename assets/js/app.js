@@ -34,6 +34,7 @@ import pages from '@/js/listeners/pages'
 import passwordMeter from '@/js/listeners/password-meter'
 import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
+import toc from '@/js/listeners/toc'
 import tooltip from '@/js/listeners/tooltip'
 import transferToasts from '@/js/listeners/transfer-toasts'
 import videoFacade from '@/js/listeners/video-facade'
@@ -109,6 +110,7 @@ class App {
             passwordMeter,
             passwordReveal,
             popup,
+            toc,
             tooltip,
             transferToasts,
             videoFacade,
