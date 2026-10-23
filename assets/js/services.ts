@@ -1,5 +1,5 @@
 import { defineServices, type ServicesOf } from '@silarhi/app-js'
-import CollectionManager from '@/js/services/form/CollectionManager'
+import { CollectionManager } from '@silarhi/app-js/form'
 import ModalManager from '@/js/services/modals/ModalManager'
 import ToastManager from '@/js/services/modals/ToastManager'
 
@@ -18,8 +18,20 @@ export type Parameters = {
 export const services = defineServices({
     toastManager: () => new ToastManager(),
     modalManager: () => new ModalManager(),
-    // Reads the container: its return type stops the inference from looping through ServiceMap
-    collectionManager: (container): CollectionManager => new CollectionManager(container.get('modalManager')),
+    // Symfony form collections (templates/form/fields.html.twig): its buttons' listener is registered by app.ts. Reads
+    // the container: its return type stops the inference from looping through ServiceMap
+    collectionManager: (container): CollectionManager =>
+        new CollectionManager({
+            app: container.get('app'),
+            selectors: { collection: '.collection' },
+            // Only remove buttons with a data-confirm-message ask
+            confirm: async (message) =>
+                (await container.get('modalManager').createConfirm({
+                    text: message,
+                    focusConfirm: true,
+                    focusCancel: false,
+                })) === true,
+        }),
 })
 
 declare module '@silarhi/app-js' {

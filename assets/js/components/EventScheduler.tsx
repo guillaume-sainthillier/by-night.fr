@@ -1,6 +1,6 @@
 import { findAll, findOne } from '@silarhi/app-js'
+import type { CollectionManager } from '@silarhi/app-js/form'
 import { useEffect, useMemo, useState } from 'preact/hooks'
-import type CollectionManager from '@/js/services/form/CollectionManager'
 import { plural } from '@/js/utils/plural'
 import TimesheetGenerator, { type Timesheet } from '@/js/utils/TimesheetGenerator'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
@@ -137,7 +137,7 @@ export default function EventScheduler({
     }, [startDateFieldId, endDateFieldId])
 
     // Validate and generate
-    const handleGenerate = (e: Event) => {
+    const handleGenerate = async (e: Event) => {
         e.preventDefault()
 
         const { startDate, endDate } = dateRange
@@ -167,12 +167,12 @@ export default function EventScheduler({
             const collection = findOne(`#${timesheetsCollectionId}`)
             if (!collection) throw new Error('Collection not found')
 
-            collectionManager.emptyCollection(collection)
+            await collectionManager.clear(collection)
 
             for (const timesheet of timesheets) {
-                collectionManager.addElement(collection, {
-                    from: timesheet.startAt,
-                    to: timesheet.endAt,
+                // Keyed by the item's field paths: the dates sit in its dateRange (timesheets_0_dateRange_from)
+                collectionManager.add(collection, {
+                    dateRange: { from: timesheet.startAt, to: timesheet.endAt },
                 })
             }
 

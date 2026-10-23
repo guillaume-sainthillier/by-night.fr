@@ -22,7 +22,6 @@ import facebookPage from '@/js/listeners/facebook-page'
 import feedback from '@/js/listeners/feedback'
 import fileMaxSize from '@/js/listeners/file-max-size'
 import filteredLink from '@/js/listeners/filtered-link'
-import formCollection from '@/js/listeners/form-collection'
 import formConfirm from '@/js/listeners/form-confirm'
 import formErrors from '@/js/listeners/form-errors'
 import formTarget from '@/js/listeners/form-target'
@@ -73,7 +72,6 @@ const app = new App({
         feedback,
         fileMaxSize,
         filteredLink,
-        formCollection,
         formConfirm,
         formErrors,
         formTarget,
@@ -92,6 +90,9 @@ const app = new App({
     services,
     parameters,
 })
+
+// After the app: the collection manager mounts the items it adds
+app.addListener(app.get('collectionManager').listener)
 
 window.App = app
 

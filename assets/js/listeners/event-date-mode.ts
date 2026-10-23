@@ -37,7 +37,7 @@ export default function initEventDateMode(container: HTMLElement, app: App) {
             })
             if (!confirmed) return
 
-            app.get('collectionManager').emptyCollection(collection)
+            await app.get('collectionManager').clear(collection)
         }
 
         select(mode)
