@@ -21,6 +21,7 @@
         profile: {icon: 'lucide:user', label: 'Profil'},
         socials: {icon: 'lucide:share-2', label: 'Réseaux sociaux'},
         password: {icon: 'lucide:key-round', label: 'Mot de passe'},
+        security: {icon: 'lucide:shield-check', label: 'Sécurité'},
         delete: {icon: 'lucide:trash-2', label: 'Supprimer le compte'},
     } %}
 
@@ -222,6 +223,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {# Second factors #}
+                <div class="tab-pane fade{{ activeTab == 'security' ? ' show active' }}" id="security" role="tabpanel" aria-labelledby="security-tab">
+                    {{ include('profile/_security.html.twig') }}
                 </div>
 
                 {# Account deletion #}

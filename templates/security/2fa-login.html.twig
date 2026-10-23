@@ -1,0 +1,86 @@
+{#
+ # The second factor of a login (scheb/2fa-bundle): the passkey, the code of the authenticator app, or a recovery code.
+ # Each form posts its auth_type, which App\Security\TwoFactor\TwoFactorProviderSelectionListener routes to its provider;
+ # a recovery code is checked whatever the provider.
+ #}
+{% extends 'layouts/full.html.twig' %}
+
+{% block title 'Double authentification' %}
+
+{% block meta_robots %}
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block body %}
+    {% set checkUrl = checkPathUrl ?: path(checkPathRoute) %}
+    {% set hasTotp = 'google' in availableTwoFactorProviders %}
+    {% set hasPasskey = constant('App\\Security\\TwoFactor\\Webauthn\\WebauthnTwoFactorProvider::ALIAS') in availableTwoFactorProviders %}
+    <div class="container-tight py-4 py-lg-5">
+        <div class="card card-md mb-0">
+            <div class="card-body">
+                <twig:Section:Eyebrow icon="lucide:shield-check" badge="{{ true }}">Connexion sécurisée</twig:Section:Eyebrow>
+                <h1 class="text-start mb-2">Double authentification</h1>
+                <p class="text-secondary mb-4">Confirmez votre identité pour terminer la connexion.</p>
+
+                {% if authenticationError %}
+                    <div class="alert alert-danger" role="alert">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</div>
+                {% endif %}
+
+                {% if hasPasskey and webauthnRequestOptions is defined %}
+                    <form class="js-webauthn" action="{{ checkUrl }}" method="post" data-webauthn-action="authenticate" data-webauthn-options="{{ webauthnRequestOptions }}">
+                        <input type="hidden" name="auth_type" value="webauthn">
+                        <input type="hidden" name="{{ authCodeParameterName }}" data-webauthn-response>
+                        {% if isCsrfProtectionEnabled %}
+                            <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+                        {% endif %}
+                        <div class="alert alert-warning" role="alert" data-webauthn-error hidden></div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100" {% if not hasTotp %}autofocus{% endif %}>
+                            <twig:Icon name="lucide:fingerprint" />
+                            Utiliser ma clé d’accès
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if hasPasskey and hasTotp %}
+                    <div class="hr-text">ou</div>
+                {% endif %}
+
+                {% if hasTotp %}
+                    <form action="{{ checkUrl }}" method="post">
+                        <input type="hidden" name="auth_type" value="totp">
+                        <label class="form-label" for="_auth_code">Code de votre application d’authentification</label>
+                        <twig:OtpInput name="{{ authCodeParameterName }}" id="_auth_code" autofocus="{{ true }}" label="Code de votre application d’authentification" />
+                        {% if isCsrfProtectionEnabled %}
+                            <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+                        {% endif %}
+                        <button type="submit" class="btn {{ hasPasskey ? 'btn-outline-primary' : 'btn-primary btn-lg' }} w-100 mt-3">Valider le code</button>
+                    </form>
+                {% endif %}
+
+                <details class="mt-4">
+                    <summary class="text-secondary">Utiliser un code de secours</summary>
+                    <form class="mt-3" action="{{ checkUrl }}" method="post">
+                        <input type="hidden" name="auth_type" value="backup_code">
+                        <label class="form-label" for="_backup_code">Code de secours</label>
+                        <input type="text" class="form-control" id="_backup_code" name="{{ authCodeParameterName }}" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" required>
+                        <small class="form-hint">Chaque code de secours ne sert qu’une fois.</small>
+                        {% if isCsrfProtectionEnabled %}
+                            <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+                        {% endif %}
+                        <button type="submit" class="btn btn-outline-secondary w-100 mt-3">Valider le code de secours</button>
+                    </form>
+                </details>
+            </div>
+            <div class="card-footer d-flex flex-wrap justify-content-between gap-2">
+                <form method="post" action="{{ path('app_two_factor_recovery_request') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token(constant('App\\Controller\\TwoFactorRecoveryController::CSRF_TOKEN_ID')) }}">
+                    <button type="submit" class="btn btn-link p-0 border-0 bg-transparent">
+                        <twig:Icon name="lucide:life-buoy" />
+                        J’ai perdu l’accès à mes facteurs
+                    </button>
+                </form>
+                <a href="{{ logoutPath }}" class="text-secondary">Annuler la connexion</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

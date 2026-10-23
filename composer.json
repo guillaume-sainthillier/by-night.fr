@@ -41,6 +41,7 @@
         "api-platform/core": "^5.0.4",
         "aws/aws-sdk-php": "^3.401.4",
         "babdev/pagerfanta-bundle": "^4.7",
+        "bacon/bacon-qr-code": "^3.1",
         "beberlei/doctrineextensions": "^1.5",
         "doctrine/doctrine-bundle": "^3.3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0.1",
@@ -66,6 +67,9 @@
         "pagerfanta/doctrine-orm-adapter": "^4",
         "pagerfanta/twig": "^4",
         "presta/sitemap-bundle": "^4.3.1",
+        "scheb/2fa-backup-code": "^8.6",
+        "scheb/2fa-bundle": "^8.6",
+        "scheb/2fa-google-authenticator": "^8.6",
         "sentry/sentry-symfony": "^5.14.0",
         "silarhi/cursor-pagination": "^2.4.0",
         "silarhi/llms-txt-bundle": "^1.3.0",
@@ -118,7 +122,8 @@
         "twig/extra-bundle": "^3.29.0",
         "twig/intl-extra": "^3.30.0",
         "twig/string-extra": "^3.24",
-        "vich/uploader-bundle": "^3.0.0"
+        "vich/uploader-bundle": "^3.0.0",
+        "web-auth/webauthn-symfony-bundle": "^5.3"
     },
     "require-dev": {
         "api-platform/test": "5.0.4",

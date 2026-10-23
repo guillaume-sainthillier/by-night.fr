@@ -13,6 +13,7 @@ namespace App\Manager;
 use App\Entity\ContentRemovalRequest;
 use App\Entity\User;
 use App\Enum\ContentRemovalType;
+use DateTimeImmutable;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
@@ -51,6 +52,29 @@ final readonly class MailerManager
             ->context([
                 'resetPasswordToken' => $resetPasswordToken,
             ]);
+
+        $this->sendMail($email);
+    }
+
+    /**
+     * The link that turns off the second factors of a member who lost them (App\Manager\Security\TwoFactorRecoveryManager)
+     */
+    public function sendTwoFactorRecoveryLink(User $user, string $url, DateTimeImmutable $expiresAt): void
+    {
+        $email = $this->createEmail('email/two-factor-recovery')
+            ->to($user->getEmail())
+            ->subject('Récupérer l\'accès à votre compte - By Night')
+            ->context(['user' => $user, 'url' => $url, 'expiresAt' => $expiresAt]);
+
+        $this->sendMail($email);
+    }
+
+    public function sendTwoFactorReset(User $user): void
+    {
+        $email = $this->createEmail('email/two-factor-reset')
+            ->to($user->getEmail())
+            ->subject('La double authentification de votre compte est désactivée - By Night')
+            ->context(['user' => $user]);
 
         $this->sendMail($email);
     }

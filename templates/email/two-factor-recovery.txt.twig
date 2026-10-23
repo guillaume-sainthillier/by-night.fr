@@ -1,0 +1,11 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Récupérer l'accès à votre compte{% endblock %}
+
+{% block body %}
+Vous avez demandé à récupérer l'accès à votre compte. Ce lien désactive la double authentification : l'application d'authentification, les codes de secours et les clés d'accès. Vous vous connecterez ensuite sans second facteur, et pourrez la réactiver depuis votre compte.
+
+{{ url }}
+
+Ce lien est valable une heure, jusqu'à {{ expiresAt|date('H:i', 'Europe/Paris') }}, et ne sert qu'une fois. Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail : quelqu'un a pu se connecter à votre compte, changez votre mot de passe.
+{% endblock %}

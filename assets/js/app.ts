@@ -30,6 +30,7 @@ import imagePreviews from '@/js/listeners/image-previews'
 import impersonate from '@/js/listeners/impersonate'
 import like from '@/js/listeners/like'
 import loadMore from '@/js/listeners/load-more'
+import otpAutosubmit from '@/js/listeners/otp-autosubmit'
 import pages from '@/js/listeners/pages'
 import passwordMeter from '@/js/listeners/password-meter'
 import passwordReveal from '@/js/listeners/password-reveal'
@@ -38,6 +39,7 @@ import toc from '@/js/listeners/toc'
 import tooltip from '@/js/listeners/tooltip'
 import transferToasts from '@/js/listeners/transfer-toasts'
 import videoFacade from '@/js/listeners/video-facade'
+import webauthn from '@/js/listeners/webauthn'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
@@ -105,6 +107,7 @@ export class App {
             impersonate,
             like,
             loadMore,
+            otpAutosubmit,
             passwordMeter,
             passwordReveal,
             popup,
@@ -112,6 +115,7 @@ export class App {
             tooltip,
             transferToasts,
             videoFacade,
+            webauthn,
         ]
 
         this.#listeners.forEach((listener) => this.#tracked.set(listener, new Set()))

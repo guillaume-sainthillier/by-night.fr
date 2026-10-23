@@ -44,4 +44,6 @@ return [
     Symfony\Reprise\RepriseBundle::class => ['all' => true],
     Silarhi\LlmsTxtBundle\LlmsTxtBundle::class => ['all' => true],
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
+    Scheb\TwoFactorBundle\SchebTwoFactorBundle::class => ['all' => true],
+    Webauthn\Bundle\WebauthnBundle::class => ['all' => true],
 ];

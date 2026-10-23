@@ -1,0 +1,44 @@
+{% extends 'profile/security/_layout.html.twig' %}
+
+{% block title 'Application d’authentification' %}
+{% block breadcrumb %}
+    {{ parent() }}
+    {% do menu.addItem('Application d’authentification', url('app_user_security_totp')) %}
+{% endblock %}
+{% block page_title 'Activer l’application d’authentification' %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card">
+                {{ form_start(form) }}
+                <div class="card-body">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-md-auto text-center">
+                            <img src="{{ qrCode }}" width="200" height="200" alt="QR code à scanner avec votre application d’authentification" class="border rounded p-2 bg-white">
+                        </div>
+                        <div class="col-md">
+                            <ol class="mb-3">
+                                <li>Ouvrez votre application d’authentification (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…).</li>
+                                <li>Scannez ce QR code, ou saisissez la clé ci-dessous.</li>
+                                <li>Saisissez le code à 6 chiffres qu’elle affiche.</li>
+                            </ol>
+                            <div class="mb-0">
+                                <span class="form-label">Clé de configuration</span>
+                                <code class="d-inline-block user-select-all fs-4 text-break">{{ secret|split('', 4)|join(' ') }}</code>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    {{ form_row(form.code) }}
+                    {{ form_rest(form) }}
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ path('app_user_edit', {_fragment: 'security'}) }}" class="btn btn-link">Annuler</a>
+                    <button type="submit" class="btn btn-primary">Activer</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

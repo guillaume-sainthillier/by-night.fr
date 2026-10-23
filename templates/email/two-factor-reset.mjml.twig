@@ -1,0 +1,20 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Double authentification désactivée{% endblock %}
+{% block preheader %}La double authentification de votre compte est désactivée : réactivez-la depuis votre compte.{% endblock %}
+
+{% block icon 'info' %}
+{% block heading %}Double authentification désactivée{% endblock %}
+
+{% block body %}
+    <mj-text align="center">
+        La double authentification de votre compte vient d'être désactivée par le lien de récupération&nbsp;: votre
+        application d'authentification, vos codes de secours et vos clés d'accès ne sont plus demandés.
+    </mj-text>
+    <mj-button href="{{ url('app_user_edit', {_fragment: 'security'}) }}">
+        Réactiver la double authentification
+    </mj-button>
+    <mj-text mj-class="muted">
+        Si vous n'êtes pas à l'origine de ce changement, changez votre mot de passe et répondez à cet e-mail.
+    </mj-text>
+{% endblock %}
