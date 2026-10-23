@@ -76,6 +76,11 @@ $-headings-line-height: 1.2;
     $progress-box-shadow: none,
     // 1rem / .75rem: .btn-sm and the chips (1rem, i.e. shorter, since 1.5)
     $input-btn-line-height-sm: 1.3333333,
+    // Filled .btn-* got a darker border, light/dark inner edges and a white gradient in 1.7: flat again, as in 1.6
+    $btn-variant-border-color: transparent,
+    $btn-highlight-color: transparent,
+    $btn-shade-color: transparent,
+    $btn-gradient: none,
 
     // Configuration
     $enable-dark-mode: true,
