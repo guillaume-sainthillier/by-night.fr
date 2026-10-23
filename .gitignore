@@ -2,6 +2,10 @@
 .eslintcache
 /public/image
 
+# Icons dumped by silarhi/ux-icons-js-bundle: index.js/index.d.ts are committed, the by-name loaders are unused
+/assets/js/icons/loaders.*
+/assets/js/icons/icons/
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

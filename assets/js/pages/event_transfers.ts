@@ -1,4 +1,4 @@
-import type { Page } from '@/js/types'
+import type { Page } from '@silarhi/app-js'
 import { coalesce, followTransfers } from '@/js/utils/transfers'
 
 /**

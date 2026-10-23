@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * Send a verification email when the element is clicked, then dismiss its

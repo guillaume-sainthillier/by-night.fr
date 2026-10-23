@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * Load the next page of results and insert it before the button, then mount
@@ -31,4 +31,4 @@ export default {
 
         return () => $element.off('.loadMore')
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

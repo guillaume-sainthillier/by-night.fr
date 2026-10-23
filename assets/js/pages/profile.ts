@@ -1,7 +1,7 @@
+import type { Page } from '@silarhi/app-js'
 import { Tab } from '@tabler/core'
 import SocialLogin from '@/js/components/SocialLogin'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
-import type { Page } from '@/js/types'
 
 const initialize: Page = () => {
     new SocialLogin().init()

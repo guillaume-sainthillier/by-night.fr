@@ -1,8 +1,8 @@
+import type { Page } from '@silarhi/app-js'
+import { renderIcon } from '@silarhi/ux-icons-js'
 import { Tab } from '@tabler/core'
 import $ from 'jquery'
-import { iconHtml } from '@/js/components/icons'
-import Loader2Icon from '@/js/icons/lucide/Loader2'
-import type { Page } from '@/js/types'
+import { LucideLoader2Icon } from '@/js/icons'
 
 const initialize: Page = ({ app }) => {
     init()
@@ -44,7 +44,7 @@ const initialize: Page = ({ app }) => {
 
                 // Add spinner to button
                 const originalText = btn.html()
-                btn.html(`${iconHtml(Loader2Icon, 'icon-spin')} ${originalText}`)
+                btn.html(`${renderIcon(LucideLoader2Icon, { class: 'icon icon-spin' })} ${originalText}`)
                 btn.prop('disabled', true)
 
                 $.get(loadMore.data('url'), (html: string) => {

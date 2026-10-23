@@ -3,8 +3,8 @@
  * Run: pnpm test
  */
 
+import type { App } from '@silarhi/app-js'
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import type { App } from '@/js/app'
 import copyUrl from '@/js/listeners/copy-url'
 import { fake } from '@/js/test/fake'
 

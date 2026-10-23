@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * Copy the address a button carries in `data-copy-url` (the share menu of an event, the calendar of "Mes sorties").

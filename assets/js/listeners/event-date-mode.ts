@@ -1,5 +1,5 @@
-import type { App } from '@/js/app'
-import { findAll, findOne, on } from '@/js/utils/dom'
+import type { App } from '@silarhi/app-js'
+import { findAll, findOne, on } from '@silarhi/app-js'
 import { plural } from '@/js/utils/plural'
 
 /**
@@ -37,7 +37,7 @@ export default function initEventDateMode(container: HTMLElement, app: App) {
             })
             if (!confirmed) return
 
-            app.get('collectionManager').emptyCollection(collection)
+            await app.get('collectionManager').clear(collection)
         }
 
         select(mode)

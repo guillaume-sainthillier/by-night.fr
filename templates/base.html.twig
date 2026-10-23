@@ -155,19 +155,17 @@ _______     __  _   _ _____ _____ _    _ _______
 </button>
 
 <!-- JS -->
-{{ reprise_entry_script_tags('app') }}
-{# A module script so it runs after the app entry module (deferred, document order), once window.$ and window.App exist. #}
-<script type="module">
-    $(document).ready(function () {
-    App.start({{ {
+{# A classic script: it runs at once, before the app entry module (deferred), which reads it to boot (assets/js/app.ts) #}
+<script>
+    window.appParameters = {{ {
         environment: app.environment,
         locale: app.request.locale,
         release: 'v' ~ app_version,
         dsn: sentry_dsn,
         user: (app.user ? {id: app.user.id} : null),
-    }|json_encode|raw }});
-  });
+    }|json_encode|raw }};
 </script>
+{{ reprise_entry_script_tags('app') }}
 {%- block js -%}{%- endblock -%}
 <!-- ./JS -->
 </body>

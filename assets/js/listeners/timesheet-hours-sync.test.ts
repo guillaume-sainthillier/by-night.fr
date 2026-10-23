@@ -21,7 +21,7 @@ const { page } = vi.hoisted(() => {
 
 type Field = (typeof page.rows)[number]
 
-vi.mock('@/js/utils/dom', () => ({
+vi.mock('@silarhi/app-js', () => ({
     findOne: (selector: string) => page.fields[selector] ?? null,
     findAll: (selector: string) => {
         const suffix = /\$="([^"]+)"/.exec(selector)?.[1]

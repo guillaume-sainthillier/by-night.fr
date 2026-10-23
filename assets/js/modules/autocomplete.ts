@@ -1,6 +1,6 @@
+import type { Module } from '@silarhi/app-js'
 import $ from 'jquery'
 import initAutocomplete from '@/js/components/autocomplete'
-import type { Module } from '@/js/types'
 import { isTouchDevice } from '@/js/utils/utils'
 
 /**

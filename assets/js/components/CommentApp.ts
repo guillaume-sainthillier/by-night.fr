@@ -1,11 +1,9 @@
+import { renderIcon } from '@silarhi/ux-icons-js'
 import $ from 'jquery'
 import type { SweetAlertIcon } from 'sweetalert2'
-import { iconHtml } from '@/js/components/icons'
-import CheckIcon from '@/js/icons/lucide/Check'
-import ChevronDownIcon from '@/js/icons/lucide/ChevronDown'
-import ChevronUpIcon from '@/js/icons/lucide/ChevronUp'
-import Loader2Icon from '@/js/icons/lucide/Loader2'
+import { LucideLoader2Icon } from '@/js/icons'
 import type ToastManager from '@/js/services/modals/ToastManager'
+import { loadingButtons, resetButtons } from '@/js/utils/buttons'
 import { plural } from '@/js/utils/plural'
 
 /**
@@ -22,10 +20,7 @@ type ReplyResponse = { success: true; comment: string; reply_count: number } | {
 
 export default class CommentApp {
     options = {
-        icon_up: ChevronUpIcon,
-        icon_down: ChevronDownIcon,
-        icon_spinner: Loader2Icon,
-        icon_check: CheckIcon,
+        icon_spinner: LucideLoader2Icon,
         css_btn_list: '.btn-list',
         css_main_reply_block: '.reply-thread',
         css_reply_link: '.reply-link',
@@ -76,7 +71,7 @@ export default class CommentApp {
 
                 // Add spinner to button
                 const originalText = btn.html()
-                btn.html(`${iconHtml(this.options.icon_spinner, 'icon-spin')} ${originalText}`)
+                btn.html(`${renderIcon(this.options.icon_spinner, { class: 'icon icon-spin' })} ${originalText}`)
                 btn.prop('disabled', true)
 
                 const url: string = loadMore.data('url')
@@ -113,7 +108,9 @@ export default class CommentApp {
                 // For all reply links
                 const link = $(event.currentTarget)
 
-                link.data('original-html', link.html()).html(iconHtml(self.options.icon_spinner, 'icon-spin'))
+                link.data('original-html', link.html()).html(
+                    renderIcon(self.options.icon_spinner, { class: 'icon icon-spin' })
+                )
                 const postAnswerContainer = link
                     .closest(self.options.css_main_reply_block)
                     .find(self.options.css_reply_form_container) // Find the post block
@@ -156,7 +153,7 @@ export default class CommentApp {
             .off('submit')
             .submit((event) => {
                 const formElement = event.currentTarget
-                window.App.loadingButtons(formElement)
+                loadingButtons(formElement)
                 const form = $(formElement)
                 const textarea = form.find('textarea')
                 const mainAnswerContainer = answerPostContainer.closest(this.options.css_main_reply_block)
@@ -224,7 +221,7 @@ export default class CommentApp {
                         this.showToast('error', 'Une erreur est survenue')
                     })
                     .always(() => {
-                        window.App.resetButtons(formElement)
+                        resetButtons(formElement)
                     })
 
                 return false
@@ -239,7 +236,7 @@ export default class CommentApp {
                 const textarea = form.find('textarea')
 
                 form.off('submit').submit(() => {
-                    window.App.loadingButtons(comment)
+                    loadingButtons(comment)
 
                     // Create temporary comment element for optimistic UI
                     const tempComment = $('<div class="comment is-sending">')
@@ -318,7 +315,7 @@ export default class CommentApp {
                             this.showToast('error', 'Une erreur est survenue')
                         })
                         .always(() => {
-                            window.App.resetButtons(comment)
+                            resetButtons(comment)
                             tempComment.remove()
                         })
 

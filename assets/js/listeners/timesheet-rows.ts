@@ -1,5 +1,5 @@
+import { findAll, findOne, on } from '@silarhi/app-js'
 import { leafLines } from '@/js/utils/dateLeaf'
-import { findAll, findOne, on } from '@/js/utils/dom'
 import { plural } from '@/js/utils/plural'
 
 /**
@@ -41,7 +41,7 @@ export default function initTimesheetRows(container: HTMLElement) {
         fillLeaf(e.detail.item)
         updateCount()
     })
-    on(collection, 'collection.deleted', updateCount)
+    on(collection, 'collection.removed', updateCount)
 
     // The date picker of a row dispatches "change" on its hidden date field
     on(collection, 'change', (e) => {

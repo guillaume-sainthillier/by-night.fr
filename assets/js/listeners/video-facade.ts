@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * Click-to-load facade of the YouTube players of event descriptions: `HtmlFormatter::deferVideoPlayers()` renders a
@@ -30,4 +30,4 @@ export default {
 
         return () => button.removeEventListener('click', onClick)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

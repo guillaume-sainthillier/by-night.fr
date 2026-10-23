@@ -3,8 +3,8 @@
  * Run: pnpm test
  */
 
+import type { App } from '@silarhi/app-js'
 import { afterEach, beforeEach, describe, expect, type Mock, test, vi } from 'vitest'
-import type { App } from '@/js/app'
 import scrollToTop, { SHOW_AFTER } from '@/js/modules/scroll-to-top'
 import { fake } from '@/js/test/fake'
 

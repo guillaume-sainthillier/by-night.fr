@@ -1,6 +1,6 @@
+import { findAll, findOne } from '@silarhi/app-js'
+import type { CollectionManager } from '@silarhi/app-js/form'
 import { useEffect, useMemo, useState } from 'preact/hooks'
-import type CollectionManager from '@/js/services/form/CollectionManager'
-import { dom, findAll } from '@/js/utils/dom'
 import { plural } from '@/js/utils/plural'
 import TimesheetGenerator, { type Timesheet } from '@/js/utils/TimesheetGenerator'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
@@ -74,7 +74,7 @@ export default function EventScheduler({
     useEffect(() => {
         if (!detectExisting) return
 
-        const collection = dom(`#${timesheetsCollectionId}`)
+        const collection = findOne(`#${timesheetsCollectionId}`)
         if (!collection) return
 
         const existingTimesheets: Timesheet[] = []
@@ -107,8 +107,8 @@ export default function EventScheduler({
 
     // Listen to main event startDate/endDate field changes
     useEffect(() => {
-        const startDateField = dom<HTMLInputElement>(`#${startDateFieldId}`)
-        const endDateField = dom<HTMLInputElement>(`#${endDateFieldId}`)
+        const startDateField = findOne<HTMLInputElement>(`#${startDateFieldId}`)
+        const endDateField = findOne<HTMLInputElement>(`#${endDateFieldId}`)
 
         if (!startDateField || !endDateField) return
 
@@ -137,7 +137,7 @@ export default function EventScheduler({
     }, [startDateFieldId, endDateFieldId])
 
     // Validate and generate
-    const handleGenerate = (e: Event) => {
+    const handleGenerate = async (e: Event) => {
         e.preventDefault()
 
         const { startDate, endDate } = dateRange
@@ -164,15 +164,15 @@ export default function EventScheduler({
                     ? generator.generateWeekdays(startDate, endDate, Array.from(selectedWeekdays))
                     : generator.generateDaily(startDate, endDate)
 
-            const collection = dom(`#${timesheetsCollectionId}`)
+            const collection = findOne(`#${timesheetsCollectionId}`)
             if (!collection) throw new Error('Collection not found')
 
-            collectionManager.emptyCollection(collection)
+            await collectionManager.clear(collection)
 
             for (const timesheet of timesheets) {
-                collectionManager.addElement(collection, {
-                    from: timesheet.startAt,
-                    to: timesheet.endAt,
+                // Keyed by the item's field paths: the dates sit in its dateRange (timesheets_0_dateRange_from)
+                collectionManager.add(collection, {
+                    dateRange: { from: timesheet.startAt, to: timesheet.endAt },
                 })
             }
 
@@ -189,7 +189,7 @@ export default function EventScheduler({
     // The "Générer les dates" button sits next to the period field, outside this component: re-bound on every render
     // so that it always generates from the current state
     useEffect(() => {
-        const button = dom(`#${generateButtonId}`)
+        const button = findOne(`#${generateButtonId}`)
         if (!button) return
 
         button.addEventListener('click', handleGenerate)

@@ -1,4 +1,4 @@
-import type { Module } from '@/js/types'
+import type { Module } from '@silarhi/app-js'
 
 /**
  * Names the card picture the cross-document view transition morphs into the event's poster, and back
