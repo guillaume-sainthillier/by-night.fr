@@ -55,6 +55,19 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     /**
+     * The members whose account is open: the disabled ones left out.
+     */
+    public function countEnabled(): int
+    {
+        return (int) $this
+            ->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.enabled = true')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * The member whose picture, their own or their network's, is stored under that file name.
      */
     public function findOneByImageName(string $name): ?User
