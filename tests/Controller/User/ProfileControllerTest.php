@@ -256,4 +256,24 @@ final class ProfileControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('[name="profile_form[publisherNews]"]');
     }
+
+    /**
+     * The e-mails a member can turn on or off are in one panel, the organizers' news for organizers only.
+     */
+    public function testTheEmailsAreChosenInOnePlace(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        PublisherFactory::createOne(['owner' => $user]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/profile/edit');
+
+        $panel = $crawler->filter('h3:contains("E-mails") + .form-panel');
+        self::assertCount(1, $panel);
+        self::assertSame(
+            ['profile_form[weekendDigest]', 'profile_form[outingAlerts]', 'profile_form[publisherNews]'],
+            $panel->filter('input[type="checkbox"]')->each(static fn ($input): ?string => $input->attr('name')),
+        );
+    }
 }
