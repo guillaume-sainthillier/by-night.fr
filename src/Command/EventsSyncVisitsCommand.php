@@ -43,12 +43,6 @@ final class EventsSyncVisitsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$this->eventVisitSync->isConfigured()) {
-            $io->warning('Umami is not configured (UMAMI_WEBSITE_ID, UMAMI_USERNAME, UMAMI_PASSWORD): nothing to read.');
-
-            return Command::SUCCESS;
-        }
-
         $date = $input->getOption('date');
         if (null !== $date) {
             $day = DateTimeImmutable::createFromFormat('!Y-m-d', (string) $date);

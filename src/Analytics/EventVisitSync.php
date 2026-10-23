@@ -32,11 +32,6 @@ final readonly class EventVisitSync
     ) {
     }
 
-    public function isConfigured(): bool
-    {
-        return $this->umamiClient->isConfigured();
-    }
-
     /**
      * Replaces the audience of $day (Paris time) with Umami's: a day read again, today hour after hour, is up to date.
      *

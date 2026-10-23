@@ -41,11 +41,6 @@ final class UmamiClient implements ResetInterface
     ) {
     }
 
-    public function isConfigured(): bool
-    {
-        return '' !== $this->websiteId && '' !== $this->username && '' !== $this->password;
-    }
-
     /**
      * The visitors of each page whose path contains $pathContains between $from and $to: a visitor of a page counts
      * once in the period, however many times they saw it.
