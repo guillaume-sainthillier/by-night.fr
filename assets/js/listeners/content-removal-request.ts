@@ -1,6 +1,6 @@
+import type { Listener } from '@silarhi/app-js'
 import { Modal } from '@tabler/core'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * What the removal request API answers.
@@ -178,4 +178,4 @@ export default {
             submitBtn.removeEventListener('click', onSubmit)
         }
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

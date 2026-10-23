@@ -10,18 +10,23 @@
 
 namespace App\Controller\PersonalSpace;
 
+use App\Analytics\AudienceQuery;
+use App\Analytics\EventAudienceReport;
+use App\App\PublisherContext;
 use App\Controller\AbstractController as BaseController;
 use App\Dto\EventDto;
 use App\DtoFactory\EventDtoFactory;
 use App\Entity\Event;
 use App\Enum\EventBulkAction;
 use App\Enum\PersonalEventFilter;
+use App\Form\Type\AudienceQueryType;
 use App\Form\Type\EventType;
 use App\Manager\MemberEventBulkEditor;
 use App\Manager\MemberEventPublisher;
 use App\Repository\EventRepository;
 use App\SearchRepository\DuplicateEventFinder;
 use App\Security\Voter\EventVoter;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,20 +36,32 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * A publisher's events, as the members who manage it see them in their personal space: its list, the bulk actions,
+ * the new event form and each event's form. PublisherContextSubscriber resolves {publisher} and checks they manage it.
+ */
+#[Route(path: '/organisateurs/{publisher<%patterns.slug%>}')]
 final class EventController extends BaseController
 {
     private const int EVENT_PER_PAGE = 50;
 
-    #[Route(path: '/mes-soirees', name: 'app_event_list', methods: ['GET'])]
-    public function index(Request $request, EventRepository $eventRepository): Response
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        private readonly PublisherContext $publisherContext,
+    ) {
+        parent::__construct($entityManager);
+    }
+
+    #[Route(path: '/evenements', name: 'app_event_list', methods: ['GET'])]
+    public function index(Request $request, EventRepository $eventRepository, EventAudienceReport $audienceReport): Response
     {
-        $user = $this->getAppUser();
+        $publisher = $this->publisherContext->get();
         $page = $request->query->getInt('page', 1);
         $q = $request->query->getString('q');
         // An unknown value (an old link, a hand-edited URL) lists every event rather than failing
         $filter = PersonalEventFilter::tryFrom($request->query->getString('status'));
         $events = $this->createMultipleEagerLoadingPaginator(
-            $eventRepository->findAllByUserQueryBuilder($user, $q ?: null, $filter),
+            $eventRepository->findAllByPublisherQueryBuilder($publisher, $q ?: null, $filter),
             $eventRepository,
             $page,
             self::EVENT_PER_PAGE,
@@ -56,15 +73,16 @@ final class EventController extends BaseController
             'events' => $events,
             'q' => $q,
             'filter' => $filter,
-            'counts' => $eventRepository->countByUserAndFilter($user),
+            'counts' => $eventRepository->countByPublisherAndFilter($publisher),
+            'audience' => $audienceReport->lastDaysByEvent($events->getCurrentPageResults()),
         ]);
     }
 
     /**
-     * Publishes, hides or deletes the member's events picked in their list, or those of an import's report, then
+     * Publishes, hides or deletes the publisher's events picked in its list, or those of an import's report, then
      * goes back to that page ("_target_path", a path of the personal space).
      */
-    #[Route(path: '/mes-soirees/lot', name: 'app_event_bulk', methods: ['POST'])]
+    #[Route(path: '/evenements/lot', name: 'app_event_bulk', methods: ['POST'])]
     public function bulk(Request $request, MemberEventBulkEditor $bulkEditor, TranslatorInterface $translator): Response
     {
         $payload = $request->getPayload();
@@ -84,13 +102,13 @@ final class EventController extends BaseController
             return $this->redirect($target);
         }
 
-        $count = $bulkEditor->apply($this->getAppUser(), $ids, $action);
+        $count = $bulkEditor->apply($this->publisherContext->get(), $ids, $action);
         $this->addFlash(0 === $count ? 'warning' : 'success', $translator->trans($action->getDoneMessage(), ['count' => $count], 'messages+intl-icu'));
 
         return $this->redirect($target);
     }
 
-    #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/evenements/nouveau', name: 'app_event_new', methods: ['GET', 'POST'])]
     public function new(Request $request, MemberEventPublisher $memberEventPublisher): Response
     {
         if (!$this->isGranted(EventVoter::CREATE)) {
@@ -101,7 +119,7 @@ final class EventController extends BaseController
         $form = $this->createForm(EventType::class, $eventDto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $event = $memberEventPublisher->create($eventDto, $this->isSavedAsDraft($form), $form->get('comment')->getData());
+            $event = $memberEventPublisher->create($eventDto, $this->publisherContext->get(), $this->isSavedAsDraft($form), $form->get('comment')->getData());
             $this->addFlash(
                 'success',
                 $event->isDraft()
@@ -121,7 +139,7 @@ final class EventController extends BaseController
      * The published events the member's new event likely repeats, asked by its form before it publishes it
      * (assets/js/utils/duplicates.ts).
      */
-    #[Route(path: '/nouvelle-soiree/doublons', name: 'app_event_new_duplicates', methods: ['POST'])]
+    #[Route(path: '/evenements/nouveau/doublons', name: 'app_event_new_duplicates', methods: ['POST'])]
     #[IsGranted(EventVoter::CREATE)]
     public function newDuplicates(Request $request, MemberEventPublisher $memberEventPublisher, DuplicateEventFinder $duplicateEventFinder): Response
     {
@@ -132,17 +150,20 @@ final class EventController extends BaseController
      * The published events a draft likely repeats, before it goes online: from its form as filled in (POST), or as
      * saved, for the publish button of its preview (GET).
      */
-    #[Route(path: '/{id<%patterns.id%>}/doublons', name: 'app_event_edit_duplicates', methods: ['GET', 'POST'])]
+    #[Route(path: '/evenements/{id<%patterns.id%>}/doublons', name: 'app_event_edit_duplicates', methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function editDuplicates(Request $request, Event $event, EventDtoFactory $eventDtoFactory, DuplicateEventFinder $duplicateEventFinder): Response
     {
+        $this->denyUnlessInContext($event);
+
         return $this->renderDuplicates($request, $eventDtoFactory->create($event), $duplicateEventFinder);
     }
 
-    #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
+    #[Route(path: '/evenements/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function edit(Request $request, Event $event, EventDtoFactory $eventDtoFactory, MemberEventPublisher $memberEventPublisher): Response
     {
+        $this->denyUnlessInContext($event);
         $dto = $eventDtoFactory->create($event);
         $form = $this->createForm(EventType::class, $dto);
         $form->handleRequest($request);
@@ -161,10 +182,37 @@ final class EventController extends BaseController
         ]);
     }
 
-    #[Route(path: '{id<%patterns.id%>}', name: 'app_event_delete', methods: ['DELETE'])]
+    /**
+     * The visitors of the event's page and the clicks on its ticketing links, day by day (EventVisitSync).
+     */
+    #[Route(path: '/evenements/{id<%patterns.id%>}/statistiques', name: 'app_event_stats', methods: ['GET'])]
+    #[IsGranted(EventVoter::EDIT, subject: 'event')]
+    public function stats(Request $request, Event $event, EventAudienceReport $audienceReport): Response
+    {
+        $this->denyUnlessInContext($event);
+
+        // A shortcut ("?period=") or dates picked ("?dateRange[from]="), the last 30 days without either
+        $query = new AudienceQuery();
+        $form = $this->createForm(AudienceQueryType::class, $query);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $query = new AudienceQuery();
+        }
+
+        return $this->render('personal-space/stats.html.twig', [
+            'event' => $event,
+            'form' => $form,
+            'query' => $query,
+            'audience' => $audienceReport->forEvent($event, $query->getDateRange()),
+        ]);
+    }
+
+    #[Route(path: '/evenements/{id<%patterns.id%>}', name: 'app_event_delete', methods: ['DELETE'])]
     #[IsGranted(EventVoter::DELETE, subject: 'event')]
     public function delete(Request $request, Event $event): Response
     {
+        $this->denyUnlessInContext($event);
+
         // The delete forms carry a token only their page can issue: no other site can post them
         if (!$this->isCsrfTokenValid('delete-event-' . $event->getId(), $request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException('Invalid CSRF token.');
@@ -179,6 +227,16 @@ final class EventController extends BaseController
         );
 
         return $this->redirectToRoute('app_event_list');
+    }
+
+    /**
+     * An event is edited on the pages of its publisher: another one's URL does not reach it.
+     */
+    private function denyUnlessInContext(Event $event): void
+    {
+        if ($event->getPublisher()?->getId() !== $this->publisherContext->get()->getId()) {
+            throw $this->createNotFoundException('The event is not one of this publisher.');
+        }
     }
 
     /**

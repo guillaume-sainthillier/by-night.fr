@@ -123,6 +123,11 @@
 
                         <h3 class="h4 mt-4 mb-3">Vos sorties</h3>
                         {{ form_row(form.city) }}
+                        <div class="card form-panel mb-0">
+                            <div class="card-body">
+                                {{ form_row(form.outingAlerts, {row_class: 'mb-0', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
+                            </div>
+                        </div>
 
                         <h3 class="h4 mt-4 mb-3">Visibilité</h3>
                         <div class="card form-panel mb-0">
@@ -130,6 +135,15 @@
                                 {{ form_row(form.showSocials, {row_class: 'mb-0', help: 'Des liens vers vos comptes Facebook et X connectés, sous votre photo.'}) }}
                             </div>
                         </div>
+
+                        {% if form.publisherNews is defined %}
+                            <h3 class="h4 mt-4 mb-3">E-mails</h3>
+                            <div class="card form-panel mb-0">
+                                <div class="card-body">
+                                    {{ form_row(form.publisherNews, {row_class: 'mb-0', help: 'Une fois par mois au plus, ce qui change sur By Night pour vos événements et votre page organisateur.'}) }}
+                                </div>
+                            </div>
+                        {% endif %}
 
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-top pt-4 mt-4">
                             <p class="text-secondary small mb-0">
@@ -149,7 +163,7 @@
                     {% set favorites_meta %}{{ '{count, plural, =0 {Aucun favori} one {# favori} other {# favoris}}'|trans({count: favoritesCount}, 'messages+intl-icu') }}{% endset %}
                     <div class="row row-cards">
                         <div class="col-md-6">
-                            <twig:Tile href="{{ path('app_event_list') }}" icon="lucide:calendar-days" tone="blue" title="Mes événements" description="Créez vos événements et suivez ceux que vous avez publiés." meta="{{ events_meta }}" />
+                            <twig:Tile href="{{ path('app_personal_space_events') }}" icon="lucide:calendar-days" tone="blue" title="Mes événements" description="Créez vos événements et suivez ceux que vous avez publiés." meta="{{ events_meta }}" />
                         </div>
                         <div class="col-md-6">
                             <twig:Tile href="{{ publicProfileUrl }}" icon="lucide:heart" tone="pink" title="Mon profil public" description="Vos sorties favorites, telles que les autres membres les voient." meta="{{ favorites_meta }}" />

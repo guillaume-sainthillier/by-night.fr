@@ -3,8 +3,8 @@
  * Run: pnpm test
  */
 
+import type { App } from '@silarhi/app-js'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import type { App } from '@/js/app'
 import formConfirm from '@/js/listeners/form-confirm'
 import { fake } from '@/js/test/fake'
 

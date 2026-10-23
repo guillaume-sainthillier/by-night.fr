@@ -1,5 +1,5 @@
+import type { Page } from '@silarhi/app-js'
 import SocialLogin from '@/js/components/SocialLogin'
-import type { Page } from '@/js/types'
 
 const initialize: Page = () => {
     new SocialLogin().init()

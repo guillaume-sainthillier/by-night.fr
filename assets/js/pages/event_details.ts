@@ -1,7 +1,7 @@
+import type { Page } from '@silarhi/app-js'
 import $ from 'jquery'
 import CommentApp from '@/js/components/CommentApp'
 import Widgets from '@/js/components/Widgets'
-import type { Page } from '@/js/types'
 
 const initialize: Page = () => {
     new Widgets().init()
@@ -22,16 +22,6 @@ const initialize: Page = () => {
                 })
                 .css('border', 0)
                 .appendTo($('#googleMap').empty())
-        })
-
-    $('[data-copy-url]')
-        .off('click')
-        .on('click', (event) => {
-            const toastManager = window.App.get('toastManager')
-            navigator.clipboard.writeText($(event.currentTarget).data('copy-url')).then(
-                () => toastManager.createToast('success', 'Lien copié !'),
-                () => toastManager.createToast('error', 'Impossible de copier le lien')
-            )
         })
 }
 

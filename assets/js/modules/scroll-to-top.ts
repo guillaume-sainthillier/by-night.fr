@@ -1,5 +1,5 @@
+import type { Module } from '@silarhi/app-js'
 import debounce from 'lodash/debounce'
-import type { Module } from '@/js/types'
 
 /** How far down the page the button shows, in pixels */
 export const SHOW_AFTER = 200

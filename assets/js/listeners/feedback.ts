@@ -1,6 +1,6 @@
+import type { Listener } from '@silarhi/app-js'
 import { Alert, Modal } from '@tabler/core'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * The body of a refused message: the message of an HTTP error, or the validation's violations.
@@ -90,4 +90,4 @@ export default {
             modalEl.removeEventListener('hidden.bs.modal', onHidden)
         }
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

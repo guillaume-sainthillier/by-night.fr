@@ -11,7 +11,7 @@
 namespace App\Enum;
 
 /**
- * The status filters of an organizer's list of events (/espace-perso/mes-soirees): each one keeps the events one of
+ * The status filters of an organizer's list of events (/espace-perso/organisateurs/{publisher}/evenements): each one keeps the events one of
  * the list's switches is set for, "Visible" on or off, "Annulé" on.
  */
 enum PersonalEventFilter: string

@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 // A section counts as current once its top has gone above this line: below the sticky header, and far enough down
 // the screen that the section filling it is the one marked rather than the end of the previous one
@@ -56,4 +56,4 @@ export default {
 
         return () => document.removeEventListener('scroll', update)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

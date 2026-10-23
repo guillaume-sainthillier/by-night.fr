@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 const FEEDBACK_CLASS = 'file-max-size-feedback'
 

@@ -1,7 +1,7 @@
+import type { Page } from '@silarhi/app-js'
 import { Offcanvas } from '@tabler/core'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
-import type { Page } from '@/js/types'
 import { groupByVenue, type MapEvent } from '@/js/utils/venues'
 
 /**

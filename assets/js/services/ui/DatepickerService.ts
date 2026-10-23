@@ -27,6 +27,8 @@ export interface DatepickerOptions {
     toInput?: string | HTMLInputElement | null
     singleDate?: boolean
     onApply?: ((selection: DateRangeSelection) => void) | null
+    /** YYYY-MM-DD: no day after it can be picked (a period looking back), and its month is shown last */
+    maxDate?: string | null
 }
 
 function resolveElement(element: string | HTMLInputElement | null | undefined): HTMLInputElement | null {
@@ -82,7 +84,42 @@ function dayOf(input: HTMLInputElement | null): string | null {
     return day ? formatDay(day) : null
 }
 
-export function create({ element, fromInput, toInput, singleDate = false, onApply = null }: DatepickerOptions): {
+/**
+ * The months the calendar opens on when it looks back to maxDate: the one before maxDate's and maxDate's own side by side,
+ * or the dates picked's when they are older. Undefined without maxDate (the library's default: today's, or the dates
+ * picked's).
+ *
+ * @param maxDate - YYYY-MM-DD
+ * @param start - YYYY-MM-DD, the first day picked
+ * @param wide - two months side by side
+ */
+function firstMonthShown(
+    maxDate: string | null,
+    start: string | null,
+    wide: boolean
+): { selectedMonth: number; selectedYear: number } | undefined {
+    const max = parseDay(maxDate)
+    if (!max) {
+        return undefined
+    }
+
+    let first = new Date(max.getFullYear(), max.getMonth() - (wide ? 1 : 0), 1)
+    const picked = parseDay(start)
+    if (picked && picked < first) {
+        first = new Date(picked.getFullYear(), picked.getMonth(), 1)
+    }
+
+    return { selectedMonth: first.getMonth(), selectedYear: first.getFullYear() }
+}
+
+export function create({
+    element,
+    fromInput,
+    toInput,
+    singleDate = false,
+    onApply = null,
+    maxDate = null,
+}: DatepickerOptions): {
     destroy: () => void
 } {
     const input = resolveElement(element)
@@ -133,6 +170,8 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
     }
 
     const wide = !singleDate && window.matchMedia(WIDE_SCREEN).matches
+    // dateMax alone: with displayDateMax, the library opens on maxDate's month first and ignores selectedMonth
+    const lookingBack = maxDate ? { dateMax: maxDate, ...firstMonthShown(maxDate, start, wide) } : {}
     const calendar = new Calendar(input, {
         // Side by side months (type: 'multiple')
         extensions: [months],
@@ -149,8 +188,10 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
         selectionDatesMode: singleDate ? 'single' : 'multiple-ranged',
         // A second click on the start day picks that day alone instead of clearing the selection
         enableDateToggle: false,
-        enableJumpToSelectedDate: true,
+        // Looking back, firstMonthShown() already shows the dates picked
+        enableJumpToSelectedDate: !maxDate,
         selectedDates,
+        ...lookingBack,
         // Applies once the range is complete: the first click only sets its start
         onChangeToInput(self) {
             const dates = self.context.selectedDates

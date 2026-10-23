@@ -26,6 +26,14 @@ final class EventExportFactory extends PersistentObjectFactory
         return EventExport::class;
     }
 
+    /**
+     * The export of the member's publisher, as the export page starts it.
+     */
+    protected function initialize(): static
+    {
+        return $this->beforeInstantiate(static fn (array $parameters, string $class, self $factory): array => PublisherFactory::forTheMember($parameters, $factory->isPersisting()));
+    }
+
     protected function defaults(): array
     {
         return [

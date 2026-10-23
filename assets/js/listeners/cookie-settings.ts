@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 /**
  * Google's Funding Choices API (the consent message of AdSense's Privacy & messaging), as far as it is used here: the
@@ -38,4 +38,4 @@ export default {
 
         return () => element.removeEventListener('click', onClick)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

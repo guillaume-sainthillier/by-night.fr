@@ -61,6 +61,7 @@ framework:
             App\Message\PurgeCdnCachePrefix: cdn
             App\Message\RemoveImageThumbnails: async
             App\Message\RecountUpcomingEvents: async
+            App\Message\CheckOutingChanges: async
             App\Message\DownloadEventImages: image
             App\Message\CheckEventImport: transfers
             App\Message\RunEventImport: transfers

@@ -1,0 +1,40 @@
+{# @var completion \App\Stats\PublisherCompletion #}
+{# What makes the owner's page complete: how far they are, and the steps left, each with why it matters #}
+{% props completion, editUrl = null %}
+{% set percent = completion.percent %}
+<div {{ attributes.defaults({class: 'card'}) }}>
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+            <div>
+                <div class="subheader">Votre page organisateur</div>
+                <div class="h2 mb-0">{{ completion.complete ? 'Complète, bravo !' : 'Complète à ' ~ percent ~ ' %' }}</div>
+            </div>
+            {% if editUrl %}
+                <a class="btn btn-primary flex-shrink-0" href="{{ editUrl }}">
+                    <twig:Icon name="lucide:pencil" />
+                    {{ completion.complete ? 'Modifier' : 'Compléter' }}
+                </a>
+            {% endif %}
+        </div>
+        <div class="progress progress-sm mb-3">
+            <div class="progress-bar {{ completion.complete ? 'bg-teal' : 'bg-primary' }}" style="width: {{ percent }}%" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="Page complète à {{ percent }}&nbsp;%"></div>
+        </div>
+        {% if completion.missing %}
+            <ul class="list-unstyled mb-0">
+                {% for step in completion.missing %}
+                    <li class="d-flex gap-2{{ not loop.last ? ' mb-2' }}">
+                        <span class="avatar avatar-sm bg-primary-lt flex-shrink-0">
+                            <twig:Icon name="{{ step.icon }}" />
+                        </span>
+                        <span>
+                            <strong class="d-block">{{ step.label }}</strong>
+                            <span class="small text-secondary">{{ step.hint }}</span>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="small text-secondary mb-0">Votre page affiche le badge «&nbsp;Page complète&nbsp;».</p>
+        {% endif %}
+    </div>
+</div>

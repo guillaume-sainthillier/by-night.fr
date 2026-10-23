@@ -1,0 +1,45 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{% block title first ? 'Votre page organisateur' : 'Nouvelle page organisateur' %}
+
+{% block breadcrumb_personal_space %}
+    {% do menu.addItem(block('title'), url('app_publisher_new')) %}
+{% endblock %}
+
+{# The page title is the hero at the top of the body #}
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% block body -%}
+    <section class="row justify-content-center text-center pt-lg-3 mb-4">
+        <div class="col-lg-8">
+            <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+            <h1 class="display-6 fw-bold mb-3">{{ block('title') }}</h1>
+            <p class="lead text-secondary mb-0">
+                {% if first %}
+                    Vos événements sont publiés au nom d'une page organisateur&nbsp;: la vôtre, celle de votre lieu ou de votre collectif. Elle les présente aux visiteurs, avec votre logo et vos réseaux.
+                {% else %}
+                    Une autre page pour un autre lieu ou un autre collectif&nbsp;: ses événements, ses imports et sa présentation restent séparés de ceux de vos autres pages.
+                {% endif %}
+            </p>
+        </div>
+    </section>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            {{ form_start(form) }}
+                <twig:FormCard icon="lucide:id-card" title="Nom de la page" description="Vous pourrez le changer à tout moment">
+                    {{ form_row(form.name) }}
+                </twig:FormCard>
+                <div class="text-end mb-5">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <twig:Icon name="lucide:check" />
+                        Créer la page
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{%- endblock %}

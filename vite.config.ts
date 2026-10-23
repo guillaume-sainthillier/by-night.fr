@@ -43,6 +43,7 @@ const pages = [
     'personal_space_list',
     'personal_space_event',
     'event_transfers',
+    'event_stats',
 ]
 
 export default defineConfig(({ mode }) => {
@@ -75,7 +76,6 @@ export default defineConfig(({ mode }) => {
         ],
 
         // JSX is compiled for Preact with the automatic runtime, as the Babel config did.
-        // The generated icons in assets/js/icons rely on it: they use JSX without importing h.
         oxc: {
             jsx: {
                 runtime: 'automatic',

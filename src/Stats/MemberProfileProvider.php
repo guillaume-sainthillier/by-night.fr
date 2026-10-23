@@ -42,7 +42,7 @@ final readonly class MemberProfileProvider
 
         $stats = new MemberStats(
             activity: new MemberActivity($this->eventRepository->countUserEventsByDay($user)),
-            publishedEvents: $this->eventRepository->countByUserAndFilter($user)[PersonalEventFilter::Visible->value],
+            publishedEvents: $this->eventRepository->countManagedByAndFilter($user)[PersonalEventFilter::Visible->value],
             comments: $this->commentRepository->countApprovedByUser($user),
             cities: \count($cities),
             busiestPlaceEvents: $places[0]['events'] ?? 0,

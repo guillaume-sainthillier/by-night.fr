@@ -1,7 +1,7 @@
+import type { App } from '@silarhi/app-js'
+import { findOne } from '@silarhi/app-js'
 import { h, render } from 'preact'
-import type { App } from '@/js/app'
 import EventScheduler from '@/js/components/EventScheduler'
-import { findOne } from '@/js/utils/dom'
 
 /**
  * Initialize Event Scheduler component

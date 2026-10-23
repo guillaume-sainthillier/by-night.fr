@@ -1,6 +1,6 @@
+import type { Listener } from '@silarhi/app-js'
 import Swal from 'sweetalert2'
 import { create } from '@/js/services/ui/AutocompleteService'
-import type { Listener } from '@/js/types'
 
 /**
  * Open a user-search dialog and switch to the selected user.
@@ -53,4 +53,4 @@ export default {
 
         return () => el.removeEventListener('click', onClick)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

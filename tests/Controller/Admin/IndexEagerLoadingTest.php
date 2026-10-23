@@ -16,6 +16,7 @@ use App\Factory\CommentFactory;
 use App\Factory\ContentRemovalRequestFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
+use App\Factory\EventVisitStatFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
@@ -75,6 +76,7 @@ final class IndexEagerLoadingTest extends AppWebTestCase
         yield 'dates and their event and source event' => ['/_administration/event-timesheet', static fn (): object => EventTimesheetFactory::createOne([
             'sourceEvent' => EventFactory::new(),
         ])];
+        yield 'visit statistics and their event' => ['/_administration/event-visit-stat', static fn (): object => EventVisitStatFactory::createOne()];
         yield 'participations and their event and member' => ['/_administration/user-event', static fn (): object => UserEventFactory::createOne()];
         yield 'removal requests and their events' => ['/_administration/content-removal-request', static fn (): object => ContentRemovalRequestFactory::createOne([
             'events' => EventFactory::new()->many(2),

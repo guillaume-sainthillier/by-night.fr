@@ -11,12 +11,18 @@
 namespace App\Tests\Manager;
 
 use App\Entity\User;
+use App\Enum\EventExportStatus;
+use App\Enum\EventImportStatus;
 use App\Factory\CommentFactory;
+use App\Factory\EventExportFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventImportFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Manager\UserRemover;
 use App\Tests\AppKernelTestCase;
+use App\Transfer\TransferFiles;
 use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -32,6 +38,7 @@ final class UserRemoverTest extends AppKernelTestCase
         $userId = $user->getId();
         $own = EventFactory::createOne(['user' => $user]);
         $ownId = $own->getId();
+        $publisherId = $own->getPublisher()?->getId();
         UserEventFactory::createOne(['user' => $user, 'event' => $own]);
         UserEventFactory::createOne(['event' => $own]);
         $followed = EventFactory::createOne(['participations' => 9]);
@@ -43,10 +50,49 @@ final class UserRemoverTest extends AppKernelTestCase
         self::getContainer()->get(UserRemover::class)->remove($user, true);
 
         self::assertSame(0, UserFactory::count(['id' => $userId]));
+        self::assertSame(0, PublisherFactory::count(['id' => $publisherId]));
         self::assertSame(0, EventFactory::count(['id' => $ownId]));
         self::assertSame(0, CommentFactory::count());
         self::assertSame(1, UserEventFactory::count());
         self::assertSame(1, EventFactory::find(['id' => $followed->getId()])->getParticipations());
+    }
+
+    /**
+     * Their imports and exports go with their files: nothing of the member stays in storage.
+     */
+    public function testTheMembersJobsGoWithTheirFiles(): void
+    {
+        $user = UserFactory::createOne();
+        $files = self::getContainer()->get(TransferFiles::class);
+        $path = tempnam(sys_get_temp_dir(), 'csv');
+        file_put_contents($path, "Nom\n");
+        $files->upload($path, 'imports/member/original.csv');
+        $files->upload($path, 'exports/member/evenements.csv');
+        EventImportFactory::createOne(['user' => $user, 'filePath' => 'imports/member/original.csv', 'status' => EventImportStatus::Completed]);
+        EventExportFactory::createOne(['user' => $user, 'filePath' => 'exports/member/evenements.csv', 'status' => EventExportStatus::Completed]);
+
+        self::getContainer()->get(UserRemover::class)->remove($user, true);
+
+        self::assertSame(0, EventImportFactory::count());
+        self::assertSame(0, EventExportFactory::count());
+        self::assertFalse($files->exists('imports/member/original.csv'));
+        self::assertFalse($files->exists('exports/member/evenements.csv'));
+    }
+
+    /**
+     * Kept, their events stay online without an author nor a publisher: theirs goes with them.
+     */
+    public function testTheEventsOfAMemberCanStayWithoutThem(): void
+    {
+        $user = UserFactory::createOne();
+        $own = EventFactory::createOne(['user' => $user]);
+
+        self::getContainer()->get(UserRemover::class)->remove($user, false);
+
+        $kept = EventFactory::find(['id' => $own->getId()]);
+        self::assertNull($kept->getUser());
+        self::assertNull($kept->getPublisher());
+        self::assertSame(0, PublisherFactory::count());
     }
 
     /**

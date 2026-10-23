@@ -89,7 +89,7 @@ final class HomeControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $client->loginUser(UserFactory::createOne());
-        $events = self::getContainer()->get('router')->generate('app_event_list');
+        $events = self::getContainer()->get('router')->generate('app_personal_space_events');
 
         $crawler = $client->request('GET', '/');
 
