@@ -393,6 +393,19 @@
     "ruflin/elastica": {
         "version": "6.1.1"
     },
+    "scheb/2fa-bundle": {
+        "version": "8.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.0",
+            "ref": "1e6f68089146853a790b5da9946fc5974f6fcd49"
+        },
+        "files": [
+            "config/packages/scheb_2fa.yaml",
+            "config/routes/scheb_2fa.yaml"
+        ]
+    },
     "sebastian/diff": {
         "version": "4.0.2"
     },
@@ -939,6 +952,19 @@
             "version": "3.0",
             "ref": "d42582ae1bce86fd43491d6264c738b0867f8ffe"
         }
+    },
+    "web-auth/webauthn-symfony-bundle": {
+        "version": "5.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "a5dff33bd46575bea263af94069650af7742dcb6"
+        },
+        "files": [
+            "config/packages/webauthn.yaml",
+            "config/routes/webauthn_routes.yaml"
+        ]
     },
     "zenstruck/foundry": {
         "version": "2.13",

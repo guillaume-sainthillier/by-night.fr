@@ -1,0 +1,30 @@
+{% extends 'email/layout.mjml.twig' %}
+
+{% block email_title %}Récupérer l'accès à votre compte{% endblock %}
+{% block preheader %}Le lien pour désactiver la double authentification de votre compte, valable jusqu'à {{ expiresAt|date('H:i', 'Europe/Paris') }}.{% endblock %}
+
+{% block icon 'key' %}
+{% block heading %}Récupérer l'accès à votre compte{% endblock %}
+
+{% block body %}
+    <mj-text align="center">
+        Vous avez demandé à récupérer l'accès à votre compte. Ce lien désactive la double authentification&nbsp;:
+        l'application d'authentification, les codes de secours et les clés d'accès. Vous vous connecterez ensuite
+        sans second facteur, et pourrez la réactiver depuis votre compte.
+    </mj-text>
+    <mj-button href="{{ url }}">
+        Désactiver la double authentification
+    </mj-button>
+    <mj-divider />
+    <mj-text mj-class="muted">
+        Ce lien est valable une heure, jusqu'à {{ expiresAt|date('H:i', 'Europe/Paris') }}, et ne sert qu'une fois.
+        Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur&nbsp;:
+    </mj-text>
+    <mj-text mj-class="muted" css-class="break-all">
+        <a href="{{ url }}">{{ url }}</a>
+    </mj-text>
+    <mj-text mj-class="muted">
+        Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail&nbsp;: quelqu'un a pu se connecter à votre
+        compte, changez votre mot de passe.
+    </mj-text>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'profile/security/_layout.html.twig' %}
+
+{% block title 'Renommer la clé d’accès' %}
+{% block breadcrumb %}
+    {{ parent() }}
+    {% do menu.addItem(key.name, url('app_user_security_passkey_edit', {uuid: key.uuid})) %}
+{% endblock %}
+{% block page_title 'Renommer la clé d’accès' %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card">
+                {{ form_start(form) }}
+                <div class="card-body">
+                    {{ form_widget(form) }}
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ path('app_user_edit', {_fragment: 'security'}) }}" class="btn btn-link">Annuler</a>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

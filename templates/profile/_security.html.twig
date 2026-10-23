@@ -1,0 +1,75 @@
+{#
+    The "Sécurité" tab of the account: the second factors of the member, all opt-in (App\Controller\User\SecurityController).
+    The recovery codes first, then an authenticator app and/or passkeys.
+#}
+<p class="text-secondary">
+    La double authentification protège votre compte même si votre mot de passe fuite&nbsp;: après le mot de passe ou le
+    réseau social, chaque connexion demande aussi le code de votre application d’authentification ou votre clé d’accès.
+</p>
+
+<twig:FormCard icon="lucide:life-buoy" tone="teal" title="Codes de secours"
+               description="Chaque code remplace une fois votre second facteur, si vous perdez votre téléphone ou votre clé. À configurer en premier."
+               badge="{{ user.backupCodeEnabled ? user.backupCodes|length ~ ' restant' ~ (user.backupCodes|length > 1 ? 's') : 'Non configurés' }}"
+               badgeTone="{{ user.backupCodeEnabled ? 'green' : 'secondary' }}">
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+        {% if user.backupCodeEnabled %}
+            <form method="post" action="{{ path('app_user_security_recovery_codes_delete') }}" data-confirm-message="Vos codes de secours ne vous permettront plus de vous connecter{{ user.hasSecondFactor ? ' : en cas de perte de votre second facteur, il vous restera le lien de récupération envoyé par e-mail' }}." data-confirm-button="Supprimer">
+                <input type="hidden" name="_token" value="{{ csrf_token('two-factor-recovery-codes-delete') }}">
+                <button type="submit" class="btn btn-outline-danger">Supprimer les codes</button>
+            </form>
+        {% endif %}
+        <a href="{{ path('app_user_security_recovery_codes') }}" class="btn {{ user.backupCodeEnabled ? 'btn-outline-primary' : 'btn-primary' }}">
+            {{ user.backupCodeEnabled ? 'Générer de nouveaux codes' : 'Générer mes codes de secours' }}
+        </a>
+    </div>
+</twig:FormCard>
+
+<twig:FormCard icon="lucide:smartphone" tone="blue" title="Application d’authentification"
+               description="Un code à 6 chiffres renouvelé toutes les 30 secondes par une application comme Google Authenticator, Microsoft Authenticator, 1Password ou Bitwarden."
+               badge="{{ user.googleAuthenticatorEnabled ? 'Activée' : 'Désactivée' }}"
+               badgeTone="{{ user.googleAuthenticatorEnabled ? 'green' : 'secondary' }}">
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+        {% if user.googleAuthenticatorEnabled %}
+            <form method="post" action="{{ path('app_user_security_totp_disable') }}" data-confirm-message="Votre application d’authentification ne vous sera plus demandée à la connexion." data-confirm-button="Désactiver">
+                <input type="hidden" name="_token" value="{{ csrf_token('two-factor-totp-disable') }}">
+                <button type="submit" class="btn btn-outline-danger">Désactiver</button>
+            </form>
+            <a href="{{ path('app_user_security_totp') }}" class="btn btn-outline-primary">Changer d’application</a>
+        {% else %}
+            <a href="{{ path('app_user_security_totp') }}" class="btn btn-primary">Activer</a>
+        {% endif %}
+    </div>
+</twig:FormCard>
+
+<twig:FormCard icon="lucide:key-round" tone="purple" title="Clés d’accès"
+               description="Votre empreinte, votre visage, le code de votre téléphone ou une clé de sécurité (YubiKey…) confirment la connexion, sans code à recopier."
+               badge="{{ user.webauthnKeys|length }} clé{{ user.webauthnKeys|length > 1 ? 's' }}"
+               badgeTone="{{ user.webauthnAuthenticatorEnabled ? 'green' : 'secondary' }}">
+    {% if user.webauthnKeys is not empty %}
+        <div class="list-group mb-3">
+            {% for key in user.webauthnKeys %}
+                <div class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                    <div class="flex-fill">
+                        <div class="fw-bold">{{ key.name }}</div>
+                        <div class="text-secondary small">
+                            Ajoutée le {{ key.createdAt|date('d/m/Y') }}
+                            · {{ key.lastUsedAt ? 'utilisée le ' ~ key.lastUsedAt|date('d/m/Y') : 'jamais utilisée' }}
+                        </div>
+                    </div>
+                    <a href="{{ path('app_user_security_passkey_edit', {uuid: key.uuid}) }}" class="btn btn-sm btn-icon btn-outline-secondary" title="Renommer">
+                        <twig:Icon name="lucide:pencil" /><span class="visually-hidden">Renommer {{ key.name }}</span>
+                    </a>
+                    <form method="post" action="{{ path('app_user_security_passkey_delete', {uuid: key.uuid}) }}" data-confirm-message="La clé « {{ key.name }} » ne pourra plus confirmer vos connexions." data-confirm-button="Supprimer">
+                        <input type="hidden" name="_token" value="{{ csrf_token('two-factor-passkey-delete') }}">
+                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Supprimer">
+                            <twig:Icon name="lucide:trash-2" /><span class="visually-hidden">Supprimer {{ key.name }}</span>
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="d-flex justify-content-end">
+        <a href="{{ path('app_user_security_passkey_new') }}" class="btn {{ user.webauthnAuthenticatorEnabled ? 'btn-outline-primary' : 'btn-primary' }}">Ajouter une clé d’accès</a>
+    </div>
+</twig:FormCard>

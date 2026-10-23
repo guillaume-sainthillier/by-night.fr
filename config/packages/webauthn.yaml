@@ -1,0 +1,14 @@
+# Only for its Doctrine types (aaguid, trust_path, base64) and the mapping of Webauthn\PublicKeyCredentialSource, which
+# App\Entity\WebauthnKey extends. The passkey second factor is App\Security\TwoFactor\Webauthn: the bundle's own
+# ceremonies and routes are not used, so these required settings are unused at runtime.
+webauthn:
+    credential_repository: 'Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository'
+    user_repository: 'Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository'
+    creation_profiles:
+        default:
+            rp:
+                name: null
+                id: null
+    request_profiles:
+        default:
+            rp_id: null

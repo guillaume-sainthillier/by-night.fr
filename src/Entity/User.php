@@ -15,6 +15,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Picture\ImageFormats;
 use App\Repository\UserRepository;
+use App\Security\TwoFactor\Webauthn\WebauthnTwoFactorProvider;
 use App\Utils\ObjectKey;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
@@ -24,7 +25,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
 use Serializable;
+use SortDirection;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
@@ -35,6 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 #[Vich\Uploadable]
 #[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cette adresse e-mail')]
@@ -46,7 +52,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'user_image_system_name_idx', columns: ['image_system_name'])]
 #[ORM\UniqueConstraint(name: 'user_calendar_token_unique', columns: ['calendar_token'])]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate, GoogleTwoFactorInterface, BackupCodeInterface, PreferredProviderInterface
 {
     use EntityTimestampableTrait;
 
@@ -110,6 +116,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
      */
     #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
     private Collection $userEvents;
+
+    /** The secret of the authenticator app: null while the TOTP second factor is off */
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true)]
+    private ?string $googleAuthenticatorSecret = null;
+
+    /**
+     * The recovery codes not used yet, each usable once in place of the second factor
+     *
+     * @var list<string>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $backupCodes = null;
+
+    /**
+     * @var Collection<int, WebauthnKey>
+     */
+    #[ORM\OneToMany(targetEntity: WebauthnKey::class, mappedBy: 'user', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => SortDirection::Ascending])]
+    private Collection $webauthnKeys;
 
     /** The city the member goes out in, chosen on their profile: the location of the pages whose URL has none */
     #[ORM\ManyToOne(targetEntity: City::class)]
@@ -186,6 +211,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     {
         $this->lastLogin = new DateTimeImmutable();
         $this->userEvents = new ArrayCollection();
+        $this->webauthnKeys = new ArrayCollection();
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
@@ -763,5 +789,121 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         $this->salt = $salt;
 
         return $this;
+    }
+
+    public function isGoogleAuthenticatorEnabled(): bool
+    {
+        return null !== $this->googleAuthenticatorSecret && '' !== $this->googleAuthenticatorSecret;
+    }
+
+    public function getGoogleAuthenticatorUsername(): string
+    {
+        return $this->email ?? $this->username ?? '';
+    }
+
+    public function getGoogleAuthenticatorSecret(): ?string
+    {
+        return $this->googleAuthenticatorSecret;
+    }
+
+    public function setGoogleAuthenticatorSecret(?string $googleAuthenticatorSecret): self
+    {
+        $this->googleAuthenticatorSecret = $googleAuthenticatorSecret;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getBackupCodes(): ?array
+    {
+        return $this->backupCodes;
+    }
+
+    /**
+     * @param list<string>|null $backupCodes
+     */
+    public function setBackupCodes(?array $backupCodes): self
+    {
+        $this->backupCodes = $backupCodes;
+
+        return $this;
+    }
+
+    public function isBackupCodeEnabled(): bool
+    {
+        return [] !== ($this->backupCodes ?? []);
+    }
+
+    public function isBackupCode(string $code): bool
+    {
+        return \in_array($code, $this->backupCodes ?? [], true);
+    }
+
+    /**
+     * Re-indexed: the codes must stay a JSON list, not become an object once one is gone
+     */
+    public function invalidateBackupCode(string $code): void
+    {
+        $this->backupCodes = array_values(array_filter(
+            $this->backupCodes ?? [],
+            static fn (string $backupCode): bool => $backupCode !== $code,
+        ));
+    }
+
+    /**
+     * @return Collection<int, WebauthnKey>
+     */
+    public function getWebauthnKeys(): Collection
+    {
+        return $this->webauthnKeys;
+    }
+
+    public function addWebauthnKey(WebauthnKey $webauthnKey): self
+    {
+        if (!$this->webauthnKeys->contains($webauthnKey)) {
+            $this->webauthnKeys[] = $webauthnKey;
+            $webauthnKey->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWebauthnKey(WebauthnKey $webauthnKey): self
+    {
+        $this->webauthnKeys->removeElement($webauthnKey);
+
+        return $this;
+    }
+
+    public function isWebauthnAuthenticatorEnabled(): bool
+    {
+        return !$this->webauthnKeys->isEmpty();
+    }
+
+    /**
+     * The account the passkeys are bound to: its handle is the id, never the e-mail, which can change
+     */
+    public function getWebauthnUser(): PublicKeyCredentialUserEntity
+    {
+        return PublicKeyCredentialUserEntity::create(
+            $this->getUserIdentifier(),
+            (string) $this->getId(),
+            $this->getUsername(),
+        );
+    }
+
+    public function hasSecondFactor(): bool
+    {
+        return $this->isGoogleAuthenticatorEnabled() || $this->isWebauthnAuthenticatorEnabled();
+    }
+
+    /**
+     * The 2FA form opens on the passkey when there is one (App\Security\TwoFactor\TwoFactorProviderSelectionListener)
+     */
+    public function getPreferredTwoFactorProvider(): ?string
+    {
+        return $this->isWebauthnAuthenticatorEnabled() ? WebauthnTwoFactorProvider::ALIAS : null;
     }
 }

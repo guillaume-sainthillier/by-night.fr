@@ -1,0 +1,11 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}Double authentification désactivée{% endblock %}
+
+{% block body %}
+La double authentification de votre compte vient d'être désactivée par le lien de récupération : votre application d'authentification, vos codes de secours et vos clés d'accès ne sont plus demandés.
+
+Réactivez-la depuis votre compte : {{ url('app_user_edit', {_fragment: 'security'}) }}
+
+Si vous n'êtes pas à l'origine de ce changement, changez votre mot de passe et répondez à cet e-mail.
+{% endblock %}
