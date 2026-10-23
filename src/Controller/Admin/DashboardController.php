@@ -96,6 +96,7 @@ final class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Membres', 'lucide:folder-open');
         yield MenuItem::linkTo(UserCrudController::class, 'Membres', 'lucide:users');
+        yield MenuItem::linkTo(PublisherCrudController::class, 'Organisateurs', 'lucide:building-2');
         yield MenuItem::linkTo(UserOAuthCrudController::class, 'Réseaux sociaux des membres', 'lucide:megaphone');
 
         yield MenuItem::section('Contenu', 'lucide:folder-open');

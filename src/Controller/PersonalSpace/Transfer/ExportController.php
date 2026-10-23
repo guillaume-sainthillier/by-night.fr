@@ -27,9 +27,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * A member's export of events: started from its page, followed live in the page's history (read again here,
+ * A publisher's export of events: started from its page, followed live in the page's history (read again here,
  * history(), when an export changes), then downloaded.
  */
+#[Route(path: '/organisateurs/{publisher<%patterns.slug%>}')]
 final class ExportController extends AbstractTransferController
 {
     /**
@@ -43,7 +44,7 @@ final class ExportController extends AbstractTransferController
 
         return $this->render('personal-space/transfers/export/index.html.twig', [
             'form' => $this->createForm(EventExportType::class, ['searchQuery' => $query, 'statusFilter' => $filter?->value], ['action' => $this->generateUrl('app_event_export_new')]),
-            'exports' => $exportRepository->findLatestByUser($this->getAppUser()),
+            'exports' => $exportRepository->findLatestByPublisher($this->publisherContext->get()),
             'query' => '' === $query ? null : $query,
             'filter' => $filter,
         ]);
@@ -56,7 +57,7 @@ final class ExportController extends AbstractTransferController
     public function history(EventExportRepository $exportRepository): Response
     {
         return $this->render('personal-space/transfers/export/_history.html.twig', [
-            'exports' => $exportRepository->findLatestByUser($this->getAppUser()),
+            'exports' => $exportRepository->findLatestByPublisher($this->publisherContext->get()),
         ]);
     }
 
@@ -82,6 +83,7 @@ final class ExportController extends AbstractTransferController
         $format = $form->get('format')->getData();
         $export = new EventExport()
             ->setUser($user)
+            ->setPublisher($this->publisherContext->get())
             ->setScope($scope)
             ->setFormat($format)
             ->setSearchQuery($form->get('searchQuery')->getData())
@@ -103,6 +105,8 @@ final class ExportController extends AbstractTransferController
     #[IsGranted(ExportVoter::VIEW, subject: 'export')]
     public function show(EventExport $export): Response
     {
+        $this->denyUnlessInContext($export);
+
         return $this->render('personal-space/transfers/export/_row.html.twig', [
             'export' => $export,
         ]);
@@ -112,6 +116,8 @@ final class ExportController extends AbstractTransferController
     #[IsGranted(ExportVoter::VIEW, subject: 'export')]
     public function downloadFile(EventExport $export, TransferFiles $files): Response
     {
+        $this->denyUnlessInContext($export);
+
         return $this->download($files, $export->getFilePath(), $export->getFormat(), $export->getDownloadName());
     }
 }

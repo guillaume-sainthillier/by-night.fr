@@ -20,7 +20,7 @@ final class UploadMappingsTest extends AppKernelTestCase
         $mappings = self::getContainer()->get(UploadMappings::class);
 
         self::assertEqualsCanonicalizing(
-            ['uploads/users', 'uploads/documents', 'uploads/pages', 'uploads/countries', 'uploads/cities'],
+            ['uploads/users', 'uploads/documents', 'uploads/pages', 'uploads/publishers', 'uploads/countries', 'uploads/cities'],
             $mappings->getFolders(),
         );
         // A city is an admin zone (single table inheritance): its cover is named in that table
@@ -30,6 +30,8 @@ final class UploadMappingsTest extends AppKernelTestCase
             ['table' => 'user', 'column' => 'image_name'],
             ['table' => 'user', 'column' => 'image_system_name'],
             ['table' => 'page', 'column' => 'image_name'],
+            ['table' => 'publisher', 'column' => 'logo_name'],
+            ['table' => 'publisher', 'column' => 'cover_name'],
             ['table' => 'country', 'column' => 'hero_image_name'],
             ['table' => 'admin_zone', 'column' => 'hero_image_name'],
         ], $mappings->getNameColumns());

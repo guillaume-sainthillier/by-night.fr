@@ -16,6 +16,7 @@ use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use App\Repository\PageRepository;
 use App\Repository\PlaceRepository;
+use App\Repository\PublisherRepository;
 use App\Repository\UserRepository;
 use App\SEO\EventIndexingPolicy;
 use DateTimeImmutable;
@@ -57,6 +58,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
         private readonly PlaceRepository $placeRepository,
         private readonly EventRepository $eventRepository,
         private readonly UserRepository $userRepository,
+        private readonly PublisherRepository $publisherRepository,
         private readonly PageRepository $pageRepository,
     ) {
     }
@@ -81,6 +83,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
             'agenda' => $this->registerAgendaRoutes(...),
             'places' => $this->registerPlacesRoutes(...),
             'users' => $this->registerUserRoutes(...),
+            'publishers' => $this->registerPublisherRoutes(...),
             'events' => $this->registerEventRoutes(...),
             'tags' => $this->registerTagRoutes(...),
             'pages' => $this->registerPageRoutes(...),
@@ -193,6 +196,20 @@ final class SitemapSuscriber implements EventSubscriberInterface
                 $user['updatedAt'],
                 UrlConcrete::CHANGEFREQ_DAILY,
                 0.4
+            );
+        }
+    }
+
+    private function registerPublisherRoutes(?string $section): void
+    {
+        foreach ($this->publisherRepository->findAllSitemap($this->today(), self::BATCH_SIZE) as $publisher) {
+            $this->addUrl(
+                $section,
+                'app_publisher_index',
+                ['slug' => $publisher['slug']],
+                $publisher['updatedAt'],
+                UrlConcrete::CHANGEFREQ_DAILY,
+                0.5
             );
         }
     }

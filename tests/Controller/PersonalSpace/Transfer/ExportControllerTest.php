@@ -30,13 +30,13 @@ final class ExportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne();
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/exports');
+        $crawler = $client->request('GET', self::organizerPath($user, 'exports'));
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('form[action="/espace-perso/exports"] select[name="event_export[format]"]');
-        self::assertSelectorExists('nav a.active[href="/espace-perso/exports"]');
+        self::assertSelectorExists('form[action$="/exports"] select[name="event_export[format]"]');
+        self::assertSelectorExists('nav a.active[href$="/exports"]');
         self::assertSame('__Secure-mercure_access_token', ($client->getResponse()->headers->getCookies()[0] ?? null)?->getName());
-        self::assertStringContainsString('/espace-perso/exports/historique', (string) $crawler->filter('[data-page]')->attr('data-page-params'));
+        self::assertStringContainsString(self::organizerPath($user, 'exports/historique'), (string) $crawler->filter('[data-page]')->attr('data-page-params'));
     }
 
     public function testTheHistoryListsTheMembersExportsOnly(): void
@@ -47,7 +47,7 @@ final class ExportControllerTest extends AppWebTestCase
         EventExportFactory::createOne(['scope' => EventExportScope::Past]);
         $client->loginUser($user);
 
-        $client->request('GET', '/espace-perso/exports/historique');
+        $client->request('GET', self::organizerPath($user, 'exports/historique'));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.list-group', 'Brouillons');
@@ -60,10 +60,10 @@ final class ExportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne();
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/exports', ['q' => 'jazz', 'status' => 'hidden']);
+        $crawler = $client->request('GET', self::organizerPath($user, 'exports'), ['q' => 'jazz', 'status' => 'hidden']);
         self::assertSelectorTextContains('#export-list-filter', 'jazz');
         self::assertSelectorTextContains('#export-list-filter', 'masqués');
-        $client->submit($crawler->filter('form[action="/espace-perso/exports"]')->form());
+        $client->submit($crawler->filter('form[action$="/exports"]')->form());
 
         $export = EventExportFactory::find(['user' => $user]);
         self::assertSame('jazz', $export->getSearchQuery());
@@ -77,7 +77,7 @@ final class ExportControllerTest extends AppWebTestCase
         EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Checking]);
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/exports')->filter('form[action="/espace-perso/exports"]')->form());
+        $client->submit($client->request('GET', self::organizerPath($user, 'exports'))->filter('form[action$="/exports"]')->form());
 
         self::assertSame(0, EventExportFactory::count(['user' => $user]));
         $client->followRedirect();
@@ -90,7 +90,7 @@ final class ExportControllerTest extends AppWebTestCase
         $user = UserFactory::createOne();
         $client->loginUser($user);
 
-        $client->submit($client->request('GET', '/espace-perso/exports')->filter('form[action="/espace-perso/exports"]')->form(), [
+        $client->submit($client->request('GET', self::organizerPath($user, 'exports'))->filter('form[action$="/exports"]')->form(), [
             'event_export[scope]' => 'upcoming',
             'event_export[format]' => 'ics',
         ]);
@@ -112,9 +112,10 @@ final class ExportControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $export = EventExportFactory::createOne(['status' => EventExportStatus::Completed, 'filePath' => 'exports/x/evenements.csv']);
-        $client->loginUser(UserFactory::createOne());
+        $member = UserFactory::createOne();
+        $client->loginUser($member);
 
-        $client->request('GET', '/espace-perso/exports/' . $export->getId() . '/fichier');
+        $client->request('GET', self::organizerPath($member, 'exports/' . $export->getId() . '/fichier'));
 
         self::assertResponseStatusCodeSame(403);
     }

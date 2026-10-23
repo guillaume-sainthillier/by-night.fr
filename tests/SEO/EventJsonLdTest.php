@@ -15,6 +15,7 @@ use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PublisherFactory;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Parser\Common\OpenAgendaParser;
@@ -252,9 +253,38 @@ final class EventJsonLdTest extends AppKernelTestCase
         self::assertSame('MusicEvent', $this->schema($this->createEvent(['type' => 'Concert']))['@type']);
     }
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
+    public function testTheOrganizerIsThePublisher(): void
+    {
+        $event = $this->createEvent(['publisher' => PublisherFactory::createOne(['name' => 'Le Bikini'])]);
+
+        self::assertSame(['@type' => 'Organization', 'name' => 'Le Bikini', 'url' => 'https://by-night.test/organisateurs/le-bikini'], $this->schema($event)['organizer']);
+    }
+
+    public function testThePublisherIsTheSameAsItsSiteAndItsNetworks(): void
+    {
+        $event = $this->createEvent(['publisher' => PublisherFactory::createOne([
+            'website' => 'https://lebikini.com',
+            'socialLinks' => ['instagram' => 'https://www.instagram.com/lebikini'],
+        ])]);
+
+        self::assertSame(['https://lebikini.com', 'https://www.instagram.com/lebikini'], $this->schema($event)['organizer']['sameAs']);
+    }
+
+    public function testAnEventWithoutPublisherIsOrganizedByItsAuthor(): void
+    {
+        $event = $this->createEvent(['publisher' => null]);
+
+        self::assertSame('Person', $this->schema($event)['organizer']['@type']);
+        self::assertSame($event->getUser()?->getUsername(), $this->schema($event)['organizer']['name']);
+    }
+
+    public function testAnImportedEventHasNoOrganizer(): void
+    {
+        $event = $this->createEvent(['user' => null]);
+
+        self::assertArrayNotHasKey('organizer', $this->schema($event));
+    }
+
     private function createEvent(array $attributes): Event
     {
         $city = CityFactory::toulouse()->create();
