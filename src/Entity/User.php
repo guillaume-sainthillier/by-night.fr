@@ -43,6 +43,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Table(name: '`user`')]
 #[ORM\Index(name: 'user_image_name_idx', columns: ['image_name'])]
 #[ORM\Index(name: 'user_image_system_name_idx', columns: ['image_system_name'])]
+#[ORM\UniqueConstraint(name: 'user_calendar_token_unique', columns: ['calendar_token'])]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate
 {
@@ -150,6 +151,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $verified = false;
+
+    /**
+     * The secret of the address of the member's outings as a calendar (OutingCalendarController): whoever has it reads
+     * them, so the member can change it. Made the first time the member's outings show it.
+     */
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $calendarToken = null;
+
+    /** Whether the member hears by e-mail of the changes of their outings (OutingChangeNotifier) */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $outingAlerts = true;
 
     /** Whether the member, when they run a publisher, gets the news By Night sends them (app:publishers:send-news) */
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
@@ -521,6 +533,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
                 $userEvent->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCalendarToken(): ?string
+    {
+        return $this->calendarToken;
+    }
+
+    /**
+     * A new address for the member's outings as a calendar: the former one no longer answers.
+     */
+    public function renewCalendarToken(): self
+    {
+        $this->calendarToken = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
+
+        return $this;
+    }
+
+    public function isOutingAlerts(): bool
+    {
+        return $this->outingAlerts;
+    }
+
+    public function setOutingAlerts(bool $outingAlerts): self
+    {
+        $this->outingAlerts = $outingAlerts;
 
         return $this;
     }

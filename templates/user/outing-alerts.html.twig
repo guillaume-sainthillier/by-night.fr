@@ -1,0 +1,42 @@
+{% extends 'layouts/default.html.twig' %}
+
+{% block title 'Alertes de mes sorties' %}
+
+{% block meta_robots %}
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block body -%}
+    <div class="card">
+        <div class="empty">
+            {% if unsubscribed %}
+                <div class="empty-icon"><twig:Icon name="lucide:bell-off" /></div>
+                <p class="empty-title">Vous ne serez plus prévenu des changements de vos sorties</p>
+                <p class="empty-subtitle text-secondary">
+                    Vous pouvez les réactiver à tout moment depuis votre profil.
+                </p>
+                <div class="empty-action">
+                    <a class="btn" href="{{ path('app_user_edit') }}">
+                        <twig:Icon name="lucide:user" />
+                        Mon profil
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-icon"><twig:Icon name="lucide:bell" /></div>
+                <p class="empty-title">Ne plus être prévenu des changements de vos sorties&nbsp;?</p>
+                <p class="empty-subtitle text-secondary">
+                    Quand un événement où vous avez dit «&nbsp;J'y vais&nbsp;!&nbsp;» est annulé, change de dates ou de
+                    lieu, nous vous l'écrivons. Vous ne recevrez plus ces e-mails.
+                </p>
+                <div class="empty-action">
+                    <form method="post" action="{{ app.request.requestUri }}">
+                        <button type="submit" class="btn btn-primary">
+                            <twig:Icon name="lucide:bell-off" />
+                            Ne plus être prévenu
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{%- endblock %}
