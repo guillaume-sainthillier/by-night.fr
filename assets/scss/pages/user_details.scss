@@ -1,8 +1,10 @@
 @use '../core' as *;
 
-// A member's public profile (templates/user/index.html.twig). The blocks are Tabler cards, badges and progress bars;
-// only the charts they have no equivalent for live here.
-#page-user {
+// A member's public profile (templates/user/index.html.twig) and a publisher's page, built on it
+// (templates/publisher/index.html.twig). The blocks are Tabler cards, badges and progress bars; only the charts they
+// have no equivalent for live here.
+#page-user,
+#page-publisher {
     // The stroke under the member's name
     .member-title-accent {
         width: 6rem;
@@ -46,5 +48,22 @@
         .card-body {
             padding: 0.5rem 0.25rem;
         }
+    }
+}
+
+// A publisher's page (templates/publisher/index.html.twig)
+#page-publisher {
+    // Its cover, across the top of the page: a wide strip, whatever the picture's ratio
+    .publisher-cover img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4;
+        object-fit: cover;
+    }
+
+    // Its presentation keeps the line breaks it was typed with
+    .publisher-description {
+        white-space: pre-line;
     }
 }

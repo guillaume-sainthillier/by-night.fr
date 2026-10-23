@@ -78,6 +78,17 @@
                         <div class="subheader mt-2">{{ '{count, plural, one {sortie en favori} other {sorties en favoris}}'|trans({count: favoriteEventsCount}, 'messages+intl-icu') }}</div>
                     </div>
                 </div>
+                {% if publishers %}
+                    <div class="card-body">
+                        <div class="subheader mb-2">{{ publishers|length > 1 ? 'Ses pages organisateur' : 'Sa page organisateur' }}</div>
+                        {% for publisher in publishers %}
+                            <a class="d-flex align-items-center gap-2 text-reset{{ not loop.last ? ' mb-2' }}" href="{{ path('app_publisher_index', {slug: publisher.slug}) }}" title="Les événements de {{ publisher.name }}">
+                                <twig:Publisher:Avatar publisher="{{ publisher }}" />
+                                <strong>{{ publisher.name }}</strong>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div class="card-body d-flex align-items-center justify-content-between gap-2">
                     <span class="text-secondary">
                         <twig:Icon name="lucide:calendar-days" />

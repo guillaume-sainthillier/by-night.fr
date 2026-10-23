@@ -147,7 +147,7 @@
                         </a>
                     {% elseif is_granted(constant('\\App\\Security\\Voter\\EventVoter::EDIT'), event) %}
                         {# The author corrects their event from their personal space #}
-                        <a class="btn btn-outline-secondary flex-shrink-0" href="{{ path('app_event_edit', {id: event.id}) }}" title="Modifier l'événement">
+                        <a class="btn btn-outline-secondary flex-shrink-0" href="{{ path('app_event_edit', {publisher: event.publisher.slug, id: event.id}) }}" title="Modifier l'événement">
                             <twig:Icon name="lucide:pencil" />
                             <span class="d-none d-sm-inline">Modifier</span>
                         </a>
@@ -164,7 +164,7 @@
                             <div class="fw-bold">Aperçu&nbsp;: cet événement n'est pas encore publié</div>
                             Seuls son auteur et les administrateurs le voient. Publiez-le pour qu'il apparaisse dans l'agenda.
                         </div>
-                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_draft', {id: event.id}) }}" data-duplicates-href="{{ path('app_event_edit_duplicates', {id: event.id}) }}">
+                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_draft', {id: event.id}) }}" {% if event.publisher %}data-duplicates-href="{{ path('app_event_edit_duplicates', {publisher: event.publisher.slug, id: event.id}) }}"{% endif %}>
                             <twig:Icon name="lucide:rocket" />
                             Publier l'événement
                         </button>
@@ -484,7 +484,16 @@
                             </div>
                         </div>
                         <div class="card-footer d-flex flex-wrap align-items-center gap-3">
-                            {% if event.user %}
+                            {% if event.publisher %}
+                                <a class="d-flex align-items-center gap-2 text-reset" href="{{ path('app_publisher_index', {slug: event.publisher.slug}) }}" title="Les événements de {{ event.publisher.name }}">
+                                    <twig:Publisher:Avatar publisher="{{ event.publisher }}" />
+                                    <span>
+                                        <span class="subheader d-block">Organisé par</span>
+                                        <strong>{{ event.publisher.name }}</strong>
+                                    </span>
+                                </a>
+                                <twig:Publisher:Links publisher="{{ event.publisher }}" small="{{ true }}" class="gap-1" />
+                            {% elseif event.user %}
                                 <a class="d-flex align-items-center gap-2 text-reset" href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" title="Les événements de {{ event.user.username }}">
                                     <span class="avatar">
                                         <twig:User:Thumb user="{{ event.user }}" width="{{ 40 }}" height="{{ 40 }}" />
