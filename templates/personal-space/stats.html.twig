@@ -1,0 +1,137 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{# @var event \App\Entity\Event #}
+{# @var audience \App\Analytics\EventAudience #}
+
+{% block title %}Statistiques de {{ event.name }}{% endblock %}
+{% block page_title 'Statistiques' %}
+
+{% block breadcrumb_personal_space -%}
+    {% do menu.addItem(event.name, url('app_event_edit', {id: event.id})) %}
+    {% do menu.addItem('Statistiques', url('app_event_stats', {id: event.id})) %}
+{%- endblock %}
+
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% set days = audience.days|length %}
+{% set week = audience.last(7) %}
+{% set month = audience.last(days) %}
+{% set tiles = [
+    {label: '7 derniers jours', count: week.visitors, unit: 'visiteurs', icon: 'lucide:users', tone: 'blue'},
+    {label: days ~ ' derniers jours', count: month.visitors, unit: 'visiteurs', icon: 'lucide:users', tone: 'blue'},
+    {label: 'Depuis le début', count: audience.total.visitors, unit: 'visiteurs', icon: 'lucide:users', tone: 'secondary'},
+    {label: days ~ ' derniers jours', count: month.ticketClicks, unit: 'clics billetterie', icon: 'lucide:ticket', tone: 'teal'},
+] %}
+
+{% block body -%}
+    <div class="row justify-content-center" id="event-stats">
+        <div class="col-lg-10">
+            <section class="text-center pt-lg-3 mb-4">
+                <twig:Section:Eyebrow icon="lucide:chart-column" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold mb-2">{{ event.name }}</h1>
+                <p class="lead text-secondary mb-4">Combien de personnes ont vu sa page, et cliqué pour réserver.</p>
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
+                    <twig:Icon name="lucide:eye" />
+                    Voir l'événement
+                </a>
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_edit', {id: event.id}) }}">
+                    <twig:Icon name="lucide:pencil" />
+                    Modifier
+                </a>
+            </section>
+
+            <div class="row row-cards mb-4">
+                {% for tile in tiles %}
+                    <div class="col-6 col-md-3">
+                        <div class="card card-sm mb-0">
+                            <div class="card-body d-flex align-items-center justify-content-between gap-3">
+                                <div>
+                                    <div class="subheader">{{ tile.label }}</div>
+                                    <div class="h1 text-start mb-0">{{ tile.count|format_number(locale: 'fr') }}</div>
+                                    <div class="small text-secondary">{{ tile.unit }}</div>
+                                </div>
+                                <span class="avatar bg-{{ tile.tone }}-lt d-none d-sm-inline-flex">
+                                    <twig:Icon name="{{ tile.icon }}" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="card-title text-start">{{ 'Visiteurs par jour, sur {days} jours'|trans({days: days}, 'messages+intl-icu') }}</h2>
+                </div>
+                <div class="card-body">
+                    {% if month.visitors > 0 %}
+                        {# Each bar is a day, scaled to the busiest; the table below says the same in words #}
+                        {% set peak = audience.peakVisitors() %}
+                        <div class="d-flex align-items-end gap-1" style="height: 10rem" aria-hidden="true">
+                            {% for row in audience.days %}
+                                <div class="flex-fill d-flex flex-column justify-content-end h-100" title="{{ row.day|format_date('medium', locale: 'fr') }} : {{ row.visitors }}">
+                                    <div class="bg-primary rounded-top" style="height: {{ max(row.visitors > 0 ? 2 : 0, (row.visitors / peak * 100)|round) }}%"></div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex justify-content-between small text-secondary mt-2" aria-hidden="true">
+                            <span>{{ (audience.days|first).day|format_date('medium', locale: 'fr') }}</span>
+                            <span>Aujourd'hui</span>
+                        </div>
+                    {% else %}
+                        <div class="empty py-4">
+                            <div class="empty-icon"><twig:Icon name="lucide:chart-column" /></div>
+                            <p class="empty-title">{{ 'Pas encore de visite'|trans }}</p>
+                            <p class="empty-subtitle text-secondary">
+                                {{ "Les visites de sa page s'affichent ici, au plus tard une heure après."|trans }}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if month.visitors > 0 or month.ticketClicks > 0 %}
+                    <details class="card-footer">
+                        <summary class="text-secondary">Le détail jour par jour</summary>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-sm table-vcenter mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Jour</th>
+                                    <th class="text-end">Visiteurs</th>
+                                    <th class="text-end">Clics billetterie</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for row in audience.days|reverse %}
+                                    <tr>
+                                        <td>{{ row.day|format_date('full', locale: 'fr') }}</td>
+                                        <td class="text-end">{{ row.visitors|format_number(locale: 'fr') }}</td>
+                                        <td class="text-end">{{ row.ticketClicks|format_number(locale: 'fr') }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                {% endif %}
+            </div>
+
+            <div class="card mb-0">
+                <div class="card-body d-flex align-items-start gap-3">
+                    <span class="avatar bg-secondary-lt flex-shrink-0"><twig:Icon name="lucide:info" /></span>
+                    <div class="text-secondary small">
+                        <p class="mb-2">
+                            <strong>Visiteurs</strong>&nbsp;: les personnes qui ont ouvert la page de l'événement, chacune comptée une fois par jour.
+                            <strong>Clics billetterie</strong>&nbsp;: les clics sur ses liens de réservation.
+                        </p>
+                        <p class="mb-0">
+                            Mesuré sans cookie et mis à jour toutes les heures. Les robots ne sont pas comptés, ni les visiteurs qui bloquent toute mesure d'audience&nbsp;: les chiffres réels peuvent être un peu plus élevés.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endblock %}
