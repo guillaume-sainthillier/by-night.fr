@@ -41,6 +41,18 @@ vich_uploader:
                 options:
                     date_time_property: createdAt
 
+        publisher_image:
+            uri_prefix: /uploads/publishers
+            upload_destination: publishers.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+            directory_namer:
+                service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
+                options:
+                    date_time_property: createdAt
+
         # Country and city hero images: no directory namer, the dated one needs a creation date
         # (CurrentDateTimeDirectoryNamer without a property would compute a different directory
         # when reading the file back). A few hundred files at most sit fine in one directory.
