@@ -112,6 +112,17 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertSelectorTextContains('#financement', 'Awin');
         self::assertSelectorTextContains('#billets', "le lien de réservation de l'organisateur n'est pas affiché");
         self::assertSelectorExists('footer a[href="/transparence"]');
+        // The anchors the ticket links and the source line of an event page point to
+        foreach (['#editeur', '#financement', '#classement', '#billets', '#liens', '#sites'] as $section) {
+            self::assertSelectorExists($section);
+        }
+        self::assertSelectorTextContains('#financement', 'Kwanko');
+        self::assertSelectorTextContains('#financement', 'Sponsorisé');
+        self::assertSelectorTextContains('#sites', 'Offre-Parrainages.fr');
+        // What no partnership buys, as the advertisers' page promises it
+        self::assertSelectorTextContains('#engagements', 'Aucun classement acheté');
+        self::assertSelectorExists('#engagements a[href="/annonceurs"]');
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=86400, stale-if-error=86400, stale-while-revalidate=86400');
     }
 
     public function testTheAdvertisersPageShowsTheFiguresTheFormatsAndTheContact(): void

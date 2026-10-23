@@ -50,6 +50,8 @@ final class ContentController extends BaseController
         return $this->render('content/terms.html.twig');
     }
 
+    /** A day in Cloudflare: the page only changes with a release */
+    #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
     #[Route(path: '/transparence', name: 'app_transparency', options: ['llms_txt' => new LlmsTxtEntry(title: 'Transparence', description: 'Qui édite By Night, comment le site est financé (publicité, liens affiliés vers des billetteries), comment les événements et les offres de billets sont classés et comment les liens rémunérés sont signalés.', section: Section::OPTIONAL)], methods: ['GET'])]
     public function transparency(): Response
     {
