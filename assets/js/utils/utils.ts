@@ -1,4 +1,4 @@
-import { findAll } from '@/js/utils/dom'
+import { findAll } from '@silarhi/app-js'
 
 declare global {
     interface Window {

@@ -1,6 +1,5 @@
 import type { Listener } from '@silarhi/app-js'
-import { closest } from '@/js/utils/css'
-import { findOne } from '@/js/utils/dom'
+import { findOne } from '@silarhi/app-js'
 
 /**
  * Symfony form collection buttons: add a prototype-based item or remove the
@@ -15,8 +14,8 @@ export default {
             const onAdd = (e: MouseEvent) => {
                 e.preventDefault()
 
-                const wrapper = closest(btn, '.collection-wrapper')
-                const collection = findOne('.collection', wrapper)
+                const wrapper = btn.closest('.collection-wrapper')
+                const collection = wrapper && findOne('.collection', wrapper)
                 if (!collection) return
 
                 collectionManager.addElement(collection)

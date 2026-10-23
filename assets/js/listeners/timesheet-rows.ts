@@ -1,5 +1,5 @@
+import { findAll, findOne, on } from '@silarhi/app-js'
 import { leafLines } from '@/js/utils/dateLeaf'
-import { findAll, findOne, on } from '@/js/utils/dom'
 import { plural } from '@/js/utils/plural'
 
 /**

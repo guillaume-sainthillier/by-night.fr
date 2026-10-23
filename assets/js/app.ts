@@ -6,7 +6,6 @@ import '@/stimulus_bootstrap'
 import $ from 'jquery'
 import '@/js/vendors'
 import '@/js/overrides'
-import '@/js/utils/css'
 
 import * as Sentry from '@sentry/browser'
 import { App } from '@silarhi/app-js'

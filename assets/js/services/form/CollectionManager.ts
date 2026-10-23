@@ -1,6 +1,5 @@
+import { appendHTML, findAll, findOne, trigger } from '@silarhi/app-js'
 import type ModalManager from '@/js/services/modals/ModalManager'
-import { closest } from '@/js/utils/css'
-import { appendHTML, data, dom, findAll, remove, trigger } from '@/js/utils/dom'
 import { getVirtualForm, setElementValue } from '@/js/utils/utils'
 
 interface CollectionItemDetail {
@@ -39,8 +38,8 @@ export default class CollectionManager {
     ) {
         const counter = countCallBack ? countCallBack(collection) : collection.children.length
 
-        const prototypeItemName = data(collection, 'prototypeName') || '__name__'
-        const prototypeItemHTML = (data(collection, 'prototype') ?? '').replace(
+        const prototypeItemName = collection.dataset.prototypeName || '__name__'
+        const prototypeItemHTML = (collection.dataset.prototype ?? '').replace(
             new RegExp(prototypeItemName, 'g'),
             String(counter)
         )
@@ -78,7 +77,7 @@ export default class CollectionManager {
             // Collection elements
             if (Array.isArray(value)) {
                 const collectionId = virtualForm[`_${formElementName}`]
-                const parent = typeof collectionId === 'string' ? dom(`#${collectionId}`) : null
+                const parent = typeof collectionId === 'string' ? findOne(`#${collectionId}`) : null
                 if (parent) {
                     value.forEach((childElementValues) => {
                         if (typeof childElementValues === 'object') {
@@ -88,7 +87,7 @@ export default class CollectionManager {
                     })
                 } else if (typeof formElement === 'string') {
                     // Select multiple
-                    const element = dom(`#${formElement}`)
+                    const element = findOne(`#${formElement}`)
                     if (element) {
                         setElementValue(element, value)
                     }
@@ -101,7 +100,7 @@ export default class CollectionManager {
                 continue
             }
 
-            const element = dom(`#${formElement}`)
+            const element = findOne(`#${formElement}`)
             if (element) {
                 setElementValue(element, value !== null && typeof value === 'object' ? value.id : value)
             }
@@ -116,7 +115,7 @@ export default class CollectionManager {
 
         this.modalManager
             .createConfirm({
-                text: data(btn, 'confirmMessage'),
+                text: btn.dataset.confirmMessage,
                 focusConfirm: true,
                 focusCancel: false,
             })
@@ -134,14 +133,14 @@ export default class CollectionManager {
     }
 
     _doRemove(btn: HTMLElement) {
-        const collection = closest(btn, '.collection')
-        const collectionItem = closest(btn, data(btn, 'item') || '.form-group')
+        const collection = btn.closest('.collection')
+        const collectionItem = btn.closest(btn.dataset.item || '.form-group')
         if (!collectionItem) {
             return
         }
 
         window.App.unmount(collectionItem)
-        remove(collectionItem)
+        collectionItem.remove()
         if (collection) {
             trigger(collection, 'collection.deleted')
         }
