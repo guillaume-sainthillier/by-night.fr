@@ -14,8 +14,7 @@
         "jsx": "react-jsx",
         "jsxImportSource": "preact",
         "paths": {
-            "@/*": ["./assets/*"],
-            "@icons": ["./assets/js/icons/index"]
+            "@/*": ["./assets/*"]
         }
     },
     "include": ["assets", "vite.config.ts", "vitest.config.ts"]

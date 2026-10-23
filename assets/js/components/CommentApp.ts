@@ -1,7 +1,7 @@
-import { LucideLoader2Icon } from '@icons'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import $ from 'jquery'
 import type { SweetAlertIcon } from 'sweetalert2'
+import { LucideLoader2Icon } from '@/js/icons'
 import type ToastManager from '@/js/services/modals/ToastManager'
 import { loadingButtons, resetButtons } from '@/js/utils/buttons'
 import { plural } from '@/js/utils/plural'

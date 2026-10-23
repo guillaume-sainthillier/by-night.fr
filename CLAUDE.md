@@ -317,7 +317,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 **Code Style**:
 
 - TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`, jQuery plugins on `JQuery` in `jquery-plugins.d.ts`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`)
-- Icons: the same as `<twig:Icon>`, from `@icons` (`assets/js/icons/`, dumped by `silarhi/ux-icons-js-bundle` on every cache warmup or `bin/console ux-icons-js:dump`, committed; CI fails on a stale dump). `import { LucideTrash2Icon } from '@icons'`, rendered with `renderIcon()` / `createIconElement()` of `@silarhi/ux-icons-js`, or the Preact `<Icon icon={…} />` (`assets/js/components/Icon.tsx`). A given `class` replaces the configured `icon` class, as in Twig
+- Icons are the SVG files of `assets/icons/`, rendered by `<twig:Icon>` in Twig and, in TypeScript, from the dump `silarhi/ux-icons-js-bundle` writes into `assets/js/icons/index.js` with the `ux_icons` attributes, on every cache rebuild or with `bin/console ux-icons-js:dump` (`lucide:trash-2` is `LucideTrash2Icon`): `renderIcon()` of `@silarhi/ux-icons-js` for HTML strings, `UXIcon` of `@silarhi/ux-icons-js/preact` in the Preact components, never drawn by hand. The dump is committed, so the frontend builds without PHP: commit it again after adding an SVG or changing `ux_icons` (prod dumps to `var/icons` instead, see `config/packages/silarhi_ux_icons_js.yaml`). A `class` replaces the configured `icon` class, as in Twig
 - Biome (`biome.json`) lints and formats TypeScript: 120 char width, single quotes, 4 space indent, no semicolons
 - Prettier only for non-JS files (SCSS, Markdown, YAML)
 

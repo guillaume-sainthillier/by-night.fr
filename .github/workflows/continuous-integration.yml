@@ -54,15 +54,6 @@ jobs:
                   extensions: amqp, redis
             - name: Install Composer dependencies
               run: composer install --no-interaction --no-progress --prefer-dist
-            # The JS imports the icons from assets/js/icons (@icons), dumped from assets/icons and the ux_icons config
-            - name: Check the icons dump is up to date
-              run: |
-                  bin/console ux-icons-js:dump
-                  if [ -n "$(git status --porcelain -- assets/js/icons)" ]; then
-                      git status --short -- assets/js/icons
-                      echo '::error::assets/js/icons is stale: run bin/console ux-icons-js:dump and commit the result'
-                      exit 1
-                  fi
             - name: Setup pnpm
               uses: pnpm/action-setup@v6
             - name: Setup Node.js

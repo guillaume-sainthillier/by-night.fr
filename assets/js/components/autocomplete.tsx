@@ -1,8 +1,13 @@
 import { type AutocompleteSource, autocomplete } from '@algolia/autocomplete-js'
 import type { UXIconData } from '@silarhi/ux-icons-js'
+import { UXIcon } from '@silarhi/ux-icons-js/preact'
 import { Fragment, h, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
+import { Offcanvas } from '@tabler/core'
+import hotkeys from 'hotkeys-js'
+import $ from 'jquery'
+import groupBy from 'lodash/groupBy'
 import {
     LucideChevronRightIcon,
     LucideCrosshairIcon,
@@ -12,12 +17,7 @@ import {
     LucideTrash2Icon,
     LucideTriangleAlertIcon,
     LucideUserIcon,
-} from '@icons'
-import { Offcanvas } from '@tabler/core'
-import hotkeys from 'hotkeys-js'
-import $ from 'jquery'
-import groupBy from 'lodash/groupBy'
-import { Icon } from '@/js/components/Icon'
+} from '@/js/icons'
 import { splitHighlights } from '@/js/utils/highlight'
 import { plural } from '@/js/utils/plural'
 import { searchPageHref } from '@/js/utils/searchPage'
@@ -247,7 +247,7 @@ export default function init({
                 return render(
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                            <Icon icon={LucideTriangleAlertIcon} class="icon-3x text-danger" />
+                            <UXIcon icon={LucideTriangleAlertIcon} className="icon-3x text-danger" />
                             <h2 className="mt-4 h5 text-danger">Erreur de recherche</h2>
                             <p className="text-muted">
                                 Une erreur est survenue lors de la recherche. Veuillez réessayer dans quelques instants.
@@ -264,7 +264,7 @@ export default function init({
                 return render(
                     <div className="aa-PanelLayout">
                         <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                            <Icon icon={LucideSearchIcon} width="40" height="40" class="text-muted" />
+                            <UXIcon icon={LucideSearchIcon} width="40" height="40" className="text-muted" />
                             <p className="mt-3 mb-0 text-muted">
                                 Le nom d'un événement, d'une ville ou d'un membre&nbsp;: quelques lettres suffisent.
                             </p>
@@ -281,7 +281,7 @@ export default function init({
             return render(
                 <div className="aa-PanelLayout">
                     <div className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-                        <Icon icon={LucideSearchIcon} width="40" height="40" class="text-muted" />
+                        <UXIcon icon={LucideSearchIcon} width="40" height="40" className="text-muted" />
                         <h2 className="mt-4 display-4">
                             Aucun résultat pour <strong>«&nbsp;{state.query}&nbsp;»</strong>.
                         </h2>
@@ -390,7 +390,7 @@ const TYPE_ICONS: Partial<Record<string, UXIconData>> = {
 }
 
 function TypeIcon({ type, className = '' }: { type?: string; className?: string }) {
-    return <Icon icon={(type && TYPE_ICONS[type]) || LucideSearchIcon} class={`icon ${className}`.trim()} />
+    return <UXIcon icon={(type && TYPE_ICONS[type]) || LucideSearchIcon} className={`icon ${className}`.trim()} />
 }
 
 function HighlightedText({ item, attribute }: { item: DisplayedItem; attribute: HighlightedAttribute }) {
@@ -465,7 +465,7 @@ function ResultItem({ item, onRemove }: { item: DisplayedItem; onRemove?: (id: s
                             onRemove(item.id)
                         }}
                     >
-                        <Icon icon={LucideTrash2Icon} width="20" height="20" />
+                        <UXIcon icon={LucideTrash2Icon} width="20" height="20" />
                     </button>
                 )}
                 <button
@@ -474,7 +474,7 @@ function ResultItem({ item, onRemove }: { item: DisplayedItem; onRemove?: (id: s
                     title="Sélectionner"
                     aria-label="Sélectionner"
                 >
-                    <Icon icon={LucideChevronRightIcon} width="20" height="20" />
+                    <UXIcon icon={LucideChevronRightIcon} width="20" height="20" />
                 </button>
             </div>
         </a>

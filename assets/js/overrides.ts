@@ -1,7 +1,7 @@
-import { LucideLoader2Icon } from '@icons'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import { Modal } from '@tabler/core'
 import $ from 'jquery'
+import { LucideLoader2Icon } from '@/js/icons'
 
 /**
  * Helpers added to Bootstrap's Modal for #dialog_details, also reachable through its jQuery plugin

@@ -6,8 +6,7 @@ allowBuilds:
 # Our own packages, installed as soon as they are released: pnpm holds back any version younger than a day, even
 # with --frozen-lockfile (CI, the Docker build)
 minimumReleaseAgeExclude:
-    - '@silarhi/app-js'
-    - '@silarhi/ux-icons-js'
+    - '@silarhi/*'
 
 # Pinned versions (formerly Yarn "resolutions")
 overrides:
