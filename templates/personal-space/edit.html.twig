@@ -28,6 +28,10 @@
                 <twig:Icon name="lucide:eye" class="dropdown-item-icon" />
                 Voir l'événement
             </a>
+            <a class="dropdown-item" href="{{ path('app_event_stats', {id: event.id}) }}">
+                <twig:Icon name="lucide:chart-column" class="dropdown-item-icon" />
+                Statistiques
+            </a>
             <div class="dropdown-divider"></div>
             {# Submits the delete form below, which cannot be nested in the event form #}
             <button type="submit" form="event-delete-form" class="dropdown-item text-danger">

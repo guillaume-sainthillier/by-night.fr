@@ -1,0 +1,204 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{# @var event \App\Entity\Event #}
+{# @var query \App\Analytics\AudienceQuery #}
+{# @var audience \App\Analytics\EventAudience #}
+{# @var form \Symfony\Component\Form\FormView #}
+
+{% block title %}Statistiques de {{ event.name }}{% endblock %}
+{% block page_title 'Statistiques' %}
+
+{% block breadcrumb_personal_space -%}
+    {% do menu.addItem(event.name, url('app_event_edit', {id: event.id})) %}
+    {% do menu.addItem('Statistiques', url('app_event_stats', {id: event.id})) %}
+{%- endblock %}
+
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% set sum = audience.sum() %}
+{% set rate = audience.clickRate() %}
+{% set googleAnalyticsUntil = audience.googleAnalyticsUntil() %}
+{% set periodLabel = query.preset ? query.preset.label : audience.range.label %}
+{% set tiles = [
+    {label: 'Visiteurs', value: sum.visitors|format_number(locale: 'fr'), hint: periodLabel, icon: 'lucide:users', tone: 'primary'},
+    {label: 'Clics billetterie', value: sum.ticketClicks|format_number(locale: 'fr'), hint: periodLabel, icon: 'lucide:ticket', tone: 'teal'},
+    {label: 'Taux de clic', value: rate is null ? '–' : rate|format_number({fraction_digit: 1}, style: 'percent', locale: 'fr'), hint: 'des visiteurs ont cliqué', icon: 'lucide:trending-up', tone: 'yellow'},
+    {label: 'Depuis le début', value: audience.total.visitors|format_number(locale: 'fr'), hint: 'visiteurs au total', icon: 'lucide:history', tone: 'secondary'},
+] %}
+
+{% block body -%}
+    <div class="row justify-content-center" id="event-stats" {{ load_page('event_stats') }}>
+        <div class="col-lg-10">
+            <section class="text-center pt-lg-3 mb-4">
+                <twig:Section:Eyebrow icon="lucide:chart-line" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+                <h1 class="display-6 fw-bold mb-2">{{ event.name }}</h1>
+                <p class="lead text-secondary mb-4">Combien de personnes ont vu sa page, et cliqué pour réserver.</p>
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
+                    <twig:Icon name="lucide:eye" />
+                    Voir l'événement
+                </a>
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_edit', {id: event.id}) }}">
+                    <twig:Icon name="lucide:pencil" />
+                    Modifier
+                </a>
+            </section>
+
+            {# The period: a shortcut, as the agenda's dates (location/agenda/_dates.html.twig) but looking back, or dates
+               picked, which assets/js/pages/event_stats.js sends as soon as they are chosen #}
+            <div class="card mb-4">
+                <div class="card-body d-flex flex-column flex-md-row align-items-md-center gap-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2" id="event-stats-periods" role="group" aria-label="{{ 'Période'|trans }}">
+                        {% for period in enum_cases('App\\Enum\\AudiencePeriod') %}
+                            <twig:Chip href="{{ path('app_event_stats', {id: event.id, period: period.value}) }}" active="{{ query.preset is same as(period) }}" class="btn-sm text-nowrap">
+                                {{ period.label }}
+                            </twig:Chip>
+                        {% endfor %}
+                    </div>
+                    {{ form_start(form, {action: path('app_event_stats', {id: event.id}), attr: {class: 'ms-md-auto flex-shrink-0', style: 'min-width: 15rem', id: 'event-stats-dates'}}) }}
+                    {{ form_widget(form.period) }}
+                    <div class="d-flex align-items-center gap-2">
+                        <twig:InputIcon class="flex-grow-1" iconPrepend="lucide:calendar-range">
+                            {# Its own attributes kept: the picker finds it by "shorcuts_date" and its data-from/data-to (DateRangeType) #}
+                            {{ form_widget(form.dateRange.range, {attr: form.dateRange.range.vars.attr|merge({class: 'form-control form-control-sm shorcuts_date' ~ (query.preset ? '' : ' border-primary'), 'aria-label': 'Choisir des dates'})}) }}
+                        </twig:InputIcon>
+                        {{ form_widget(form.dateRange.from) }}
+                        {{ form_widget(form.dateRange.to) }}
+                        <noscript><button type="submit" class="btn btn-sm">Afficher</button></noscript>
+                    </div>
+                    {{ form_end(form, {render_rest: false}) }}
+                </div>
+            </div>
+
+            <div class="row row-cards mb-4">
+                {% for tile in tiles %}
+                    <div class="col-6 col-lg-3">
+                        <div class="card card-sm h-100 mb-0">
+                            <div class="card-body d-flex align-items-center justify-content-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="subheader">{{ tile.label }}</div>
+                                    <div class="h1 text-start mb-0">{{ tile.value }}</div>
+                                    <div class="small text-secondary">{{ tile.hint }}</div>
+                                </div>
+                                <span class="avatar bg-{{ tile.tone }}-lt d-none d-sm-inline-flex flex-shrink-0">
+                                    <twig:Icon name="{{ tile.icon }}" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header flex-wrap gap-2">
+                    <h2 class="card-title text-start mb-0">{{ audience.range.label }}</h2>
+                    <div class="ms-auto d-flex align-items-center gap-3 small text-secondary" aria-hidden="true">
+                        <span class="d-inline-flex align-items-center gap-1"><span class="d-inline-block rounded-pill bg-primary" style="width: 1rem; height: 3px"></span>Visiteurs</span>
+                        <span class="d-inline-flex align-items-center gap-1"><span class="d-inline-block rounded-pill bg-teal" style="width: 1rem; height: 3px"></span>Clics billetterie</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if sum.visitors > 0 or sum.ticketClicks > 0 %}
+                        {% set chart = audience.chart() %}
+                        {# Drawn server side (App\Analytics\AudienceChart) and stretched to the card: the lines keep their
+                           width (non-scaling-stroke), the axis and the days are HTML so their text is not stretched. Each
+                           day's column says its figures when hovered; the table below says them all in words #}
+                        <div class="d-flex gap-2" aria-hidden="true">
+                            <div class="position-relative small text-secondary text-end flex-shrink-0" style="width: 2.5rem; height: 14rem">
+                                {% for tick in chart.ticks %}
+                                    <span class="position-absolute end-0 lh-1" style="bottom: {{ tick.bottom }}%; transform: translateY(50%)">{{ tick.value|format_number(locale: 'fr') }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="flex-grow-1 min-w-0">
+                                <svg class="d-block w-100" style="height: 14rem; overflow: visible" viewBox="0 0 {{ constant('App\\Analytics\\AudienceChart::WIDTH') }} {{ constant('App\\Analytics\\AudienceChart::HEIGHT') }}" preserveAspectRatio="none" id="event-stats-chart">
+                                    {% for tick in chart.ticks %}
+                                        {% set y = constant('App\\Analytics\\AudienceChart::HEIGHT') * (1 - tick.bottom / 100) %}
+                                        <line class="text-secondary" stroke="currentColor" stroke-opacity="0.2" x1="0" x2="{{ constant('App\\Analytics\\AudienceChart::WIDTH') }}" y1="{{ y }}" y2="{{ y }}" vector-effect="non-scaling-stroke" {% if not loop.first %}stroke-dasharray="4 4"{% endif %} />
+                                    {% endfor %}
+                                    <path class="text-primary" fill="currentColor" fill-opacity="0.12" d="{{ chart.area }}" />
+                                    <path class="text-primary" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" d="{{ chart.line('visitors') }}" vector-effect="non-scaling-stroke" data-series="visitors" />
+                                    <path class="text-teal" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="{{ chart.line('ticketClicks') }}" vector-effect="non-scaling-stroke" data-series="ticketClicks" />
+                                    {% for column in chart.columns %}
+                                        <rect fill="transparent" x="{{ column.x }}" y="0" width="{{ column.width }}" height="{{ constant('App\\Analytics\\AudienceChart::HEIGHT') }}"><title>{{ column.day|format_date('medium', locale: 'fr') }} : {{ '{visitors, plural, one {# visiteur} other {# visiteurs}}, {clicks, plural, one {# clic} other {# clics}} billetterie'|trans({visitors: column.visitors, clicks: column.ticketClicks}, 'messages+intl-icu') }}</title></rect>
+                                    {% endfor %}
+                                </svg>
+                                <div class="position-relative small text-secondary mt-2" style="height: 1.25rem">
+                                    {# On a phone, the first, a middle and the last day only: six would overlap #}
+                                    {% set labels = chart.labels %}
+                                    {% set middle = (labels|length / 2)|round(0, 'floor') %}
+                                    {% for label in labels %}
+                                        <span class="position-absolute text-nowrap{{ loop.first or loop.last or loop.index0 == middle ? '' : ' d-none d-md-inline' }}" style="left: {{ label.left }}%; transform: translateX({{ loop.first ? '0' : (loop.last ? '-100%' : '-50%') }})">{{ label.day|format_date(pattern: 'd MMM', locale: 'fr') }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty py-4">
+                            <div class="empty-icon"><twig:Icon name="lucide:chart-line" /></div>
+                            <p class="empty-title">{{ 'Pas de visite sur cette période'|trans }}</p>
+                            <p class="empty-subtitle text-secondary">
+                                {{ "Les visites de sa page s'affichent ici, au plus tard une heure après. Essayez une période plus longue."|trans }}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if sum.visitors > 0 or sum.ticketClicks > 0 %}
+                    {# The table spans the card (card-table), as the legal pages' tables: only its summary is padded #}
+                    <details class="border-top" id="event-stats-days">
+                        <summary class="card-body py-3 text-secondary">Le détail jour par jour</summary>
+                        <div class="table-responsive">
+                            <table class="table card-table table-vcenter">
+                                <thead>
+                                <tr>
+                                    <th>Jour</th>
+                                    <th class="text-end">Visiteurs</th>
+                                    <th class="text-end">Clics billetterie</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for row in audience.days|reverse %}
+                                    <tr>
+                                        <td>{{ row.day|format_date('full', locale: 'fr') }}</td>
+                                        <td class="text-end">{{ row.visitors|format_number(locale: 'fr') }}</td>
+                                        <td class="text-end">{{ row.ticketClicks|format_number(locale: 'fr') }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                {% endif %}
+            </div>
+
+            <div class="card mb-0">
+                <div class="card-body d-flex align-items-start gap-3">
+                    <span class="avatar bg-secondary-lt flex-shrink-0"><twig:Icon name="lucide:info" /></span>
+                    <div class="text-secondary small">
+                        <p class="mb-2">
+                            <strong>Visiteurs</strong>&nbsp;: les personnes qui ont ouvert la page de l'événement, chacune comptée une fois par jour.
+                            <strong>Clics billetterie</strong>&nbsp;: les clics sur ses liens de réservation.
+                        </p>
+                        {% if googleAnalyticsUntil %}
+                            <p class="mb-2" id="event-stats-google-analytics">
+                                {{ "Jusqu'au {day}, les visiteurs viennent de Google Analytics, qui ne comptait que ceux ayant accepté ses cookies : ils sont plus bas qu'ensuite, et les clics billetterie n'y sont pas."|trans({day: googleAnalyticsUntil|format_date('long', locale: 'fr')}, 'messages+intl-icu') }}
+                            </p>
+                        {% endif %}
+                        <p class="mb-0">
+                            Mesuré sans cookie et mis à jour toutes les heures. Les robots ne sont pas comptés, ni les visiteurs qui bloquent toute mesure d'audience&nbsp;: les chiffres réels peuvent être un peu plus élevés.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endblock %}
+
+{% block css -%}
+    {{ reprise_entry_link_tags('event_stats') }}
+{%- endblock %}
+
+{% block js -%}
+    {{ reprise_entry_script_tags('event_stats') }}
+{%- endblock %}

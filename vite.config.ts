@@ -43,6 +43,7 @@ const pages = [
     'personal_space_list',
     'personal_space_event',
     'event_transfers',
+    'event_stats',
 ]
 
 export default defineConfig(({ mode }) => {
