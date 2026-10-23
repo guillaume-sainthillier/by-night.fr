@@ -3,7 +3,6 @@ import '@/scss/app.scss'
 // Symfony UX Stimulus
 import '@/stimulus_bootstrap'
 
-import $ from 'jquery'
 import '@/js/vendors'
 import '@/js/overrides'
 
@@ -150,11 +149,8 @@ if (parameters) {
         Sentry.getCurrentScope().setUser(parameters.user)
     }
 
-    // Once the document is ready, as App.start() was: every deferred entry has run by then, the page entries included.
-    // Mounted earlier, the data-page markers would wait for registerPage(), which then runs the page in the middle of
-    // its own chunk's evaluation (a TDZ ReferenceError on the event form)
-    $(() => {
-        app.start()
-        app.mount(document)
-    })
+    // A module script: the document is parsed. The page entries load after this one, and their data-page markers wait
+    // for registerPage(), which runs them once their own chunk has been evaluated
+    app.start()
+    app.mount(document)
 }
