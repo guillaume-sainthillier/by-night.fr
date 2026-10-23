@@ -298,13 +298,13 @@ final class LocationPageTest extends AppWebTestCase
         $this->stubAgendaSearch($this->dateCounts(['anytime' => 9, 'today' => 0, 'tomorrow' => 0, 'this_weekend' => 5, 'this_week' => 6, 'this_month' => 8]));
         CityFactory::toulouse()->create();
 
-        $crawler = $client->request('GET', '/toulouse?when=today&term=jazz');
+        $crawler = $client->request('GET', '/toulouse/ce-soir?term=jazz');
 
         self::assertResponseIsSuccessful();
         // The closest first, "Tous les jours" last, none for the period on show or for a period as empty, each keeping
         // the other filters
         self::assertSame(
-            [['Ce week-end 5', '/toulouse?term=jazz&when=this_weekend'], ['Cette semaine 6', '/toulouse?term=jazz&when=this_week'], ['Ce mois 8', '/toulouse?term=jazz&when=this_month'], ['Tous les jours 9', '/toulouse?term=jazz']],
+            [['Ce week-end 5', '/toulouse/ce-week-end?term=jazz'], ['Cette semaine 6', '/toulouse?term=jazz&when=this_week'], ['Ce mois 8', '/toulouse?term=jazz&when=this_month'], ['Tous les jours 9', '/toulouse?term=jazz']],
             $crawler->filter('#agenda-wider a')->each(static fn ($chip): array => [preg_replace('/\s+/', ' ', trim($chip->text())), $chip->attr('href')]),
         );
     }
@@ -315,7 +315,7 @@ final class LocationPageTest extends AppWebTestCase
         $this->stubAgendaSearch();
         CityFactory::toulouse()->create();
 
-        $client->request('GET', '/toulouse?when=this_weekend&term=jazz');
+        $client->request('GET', '/toulouse/ce-week-end?term=jazz');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#agenda-dates .btn-chip.active', 'Ce week-end');

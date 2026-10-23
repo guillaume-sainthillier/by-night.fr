@@ -10,6 +10,7 @@
 
 namespace App\Tests\Routing;
 
+use App\Enum\DateRangePreset;
 use App\Routing\LocationRequirement;
 use App\Tests\AppKernelTestCase;
 use Symfony\Component\Routing\RouterInterface;
@@ -33,6 +34,22 @@ final class LocationRequirementTest extends AppKernelTestCase
         foreach ($words as $word => $routes) {
             self::assertTrue(LocationRequirement::isReserved($word), \sprintf('"%s" (%s) must be in LocationRequirement::RESERVED and PATTERN', $word, implode(', ', $routes)));
             self::assertDoesNotMatchRegularExpression('#^(?:' . LocationRequirement::PATTERN . ')$#', 'suisse/' . $word, \sprintf('PATTERN must exclude "%s"', $word));
+        }
+    }
+
+    /**
+     * The date pages follow the location with a variable ("/{location}/{dateSlug}"), which the test above cannot read.
+     */
+    public function testTheDatePagesAreReserved(): void
+    {
+        foreach (DateRangePreset::cases() as $preset) {
+            $slug = $preset->getPageSlug();
+            if (null === $slug) {
+                continue;
+            }
+
+            self::assertTrue(LocationRequirement::isReserved($slug), \sprintf('"%s" must be in LocationRequirement::RESERVED', $slug));
+            self::assertDoesNotMatchRegularExpression('#^(?:' . LocationRequirement::PATTERN . ')$#', 'suisse/' . $slug, \sprintf('PATTERN must exclude "%s"', $slug));
         }
     }
 

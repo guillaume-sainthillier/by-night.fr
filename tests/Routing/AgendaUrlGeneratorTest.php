@@ -11,6 +11,7 @@
 namespace App\Tests\Routing;
 
 use App\Enum\AgendaType;
+use App\Enum\DateRangePreset;
 use App\Factory\CityFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
@@ -40,7 +41,10 @@ final class AgendaUrlGeneratorTest extends AppKernelTestCase
             $generator->generate('toulouse', AgendaType::Student, null, $jazz, $filters),
         );
         self::assertSame('/toulouse/agenda/sortir/etudiant?when=this_weekend', $generator->generate('toulouse', AgendaType::Student, filters: $filters));
-        self::assertSame('/toulouse?when=this_weekend', $generator->generate('toulouse', filters: $filters));
+        // The location's agenda: the shortcuts searched for by name have a page of their own, a later page included
+        self::assertSame('/toulouse/ce-week-end', $generator->generate('toulouse', filters: $filters));
+        self::assertSame('/toulouse/ce-soir/2?term=jazz', $generator->generate('toulouse', filters: ['when' => 'today', 'page' => 2, 'term' => 'jazz']));
+        self::assertSame('/toulouse?when=tomorrow', $generator->generate('toulouse', filters: ['when' => 'tomorrow']));
     }
 
     /**
@@ -58,6 +62,8 @@ final class AgendaUrlGeneratorTest extends AppKernelTestCase
             $generator->formTarget('toulouse', AgendaType::Student, $bikini, $jazz),
         );
         self::assertSame(['/toulouse/agenda/sortir-a/le-bikini', []], $generator->formTarget('toulouse', place: $bikini));
+        // The date page names its shortcut in its path, and the form sends it again as its own field
+        self::assertSame(['/toulouse/ce-week-end', []], $generator->formTarget('toulouse', when: DateRangePreset::ThisWeekend));
         self::assertSame(
             [\sprintf('/toulouse/agenda/tag/jazz--%d', $jazz->getId()), ['type' => 'student']],
             $generator->formTarget('toulouse', AgendaType::Student, tag: $jazz),

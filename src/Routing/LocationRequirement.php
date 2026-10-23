@@ -13,18 +13,19 @@ namespace App\Routing;
 /**
  * The {location} of the URLs: a city or a country ("/toulouse", "/suisse"), or a city of a country that prefixes its
  * cities' URLs ("/suisse/geneve", see Country::$prefixesCities). The words that follow a location in the routes
- * ("/suisse/agenda", "/suisse/soiree/…", "/suisse/2") are never a city of it: CitySlugHandler keeps them free.
+ * ("/suisse/agenda", "/suisse/soiree/…", "/suisse/2", the date pages of DateRangePreset "/suisse/ce-week-end") are
+ * never a city of it: CitySlugHandler keeps them free.
  */
 final class LocationRequirement
 {
     /** The second segments of a location's own routes */
-    public const array RESERVED = ['agenda', 'soiree'];
+    public const array RESERVED = ['agenda', 'soiree', 'ce-soir', 'ce-week-end'];
 
     /**
      * config/routes.yaml. No dot: slugs never hold one, and the probes of files ("/wp-login.php", "/rennes/k.php") are
      * then not found by the router, before any lookup.
      */
-    public const string PATTERN = '[^/.]+(?:/(?!(?:agenda|soiree|\d+)(?:/|$))[^/.]+)?';
+    public const string PATTERN = '[^/.]+(?:/(?!(?:agenda|soiree|ce-soir|ce-week-end|\d+)(?:/|$))[^/.]+)?';
 
     /**
      * Whether a city of a prefixing country may end its slug with this segment.
