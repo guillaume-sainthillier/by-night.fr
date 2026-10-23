@@ -144,81 +144,83 @@
     </twig:Legal:Section>
 
     <twig:Legal:Section id="traitements" title="{{ legal_sections[3].title }}" number="{{ 4 }}">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Traitement</th>
-                        <th>Base légale</th>
-                        <th>Durée de conservation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Votre compte, votre profil et vos connexions avec Google, Facebook ou X</td>
-                        <td>Exécution des <a href="{{ path('app_terms') }}">conditions d'utilisation</a></td>
-                        <td>
-                            Tant que le compte existe. Une connexion avec un réseau et ses jetons sont effacés dès que vous
-                            la dissociez.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Vos événements, favoris et commentaires</td>
-                        <td>Exécution des conditions d'utilisation</td>
-                        <td>
-                            Tant que le compte existe. À sa suppression, favoris et commentaires sont effacés, et vos
-                            événements supprimés ou conservés sans lien avec vous, à votre choix.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Les fichiers de vos imports et exports d'événements</td>
-                        <td>Exécution des conditions d'utilisation</td>
-                        <td>30 jours, puis effacés automatiquement.</td>
-                    </tr>
-                    <tr>
-                        <td>Vos avis et vos e-mails à support@by-night.fr</td>
-                        <td>Intérêt légitime : vous répondre</td>
-                        <td>
-                            Ils ne sont pas enregistrés sur le site : ils nous parviennent par e-mail et sont conservés 3 ans
-                            après notre dernier échange.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Les demandes de retrait de contenu</td>
-                        <td>Obligation légale (traitement des signalements) et intérêt légitime : garder la preuve des retraits</td>
-                        <td>5 ans après leur traitement, durée pendant laquelle un retrait peut être contesté en justice.</td>
-                    </tr>
-                    <tr>
-                        <td>Les journaux techniques des serveurs (adresse IP, page demandée, navigateur)</td>
-                        <td>Intérêt légitime : faire fonctionner et protéger le site</td>
-                        <td>120 jours, puis effacés automatiquement.</td>
-                    </tr>
-                    <tr>
-                        <td>Le comptage des signalements par adresse IP</td>
-                        <td>Intérêt légitime : protéger le formulaire des abus</td>
-                        <td>1 heure.</td>
-                    </tr>
-                    <tr>
-                        <td>Les rapports d'erreurs (sans adresse IP)</td>
-                        <td>Intérêt légitime : corriger les erreurs</td>
-                        <td>90 jours, puis effacés automatiquement.</td>
-                    </tr>
-                    <tr>
-                        <td>La protection de l'inscription (Google reCAPTCHA)</td>
-                        <td>Intérêt légitime : empêcher les inscriptions automatisées</td>
-                        <td>Durée fixée par Google ; By Night ne conserve ni le résultat du contrôle ni les données transmises.</td>
-                    </tr>
-                    <tr>
-                        <td>La mesure d'audience et la publicité personnalisée</td>
-                        <td>Votre consentement, que vous pouvez retirer à tout moment</td>
-                        <td>
-                            Celle des cookies, indiquée dans la <a href="{{ path('app_main_cookie') }}">politique de
-                                cookies</a>.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <twig:block name="table">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter">
+                    <thead>
+                        <tr>
+                            <th>Traitement</th>
+                            <th>Base légale</th>
+                            <th>Durée de conservation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Votre compte, votre profil et vos connexions avec Google, Facebook ou X</td>
+                            <td>Exécution des <a href="{{ path('app_terms') }}">conditions d'utilisation</a></td>
+                            <td>
+                                Tant que le compte existe. Une connexion avec un réseau et ses jetons sont effacés dès que vous
+                                la dissociez.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vos événements, favoris et commentaires</td>
+                            <td>Exécution des conditions d'utilisation</td>
+                            <td>
+                                Tant que le compte existe. À sa suppression, favoris et commentaires sont effacés, et vos
+                                événements supprimés ou conservés sans lien avec vous, à votre choix.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Les fichiers de vos imports et exports d'événements</td>
+                            <td>Exécution des conditions d'utilisation</td>
+                            <td>30 jours, puis effacés automatiquement.</td>
+                        </tr>
+                        <tr>
+                            <td>Vos avis et vos e-mails à support@by-night.fr</td>
+                            <td>Intérêt légitime : vous répondre</td>
+                            <td>
+                                Ils ne sont pas enregistrés sur le site : ils nous parviennent par e-mail et sont conservés 3 ans
+                                après notre dernier échange.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Les demandes de retrait de contenu</td>
+                            <td>Obligation légale (traitement des signalements) et intérêt légitime : garder la preuve des retraits</td>
+                            <td>5 ans après leur traitement, durée pendant laquelle un retrait peut être contesté en justice.</td>
+                        </tr>
+                        <tr>
+                            <td>Les journaux techniques des serveurs (adresse IP, page demandée, navigateur)</td>
+                            <td>Intérêt légitime : faire fonctionner et protéger le site</td>
+                            <td>120 jours, puis effacés automatiquement.</td>
+                        </tr>
+                        <tr>
+                            <td>Le comptage des signalements par adresse IP</td>
+                            <td>Intérêt légitime : protéger le formulaire des abus</td>
+                            <td>1 heure.</td>
+                        </tr>
+                        <tr>
+                            <td>Les rapports d'erreurs (sans adresse IP)</td>
+                            <td>Intérêt légitime : corriger les erreurs</td>
+                            <td>90 jours, puis effacés automatiquement.</td>
+                        </tr>
+                        <tr>
+                            <td>La protection de l'inscription (Google reCAPTCHA)</td>
+                            <td>Intérêt légitime : empêcher les inscriptions automatisées</td>
+                            <td>Durée fixée par Google ; By Night ne conserve ni le résultat du contrôle ni les données transmises.</td>
+                        </tr>
+                        <tr>
+                            <td>La mesure d'audience et la publicité personnalisée</td>
+                            <td>Votre consentement, que vous pouvez retirer à tout moment</td>
+                            <td>
+                                Celle des cookies, indiquée dans la <a href="{{ path('app_main_cookie') }}">politique de
+                                    cookies</a>.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </twig:block>
     </twig:Legal:Section>
 
     <twig:Legal:Section id="destinataires" title="{{ legal_sections[4].title }}" number="{{ 5 }}">
