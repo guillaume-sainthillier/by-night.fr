@@ -36,7 +36,7 @@ final class EventStatsTest extends AppWebTestCase
         self::assertSelectorTextContains('h1', 'Concert de jazz');
         self::assertSame(['40', '4', "10,0\u{a0}%", '140'], $this->tiles($crawler));
         self::assertSelectorTextSame('#event-stats-periods .active', '30 derniers jours');
-        self::assertCount(30, $crawler->filter('#event-stats details tbody tr'));
+        self::assertCount(30, $crawler->filter('#event-stats-days .card-table tbody tr'));
         self::assertSelectorExists('#event-stats-chart path[data-series="visitors"]');
         self::assertSelectorExists('#event-stats-chart path[data-series="ticketClicks"]');
         self::assertCount(30, $crawler->filter('#event-stats-chart rect title'));
@@ -55,7 +55,7 @@ final class EventStatsTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSame('12', $this->tiles($crawler)[0]);
         self::assertSelectorTextSame('#event-stats-periods .active', '7 derniers jours');
-        self::assertCount(7, $crawler->filter('#event-stats details tbody tr'));
+        self::assertCount(7, $crawler->filter('#event-stats-days .card-table tbody tr'));
     }
 
     public function testTheDatesPickedWinOverTheShortcut(): void
@@ -76,7 +76,7 @@ final class EventStatsTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSame('28', $this->tiles($crawler)[0]);
         self::assertSelectorNotExists('#event-stats-periods .active');
-        self::assertCount(5, $crawler->filter('#event-stats details tbody tr'));
+        self::assertCount(5, $crawler->filter('#event-stats-days .card-table tbody tr'));
         self::assertSelectorTextContains('#event-stats .card-title', 'Du ');
     }
 
@@ -120,6 +120,7 @@ final class EventStatsTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#event-stats-google-analytics', 'Google Analytics');
         self::assertSelectorExists('#event-stats-chart rect[data-google-analytics]');
+        self::assertSelectorTextContains('[data-legend-google-analytics]', 'Google Analytics');
     }
 
     public function testTheShadeIsLeftOutOfAPeriodWithoutGoogleAnalyticsDays(): void
@@ -135,6 +136,7 @@ final class EventStatsTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('#event-stats-google-analytics');
         self::assertSelectorNotExists('#event-stats-chart rect[data-google-analytics]');
+        self::assertSelectorNotExists('[data-legend-google-analytics]');
     }
 
     public function testAnotherMemberCannotSeeThem(): void
