@@ -19,6 +19,7 @@ use App\Repository\PublisherLegacySlugRepository;
 use App\Transfer\TransferFiles;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Deletes a publisher its members no longer want, in one transaction. Its events go to another publisher of its owner
@@ -35,6 +36,8 @@ final readonly class PublisherRemover
         private EventImportRepository $importRepository,
         private EventExportRepository $exportRepository,
         private PublisherLegacySlugRepository $legacySlugRepository,
+        // Lazy: the back office builds this service while loading its routes, before any S3 client may be configured
+        #[Autowire(lazy: true)]
         private TransferFiles $files,
     ) {
     }

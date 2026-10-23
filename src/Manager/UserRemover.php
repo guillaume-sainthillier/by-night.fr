@@ -19,6 +19,7 @@ use App\Repository\PublisherRepository;
 use App\Repository\UserEventRepository;
 use App\Transfer\TransferFiles;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Deletes a member's account, whether they close it from their profile or an admin deletes it: their
@@ -40,6 +41,8 @@ final readonly class UserRemover
         private PublisherRepository $publisherRepository,
         private EventImportRepository $importRepository,
         private EventExportRepository $exportRepository,
+        // Lazy: the back office builds this service while loading its routes, before any S3 client may be configured
+        #[Autowire(lazy: true)]
         private TransferFiles $files,
     ) {
     }
