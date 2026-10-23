@@ -24,7 +24,7 @@
                 {{ include('fragments/_header-user-dropdown.html.twig', {show_username: false}) }}
             </ul>
         </div>
-        <div class="offcanvas-lg offcanvas-end flex-grow-1" id="navbar-main">
+        <nav class="offcanvas-lg offcanvas-end flex-grow-1" id="navbar-main" aria-label="Menu principal">
             <div class="offcanvas-header">
                 <div class="site-brand">
                     {# Hidden until the menu opens: lazy #}
@@ -120,6 +120,6 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
+        </nav>
     </div>
 </header>
