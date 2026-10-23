@@ -1,0 +1,230 @@
+{% extends 'layouts/full.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Annonceurs', url('app_advertisers')) %}
+{% endblock %}
+
+{% block title 'Annonceurs et partenaires : faire connaître vos événements sur By Night' %}
+{% block meta_description 'Organisateurs, salles, billetteries et marques : les chiffres de By Night, les formats de partenariat proposés et leur signalement, et les solutions gratuites pour publier vos événements.' %}
+
+{# The advertisers' page: who it is for, the figures (AdvertiserFiguresProvider, hidden when they cannot be counted),
+   the paid formats and how each is labelled, the free ways in, what we don't do (components/Commitments, shared with
+   "Transparence") and the contact. Never a traffic figure: the site publishes none. #}
+{% set contact = 'mailto:support@by-night.fr?subject=' ~ 'Partenariat annonceur'|url_encode %}
+
+{% block body %}
+    <section class="hero-glow py-5">
+        <div class="container-lg">
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-7">
+                    <twig:Section:Eyebrow icon="lucide:handshake" badge="{{ true }}">Annonceurs & partenaires</twig:Section:Eyebrow>
+                    <h1 class="display-5 fw-bold text-start mb-3">Faites connaître vos événements à ceux qui cherchent leur prochaine sortie.</h1>
+                    <p class="lead text-secondary mb-4">
+                        Organisateurs, salles, billetteries et marques&nbsp;: By Night est l'agenda indépendant des
+                        concerts, spectacles, expos et soirées, en France et au-delà. Publier y est gratuit&nbsp;; pour aller
+                        plus loin, nous proposons quelques formats, tous clairement signalés.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary btn-lg" href="{{ contact }}">
+                            <twig:Icon name="lucide:mail" />
+                            Parlons partenariat
+                        </a>
+                        <a class="btn btn-lg" href="{{ path('app_event_new') }}">
+                            <twig:Icon name="lucide:circle-plus" />
+                            Publier gratuitement
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="row g-3" id="audiences">
+                        {% for audience in [
+                            {icon: 'lucide:mic-vocal', tone: 'primary', title: 'Organisateurs', text: 'Festivals, collectifs, associations'},
+                            {icon: 'lucide:building-2', tone: 'teal', title: 'Salles & lieux', text: 'Scènes, bars, musées, théâtres'},
+                            {icon: 'lucide:ticket', tone: 'yellow', title: 'Billetteries', text: 'Catalogues et liens affiliés'},
+                            {icon: 'lucide:sparkles', tone: 'purple', title: 'Marques', text: 'Autour d\'une ville ou d\'un festival'},
+                        ] %}
+                            <div class="col-6">
+                                <div class="card card-sm shadow-sm h-100 mb-0">
+                                    <div class="card-body">
+                                        <span class="avatar bg-{{ audience.tone }}-lt mb-2"><twig:Icon name="{{ audience.icon }}" /></span>
+                                        <div class="fw-semibold">{{ audience.title }}</div>
+                                        <div class="text-secondary small">{{ audience.text }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if figures %}
+        <twig:Section eyebrow="By Night aujourd'hui" icon="lucide:chart-no-axes-column" title="Les chiffres, tirés de notre base" description="Recomptés chaque jour à partir de nos données. Nous ne publions pas de chiffres d'audience." muted="{{ true }}" id="chiffres">
+            {% set stats = [
+                {icon: 'lucide:calendar-check', tone: 'primary', value: figures.upcomingEvents, title: '{count, plural, one {Événement à venir} other {Événements à venir}}'|trans({count: figures.upcomingEvents}, 'messages+intl-icu'), text: 'Publiés et à l\'agenda, de ce soir aux mois qui viennent.'},
+                {icon: 'lucide:map-pin', tone: 'teal', value: figures.cities, title: '{count, plural, one {Ville couverte} other {Villes couvertes}}'|trans({count: figures.cities}, 'messages+intl-icu'), text: 'Des villes qui ont au moins un événement à venir.'},
+                {icon: 'lucide:globe', tone: 'yellow', value: figures.countries, title: '{count, plural, one {Pays ou territoire} other {Pays & territoires}}'|trans({count: figures.countries}, 'messages+intl-icu'), text: 'Partout où des sorties sont à venir.'},
+                {icon: 'lucide:users', tone: 'purple', value: figures.members, title: '{count, plural, one {Membre} other {Membres}}'|trans({count: figures.members}, 'messages+intl-icu'), text: 'Des comptes ouverts, gratuits, pour suivre ses sorties ou publier.'},
+                {icon: 'lucide:database', tone: 'blue', value: figures.sources, title: '{count, plural, one {Source de données} other {Sources de données}}'|trans({count: figures.sources}, 'messages+intl-icu'), text: 'Agendas ouverts et billetteries partenaires, importés automatiquement.'},
+                {icon: 'lucide:party-popper', tone: 'pink', value: figures.memberEvents, title: '{count, plural, one {Événement publié par un membre} other {Événements publiés par les membres}}'|trans({count: figures.memberEvents}, 'messages+intl-icu'), text: 'Publiés à la main par des organisateurs, en plus des imports.'},
+            ] %}
+            <div class="row row-cards row-deck">
+                {% for stat in stats %}
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card card-layout mb-0">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <twig:Icon name="{{ stat.icon }}" class="icon-lg text-{{ stat.tone }} flex-shrink-0" />
+                                    <div class="display-6 fw-bold text-{{ stat.tone }}">{{ stat.value|format_number }}</div>
+                                </div>
+                                <h3 class="mb-1">{{ stat.title }}</h3>
+                                <p class="text-secondary small mb-0">{{ stat.text }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-4 small" id="sources">
+                <span class="text-secondary me-1">Nos sources&nbsp;:</span>
+                {% for source in figures.agendaSources %}
+                    <span class="badge bg-secondary-lt">{{ source }}</span>
+                {% endfor %}
+                {% for source in figures.ticketingSources %}
+                    <span class="badge bg-yellow-lt" title="Billetterie partenaire : ses liens sont des liens affiliés">{{ source }}</span>
+                {% endfor %}
+            </div>
+        </twig:Section>
+    {% endif %}
+
+    <section class="py-5" id="formats">
+        <div class="container-lg">
+            <twig:Section:Header eyebrow="Formats proposés" icon="lucide:layout-grid" title="Trois façons d'aller plus loin" description="Chaque format est signalé là où il s'affiche. Sur demande : écrivez-nous pour les dates et les conditions." />
+            <div class="row row-cards">
+                {% for format in [
+                    {icon: 'lucide:star', tone: 'primary', title: 'Événement mis en avant', text: 'Un événement ou un lieu présenté dans un emplacement dédié de l\'agenda d\'une ville ou de la page d\'accueil, pendant la période choisie.', label: 'Sponsorisé', how: 'L\'emplacement est séparé des résultats et porte la mention « Sponsorisé ». L\'ordre de l\'agenda et de la recherche ne change pas.'},
+                    {icon: 'lucide:ticket', tone: 'teal', title: 'Partenariat billetterie', text: 'Vos événements importés depuis votre catalogue, avec un lien de réservation qui nous verse une commission, comme Fnac Spectacles, Billets Réduc, CDiscount ou SeeTickets aujourd\'hui.', label: 'Lien affilié', how: 'Sous les boutons de réservation et sur la ligne « Source » de l\'événement, avec l\'attribut rel="sponsored". Les offres restent classées de la moins chère à la plus chère.'},
+                    {icon: 'lucide:newspaper', tone: 'yellow', title: 'Article sponsorisé', text: 'Un article de nos pages éditoriales autour d\'une ville, d\'un festival ou d\'un univers de sorties, écrit avec vous et publié sur By Night.', label: 'Sponsorisé', how: 'L\'article porte la mention « Sponsorisé » et nomme le partenaire. Les événements qu\'il cite gardent leur place dans l\'agenda.'},
+                ] %}
+                    <div class="col-md-4">
+                        <article class="card card-layout h-100 mb-0">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <span class="avatar bg-{{ format.tone }}-lt"><twig:Icon name="{{ format.icon }}" /></span>
+                                    <span class="badge bg-yellow-lt"><twig:Icon name="lucide:info" /> {{ format.label }}</span>
+                                </div>
+                                <h3 class="h2 text-start mb-2">{{ format.title }}</h3>
+                                <p class="text-secondary">{{ format.text }}</p>
+                                <div class="form-panel rounded-3 p-3 mt-auto">
+                                    <div class="subheader mb-1">Comment c'est signalé</div>
+                                    <p class="small mb-0">{{ format.how }}</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <twig:Section eyebrow="Sans payer" icon="lucide:hand-heart" title="Les solutions gratuites" description="La plupart des événements de By Night n'ont rien coûté à personne : publier ou partager un agenda est gratuit." muted="{{ true }}" id="gratuit">
+        <div class="row row-cards">
+            <div class="col-md-6">
+                <article class="card card-lg h-100 mb-0">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="avatar bg-primary-lt"><twig:Icon name="lucide:user-plus" /></span>
+                            <h3 class="h2 text-start mb-0">Publiez avec un compte membre</h3>
+                        </div>
+                        <p class="text-secondary">
+                            Créez un compte gratuit, puis publiez vos événements en quelques minutes&nbsp;: dates, tarifs,
+                            affiche, lieu et liens de réservation. Ils rejoignent l'agenda de leur ville et la recherche, à
+                            la même place que tous les autres. Vous en avez beaucoup&nbsp;? Importez-les d'un tableur.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2 mt-auto">
+                            <a class="btn btn-primary" href="{{ path('app_register') }}"><twig:Icon name="lucide:user-plus" /> Créer un compte</a>
+                            <a class="btn" href="{{ path('app_event_new') }}"><twig:Icon name="lucide:circle-plus" /> Publier un événement</a>
+                            <a class="btn" href="{{ path('app_event_imports') }}"><twig:Icon name="lucide:file-spreadsheet" /> Importer un tableur</a>
+                            <a class="btn btn-ghost-secondary" href="{{ path('app_plus') }}"><twig:Icon name="lucide:info" /> Comment ça marche</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="card card-lg h-100 mb-0">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="avatar bg-teal-lt"><twig:Icon name="lucide:rss" /></span>
+                            <h3 class="h2 text-start mb-0">Partagez votre agenda</h3>
+                        </div>
+                        <p class="text-secondary">
+                            By Night importe automatiquement les agendas ouverts&nbsp;: publiez vos événements sur un agenda
+                            public <strong>OpenAgenda</strong>, dans <strong>DATAtourisme</strong> (par votre office de
+                            tourisme) ou avec <strong>SowProg</strong>, et ils arrivent sur By Night sans rien faire de plus.
+                            Un autre flux (API, fichier)&nbsp;? Écrivez-nous.
+                        </p>
+                        <ul class="list-inline mb-3 small">
+                            <li class="list-inline-item"><a href="https://openagenda.com" target="_blank" rel="noopener">OpenAgenda</a></li>
+                            <li class="list-inline-item"><a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a></li>
+                            <li class="list-inline-item"><a href="https://www.sowprog.com" target="_blank" rel="noopener">SowProg</a></li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a class="btn" href="{{ contact }}"><twig:Icon name="lucide:mail" /> Proposer un flux</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </twig:Section>
+
+    <section class="py-5">
+        <div class="container-lg">
+            <div class="card card-lg card-night border-0 mb-0" data-bs-theme="dark" id="engagements">
+                <div class="card-body">
+                    <div class="row g-4 g-lg-5 align-items-center">
+                        <div class="col-lg-5">
+                            <span class="badge bg-primary-lt mb-3"><twig:Icon name="lucide:shield" /> Ce que nous ne faisons pas</span>
+                            <h2 class="h1 text-start mb-3">Un partenariat n'achète pas la confiance des visiteurs.</h2>
+                            <p class="lead text-secondary">
+                                Les mêmes règles pour tous les partenaires, expliquées en détail sur notre page Transparence.
+                            </p>
+                            <a class="btn" href="{{ path('app_transparency') }}">
+                                <twig:Icon name="lucide:scale" />
+                                Lire la page Transparence
+                            </a>
+                        </div>
+                        <div class="col-lg-7">
+                            <twig:Commitments />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <div class="card card-lg card-sunset border-0 text-white mb-0" id="contact">
+                <div class="card-body py-lg-6">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-lg-8">
+                            <span class="badge bg-white text-primary mb-3"><twig:Icon name="lucide:handshake" /> Partenariat annonceur</span>
+                            <h2 class="display-6 fw-bold text-start text-white mb-3">Un festival, une salle, une billetterie à faire connaître&nbsp;?</h2>
+                            <p class="lead mb-0">
+                                Dites-nous qui vous êtes, ce que vous voulez mettre en avant, où et quand&nbsp;: nous vous
+                                répondons avec les formats possibles et leurs conditions.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 d-grid gap-2">
+                            <a class="btn btn-lg bg-white text-primary" href="{{ contact }}">
+                                <twig:Icon name="lucide:mail" />
+                                Nous écrire
+                            </a>
+                            <span class="small text-center opacity-75">support@by-night.fr · objet «&nbsp;Partenariat annonceur&nbsp;»</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

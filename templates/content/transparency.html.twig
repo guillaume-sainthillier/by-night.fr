@@ -1,0 +1,291 @@
+{% extends 'layouts/full.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Transparence', url('app_transparency')) %}
+{%- endblock %}
+
+{% block title 'Transparence : comment By Night est financé' %}
+{% block meta_description 'Qui édite By Night, comment le site est financé (publicité, liens affiliés vers des billetteries), comment les événements et les offres de billets sont classés et comment les liens rémunérés sont signalés.' %}
+
+{% set updated = '2026-10-23' %}
+{% set sections = [
+    {id: 'editeur', title: 'Qui édite By Night ?', number: 1, icon: 'lucide:landmark'},
+    {id: 'financement', title: 'Comment le site est-il financé ?', number: 2, icon: 'lucide:wallet'},
+    {id: 'classement', title: 'Comment les événements sont-ils classés ?', number: 3, icon: 'lucide:list-ordered'},
+    {id: 'billets', title: 'Comment les offres de billets sont-elles choisies ?', number: 4, icon: 'lucide:ticket'},
+    {id: 'liens', title: 'Comment repérer un lien rémunéré ?', number: 5, icon: 'lucide:tag'},
+    {id: 'sites', title: 'Les liens vers nos autres sites', number: 6, icon: 'lucide:link'},
+] %}
+
+{# How the site earns money and orders what it shows (loi n° 2023-451 du 9 juin 2023, art. L. 111-7 du Code de la
+   consommation), in the spirit of "À propos" but with the legal pages' tabs, numbered articles and "Sur cette page".
+   Keep the ranking sections in step with EventElasticaRepository (agenda and search), EventRepository
+   (findHighlights, the header's suggestions), EventFamilyResolver::elect() with AffiliateParsers::pageRank(), and
+   EventTicketOffers / TicketOffer::compare(); the labels with location/event/_tickets.html.twig and the source line
+   of the event page; the advertising with fragments/_google-tags.html.twig; the partner sites with
+   fragments/footer.html.twig; the commitments with content/advertisers.html.twig. #}
+{% block body %}
+    <section class="hero-glow pt-5 pb-4">
+        <div class="container-lg">
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-7">
+                    <twig:Section:Eyebrow icon="lucide:scale" badge="{{ true }}">Informations juridiques</twig:Section:Eyebrow>
+                    <h1 class="display-5 fw-bold text-start mb-3">Transparence</h1>
+                    <p class="lead text-secondary mb-3">
+                        Qui édite By Night, ce qui le finance, comment les événements et les billets sont classés, et
+                        comment repérer un lien rémunéré. Sans petites lignes.
+                    </p>
+                    <p class="small text-secondary hstack gap-1 mb-0">
+                        <twig:Icon name="lucide:clock" />
+                        Dernière mise à jour&nbsp;: <time datetime="{{ updated }}">{{ updated|format_date('long') }}</time>
+                    </p>
+                </div>
+                <div class="col-lg-5 d-grid gap-3" id="en-bref">
+                    {% for fact in [
+                        {icon: 'lucide:hand-heart', tone: 'teal', label: 'Gratuit', text: 'pour les visiteurs, les membres et les organisateurs'},
+                        {icon: 'lucide:list-ordered', tone: 'primary', label: 'Aucun classement acheté', text: 'dates, distance, mots cherchés et intérêt des membres'},
+                        {icon: 'lucide:tag', tone: 'yellow', label: 'Chaque lien rémunéré signalé', text: '« Lien affilié » et rel="sponsored"'},
+                    ] %}
+                        <div class="card card-sm shadow-sm mb-0">
+                            <div class="card-body d-flex align-items-center gap-3">
+                                <span class="avatar bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Icon name="{{ fact.icon }}" /></span>
+                                <div>
+                                    <div class="fw-semibold">{{ fact.label }}</div>
+                                    <div class="text-secondary small">{{ fact.text }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <twig:Legal:Tabs class="mt-4" current="{{ app.current_route }}" />
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container-lg">
+            <div class="row g-4 g-xl-5">
+                <div class="col-lg-8 vstack gap-4">
+                    <twig:Legal:Section id="editeur" title="{{ sections[0].title }}" number="{{ 1 }}">
+                        <div class="row g-3 align-items-center mb-3">
+                            <div class="col-sm-7">
+                                <p>
+                                    By Night est édité par <strong>ARNOVA</strong>, SAS au capital de 1 000 €, 200 rue de la
+                                    Croix Nivert, 75015 Paris (RCS Paris 942 070 392). Les informations complètes sur
+                                    l'éditeur et l'hébergeur figurent dans les
+                                    <a href="{{ path('app_legal_mentions', {_fragment: 'editeur'}) }}">mentions légales</a>.
+                                </p>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-panel rounded-3 p-3 hstack gap-3">
+                                    <span class="avatar bg-white text-primary flex-shrink-0"><twig:Icon name="lucide:landmark" /></span>
+                                    <div>
+                                        <div class="subheader">Éditeur</div>
+                                        <div class="fw-bold">ARNOVA</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p>
+                            Consulter l'agenda, créer un compte et publier un événement sont gratuits, pour les visiteurs
+                            comme pour les organisateurs. By Night ne vend pas de billets&nbsp;: il renvoie vers les
+                            billetteries et les organisateurs.
+                        </p>
+                    </twig:Legal:Section>
+
+                    <twig:Legal:Section id="financement" title="{{ sections[1].title }}" number="{{ 2 }}">
+                        <p>By Night est financé de deux façons&nbsp;:</p>
+                        <div class="row row-cards row-deck mb-3">
+                            <div class="col-md-6">
+                                <div class="card card-sm form-panel border-0 mb-0">
+                                    <div class="card-body">
+                                        <div class="hstack gap-2 mb-2">
+                                            <span class="avatar avatar-sm bg-primary-lt"><twig:Icon name="lucide:megaphone" /></span>
+                                            <h3 class="h4 mb-0">La publicité</h3>
+                                        </div>
+                                        <p class="small mb-0">
+                                            Des annonces <strong>Google AdSense</strong> s'affichent sur les pages. Elles
+                                            sont choisies par Google&nbsp;: By Night ne choisit ni les annonceurs ni les
+                                            annonces affichées, et Google les signale comme des annonces. Le bandeau de
+                                            consentement est celui de Google (Funding Choices)&nbsp;: tant que vous n'avez
+                                            pas répondu, tout est refusé, et la publicité personnalisée n'a lieu qu'avec
+                                            votre accord (voir la <a href="{{ path('app_main_cookie') }}">politique de cookies</a>).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card card-sm form-panel border-0 mb-0">
+                                    <div class="card-body">
+                                        <div class="hstack gap-2 mb-2">
+                                            <span class="avatar avatar-sm bg-teal-lt"><twig:Icon name="lucide:ticket" /></span>
+                                            <h3 class="h4 mb-0">Les liens affiliés</h3>
+                                        </div>
+                                        <p class="small mb-0">
+                                            Les événements de Fnac Spectacles, Billets Réduc et CDiscount (par la
+                                            plateforme d'affiliation <strong>Awin</strong>) et de SeeTickets (par
+                                            <strong>Kwanko</strong>) sont importés de leurs catalogues, et leurs liens de
+                                            réservation sont des liens d'affiliation&nbsp;: quand vous achetez un billet
+                                            après avoir suivi l'un d'eux, la billetterie verse une commission à ARNOVA. Le
+                                            prix que vous payez est le même que sur le site de la billetterie.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p>
+                            CDiscount revend les spectacles de Ticketmaster France&nbsp;: By Night lit aussi le catalogue
+                            public de Ticketmaster pour compléter leurs dates, leurs photos et leurs lieux, mais
+                            Ticketmaster ne lui verse rien et aucun lien du site ne mène à Ticketmaster. Les liens du pied
+                            de page vers nos autres sites sont expliqués <a href="#sites">plus bas</a>.
+                        </p>
+                        <div class="alert alert-important bg-teal-lt border-0 mb-0" role="note">
+                            <div class="hstack gap-3 align-items-start">
+                                <twig:Icon name="lucide:shield-check" class="icon-lg text-teal flex-shrink-0 d-none d-sm-inline-block" />
+                                <p class="mb-0 text-body">
+                                    <strong>Aucun organisateur, lieu ou billetterie ne paie pour qu'un événement figure sur
+                                        By Night ou y soit mieux placé.</strong>
+                                    Aucun emplacement sponsorisé n'est vendu aujourd'hui. Si By Night en propose un (voir
+                                    la page <a href="{{ path('app_advertisers') }}">Annonceurs</a>), il portera toujours la
+                                    mention «&nbsp;Sponsorisé&nbsp;», sera affiché à part et ne changera jamais l'ordre de
+                                    l'agenda ni de la recherche. Un événement importé d'un agenda ou d'une billetterie n'est
+                                    jamais un emplacement payé, sauf s'il porte cette mention.
+                                </p>
+                            </div>
+                        </div>
+                    </twig:Legal:Section>
+
+                    <twig:Legal:Section id="classement" title="{{ sections[2].title }}" number="{{ 3 }}">
+                        <p>
+                            Aucun classement ne tient compte d'une rémunération, ni du fait qu'un événement vienne d'une
+                            billetterie affiliée, d'un agenda partenaire ou d'un membre. Seuls comptent les dates, la
+                            distance, les mots recherchés et l'intérêt des membres&nbsp;:
+                        </p>
+                        <div class="vstack gap-3 mb-3">
+                            {% for rule in [
+                                {icon: 'lucide:calendar-days', tone: 'primary', title: 'Agenda d\'une ville, d\'un pays ou d\'un lieu', text: 'et ses pages par univers, thème ou catégorie : les événements qui ont une date dans la période choisie, du plus proche dans le temps au plus lointain, selon la fin de leur prochaine séance. À date égale, sur l\'agenda d\'une ville, le plus proche de son centre passe devant. Les filtres (dates, distance, catégorie, prix maximum) choisissent les événements affichés, sans changer leur ordre.'},
+                                {icon: 'lucide:search', tone: 'teal', title: 'Recherche', text: '(page « Rechercher » et barre de recherche) : tous les mots saisis doivent se retrouver dans l\'événement. Les résultats sont classés par pertinence : un mot trouvé dans le nom de l\'événement compte le plus, puis le nom du lieu et sa ville, puis les thèmes, puis la description ; une faute de frappe dans le nom compte très peu. Quand la recherche porte sur une ville, ses événements et ceux des environs voient leur pertinence multipliée jusqu\'à trois, de moins en moins avec la distance. À pertinence égale, la date la plus proche passe devant.'},
+                                {icon: 'lucide:flame', tone: 'yellow', title: '« À l\'affiche » et suggestions de la barre de recherche', text: ': des événements des jours qui viennent, classés par nombre de membres qui ont cliqué sur « J\'y vais », puis par date (« À l\'affiche »), ou par date puis par nombre de « J\'y vais » (suggestions de la semaine).'},
+                                {icon: 'lucide:map-pin', tone: 'purple', title: 'Événements du même lieu ou du même jour', text: ', sur une page d\'événement : par date pour les prochains événements du lieu, par ordre alphabétique pour les autres sorties du jour en ville.'},
+                            ] %}
+                                <div class="d-flex gap-3">
+                                    <span class="avatar bg-{{ rule.tone }}-lt flex-shrink-0"><twig:Icon name="{{ rule.icon }}" /></span>
+                                    <p class="mb-0"><strong>{{ rule.title }}</strong> {{ rule.text }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <p>
+                            <strong>Un même événement diffusé par plusieurs sources</strong> n'apparaît qu'une fois&nbsp;:
+                            ses pages sont réunies en une seule. La page conservée est en priorité celle d'un agenda
+                            partenaire, d'un office de tourisme ou de l'organisateur, qui en donnent la description la plus
+                            complète, puis, à défaut, celle d'une billetterie dans cet ordre&nbsp;: Fnac Spectacles, Billets
+                            Réduc, SeeTickets, CDiscount. Ce choix ne change pas la place de l'événement dans l'agenda.
+                        </p>
+                    </twig:Legal:Section>
+
+                    <twig:Legal:Section id="billets" title="{{ sections[3].title }}" number="{{ 4 }}">
+                        <p>
+                            Quand un événement est vendu par plusieurs billetteries, sa page les propose toutes, une offre
+                            par billetterie (son prix le plus bas), dans cet ordre&nbsp;:
+                        </p>
+                        <ol class="list-unstyled vstack gap-2 mb-3">
+                            {% for step in [
+                                'd\'abord les offres disponibles dont le prix est connu, de la moins chère à la plus chère ;',
+                                'puis les offres sans prix connu, puis les offres complètes ;',
+                                'à égalité, par ordre alphabétique de la billetterie.',
+                            ] %}
+                                <li class="d-flex align-items-center gap-3">
+                                    <span class="legal-section-number">{{ loop.index }}</span>
+                                    {{ step }}
+                                </li>
+                            {% endfor %}
+                        </ol>
+                        <p>
+                            Le bouton de réservation mène à la première de cette liste. <strong>Quand au moins une
+                                billetterie affiliée a encore des billets en vente, le lien de réservation de l'organisateur n'est pas affiché</strong>&nbsp;:
+                            seules les billetteries affiliées sont proposées. Le lien de l'organisateur, qui ne rapporte rien
+                            à By Night, n'est proposé que si aucune billetterie affiliée ne vend l'événement, et n'est plus
+                            affiché une fois l'événement passé. Vous pouvez toujours retrouver l'organisateur et son site
+                            depuis la description de l'événement ou une recherche.
+                        </p>
+                        <p>
+                            Les prix et les disponibilités sont ceux que chaque billetterie transmet à son dernier import et
+                            peuvent avoir changé&nbsp;: seul compte le prix affiché par la billetterie au moment de l'achat.
+                        </p>
+                    </twig:Legal:Section>
+
+                    <twig:Legal:Section id="liens" title="{{ sections[4].title }}" number="{{ 5 }}">
+                        <div class="row row-cards row-deck mb-3">
+                            {% for label in [
+                                {sample: 'Lien affilié', where: 'Sous les boutons de réservation', text: 'La mention « Lien affilié » signale que les liens vers les billetteries rapportent une commission à By Night, avec un lien vers cette page.'},
+                                {sample: 'lien affilié', where: 'Sur la ligne « Source »', text: 'Sur une page d\'événement importé d\'une billetterie, la même mention accompagne le lien vers la billetterie.'},
+                                {sample: 'rel="sponsored"', where: 'Pour les moteurs de recherche', text: 'Ces liens portent l\'attribut rel="sponsored", qui les déclare comme liens rémunérés.', code: true},
+                                {sample: 'Annonce', where: 'Les publicités', text: 'Elles sont signalées comme telles par Google, qui les affiche.'},
+                            ] %}
+                                <div class="col-sm-6">
+                                    <div class="card card-sm mb-0">
+                                        <div class="card-body">
+                                            {% if label.code ?? false %}
+                                                <code class="d-inline-block mb-2">{{ label.sample }}</code>
+                                            {% else %}
+                                                <span class="badge bg-yellow-lt mb-2"><twig:Icon name="lucide:info" /> {{ label.sample }}</span>
+                                            {% endif %}
+                                            <div class="fw-semibold">{{ label.where }}</div>
+                                            <p class="small text-secondary mb-0">{{ label.text }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <p>Les autres liens du site (sources, sites des organisateurs et des lieux) ne sont pas rémunérés.</p>
+                    </twig:Legal:Section>
+
+                    <twig:Legal:Section id="sites" title="{{ sections[5].title }}" number="{{ 6 }}">
+                        <p>
+                            Le pied de page de By Night renvoie, sous «&nbsp;Nos sites partenaires&nbsp;», vers d'autres
+                            sites liés à son éditeur&nbsp;: Offre-Parrainages.fr et Avis-Banque.fr, édités par ARNOVA&nbsp;;
+                            parrainages-boursorama.fr, autre site de parrainage de son dirigeant&nbsp;; et le site et le blog
+                            de SILARHI, la société de développement web de son dirigeant. Personne ne paie By Night pour ces
+                            liens, mais les sites de parrainage sont eux-mêmes financés par des primes de parrainage et des
+                            liens affiliés, comme ils l'expliquent sur leurs propres pages&nbsp;: ces liens profitent donc
+                            indirectement à l'éditeur et à son dirigeant.
+                        </p>
+                    </twig:Legal:Section>
+                </div>
+                {# Only "Sur cette page" sticks: with the question box, the column would outgrow a short screen #}
+                <aside class="col-lg-4 vstack gap-3">
+                    <twig:Legal:Contact />
+                    <div class="legal-aside sticky-lg-top">
+                        <twig:Legal:Toc sections="{{ sections }}" />
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="container-lg">
+            <div class="card card-lg card-night border-0 mb-0" data-bs-theme="dark" id="engagements">
+                <div class="card-body">
+                    <div class="row g-4 g-lg-5 align-items-center">
+                        <div class="col-lg-5">
+                            <span class="badge bg-primary-lt mb-3"><twig:Icon name="lucide:shield" /> Nos engagements</span>
+                            <h2 class="h1 text-start mb-3">Ce qui n'est pas à vendre.</h2>
+                            <p class="lead text-secondary mb-0">
+                                Organisateurs, billetteries et marques peuvent travailler avec By Night&nbsp;: voici ce
+                                qu'aucun partenariat ne peut acheter.
+                            </p>
+                        </div>
+                        <div class="col-lg-7">
+                            <twig:Commitments />
+                            <a class="btn mt-4" href="{{ path('app_advertisers') }}">
+                                <twig:Icon name="lucide:handshake" />
+                                Annonceurs et partenaires
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

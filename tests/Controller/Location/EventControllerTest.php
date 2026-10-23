@@ -391,6 +391,36 @@ final class EventControllerTest extends AppWebTestCase
         self::assertNotNull($duplicate->getId());
     }
 
+    public function testTheAffiliateLinksAreLabelled(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setFromData(FnacSpectaclesAwinParser::getParserName())->setSource('https://www.awin1.com/fnac');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertResponseIsSuccessful();
+        // Under the booking button, and on the source line, which leads to the same affiliate link
+        self::assertAnySelectorTextContains('#event-tickets p', 'Lien affilié');
+        self::assertSelectorExists('#event-tickets a[href="/transparence#billets"]');
+        self::assertSelectorExists('a[href="https://www.awin1.com/fnac"][rel="sponsored noopener"]:not(.btn)');
+        self::assertSelectorExists('a[href="/transparence#liens"]');
+    }
+
+    public function testTheOrganizersBookingIsNotLabelledAsAffiliate(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(new DateTimeImmutable('+10 days'));
+        $event->setTicketUrl('https://billetterie.example.org/concert');
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorExists('a.btn[href="https://billetterie.example.org/concert"]');
+        self::assertSelectorNotExists('a[href="/transparence#billets"]');
+    }
+
     public function testOnAPhoneTheTicketsComeRightUnderTheTitle(): void
     {
         $client = self::createClient();

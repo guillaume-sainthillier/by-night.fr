@@ -59,6 +59,22 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->join($alias . '.country', 'country');
     }
 
+    /**
+     * The cities with events to come, as last counted by UpcomingEventCounter.
+     */
+    public function countWithUpcomingEvents(): int
+    {
+        // Not createQueryBuilder(): its joins are for the city pages
+        return (int) $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(c.id)')
+            ->from(City::class, 'c')
+            ->where('c.upcomingEvents > 0')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function loadAllEager(array $entities, array $context = []): void
     {
         $entityIds = array_map(static fn (City $entity): ?int => $entity->getId(), $entities);

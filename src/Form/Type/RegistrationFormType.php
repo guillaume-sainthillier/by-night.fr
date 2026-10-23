@@ -14,11 +14,13 @@ use App\Entity\User;
 use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
 use Karser\Recaptcha3Bundle\Validator\Constraints\Recaptcha3;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -61,6 +63,14 @@ final class RegistrationFormType extends AbstractType
                 'attr' => ['autocomplete' => 'family-name'],
             ])
             ->add('plainPassword', NewPasswordType::class)
+            // The terms of use the member agrees to (content/terms.html.twig); the social logins say it next to their
+            // buttons instead (Auth:TermsNotice)
+            ->add('agreeTerms', CheckboxType::class, [
+                'mapped' => false,
+                // registration/register.html.twig links the label to the terms
+                'label' => "J'accepte les conditions générales d'utilisation de By Night.",
+                'constraints' => [new IsTrue(message: "Veuillez accepter les conditions générales d'utilisation.")],
+            ])
             ->add('captcha', Recaptcha3Type::class, [
                 'constraints' => new Recaptcha3(),
                 'action_name' => 'register',

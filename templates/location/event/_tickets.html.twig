@@ -25,3 +25,11 @@
         {% endfor %}
     </div>
 {% endif %}
+{% if offers|filter(offer => offer.affiliate) is not empty %}
+    {# The commission, said where the links are (loi n° 2023-451 du 9 juin 2023): content/transparency.html.twig explains it #}
+    <p class="small text-secondary mb-0">
+        <twig:Icon name="lucide:info" />
+        Lien affilié&nbsp;: By Night perçoit une commission sur les billets achetés, sans surcoût pour vous.
+        <a class="link-secondary text-decoration-underline" href="{{ path('app_transparency', {_fragment: 'billets'}) }}">En savoir plus</a>
+    </p>
+{% endif %}

@@ -51,6 +51,8 @@ $-headings-line-height: 1.2;
     $navbar-toggler-padding-y: 0,
     // 1.25rem since 1.5
     $card-spacer-y: 1rem,
+    // $card-cap-padding-y (0.75rem below) up to 1.6, a fixed 1rem since 1.7
+    $list-group-item-padding-y: 0.75rem,
     // Round (pill) since 1.5
     $avatar-border-radius: var(--border-radius),
     // Half-transparent since 1.5
@@ -74,6 +76,11 @@ $-headings-line-height: 1.2;
     $progress-box-shadow: none,
     // 1rem / .75rem: .btn-sm and the chips (1rem, i.e. shorter, since 1.5)
     $input-btn-line-height-sm: 1.3333333,
+    // Filled .btn-* got a darker border, light/dark inner edges and a white gradient in 1.7: flat again, as in 1.6
+    $btn-variant-border-color: transparent,
+    $btn-highlight-color: transparent,
+    $btn-shade-color: transparent,
+    $btn-gradient: none,
 
     // Configuration
     $enable-dark-mode: true,

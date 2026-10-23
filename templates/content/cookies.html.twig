@@ -1,4 +1,4 @@
-{% extends 'layouts/simple.html.twig' %}
+{% extends 'layouts/legal.html.twig' %}
 
 {% block breadcrumb %}
     {% do menu.addItem('Cookies', url('app_main_cookie')) %}
@@ -8,120 +8,194 @@
 {% block page_title 'Politique de cookies' %}
 {% block meta_description 'Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.' %}
 
-{% block body %}
-    <p class="text-muted">Dernière mise à jour : 22 septembre 2026</p>
+{% set legal_lead = 'Les cookies que By Night dépose, ceux de ses partenaires, et comment les accepter ou les refuser.' %}
+{% set legal_updated = '2026-10-22' %}
+{% set legal_sections = [
+    {id: 'cookies', title: 'Qu\'est-ce qu\'un cookie ?'},
+    {id: 'necessaires', title: 'Cookies nécessaires au fonctionnement du site', number: 1},
+    {id: 'mesure-audience', title: 'Mesure d\'audience, avec votre accord', number: 2},
+    {id: 'publicite', title: 'Publicité, avec votre accord', number: 3},
+    {id: 'services-tiers', title: 'Services tiers', number: 4},
+    {id: 'gerer', title: 'Gérer vos choix', number: 5},
+] %}
 
-    <p class="lead">
-        Un cookie est un petit fichier déposé sur votre appareil (ordinateur, tablette, téléphone) par le site que vous
-        consultez ou par un service tiers. Sans votre accord, By Night n'utilise que les cookies nécessaires à son
-        fonctionnement : ceux qui servent à mesurer l'audience et à la publicité ne sont déposés que si vous l'acceptez.
-    </p>
-    <p>
-        <a href="{{ path('app_main_cookie') }}" class="btn btn-primary" data-cookie-consent>Gérer mes cookies</a>
-    </p>
+{% block legal_content %}
+    <twig:Legal:Section id="cookies" title="{{ legal_sections[0].title }}">
+        <p>
+            Un cookie est un petit fichier déposé sur votre appareil (ordinateur, tablette, téléphone) par le site que vous
+            consultez ou par un service tiers. Sans votre accord, By Night n'utilise que les cookies nécessaires à son
+            fonctionnement : ceux qui servent à mesurer l'audience et à la publicité ne sont déposés que si vous l'acceptez.
+        </p>
+        <p>
+            <a href="{{ path('app_main_cookie') }}" class="btn btn-primary" data-cookie-consent>Gérer mes cookies</a>
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Cookies nécessaires au fonctionnement du site</h2>
-    <p>Indispensables au site, ils ne demandent pas votre accord.</p>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Cookie</th>
-                    <th>Rôle</th>
-                    <th>Durée</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>PHPSESSID</code></td>
-                    <td>Maintient votre session, par exemple une fois connecté.</td>
-                    <td>Jusqu'à la fermeture du navigateur</td>
-                </tr>
-                <tr>
-                    <td><code>REMEMBERME</code></td>
-                    <td>Vous garde connecté si vous avez coché « Se souvenir de moi ».</td>
-                    <td>1 an</td>
-                </tr>
-                <tr>
-                    <td><code>__Host-…</code></td>
-                    <td>Protège les formulaires contre les envois frauduleux.</td>
-                    <td>Jusqu'à la fermeture du navigateur</td>
-                </tr>
-                <tr>
-                    <td><code>FCCDCF</code> et cookies associés</td>
-                    <td>Enregistrent vos choix sur les cookies (plateforme de consentement de Google).</td>
-                    <td>Fixée par Google</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <p>
-        La barre de recherche garde aussi vos recherches récentes dans le stockage local de votre navigateur, pour vous
-        les proposer à nouveau. Elles ne nous sont jamais transmises, et vous pouvez les effacer depuis la liste des
-        suggestions.
-    </p>
+    <twig:Legal:Section id="necessaires" title="{{ legal_sections[1].title }}" number="{{ 1 }}">
+        <p>Indispensables au site, ils ne demandent pas votre accord.</p>
+        <twig:block name="table">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter">
+                    <thead>
+                        <tr>
+                            <th>Cookie</th>
+                            <th>Rôle</th>
+                            <th>Durée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>PHPSESSID</code></td>
+                            <td>Maintient votre session, par exemple une fois connecté.</td>
+                            <td>Jusqu'à la fermeture du navigateur</td>
+                        </tr>
+                        <tr>
+                            <td><code>REMEMBERME</code></td>
+                            <td>Vous garde connecté si vous avez coché « Se souvenir de moi ».</td>
+                            <td>1 an</td>
+                        </tr>
+                        <tr>
+                            <td><code>__Host-…</code></td>
+                            <td>Protège les formulaires contre les envois frauduleux.</td>
+                            <td>Jusqu'à la fermeture du navigateur</td>
+                        </tr>
+                        <tr>
+                            <td><code>FCCDCF</code> et cookies associés</td>
+                            <td>Enregistrent vos choix sur les cookies (plateforme de consentement de Google).</td>
+                            <td>Fixée par Google</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </twig:block>
+        <twig:block name="after">
+            <p>
+                La barre de recherche garde aussi vos recherches récentes dans le stockage local de votre navigateur, pour vous
+                les proposer à nouveau. Elles ne nous sont jamais transmises, et vous pouvez les effacer depuis la liste des
+                suggestions.
+            </p>
+        </twig:block>
+    </twig:Legal:Section>
 
-    <h2>Mesure d'audience, avec votre accord</h2>
-    <p>
-        Si vous l'acceptez, Google Analytics, chargé par Google Tag Manager, mesure la fréquentation du site (pages
-        vues, durée et provenance des visites) pour nous aider à l'améliorer. Sans votre accord, Google Analytics n'est
-        pas déclenché : il ne dépose aucun cookie et ne transmet aucune donnée.
-    </p>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Cookie</th>
-                    <th>Rôle</th>
-                    <th>Durée</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>_ga</code>, <code>_ga_…</code></td>
-                    <td>Distinguent les visiteurs et leurs visites (Google Analytics).</td>
-                    <td>2 ans au plus</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <twig:Legal:Section id="mesure-audience" title="{{ legal_sections[2].title }}" number="{{ 2 }}">
+        <p>
+            Si vous l'acceptez, Google Analytics, chargé par Google Tag Manager, mesure la fréquentation du site (pages
+            vues, durée et provenance des visites) pour nous aider à l'améliorer. Sans votre accord, Google Analytics n'est
+            pas déclenché : il ne dépose aucun cookie et ne transmet aucune donnée.
+        </p>
+        <twig:block name="table">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter">
+                    <thead>
+                        <tr>
+                            <th>Cookie</th>
+                            <th>Rôle</th>
+                            <th>Durée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>_ga</code>, <code>_ga_…</code></td>
+                            <td>Distinguent les visiteurs et leurs visites (Google Analytics).</td>
+                            <td>2 ans au plus</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </twig:block>
+    </twig:Legal:Section>
 
-    <h2>Publicité, avec votre accord</h2>
-    <p>
-        Le site affiche des publicités Google AdSense. Si vous l'acceptez, Google et ses partenaires utilisent des
-        cookies (par exemple <code>__gads</code>, <code>__gpi</code> ou <code>IDE</code>) pour choisir des publicités
-        adaptées à vos centres d'intérêt, en limiter la répétition et en mesurer l'efficacité. Sans votre accord, seules
-        des publicités limitées, sans cookie, peuvent s'afficher.
-    </p>
-    <p>
-        La liste de ces partenaires et de leurs finalités figure dans la fenêtre de consentement, sous « Gérer les
-        options », où vous pouvez faire vos choix finalité par finalité et partenaire par partenaire. Google décrit ses
-        cookies et leurs durées sur
-        <a href="https://policies.google.com/technologies/cookies?hl=fr" rel="nofollow">sa page consacrée aux cookies</a>.
-    </p>
+    <twig:Legal:Section id="publicite" title="{{ legal_sections[3].title }}" number="{{ 3 }}">
+        <p>
+            Le site affiche des publicités Google AdSense. Si vous l'acceptez, Google et ses partenaires utilisent des
+            cookies (par exemple <code>__gads</code>, <code>__gpi</code> ou <code>IDE</code>) pour choisir des publicités
+            adaptées à vos centres d'intérêt, en limiter la répétition et en mesurer l'efficacité. Sans votre accord, seules
+            des publicités limitées, sans cookie, peuvent s'afficher.
+        </p>
+        <p>
+            La liste de ces partenaires et de leurs finalités figure dans la fenêtre de consentement, sous « Gérer les
+            options », où vous pouvez faire vos choix finalité par finalité et partenaire par partenaire. Google décrit ses
+            cookies et leurs durées sur
+            <a href="https://policies.google.com/technologies/cookies?hl=fr" rel="nofollow">sa page consacrée aux cookies</a>.
+        </p>
+    </twig:Legal:Section>
 
-    <h2>Services tiers</h2>
-    <p>Certaines pages intègrent des services qui appliquent leur propre politique de cookies :</p>
-    <ul>
-        <li>Google reCAPTCHA, sur le formulaire d'inscription, pour le protéger contre les robots ;</li>
-        <li>Google Maps, sur le formulaire de création d'événement, pour localiser le lieu ;</li>
-        <li>Facebook, Google et X, uniquement si vous choisissez de vous connecter avec l'un de ces réseaux.</li>
-    </ul>
+    <twig:Legal:Section id="services-tiers" title="{{ legal_sections[4].title }}" number="{{ 4 }}">
+        <p>
+            Certaines pages intègrent des services tiers. Ils ne sont pas couverts par le bandeau de consentement : ils
+            appliquent leur propre politique de cookies et reçoivent votre adresse IP et les informations de votre
+            navigateur dès qu'ils sont chargés. C'est pourquoi la plupart ne se chargent que lorsque vous le demandez.
+        </p>
+        <twig:block name="table">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Où et quand</th>
+                            <th>Fournisseur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Google reCAPTCHA (v3)</td>
+                            <td>Sur le formulaire d'inscription, pour le protéger contre les robots : il se charge avec le formulaire.</td>
+                            <td>Google</td>
+                        </tr>
+                        <tr>
+                            <td>Google Maps</td>
+                            <td>
+                                Sur la page d'un événement, seulement quand vous cliquez sur « Afficher la carte », et sur le
+                                formulaire de création d'événement, pour localiser le lieu.
+                            </td>
+                            <td>Google</td>
+                        </tr>
+                        <tr>
+                            <td>Vidéos YouTube</td>
+                            <td>
+                                Dans certaines descriptions d'événements, seulement quand vous cliquez sur la vidéo. Elles sont
+                                servies depuis youtube-nocookie.com, le mode de confidentialité renforcée de YouTube, qui ne dépose
+                                pas de cookie avant la lecture.
+                            </td>
+                            <td>Google</td>
+                        </tr>
+                        <tr>
+                            <td>Page Facebook de By Night</td>
+                            <td>Sur les agendas, seulement quand vous cliquez sur « Afficher la page Facebook ».</td>
+                            <td>Meta</td>
+                        </tr>
+                        <tr>
+                            <td>Connexion avec Facebook, Google ou X</td>
+                            <td>Uniquement si vous choisissez de vous connecter avec l'un de ces réseaux.</td>
+                            <td>Meta, Google, X</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </twig:block>
+        <twig:block name="after">
+            <p>
+                Les autres vidéos et contenus intégrés par les organisateurs dans leurs descriptions (Vimeo, Dailymotion,
+                SoundCloud…) se chargent avec la page de l'événement.
+            </p>
+        </twig:block>
+    </twig:Legal:Section>
 
-    <h2>Gérer vos choix</h2>
-    <p>
-        Lors de votre première visite, un bandeau vous permet d'accepter ou de refuser les cookies de mesure d'audience
-        et de publicité. Vous pouvez changer d'avis à tout moment avec le lien « Gérer mes cookies » en bas de chaque
-        page. Refuser ne vous empêche pas d'utiliser le site.
-    </p>
-    <p>
-        Vous pouvez aussi bloquer ou supprimer les cookies depuis les réglages de votre navigateur, comme l'explique la
-        CNIL sur
-        <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/comment-se-proteger/maitriser-votre-navigateur" rel="nofollow">sa
-            page consacrée aux navigateurs</a>. Bloquer tous les cookies peut toutefois vous empêcher de vous connecter.
-    </p>
-    <p>
-        Pour en savoir plus sur le traitement de vos données personnelles, consultez notre
-        <a href="{{ path('app_privacy_policy') }}">politique de confidentialité</a>.
-    </p>
+    <twig:Legal:Section id="gerer" title="{{ legal_sections[5].title }}" number="{{ 5 }}">
+        <p>
+            Lors de votre première visite, un bandeau vous permet d'accepter ou de refuser les cookies de mesure d'audience
+            et de publicité. Vous pouvez changer d'avis à tout moment avec le lien « Gérer mes cookies » en bas de chaque
+            page. Refuser ne vous empêche pas d'utiliser le site.
+        </p>
+        <p>
+            Vous pouvez aussi bloquer ou supprimer les cookies depuis les réglages de votre navigateur, comme l'explique la
+            CNIL sur
+            <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/comment-se-proteger/maitriser-votre-navigateur" rel="nofollow">sa
+                page consacrée aux navigateurs</a>. Bloquer tous les cookies peut toutefois vous empêcher de vous connecter.
+        </p>
+        <p>
+            Pour en savoir plus sur le traitement de vos données personnelles, consultez notre
+            <a href="{{ path('app_privacy_policy') }}">politique de confidentialité</a>.
+        </p>
+    </twig:Legal:Section>
 {% endblock %}
