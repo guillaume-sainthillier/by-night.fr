@@ -32,7 +32,7 @@ final readonly class DateRange
 
     /**
      * "Le 3 oct. 2026", "Du 3 oct. 2026 au 5 oct. 2026", "À partir du 3 oct. 2026", as the date picker writes them
-     * (assets/js/services/ui/DatepickerService.js).
+     * (assets/js/services/ui/DatepickerService.ts).
      */
     public function label(): string
     {
