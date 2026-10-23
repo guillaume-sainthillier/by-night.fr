@@ -243,7 +243,7 @@
                             <div class="card-body d-flex flex-wrap align-items-center gap-2">
                                 <twig:Icon name="lucide:calendar-days" class="text-primary" />
                                 <h2 class="h3 text-start text-body m-0">
-                                    <time datetime="{{ day }}">{{ section.day|format_date(pattern: 'EEEE d MMMM y', locale: 'fr')|ucfirst }}</time>
+                                    <time datetime="{{ day }}">{{ section.day|format_date(pattern: 'EEEE d MMMM y')|ucfirst }}</time>
                                 </h2>
                                 {% if facets.dates[day] is defined %}
                                     {% set dayFilters = undatedFilters|merge({dateRange: {from: day, to: day}}) %}
@@ -281,7 +281,7 @@
                         <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <span class="text-secondary">
                                 Sorties <strong>{{ events.currentPageOffsetStart }} à {{ events.currentPageOffsetEnd }}</strong>
-                                sur <strong>{{ events.nbResults|format_number(locale: 'fr') }}</strong>
+                                sur <strong>{{ events.nbResults|format_number() }}</strong>
                             </span>
                             {{ pagerfanta(events, {omitFirstPage: true, proximity: 1}) }}
                         </div>

@@ -16,7 +16,7 @@
 
 {% block heading %}Ce week-end {{ location.atName }}{% endblock %}
 {% block subheading -%}
-    Du {{ weekend.from|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }} au {{ weekend.to|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }}
+    Du {{ weekend.from|format_date(pattern: 'EEEE d MMMM') }} au {{ weekend.to|format_date(pattern: 'EEEE d MMMM') }}
 {%- endblock %}
 
 {% block body %}
@@ -46,8 +46,8 @@
                 </mj-text>
                 <mj-text mj-class="muted" padding="0 0 0 12px">
                     {% if session %}
-                        {{ session.startAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr')|capitalize }}
-                        {%- if session.endAt and session.endAt|date('Y-m-d') != session.startAt|date('Y-m-d') %} au {{ session.endAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }}{% endif %}
+                        {{ session.startAt|format_date(pattern: 'EEEE d MMMM')|capitalize }}
+                        {%- if session.endAt and session.endAt|date('Y-m-d') != session.startAt|date('Y-m-d') %} au {{ session.endAt|format_date(pattern: 'EEEE d MMMM') }}{% endif %}
                         {%- set hours = session_hours(session) %}
                         {%- if hours %} · {{ hours }}{% endif %}
                         <br />

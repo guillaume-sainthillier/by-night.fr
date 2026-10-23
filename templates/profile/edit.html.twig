@@ -39,7 +39,7 @@
                 </div>
                 <h1 class="display-6 fw-bold mb-2">{{ user.username }}</h1>
                 <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 small text-secondary">
-                    <span class="badge bg-teal-lt">Membre depuis {{ user.createdAt|format_date(pattern: 'LLLL yyyy', locale: 'fr') }}</span>
+                    <span class="badge bg-teal-lt">Membre depuis {{ user.createdAt|format_date(pattern: 'LLLL yyyy') }}</span>
                 </div>
             </header>
 

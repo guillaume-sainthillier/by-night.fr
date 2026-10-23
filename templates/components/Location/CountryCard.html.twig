@@ -18,7 +18,7 @@
                 </div>
                 <div class="card card-sm bg-light flex-shrink-0 text-sm-end mb-0">
                     <div class="card-body">
-                        <div class="h2 text-primary mb-0">{{ events|format_number(locale: 'fr') }}</div>
+                        <div class="h2 text-primary mb-0">{{ events|format_number() }}</div>
                         <div class="subheader">{{ '{count, plural, one {sortie à venir} other {sorties à venir}}'|trans({count: events}, 'messages+intl-icu') }}</div>
                     </div>
                 </div>

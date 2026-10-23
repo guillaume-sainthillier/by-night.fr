@@ -23,10 +23,10 @@
 {% set googleAnalyticsUntil = audience.googleAnalyticsUntil() %}
 {% set periodLabel = query.preset ? query.preset.label : audience.range.label %}
 {% set tiles = [
-    {label: 'Visiteurs', value: sum.visitors|format_number(locale: 'fr'), hint: periodLabel, icon: 'lucide:users', tone: 'primary'},
-    {label: 'Clics billetterie', value: sum.ticketClicks|format_number(locale: 'fr'), hint: periodLabel, icon: 'lucide:ticket', tone: 'teal'},
-    {label: 'Taux de clic', value: rate is null ? '–' : rate|format_number({fraction_digit: 1}, style: 'percent', locale: 'fr'), hint: 'des visiteurs ont cliqué', icon: 'lucide:trending-up', tone: 'yellow'},
-    {label: 'Depuis le début', value: audience.total.visitors|format_number(locale: 'fr'), hint: 'visiteurs au total', icon: 'lucide:history', tone: 'secondary'},
+    {label: 'Visiteurs', value: sum.visitors|format_number(), hint: periodLabel, icon: 'lucide:users', tone: 'primary'},
+    {label: 'Clics billetterie', value: sum.ticketClicks|format_number(), hint: periodLabel, icon: 'lucide:ticket', tone: 'teal'},
+    {label: 'Taux de clic', value: rate is null ? '–' : rate|format_number({fraction_digit: 1}, style: 'percent'), hint: 'des visiteurs ont cliqué', icon: 'lucide:trending-up', tone: 'yellow'},
+    {label: 'Depuis le début', value: audience.total.visitors|format_number(), hint: 'visiteurs au total', icon: 'lucide:history', tone: 'secondary'},
 ] %}
 
 {% block body -%}
@@ -108,7 +108,7 @@
                         <div class="d-flex gap-2" aria-hidden="true">
                             <div class="position-relative small text-secondary text-end flex-shrink-0" style="width: 2.5rem; height: 14rem">
                                 {% for tick in chart.ticks %}
-                                    <span class="position-absolute end-0 lh-1" style="bottom: {{ tick.bottom }}%; transform: translateY(50%)">{{ tick.value|format_number(locale: 'fr') }}</span>
+                                    <span class="position-absolute end-0 lh-1" style="bottom: {{ tick.bottom }}%; transform: translateY(50%)">{{ tick.value|format_number() }}</span>
                                 {% endfor %}
                             </div>
                             <div class="flex-grow-1 min-w-0">
@@ -121,7 +121,7 @@
                                     <path class="text-primary" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" d="{{ chart.line('visitors') }}" vector-effect="non-scaling-stroke" data-series="visitors" />
                                     <path class="text-teal" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="{{ chart.line('ticketClicks') }}" vector-effect="non-scaling-stroke" data-series="ticketClicks" />
                                     {% for column in chart.columns %}
-                                        <rect fill="transparent" x="{{ column.x }}" y="0" width="{{ column.width }}" height="{{ constant('App\\Analytics\\AudienceChart::HEIGHT') }}"><title>{{ column.day|format_date('medium', locale: 'fr') }} : {{ '{visitors, plural, one {# visiteur} other {# visiteurs}}, {clicks, plural, one {# clic} other {# clics}} billetterie'|trans({visitors: column.visitors, clicks: column.ticketClicks}, 'messages+intl-icu') }}</title></rect>
+                                        <rect fill="transparent" x="{{ column.x }}" y="0" width="{{ column.width }}" height="{{ constant('App\\Analytics\\AudienceChart::HEIGHT') }}"><title>{{ column.day|format_date('medium') }} : {{ '{visitors, plural, one {# visiteur} other {# visiteurs}}, {clicks, plural, one {# clic} other {# clics}} billetterie'|trans({visitors: column.visitors, clicks: column.ticketClicks}, 'messages+intl-icu') }}</title></rect>
                                     {% endfor %}
                                 </svg>
                                 <div class="position-relative small text-secondary mt-2" style="height: 1.25rem">
@@ -129,7 +129,7 @@
                                     {% set labels = chart.labels %}
                                     {% set middle = (labels|length / 2)|round(0, 'floor') %}
                                     {% for label in labels %}
-                                        <span class="position-absolute text-nowrap{{ loop.first or loop.last or loop.index0 == middle ? '' : ' d-none d-md-inline' }}" style="left: {{ label.left }}%; transform: translateX({{ loop.first ? '0' : (loop.last ? '-100%' : '-50%') }})">{{ label.day|format_date(pattern: 'd MMM', locale: 'fr') }}</span>
+                                        <span class="position-absolute text-nowrap{{ loop.first or loop.last or loop.index0 == middle ? '' : ' d-none d-md-inline' }}" style="left: {{ label.left }}%; transform: translateX({{ loop.first ? '0' : (loop.last ? '-100%' : '-50%') }})">{{ label.day|format_date(pattern: 'd MMM') }}</span>
                                     {% endfor %}
                                 </div>
                             </div>
@@ -160,9 +160,9 @@
                                 <tbody>
                                 {% for row in audience.days|reverse %}
                                     <tr>
-                                        <td>{{ row.day|format_date('full', locale: 'fr') }}</td>
-                                        <td class="text-end">{{ row.visitors|format_number(locale: 'fr') }}</td>
-                                        <td class="text-end">{{ row.ticketClicks|format_number(locale: 'fr') }}</td>
+                                        <td>{{ row.day|format_date('full') }}</td>
+                                        <td class="text-end">{{ row.visitors|format_number() }}</td>
+                                        <td class="text-end">{{ row.ticketClicks|format_number() }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -182,7 +182,7 @@
                         </p>
                         {% if googleAnalyticsUntil %}
                             <p class="mb-2" id="event-stats-google-analytics">
-                                {{ "Jusqu'au {day}, les visiteurs viennent de Google Analytics, qui ne comptait que ceux ayant accepté ses cookies : ils sont plus bas qu'ensuite, et les clics billetterie n'y sont pas."|trans({day: googleAnalyticsUntil|format_date('long', locale: 'fr')}, 'messages+intl-icu') }}
+                                {{ "Jusqu'au {day}, les visiteurs viennent de Google Analytics, qui ne comptait que ceux ayant accepté ses cookies : ils sont plus bas qu'ensuite, et les clics billetterie n'y sont pas."|trans({day: googleAnalyticsUntil|format_date('long')}, 'messages+intl-icu') }}
                             </p>
                         {% endif %}
                         <p class="mb-0">
