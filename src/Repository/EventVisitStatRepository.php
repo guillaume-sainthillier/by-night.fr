@@ -10,7 +10,10 @@
 
 namespace App\Repository;
 
+use App\Contracts\MultipleEagerLoaderInterface;
+use App\Entity\Event;
 use App\Entity\EventVisitStat;
+use App\Manager\PreloadManager;
 use App\Search\DateRange;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -21,18 +24,32 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<EventVisitStat>
  *
+ * @implements MultipleEagerLoaderInterface<EventVisitStat>
+ *
  * @method EventVisitStat|null find($id, $lockMode = null, $lockVersion = null)
  * @method EventVisitStat|null findOneBy(array $criteria, array $orderBy = null)
  * @method EventVisitStat[]    findAll()
  * @method EventVisitStat[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-final class EventVisitStatRepository extends ServiceEntityRepository
+final class EventVisitStatRepository extends ServiceEntityRepository implements MultipleEagerLoaderInterface
 {
     private const int INSERT_BATCH_SIZE = 500;
 
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PreloadManager $preloadManager,
+    ) {
         parent::__construct($registry, EventVisitStat::class);
+    }
+
+    /**
+     * The events of the admin list's rows (EventVisitStatCrudController), in one query for the page.
+     */
+    public function loadAllEager(array $entities, array $context = []): void
+    {
+        if ('admin:index' === ($context['view'] ?? null)) {
+            $this->preloadManager->preloadEntities(Event::class, array_map(static fn (EventVisitStat $stat): ?int => $stat->getEvent()->getId(), $entities));
+        }
     }
 
     /**

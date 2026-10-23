@@ -108,6 +108,7 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(ParserDataCrudController::class, 'Explorations', 'lucide:eye');
         yield MenuItem::linkTo(ParserHistoryCrudController::class, 'Historique des imports', 'lucide:history');
         yield MenuItem::linkTo(ParserStateCrudController::class, 'Points de reprise', 'lucide:calendar-clock');
+        yield MenuItem::linkTo(EventVisitStatCrudController::class, 'Statistiques de visite', 'lucide:chart-line');
     }
 
     /**
