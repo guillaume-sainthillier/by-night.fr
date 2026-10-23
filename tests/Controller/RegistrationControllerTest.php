@@ -58,6 +58,29 @@ final class RegistrationControllerTest extends AppWebTestCase
         self::assertSame(0, UserFactory::count(['email' => 'camille.martin@example.com']));
     }
 
+    public function testTheTermsMustBeAccepted(): void
+    {
+        $client = self::createClient();
+
+        $this->signUp($client, 'camille.martin@example.com', 'camille_m', agreeTerms: false);
+
+        self::assertResponseIsUnprocessable();
+        self::assertAnySelectorTextContains('.invalid-feedback', "Veuillez accepter les conditions générales d'utilisation.");
+        self::assertSame(0, UserFactory::count(['email' => 'camille.martin@example.com']));
+    }
+
+    public function testTheSignUpPageLinksToTheTerms(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/inscription');
+
+        self::assertResponseIsSuccessful();
+        // The checkbox for the e-mail sign-up, the notice for the social logins, which create the account without it
+        self::assertSelectorExists('label[for="registration_form_agreeTerms"] a[href="/conditions-generales-d-utilisation"]');
+        self::assertSelectorExists('p.text-secondary a[href="/conditions-generales-d-utilisation"]');
+    }
+
     #[RequiresPhpExtension('mjml')]
     public function testANewMemberGoesBackToThePageTheySignedUpFrom(): void
     {
@@ -80,7 +103,7 @@ final class RegistrationControllerTest extends AppWebTestCase
         self::assertResponseRedirects('/profile/edit');
     }
 
-    private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1', string $url = '/inscription'): void
+    private function signUp(KernelBrowser $client, string $email, string $username, string $password = 'Motdepasse1', string $url = '/inscription', bool $agreeTerms = true): void
     {
         $client->request('GET', $url);
         $client->submitForm('Créer mon compte', [
@@ -90,6 +113,8 @@ final class RegistrationControllerTest extends AppWebTestCase
             'registration_form[email]' => $email,
             'registration_form[plainPassword][first]' => $password,
             'registration_form[plainPassword][second]' => $password,
+            // A checkbox: true ticks it, false leaves it unticked
+            'registration_form[agreeTerms]' => $agreeTerms,
         ]);
     }
 }

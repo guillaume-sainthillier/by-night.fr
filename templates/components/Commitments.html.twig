@@ -1,0 +1,25 @@
+{#
+    What no partnership can buy: one list for "Transparence" and "Annonceurs", so that both pages promise the same.
+    Keep it in step with content/transparency.html.twig (#financement, #liens).
+
+    <twig:Commitments />
+
+    Composed, e.g. to pick some of them:
+    <twig:Commitments>
+        <twig:Commitments:Item title="Aucun classement acheté">L'ordre de l'agenda ne se paie pas.</twig:Commitments:Item>
+    </twig:Commitments>
+#}
+<ul {{ attributes.defaults({class: 'list-unstyled d-grid gap-3 mb-0'}) }}>
+    {% block content %}
+        {% for commitment in [
+            {title: 'Aucun classement acheté', text: 'l\'ordre de l\'agenda, de la recherche et de « À l\'affiche » ne se paie pas, ni ne dépend d\'une commission.'},
+            {title: 'Aucun contenu payé déguisé', text: 'un emplacement ou un contenu payé porte toujours la mention « Sponsorisé », un lien rémunéré la mention « Lien affilié ».'},
+            {title: 'Les événements importés ne sont pas des publicités', text: 'un événement venu d\'un agenda ou d\'une billetterie n\'est jamais mis en avant contre paiement, sauf s\'il porte la mention « Sponsorisé ».'},
+            {title: 'Aucune donnée vendue', text: 'les données des visiteurs et des membres ne sont ni vendues ni louées, et la publicité n\'est personnalisée qu\'avec leur accord.'},
+            {title: 'Aucun chiffre inventé', text: 'les chiffres publiés sont tirés de notre base ; nous ne promettons pas d\'audience que nous ne mesurons pas.'},
+            {title: 'Aucun surcoût', text: 'un billet acheté par un lien affilié coûte le même prix que sur le site de la billetterie.'},
+        ] %}
+            <twig:Commitments:Item title="{{ commitment.title }}">{{ commitment.text }}</twig:Commitments:Item>
+        {% endfor %}
+    {% endblock %}
+</ul>

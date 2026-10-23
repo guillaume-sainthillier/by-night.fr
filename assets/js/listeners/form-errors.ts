@@ -1,0 +1,14 @@
+import $ from 'jquery'
+import type { Listener } from '@/js/types'
+
+/**
+ * Keep static material labels positioned when their field has errors.
+ */
+export default {
+    selector: 'label.bmd-label-static',
+    connect(element) {
+        $(element).toggleClass('position-static', $(element).find('.invalid-feedback').length > 0)
+
+        return undefined
+    },
+} satisfies Listener<HTMLLabelElement>

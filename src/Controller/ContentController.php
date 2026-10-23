@@ -14,9 +14,11 @@ use App\App\AppContext;
 use App\App\Location;
 use App\Controller\AbstractController as BaseController;
 use App\Repository\EventRepository;
+use App\Stats\AdvertiserFiguresProvider;
 use Silarhi\LlmsTxtBundle\Model\Section;
 use Silarhi\LlmsTxtBundle\Routing\LlmsTxtEntry;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class ContentController extends BaseController
@@ -42,6 +44,20 @@ final class ContentController extends BaseController
         return $this->render('content/privacy-policy.html.twig');
     }
 
+    #[Route(path: '/conditions-generales-d-utilisation', name: 'app_terms', options: ['llms_txt' => new LlmsTxtEntry(title: "Conditions générales d'utilisation", description: 'Les règles du compte By Night, des événements, images et commentaires publiés par les membres, de leur modération et du signalement des contenus illicites.', section: Section::OPTIONAL)], methods: ['GET'])]
+    public function terms(): Response
+    {
+        return $this->render('content/terms.html.twig');
+    }
+
+    /** A day in Cloudflare: the page only changes with a release */
+    #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
+    #[Route(path: '/transparence', name: 'app_transparency', options: ['llms_txt' => new LlmsTxtEntry(title: 'Transparence', description: 'Qui édite By Night, comment le site est financé (publicité, liens affiliés vers des billetteries), comment les événements et les offres de billets sont classés et comment les liens rémunérés sont signalés.', section: Section::OPTIONAL)], methods: ['GET'])]
+    public function transparency(): Response
+    {
+        return $this->render('content/transparency.html.twig');
+    }
+
     #[Route(path: '/a-propos', name: 'app_about', options: ['llms_txt' => new LlmsTxtEntry(title: 'À propos de By Night', description: 'By Night est votre guide de sorties en France. Depuis 2013, nous référençons concerts, spectacles, expos et événements pour vous aider à trouver votre prochaine sortie.')], methods: ['GET'])]
     public function about(AppContext $appContext, EventRepository $eventRepository): Response
     {
@@ -58,6 +74,17 @@ final class ContentController extends BaseController
         return $this->render('content/plus.html.twig', [
             'posters' => $eventRepository->findHighlights(new Location(), self::POSTERS),
             'members' => $eventRepository->getMemberTotals(),
+        ]);
+    }
+
+    /** A day in Cloudflare, as long as its figures are kept (AdvertiserFiguresProvider) */
+    #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
+    #[Route(path: '/annonceurs', name: 'app_advertisers', options: ['llms_txt' => new LlmsTxtEntry(title: 'Annonceurs et partenaires', description: "Organisateurs, salles, billetteries et marques : les chiffres de By Night, les formats de partenariat proposés et leur signalement, les solutions gratuites (publication par un compte membre, import d'un agenda) et ce que By Night ne fait pas.")], methods: ['GET'])]
+    public function advertisers(AdvertiserFiguresProvider $figures): Response
+    {
+        return $this->render('content/advertisers.html.twig', [
+            // Null when the database or the cache is down: the page hides its figures
+            'figures' => $figures->get(),
         ]);
     }
 }

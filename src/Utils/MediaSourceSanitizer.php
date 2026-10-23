@@ -16,7 +16,8 @@ use Symfony\Component\HtmlSanitizer\Visitor\AttributeSanitizer\AttributeSanitize
 /**
  * Runs before the URL check of the sanitizer on the src of images and frames: protocol-relative
  * sources ("//www.youtube.com/embed/…", the way the WYSIWYG editor inserts videos) become https
- * instead of being dropped, and frames only keep a source from a known video, audio or map player.
+ * instead of being dropped, frames only keep a source from a known video, audio or map player, and
+ * YouTube players move to youtube-nocookie.com.
  */
 final class MediaSourceSanitizer implements AttributeSanitizerInterface
 {
@@ -55,7 +56,34 @@ final class MediaSourceSanitizer implements AttributeSanitizerInterface
         // The players all serve https: an embed copied with http would be blocked as mixed content
         $value = (string) preg_replace('~^http://~i', 'https://', $value);
 
-        return $this->isEmbedSource($value) ? $value : null;
+        if (!$this->isEmbedSource($value)) {
+            return null;
+        }
+
+        return $this->toPrivacyEnhancedYoutube($value);
+    }
+
+    /**
+     * A YouTube player is served from youtube-nocookie.com, YouTube's privacy-enhanced mode, which sets
+     * no cookie before the video plays: "https://www.youtube.com/embed/ID?start=10" becomes
+     * "https://www.youtube-nocookie.com/embed/ID?start=10". Other YouTube pages are left alone.
+     */
+    private function toPrivacyEnhancedYoutube(string $url): string
+    {
+        $host = strtolower((string) parse_url($url, \PHP_URL_HOST));
+        if ('youtube.com' !== $host && !str_ends_with($host, '.youtube.com')) {
+            return $url;
+        }
+
+        $path = (string) parse_url($url, \PHP_URL_PATH);
+        if (!str_starts_with($path, '/embed/')) {
+            return $url;
+        }
+
+        $query = (string) parse_url($url, \PHP_URL_QUERY);
+        $fragment = (string) parse_url($url, \PHP_URL_FRAGMENT);
+
+        return 'https://www.youtube-nocookie.com' . $path . ('' !== $query ? '?' . $query : '') . ('' !== $fragment ? '#' . $fragment : '');
     }
 
     private function isEmbedSource(string $url): bool

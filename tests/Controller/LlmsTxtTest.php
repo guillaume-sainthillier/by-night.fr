@@ -56,6 +56,7 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringContainsString("## Pages\n\n- [À propos de By Night](https://by-night.test/a-propos): By Night est votre guide de sorties en France.", $content);
         self::assertStringContainsString('- [Accueil](https://by-night.test/): Découvrez des milliers', $content);
         self::assertStringContainsString('- [Recherche](https://by-night.test/recherche/): Trouvez des événements', $content);
+        self::assertStringContainsString('- [Annonceurs et partenaires](https://by-night.test/annonceurs): Organisateurs, salles, billetteries et marques', $content);
         // The busiest first
         $events = LlmsTxtSubscriber::CITY_MIN_EVENTS;
         self::assertStringContainsString(\sprintf("## Agendas par pays\n\n- [France](https://by-night.test/france): %d sorties à venir\n- [Belgique](https://by-night.test/belgique): 1 sortie à venir\n", 2 * $events - 1), $content);
@@ -68,7 +69,7 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringNotContainsString('/soiree/', $content);
         self::assertStringNotContainsString('/sortir-a/', $content);
         // The legal pages come last, in the section an assistant may skip
-        self::assertStringEndsWith("## Optional\n\n- [Politique de cookies](https://by-night.test/cookie): Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.\n- [Mentions légales](https://by-night.test/mentions-legales): Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.\n- [Politique de confidentialité](https://by-night.test/confidentialite): Les données personnelles que By Night collecte, dont celles reçues de Google, Facebook et X à la connexion, leur usage, leur durée de conservation et vos droits.\n", $content);
+        self::assertStringEndsWith("## Optional\n\n- [Politique de cookies](https://by-night.test/cookie): Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.\n- [Mentions légales](https://by-night.test/mentions-legales): Mentions légales de By Night : éditeur, hébergeur, règles de publication, signalement de contenus et protection de vos données personnelles.\n- [Politique de confidentialité](https://by-night.test/confidentialite): Les données personnelles que By Night collecte, dont celles reçues de Google, Facebook et X à la connexion, leur usage, leur durée de conservation et vos droits.\n- [Conditions générales d'utilisation](https://by-night.test/conditions-generales-d-utilisation): Les règles du compte By Night, des événements, images et commentaires publiés par les membres, de leur modération et du signalement des contenus illicites.\n- [Transparence](https://by-night.test/transparence): Qui édite By Night, comment le site est financé (publicité, liens affiliés vers des billetteries), comment les événements et les offres de billets sont classés et comment les liens rémunérés sont signalés.\n", $content);
     }
 
     public function testLeavesTheAgendasOutWhileNothingIsToCome(): void

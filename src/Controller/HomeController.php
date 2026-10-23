@@ -28,7 +28,7 @@ final class HomeController extends AbstractController
     public function index(AppContext $appContext, EventRepository $eventRepository, LocationPortalProvider $locationPortalProvider): Response
     {
         // The search goes by GET to the agenda of the member's city, until the city picker points it at another one
-        // (assets/js/pages/index.js)
+        // (assets/js/pages/index.ts)
         $memberCity = $appContext->getCity();
         $form = $this->createForm(QuickSearchType::class, ['when' => DateRangePreset::Anytime], [
             'action' => null !== $memberCity ? $this->generateUrl('app_location_index', ['location' => $memberCity->getSlug()]) : '',

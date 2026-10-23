@@ -1,0 +1,232 @@
+{% extends 'layouts/legal.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Conditions générales d\'utilisation', url('app_terms')) %}
+{%- endblock %}
+
+{% block title 'Conditions générales d\'utilisation' %}
+{% block page_title 'Conditions générales d\'utilisation' %}
+{% block meta_description 'Les règles du compte By Night, des événements, images et commentaires publiés par les membres, de leur modération et du signalement des contenus illicites.' %}
+
+{% set legal_lead = 'Les règles du compte By Night, de ce que vous y publiez, de sa modération et du signalement des contenus illicites.' %}
+{% set legal_updated = '2026-10-23' %}
+{% set legal_sections = [
+    {id: 'objet', title: 'Objet et acceptation', number: 1},
+    {id: 'compte', title: 'Votre compte', number: 2},
+    {id: 'publications', title: 'Ce que vous publiez', number: 3},
+    {id: 'licence', title: 'Licence sur vos contenus', number: 4},
+    {id: 'moderation', title: 'Modération', number: 5},
+    {id: 'signalement', title: 'Signaler un contenu illicite', number: 6},
+    {id: 'sources', title: 'Événements des sources partenaires', number: 7},
+    {id: 'responsabilite', title: 'Responsabilité', number: 8},
+    {id: 'modifications', title: 'Modification et droit applicable', number: 9},
+] %}
+
+{# The terms a member accepts when signing up (RegistrationFormType's agreeTerms, Auth:TermsNotice for the social
+   logins). Keep them in step with the code: DeleteAccountFormType (what goes with an account), the content removal
+   request (EventAction, admin ContentRemovalActionController), UserChecker (disabled accounts), Comment::$approved,
+   and EventTicketOffers for the partners' events. #}
+{% block legal_content %}
+    <twig:Legal:Section id="objet" title="{{ legal_sections[0].title }}" number="{{ 1 }}">
+        <p>
+            By Night (<a href="{{ url('app_index') }}">by-night.fr</a>) est un agenda gratuit des sorties, édité par
+            ARNOVA (voir les <a href="{{ path('app_legal_mentions') }}">mentions légales</a>). Ces conditions générales
+            d'utilisation (« CGU ») s'appliquent à toute personne qui crée un compte sur By Night (un « membre ») et à ce
+            qu'elle y publie : événements, images, commentaires et informations de profil.
+        </p>
+        <p>
+            Consulter l'agenda ne demande ni compte ni acceptation de ces CGU. Vous les acceptez en créant votre compte :
+            en cochant la case prévue sur le formulaire d'inscription, ou en vous inscrivant avec Google, Facebook ou X,
+            où un message vous le rappelle avant de continuer.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="compte" title="{{ legal_sections[1].title }}" number="{{ 2 }}">
+        <h3>Création</h3>
+        <p>
+            Le compte est gratuit. Vous le créez avec un nom d'utilisateur, une adresse e-mail, vos prénom et nom et un
+            mot de passe, puis vous confirmez votre adresse depuis le lien reçu par e-mail. Les informations que vous
+            donnez doivent être exactes ; le nom d'utilisateur est public et ne doit ni usurper l'identité d'un tiers, ni
+            être injurieux ou trompeur.
+        </p>
+        <h3>Connexion avec Google, Facebook ou X</h3>
+        <p>
+            Vous pouvez aussi vous inscrire et vous connecter avec votre compte Google, Facebook ou X. À la première
+            connexion, un compte By Night est créé avec les informations que ce réseau nous transmet, décrites dans la
+            <a href="{{ path('app_privacy_policy', {_fragment: 'connexion-reseaux-sociaux'}) }}">politique de
+                confidentialité</a>. Votre usage de ce réseau reste soumis à ses propres conditions. Vous pouvez dissocier
+            un réseau à tout moment depuis l'onglet « Réseaux sociaux » de <a href="{{ path('app_user_edit') }}">votre
+                compte</a>.
+        </p>
+        <h3>Sécurité</h3>
+        <p>
+            Votre compte est personnel. Gardez votre mot de passe confidentiel et prévenez-nous à
+            <a href="mailto:support@by-night.fr">support@by-night.fr</a> si vous pensez qu'un tiers l'utilise : ce qui
+            est publié depuis votre compte est réputé l'avoir été par vous.
+        </p>
+        <h3>Suppression</h3>
+        <p>
+            Vous pouvez supprimer votre compte à tout moment depuis l'onglet « Supprimer le compte » de
+            <a href="{{ path('app_user_edit') }}">votre compte</a>. Vos informations personnelles, vos connexions aux
+            réseaux sociaux, vos favoris et vos commentaires sont alors effacés. Vos événements sont, à votre choix,
+            supprimés avec le compte ou conservés sur le site sans lien avec vous.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="publications" title="{{ legal_sections[2].title }}" number="{{ 3 }}">
+        <p>
+            Vous pouvez publier des événements (seul ou par import d'un tableur), leurs images, et commenter les
+            événements. Vous êtes responsable de ce que vous publiez, qui doit :
+        </p>
+        <ul>
+            <li>porter sur un événement réel, ouvert au public, avec des dates, un lieu et des tarifs exacts ;</li>
+            <li>
+                être votre création, ou une création dont vous détenez les droits : textes, photos et affiches ne peuvent
+                être repris d'un tiers sans son accord ;
+            </li>
+            <li>
+                respecter la loi et les droits des tiers : ni contenu injurieux, diffamatoire, haineux, discriminatoire,
+                violent, pornographique ou incitant à une infraction, ni atteinte à la vie privée ou au droit à l'image
+                d'une personne reconnaissable sans son accord ;
+            </li>
+            <li>
+                rester dans l'objet du site : pas de publicité sans rapport avec un événement, de spam, de lien trompeur
+                ni de contenu publié en masse pour un même événement.
+            </li>
+        </ul>
+        <p>
+            Les événements que vous publiez sont vérifiés automatiquement (champs requis, doublons, contenus indésirables)
+            puis mis en ligne sans relecture préalable ; vos commentaires sont publiés dès leur envoi. By Night agit donc
+            comme hébergeur de ces contenus.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="licence" title="{{ legal_sections[3].title }}" number="{{ 4 }}">
+        <p>
+            Vous restez propriétaire de ce que vous publiez. En le publiant, vous accordez à ARNOVA, gratuitement et pour
+            le monde entier, le droit non exclusif de reproduire, de représenter et d'adapter vos événements, leurs images
+            et vos commentaires, dans la seule mesure nécessaire pour :
+        </p>
+        <ul>
+            <li>
+                les afficher sur By Night, y compris recadrés ou redimensionnés (vignettes, formats des pages et des
+                partages) ;
+            </li>
+            <li>
+                les rendre trouvables : moteurs de recherche (données structurées), aperçus sur les réseaux sociaux quand
+                une page est partagée, flux de calendrier et exports de vos propres événements ;
+            </li>
+            <li>les relier aux mêmes événements diffusés par d'autres sources, sur une seule page.</li>
+        </ul>
+        <p>
+            Cette licence vaut tant que le contenu est en ligne : elle prend fin quand vous le supprimez ou supprimez
+            votre compte en choisissant d'effacer vos événements, sous réserve du délai nécessaire pour que les copies en
+            cache (réseau de diffusion, moteurs de recherche) disparaissent. Si vous choisissez de conserver vos événements
+            en supprimant votre compte, la licence se poursuit pour eux.
+        </p>
+        <p>
+            Vous garantissez à ARNOVA que vous détenez les droits nécessaires sur ce que vous publiez, notamment sur les
+            images, et que leur publication ne porte atteinte à personne.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="moderation" title="{{ legal_sections[4].title }}" number="{{ 5 }}">
+        <p>
+            By Night ne relit pas les contenus avant leur publication, mais peut retirer, masquer ou corriger un
+            événement, une image ou un commentaire contraire à la loi ou à ces CGU, de lui-même ou après un signalement.
+            En cas de manquement grave ou répété, le compte de son auteur peut être désactivé : il ne permet plus de se
+            connecter.
+        </p>
+        <p>
+            Quand une décision de modération vous concerne, nous vous en informons par e-mail en indiquant le contenu en
+            cause, la mesure prise et ses motifs, sauf si la loi ou une autorité nous l'interdit, ou s'il s'agit de
+            contenus commerciaux trompeurs publiés en masse. Vous pouvez la contester en répondant à cet e-mail ou en
+            écrivant à <a href="mailto:support@by-night.fr">support@by-night.fr</a> : votre demande est réexaminée par une
+            personne, et vous gardez la possibilité de saisir le juge.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="signalement" title="{{ legal_sections[5].title }}" number="{{ 6 }}">
+        <p>
+            Toute personne, membre ou non, peut nous signaler un contenu qu'elle estime illicite, conformément au
+            règlement européen sur les services numériques (DSA, art. 16) et à la loi pour la confiance dans l'économie
+            numérique.
+        </p>
+        <ul>
+            <li>
+                <strong>Un événement ou son image :</strong> utilisez le bouton « Signaler ce contenu » en bas de la page
+                de l'événement. Indiquez votre adresse e-mail, s'il s'agit de l'image ou de l'événement entier, et le motif
+                de votre demande, avec les adresses d'autres pages où l'événement apparaît s'il y a lieu.
+            </li>
+            <li>
+                <strong>Tout autre contenu</strong> (un commentaire, un profil…) : écrivez à
+                <a href="mailto:support@by-night.fr">support@by-night.fr</a>, notre point de contact unique, en français ou
+                en anglais.
+            </li>
+        </ul>
+        <p>Pour que nous puissions agir, votre signalement doit indiquer :</p>
+        <ul>
+            <li>l'adresse précise (URL) de la page et le contenu en cause ;</li>
+            <li>les raisons pour lesquelles vous estimez ce contenu illicite ;</li>
+            <li>vos nom et adresse e-mail, sauf pour un contenu pédopornographique, qui peut être signalé anonymement ;</li>
+            <li>une déclaration confirmant que vous êtes de bonne foi et que les informations fournies sont exactes.</li>
+        </ul>
+        <p>
+            Le formulaire vous confirme l'envoi de votre signalement. Nous l'examinons avec diligence et de manière
+            objective, puis vous informons par e-mail de notre décision : événement ou image retiré, ou demande sans
+            suite. Vous pouvez répondre à cet e-mail pour la contester ou apporter des éléments complémentaires.
+            Un signalement abusif, fait en sachant que le contenu n'est pas illicite, peut être puni par la loi (art. 6
+            de la loi n° 2004-575 du 21 juin 2004). Vous pouvez aussi signaler un contenu illicite aux autorités, par
+            exemple sur <a href="https://www.internet-signalement.gouv.fr" rel="nofollow">internet-signalement.gouv.fr</a>
+            (Pharos).
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="sources" title="{{ legal_sections[6].title }}" number="{{ 7 }}">
+        <p>
+            Une grande partie des événements est importée automatiquement de sources partenaires : agendas ouverts,
+            offices de tourisme et billetteries. Chaque page d'événement indique sa source. Ces informations sont reprises
+            telles que la source les diffuse et mises à jour à chaque import ; By Night ne les vérifie pas une à une.
+        </p>
+        <p>
+            Les dates, horaires, lieux, tarifs, disponibilités et annulations peuvent donc être inexacts ou changer après
+            leur import. Vérifiez-les auprès de l'organisateur ou de la billetterie avant d'acheter un billet ou de vous
+            déplacer. Les billets sont vendus par les billetteries elles-mêmes, selon leurs propres conditions : By Night
+            n'est pas partie à la vente, ne perçoit pas votre paiement et ne peut ni rembourser ni échanger un billet.
+            Comment ces offres sont choisies et classées est expliqué sur la page
+            <a href="{{ path('app_transparency') }}">Transparence</a>.
+        </p>
+        <p>
+            Un organisateur qui constate une erreur sur son événement peut nous la signaler comme indiqué à l'article
+            précédent ; le plus sûr reste de la corriger à sa source, que le prochain import reprendra.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="responsabilite" title="{{ legal_sections[7].title }}" number="{{ 8 }}">
+        <p>
+            ARNOVA met tout en œuvre pour que By Night fonctionne correctement, sans garantir qu'il soit disponible en
+            permanence ni exempt d'erreurs. Sa responsabilité ne peut être engagée pour les contenus publiés par les
+            membres ou repris des sources partenaires tant qu'elle n'a pas eu connaissance de leur caractère illicite, ni
+            pour un événement reporté, annulé ou différent de sa description, ni pour les sites vers lesquels mènent les
+            liens du site.
+        </p>
+        <p>
+            Vous êtes responsable envers ARNOVA et les tiers de ce que vous publiez : si un tiers lui réclame réparation
+            pour un contenu que vous avez publié en méconnaissance de ces CGU, ARNOVA peut se retourner contre vous.
+        </p>
+    </twig:Legal:Section>
+
+    <twig:Legal:Section id="modifications" title="{{ legal_sections[8].title }}" number="{{ 9 }}">
+        <p>
+            Nous pouvons modifier ces CGU pour suivre l'évolution du site ou de la loi. La date de dernière mise à jour
+            figure en haut de cette page ; en cas de changement important, les membres en sont informés par e-mail ou
+            sur le site avant son entrée en vigueur. Si vous ne l'acceptez pas, vous pouvez supprimer votre compte.
+        </p>
+        <p>
+            Ces CGU sont régies par le droit français. En cas de litige, écrivez-nous d'abord à
+            <a href="mailto:support@by-night.fr">support@by-night.fr</a> pour chercher une solution amiable. À défaut, les
+            tribunaux de Paris, ressort du siège d'ARNOVA, sont compétents, sous réserve des règles impératives qui
+            permettent à un consommateur de saisir le tribunal de son domicile.
+        </p>
+    </twig:Legal:Section>
+{% endblock %}
