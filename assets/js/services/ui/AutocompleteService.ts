@@ -1,14 +1,52 @@
 import autoComplete from '@tarekraafat/autocomplete.js'
 import { highlightMatch } from '@/js/utils/highlight'
 
-function resolveElement(element) {
+/** A result of the API: the fields named by `labelField` and `valueField` among others */
+export type AutocompleteRecord = Record<string, unknown>
+
+export interface AutocompleteOptions<T extends AutocompleteRecord> {
+    element: string | HTMLInputElement
+    url: string
+    valueField?: string
+    labelField?: string
+    valueInput?: string | HTMLInputElement | null
+    minLength?: number
+    throttle?: number
+    maxResults?: number
+    highlight?: boolean
+    noResults?: boolean
+    noResultsText?: string
+    errorText?: string
+    placeholder?: string | null
+    onSelection?: ((selection: T) => void) | null
+    onInput?: ((value: string) => void) | null
+    onError?: ((error: unknown) => void) | null
+    /** Wraps the input in a div of its own (the library's default); false leaves it in place */
+    wrapper?: boolean | null
+    inModal?: boolean
+    transformResponse?: (data: unknown) => T[]
+    fetchOptions?: RequestInit
+}
+
+export interface Autocomplete {
+    start: () => void
+    destroy: () => void
+}
+
+function resolveElement(element: string | HTMLInputElement): HTMLInputElement | null {
     if (typeof element === 'string') {
-        return document.querySelector(element)
+        return document.querySelector<HTMLInputElement>(element)
     }
     return element
 }
 
-export function create({
+// An API Platform collection (JSON-LD, older "hydra:" prefix or not), else the list itself
+function members<T>(data: unknown): T[] {
+    const collection = data as { 'hydra:member'?: T[]; member?: T[] }
+    return collection['hydra:member'] || collection.member || (data as T[])
+}
+
+export function create<T extends AutocompleteRecord = AutocompleteRecord>({
     element,
     url,
     valueField = 'slug',
@@ -27,10 +65,13 @@ export function create({
     onError = null,
     wrapper = null,
     inModal = false,
-    transformResponse = (data) => data['hydra:member'] || data.member || data,
+    transformResponse = members,
     fetchOptions = { headers: { Accept: 'application/ld+json' } },
-} = {}) {
+}: AutocompleteOptions<T>): Autocomplete {
     const inputElement = resolveElement(element)
+    if (!inputElement) {
+        throw new Error(`Autocomplete: no input matches ${String(element)}`)
+    }
     const valueInputElement = valueInput ? resolveElement(valueInput) : null
 
     if (placeholder) {
@@ -40,9 +81,9 @@ export function create({
     // Disable browser autocomplete to avoid conflicts
     inputElement.setAttribute('autocomplete', 'off')
 
-    let fetchError = null
+    let fetchError: unknown = null
 
-    const ac = new autoComplete({
+    const ac = new autoComplete<T>({
         selector: () => inputElement,
         wrapper,
         data: {
@@ -54,7 +95,7 @@ export function create({
                     if (!res.ok) {
                         throw new Error(`HTTP ${res.status}`)
                     }
-                    const data = await res.json()
+                    const data: unknown = await res.json()
                     return transformResponse(data)
                 } catch (error) {
                     fetchError = error
@@ -98,10 +139,10 @@ export function create({
                         return
                     }
 
-                    ac.input.value = selection[labelField]
+                    ac.input.value = String(selection[labelField])
 
                     if (valueInputElement) {
-                        valueInputElement.value = selection[valueField]
+                        valueInputElement.value = String(selection[valueField])
                     }
 
                     if (onSelection) {
@@ -113,7 +154,7 @@ export function create({
     })
 
     if (inModal && wrapper) {
-        element[0].parentNode.before(element[0])
+        inputElement.parentElement?.before(inputElement)
     }
 
     // Clear value input when user edits the text

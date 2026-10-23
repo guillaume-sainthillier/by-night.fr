@@ -2,15 +2,32 @@ import $ from '@/js/jquery-global'
 import 'fancybox/dist/js/jquery.fancybox'
 import 'fancybox/dist/css/jquery.fancybox.css'
 
-function resolveElement(element) {
+export interface FancyboxServiceOptions {
+    element: string | HTMLElement
+    titlePosition?: 'top' | 'bottom'
+    overlayLocked?: boolean
+    preventClick?: boolean
+}
+
+function resolveElement(element: string | HTMLElement): HTMLElement | null {
     if (typeof element === 'string') {
-        return document.querySelector(element)
+        return document.querySelector<HTMLElement>(element)
     }
     return element
 }
 
-export function create({ element, titlePosition = 'top', overlayLocked = false, preventClick = true } = {}) {
-    const $el = $(resolveElement(element))
+export function create({
+    element,
+    titlePosition = 'top',
+    overlayLocked = false,
+    preventClick = true,
+}: FancyboxServiceOptions): {
+    open: () => void
+    destroy: () => void
+} {
+    const target = resolveElement(element)
+    // No element: an empty collection, on which every call does nothing
+    const $el = target ? $(target) : $()
 
     $el.fancybox({
         helpers: {

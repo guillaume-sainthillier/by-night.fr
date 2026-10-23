@@ -4,9 +4,24 @@ import 'summernote/dist/lang/summernote-fr-FR'
 
 import '@/scss/lazy-components/_wysiwyg.scss'
 
-function resolveElement(element) {
+export interface WysiwygOptions {
+    element: string | HTMLTextAreaElement
+    lang?: string
+    toolbar?: SummernoteToolbarGroup[]
+    height?: number
+    codemirror?: SummernoteOptions['codemirror']
+}
+
+export interface Wysiwyg {
+    getCode: () => string
+    setCode: (html: string) => void
+    isEmpty: () => boolean
+    destroy: () => void
+}
+
+function resolveElement(element: string | HTMLTextAreaElement): HTMLTextAreaElement | null {
     if (typeof element === 'string') {
-        return document.querySelector(element)
+        return document.querySelector<HTMLTextAreaElement>(element)
     }
     return element
 }
@@ -23,8 +38,10 @@ export function create({
     ],
     height = 280,
     codemirror = { mode: 'text/html', htmlMode: true },
-} = {}) {
-    const $el = $(resolveElement(element))
+}: WysiwygOptions): Wysiwyg {
+    const target = resolveElement(element)
+    // No element: an empty collection, on which every call does nothing
+    const $el = target ? $(target) : $()
 
     $el.summernote({
         lang,

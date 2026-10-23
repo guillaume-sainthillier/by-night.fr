@@ -14,21 +14,33 @@ const dateFormatter = new Intl.DateTimeFormat('fr', { dateStyle: 'medium' })
 // Two months side by side need about 37rem: narrower screens get one
 const WIDE_SCREEN = '(min-width: 576px)'
 
-function resolveElement(element) {
+interface DateRangeSelection {
+    /** YYYY-MM-DD */
+    start: string
+    /** YYYY-MM-DD */
+    end: string
+}
+
+export interface DatepickerOptions {
+    element: string | HTMLInputElement
+    fromInput?: string | HTMLInputElement | null
+    toInput?: string | HTMLInputElement | null
+    singleDate?: boolean
+    onApply?: ((selection: DateRangeSelection) => void) | null
+}
+
+function resolveElement(element: string | HTMLInputElement | null | undefined): HTMLInputElement | null {
     if (typeof element === 'string') {
-        return document.querySelector(element)
+        return document.querySelector<HTMLInputElement>(element)
     }
-    return element
+    return element ?? null
 }
 
 /**
  * Whether the field sits in a panel fixed to the screen, as the agenda filters' offcanvas on a phone: the calendar's
  * "auto" placement opens it above the field there, its header out of the screen.
- *
- * @param {HTMLElement} input
- * @returns {boolean}
  */
-function inFixedPanel(input) {
+function inFixedPanel(input: HTMLElement): boolean {
     const panel = input.closest(
         '.offcanvas, .offcanvas-sm, .offcanvas-md, .offcanvas-lg, .offcanvas-xl, .offcanvas-xxl'
     )
@@ -36,10 +48,9 @@ function inFixedPanel(input) {
 }
 
 /**
- * @param {string} date - YYYY-MM-DD
- * @returns {string}
+ * @param date - YYYY-MM-DD
  */
-function formatDate(date) {
+function formatDate(date: string): string {
     const [year, month, day] = date.split('-').map(Number)
     return dateFormatter.format(new Date(year, month - 1, day))
 }
@@ -47,11 +58,10 @@ function formatDate(date) {
 /**
  * The label DateRange::label() renders: "Le 3 oct. 2026", "Du 3 oct. 2026 au 5 oct. 2026", "À partir du 3 oct. 2026".
  *
- * @param {string} start - YYYY-MM-DD
- * @param {string|null} end - YYYY-MM-DD
- * @returns {string}
+ * @param start - YYYY-MM-DD
+ * @param end - YYYY-MM-DD
  */
-export function formatRangeLabel(start, end) {
+export function formatRangeLabel(start: string, end: string | null): string {
     if (!end) {
         return `À partir du ${formatDate(start)}`
     }
@@ -65,16 +75,20 @@ export function formatRangeLabel(start, end) {
  * The day of a hidden input. The server sends back a value it could not read as a date as it came
  * ("?dateRange[from]=undefined"), and searches without it: no day then.
  *
- * @param {HTMLInputElement|null} input
- * @returns {string|null} YYYY-MM-DD
+ * @returns YYYY-MM-DD
  */
-function dayOf(input) {
+function dayOf(input: HTMLInputElement | null): string | null {
     const day = parseDay(input?.value)
     return day ? formatDay(day) : null
 }
 
-export function create({ element, fromInput, toInput, singleDate = false, onApply = null } = {}) {
+export function create({ element, fromInput, toInput, singleDate = false, onApply = null }: DatepickerOptions): {
+    destroy: () => void
+} {
     const input = resolveElement(element)
+    if (!input) {
+        throw new Error(`Datepicker: no input matches ${String(element)}`)
+    }
     const from = resolveElement(fromInput)
     const to = resolveElement(toInput)
 
@@ -87,7 +101,7 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
         input.classList.add('form-control-readonly')
     }
 
-    const apply = (start, end) => {
+    const apply = (start: string, end: string) => {
         input.value = singleDate ? formatDate(start) : formatRangeLabel(start, end)
         if (from) {
             from.value = start
@@ -104,7 +118,7 @@ export function create({ element, fromInput, toInput, singleDate = false, onAppl
     }
 
     // Initialize with existing values
-    const selectedDates = []
+    const selectedDates: string[] = []
     const start = dayOf(from)
     if (start) {
         // No end: a range open from its start ("À partir du 3 oct. 2026"), not that day alone

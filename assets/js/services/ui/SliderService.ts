@@ -1,20 +1,38 @@
-import noUiSlider from 'nouislider'
+import noUiSlider, { type Options as SliderOptions } from 'nouislider'
 
 import '@/scss/lazy-components/_slider.scss'
+
+export interface SliderServiceOptions {
+    element: HTMLInputElement
+    range: SliderOptions['range']
+    snap?: boolean
+    unit?: string
+    label?: string | null
+    onChange?: ((value: string) => void) | null
+}
 
 /**
  * Turns a number input into a slider. The input stays in the form, hidden, and keeps the value the form submits: the
  * slider only writes into it, and shows the value at the end of the input's label. `onChange` runs once the handle is
  * released on a new value, never when the slider starts.
  */
-export function create({ element, range, snap = false, unit = '', label = null, onChange = null }) {
+export function create({
+    element,
+    range,
+    snap = false,
+    unit = '',
+    label = null,
+    onChange = null,
+}: SliderServiceOptions): {
+    destroy: () => void
+} {
     const labelEl = element.id ? document.querySelector(`label[for="${element.id}"]`) : null
     const ariaLabel = label ?? labelEl?.textContent.trim() ?? ''
     // A range edge is either a value or a [value, step] pair
     const min = [range.min].flat()[0]
     const format = {
-        to: (value) => `${Math.round(value)}${unit ? ` ${unit}` : ''}`,
-        from: (value) => Number.parseFloat(value),
+        to: (value: number) => `${Math.round(value)}${unit ? ` ${unit}` : ''}`,
+        from: (value: string) => Number.parseFloat(value),
     }
 
     const slider = document.createElement('div')
@@ -36,9 +54,10 @@ export function create({ element, range, snap = false, unit = '', label = null, 
         handleAttributes: [{ 'aria-label': ariaLabel }],
     })
 
+    // Without a `format` option, the slider hands its values over as strings ("25.00")
     instance.on('update', ([value]) => {
-        element.value = Math.round(value)
-        output.textContent = format.to(value)
+        element.value = String(Math.round(Number(value)))
+        output.textContent = format.to(Number(value))
     })
 
     if (onChange) {
