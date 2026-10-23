@@ -1,12 +1,15 @@
 import { describe, expect, it, vi } from 'vitest'
+import { fake } from '@/js/test/fake'
 import { loadErrorMessage, loadIntoDialog } from './dialog'
 
 /**
  * A stand-in for the jQuery dialog: load() answers at once with the given outcome.
  */
-function fakeDialog(status, httpStatus) {
+function fakeDialog(status: string, httpStatus: number) {
     return {
-        load: vi.fn((_url, complete) => complete('', status, { status: httpStatus })),
+        load: vi.fn((_url: string, complete: (response: string, status: string, xhr: { status: number }) => void) =>
+            complete('', status, { status: httpStatus })
+        ),
         modal: vi.fn(),
     }
 }
@@ -16,7 +19,7 @@ describe('loadIntoDialog', () => {
         const $dialog = fakeDialog('success', 200)
         const onLoaded = vi.fn()
 
-        loadIntoDialog($dialog, '/login', onLoaded)
+        loadIntoDialog(fake<JQuery>($dialog), '/login', onLoaded)
 
         expect($dialog.load).toHaveBeenCalledWith('/login', expect.any(Function))
         expect(onLoaded).toHaveBeenCalledOnce()
@@ -27,7 +30,7 @@ describe('loadIntoDialog', () => {
         const $dialog = fakeDialog('error', 500)
         const onLoaded = vi.fn()
 
-        loadIntoDialog($dialog, '/login', onLoaded)
+        loadIntoDialog(fake<JQuery>($dialog), '/login', onLoaded)
 
         expect(onLoaded).not.toHaveBeenCalled()
         expect($dialog.modal).toHaveBeenCalledWith('setError', loadErrorMessage(500))

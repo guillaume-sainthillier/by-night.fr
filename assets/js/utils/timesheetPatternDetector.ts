@@ -1,12 +1,24 @@
 import { addDays, diffDays, isoWeekday, parseDay } from '@/js/utils/days'
+import type { Timesheet } from '@/js/utils/TimesheetGenerator'
+
+/**
+ * The recurrence the scheduler offers: every day of a range, or some weekdays (1=Monday, 7=Sunday)
+ */
+type PatternConfig = { pattern: 'daily' } | { pattern: 'weekdays'; weekdays: number[] }
+
+/**
+ * What the timesheets look like: a list of dates to edit one by one, or a recurrence
+ */
+export type PatternDetection =
+    | { mode: 'simple'; config: Record<string, never> }
+    | { mode: 'pattern'; config: PatternConfig }
 
 /**
  * Detect pattern in existing timesheets
  *
- * @param {Array<{startAt: string, endAt: string}>} timesheets - Array of timesheets
- * @returns {{mode: string, config: Object}} Detection result
+ * @returns Detection result
  */
-export function detectPattern(timesheets) {
+export function detectPattern(timesheets: Timesheet[] | null | undefined): PatternDetection {
     if (!timesheets || timesheets.length === 0) {
         return {
             mode: 'simple',
@@ -15,7 +27,7 @@ export function detectPattern(timesheets) {
     }
 
     // The days the timesheets start on (handle both date and datetime formats)
-    const dates = timesheets.map((ts) => parseDay(ts.startAt)).filter(Boolean)
+    const dates = timesheets.map((ts) => parseDay(ts.startAt)).filter((date): date is Date => null !== date)
 
     // Single date - simple mode
     if (dates.length <= 1) {
@@ -26,7 +38,7 @@ export function detectPattern(timesheets) {
     }
 
     // Sort dates
-    dates.sort((a, b) => a - b)
+    dates.sort((a, b) => a.getTime() - b.getTime())
 
     // Check if daily (consecutive dates)
     const isDaily = dates.every((date, index) => {
@@ -49,7 +61,7 @@ export function detectPattern(timesheets) {
 
     if (weekdays.length > 0 && weekdays.length <= 7) {
         // Count occurrences of each weekday to ensure consistency
-        const weekdayCounts = {}
+        const weekdayCounts: Record<number, number> = {}
         dates.forEach((date) => {
             const day = isoWeekday(date)
             weekdayCounts[day] = (weekdayCounts[day] || 0) + 1

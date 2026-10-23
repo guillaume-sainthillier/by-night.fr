@@ -1,13 +1,12 @@
 import $ from 'jquery'
 import initAutocomplete from '@/js/components/autocomplete'
+import type { Module } from '@/js/types'
 import { isTouchDevice } from '@/js/utils/utils'
 
 /**
  * Wire the global search autocomplete. Runs once at App.start().
- *
- * @type {Module}
  */
-export default () => {
+const autocomplete: Module = () => {
     const $autocomplete = $('#autocomplete')
     const $autocompleteMobileToggler = $('#autocomplete-mobile-toggler')
     if ($autocomplete.length === 0) {
@@ -38,8 +37,8 @@ export default () => {
 
     $autocompleteMobileToggler.click((event) => {
         event.preventDefault()
-        result.show()
+        result?.show()
     })
-
-    return result
 }
+
+export default autocomplete

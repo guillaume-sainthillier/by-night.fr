@@ -4,7 +4,11 @@
  */
 
 import { describe, expect, test } from 'vitest'
-import { detectPattern } from '@/js/utils/timesheetPatternDetector'
+import { detectPattern, type PatternDetection } from '@/js/utils/timesheetPatternDetector'
+
+// The weekdays of a weekdays pattern, none for the other results
+const weekdaysOf = (result: PatternDetection): number[] =>
+    'pattern' === result.mode && 'weekdays' === result.config.pattern ? result.config.weekdays : []
 
 describe('timesheetPatternDetector', () => {
     describe('detectPattern', () => {
@@ -51,7 +55,7 @@ describe('timesheetPatternDetector', () => {
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
             // Weekdays: 1=Mon, 3=Wed, 5=Fri
-            expect(result.config.weekdays.sort()).toEqual([1, 3, 5])
+            expect(weekdaysOf(result).sort()).toEqual([1, 3, 5])
         })
 
         test('Mon-Fri pattern should be detected as weekdays', () => {
@@ -69,7 +73,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays.sort()).toEqual([1, 2, 3, 4, 5])
+            expect(weekdaysOf(result).sort()).toEqual([1, 2, 3, 4, 5])
         })
 
         test('Non-consecutive days with weekday pattern', () => {
@@ -81,7 +85,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays.sort()).toEqual([1, 3])
+            expect(weekdaysOf(result).sort()).toEqual([1, 3])
         })
 
         test('Weekend pattern should be detected', () => {
@@ -93,7 +97,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays.sort()).toEqual([6, 7])
+            expect(weekdaysOf(result).sort()).toEqual([6, 7])
         })
 
         test('Single weekday repeated should be weekdays pattern', () => {
@@ -104,7 +108,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays).toEqual([3])
+            expect(weekdaysOf(result)).toEqual([3])
         })
 
         test('Irregular dates should fall back to simple mode', () => {
@@ -127,7 +131,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays).toEqual([1]) // Monday only
+            expect(weekdaysOf(result)).toEqual([1]) // Monday only
         })
 
         test('Two Mondays should detect Monday pattern', () => {
@@ -137,7 +141,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays).toEqual([1])
+            expect(weekdaysOf(result)).toEqual([1])
         })
 
         test('Tue/Thu pattern with 2 occurrences each should be detected', () => {
@@ -149,7 +153,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays.sort()).toEqual([2, 4]) // Tue, Thu
+            expect(weekdaysOf(result).sort()).toEqual([2, 4]) // Tue, Thu
         })
 
         test('Mon/Wed pattern with perfect coverage should be detected', () => {
@@ -159,7 +163,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays.sort()).toEqual([1, 3]) // Mon, Wed
+            expect(weekdaysOf(result).sort()).toEqual([1, 3]) // Mon, Wed
         })
 
         test('Mon/Wed/Fri with 2 Mon, 1 Wed, 2 Fri should be detected', () => {
@@ -172,7 +176,7 @@ describe('timesheetPatternDetector', () => {
             ])
             expect(result.mode).toBe('pattern')
             expect(result.config.pattern).toBe('weekdays')
-            expect(result.config.weekdays.sort()).toEqual([1, 3, 5]) // Mon, Wed, Fri
+            expect(weekdaysOf(result).sort()).toEqual([1, 3, 5]) // Mon, Wed, Fri
         })
 
         test('Datetime format should still work (backwards compatible)', () => {

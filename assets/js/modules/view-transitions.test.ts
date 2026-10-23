@@ -4,17 +4,23 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import type { App } from '@/js/app'
 import viewTransitions from '@/js/modules/view-transitions'
+import { fake } from '@/js/test/fake'
 
 const ORIGIN = 'https://by-night.fr'
 const EVENT = '/toulouse/soiree/concert--1'
 const OTHER_EVENT = '/toulouse/soiree/expo--2'
 
 // The Node environment has no DOM: elements only carry the inline style the module sets
-const fakeElement = () => ({
+interface FakeElement {
+    style: { viewTransitionName: string; removeProperty(property: string): void }
+}
+
+const fakeElement = (): FakeElement => ({
     style: {
         viewTransitionName: '',
-        removeProperty(property) {
+        removeProperty(property: string) {
             if ('view-transition-name' === property) {
                 this.viewTransitionName = ''
             }
@@ -23,19 +29,19 @@ const fakeElement = () => ({
 })
 
 // A card of the page: its title link leads to pathname, its picture is what the module names
-const fakeCard = (pathname) => {
+const fakeCard = (pathname: string) => {
     const picture = fakeElement()
-    const card = { querySelector: (selector) => ('.image-container' === selector ? picture : null) }
-    const link = { pathname, closest: (selector) => ('.card-event' === selector ? card : null) }
+    const card = { querySelector: (selector: string) => ('.image-container' === selector ? picture : null) }
+    const link = { pathname, closest: (selector: string) => ('.card-event' === selector ? card : null) }
 
     return { link, picture }
 }
 
 // A transition whose end the test decides
 const fakeTransition = () => {
-    let finish
-    let abort
-    const finished = new Promise((resolve, reject) => {
+    let finish = () => {}
+    let abort = (_reason: Error) => {}
+    const finished = new Promise<void>((resolve, reject) => {
         finish = resolve
         abort = reject
     })
@@ -43,23 +49,38 @@ const fakeTransition = () => {
     return { finished, finish, abort }
 }
 
-let handlers
-const load = ({ cards = [], poster = null, from = null } = {}) => {
+type FakeTransition = ReturnType<typeof fakeTransition>
+type FakeCard = ReturnType<typeof fakeCard>
+type Handler = (event: {
+    viewTransition: FakeTransition | null
+    activation?: { entry: { url: string } } | null
+}) => void
+
+let handlers: Record<string, Handler>
+const load = ({
+    cards = [],
+    poster = null,
+    from = null,
+}: {
+    cards?: FakeCard[]
+    poster?: FakeElement | null
+    from?: string | null
+} = {}) => {
     handlers = {}
     vi.stubGlobal('window', {
-        addEventListener: (type, handler) => {
+        addEventListener: (type: string, handler: Handler) => {
             handlers[type] = handler
         },
         navigation: from ? { activation: { from: { url: ORIGIN + from } } } : undefined,
     })
     vi.stubGlobal('document', {
-        getElementById: (id) => ('event-poster' === id ? poster : null),
+        getElementById: (id: string) => ('event-poster' === id ? poster : null),
         querySelectorAll: () => cards.map((card) => card.link),
     })
-    viewTransitions()
+    viewTransitions({ app: fake<App>({}) })
 }
 
-const leave = (to, transition = fakeTransition()) => {
+const leave = (to: string, transition = fakeTransition()) => {
     handlers.pageswap({ viewTransition: transition, activation: { entry: { url: ORIGIN + to } } })
 
     return transition

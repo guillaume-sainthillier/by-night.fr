@@ -1,3 +1,5 @@
+import type { Module } from '@/js/types'
+
 /**
  * Names the card picture the cross-document view transition morphs into the event's poster, and back
  * (scss/components/_view-transitions.scss). A name must be unique on a page and a listing shows dozens of cards, so
@@ -5,14 +7,11 @@
  *
  * The poster names itself in CSS: `pagereveal` fires on the event page's first render, before App.start(). Here, it
  * only fires on a page restored from the back/forward cache, whose listeners are still there: back to a listing.
- *
- * @type {Module}
  */
-export default () => {
-    /** @type {HTMLElement[]} */
-    let styled = []
+const viewTransitions: Module = () => {
+    let styled: HTMLElement[] = []
 
-    const style = (element, name) => {
+    const style = (element: HTMLElement, name: string) => {
         element.style.viewTransitionName = name
         styled.push(element)
     }
@@ -23,16 +22,18 @@ export default () => {
     }
 
     // The picture of a card of this page leading to url
-    const card = (url) => {
+    const card = (url: string) => {
         const { pathname } = new URL(url)
-        const link = [...document.querySelectorAll('.card-event h3 a[href]')].find((a) => a.pathname === pathname)
+        const link = [...document.querySelectorAll<HTMLAnchorElement>('.card-event h3 a[href]')].find(
+            (a) => a.pathname === pathname
+        )
 
-        return link?.closest('.card-event').querySelector('.image-container')
+        return link?.closest('.card-event')?.querySelector<HTMLElement>('.image-container')
     }
 
     // Clears the names of a previous transition first: a page restored from the back/forward cache keeps those its
     // `pageswap` set
-    const name = (transition, picture) => {
+    const name = (transition: ViewTransition, picture: HTMLElement | null | undefined) => {
         clear()
         if (!picture) {
             return
@@ -52,17 +53,20 @@ export default () => {
     // Leaving: the card leading to the destination, if any; an event page's poster keeps its own name otherwise.
     // `activation` needs the Navigation API: without it, no card
     window.addEventListener('pageswap', (e) => {
-        if (e.viewTransition && e.activation?.entry) {
-            name(e.viewTransition, card(e.activation.entry.url))
+        const to = e.activation?.entry?.url
+        if (e.viewTransition && to) {
+            name(e.viewTransition, card(to))
         }
     })
 
     // Arriving back on a listing: the card leading to the event left. An event page is left alone, its poster is
     // already named
     window.addEventListener('pagereveal', (e) => {
-        const from = window.navigation?.activation?.from
-        if (e.viewTransition && from?.url && !document.getElementById('event-poster')) {
-            name(e.viewTransition, card(from.url))
+        const from = window.navigation?.activation?.from?.url
+        if (e.viewTransition && from && !document.getElementById('event-poster')) {
+            name(e.viewTransition, card(from))
         }
     })
 }
+
+export default viewTransitions

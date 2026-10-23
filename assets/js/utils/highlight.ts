@@ -1,26 +1,27 @@
 /**
+ * A part of a highlighted value: a match of the search, or the text around
+ */
+export interface HighlightSegment {
+    text: string
+    highlighted: boolean
+}
+
+/**
  * Splits a value highlighted by the search API ("Le __aa-highlight__Bikini__/aa-highlight__") into
  * segments, so the matches can be rendered as <mark> nodes without parsing the value as HTML: names
  * come from members and feeds and may contain markup.
- *
- * @param {string} value
- * @returns {{ text: string, highlighted: boolean }[]}
  */
-export function splitHighlights(value) {
+export function splitHighlights(value: string): HighlightSegment[] {
     return value
         .split(/__aa-highlight__(.*?)__\/aa-highlight__/s)
         .map((text, index) => ({ text, highlighted: index % 2 === 1 }))
         .filter(({ text }) => text !== '')
 }
 
-const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
+const HTML_ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
 
-/**
- * @param {*} text
- * @returns {string}
- */
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, (char) => HTML_ESCAPES[char])
+function escapeHtml(text: string): string {
+    return text.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char])
 }
 
 /**
@@ -28,12 +29,9 @@ function escapeHtml(text) {
  * but the record is escaped before the match gets wrapped in <mark>, the library rendering the
  * result as HTML while tags, cities and usernames are typed by members.
  *
- * @param {string} query
- * @param {*} record
- * @param {boolean} highlight
- * @returns {string|undefined} undefined when the record does not match
+ * @returns undefined when the record does not match
  */
-export function highlightMatch(query, record, highlight = true) {
+export function highlightMatch(query: string, record: unknown, highlight = true): string | undefined {
     const text = String(record ?? '')
     const needle = String(query).toLowerCase()
     const start = text.toLowerCase().indexOf(needle)

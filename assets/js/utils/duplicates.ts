@@ -1,15 +1,19 @@
+import type ModalManager from '@/js/services/modals/ModalManager'
+
 /**
  * Before an event goes online, asks for the events already online it likely repeats (EventController::renderDuplicates())
  * and, if there are some, lets the member confirm. The check only advises: whatever keeps it from answering (a network
  * failure, an error, a lapsed session redirected to the login page) publishes as before.
  *
- * @param {{createConfirm: (params: object) => Promise<boolean|undefined>}} modalManager
- * @param {string} url
- * @param {RequestInit} [init] the event's form for a POST, none to search the draft as saved
- * @returns {Promise<boolean>} whether to publish
+ * @param init the event's form for a POST, none to search the draft as saved
+ * @returns whether to publish
  */
-export async function confirmPublication(modalManager, url, init = {}) {
-    let response
+export async function confirmPublication(
+    modalManager: Pick<ModalManager, 'createConfirm'>,
+    url: string,
+    init: RequestInit = {}
+): Promise<boolean> {
+    let response: Response
     try {
         response = await fetch(url, { ...init, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
     } catch {
@@ -36,11 +40,8 @@ export async function confirmPublication(modalManager, url, init = {}) {
 /**
  * The fields of a form to search its likely duplicates: the picture left out, which the search does not read and the
  * request would upload for nothing.
- *
- * @param {HTMLFormElement} form
- * @returns {FormData}
  */
-export function duplicatesSearchBody(form) {
+export function duplicatesSearchBody(form: HTMLFormElement): FormData {
     const body = new FormData(form)
     for (const [name, value] of [...body.entries()]) {
         if (value instanceof File) {
