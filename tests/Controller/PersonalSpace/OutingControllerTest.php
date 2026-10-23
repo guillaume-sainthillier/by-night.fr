@@ -97,4 +97,57 @@ final class OutingControllerTest extends AppWebTestCase
 
         self::assertSame('/espace-perso/mes-sorties', $crawler->filter('.nav-avatar .dropdown-menu a.dropdown-item')->first()->attr('href'));
     }
+
+    public function testTheOutingsGiveTheAddressOfTheirCalendar(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        $client->loginUser($member);
+
+        $crawler = $client->request('GET', '/espace-perso/mes-sorties');
+
+        // Made the first time, kept afterwards
+        $token = UserFactory::find(['id' => $member->getId()])->getCalendarToken();
+        self::assertNotNull($token);
+        $url = 'https://by-night.test/calendrier/' . $token . '.ics';
+        self::assertSame($url, $crawler->filter('#calendar-url')->attr('value'));
+        self::assertSelectorExists(\sprintf('#calendrier [data-copy-url="%s"]', $url));
+        self::assertSelectorExists(\sprintf('#calendrier a[href="webcal://by-night.test/calendrier/%s.ics"]', $token));
+        self::assertSelectorExists(\sprintf('#calendrier a[href="https://calendar.google.com/calendar/render?cid=%s"]', rawurlencode('webcal://by-night.test/calendrier/' . $token . '.ics')));
+
+        $client->request('GET', '/espace-perso/mes-sorties');
+        self::assertSame($token, UserFactory::find(['id' => $member->getId()])->getCalendarToken());
+    }
+
+    public function testAMemberGivesTheirCalendarANewAddress(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        $client->loginUser($member);
+        $crawler = $client->request('GET', '/espace-perso/mes-sorties');
+        $former = UserFactory::find(['id' => $member->getId()])->getCalendarToken();
+
+        $client->submit($crawler->filter('#calendrier form')->form());
+
+        self::assertResponseRedirects('/espace-perso/mes-sorties#calendrier');
+        $token = UserFactory::find(['id' => $member->getId()])->getCalendarToken();
+        self::assertNotNull($token);
+        self::assertNotSame($former, $token);
+        $client->followRedirect();
+        self::assertSelectorTextContains('body', "L'adresse de votre calendrier a bien été changée.");
+    }
+
+    public function testTheCalendarKeepsItsAddressWithoutAValidToken(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        $client->loginUser($member);
+        $client->request('GET', '/espace-perso/mes-sorties');
+        $token = UserFactory::find(['id' => $member->getId()])->getCalendarToken();
+
+        $client->request('POST', '/espace-perso/mes-sorties/calendrier', ['_token' => 'forged']);
+
+        self::assertResponseStatusCodeSame(403);
+        self::assertSame($token, UserFactory::find(['id' => $member->getId()])->getCalendarToken());
+    }
 }

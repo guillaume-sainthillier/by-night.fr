@@ -10,7 +10,9 @@
 
 namespace App\Entity;
 
+use App\Outing\OutingState;
 use App\Repository\UserEventRepository;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
@@ -35,6 +37,19 @@ class UserEvent implements Stringable
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'userEvents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
+
+    /**
+     * What the member knows of the event (OutingState): as it was when they said "J'y vais", then as their last alert
+     * told them. Null for a row older than the alerts, which the next check fills without an alert.
+     *
+     * @var array<string, mixed>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $knownState = null;
+
+    /** When the member last heard of a change of the event: one alert a day at most */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $alertedAt = null;
 
     public function __toString(): string
     {
@@ -85,6 +100,30 @@ class UserEvent implements Stringable
     public function setEvent(?Event $event): self
     {
         $this->event = $event;
+
+        return $this;
+    }
+
+    public function getKnownState(): ?OutingState
+    {
+        return null === $this->knownState ? null : OutingState::fromArray($this->knownState);
+    }
+
+    public function setKnownState(?OutingState $knownState): self
+    {
+        $this->knownState = $knownState?->toArray();
+
+        return $this;
+    }
+
+    public function getAlertedAt(): ?DateTimeImmutable
+    {
+        return $this->alertedAt;
+    }
+
+    public function setAlertedAt(?DateTimeImmutable $alertedAt): self
+    {
+        $this->alertedAt = $alertedAt;
 
         return $this;
     }

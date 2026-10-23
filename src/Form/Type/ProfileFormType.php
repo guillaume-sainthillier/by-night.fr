@@ -55,6 +55,13 @@ final class ProfileFormType extends AbstractType
                 'label' => 'Ma ville',
                 'help' => "La ville de vos sorties\u{a0}: le menu et la page d'accueil vous la proposent.",
             ])
+            ->add('outingAlerts', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Me prévenir par e-mail quand une de mes sorties change',
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
+                ],
+            ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Afficher un lien vers mes réseaux sociaux',
