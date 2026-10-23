@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 const options = {
     css_selector_like: '.btn-like-event',
@@ -58,4 +58,4 @@ export default {
 
         return () => $element.off('.like')
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

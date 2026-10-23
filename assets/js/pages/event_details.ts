@@ -1,7 +1,7 @@
+import type { Page } from '@silarhi/app-js'
 import $ from 'jquery'
 import CommentApp from '@/js/components/CommentApp'
 import Widgets from '@/js/components/Widgets'
-import type { Page } from '@/js/types'
 
 const initialize: Page = () => {
     new Widgets().init()

@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import type { create } from '@/js/services/ui/FancyboxService'
-import type { Listener } from '@/js/types'
 
 /**
  * Open every `.image-gallery` link in a Fancybox lightbox instead of following
@@ -30,4 +30,4 @@ export default {
             lightbox?.destroy()
         }
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

@@ -1,4 +1,4 @@
-import type { App } from '@/js/app'
+import type { App } from '@silarhi/app-js'
 import { findAll, findOne, on } from '@/js/utils/dom'
 import { plural } from '@/js/utils/plural'
 

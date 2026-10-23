@@ -194,6 +194,9 @@ importers:
       '@sentry/browser':
         specifier: ^11.8.0
         version: 11.8.0
+      '@silarhi/app-js':
+        specifier: ^0.2.0
+        version: 0.2.0
       '@silarhi/ux-icons-js':
         specifier: ^0.2.0
         version: 0.2.0
@@ -956,6 +959,9 @@ packages:
   '@sentry/replay@11.8.0':
     resolution: {integrity: sha512-0jXMLd9XCBEZ5tu0VJa1uj1HYCpsjuNjbEBhF5pUw4FHyIH5hz01WuI20SH2Ct0pP1mykTzJLPGjZ8sUiAmMnQ==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
+
+  '@silarhi/app-js@0.2.0':
+    resolution: {integrity: sha512-YXuJHcd+8Cs8uGDn7zryibkswjx4EyLO10MGU8RBvUHVOrU5LfOXNWdFFX4vh544bEk/pMK915fAAOjvgiLOcA==}
 
   '@silarhi/ux-icons-js@0.2.0':
     resolution: {integrity: sha512-RVndLTTclvFwRlT4jj+ibphTFgvsBY4HDvN6x/QGFL/E71ECXoR9nVeO1EodcAz7Cc6dfNAYvkMm7j0mvl/aew==}
@@ -2297,6 +2303,8 @@ snapshots:
     dependencies:
       '@sentry/browser-utils': 11.8.0
       '@sentry/core': 11.8.0
+
+  '@silarhi/app-js@0.2.0': {}
 
   '@silarhi/ux-icons-js@0.2.0': {}
 

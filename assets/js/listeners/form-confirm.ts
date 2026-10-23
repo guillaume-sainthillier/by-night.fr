@@ -1,5 +1,5 @@
+import type { Listener } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Listener } from '@/js/types'
 
 /**
  * Ask for a confirmation in a SweetAlert dialog before submitting a form carrying `data-confirm-message`.

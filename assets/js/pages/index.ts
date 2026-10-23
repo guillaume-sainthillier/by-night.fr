@@ -1,6 +1,6 @@
+import type { Page } from '@silarhi/app-js'
 import $ from 'jquery'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
-import type { Page } from '@/js/types'
 
 const initialize: Page<{ apiCityURL: string; agendaURL: string }> = ({ apiCityURL, agendaURL }) => {
     $('.form-city-picker').each((_index, element) => {

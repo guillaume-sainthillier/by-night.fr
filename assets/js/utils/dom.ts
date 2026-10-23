@@ -6,21 +6,6 @@ export const findAll = <E extends HTMLElement = HTMLElement>(
     element?: ParentNode | null
 ): NodeListOf<E> => (element || document).querySelectorAll<E>(selector)
 
-/**
- * Like `findAll`, but also includes `element` itself when it matches `selector`.
- *
- * `App.mount(container)` scans `container` with each listener's selector, and a
- * descendants-only query would miss the container itself.
- */
-export const findAllSelf = (selector: string, element?: Element | Document | null): Element[] => {
-    const root = element || document
-    const found = [...root.querySelectorAll(selector)]
-    if (root instanceof Element && root.matches(selector)) {
-        found.unshift(root)
-    }
-    return found
-}
-
 export const data = (element: HTMLElement, name: string): string | undefined => element.dataset[name]
 
 export const on = <K extends keyof HTMLElementEventMap>(

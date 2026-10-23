@@ -1,8 +1,8 @@
 import { LucideLoader2Icon } from '@icons'
+import type { Page } from '@silarhi/app-js'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import { Tab } from '@tabler/core'
 import $ from 'jquery'
-import type { Page } from '@/js/types'
 
 const initialize: Page = ({ app }) => {
     init()

@@ -1,5 +1,5 @@
+import type { Page } from '@silarhi/app-js'
 import $ from 'jquery'
-import type { Page } from '@/js/types'
 
 const initialize: Page = () => {
     $('.draft').change((event) => {

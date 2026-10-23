@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 
 const DROPZONE_SELECTOR = '.dropzone'
 const FILE_INPUT_SELECTOR = 'input[type="file"]'
@@ -228,4 +228,4 @@ export default {
             }
         }
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>

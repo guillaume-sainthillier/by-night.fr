@@ -1,4 +1,5 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
+import type { Page } from '@silarhi/app-js'
 import $ from 'jquery'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
@@ -12,7 +13,6 @@ import { create as createTags } from '@/js/services/ui/TagsService'
 import { create as createTimepicker } from '@/js/services/ui/TimepickerService'
 import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
-import type { Page } from '@/js/types'
 
 const inputById = (id: string | undefined): HTMLInputElement | null => {
     const input = id ? document.getElementById(id) : null

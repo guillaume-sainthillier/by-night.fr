@@ -3,8 +3,8 @@
  * Run: pnpm test
  */
 
+import type { App } from '@silarhi/app-js'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import type { App } from '@/js/app'
 import duplicateCheck from '@/js/listeners/duplicate-check'
 import { fake } from '@/js/test/fake'
 import { confirmPublication } from '@/js/utils/duplicates'

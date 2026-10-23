@@ -1,4 +1,4 @@
-import type { Listener } from '@/js/types'
+import type { Listener } from '@silarhi/app-js'
 import { closest } from '@/js/utils/css'
 import { findOne } from '@/js/utils/dom'
 
@@ -38,4 +38,4 @@ export default {
 
         return () => btn.removeEventListener('click', onRemove)
     },
-} satisfies Listener
+} satisfies Listener<HTMLElement>
