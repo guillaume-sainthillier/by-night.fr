@@ -8,7 +8,7 @@ import '@/js/vendors'
 import '@/js/overrides'
 
 import * as Sentry from '@sentry/browser'
-import { App } from '@silarhi/app-js'
+import { App, type ErrorContext } from '@silarhi/app-js'
 // Per-element listeners (connected on every mount)
 import bulkActions from '@/js/listeners/bulk-actions'
 import citySwitcher from '@/js/listeners/city-switcher'
@@ -50,6 +50,26 @@ declare global {
     }
 }
 
+/**
+ * What to do with an error the app caught in a module, a listener's connect or cleanup, or a page initializer: the
+ * app carries on with the next one.
+ */
+const reportError = (error: unknown, context: ErrorContext) => {
+    console.error(error)
+
+    // Caught, so Sentry's global handlers never see it. Tagged with what failed, to search and group by it; the element
+    // stays out (its markup may hold a member's data). A no-op without a DSN (dev, tests)
+    const tags: Record<string, string> = { 'app.stage': context.type }
+    if (context.type === 'page') {
+        tags['app.page'] = context.pageId
+    } else if (context.type === 'module') {
+        tags['app.module'] = context.module.name || 'anonymous'
+    } else {
+        tags['app.listener'] = context.listener.selector
+    }
+    Sentry.captureException(error, { tags })
+}
+
 const parameters = window.appParameters
 
 /**
@@ -89,6 +109,7 @@ const app = new App({
     ],
     services,
     parameters,
+    onError: reportError,
 })
 
 // After the app: the collection manager mounts the items it adds
