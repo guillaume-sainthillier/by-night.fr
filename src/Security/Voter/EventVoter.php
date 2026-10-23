@@ -71,7 +71,7 @@ final class EventVoter extends Voter
 
     private function canEdit(Event $event, User $user): bool
     {
-        return $event->getUser() === $user;
+        return $event->getPublisher()?->isManagedBy($user) ?? false;
     }
 
     private function canDelete(Event $event, User $user): bool

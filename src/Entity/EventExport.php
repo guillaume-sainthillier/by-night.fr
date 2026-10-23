@@ -29,9 +29,15 @@ class EventExport
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
 
+    /** The member who started it, told when it is done */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
+
+    /** The publisher whose events it holds: its page lists the job */
+    #[ORM\ManyToOne(targetEntity: Publisher::class)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    private ?Publisher $publisher = null;
 
     #[ORM\Column(type: Types::STRING, length: 16, enumType: EventExportStatus::class)]
     private EventExportStatus $status = EventExportStatus::Pending;
@@ -70,6 +76,18 @@ class EventExport
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPublisher(): ?Publisher
+    {
+        return $this->publisher;
+    }
+
+    public function setPublisher(Publisher $publisher): self
+    {
+        $this->publisher = $publisher;
 
         return $this;
     }

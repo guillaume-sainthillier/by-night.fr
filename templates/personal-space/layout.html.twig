@@ -1,7 +1,11 @@
 {% extends 'layouts/default.html.twig' %}
 
+{# current_publisher(): the publisher whose organizer pages these are (/espace-perso/organisateurs/{publisher}/…), none on the creation of one; the navbar switches it (fragments/_header-publisher-dropdown.html.twig) #}
 {% block breadcrumb %}
-    {% do menu.addItem('Mes événements', url('app_event_list')) %}
+    {% set currentPublisher = current_publisher() %}
+    {% if currentPublisher %}
+        {% do menu.addItem(currentPublisher.name, url('app_event_list')) %}
+    {% endif %}
     {% block breadcrumb_personal_space %}{% endblock %}
 {% endblock %}
 
@@ -33,7 +37,7 @@
 
 {% block modals %}
     {# Tells the member, on any page of their space, when an import or an export of theirs is done (listeners/transfer-toasts.js) #}
-    <div hidden data-transfer-toasts="{{ user_channel_hub(app.user) }}" data-exports-url="{{ path('app_event_exports') }}"></div>
+    <div hidden data-transfer-toasts="{{ user_channel_hub(app.user) }}"></div>
     <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

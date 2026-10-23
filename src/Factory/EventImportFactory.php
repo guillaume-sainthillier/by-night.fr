@@ -32,7 +32,8 @@ final class EventImportFactory extends PersistentObjectFactory
      */
     protected function initialize(): static
     {
-        return $this->instantiateWith(Instantiator::withConstructor()->alwaysForce());
+        // The import of the member's publisher, as the import page starts it
+        return $this->instantiateWith(Instantiator::withConstructor()->alwaysForce())->beforeInstantiate(static fn (array $parameters, string $class, self $factory): array => PublisherFactory::forTheMember($parameters, $factory->isPersisting()));
     }
 
     protected function defaults(): array

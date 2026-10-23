@@ -81,6 +81,6 @@ final class RegistrationController extends AbstractController
 
         $this->addFlash('success', 'Votre adresse e-mail a bien été vérifiée.');
 
-        return $this->redirectToRoute('app_event_list');
+        return $this->redirectToRoute('app_personal_space_events');
     }
 }

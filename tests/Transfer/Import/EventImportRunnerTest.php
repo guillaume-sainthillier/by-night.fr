@@ -14,6 +14,7 @@ use App\Enum\EventImportStatus;
 use App\Enum\EventStatus;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Repository\EventImportRepository;
 use App\Tests\AppKernelTestCase;
@@ -49,12 +50,28 @@ final class EventImportRunnerTest extends AppKernelTestCase
 
         $event = EventFactory::find(['externalReference' => 'JAZZ']);
         self::assertSame($this->user->getId(), $event->getUser()?->getId());
+        self::assertSame($this->user->getId(), $event->getPublisher()?->getOwner()?->getId());
         self::assertTrue($event->isDraft());
         self::assertSame('Soirée jazz', $event->getName());
         self::assertSame('20:30', $event->getStartTime()?->format('H:i'));
         self::assertSame('Concert', $event->getCategory()?->getName());
         self::assertSame($event->getId(), $import->getOutcomes()[0]['id']);
         self::assertSame(1, UserEventFactory::count(['user' => $this->user, 'event' => $event, 'going' => true]));
+    }
+
+    /**
+     * A reference names an event among those of the member's publisher: another publisher's is no match.
+     */
+    public function testAReferenceOfAnotherPublisherMakesANewEvent(): void
+    {
+        $publisher = PublisherFactory::createOne(['owner' => $this->user]);
+        $other = EventFactory::createOne(['externalReference' => 'JAZZ', 'name' => 'Concert de jazz']);
+
+        $import = $this->import(self::HEADER . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+
+        self::assertSame(1, $import->getCreatedCount());
+        self::assertSame('Concert de jazz', EventFactory::find(['id' => $other->getId()])->getName());
+        self::assertSame(1, EventFactory::count(['publisher' => $publisher, 'externalReference' => 'JAZZ']));
     }
 
     public function testTheBrouillonColumnCanPublishAtOnce(): void

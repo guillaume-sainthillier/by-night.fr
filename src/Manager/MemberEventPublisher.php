@@ -14,6 +14,7 @@ use App\Dto\EventDto;
 use App\Dto\UserDto;
 use App\Entity\Comment;
 use App\Entity\Event;
+use App\Entity\Publisher;
 use App\Entity\User;
 use App\Handler\DoctrineEventHandler;
 use DateTimeImmutable;
@@ -21,9 +22,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 
 /**
- * The events members publish from their personal space. They are saved through the import pipeline like any other
- * (DoctrineEventHandler), then given what only a member's event has: its draft state, and on creation its author's
- * participation and first comment.
+ * The events members publish from their personal space, as one of the publishers they manage. They are saved through
+ * the import pipeline like any other (DoctrineEventHandler), then given what only a member's event has: its draft
+ * state, and on creation its publisher, its author's participation and first comment.
  *
  * DoctrineEventHandler clears the entity manager: the event and its author are taken back by reference afterwards.
  */
@@ -51,17 +52,18 @@ final readonly class MemberEventPublisher
     }
 
     /**
-     * Saves a new event of the member, who goes, with their first comment if they wrote one.
+     * Saves a new event of the member as the publisher, the member going, with their first comment if they wrote one.
      *
      * @param EventDto $dto an event of createDto()
      */
-    public function create(EventDto $dto, bool $draft, ?string $comment): Event
+    public function create(EventDto $dto, Publisher $publisher, bool $draft, ?string $comment): Event
     {
         $this->doctrineEventHandler->handleOne($dto);
 
         $event = $this->getEvent($dto);
         $event->setDraft($draft);
         $author = $this->entityManager->getReference(User::class, $dto->user?->entityId ?? throw new LogicException('The event has no author.'));
+        $event->setPublisher($this->entityManager->getReference(Publisher::class, $publisher->getId()));
         if (null !== $comment && '' !== trim($comment)) {
             $this->entityManager->persist(new Comment()->setComment($comment)->setEvent($event)->setUser($author));
         }
@@ -93,15 +95,15 @@ final readonly class MemberEventPublisher
 
     /**
      * Saves a batch of a member's imported events (App\Transfer\Import\EventImportRunner) in one go through the
-     * pipeline, then gives each what only a member's event has: a new one is a draft unless the file says otherwise,
-     * and its author goes; a changed one keeps its draft state unless the file says otherwise. Both take the
-     * member's reference.
+     * pipeline, then gives each what only a member's event has: a new one is the import's publisher's, a draft unless
+     * the file says otherwise, and its author goes; a changed one keeps its draft state unless the file says otherwise.
+     * Both take the member's reference.
      *
      * @param list<array{dto: EventDto, new: bool, draft: ?bool, reference: ?string}> $items
      *
      * @return list<?int> the saved event of each item, null for one the pipeline turned down
      */
-    public function saveImported(User $author, array $items): array
+    public function saveImported(User $author, Publisher $publisher, array $items): array
     {
         foreach ($items as $item) {
             if (!$item['new'] && null !== $item['dto']->externalId) {
@@ -112,6 +114,7 @@ final readonly class MemberEventPublisher
         $this->doctrineEventHandler->handleMany(array_column($items, 'dto'));
 
         $author = $this->entityManager->getReference(User::class, $author->getId());
+        $publisher = $this->entityManager->getReference(Publisher::class, $publisher->getId());
         $ids = [];
         $created = [];
         foreach ($items as $item) {
@@ -133,6 +136,7 @@ final readonly class MemberEventPublisher
             }
 
             if ($item['new']) {
+                $event->setPublisher($publisher);
                 $created[] = $event;
             }
 

@@ -10,7 +10,7 @@
 
 namespace App\Manager;
 
-use App\Entity\User;
+use App\Entity\Publisher;
 use App\Enum\EventBulkAction;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,14 +36,14 @@ final readonly class MemberEventBulkEditor
      *
      * @return int the events it acted on
      */
-    public function apply(User $member, array $ids, EventBulkAction $action): int
+    public function apply(Publisher $publisher, array $ids, EventBulkAction $action): int
     {
         $ids = \array_slice(array_values(array_unique(array_filter($ids, static fn (int $id): bool => $id > 0))), 0, self::MAX_EVENTS);
         if ([] === $ids) {
             return 0;
         }
 
-        $events = $this->eventRepository->findBy(['id' => $ids, 'user' => $member]);
+        $events = $this->eventRepository->findByPublisherAndIds($publisher, $ids);
         foreach ($events as $event) {
             match ($action) {
                 EventBulkAction::Publish => $event->setDraft(false),

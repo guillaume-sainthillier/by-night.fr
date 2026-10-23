@@ -191,17 +191,9 @@ cookie, so no consent and every visitor counted.
 docker compose exec -T worker /app/bin/console app:events:sync-visits -vv
 ```
 
-Once, after the first sync: the 90 days before Umami's first day are filled from Google Analytics
-(`app:events:import-ga4-visits`, flagged `from_google_analytics`: GA4 only counted the visitors who accepted its
-cookies, and no ticketing clicks; the statistics page says so). It needs a Google Cloud service account with the
-Google Analytics Data API enabled, added as Viewer on the GA4 property (316503959), and its JSON key on the server:
-
-```bash
-docker compose exec -T worker /app/bin/console app:events:import-ga4-visits --key-file=/tmp/ga4-key.json --dry-run -vv
-docker compose exec -T worker /app/bin/console app:events:import-ga4-visits --key-file=/tmp/ga4-key.json -vv
-```
-
-Then delete the key (and the service account) and the command.
+The 90 days before Umami (2026-07-25 to 2026-10-22) were filled once from Google Analytics, flagged
+`from_google_analytics`: GA4 only counted the visitors who accepted its cookies, and no ticketing clicks; the statistics
+page says so. The one-shot command that did it is gone.
 
 Umami's event-data values stop at the top 100, so the sync pages through `metrics?type=path` (the visitors of each
 `/soiree/` page) and `events?event=ticket-click` (one row per click), and finds the event by the `--{id}` ending

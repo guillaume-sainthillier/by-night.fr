@@ -12,6 +12,7 @@ namespace App\Tests\Controller\User;
 
 use App\Entity\User;
 use App\Factory\CityFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserFactory;
 use App\Form\Type\DeleteAccountFormType;
 use App\Tests\AppWebTestCase;
@@ -155,5 +156,32 @@ final class ProfileControllerTest extends AppWebTestCase
         self::assertSelectorTextContains('#profile .invalid-feedback', 'Choisissez une ville dans la liste.');
         refresh($user);
         self::assertSame('toulouse', $user->getCity()?->getSlug(), 'The city is kept');
+    }
+
+    public function testAPublisherOptsOutOfTheNews(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        PublisherFactory::createOne(['owner' => $user]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        self::assertCheckboxChecked('profile_form[publisherNews]', 'Subscribed by default');
+        $client->submitForm('Enregistrer les modifications', ['profile_form[publisherNews]' => false]);
+
+        self::assertResponseIsSuccessful();
+        refresh($user);
+        self::assertFalse($user->isPublisherNews());
+    }
+
+    public function testAMemberWithoutAPublisherIsNotOfferedTheNews(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', '/profile/edit');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('[name="profile_form[publisherNews]"]');
     }
 }

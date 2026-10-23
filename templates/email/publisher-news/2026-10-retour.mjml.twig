@@ -1,0 +1,72 @@
+{% extends 'email/publisher-news/layout.mjml.twig' %}
+
+{# For the publishers not logged in for 6 months (PublisherNewsAudience::Dormant): what changed since spring 2026 #}
+
+{% block email_title %}Ce qui a changé sur By Night{% endblock %}
+{% block preheader %}Un site redessiné, une page organisateur à votre nom, l'audience de vos événements et l'import depuis un tableur.{% endblock %}
+
+{% block heading %}By Night a bien changé{% endblock %}
+{% block subheading %}Ce qui est nouveau pour vos événements depuis votre dernière visite{% endblock %}
+
+{% block intro %}
+    <mj-text>
+        Vous avez publié des événements sur By Night. Depuis votre dernière visite, le site a été entièrement repensé, et
+        l'espace des organisateurs avec lui. Voici l'essentiel.
+    </mj-text>
+{% endblock %}
+
+{% block features %}
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Nouveau design',
+        title: 'Un site entièrement redessiné',
+        text: "Plus clair, plus rapide et pensé pour le téléphone. Les visiteurs filtrent l'agenda par date, par prix et par catégorie, retrouvent vos événements même avec une faute de frappe, et marquent ceux où ils vont d'un « J'y vais ».",
+        url: url('app_index'),
+        link: 'Découvrir le site',
+    }) }}
+
+    {% set publisher_text %}
+        Vos événements sont réunis sur une page publique à votre nom{% if publisher %}, <strong>{{ publisher.name }}</strong>{% endif %}&nbsp;:
+        ceux à venir, ceux passés, votre logo, une image de couverture, votre présentation et les liens vers votre
+        site et vos réseaux. Chacun de vos événements la signe d'un «&nbsp;Organisé par&nbsp;».
+    {% endset %}
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Page organisateur',
+        title: 'Une page qui présente votre programmation',
+        text: publisher_text,
+        url: url('app_personal_space_publisher'),
+        link: 'Compléter ma page',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Statistiques',
+        title: "L'audience de chacun de vos événements",
+        text: 'Le nombre de visiteurs de sa page et de clics vers votre billetterie, jour après jour, sur la période de votre choix.',
+        url: url('app_personal_space_events'),
+        link: 'Voir mes événements',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Import et export',
+        title: 'Vos événements depuis un tableur',
+        text: "Publiez ou mettez à jour des dizaines d'événements d'un coup depuis un fichier Excel ou CSV, vérifié avant l'import. Et exportez-les à tout moment, en tableur ou en calendrier.",
+        url: url('app_personal_space_imports'),
+        link: 'Importer des événements',
+    }) }}
+
+    {{ include('email/publisher-news/_feature.mjml.twig', {
+        label: 'Publication',
+        title: 'Un formulaire plus simple',
+        text: "Une date ou plusieurs, les horaires de chaque séance, un calendrier plus pratique, et un avertissement quand l'événement est déjà en ligne. Vous publiez, masquez ou supprimez aussi plusieurs événements à la fois.",
+        url: url('app_personal_space_event_new'),
+        link: 'Publier un événement',
+    }) }}
+{% endblock %}
+
+{% block cta 'Revenir sur mon espace' %}
+
+{% block outro %}
+    <mj-text mj-class="muted">
+        Mot de passe oublié&nbsp;? <a href="{{ url('app_forgot_password_request') }}">Choisissez-en un nouveau</a> en
+        quelques secondes.
+    </mj-text>
+{% endblock %}

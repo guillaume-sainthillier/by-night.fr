@@ -18,8 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * The audience of an event page on a day (Paris time), read from Umami by `app:events:sync-visits`
  * (App\Analytics\EventVisitSync): its visitors, a visitor counted once a day, and the clicks on its ticketing links.
- * Shown to the event's author in their personal space. The days before Umami were read once from Google Analytics
- * (`app:events:import-ga4-visits`), which only saw the visitors who accepted its cookies.
+ * Shown to the event's author in their personal space. The 90 days before Umami (to 2026-10-22) were read once from
+ * Google Analytics, which only saw the visitors who accepted its cookies: those rows are flagged fromGoogleAnalytics.
  */
 #[ORM\Entity(repositoryClass: EventVisitStatRepository::class)]
 #[ORM\UniqueConstraint(name: 'event_visit_stat_unique', columns: ['event_id', 'day'])]
