@@ -79,12 +79,14 @@
                     </div>
                 </div>
                 {% if publishers %}
-                    <div class="card-body">
-                        <div class="subheader mb-2">{{ publishers|length > 1 ? 'Ses pages organisateur' : 'Sa page organisateur' }}</div>
+                    <div class="card-body pb-2">
+                        <div class="subheader">{{ publishers|length > 1 ? 'Ses pages organisateur' : 'Sa page organisateur' }}</div>
+                    </div>
+                    <div class="list-group list-group-flush">
                         {% for publisher in publishers %}
-                            <a class="d-flex align-items-center gap-2 text-reset{{ not loop.last ? ' mb-2' }}" href="{{ path('app_publisher_index', {slug: publisher.slug}) }}" title="Les événements de {{ publisher.name }}">
+                            <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="{{ path('app_publisher_index', {slug: publisher.slug}) }}" title="Les événements de {{ publisher.name }}">
                                 <twig:Publisher:Avatar publisher="{{ publisher }}" />
-                                <strong>{{ publisher.name }}</strong>
+                                <strong class="text-truncate">{{ publisher.name }}</strong>
                             </a>
                         {% endfor %}
                     </div>
