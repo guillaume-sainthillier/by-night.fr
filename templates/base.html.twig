@@ -94,6 +94,14 @@ _______     __  _   _ _____ _____ _    _ _______
         {{ include('fragments/_google-tags.html.twig') }}
     {% endif %}
 
+    {# Umami, without cookies: no consent needed, so it counts every visitor. On the site's own origin: Traefik sends
+       /a/script.js and /a/api/send (where the script posts, next to itself) straight to the Umami container (README);
+       only where a website id is set. Its event pages' visitors and ticketing clicks are shown to their authors
+       (app:events:sync-visits) #}
+    {% if umami_website_id %}
+        <script defer src="/a/script.js" data-website-id="{{ umami_website_id }}"></script>
+    {% endif %}
+
     {{ site_json_ld() }}
     {% block json_ld '' %}
     {% block head_js_layout '' %}
