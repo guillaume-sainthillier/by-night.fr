@@ -249,3 +249,8 @@
         {{- form_errors(form) -}}
     </div>
 {%- endblock city_picker_row %}
+
+{# App\Form\Type\OtpType. Never refilled after a wrong code: a full value would submit the form again at once #}
+{% block otp_widget %}
+    <twig:OtpInput name="{{ full_name }}" id="{{ id }}" length="{{ length }}" autosubmit="{{ autosubmit }}" invalid="{{ not valid }}" autofocus="{{ true }}" label="{{ label|default('Code à usage unique') }}" />
+{% endblock %}

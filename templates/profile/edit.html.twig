@@ -21,6 +21,7 @@
         profile: {icon: 'lucide:user', label: 'Profil'},
         socials: {icon: 'lucide:share-2', label: 'Réseaux sociaux'},
         password: {icon: 'lucide:key-round', label: 'Mot de passe'},
+        security: {icon: 'lucide:shield-check', label: 'Sécurité'},
         delete: {icon: 'lucide:trash-2', label: 'Supprimer le compte'},
     } %}
 
@@ -39,7 +40,7 @@
                 </div>
                 <h1 class="display-6 fw-bold mb-2">{{ user.username }}</h1>
                 <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 small text-secondary">
-                    <span class="badge bg-teal-lt">Membre depuis {{ user.createdAt|format_date(pattern: 'LLLL yyyy', locale: 'fr') }}</span>
+                    <span class="badge bg-teal-lt">Membre depuis {{ user.createdAt|format_date(pattern: 'LLLL yyyy') }}</span>
                 </div>
             </header>
 
@@ -123,11 +124,6 @@
 
                         <h3 class="h4 mt-4 mb-3">Vos sorties</h3>
                         {{ form_row(form.city) }}
-                        <div class="card form-panel mb-0">
-                            <div class="card-body">
-                                {{ form_row(form.outingAlerts, {row_class: 'mb-0', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
-                            </div>
-                        </div>
 
                         <h3 class="h4 mt-4 mb-3">Visibilité</h3>
                         <div class="card form-panel mb-0">
@@ -136,14 +132,17 @@
                             </div>
                         </div>
 
-                        {% if form.publisherNews is defined %}
-                            <h3 class="h4 mt-4 mb-3">E-mails</h3>
-                            <div class="card form-panel mb-0">
-                                <div class="card-body">
+                        {# Every e-mail the member may turn on or off, in one place; the organizers' news for organizers only #}
+                        <h3 class="h4 mt-4 mb-3">E-mails</h3>
+                        <div class="card form-panel mb-0">
+                            <div class="card-body">
+                                {{ form_row(form.weekendDigest, {row_class: 'mb-3'}) }}
+                                {{ form_row(form.outingAlerts, {row_class: form.publisherNews is defined ? 'mb-3' : 'mb-0', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
+                                {% if form.publisherNews is defined %}
                                     {{ form_row(form.publisherNews, {row_class: 'mb-0', help: 'Une fois par mois au plus, ce qui change sur By Night pour vos événements et votre page organisateur.'}) }}
-                                </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
+                        </div>
 
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-top pt-4 mt-4">
                             <p class="text-secondary small mb-0">
@@ -236,6 +235,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {# Second factors #}
+                <div class="tab-pane fade{{ activeTab == 'security' ? ' show active' }}" id="security" role="tabpanel" aria-labelledby="security-tab">
+                    {{ include('profile/_security.html.twig') }}
                 </div>
 
                 {# Account deletion #}

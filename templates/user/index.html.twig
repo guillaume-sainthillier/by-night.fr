@@ -285,16 +285,16 @@
                                         <twig:Icon name="lucide:chart-column" class="text-primary" />
                                         Rythme mensuel
                                     </h3>
-                                    {% set peakMonths = activity.peakMonths|map(month => ('2024-%02d-01'|format(month))|format_date(pattern: 'LLLL', locale: 'fr')) %}
+                                    {% set peakMonths = activity.peakMonths|map(month => ('2024-%02d-01'|format(month))|format_date(pattern: 'LLLL')) %}
                                     <span class="badge bg-primary-lt">Pic en {{ peakMonths|join(', ', ' et ') }}</span>
                                 </div>
                                 {% set busiestMonth = max(activity.byMonth) %}
                                 <div class="member-months" role="list" aria-label="Sorties par mois">
                                     {% for month, count in activity.byMonth %}
                                         {% set date = '2024-%02d-01'|format(month) %}
-                                        <div class="member-month" role="listitem" title="{{ date|format_date(pattern: 'LLLL', locale: 'fr')|capitalize }}&nbsp;: {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: count}, 'messages+intl-icu') }}">
+                                        <div class="member-month" role="listitem" title="{{ date|format_date(pattern: 'LLLL')|capitalize }}&nbsp;: {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: count}, 'messages+intl-icu') }}">
                                             <div class="member-month-bar{{ count == busiestMonth ? ' bg-primary' : (count > 0 ? ' bg-primary-lt') }}" style="height: {{ (count * 100 / busiestMonth)|round }}%"></div>
-                                            <span class="small text-secondary" aria-hidden="true">{{ date|format_date(pattern: 'LLLLL', locale: 'fr') }}</span>
+                                            <span class="small text-secondary" aria-hidden="true">{{ date|format_date(pattern: 'LLLLL') }}</span>
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -331,9 +331,9 @@
                                         {% set share = activity.share(count) %}
                                         {% set date = '2024-01-%02d'|format(weekday) %}
                                         {% set top = weekday in topWeekdays %}
-                                        <div class="card card-sm mb-0 text-center{{ top ? ' border-primary' }}" title="{{ date|format_date(pattern: 'cccc', locale: 'fr')|capitalize }}&nbsp;: {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: count}, 'messages+intl-icu') }}">
+                                        <div class="card card-sm mb-0 text-center{{ top ? ' border-primary' }}" title="{{ date|format_date(pattern: 'cccc')|capitalize }}&nbsp;: {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: count}, 'messages+intl-icu') }}">
                                             <div class="card-body">
-                                                <div class="subheader{{ top ? ' text-primary' }}">{{ date|format_date(pattern: 'ccc', locale: 'fr')|trim('.') }}</div>
+                                                <div class="subheader{{ top ? ' text-primary' }}">{{ date|format_date(pattern: 'ccc')|trim('.') }}</div>
                                                 <div class="progress progress-sm my-2">
                                                     <div class="progress-bar{{ top ? ' bg-primary' : ' bg-primary-lt' }}" style="width: {{ share }}%"></div>
                                                 </div>
@@ -348,7 +348,7 @@
                                         <twig:Icon name="lucide:badge-check" class="text-teal flex-shrink-0" />
                                         <span class="small">
                                             <strong>{{ topShare }}&nbsp;% des sorties</strong>
-                                            tombent le {{ topWeekdays|map(weekday => ('2024-01-%02d'|format(weekday))|format_date(pattern: 'cccc', locale: 'fr'))|join(' ou le ') }}
+                                            tombent le {{ topWeekdays|map(weekday => ('2024-01-%02d'|format(weekday))|format_date(pattern: 'cccc'))|join(' ou le ') }}
                                         </span>
                                     </div>
                                 </div>

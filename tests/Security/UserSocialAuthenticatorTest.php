@@ -25,12 +25,15 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorToken;
 use Smolblog\OAuth2\Client\Provider\TwitterUser;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 /**
  * Signing in with a social network finds the account of the address or of the network
@@ -126,6 +129,22 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
     }
 
     /**
+     * A member who turned on a second factor: the network vouched for them, the second factor is still to come
+     */
+    public function testAMemberWithASecondFactorGoesOnToIt(): void
+    {
+        $member = UserFactory::createOne(['email' => 'lou@example.com', 'verified' => true]);
+        $token = new TwoFactorToken(new PostAuthenticationToken($member, 'main', ['ROLE_USER']), null, 'main', ['google']);
+        $request = Request::create('/login-social/check/google');
+        $request->attributes->set('service', 'google');
+
+        $response = $this->createAuthenticator($this->createStub(ClientRegistry::class))->onAuthenticationSuccess($request, $token, 'main');
+
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertSame('/2fa', $response->getTargetUrl());
+    }
+
+    /**
      * @param array<string, string> $googleProfile
      */
     private function signIn(array $googleProfile): User
@@ -146,8 +165,22 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
         $clientRegistry = $this->createStub(ClientRegistry::class);
         $clientRegistry->method('getClient')->willReturn($client);
 
+        $authenticator = $this->createAuthenticator($clientRegistry);
+
+        $request = Request::create('/login-social/check/' . $service);
+        $request->attributes->set('service', $service);
+
+        $user = $authenticator->authenticate($request)->getUser();
+        self::assertInstanceOf(User::class, $user);
+
+        return $user;
+    }
+
+    private function createAuthenticator(ClientRegistry $clientRegistry): UserSocialAuthenticator
+    {
         $container = self::getContainer();
-        $authenticator = new UserSocialAuthenticator(
+
+        return new UserSocialAuthenticator(
             $container->get(Security::class),
             $clientRegistry,
             $container->get(EntityManagerInterface::class),
@@ -158,13 +191,5 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
             $container->get(UserRepository::class),
             $container->get(UnverifiedAccountClaim::class),
         );
-
-        $request = Request::create('/login-social/check/' . $service);
-        $request->attributes->set('service', $service);
-
-        $user = $authenticator->authenticate($request)->getUser();
-        self::assertInstanceOf(User::class, $user);
-
-        return $user;
     }
 }

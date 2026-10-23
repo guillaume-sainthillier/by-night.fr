@@ -177,6 +177,27 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         );
     }
 
+    /**
+     * The members who asked for the weekend selection and have not been sent the one of this week.
+     *
+     * @return list<int>
+     */
+    public function findWeekendDigestRecipientIds(string $week): array
+    {
+        /* @var list<int> */
+        return array_map('intval', $this
+            ->createQueryBuilder('u')
+            ->select('u.id')
+            ->where('u.weekendDigest = true')
+            ->andWhere('u.enabled = true')
+            ->andWhere('u.city IS NOT NULL')
+            ->andWhere('u.weekendDigestSentWeek IS NULL OR u.weekendDigestSentWeek <> :week')
+            ->setParameter('week', $week)
+            ->orderBy('u.id')
+            ->getQuery()
+            ->getSingleColumnResult());
+    }
+
     public function getUsersWithInfoQueryBuilder(DateTimeInterface $from): QueryBuilder
     {
         return $this

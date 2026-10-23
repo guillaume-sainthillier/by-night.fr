@@ -46,12 +46,27 @@ security:
 
             logout:
                 delete_cookies: ['PHPSESSID']
+            # Opt-in: only a member who turned on a second factor goes through /2fa (config/packages/scheb_2fa.yaml)
+            two_factor:
+                auth_form_path: 2fa_login
+                check_path: 2fa_login_check
+                # Lands like a login by the form: the page the member logged in from (LoginTargetPath)
+                success_handler: App\Security\TwoFactor\TwoFactorSuccessHandler
             # https://symfony.com/doc/current/security/impersonating_user.html
             switch_user: { role: ROLE_ADMIN }
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* matching rule is applied
     access_control:
+        # Logging out cancels a login waiting for its second factor
+        - { path: ^/logout, roles: PUBLIC_ACCESS }
+        # The 2FA form, its check and the request of a recovery link: only between the password and the second factor
+        - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+        # The signed link of the recovery e-mail, opened without a session
+        - { path: ^/connexion/recuperation/, roles: PUBLIC_ACCESS }
+        # The calendar feed of a member's outings is stateless (OutingCalendarController): declared public, scheb's
+        # 2FA access check skips it instead of reading the security token, which would start the session
+        - { path: ^/calendrier/, roles: PUBLIC_ACCESS }
         - { path: ^/login-social/service/eventbrite, roles: ROLE_ADMIN }
         - { path: ^/_administration, roles: ROLE_ADMIN }
         - { path: ^/social, roles: ROLE_USER }

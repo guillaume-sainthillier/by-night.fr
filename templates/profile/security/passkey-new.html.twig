@@ -1,0 +1,33 @@
+{% extends 'profile/security/_layout.html.twig' %}
+
+{% block title 'Nouvelle clé d’accès' %}
+{% block breadcrumb %}
+    {{ parent() }}
+    {% do menu.addItem('Nouvelle clé d’accès', url('app_user_security_passkey_new')) %}
+{% endblock %}
+{% block page_title 'Ajouter une clé d’accès' %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card">
+                {{ form_start(form, {attr: {class: 'js-webauthn', 'data-webauthn-action': 'register', 'data-webauthn-options': creationOptions}}) }}
+                <div class="card-body">
+                    <p>
+                        Donnez un nom à cette clé, puis suivez les instructions de votre navigateur&nbsp;: empreinte, visage,
+                        code du téléphone ou clé de sécurité.
+                    </p>
+                    {{ form_errors(form) }}
+                    <div class="alert alert-warning" role="alert" data-webauthn-error hidden></div>
+                    {{ form_row(form.name) }}
+                    {{ form_rest(form) }}
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ path('app_user_edit', {_fragment: 'security'}) }}" class="btn btn-link">Annuler</a>
+                    <button type="submit" class="btn btn-primary"><twig:Icon name="lucide:fingerprint" /> Créer la clé d’accès</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

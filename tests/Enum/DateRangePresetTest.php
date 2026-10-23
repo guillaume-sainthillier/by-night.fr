@@ -33,6 +33,23 @@ final class DateRangePresetTest extends TestCase
         self::assertEquals(new DateTimeImmutable('sunday this week'), DateRangePreset::ThisWeek->range()->to);
     }
 
+    /**
+     * The weekly e-mail reads "Ce week-end" on the day it is sent: a Thursday's is the next three days, a Saturday's
+     * what is left of it.
+     */
+    public function testAShortcutIsReadOnTheDayGiven(): void
+    {
+        $thursday = DateRangePreset::ThisWeekend->range(new DateTimeImmutable('2026-10-22 08:00'));
+        self::assertEquals(new DateTimeImmutable('2026-10-23'), $thursday->from);
+        self::assertEquals(new DateTimeImmutable('2026-10-25'), $thursday->to);
+
+        $saturday = DateRangePreset::ThisWeekend->range(new DateTimeImmutable('2026-10-24'));
+        self::assertEquals(new DateTimeImmutable('2026-10-24'), $saturday->from);
+        self::assertEquals(new DateTimeImmutable('2026-10-25'), $saturday->to);
+
+        self::assertEquals(new DateTimeImmutable('2026-10-23'), DateRangePreset::Tomorrow->range(new DateTimeImmutable('2026-10-22'))->from);
+    }
+
     public function testTousLesJoursHasNoEnd(): void
     {
         self::assertNull(DateRangePreset::Anytime->range()->to);

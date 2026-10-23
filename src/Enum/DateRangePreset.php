@@ -14,7 +14,9 @@ use App\Search\DateRange;
 use DateTimeImmutable;
 
 /**
- * The date shortcuts of the agenda, which its URLs name ("?when=this_weekend"): a link stays true the next week.
+ * The date shortcuts of the agenda, which its URLs name ("?when=this_weekend"): a link stays true the next week. The
+ * ones people search for ("que faire ce week-end à Toulouse") have a page of their own under the location instead
+ * ("/toulouse/ce-week-end", see getPageSlug()).
  */
 enum DateRangePreset: string
 {
@@ -24,6 +26,42 @@ enum DateRangePreset: string
     case ThisWeekend = 'this_weekend';
     case ThisWeek = 'this_week';
     case ThisMonth = 'this_month';
+
+    public static function fromPageSlug(string $slug): ?self
+    {
+        foreach (self::cases() as $preset) {
+            if ($preset->getPageSlug() === $slug) {
+                return $preset;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The path segment of the shortcut's page under a location ("/toulouse/ce-week-end"), for the ones searched for
+     * by name; the others stay in the query string. A new one must be reserved in LocationRequirement.
+     */
+    public function getPageSlug(): ?string
+    {
+        return match ($this) {
+            self::Today => 'ce-soir',
+            self::ThisWeekend => 'ce-week-end',
+            default => null,
+        };
+    }
+
+    /**
+     * How the shortcut's page names its period in a sentence: "Que faire ce week-end à Toulouse ?".
+     */
+    public function getPageLabel(): ?string
+    {
+        return match ($this) {
+            self::Today => 'ce soir',
+            self::ThisWeekend => 'ce week-end',
+            default => null,
+        };
+    }
 
     public function getLabel(): string
     {
@@ -40,17 +78,19 @@ enum DateRangePreset: string
     /**
      * The days of the shortcut from today on: "Cette semaine" starts on Monday, but the days already gone have nothing
      * left to show.
+     *
+     * @param DateTimeImmutable|null $today the day the shortcut is read on: today by default, the day of a weekly e-mail
      */
-    public function range(): DateRange
+    public function range(?DateTimeImmutable $today = null): DateRange
     {
-        $today = new DateTimeImmutable('today');
+        $today = ($today ?? new DateTimeImmutable())->setTime(0, 0);
         [$from, $to] = match ($this) {
             self::Anytime => [$today, null],
             self::Today => [$today, $today],
-            self::Tomorrow => [new DateTimeImmutable('tomorrow'), new DateTimeImmutable('tomorrow')],
-            self::ThisWeekend => [new DateTimeImmutable('friday this week'), new DateTimeImmutable('sunday this week')],
-            self::ThisWeek => [new DateTimeImmutable('monday this week'), new DateTimeImmutable('sunday this week')],
-            self::ThisMonth => [new DateTimeImmutable('first day of this month'), new DateTimeImmutable('last day of this month')],
+            self::Tomorrow => [$today->modify('+1 day'), $today->modify('+1 day')],
+            self::ThisWeekend => [$today->modify('friday this week'), $today->modify('sunday this week')],
+            self::ThisWeek => [$today->modify('monday this week'), $today->modify('sunday this week')],
+            self::ThisMonth => [$today->modify('first day of this month'), $today->modify('last day of this month')],
         };
 
         return new DateRange(max($from, $today), $to);

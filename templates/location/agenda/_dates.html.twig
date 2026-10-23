@@ -1,6 +1,7 @@
 {# The date shortcuts of the agenda, the first way through it ("what's on tonight?"), each with its count of the page's
-   other filters (EventElasticaRepository::getFacets()). "Tous les jours" leaves the period out of the URL. Not followed:
-   their dates change every day. Wrapped, all in sight: no line to scroll sideways.
+   other filters (EventElasticaRepository::getFacets()). "Tous les jours" leaves the period out of the URL. Not followed,
+   their dates changing every day, but for the date pages of a busy location ("/toulouse/ce-week-end"): those are meant
+   to be found (DatePageIndexingPolicy). Wrapped, all in sight: no line to scroll sideways.
 
    Twice on a page: above the events, headed on a phone by the button of the filters ({withFilters: true}, the id the
    tests and the links read), and in the phone's filters panel ({withFilters: false}). #}
@@ -15,7 +16,8 @@
     {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
         {% set count = facets.dates[preset.value] ?? null %}
         {% set when = preset.value == 'anytime' ? {} : {when: preset.value} %}
-        <twig:Chip href="{{ path(app.current_route, routeParams|merge(undatedFilters)|merge(when)) }}" active="{{ search.preset is same as(preset) }}" class="btn-sm text-nowrap" rel="nofollow">
+        {% set followed = datePagesIndexable and preset.pageSlug and not type and not place and not tagEntity and not undatedFilters %}
+        <twig:Chip href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: undatedFilters|merge(when)) }}" active="{{ search.preset is same as(preset) }}" class="btn-sm text-nowrap" rel="{{ followed ? false : 'nofollow' }}">
             {{ preset.label }}
             {% if count is not null %}<span class="chip-count">{{ count }}</span>{% endif %}
         </twig:Chip>

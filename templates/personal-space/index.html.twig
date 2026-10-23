@@ -50,7 +50,7 @@
                         <div class="card-body d-flex align-items-center justify-content-between gap-3">
                             <div>
                                 <div class="subheader">{{ tile.label }}</div>
-                                <div class="h1 text-start mb-0 {{ tile.tone == 'teal' ? 'text-teal' }}">{{ tile.count|format_number(locale: 'fr') }}</div>
+                                <div class="h1 text-start mb-0 {{ tile.tone == 'teal' ? 'text-teal' }}">{{ tile.count|format_number() }}</div>
                             </div>
                             <span class="avatar bg-{{ tile.tone }}-lt d-none d-sm-inline-flex">
                                 <twig:Icon name="{{ tile.icon }}" />

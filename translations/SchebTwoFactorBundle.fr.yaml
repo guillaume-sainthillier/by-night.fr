@@ -1,0 +1,6 @@
+# The errors of the 2FA form (templates/security/2fa-login.html.twig), on top of the bundle's own French translations
+code_invalid: Ce code n'est pas valide, ou a déjà servi.
+# App\Security\TwoFactor\StaleTwoFactorProviderListener
+two_factor_provider_disabled: La double authentification de votre compte a changé entre-temps. Annulez la connexion, puis reconnectez-vous.
+# App\Security\TwoFactor\TwoFactorThrottlingListener
+two_factor_too_many_attempts: Trop de codes essayés. Réessayez dans quelques minutes.

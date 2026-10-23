@@ -21,7 +21,9 @@ use App\Factory\PublisherFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
+use App\SEO\DatePageIndexingPolicy;
 use App\Tests\AppKernelTestCase;
+use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
 use LogicException;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
@@ -35,6 +37,8 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
  */
 final class SitemapSuscriberTest extends AppKernelTestCase
 {
+    use CountsUpcomingEvents;
+
     public function testAppSectionListsTheContentPages(): void
     {
         $urls = $this->collectSection('app');
@@ -94,6 +98,22 @@ final class SitemapSuscriberTest extends AppKernelTestCase
             '/toulouse/agenda/sortir/famille',
             '/toulouse/agenda/sortir/etudiant',
         ], $this->collectSection('agenda'));
+    }
+
+    public function testDatePagesAreSubmittedForBusyCitiesOnly(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $bordeaux = CityFactory::createOne(['name' => 'Bordeaux', 'country' => $toulouse->getCountry()]);
+        EventFactory::createMany(DatePageIndexingPolicy::MIN_UPCOMING_EVENTS, ['place' => $this->createPlace($toulouse, 'Le Bikini'), 'category' => null, 'themes' => []] + $this->dates(10));
+        EventFactory::createMany(DatePageIndexingPolicy::MIN_UPCOMING_EVENTS - 1, ['place' => $this->createPlace($bordeaux, 'Le Rocher'), 'category' => null, 'themes' => []] + $this->dates(10));
+        self::counter()->refresh();
+
+        $paths = $this->collectSection('agenda');
+
+        self::assertContains('/toulouse/ce-soir', $paths);
+        self::assertContains('/toulouse/ce-week-end', $paths);
+        self::assertContains('/bordeaux', $paths);
+        self::assertNotContains('/bordeaux/ce-week-end', $paths);
     }
 
     public function testUsersSectionOnlyListsMembersWithUpcomingEventsInTheirCalendar(): void

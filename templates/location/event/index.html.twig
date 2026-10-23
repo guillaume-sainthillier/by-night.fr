@@ -428,8 +428,8 @@
                             </div>
                             {# Google Maps loads on demand only: no third-party request until the visitor asks for the map #}
                             <div class="ratio ratio-4x3 bg-light{{ directionsTo ? '' : ' rounded-bottom' }}" id="googleMap">
-                                <div class="d-flex flex-column align-items-center justify-content-center gap-2 text-secondary">
-                                    <twig:Icon name="lucide:map" class="icon-lg" />
+                                <div class="map-placeholder d-flex flex-column align-items-center justify-content-center gap-2">
+                                    <twig:Icon name="lucide:map-pin" class="map-placeholder-pin" />
                                     <button type="button" class="btn" id="loadMap"
                                             data-map="https://www.google.com/maps/embed/v1/place?q={{ mapValue|url_encode }}&key={{ googleMapKey }}&zoom=16">
                                         Afficher la carte

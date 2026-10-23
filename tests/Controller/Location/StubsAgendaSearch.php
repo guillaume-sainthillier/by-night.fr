@@ -19,7 +19,8 @@ use FOS\ElasticaBundle\Paginator\PartialResultsInterface;
 
 /**
  * The page of a location lists its agenda, which Elasticsearch searches: the tests have no index of their own, so the
- * search finds nothing and counts nothing, or the events and the aggregations given. Call it once the client is created, before the
+ * search finds nothing and counts nothing, or the events and the aggregations given (and as many hits as given, when
+ * the count matters more than the events listed). Call it once the client is created, before the
  * request, and only for one request: the client boots a new kernel for the next one.
  */
 trait StubsAgendaSearch
@@ -27,21 +28,22 @@ trait StubsAgendaSearch
     /**
      * @param array<string, mixed> $aggregations the "aggregations" of the Elasticsearch response
      * @param list<Event>          $events       the events found, a single page of them
+     * @param int|null             $hits         how many events the search counts, when not the events given
      */
-    private function stubAgendaSearch(array $aggregations = [], array $events = []): void
+    private function stubAgendaSearch(array $aggregations = [], array $events = [], ?int $hits = null): void
     {
-        $empty = new readonly class($aggregations, $events) implements PaginatorAdapterInterface, PartialResultsInterface {
+        $empty = new readonly class($aggregations, $events, $hits ?? \count($events)) implements PaginatorAdapterInterface, PartialResultsInterface {
             /**
              * @param array<string, mixed> $aggregations
              * @param list<Event>          $events
              */
-            public function __construct(private array $aggregations, private array $events)
+            public function __construct(private array $aggregations, private array $events, private int $hits)
             {
             }
 
             public function getTotalHits(): int
             {
-                return \count($this->events);
+                return $this->hits;
             }
 
             public function getResults(int $offset, int $length): PartialResultsInterface

@@ -1,0 +1,48 @@
+{% extends 'layouts/full.html.twig' %}
+
+{# @var user \App\Entity\User #}
+{# @var action string the signed link itself, which the confirmation posts to #}
+
+{% block title 'Sélection du week-end' %}
+
+{% block breadcrumb -%}
+    {% do menu.addItem('Sélection du week-end', action) %}
+{%- endblock %}
+
+{% block body %}
+    <div class="container-lg py-4 py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+                <div class="card card-lg mb-0">
+                    <div class="card-body p-4 p-md-5 text-center">
+                        {% if user.weekendDigest %}
+                            <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
+                                <twig:Icon name="lucide:mail-x" />
+                            </span>
+                            <h1 class="mb-2">Ne plus recevoir la sélection du week-end&nbsp;?</h1>
+                            <p class="text-secondary mb-4">
+                                Chaque jeudi, vous recevez par e-mail les sorties du week-end {{ user.city ? user.city.name|at_place }}.
+                            </p>
+                            <form method="post" action="{{ action }}">
+                                <input type="hidden" name="List-Unsubscribe" value="One-Click" />
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <twig:Icon name="lucide:bell-off" />
+                                    Me désinscrire
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="avatar avatar-lg rounded-circle bg-teal-lt mb-3">
+                                <twig:Icon name="lucide:check" />
+                            </span>
+                            <h1 class="mb-2">Vous êtes désinscrit</h1>
+                            <p class="text-secondary mb-0">
+                                Vous ne recevrez plus la sélection du week-end. Vous pouvez la demander à nouveau depuis
+                                <a href="{{ path('app_user_edit') }}">votre compte</a>.
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
