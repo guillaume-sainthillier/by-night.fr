@@ -7,8 +7,9 @@
 @use 'variables' as *;
 
 // Values shared by several overrides below (`with` cannot read the variables it is configuring)
-// [primary-container] buttons, accents. White on it is 4.3:1: small text uses $primary-strong
-$-primary: #d94826;
+// [primary-container] buttons, accents, text links: the mockups' #d94826 one step darker, same hue, so white text on
+// it and it on white or $surface-low pass AA (5.2:1 on white, 5.0:1 under $surface, 4.7:1 on $surface-low)
+$-primary: #c43d1d;
 $-border-color: rgba($outline-soft, 0.55);
 $-line-height-base: 1.5;
 // Restore Bootstrap heading line-heights (Tabler uses fixed rem, breaks badge vertical centering)

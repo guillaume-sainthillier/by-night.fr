@@ -10,6 +10,15 @@
     color: $body-color !important;
 }
 
+// The orange is dark enough for text on the light surfaces, too dark on the night-blue islands (data-bs-theme="dark"):
+// there its text takes Bootstrap's dark-mode emphasis, the orange lightened with white
+[data-bs-theme='dark'] {
+    .text-primary,
+    .bg-primary-lt {
+        color: var(--primary-text-emphasis) !important;
+    }
+}
+
 // Text cut after two lines
 .line-clamp-2 {
     display: -webkit-box;
