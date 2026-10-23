@@ -1,8 +1,8 @@
 {% extends 'email/layout.txt.twig' %}
 
 {% set utm = {utm_source: 'newsletter', utm_medium: 'email', utm_campaign: 'weekend'} %}
-{# TODO: the city's own weekend page (/{city}/ce-week-end) once the date pages are merged #}
-{% set agendaUrl = url('app_location_index', {location: location.slug, when: 'this_weekend'}|merge(utm)) %}
+{# The city's own weekend page (/{city}/ce-week-end): agenda_path() names the shortcut's page, as the agenda's links do #}
+{% set agendaUrl = absolute_url(agenda_path(location.slug, filters: {when: 'this_weekend'}|merge(utm))) %}
 
 {% block heading %}Ce week-end {{ location.atName }}{% endblock %}
 

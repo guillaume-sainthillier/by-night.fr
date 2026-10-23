@@ -8,8 +8,8 @@
 
 {# Every link says where the visit comes from; the pages' canonical URLs leave the query string out #}
 {% set utm = {utm_source: 'newsletter', utm_medium: 'email', utm_campaign: 'weekend'} %}
-{# TODO: the city's own weekend page (/{city}/ce-week-end) once the date pages are merged #}
-{% set agendaUrl = url('app_location_index', {location: location.slug, when: 'this_weekend'}|merge(utm)) %}
+{# The city's own weekend page (/{city}/ce-week-end): agenda_path() names the shortcut's page, as the agenda's links do #}
+{% set agendaUrl = absolute_url(agenda_path(location.slug, filters: {when: 'this_weekend'}|merge(utm))) %}
 
 {% block email_title %}Ce week-end {{ location.atName }}{% endblock %}
 {% block preheader %}{{ events|slice(0, 3)|map(event => event.name)|join(', ') }}…{% endblock %}
