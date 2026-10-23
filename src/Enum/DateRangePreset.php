@@ -40,17 +40,19 @@ enum DateRangePreset: string
     /**
      * The days of the shortcut from today on: "Cette semaine" starts on Monday, but the days already gone have nothing
      * left to show.
+     *
+     * @param DateTimeImmutable|null $today the day the shortcut is read on: today by default, the day of a weekly e-mail
      */
-    public function range(): DateRange
+    public function range(?DateTimeImmutable $today = null): DateRange
     {
-        $today = new DateTimeImmutable('today');
+        $today = ($today ?? new DateTimeImmutable())->setTime(0, 0);
         [$from, $to] = match ($this) {
             self::Anytime => [$today, null],
             self::Today => [$today, $today],
-            self::Tomorrow => [new DateTimeImmutable('tomorrow'), new DateTimeImmutable('tomorrow')],
-            self::ThisWeekend => [new DateTimeImmutable('friday this week'), new DateTimeImmutable('sunday this week')],
-            self::ThisWeek => [new DateTimeImmutable('monday this week'), new DateTimeImmutable('sunday this week')],
-            self::ThisMonth => [new DateTimeImmutable('first day of this month'), new DateTimeImmutable('last day of this month')],
+            self::Tomorrow => [$today->modify('+1 day'), $today->modify('+1 day')],
+            self::ThisWeekend => [$today->modify('friday this week'), $today->modify('sunday this week')],
+            self::ThisWeek => [$today->modify('monday this week'), $today->modify('sunday this week')],
+            self::ThisMonth => [$today->modify('first day of this month'), $today->modify('last day of this month')],
         };
 
         return new DateRange(max($from, $today), $to);

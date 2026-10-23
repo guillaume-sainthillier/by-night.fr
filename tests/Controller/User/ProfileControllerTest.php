@@ -183,6 +183,53 @@ final class ProfileControllerTest extends AppWebTestCase
         self::assertSame('toulouse', $user->getCity()?->getSlug(), 'The city is kept');
     }
 
+    public function testTheWeekendSelectionIsOffUntilTheMemberAsksForIt(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['city' => CityFactory::toulouse()]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        self::assertCheckboxNotChecked('profile_form[weekendDigest]');
+
+        $client->submitForm('Enregistrer les modifications', ['profile_form[weekendDigest]' => true]);
+
+        self::assertResponseIsSuccessful();
+        refresh($user);
+        self::assertTrue($user->isWeekendDigest());
+        self::assertNotNull($user->getWeekendDigestSince(), 'The consent is dated');
+    }
+
+    public function testTheWeekendSelectionNeedsACity(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Enregistrer les modifications', ['profile_form[weekendDigest]' => true]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSelectorTextContains('#profile .invalid-feedback', 'Veuillez choisir votre ville pour recevoir la sélection du week-end.');
+        // The form left the refused choice on the member in memory: what the database holds is what counts
+        self::assertSame(1, UserFactory::count(['id' => $user->getId(), 'weekendDigest' => false]));
+    }
+
+    public function testGivingUpTheWeekendSelectionForgetsTheConsent(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['city' => CityFactory::toulouse(), 'weekendDigest' => true]);
+        $client->loginUser($user);
+
+        $client->request('GET', '/profile/edit');
+        $client->submitForm('Enregistrer les modifications', ['profile_form[weekendDigest]' => false]);
+
+        self::assertResponseIsSuccessful();
+        refresh($user);
+        self::assertFalse($user->isWeekendDigest());
+        self::assertNull($user->getWeekendDigestSince());
+    }
+
     public function testAPublisherOptsOutOfTheNews(): void
     {
         $client = self::createClient();
@@ -208,5 +255,25 @@ final class ProfileControllerTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('[name="profile_form[publisherNews]"]');
+    }
+
+    /**
+     * The e-mails a member can turn on or off are in one panel, the organizers' news for organizers only.
+     */
+    public function testTheEmailsAreChosenInOnePlace(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        PublisherFactory::createOne(['owner' => $user]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/profile/edit');
+
+        $panel = $crawler->filter('h3:contains("E-mails") + .form-panel');
+        self::assertCount(1, $panel);
+        self::assertSame(
+            ['profile_form[weekendDigest]', 'profile_form[outingAlerts]', 'profile_form[publisherNews]'],
+            $panel->filter('input[type="checkbox"]')->each(static fn ($input): ?string => $input->attr('name')),
+        );
     }
 }

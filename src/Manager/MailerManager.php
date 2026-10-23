@@ -10,7 +10,9 @@
 
 namespace App\Manager;
 
+use App\App\Location;
 use App\Entity\ContentRemovalRequest;
+use App\Entity\Event;
 use App\Entity\Publisher;
 use App\Entity\User;
 use App\Entity\UserEvent;
@@ -19,6 +21,7 @@ use App\Enum\PublisherNewsEdition;
 use App\Outing\OutingChange;
 use App\Outing\OutingChangeWording;
 use App\Outing\OutingState;
+use App\Search\DateRange;
 use LogicException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -27,6 +30,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 final readonly class MailerManager
@@ -36,6 +40,7 @@ final readonly class MailerManager
     public function __construct(
         private MailerInterface $mailer,
         private UrlGeneratorInterface $urlGenerator,
+        private TranslatorInterface $translator,
         private UriSigner $uriSigner,
         #[Autowire(env: 'SUPPORT_BCC_EMAIL')]
         private string $supportBccEmail,
@@ -65,6 +70,35 @@ final readonly class MailerManager
     }
 
     /**
+     * The weekend selection of the member's city, which a mailbox offers to unsubscribe from in one click (RFC 8058).
+     *
+     * @param list<Event> $events
+     */
+    public function sendWeekendDigestEmail(User $user, Location $location, DateRange $weekend, array $events, string $unsubscribeUrl): void
+    {
+        $email = $this->createEmail('email/weekend-digest')
+            ->to($user->getEmail())
+            ->subject($this->translator->trans(
+                "Ce week-end {at}\u{a0}: {count, plural, one {# sortie} other {# sorties}} à ne pas manquer",
+                ['at' => $location->getAtName(), 'count' => \count($events)],
+                'messages+intl-icu',
+            ))
+            ->context([
+                'user' => $user,
+                'location' => $location,
+                'weekend' => $weekend,
+                'events' => $events,
+                'unsubscribeUrl' => $unsubscribeUrl,
+            ]);
+
+        $email->getHeaders()
+            ->addTextHeader('List-Unsubscribe', '<' . $unsubscribeUrl . '>')
+            ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+
+        $this->sendMail($email);
+    }
+
+    /**
      * Tells a member going to an event what changed in it (OutingChangeNotifier). It can be turned off in one click,
      * from the e-mail or the mail app (RFC 8058).
      *
@@ -88,6 +122,7 @@ final readonly class MailerManager
                 'sentences' => array_map(static fn (OutingChange $change): string => OutingChangeWording::sentence($change, $known, $now), $changes),
                 'unsubscribeUrl' => $unsubscribeUrl,
             ]);
+
         $email->getHeaders()
             ->addTextHeader('List-Unsubscribe', '<' . $unsubscribeUrl . '>')
             ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
