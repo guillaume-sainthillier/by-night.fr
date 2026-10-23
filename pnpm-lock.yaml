@@ -195,8 +195,8 @@ importers:
         specifier: ^11.8.0
         version: 11.8.0
       '@silarhi/app-js':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.3.0
+        version: 0.3.0
       '@silarhi/ux-icons-js':
         specifier: ^0.3.1
         version: 0.3.1(preact@11.0.1)
@@ -960,8 +960,8 @@ packages:
     resolution: {integrity: sha512-0jXMLd9XCBEZ5tu0VJa1uj1HYCpsjuNjbEBhF5pUw4FHyIH5hz01WuI20SH2Ct0pP1mykTzJLPGjZ8sUiAmMnQ==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@silarhi/app-js@0.2.1':
-    resolution: {integrity: sha512-XZtQLxpbBAcSK4aD37e23m7TPrCkZmHDBKwGsRTaFuyPfvYGAeAflN258ZRb70m1QKJmeULtbTBFfBALWrLCNA==}
+  '@silarhi/app-js@0.3.0':
+    resolution: {integrity: sha512-P6veJdkd2WB91Fbw8N6vANLtMukd4IbubbY6pCSeoea25kwDj7mv2NeIB4bzuGoW4J3V9gqO4y1yUY+lu7I3Zw==}
 
   '@silarhi/ux-icons-js@0.3.1':
     resolution: {integrity: sha512-9owsAK1WHuDA8ZSlFUBOovUMLy3iaZrDL3acBKouTcggX2Ud+cgSjznEedW0mgkRcsVXe2R0iEhsWb7rfrnZIA==}
@@ -2307,7 +2307,7 @@ snapshots:
       '@sentry/browser-utils': 11.8.0
       '@sentry/core': 11.8.0
 
-  '@silarhi/app-js@0.2.1': {}
+  '@silarhi/app-js@0.3.0': {}
 
   '@silarhi/ux-icons-js@0.3.1(preact@11.0.1)':
     optionalDependencies:
