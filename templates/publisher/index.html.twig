@@ -97,13 +97,15 @@
                     <span class="badge bg-secondary-lt">{{ stats.firstYear ?: publisher.createdAt|date('Y') }}</span>
                 </div>
                 {% if owner %}
-                    <div class="card-body">
-                        <div class="subheader mb-2">Géré par</div>
-                        <a class="d-flex align-items-center gap-2 text-reset" href="{{ path('app_user_index', {id: owner.id, slug: owner.slug}) }}" title="Le profil de {{ owner.username }}">
+                    <div class="card-body pb-2">
+                        <div class="subheader">Géré par</div>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="{{ path('app_user_index', {id: owner.id, slug: owner.slug}) }}" title="Le profil de {{ owner.username }}">
                             <span class="avatar">
                                 <twig:User:Thumb user="{{ owner }}" width="{{ 40 }}" height="{{ 40 }}" />
                             </span>
-                            <strong>{{ owner.username }}</strong>
+                            <strong class="text-truncate">{{ owner.username }}</strong>
                         </a>
                     </div>
                 {% endif %}
