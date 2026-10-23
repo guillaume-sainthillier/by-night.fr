@@ -17,13 +17,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Form\FormFactoryInterface;
 
 /**
- * A new member gives their first and last names, a username of 2 characters or more and a valid address; the
- * password rules are NewPasswordTypeTest's.
+ * A new member gives their first and last names, a username of 2 characters or more and a valid address, and accepts
+ * the terms of use; the password rules are NewPasswordTypeTest's.
  */
 final class RegistrationFormTypeTest extends AppKernelTestCase
 {
     /**
-     * @return iterable<string, array{string, string, string}>
+     * @return iterable<string, array{string, ?string, string}>
      */
     public static function provideMissingFields(): iterable
     {
@@ -33,10 +33,12 @@ final class RegistrationFormTypeTest extends AppKernelTestCase
         yield 'a one-character username' => ['username', 'c', "Votre nom d'utilisateur doit comporter au moins 2 caractères."];
         yield 'no address' => ['email', '', 'Veuillez saisir votre adresse e-mail.'];
         yield 'not an address' => ['email', 'camille', 'Veuillez saisir une adresse e-mail valide.'];
+        // An unticked checkbox sends nothing
+        yield 'the terms not accepted' => ['agreeTerms', null, "Veuillez accepter les conditions générales d'utilisation."];
     }
 
     #[DataProvider('provideMissingFields')]
-    public function testTheFieldIsRequired(string $field, string $value, string $error): void
+    public function testTheFieldIsRequired(string $field, ?string $value, string $error): void
     {
         $data = [
             'firstname' => 'Camille',
@@ -44,6 +46,7 @@ final class RegistrationFormTypeTest extends AppKernelTestCase
             'username' => 'camille_m',
             'email' => 'camille@example.com',
             'plainPassword' => ['first' => 'Motdepasse1', 'second' => 'Motdepasse1'],
+            'agreeTerms' => '1',
             $field => $value,
         ];
         $form = self::getContainer()->get(FormFactoryInterface::class)->create(RegistrationFormType::class, new User(), ['csrf_protection' => false]);
@@ -63,6 +66,7 @@ final class RegistrationFormTypeTest extends AppKernelTestCase
             'username' => 'camille_m',
             'email' => 'camille@example.com',
             'plainPassword' => ['first' => 'Motdepasse1', 'second' => 'Motdepasse1'],
+            'agreeTerms' => '1',
         ]);
 
         self::assertTrue($form->isValid(), (string) $form->getErrors(true));
