@@ -84,6 +84,39 @@
         border-bottom-left-radius: inherit;
     }
 
+    // A street plan drawn in CSS behind the button, until the visitor loads the real map: a river, a park,
+    // two avenues and a grid of streets, no request at all
+    .map-placeholder {
+        border-bottom-right-radius: inherit;
+        border-bottom-left-radius: inherit;
+        background-color: #f2efe9;
+        background-image:
+            radial-gradient(ellipse 22% 18% at 78% 24%, #cfe8c4 98%, transparent),
+            linear-gradient(152deg, transparent 58%, #aad3df 58% 64%, transparent 64%),
+            linear-gradient(28deg, transparent 47%, #fff 47% 50%, transparent 50%),
+            linear-gradient(98deg, transparent 37%, #fff 37% 40%, transparent 40%),
+            repeating-linear-gradient(8deg, transparent 0 34px, #fff 34px 37px),
+            repeating-linear-gradient(98deg, transparent 0 46px, #fff 46px 49px);
+
+        // A pale veil, so the button reads on top of the streets
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(#fff, 0.7) 18%, transparent 60%);
+        }
+
+        > * {
+            position: relative;
+        }
+
+        .map-placeholder-pin {
+            --icon-size: 2.5rem;
+            color: var(--primary);
+            filter: drop-shadow(0 2px 2px rgba(#000, 0.25));
+        }
+    }
+
     #event {
         a.image-gallery {
             display: block;
