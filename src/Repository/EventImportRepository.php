@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\Entity\EventImport;
+use App\Entity\Publisher;
 use App\Entity\User;
 use App\Enum\EventImportStatus;
 use DateTimeImmutable;
@@ -33,16 +34,21 @@ final class EventImportRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return EventImport[] the member's latest, newest first
+     * @return EventImport[] the publisher's latest, newest first
      */
-    public function findLatestByUser(User $user, int $limit = 5): array
+    public function findLatestByPublisher(Publisher $publisher, int $limit = 5): array
     {
-        return $this->findBy(['user' => $user], ['id' => 'DESC'], $limit);
+        return $this->findBy(['publisher' => $publisher], ['id' => 'DESC'], $limit);
     }
 
     public function countRunningByUser(User $user): int
     {
         return $this->count(['user' => $user, 'status' => [EventImportStatus::Uploaded, EventImportStatus::Checking, EventImportStatus::Importing]]);
+    }
+
+    public function countRunningByPublisher(Publisher $publisher): int
+    {
+        return $this->count(['publisher' => $publisher, 'status' => [EventImportStatus::Uploaded, EventImportStatus::Checking, EventImportStatus::Importing]]);
     }
 
     /**

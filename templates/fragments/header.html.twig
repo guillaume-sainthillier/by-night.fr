@@ -12,13 +12,15 @@
             </span>
         </a>
         <div class="d-flex d-lg-none">
-            <ul class="navbar-nav flex-row gap-3 align-items-center">
+            {# The publisher of an organizer page joins the member's menu: closer together, they still fit beside the brand #}
+            <ul class="navbar-nav flex-row {{ current_publisher() ? 'gap-2' : 'gap-3' }} align-items-center">
                 <li class="nav-item">
                     {# Opens the search panel; the search page until the script runs #}
                     <a class="nav-link" href="{{ path('app_search_index') }}" id="autocomplete-mobile-toggler" aria-label="Rechercher">
                         <twig:Icon name="lucide:search" />
                     </a>
                 </li>
+                {{ include('fragments/_header-publisher-dropdown.html.twig', {show_name: false}) }}
                 {{ include('fragments/_header-user-dropdown.html.twig', {show_username: false}) }}
             </ul>
         </div>
@@ -89,6 +91,7 @@
                 {% endif %}
                 <ul class="d-none d-lg-flex navbar-nav align-items-center">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                        {{ include('fragments/_header-publisher-dropdown.html.twig', {show_name: true}) }}
                         {{ include('fragments/_header-user-dropdown.html.twig', {show_username: true}) }}
                     {% else %}
                         <li class="nav-item">
@@ -104,7 +107,7 @@
                     {% endif %}
                 </ul>
                 <div class="vr d-none d-lg-block"></div>
-                <a class="btn btn-primary btn-pill site-header-cta" title="Publiez votre événement gratuitement" aria-label="Publier un événement" href="{{ path('app_event_new') }}">
+                <a class="btn btn-primary btn-pill site-header-cta" title="Publiez votre événement gratuitement" aria-label="Publier un événement" href="{{ path('app_personal_space_event_new') }}">
                     <twig:Icon name="lucide:circle-plus" />
                     {# Icon only from lg to xxl, where the header is tightest: at 1280px and 1366px, two of the most common
                        desktop widths, the label cut the city picker and the search field short #}

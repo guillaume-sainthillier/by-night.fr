@@ -21,9 +21,13 @@
                 <twig:Icon name="lucide:heart" />
                 Mes sorties
             </a>
-            <a class="dropdown-item" title="Gérer les événements que j'ai publiés" href="{{ path('app_event_list') }}">
+            <a class="dropdown-item" title="Gérer les événements que j'ai publiés" href="{{ path('app_personal_space_events') }}">
                 <twig:Icon name="lucide:list-checks" />
                 Mes événements publiés
+            </a>
+            <a class="dropdown-item" title="Présenter mon lieu, mon collectif ou moi-même aux visiteurs" href="{{ path('app_personal_space_publisher') }}">
+                <twig:Icon name="lucide:megaphone" />
+                Ma page organisateur
             </a>
             <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
                 <twig:Icon name="lucide:settings" />

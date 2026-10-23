@@ -30,7 +30,7 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-60 days'), 'visitors' => 100, 'ticketClicks' => 9]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Concert de jazz');
@@ -50,7 +50,7 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-10 days'), 'visitors' => 28, 'ticketClicks' => 1]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques?period=last_7_days', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques?period=last_7_days', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSame('12', $this->tiles($crawler)[0]);
@@ -68,7 +68,7 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('today'), 'visitors' => 12, 'ticketClicks' => 3]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()), [
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())), [
             'period' => 'last_7_days',
             'dateRange' => ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')],
         ]);
@@ -86,7 +86,7 @@ final class EventStatsTest extends AppWebTestCase
         $event = EventFactory::createOne();
         $client->loginUser($event->getUser());
 
-        $client->request('GET', \sprintf('/espace-perso/%d/statistiques?period=forever', $event->getId()));
+        $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques?period=forever', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextSame('#event-stats-periods .active', '30 derniers jours');
@@ -98,7 +98,7 @@ final class EventStatsTest extends AppWebTestCase
         $event = EventFactory::createOne();
         $client->loginUser($event->getUser());
 
-        $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#event-stats .empty-title', 'Pas de visite sur cette période');
@@ -115,7 +115,7 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-2 days'), 'visitors' => 10, 'ticketClicks' => 1]);
         $client->loginUser($event->getUser());
 
-        $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#event-stats-google-analytics', 'Google Analytics');
@@ -129,7 +129,7 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-2 days'), 'visitors' => 10, 'ticketClicks' => 1]);
         $client->loginUser($event->getUser());
 
-        $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('#event-stats-google-analytics');
@@ -141,7 +141,7 @@ final class EventStatsTest extends AppWebTestCase
         $event = EventFactory::createOne();
         $client->loginUser(UserFactory::createOne());
 
-        $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -154,7 +154,7 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $canonical, 'day' => new DateTimeImmutable('today'), 'visitors' => 7, 'ticketClicks' => 2]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/statistiques', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), \sprintf('evenements/%d/statistiques', $event->getId())));
 
         self::assertResponseIsSuccessful();
         self::assertSame('7', $this->tiles($crawler)[0]);
@@ -170,12 +170,12 @@ final class EventStatsTest extends AppWebTestCase
         EventVisitStatFactory::createOne(['event' => $event, 'day' => new DateTimeImmutable('-45 days'), 'visitors' => 500, 'ticketClicks' => 50]);
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+        $crawler = $client->request('GET', self::organizerPath($user));
 
         self::assertResponseIsSuccessful();
-        $cell = $crawler->filter(\sprintf('a[href="/espace-perso/%d/statistiques"].text-reset', $event->getId()));
+        $cell = $crawler->filter(\sprintf('a[href="%s"].text-reset', self::organizerPath($user, \sprintf('evenements/%d/statistiques', $event->getId()))));
         self::assertSame('21 visiteurs 1 clic billetterie', $cell->text());
-        self::assertSame('0 visiteur', $crawler->filter(\sprintf('a[href="/espace-perso/%d/statistiques"].text-reset', $quiet->getId()))->text());
+        self::assertSame('0 visiteur', $crawler->filter(\sprintf('a[href="%s"].text-reset', self::organizerPath($user, \sprintf('evenements/%d/statistiques', $quiet->getId()))))->text());
     }
 
     /**

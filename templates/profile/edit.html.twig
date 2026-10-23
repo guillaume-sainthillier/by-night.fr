@@ -149,7 +149,7 @@
                     {% set favorites_meta %}{{ '{count, plural, =0 {Aucun favori} one {# favori} other {# favoris}}'|trans({count: favoritesCount}, 'messages+intl-icu') }}{% endset %}
                     <div class="row row-cards">
                         <div class="col-md-6">
-                            <twig:Tile href="{{ path('app_event_list') }}" icon="lucide:calendar-days" tone="blue" title="Mes événements" description="Créez vos événements et suivez ceux que vous avez publiés." meta="{{ events_meta }}" />
+                            <twig:Tile href="{{ path('app_personal_space_events') }}" icon="lucide:calendar-days" tone="blue" title="Mes événements" description="Créez vos événements et suivez ceux que vous avez publiés." meta="{{ events_meta }}" />
                         </div>
                         <div class="col-md-6">
                             <twig:Tile href="{{ publicProfileUrl }}" icon="lucide:heart" tone="pink" title="Mon profil public" description="Vos sorties favorites, telles que les autres membres les voient." meta="{{ favorites_meta }}" />

@@ -1,0 +1,104 @@
+{% extends 'personal-space/layout.html.twig' %}
+
+{% block title 'Ma page organisateur' %}
+{% block page_title 'Ma page organisateur' %}
+
+{% block breadcrumb_personal_space %}
+    {% do menu.addItem('Ma page organisateur', url('app_publisher_edit')) %}
+{% endblock %}
+
+{# The page title is the hero at the top of the body #}
+{% block layout_top %}
+    {{ include('layouts/_flash-messages.html.twig', {container_class: block('container_class')}) }}
+    {{ block('layout_header') }}
+{% endblock %}
+
+{% block body -%}
+    <section class="row justify-content-center text-center pt-lg-3 mb-5">
+        <div class="col-lg-8">
+            <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
+            <h1 class="display-6 fw-bold mb-3">{{ block('page_title') }}</h1>
+            <p class="lead text-secondary mb-4">
+                La page publique de vos événements&nbsp;: présentez-vous, ajoutez votre logo et vos réseaux, ils accompagnent chacun de vos événements.
+            </p>
+            {% if publisher.id %}
+                <a class="btn btn-outline-secondary btn-lg" href="{{ path('app_publisher_index', {slug: publisher.slug}) }}">
+                    <twig:Icon name="lucide:external-link" />
+                    Voir ma page
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <twig:Publisher:Completion completion="{{ completion }}" class="mb-4" />
+
+            {{ form_start(form) }}
+                <twig:FormCard icon="lucide:id-card" title="Identité" description="Votre nom, votre logo et l'image en tête de votre page">
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.logoFile) }}
+                    {{ form_row(form.coverFile) }}
+                </twig:FormCard>
+
+                <twig:FormCard icon="lucide:text" title="Présentation" description="Ce que vous proposez, en quelques lignes">
+                    {{ form_row(form.description) }}
+                </twig:FormCard>
+
+                <twig:FormCard icon="lucide:share-2" title="Site et réseaux sociaux" description="Affichés sur votre page et sur chacun de vos événements">
+                    {{ form_row(form.website) }}
+                    <div class="row">
+                        {% for link in form.socialLinks %}
+                            <div class="col-md-6">{{ form_row(link) }}</div>
+                        {% endfor %}
+                    </div>
+                </twig:FormCard>
+
+                <div class="text-end mb-5">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <twig:Icon name="lucide:save" />
+                        Enregistrer
+                    </button>
+                </div>
+            {{ form_end(form) }}
+
+            {# The deletion of the page: its events move to another of the member's pages or go with it #}
+            <section id="supprimer" class="mb-5">
+                <twig:FormCard icon="lucide:trash-2" tone="danger" title="Supprimer cette page" description="La page, ses imports et ses exports, sans retour possible." badge="Action définitive" badgeTone="danger">
+                    {% if jobRunning %}
+                        <div class="alert alert-info mb-0">
+                            <twig:Icon name="lucide:info" />
+                            <div>Un import ou un export de cette page est en cours&nbsp;: attendez qu'il se termine pour la supprimer.</div>
+                        </div>
+                    {% elseif deleteForm is null %}
+                        <div class="alert alert-info mb-0">
+                            <twig:Icon name="lucide:info" />
+                            <div>
+                                C'est votre seule page organisateur&nbsp;: ses {{ events }} événement{{ events > 1 ? 's' }} n'auraient nulle part où aller.
+                                <a href="{{ path('app_publisher_new', {suite: 'page'}) }}">Créez une autre page</a> pour les y déplacer, ou <a href="{{ path('app_event_list') }}">supprimez-les</a> d'abord.
+                            </div>
+                        </div>
+                    {% else %}
+                        {{ form_start(deleteForm) }}
+                            <div class="alert alert-warning">
+                                <twig:Icon name="lucide:triangle-alert" />
+                                <div>
+                                    <strong>Attention&nbsp;:</strong> la page est supprimée dès votre confirmation, avec ses imports et ses exports.
+                                    {% if deleteForm.heir is defined %}Ses événements sont déplacés vers la page de votre choix, qui reprend son adresse, ou supprimés avec elle.{% endif %}
+                                </div>
+                            </div>
+                            {% if deleteForm.heir is defined %}
+                                {{ form_row(deleteForm.heir) }}
+                            {% endif %}
+                            {{ form_row(deleteForm.name) }}
+                            <button type="submit" class="btn btn-danger">
+                                <twig:Icon name="lucide:trash-2" />
+                                Supprimer la page
+                            </button>
+                        {{ form_end(deleteForm) }}
+                    {% endif %}
+                </twig:FormCard>
+            </section>
+        </div>
+    </div>
+{%- endblock %}

@@ -125,7 +125,7 @@
                                 Votre espace «&nbsp;Mes événements&nbsp;» rassemble tout ce que vous avez publié, en ligne ou masqué, et la
                                 page de chaque événement affiche le nombre de membres qui l'ont ajouté à leurs favoris.
                             </p>
-                            <a class="card card-sm card-link-pop text-reset form-panel border-0 mb-0 mt-auto" href="{{ path('app_event_list') }}">
+                            <a class="card card-sm card-link-pop text-reset form-panel border-0 mb-0 mt-auto" href="{{ path('app_personal_space_events') }}">
                                 <div class="card-body d-flex align-items-center gap-3">
                                     <span class="avatar bg-white text-primary"><twig:Icon name="lucide:calendar-check" /></span>
                                     <div class="flex-fill">
@@ -209,7 +209,7 @@
                                 (organisateurs, salles, associations et collectifs) qui ont déjà publié leurs événements sur By Night.
                             </p>
                             <div class="d-flex flex-wrap align-items-center gap-3">
-                                <a class="btn btn-lg bg-white text-primary" href="{{ path('app_event_new') }}">
+                                <a class="btn btn-lg bg-white text-primary" href="{{ path('app_personal_space_event_new') }}">
                                     <twig:Icon name="lucide:circle-plus" />
                                     Publier un événement gratuitement
                                 </a>

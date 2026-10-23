@@ -16,6 +16,7 @@ use App\Factory\CommentFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Message\RecountUpcomingEvents;
@@ -43,7 +44,7 @@ final class EventControllerTest extends AppWebTestCase
         $eventId = $event->getId();
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $eventId));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $eventId));
 
         self::assertResponseIsSuccessful();
         // The button sits in the event form's action bar, its form attribute makes it submit the delete form
@@ -52,7 +53,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->submit($deleteButton->form());
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertSame(0, EventFactory::count(['id' => $eventId]));
     }
 
@@ -63,12 +64,12 @@ final class EventControllerTest extends AppWebTestCase
         $eventId = $event->getId();
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+        $crawler = $client->request('GET', self::organizerPath($event->getUser()));
 
         self::assertResponseIsSuccessful();
         $client->submit($crawler->filter(\sprintf('form.form-delete-%d', $eventId))->form());
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertSame(0, EventFactory::count(['id' => $eventId]));
     }
 
@@ -78,11 +79,10 @@ final class EventControllerTest extends AppWebTestCase
         $user = UserFactory::createOne();
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+        $crawler = $client->request('GET', self::organizerPath($user));
 
         self::assertResponseIsSuccessful();
         self::assertStringEndsWith(rawurlencode('https://by-night.test/users/' . $user->getId()), (string) $crawler->filter('[data-transfer-toasts]')->attr('data-transfer-toasts'));
-        self::assertSame('/espace-perso/exports', $crawler->filter('[data-transfer-toasts]')->attr('data-exports-url'));
         self::assertSame('__Secure-mercure_access_token', ($client->getResponse()->headers->getCookies()[0] ?? null)?->getName());
     }
 
@@ -104,7 +104,7 @@ final class EventControllerTest extends AppWebTestCase
             'cancelled' => ['Annulé'],
             'unknown' => ['Annulé', 'Masqué', 'En ligne'],
         ] as $status => $names) {
-            $crawler = $client->request('GET', '/espace-perso/mes-soirees', ['status' => $status]);
+            $crawler = $client->request('GET', self::organizerPath($user), ['status' => $status]);
 
             self::assertResponseIsSuccessful();
             self::assertSame($names, $crawler->filter('tbody tr > td:nth-child(2) a')->each(static fn ($link) => $link->text()), $status);
@@ -121,13 +121,13 @@ final class EventControllerTest extends AppWebTestCase
         $client->loginUser($user);
 
         // Counted whatever the search: the counts tell what each filter would list
-        $crawler = $client->request('GET', '/espace-perso/mes-soirees', ['q' => 'no match', 'status' => 'hidden']);
+        $crawler = $client->request('GET', self::organizerPath($user), ['q' => 'no match', 'status' => 'hidden']);
 
         self::assertResponseIsSuccessful();
         $counters = $crawler->filter('#event-counters a');
         self::assertSame(['Total créés 3', 'En ligne 2', 'Masqués 1', 'Annulés 1'], $counters->each(static fn ($counter) => $counter->text()));
         // Each counter keeps the search; the search form keeps the status
-        self::assertSame('/espace-perso/mes-soirees?q=no%20match&status=cancelled', $counters->last()->attr('href'));
+        self::assertSame(self::organizerPath($user) . '?q=no%20match&status=cancelled', $counters->last()->attr('href'));
         self::assertSame('Masqués 1', $crawler->filter('#event-counters a[aria-current="page"]')->text());
         self::assertSame('hidden', $crawler->filter('#event-filters input[name="status"]')->attr('value'));
         self::assertSelectorTextContains('.empty-title', 'Aucun événement ne correspond à votre recherche');
@@ -141,7 +141,7 @@ final class EventControllerTest extends AppWebTestCase
         $client->loginUser($event->getUser());
 
         // What a form posted from another site would send
-        $client->request('POST', \sprintf('/espace-perso/%d', $eventId), ['_method' => 'DELETE']);
+        $client->request('POST', self::organizerPath($event->getUser(), 'evenements/' . $eventId), ['_method' => 'DELETE']);
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
         self::assertSame(1, EventFactory::count(['id' => $eventId]));
@@ -153,12 +153,12 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['name' => 'Concert de jazz']);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[name]'] = 'Concert de jazz manouche';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertSame('Concert de jazz manouche', EventFactory::find(['id' => $event->getId()])->getName());
     }
 
@@ -172,12 +172,12 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['name' => 'Concert de jazz', 'type' => 'Concert']);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[name]'] = 'Concert de jazz manouche';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         $saved = EventFactory::find(['id' => $event->getId()]);
         self::assertSame('Concert', $saved->getType());
     }
@@ -188,13 +188,13 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne();
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[status]'] = EventStatus::Postponed->value;
         $form['app_event[statusMessage]'] = 'Reporté au 15 mars';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         $saved = EventFactory::find(['id' => $event->getId()]);
         self::assertSame(EventStatus::Postponed, $saved->getStatus());
         self::assertSame('Reporté au 15 mars', $saved->getStatusMessage());
@@ -210,12 +210,12 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['status' => EventStatus::Postponed, 'statusMessage' => 'Reporté au 15 mars']);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[status]'] = '';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         $saved = EventFactory::find(['id' => $event->getId()]);
         self::assertNull($saved->getStatus());
         self::assertNull($saved->getStatusMessage());
@@ -231,7 +231,7 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['name' => 'Concert de jazz']);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[name]'] = 'Forged name';
         $form['app_event[_token]'] = 'forged';
@@ -247,7 +247,7 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['name' => 'Concert de jazz']);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[name]'] = 'Film Streaming gratuit';
         $client->submit($form);
@@ -265,10 +265,57 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->submit($this->newEventForm($client, 'Soirée swing au Bikini'));
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         $event = EventFactory::find(['name' => 'Soirée swing au Bikini']);
         self::assertSame($user->getId(), $event->getUser()?->getId());
         self::assertFalse($event->isDraft());
+    }
+
+    public function testTheFirstEventOfAMemberIsPublishedInTheirName(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['username' => 'Swing Toulouse', 'verified' => true, 'enabled' => true]);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $client->submit($this->newEventForm($client, 'Soirée swing au Bikini'));
+
+        $publisher = EventFactory::find(['name' => 'Soirée swing au Bikini'])->getPublisher();
+        self::assertSame('Swing Toulouse', $publisher?->getName());
+        self::assertSame($user->getId(), $publisher->getOwner()?->getId());
+    }
+
+    /**
+     * An event is the publisher's whose pages it was created on, not the member's first one.
+     */
+    public function testAnEventIsThePublishersOfThePageItWasCreatedOn(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        PublisherFactory::createOne(['owner' => $user, 'name' => 'Swing Toulouse']);
+        $second = PublisherFactory::createOne(['owner' => $user, 'name' => 'Le Bikini']);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $form = $client->request('GET', '/espace-perso/organisateurs/le-bikini/evenements/nouveau')->filter('form[name="app_event"]')->form();
+        $client->submit($this->fillEventForm($form, 'Soirée swing au Bikini'));
+
+        self::assertResponseRedirects('/espace-perso/organisateurs/le-bikini/evenements');
+        self::assertSame($second->getId(), EventFactory::find(['name' => 'Soirée swing au Bikini'])->getPublisher()?->getId());
+    }
+
+    public function testTheNextEventsOfAMemberGoToTheirPublisher(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $publisher = PublisherFactory::createOne(['owner' => $user, 'name' => 'Le Bikini']);
+        CountryFactory::createOne(['id' => 'FR', 'name' => 'France', 'postalCodeRegex' => '^\\d{5}$']);
+        $client->loginUser($user);
+
+        $client->submit($this->newEventForm($client, 'Soirée swing au Bikini'));
+
+        self::assertSame($publisher->getId(), EventFactory::find(['name' => 'Soirée swing au Bikini'])->getPublisher()?->getId());
+        self::assertSame(1, PublisherFactory::count(['owner' => $user]));
     }
 
     /**
@@ -278,9 +325,10 @@ final class EventControllerTest extends AppWebTestCase
     public function testThePosterFieldGivesTheBrowserTheMaximumWeight(): void
     {
         $client = self::createClient();
-        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+        $member = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $client->loginUser($member);
 
-        $crawler = $client->request('GET', '/espace-perso/nouvelle-soiree');
+        $crawler = $client->request('GET', self::organizerPath($member, 'evenements/nouveau'));
 
         self::assertResponseIsSuccessful();
         self::assertSame(
@@ -325,7 +373,7 @@ final class EventControllerTest extends AppWebTestCase
         $form['app_event[comment]'] = 'On vous attend nombreux !';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         $event = EventFactory::find(['name' => 'Soirée swing au Bikini']);
         self::assertSame(1, $event->getParticipations());
         self::assertSame(1, UserEventFactory::count(['user' => $user, 'event' => $event, 'going' => true]));
@@ -346,12 +394,12 @@ final class EventControllerTest extends AppWebTestCase
         ]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $form = $crawler->filter('form[name="app_event"]')->form();
         $form['app_event[name]'] = 'Concert de jazz manouche';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertGreaterThan(new DateTimeImmutable('-1 minute'), EventFactory::find(['id' => $event->getId()])->getExternalUpdatedAt());
     }
 
@@ -374,7 +422,7 @@ final class EventControllerTest extends AppWebTestCase
         ];
         $client->request($form->getMethod(), $form->getUri(), $values);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         self::assertCount(1, EventFactory::find(['name' => 'Soirée swing tous les jeudis'])->getTimesheets());
     }
 
@@ -399,7 +447,7 @@ final class EventControllerTest extends AppWebTestCase
         ];
         $client->request($form->getMethod(), $form->getUri(), $values);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         $event = EventFactory::find(['name' => 'Soirée swing du jeudi']);
         $sessions = [];
         foreach ($event->getTimesheets() as $timesheet) {
@@ -429,7 +477,7 @@ final class EventControllerTest extends AppWebTestCase
         $values['app_event']['timesheets'] = [['dateRange' => ['from' => $day, 'to' => $day], 'startTime' => '', 'endTime' => '', 'hours' => '']];
         $client->request($form->getMethod(), $form->getUri(), $values);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         $event = EventFactory::find(['name' => 'Soirée swing du vendredi']);
         self::assertNull($event->getHours());
         $timesheet = $event->getTimesheets()->first();
@@ -447,14 +495,14 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->loginUser($event->getUser());
 
-        $form = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()))->filter('form[name="app_event"]')->form();
+        $form = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()))->filter('form[name="app_event"]')->form();
         self::assertSame('20:00', $form['app_event[startTime]']->getValue());
         self::assertSame('23:00', $form['app_event[endTime]']->getValue());
         self::assertSame('', $form['app_event[timesheets][0][startTime]']->getValue(), 'The dates follow the default');
 
         // Saved as is, the dates keep their slot
         $client->submit($form);
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         foreach (EventFactory::find(['id' => $event->getId()])->getTimesheets() as $timesheet) {
             self::assertSame(['20:00', '23:00'], [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i')]);
         }
@@ -470,7 +518,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->loginUser($event->getUser());
 
-        $form = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()))->filter('form[name="app_event"]')->form();
+        $form = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()))->filter('form[name="app_event"]')->form();
         self::assertSame('20:00', $form['app_event[startTime]']->getValue());
         self::assertSame('', $form['app_event[timesheets][0][startTime]']->getValue(), 'The date without precisions follows the default');
         // The default only fills the dates with neither times nor precisions: this one shows its own times
@@ -478,7 +526,7 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSame('23:00', $form['app_event[timesheets][1][endTime]']->getValue());
 
         $client->submit($form);
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         $sessions = [];
         foreach (EventFactory::find(['id' => $event->getId()])->getTimesheets() as $timesheet) {
             $sessions[] = [$timesheet->getStartTime()?->format('H:i'), $timesheet->getEndTime()?->format('H:i'), $timesheet->getHours()];
@@ -496,7 +544,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         self::assertSame('single', $crawler->filter('[data-date-mode]')->attr('data-date-mode'));
         $form = $crawler->filter('form[name="app_event"]')->form();
         self::assertFalse($form->has('app_event[timesheets][0][startTime]'), 'No list of dates');
@@ -505,7 +553,7 @@ final class EventControllerTest extends AppWebTestCase
 
         // Saved as is, the date becomes the event's own
         $client->submit($form);
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         $event = EventFactory::find(['id' => $event->getId()]);
         self::assertCount(0, $event->getTimesheets());
         self::assertSame([$day, $day], [$event->getStartDate()?->format('Y-m-d'), $event->getEndDate()?->format('Y-m-d')]);
@@ -522,7 +570,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         self::assertSame('multiple', $crawler->filter('[data-date-mode]')->attr('data-date-mode'));
         self::assertSame('true', $crawler->filter('[data-date-mode-choice="multiple"]')->attr('aria-pressed'));
     }
@@ -538,7 +586,7 @@ final class EventControllerTest extends AppWebTestCase
         $form['app_event[hours]'] = 'de 21h à minuit';
         $client->submit($form);
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         $event = EventFactory::find(['name' => 'Soirée swing du vendredi']);
         self::assertCount(0, $event->getTimesheets());
         self::assertNull($event->getHours());
@@ -554,7 +602,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->submit($this->newEventForm($client, 'Soirée swing en préparation', 'app_event[saveDraft]'));
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($user));
         self::assertTrue(EventFactory::find(['name' => 'Soirée swing en préparation'])->isDraft());
     }
 
@@ -564,10 +612,10 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['draft' => false]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $client->submit($crawler->selectButton('app_event[saveDraft]')->form());
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertTrue(EventFactory::find(['id' => $event->getId()])->isDraft());
     }
 
@@ -577,10 +625,10 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['draft' => true]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
         $client->submit($crawler->selectButton('Publier l\'événement')->form());
 
-        self::assertResponseRedirects('/espace-perso/mes-soirees');
+        self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertFalse(EventFactory::find(['id' => $event->getId()])->isDraft());
     }
 
@@ -594,7 +642,7 @@ final class EventControllerTest extends AppWebTestCase
         $event = EventFactory::createOne(['draft' => true]);
         $client->loginUser($event->getUser());
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $event->getId()));
+        $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
 
         // The delete button sits in the bar but belongs to the delete form (its form attribute)
         $buttons = $crawler->filter('form[name="app_event"] button[type="submit"]:not([form])');
@@ -631,7 +679,7 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSame(1, $event->getPlace()?->getUpcomingEvents());
         self::assertSame(1, CountryFactory::find(['id' => 'FR'])->getUpcomingEvents());
 
-        $crawler = $client->request('GET', '/espace-perso/mes-soirees');
+        $crawler = $client->request('GET', self::organizerPath($user));
         $client->submit($crawler->filter(\sprintf('form.form-delete-%d', $event->getId()))->form());
         $this->handleRecounts();
 
@@ -650,13 +698,13 @@ final class EventControllerTest extends AppWebTestCase
         $published = EventFactory::createOne(['user' => $user]);
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/espace-perso/nouvelle-soiree');
-        self::assertSame('/espace-perso/nouvelle-soiree/doublons', $crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
+        $crawler = $client->request('GET', self::organizerPath($user, 'evenements/nouveau'));
+        self::assertSame(self::organizerPath($user, 'evenements/nouveau/doublons'), $crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $draft->getId()));
-        self::assertSame(\sprintf('/espace-perso/%d/doublons', $draft->getId()), $crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
+        $crawler = $client->request('GET', self::organizerPath($user, 'evenements/' . $draft->getId()));
+        self::assertSame(self::organizerPath($user, 'evenements/' . $draft->getId() . '/doublons'), $crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
 
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d', $published->getId()));
+        $crawler = $client->request('GET', self::organizerPath($user, 'evenements/' . $published->getId()));
         self::assertNull($crawler->filter('form[name="app_event"]')->attr('data-duplicates-url'));
     }
 
@@ -667,10 +715,11 @@ final class EventControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $twin = EventFactory::createOne(['name' => 'Soirée swing', 'fromData' => 'Open Agenda']);
-        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+        $member = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $client->loginUser($member);
 
         $queries = $this->stubDuplicateSearch([$twin]);
-        $crawler = $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing au Bikini')]);
+        $crawler = $client->request('POST', self::organizerPath($member, 'evenements/nouveau/doublons'), ['app_event' => $this->newEventFields('Soirée swing au Bikini')]);
 
         self::assertResponseIsSuccessful();
         $link = $crawler->filter('a.list-group-item');
@@ -687,10 +736,11 @@ final class EventControllerTest extends AppWebTestCase
     public function testNoLikelyDuplicateAnswersNothing(): void
     {
         $client = self::createClient();
-        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+        $member = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $client->loginUser($member);
 
         $this->stubDuplicateSearch([]);
-        $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing au Bikini')]);
+        $client->request('POST', self::organizerPath($member, 'evenements/nouveau/doublons'), ['app_event' => $this->newEventFields('Soirée swing au Bikini')]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
@@ -707,7 +757,7 @@ final class EventControllerTest extends AppWebTestCase
         $client->loginUser($user);
 
         $queries = $this->stubDuplicateSearch([$mine]);
-        $crawler = $client->request('GET', \sprintf('/espace-perso/%d/doublons', $draft->getId()));
+        $crawler = $client->request('GET', self::organizerPath($user, 'evenements/' . $draft->getId() . '/doublons'));
 
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('Publié par vous', $crawler->filter('a.list-group-item')->text());
@@ -718,9 +768,10 @@ final class EventControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $draft = EventFactory::createOne(['draft' => true]);
-        $client->loginUser(UserFactory::createOne(['verified' => true, 'enabled' => true]));
+        $member = UserFactory::createOne(['verified' => true, 'enabled' => true]);
+        $client->loginUser($member);
 
-        $client->request('GET', \sprintf('/espace-perso/%d/doublons', $draft->getId()));
+        $client->request('GET', self::organizerPath($member, 'evenements/' . $draft->getId() . '/doublons'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -728,9 +779,10 @@ final class EventControllerTest extends AppWebTestCase
     public function testAMemberWhoCannotPublishCannotSearchTheDuplicates(): void
     {
         $client = self::createClient();
-        $client->loginUser(UserFactory::createOne(['verified' => false, 'enabled' => true]));
+        $member = UserFactory::createOne(['verified' => false, 'enabled' => true]);
+        $client->loginUser($member);
 
-        $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing')]);
+        $client->request('POST', self::organizerPath($member, 'evenements/nouveau/doublons'), ['app_event' => $this->newEventFields('Soirée swing')]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -739,7 +791,7 @@ final class EventControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
 
-        $client->request('POST', '/espace-perso/nouvelle-soiree/doublons', ['app_event' => $this->newEventFields('Soirée swing')]);
+        $client->request('POST', self::organizerPath(UserFactory::createOne(), 'evenements/nouveau/doublons'), ['app_event' => $this->newEventFields('Soirée swing')]);
 
         self::assertResponseRedirects();
         self::assertStringContainsString('/login', (string) $client->getResponse()->headers->get('Location'));
@@ -748,11 +800,25 @@ final class EventControllerTest extends AppWebTestCase
     /**
      * @param string|null $button The name of the submit button to send the form with, none by default
      */
+    /**
+     * The new event form as "Publier un événement" leads to it: through the creation of the member's organizer page
+     * when they have none, else on their first one's.
+     */
     private function newEventForm(KernelBrowser $client, string $name, ?string $button = null): Form
     {
-        $crawler = $client->request('GET', '/espace-perso/nouvelle-soiree');
+        $client->request('GET', '/espace-perso/nouvelle-soiree');
+        if ($client->getResponse()->isRedirect('/espace-perso/nouvelle-page-organisateur?suite=nouvel-evenement')) {
+            $client->submit($client->followRedirect()->selectButton('Créer la page')->form());
+        }
+
+        $crawler = $client->followRedirect();
         self::assertResponseIsSuccessful();
-        $form = (null === $button ? $crawler->filter('form[name="app_event"]') : $crawler->selectButton($button))->form();
+
+        return $this->fillEventForm((null === $button ? $crawler->filter('form[name="app_event"]') : $crawler->selectButton($button))->form(), $name);
+    }
+
+    private function fillEventForm(Form $form, string $name): Form
+    {
         $form['app_event[name]'] = $name;
         $form['app_event[description]'] = 'Une grande soirée de danse swing, avec initiation pour les débutants.';
         $form['app_event[dateRange][from]'] = new DateTimeImmutable('+1 week')->format('Y-m-d');

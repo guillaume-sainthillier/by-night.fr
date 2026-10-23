@@ -35,10 +35,11 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * A member's import of events: the page with the template and the upload, then each import's report, which follows
+ * A publisher's import of events: the page with the template and the upload, then each import's report, which follows
  * the check and the import live and reads its state again here (status()) when the import tells it it changed or
  * when it reconnects.
  */
+#[Route(path: '/organisateurs/{publisher<%patterns.slug%>}')]
 final class ImportController extends AbstractTransferController
 {
     #[Route(path: '/imports', name: 'app_event_imports', methods: ['GET'])]
@@ -46,7 +47,7 @@ final class ImportController extends AbstractTransferController
     {
         return $this->render('personal-space/transfers/import/index.html.twig', [
             'form' => $this->getCreateForm(),
-            'imports' => $importRepository->findLatestByUser($this->getAppUser()),
+            'imports' => $importRepository->findLatestByPublisher($this->publisherContext->get()),
             'columns' => EventColumn::cases(),
         ]);
     }
@@ -58,7 +59,7 @@ final class ImportController extends AbstractTransferController
     public function history(EventImportRepository $importRepository): Response
     {
         return $this->render('personal-space/transfers/import/_history.html.twig', [
-            'imports' => $importRepository->findLatestByUser($this->getAppUser()),
+            'imports' => $importRepository->findLatestByPublisher($this->publisherContext->get()),
         ]);
     }
 
@@ -100,6 +101,7 @@ final class ImportController extends AbstractTransferController
 
         $import = new EventImport()
             ->setUser($user)
+            ->setPublisher($this->publisherContext->get())
             ->setFormat($format)
             ->setOriginalName(mb_substr($file->getClientOriginalName(), 0, 255))
             ->setFilePath($path);
@@ -116,6 +118,8 @@ final class ImportController extends AbstractTransferController
     #[IsGranted(ImportVoter::VIEW, subject: 'import')]
     public function show(EventImport $import): Response
     {
+        $this->denyUnlessInContext($import);
+
         return $this->render('personal-space/transfers/import/show.html.twig', [
             'import' => $import,
             'form' => $this->getCreateForm(),
@@ -129,6 +133,8 @@ final class ImportController extends AbstractTransferController
     #[IsGranted(ImportVoter::VIEW, subject: 'import')]
     public function status(EventImport $import): Response
     {
+        $this->denyUnlessInContext($import);
+
         return $this->render('personal-space/transfers/import/_status.html.twig', [
             'import' => $import,
             'form' => $this->getCreateForm(),
@@ -143,6 +149,7 @@ final class ImportController extends AbstractTransferController
     #[IsGranted(EventVoter::CREATE)]
     public function run(Request $request, EventImport $import, EventImportRepository $importRepository, MessageBusInterface $bus): Response
     {
+        $this->denyUnlessInContext($import);
         $this->denyUnlessValidToken($request, 'event-import-run-' . $import->getId());
 
         // A first run, not a resumed one: a resumed import keeps the choice it started with
@@ -171,6 +178,7 @@ final class ImportController extends AbstractTransferController
     #[IsGranted(ImportVoter::VIEW, subject: 'import')]
     public function cancel(Request $request, EventImport $import, EventImportRepository $importRepository, TransferNotifier $notifier): Response
     {
+        $this->denyUnlessInContext($import);
         $this->denyUnlessValidToken($request, 'event-import-cancel-' . $import->getId());
 
         if ($importRepository->transition($import, [EventImportStatus::Uploaded, EventImportStatus::Checking, EventImportStatus::Checked], EventImportStatus::Cancelled)) {
@@ -185,6 +193,7 @@ final class ImportController extends AbstractTransferController
     #[IsGranted(ImportVoter::VIEW, subject: 'import')]
     public function downloadFile(EventImport $import, string $kind, TransferFiles $files): Response
     {
+        $this->denyUnlessInContext($import);
         $path = match ($kind) {
             'original' => $import->getFilePath(),
             'valides' => $import->getSuccessFilePath(),
