@@ -18,7 +18,7 @@
 // reaches our own heading rules.
 //
 // Tabler's sources write custom properties bare (--primary); the --bs- prefix is added after Sass, by the
-// PostCSS step of vite.config.mjs.
+// PostCSS step of vite.config.ts.
 
 // Configures Tabler before its first partial loads (see ../_core.scss)
 @use '../core';

@@ -123,7 +123,7 @@ final class EventController extends BaseController
 
     /**
      * The published events the member's new event likely repeats, asked by its form before it publishes it
-     * (assets/js/utils/duplicates.js).
+     * (assets/js/utils/duplicates.ts).
      */
     #[Route(path: '/nouvelle-soiree/doublons', name: 'app_event_new_duplicates', methods: ['POST'])]
     #[IsGranted(EventVoter::CREATE)]

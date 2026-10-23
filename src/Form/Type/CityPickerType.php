@@ -22,7 +22,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * A city picked in the autocomplete of the cities (assets/js/pages/profile.js): the name the member types, and
+ * A city picked in the autocomplete of the cities (assets/js/pages/profile.ts): the name the member types, and
  * the slug of the city they choose in the list, which becomes the City. Names are not unique (Saint-Denis), slugs are.
  */
 final class CityPickerType extends AbstractType

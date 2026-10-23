@@ -115,7 +115,7 @@ final class HtmlFormatter
     }
 
     /**
-     * A YouTube player is only loaded once the visitor asks for it (assets/js/listeners/video-facade.js): until
+     * A YouTube player is only loaded once the visitor asks for it (assets/js/listeners/video-facade.ts): until
      * then, a placeholder stands in its place and nothing reaches Google. Runs on sanitized markup, whose
      * YouTube frames all come from youtube-nocookie.com (MediaSourceSanitizer) with an encoded src.
      */
