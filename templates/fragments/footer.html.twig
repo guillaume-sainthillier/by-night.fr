@@ -14,17 +14,17 @@
                 </p>
             </div>
             {% if footer_location %}
-                <div class="col-6 col-md-3 col-lg-2">
-                    <h3 class="subheader mb-3">Par univers</h3>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footer-types">
+                    <div id="footer-types" class="subheader mb-3">Par univers</div>
                     <ul class="list-unstyled">
                         {% for type in enum_cases('App\\Enum\\AgendaType') %}
                             <li class="mb-2"><a class="link-secondary" href="{{ path('app_agenda_by_type', {typeSlug: type.slug, location: footer_location}) }}">{{ type.label }}</a></li>
                         {% endfor %}
                     </ul>
-                </div>
+                </nav>
             {% endif %}
-            <div class="col-6 col-md-3 col-lg-2 sites">
-                <h3 class="subheader mb-3">Sortir par ville</h3>
+            <nav class="col-6 col-md-3 col-lg-2 sites" aria-labelledby="footer-cities">
+                <div id="footer-cities" class="subheader mb-3">Sortir par ville</div>
                 <ul class="list-unstyled">
                     {% for city in random_cities(app_context.country) %}
                         <li class="mb-2">
@@ -34,9 +34,9 @@
                         </li>
                     {% endfor %}
                 </ul>
-            </div>
-            <div class="col-6 col-md-3 col-lg-2">
-                <h3 class="subheader mb-3">Pays & territoires</h3>
+            </nav>
+            <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footer-countries">
+                <div id="footer-countries" class="subheader mb-3">Pays & territoires</div>
                 <ul class="list-unstyled">
                     {% for country in countries %}
                         <li class="mb-2">
@@ -46,9 +46,9 @@
                         </li>
                     {% endfor %}
                 </ul>
-            </div>
-            <div class="col-6 col-md-3 col-lg-2">
-                <h3 class="subheader mb-3">By Night</h3>
+            </nav>
+            <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footer-site">
+                <div id="footer-site" class="subheader mb-3">By Night</div>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a class="link-secondary" title="Publiez votre événement gratuitement" href="{{ path('app_personal_space_event_new') }}">Publier un événement</a></li>
                     <li class="mb-2"><a class="link-secondary" title="Comment publier un événement" href="{{ path('app_plus') }}">Comment ça marche</a></li>
@@ -62,10 +62,10 @@
                     <li class="mb-2"><a class="link-secondary" title="Accepter ou refuser les cookies de mesure d'audience et de publicité" href="{{ path('app_main_cookie') }}" data-cookie-consent>Gérer mes cookies</a></li>
                     <li class="mb-2"><a class="link-secondary" title="Un problème, une question&nbsp;? Contactez-nous" href="mailto:support@by-night.fr">Contact</a></li>
                 </ul>
-            </div>
+            </nav>
         </div>
         <div class="border-top mt-5 pt-4">
-            <h3 class="subheader mb-2">Nos sites partenaires</h3>
+            <div class="subheader mb-2">Nos sites partenaires</div>
             <ul class="list-inline mb-0 small">
                 <li class="list-inline-item"><a class="link-secondary" title="Actualités techniques autour du Web et de PHP" href="https://blog.silarhi.fr">Actualités Web & PHP</a></li>
                 <li class="list-inline-item"><a class="link-secondary" title="Développement d'applications Web à Toulouse" href="https://silarhi.fr">Développement Web Toulouse</a></li>

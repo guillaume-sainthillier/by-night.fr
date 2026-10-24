@@ -10,6 +10,23 @@
     color: $body-color !important;
 }
 
+// The orange is dark enough for text on the light surfaces, too dark on the night-blue islands (data-bs-theme="dark"):
+// there its text takes Bootstrap's dark-mode emphasis, the orange lightened with white
+[data-bs-theme='dark'] {
+    .text-primary,
+    .bg-primary-lt {
+        color: var(--primary-text-emphasis) !important;
+    }
+}
+
+// A small link standing alone (no sentence around it): its hit area grows to 24px high (WCAG 2.5.8) while the negative
+// margins keep the text where it was
+.tap-target {
+    display: inline-block;
+    padding-block: 0.25rem;
+    margin-block: -0.25rem;
+}
+
 // Text cut after two lines
 .line-clamp-2 {
     display: -webkit-box;
@@ -32,9 +49,9 @@
 .share {
     display: block;
     color: white;
-    padding: 5px;
+    padding: 0.3125rem;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
 
     i,
     span {
@@ -44,7 +61,7 @@
     i {
         min-width: 1.3em;
         border-right: 1px solid white;
-        margin-right: 10px;
+        margin-right: 0.625rem;
         text-align: center;
     }
 

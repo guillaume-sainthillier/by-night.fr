@@ -175,9 +175,9 @@
                             </div>
                         {% endif %}
                         {% if intro %}
-                            <h2 class="h1 fw-bold text-start mb-2">L'agenda des sorties {{ location.atName }}</h2>
+                            <h2 class="h1 text-start mb-2">L'agenda des sorties {{ location.atName }}</h2>
                         {% else %}
-                            <h1 class="display-6 fw-bold text-start mb-2">{{ block('page_title') }}</h1>
+                            <h1 class="text-start mb-2">{{ block('page_title') }}</h1>
                         {% endif %}
                         {# The title says it on a phone, where the date shortcuts must come into sight #}
                         {% if datePage %}
@@ -273,7 +273,7 @@
                                     {% set dayFilters = undatedFilters|merge({dateRange: {from: day, to: day}}) %}
                                     {# Not followed, as the date chips: its dates change every day, and the page it leads to
                                        passes them on to all its links #}
-                                    <a class="small text-secondary" href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: dayFilters) }}" title="Toutes les sorties de ce jour" rel="nofollow">
+                                    <a class="small text-secondary tap-target" href="{{ agenda_path(location.slug, type: type, place: place, tag: tagEntity, filters: dayFilters) }}" title="Toutes les sorties de ce jour" rel="nofollow">
                                         {{ '{count, plural, one {# sortie ce jour-là} other {# sorties ce jour-là}}'|trans({count: facets.dates[day]}, 'messages+intl-icu') }}
                                     </a>
                                 {% endif %}

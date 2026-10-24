@@ -117,7 +117,7 @@ _______     __  _   _ _____ _____ _    _ _______
     {{ include('fragments/_impersonation-banner.html.twig') }}
 
     {% block breadcrumb_widget %}
-        <div id="bread">
+        <nav id="bread" aria-label="Fil d'Ariane">
             <div class="{{ container_class }}">
                 {% do menu.addItem('By Night', url('app_index')) %}
 
@@ -125,22 +125,22 @@ _______     __  _   _ _____ _____ _    _ _______
                 {{ wo_render_breadcrumbs({separator: null, listClass: 'breadcrumb', itemClass: 'breadcrumb-item'}) }}
                 {{ breadcrumb_json_ld(menu) }}
             </div>
-        </div>
+        </nav>
     {% endblock %}
 
-    <!-- Main -->
     <div class="page-wrapper">
-        {% block layout_top '' %}
-        {% block page_body %}
-            <div class="page-body">
-                {% block layout_body %}{% block body '' %}{% endblock %}
-            </div>
-        {% endblock %}
+        <main id="main" class="page-main">
+            {% block layout_top '' %}
+            {% block page_body %}
+                <div class="page-body">
+                    {% block layout_body %}{% block body '' %}{% endblock %}
+                </div>
+            {% endblock %}
+        </main>
         <!-- Footer -->
         {{ include('fragments/footer.html.twig') }}
         <!-- ./Footer -->
     </div>
-    <!-- ./Main -->
 </div>
 
 <!-- Modals -->

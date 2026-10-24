@@ -7,8 +7,9 @@
 @use 'variables' as *;
 
 // Values shared by several overrides below (`with` cannot read the variables it is configuring)
-// [primary-container] buttons, accents. White on it is 4.3:1: small text uses $primary-strong
-$-primary: #d94826;
+// [primary-container] buttons, accents, text links: the mockups' #d94826 one step darker, same hue, so white text on
+// it and it on white or $surface-low pass AA (5.2:1 on white, 5.0:1 under $surface, 4.7:1 on $surface-low)
+$-primary: #c43d1d;
 $-border-color: rgba($outline-soft, 0.55);
 $-line-height-base: 1.5;
 // Restore Bootstrap heading line-heights (Tabler uses fixed rem, breaks badge vertical centering)
@@ -179,11 +180,22 @@ $-headings-line-height: 1.2;
     // Icons
     $icon-size: 1.125em,
 
+    // Badges: the small text step (14px) instead of Tabler's 0.857em (13.71px next to the body text)
+    $badge-font-size: 0.875rem,
+
     //Buttons
+    // One radius for every action button, whatever its size ($border-radius); the pills (.btn-pill) are the filter
+    // chips and toggles
+    $btn-border-radius-sm: var(--border-radius),
+    $btn-border-radius-lg: var(--border-radius),
     $btn-padding-y-sm: 0.25rem,
     $btn-padding-x-sm: 0.5rem,
     $btn-font-size-sm: 0.875rem,
-    $btn-border-radius-sm: 0.25rem,
+    // .btn-lg is a taller button, not a bigger text: the body size, 48px high (the fields' 1.25rem stays theirs)
+    $btn-font-size-lg: 1rem,
+    $btn-padding-y-lg: 0.6875rem,
+    // Their buttons sit in the same rows: the .form-control-lg fields take the buttons' radius too
+    $input-border-radius-lg: var(--border-radius),
 
     // Forms
     $form-label-font-size: 1rem,

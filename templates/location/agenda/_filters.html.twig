@@ -69,7 +69,7 @@
             {% set current = type ? type.value : 'all' %}
             <div class="card-body border-top">
                 <div class="filter-section-header">
-                    <h3 class="subheader mb-0">Univers & thématiques</h3>
+                    <div class="subheader mb-0">Univers & thématiques</div>
                     <span class="small fw-bold text-teal">{{ enum_cases('App\\Enum\\AgendaType')|length }} univers</span>
                 </div>
                 {# The links of the type, category and venue lists are SEO pages that keep the dates and the keywords; a
@@ -131,7 +131,7 @@
 
                 {% if facets.venues %}
                     <div class="filter-section-header mt-4">
-                        <h3 class="subheader mb-0">Lieux les plus actifs</h3>
+                        <div class="subheader mb-0">Lieux les plus actifs</div>
                     </div>
                     <div class="d-flex flex-column gap-1">
                         {# Its count is the page's own: the one without the venue is not counted #}

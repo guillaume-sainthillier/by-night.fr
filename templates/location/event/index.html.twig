@@ -86,7 +86,7 @@
     {% if isHiddenDraft %}
         <div class="container-lg py-4">
             <header class="event-header mb-4">
-                <h1 class="display-6 fw-bold text-start">{{ block('title') }}</h1>
+                <h1 class="text-start">{{ block('title') }}</h1>
             </header>
             <div class="alert alert-warning">
                 <twig:Icon name="lucide:triangle-alert" />
@@ -140,7 +140,7 @@
                     </a>
                 </div>
                 <div class="d-flex align-items-start gap-3">
-                    <h1 class="display-6 fw-bold text-start">{{ block('title') }}</h1>
+                    <h1 class="text-start">{{ block('title') }}</h1>
                     {% if is_granted('ROLE_ADMIN') %}
                         <a class="btn btn-icon btn-outline-secondary flex-shrink-0" href="{{ path('admin_event_edit', {entityId: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement">
                             <twig:Icon name="lucide:pencil" />

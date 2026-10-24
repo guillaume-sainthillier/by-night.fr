@@ -5,8 +5,10 @@
 }
 
 .breadcrumb {
-    padding: 0.75rem 0;
+    // 0.75rem around the 18px line before the links grew to 24px (below): the bar keeps its 42px
+    padding: 0.5625rem 0;
     display: flex;
+    align-items: center;
     flex-wrap: nowrap;
     overflow-y: auto;
     font-size: 0.75rem;
@@ -19,7 +21,10 @@
         white-space: nowrap;
     }
 
+    // A crumb is a 24px target (WCAG 2.5.8), not just its 13px of capitals
     a {
+        display: inline-block;
+        padding-block: 0.1875rem;
         color: $text-secondary;
 
         &:hover,

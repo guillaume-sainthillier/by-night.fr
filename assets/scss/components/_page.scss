@@ -1,6 +1,11 @@
 @use '../core' as *;
 
-.page-wrapper {
+// The <main> landmark (base.html.twig): between the header and the footer, it takes the room left as .page-body did
+.page-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
     > .page-body:first-child {
         margin-top: 0;
     }

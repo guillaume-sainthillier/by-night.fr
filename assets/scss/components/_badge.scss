@@ -8,7 +8,10 @@
     }
 }
 
+// A badge that is a link is a 24px target (WCAG 2.5.8)
 a.badge {
+    min-height: 1.5rem;
+
     &:hover {
         color: white;
     }

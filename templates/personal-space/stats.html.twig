@@ -34,7 +34,7 @@
         <div class="col-lg-10">
             <section class="text-center pt-lg-3 mb-4">
                 <twig:Section:Eyebrow icon="lucide:chart-line" badge="{{ true }}">Espace organisateur</twig:Section:Eyebrow>
-                <h1 class="display-6 fw-bold mb-2">{{ event.name }}</h1>
+                <h1 class="mb-2">{{ event.name }}</h1>
                 <p class="lead text-secondary mb-4">Combien de personnes ont vu sa page, et cliqué pour réserver.</p>
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
                     <twig:Icon name="lucide:eye" />
