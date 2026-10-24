@@ -34,6 +34,7 @@ final class DigestSendCommandTest extends AppKernelTestCase
         UserFactory::createOne(['city' => $toulouse, 'weekendDigest' => true, 'weekendDigestSentWeek' => '2026-W43']);
         UserFactory::createOne(['city' => $toulouse, 'weekendDigest' => true, 'weekendDigestSentWeek' => '2026-W42']);
         UserFactory::createOne(['city' => $toulouse, 'weekendDigest' => true, 'enabled' => false]);
+        UserFactory::createOne(['city' => $toulouse, 'weekendDigest' => true, 'email' => 'ada@twitter.fr']);
         UserFactory::createOne(['city' => $toulouse]);
 
         $tester = new CommandTester(new Application(self::$kernel)->find('app:digest:send'));
@@ -43,7 +44,7 @@ final class DigestSendCommandTest extends AppKernelTestCase
         self::assertStringContainsString('2 member(s) queued.', $tester->getDisplay());
 
         $messages = $this->queued();
-        self::assertCount(2, $messages, 'Not the one sent this week, nor the disabled account, nor the one who never asked');
+        self::assertCount(2, $messages, 'Not the one sent this week, nor the disabled account, nor an address that would not reach them, nor the one who never asked');
         self::assertSame($subscriber->getId(), $messages[0]->userId);
         self::assertEquals(new DateTimeImmutable('2026-10-23'), $messages[0]->from);
         self::assertEquals(new DateTimeImmutable('2026-10-25'), $messages[0]->to);

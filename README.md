@@ -179,9 +179,36 @@ docker compose exec -T worker /app/bin/console app:outing-alerts:send -vv
 ```
 
 A run takes every event flagged before it started; a change made while it runs is left for the next one. Run again, by
-hand or after a crash, it sends nothing twice, and two runs never overlap (a lock in Redis). The e-mails that could not leave are
-listed in its output and tried again by the next run. A member hears of an event once a day at most: a change after
-the day's alert waits for the first run of the next day.
+hand or after a crash, it sends nothing twice, and two runs never overlap (a lock in Redis). The e-mails that could not
+leave are listed in its output and tried again by the next run; an address the mailer refuses is listed and skipped for
+good. A member hears of an event once a day at most: a change after the day's alert waits for the first run of the next
+day.
+
+### Weekend selection
+
+The members who asked for it get the weekend's best events of their city by e-mail. A host cron queues them every
+Thursday at 6:30 UTC (`30 6 * * 4`), one message each on the `async` transport, sent by the worker:
+
+```bash
+docker compose exec -T worker /app/bin/console app:digest:send -vv
+```
+
+Run again the same week, it queues only the members not sent it yet: the week sent is kept on the member. A city with
+fewer than three events that weekend sends nothing.
+
+### Publishers' news
+
+The owners of an organizer page get the news of the site, an edition at a time (`App\Enum\PublisherNewsEdition`). A
+daily host cron, at 9:30, lists the editions to send in order under one limit, which keeps a day under Mailjet's free
+plan (200 e-mails, shared with the password resets and confirmations):
+
+```bash
+docker compose exec -T worker /app/bin/console app:publishers:send-news 2026-10-retour 2026-10 --send --limit=150 -vv
+```
+
+Each e-mail is recorded as soon as it left, so a run again sends to the members still without it; once an edition has
+reached everyone, the next one takes what the limit leaves. Without `--send` it only counts. The e-mails that could not
+leave are listed and tried again by the next run; an address the mailer refuses is listed and skipped.
 
 ### Event audience (Umami)
 

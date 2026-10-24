@@ -100,6 +100,27 @@ final class EventVisitSyncTest extends AppKernelTestCase
     }
 
     /**
+     * A day of the Google Analytics history read again (--date): its rows are the only ones of that time, and stay.
+     */
+    public function testADayReadAgainKeepsWhatGoogleAnalyticsCounted(): void
+    {
+        $counted = EventFactory::createOne();
+        $event = EventFactory::createOne();
+        EventVisitStatFactory::createOne(['event' => $counted, 'day' => new DateTimeImmutable('2026-10-20'), 'visitors' => 9, 'ticketClicks' => 0, 'fromGoogleAnalytics' => true]);
+
+        $written = $this->sync([[
+            ['x' => '/toulouse/soiree/concert--' . $counted->getId(), 'y' => 2],
+            ['x' => '/toulouse/soiree/expo--' . $event->getId(), 'y' => 6],
+        ]], []);
+
+        self::assertSame(1, $written['events']);
+        self::assertTrue(EventVisitStatFactory::find(['event' => $counted])->isFromGoogleAnalytics());
+        $totals = $this->repository()->findTotalsByEvents([$counted->getId(), $event->getId()], new DateTimeImmutable('2026-10-01'));
+        self::assertSame(['visitors' => 9, 'ticketClicks' => 0], $totals[$counted->getId()]);
+        self::assertSame(['visitors' => 6, 'ticketClicks' => 0], $totals[$event->getId()]);
+    }
+
+    /**
      * @return iterable<string, array{string, ?int}>
      */
     public static function providePaths(): iterable

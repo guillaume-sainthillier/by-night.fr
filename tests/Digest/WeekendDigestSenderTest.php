@@ -102,6 +102,7 @@ final class WeekendDigestSenderTest extends AppKernelTestCase
 
         self::assertFalse($sender->send(UserFactory::createOne(['city' => $this->toulouse]), $this->weekend()), 'Never asked');
         self::assertFalse($sender->send($this->subscriber(['enabled' => false]), $this->weekend()), 'Account disabled');
+        self::assertFalse($sender->send($this->subscriber(['email' => 'ada@facebook.fr']), $this->weekend()), 'An address that would not reach them');
 
         self::assertEmailCount(0);
     }

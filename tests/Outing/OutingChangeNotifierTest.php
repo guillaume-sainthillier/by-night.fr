@@ -246,6 +246,45 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         self::assertSame('cancelled', UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
     }
 
+    public function testAMemberWhoseAddressWouldNotReachThemHearsNothingButKnowsTheEventAsItIs(): void
+    {
+        [$event, , $outing] = $this->outing(member: UserFactory::createOne(['email' => 'ada@facebook.fr']));
+        $event->setStatus(EventStatus::Cancelled);
+        $this->changed($event);
+
+        $this->runAlerts();
+
+        self::assertEmailCount(0);
+        self::assertSame('cancelled', UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
+        self::assertNull($this->flag($event));
+    }
+
+    /**
+     * The mailer refuses a legacy address ("First Last@domain"): the run goes on with the next followers, and the
+     * event is told all the same, or every run would stop at this follower.
+     */
+    #[RequiresPhpExtension('mjml')]
+    public function testAnInvalidAddressIsSkippedAndTheRunGoesOn(): void
+    {
+        [$event, , $skipped] = $this->outing(member: UserFactory::createOne(['email' => 'First Last@example.com']));
+        $told = UserEventFactory::createOne(['event' => $event, 'going' => true, 'wish' => false, 'knownState' => OutingState::fromEvent($event)]);
+        $event->setStatus(EventStatus::Cancelled);
+        $this->changed($event);
+
+        $run = $this->runAlerts();
+
+        self::assertSame(1, $run->getSent());
+        self::assertSame([], $run->getFailures());
+        self::assertCount(1, $run->getSkipped());
+        self::assertSame('First Last@example.com', $run->getSkipped()[0]['email']);
+        self::assertEmailCount(1);
+        self::assertEmailAddressContains(self::getMailerMessage(), 'To', (string) $told->getUser()?->getEmail());
+        $skipped = UserEventFactory::find(['id' => $skipped->getId()]);
+        self::assertSame('cancelled', $skipped->getKnownState()?->status, 'Not tried again');
+        self::assertNull($skipped->getAlertedAt());
+        self::assertNull($this->flag($event));
+    }
+
     public function testARowOlderThanTheAlertsLearnsTheEventWithoutAnAlert(): void
     {
         [$event, , $outing] = $this->outing(known: false);
