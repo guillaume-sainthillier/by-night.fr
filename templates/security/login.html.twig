@@ -60,7 +60,7 @@
                                         {# UserRepository::loadUserByIdentifier() also accepts the username the older accounts signed in with #}
                                         <label class="form-label" for="username">Adresse e-mail ou nom d'utilisateur</label>
                                         <twig:InputIcon iconPrepend="lucide:mail">
-                                            <input class="form-control" type="text" id="username" name="username" value="{{ last_username }}" autocomplete="username" placeholder="vous@exemple.fr" required />
+                                            <input class="form-control" type="text" id="username" name="username" value="{{ last_username }}" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="vous@exemple.fr" required />
                                         </twig:InputIcon>
                                     </div>
 
