@@ -15,6 +15,7 @@ use App\Transfer\Sheet\EventColumn;
 use App\Transfer\Sheet\EventSheetTemplate;
 use App\Transfer\Sheet\InvalidSheetException;
 use App\Transfer\Sheet\SheetReader;
+use App\Transfer\Sheet\SheetRow;
 use App\Transfer\Sheet\SheetWriter;
 use DateTimeImmutable;
 use OpenSpout\Common\Entity\Row;
@@ -85,6 +86,41 @@ final class SheetReaderTest extends TestCase
         self::assertSame(3, $sheet['rows'][0]->number);
     }
 
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideLineEndings(): iterable
+    {
+        yield 'unix' => ["\n"];
+        yield 'windows' => ["\r\n"];
+    }
+
+    #[DataProvider('provideLineEndings')]
+    public function testEmptyCsvLinesCountInTheRowNumbers(string $eol): void
+    {
+        $sheet = $this->readCsv(implode($eol, ['', 'Nom;Date de début', '', 'Concert;12/03/2027', '', '', 'Théâtre;13/03/2027', '']));
+
+        self::assertSame(['Nom', 'Date de début'], $sheet['headers']);
+        self::assertSame([4, 7], array_map(static fn (SheetRow $row): int => $row->number, $sheet['rows']));
+    }
+
+    public function testBlankExcelRowsCountInTheRowNumbers(): void
+    {
+        $path = $this->file(TransferFormat::Xlsx);
+        $writer = new XlsxWriter();
+        $writer->openToFile($path);
+        // The writer leaves the empty rows out of the file, as Excel does
+        foreach ([[], ['Nom', 'Date de début'], [], ['Concert', '12/03/2027'], [], [], ['Théâtre', '13/03/2027']] as $values) {
+            $writer->addRow(Row::fromValues($values));
+        }
+        $writer->close();
+
+        $sheet = new SheetReader()->read($path, TransferFormat::Xlsx);
+
+        self::assertSame(['Nom', 'Date de début'], $sheet['headers']);
+        self::assertSame([4, 7], array_map(static fn (SheetRow $row): int => $row->number, $sheet['rows']));
+    }
+
     public function testExcelDatesAndTimesAreReadAsText(): void
     {
         $path = $this->file(TransferFormat::Xlsx);
@@ -137,7 +173,7 @@ final class SheetReaderTest extends TestCase
     }
 
     /**
-     * @return array{headers: list<string>, rows: list<\App\Transfer\Sheet\SheetRow>}
+     * @return array{headers: list<string>, rows: list<SheetRow>}
      */
     private function readCsv(string $content): array
     {
