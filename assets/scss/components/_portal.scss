@@ -118,3 +118,13 @@
         }
     }
 }
+
+// A phone shows the first lines of a location's copy, the agenda right under it; "Lire la suite" (read-more.ts) shows
+// the rest. The text stays in the page
+@include media-breakpoint-down(md) {
+    [data-read-more]:not(.is-expanded) {
+        max-height: 3lh;
+        overflow: hidden;
+        mask-image: linear-gradient(to bottom, #000 50%, transparent);
+    }
+}

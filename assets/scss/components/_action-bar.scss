@@ -1,0 +1,44 @@
+@use '../core' as *;
+
+// A phone's bar pinned to the bottom of the screen once the actions it repeats have scrolled away (action-bar.ts):
+// the event page's booking and "J'y vais". It slides in rather than taking room in the page, so nothing moves; the
+// scroll-to-top button, which would cover it, steps aside while it shows.
+$action-bar-height: 4.25rem;
+
+.action-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $zindex-fixed;
+    padding: 0.75rem 0 max(0.75rem, env(safe-area-inset-bottom));
+    background-color: $white;
+    border-top: 1px solid $card-border-color;
+    box-shadow: 0 -0.25rem 0.75rem rgba($black, 0.08);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+        transform 0.2s ease-out,
+        visibility 0.2s;
+
+    &.is-visible {
+        transform: none;
+        visibility: visible;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+// The end of the page (the footer) still scrolls above the bar
+@include media-breakpoint-down(lg) {
+    .page:has(.action-bar) {
+        padding-bottom: $action-bar-height;
+    }
+
+    body:has(.action-bar.is-visible) #toTop {
+        opacity: 0;
+        visibility: hidden;
+    }
+}

@@ -94,6 +94,58 @@
     }
 }
 
+// The agenda's event cards on a phone (<twig:Event:Card compact>): a row, the picture beside the text, so that a screen
+// shows several events. The picture fills its column whatever the text's height: placed over it, it adds none
+@include media-breakpoint-down(md) {
+    .card-event-compact {
+        display: grid;
+        grid-template-columns: 6.5rem minmax(0, 1fr);
+
+        // The status alert spans the row
+        & > .alert {
+            grid-column: 1 / -1;
+        }
+
+        .card-img-container {
+            border-bottom: 0;
+            border-right: 1px solid $card-border-color;
+
+            .image-container {
+                aspect-ratio: auto;
+                height: 100%;
+                min-height: 6.5rem;
+
+                picture,
+                img {
+                    position: absolute;
+                    inset: 0;
+                }
+            }
+        }
+
+        .card-body {
+            padding: 0.75rem 0.75rem 0.25rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+
+        // Sized to the small text of the date and venue lines
+        .card-content .icon {
+            font-size: inherit;
+            width: 1em;
+            height: 1em;
+        }
+
+        .card-footer {
+            padding: 0.25rem 0.75rem 0.75rem;
+            border-top: 0;
+            background: transparent;
+        }
+    }
+}
+
 // Cards that are links share the agenda cards' hover (.card-layout above); their title takes the primary colour,
 // except over a photo. Same for the title links stretched over a card or a list item.
 a.card-layout h3,

@@ -20,7 +20,7 @@ use App\Entity\Event;
 use App\Entity\Tag;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
-use DateTimeImmutable;
+use App\Utils\NextSessionLabel;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -132,27 +132,13 @@ final readonly class SearchSuggestionsProvider implements ProviderInterface
             category: $group,
             label: (string) $event->getName(),
             shortDescription: $event->getPlace()?->getName() ?? '',
-            description: $this->when($event),
+            description: NextSessionLabel::of($event),
             url: $this->urlGenerator->generate('app_event_details', [
                 'slug' => $event->getSlug(),
                 'id' => $event->getId(),
                 'location' => $event->getLocationSlug(),
             ]),
         ), $events);
-    }
-
-    /**
-     * The day an event starts, or the day it ends when it runs already: the top events of the week include those that
-     * started months ago.
-     */
-    private function when(Event $event): ?string
-    {
-        $today = new DateTimeImmutable('today');
-        if ($event->getStartDate() < $today && null !== $event->getEndDate()) {
-            return 'Jusqu\'au ' . $event->getEndDate()->format('d/m/Y');
-        }
-
-        return $event->getStartDate()?->format('d/m/Y');
     }
 
     /**

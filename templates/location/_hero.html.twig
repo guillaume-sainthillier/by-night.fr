@@ -27,7 +27,7 @@
                         Que faire {{ location.atName }}&nbsp;?
                         <span class="d-block text-primary text-start h1 mb-0 mt-1">{{ zone.headline ?? 'Concerts, expos & soirées' }}</span>
                     </h1>
-                    <div class="lead text-secondary">
+                    <div class="lead text-secondary" data-read-more>
                         {% if zone.description ?? null %}
                             {{ zone.description|markdown }}
                         {% else %}

@@ -4,11 +4,29 @@
 {# The picture card of the "À l'affiche" blocks and of the agenda: date and price over the picture, category, title,
    excerpt and venue. The picture box has a fixed ratio, so nothing moves when the picture loads. #}
 {# @var priority bool the card opens the page: its picture is the LCP, loaded at once with a high fetch priority #}
-{% props event, tone = 'primary', from = null, to = null, priority = false %}
+{# @var compact bool on a phone, a row: a small picture beside the title, the date and price on a line under it and no
+   excerpt, so that a long list shows several events a screen (the agenda) #}
+{% props event, tone = 'primary', from = null, to = null, priority = false, compact = false %}
 {# The session the visitor is looking for, not the event's overall range #}
 {% set session = event.sessionFor(from, to) %}
 {% set price = event.prices|price_label(event.startingPrice) %}
-<article {{ attributes.defaults({class: 'card card-event card-layout h-100 mb-0'}) }}>
+{% set when %}{% apply trim %}
+    {%- if session %}
+        {%- set lastDay = session.endAt ?? session.startAt %}
+        {%- if session.startAt|date('Y-m-d') < 'now'|date('Y-m-d') %}
+            Jusqu'au {{ lastDay|format_date(pattern: 'd MMM') }}
+        {%- elseif lastDay|date('Y-m-d') > session.startAt|date('Y-m-d') %}
+            {{ session.startAt|format_date(pattern: 'd MMM') }} – {{ lastDay|format_date(pattern: 'd MMM') }}
+        {%- else %}
+            {{ session.startAt|format_date(pattern: 'EEE d MMM') }}
+        {%- endif %}
+    {%- endif -%}
+{% endapply %}{% endset %}
+{# A row of the agenda sits under its day: a session of that day says when it starts ("20h30", nothing without a time),
+   a run still says its dates #}
+{% set singleDay = session and session.startAt|date('Y-m-d') >= 'now'|date('Y-m-d') and (session.endAt ?? session.startAt)|date('Y-m-d') == session.startAt|date('Y-m-d') %}
+{% set rowWhen = singleDay ? session_start(session) : when %}
+<article {{ attributes.defaults({class: 'card card-event card-layout h-100 mb-0' ~ (compact ? ' card-event-compact')}) }}>
     {% if event.status or event.statusMessage %}
         <twig:Event:StatusAlert event="{{ event }}" class="rounded-0 py-2 small" />
     {% endif %}
@@ -16,18 +34,11 @@
         <div class="image-container position-relative">
             <twig:Event:Thumb event="{{ event }}" width="{{ 360 }}" priority="{{ priority }}" />
             {% if session or price %}
-                <div class="card-img-overlay d-flex align-items-start justify-content-between gap-2 p-3">
+                <div class="card-img-overlay {{ compact ? 'd-none d-md-flex' : 'd-flex' }} align-items-start justify-content-between gap-2 p-3">
                     {% if session %}
                         <span class="badge bg-white text-primary text-truncate min-w-0">
                             <twig:Icon name="lucide:calendar-days" />
-                            {%- set lastDay = session.endAt ?? session.startAt %}
-                            {%- if session.startAt|date('Y-m-d') < 'now'|date('Y-m-d') %}
-                                Jusqu'au {{ lastDay|format_date(pattern: 'd MMM') }}
-                            {%- elseif lastDay|date('Y-m-d') > session.startAt|date('Y-m-d') %}
-                                {{ session.startAt|format_date(pattern: 'd MMM') }} – {{ lastDay|format_date(pattern: 'd MMM') }}
-                            {%- else %}
-                                {{ session.startAt|format_date(pattern: 'EEE d MMM') }}
-                            {%- endif -%}
+                            {{- when -}}
                         </span>
                     {% endif %}
                     {% if price %}
@@ -42,11 +53,22 @@
             {% if event.category %}
                 <div class="subheader text-{{ tone }} mb-1">{{ event.category.name }}</div>
             {% endif %}
-            <h3 class="card-title line-clamp-2 mb-2">
+            <h3 class="card-title line-clamp-2 {{ compact ? 'mb-1 mb-md-2' : 'mb-2' }}">
                 <a href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" class="stretched-link" title="Tous les détails de {{ event.name }}">{{ event.name }}</a>
             </h3>
+            {% if compact and (rowWhen or price) %}
+                {# The overlay's date and price, which would hide a row's small picture #}
+                <div class="d-flex flex-wrap align-items-center gap-2 small d-md-none">
+                    {% if rowWhen %}
+                        <span class="text-primary fw-medium"><twig:Icon name="{{ singleDay ? 'lucide:clock' : 'lucide:calendar-days' }}" /> {{ rowWhen }}</span>
+                    {% endif %}
+                    {% if price %}
+                        <span class="{{ price.free ? 'text-green fw-medium' : 'text-body' }}">{{ price.label }}</span>
+                    {% endif %}
+                </div>
+            {% endif %}
             {% if event.description %}
-                <p class="text-secondary small line-clamp-2 mb-0">{{ event.description|excerpt(160) }}</p>
+                <p class="text-secondary small line-clamp-2 mb-0{{ compact ? ' d-none d-md-block' }}">{{ event.description|excerpt(160) }}</p>
             {% endif %}
         </div>
         <div class="card-footer d-flex align-items-center justify-content-between gap-2 mt-auto">

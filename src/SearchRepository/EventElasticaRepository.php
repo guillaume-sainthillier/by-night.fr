@@ -55,6 +55,11 @@ final class EventElasticaRepository extends Repository
      */
     private const string DUPLICATE_DISTANCE = '15km';
 
+    /** The header search's "around the city": its suburbs, not the next town */
+    private const string AROUND = '30km';
+
+    private const float AROUND_FIRST_WEIGHT = 100.0;
+
     public function findWithSearch(SearchEvent $search): AdapterInterface
     {
         return new FantaPaginatorAdapter($this->createPaginatorAdapter($this->createSearchQuery($search)));
@@ -333,19 +338,29 @@ final class EventElasticaRepository extends Repository
      * 100 km. A visitor of Toulouse searching "marché de noël" gets the markets around Toulouse first, the rest of
      * France after. An event whose place has no city (13% of those to come) is not around: Elasticsearch scores a
      * missing location as the closest, which put them all first.
+     *
+     * @param bool $aroundFirst the events within AROUND of the city before all the others, by relevance among them (the
+     *                          header search: a visitor of Toulouse typing "jazz" looks for a concert of Toulouse)
      */
-    private function favourNear(AbstractQuery $query, ?City $city): AbstractQuery
+    private function favourNear(AbstractQuery $query, ?City $city, bool $aroundFirst = false): AbstractQuery
     {
         if (null === $city?->getLatitude() || null === $city->getLongitude()) {
             return $query;
         }
 
-        return new FunctionScore()
+        $location = \sprintf('%F,%F', $city->getLatitude(), $city->getLongitude());
+        $score = new FunctionScore()
             ->setQuery($query)
             ->addWeightFunction(1.0)
-            ->addDecayFunction(FunctionScore::DECAY_GAUSS, 'place.city.location', \sprintf('%F,%F', $city->getLatitude(), $city->getLongitude()), '30km', '10km', 0.5, 2.0, new Exists('place.city.location'))
+            ->addDecayFunction(FunctionScore::DECAY_GAUSS, 'place.city.location', $location, '30km', '10km', 0.5, 2.0, new Exists('place.city.location'))
             ->setScoreMode(FunctionScore::SCORE_MODE_SUM)
             ->setBoostMode(FunctionScore::BOOST_MODE_MULTIPLY);
+        if ($aroundFirst) {
+            // Far above what the words weigh: a hit around comes before a better one elsewhere
+            $score->addWeightFunction(self::AROUND_FIRST_WEIGHT, new GeoDistance('place.city.location', $location, self::AROUND));
+        }
+
+        return $score;
     }
 
     /**
@@ -603,7 +618,7 @@ final class EventElasticaRepository extends Repository
     {
         $sessionFilter = $this->createSessionFilter(DateRangePreset::Anytime->range());
         $finalQuery = Query::create(new BoolQuery()
-            ->addMust($this->favourNear($this->createKeywordsQuery($query, asTyped: true), $near))
+            ->addMust($this->favourNear($this->createKeywordsQuery($query, asTyped: true), $near, aroundFirst: true))
             ->addFilter(new Nested()->setPath('sessions')->setQuery($sessionFilter)));
         // The next date between equals, as the search page
         $finalQuery->addSort(['_score' => ['order' => 'desc']]);

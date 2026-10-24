@@ -26,6 +26,12 @@ final class HoursExtension
         return SessionHours::ofSession($session);
     }
 
+    #[AsTwigFunction(name: 'session_start')]
+    public function sessionStart(EventTimesheet $session): ?string
+    {
+        return SessionHours::start($session);
+    }
+
     #[AsTwigFunction(name: 'event_hours')]
     public function eventHours(Event $event): ?string
     {

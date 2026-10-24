@@ -293,7 +293,7 @@
                             {% for event in section.events %}
                                 <div class="col-md-6 col-xl-4">
                                     {# Only the page's first picture is above the fold on a phone, unless the picture of the location comes first #}
-                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" priority="{{ not intro and loop.parent.loop.first and loop.first }}" />
+                                    <twig:Event:Card event="{{ event }}" from="{{ dateRange.from }}" to="{{ dateRange.to }}" priority="{{ not intro and loop.parent.loop.first and loop.first }}" compact="{{ true }}" />
                                 </div>
                             {% endfor %}
                         </div>

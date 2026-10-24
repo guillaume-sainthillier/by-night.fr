@@ -153,6 +153,30 @@
                         </a>
                     {% endif %}
                 </div>
+                {# On a phone, when and where right under the title: the practical information comes after the poster, a
+                   screen and a half down. The next session, as on the agenda's cards #}
+                {% set nextSession = event.sessionFor() %}
+                {% if nextSession or event.placeName %}
+                    <div class="event-summary d-flex flex-wrap align-items-center gap-2 mt-2 d-lg-none">
+                        {% if nextSession %}
+                            {% set otherSessions = event.countUpcomingSessions() - 1 %}
+                            <span class="fw-semibold">
+                                <twig:Icon name="lucide:calendar-days" class="text-primary" />
+                                {{ nextSession.startAt|format_date(pattern: 'EEE d MMMM')|ucfirst }}
+                                {%- if session_start(nextSession) %} · {{ session_start(nextSession) }}{% endif %}
+                                {%- if otherSessions > 0 %}
+                                    <span class="fw-normal text-secondary">{{ '{count, plural, one {+ # autre date} other {+ # autres dates}}'|trans({count: otherSessions}, 'messages+intl-icu') }}</span>
+                                {%- endif %}
+                            </span>
+                        {% endif %}
+                        {% if event.placeName %}
+                            <a class="link-secondary text-truncate mw-100" href="{{ placeAgenda }}" title="Sortir {{ event.placeName|at_place }}">
+                                <twig:Icon name="lucide:map-pin" class="text-primary" />
+                                {{ event.placeName }}{% if event.placeCity %}, {{ event.placeCity }}{% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </header>
 
             {# An event its source no longer lists is hidden as a draft, but has nothing to publish: its status says why #}
@@ -202,22 +226,14 @@
                         <a class="image-gallery card-img-top d-block overflow-hidden" href="{{ original }}" title="{{ eventShortName }}">
                             <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" priority="{{ true }}" id="event-poster" />
                         </a>
-                        <div class="card-footer d-flex flex-wrap align-items-center gap-2">
-                            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                                <button type="button" class="btn participate btn-like-event {{ trendsData.participate ? 'btn-primary' }}"
-                                        data-href="{{ path('api_event_participer', {id: event.id}) }}" data-intent="participer">
-                                    <twig:Icon name="lucide:heart" />
-                                    J'y vais&nbsp;!
-                                </button>
-                            {% else %}
-                                {# Going needs an account: the button opens the login dialog (modals block), the login page without
-                                   the script #}
-                                <a class="btn participate" rel="nofollow" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" data-bs-toggle="modal" data-bs-target="#login-dialog" title="Connectez-vous pour indiquer que vous y allez">
-                                    <twig:Icon name="lucide:heart" />
-                                    J'y vais&nbsp;!
-                                </a>
-                            {% endif %}
-                            <div class="dropdown">
+                        <div class="card-footer d-flex flex-wrap align-items-center gap-2" id="event-actions" data-share>
+                            {{ include('location/event/_going.html.twig') }}
+                            {# A phone's own share sheet (share.ts), in place of the menu and the copy #}
+                            <button type="button" class="btn" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" data-share-native-only hidden>
+                                <twig:Icon name="lucide:share-2" />
+                                Partager
+                            </button>
+                            <div class="dropdown" data-share-fallback>
                                 <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <twig:Icon name="lucide:share-2" />
                                     Partager
@@ -545,6 +561,28 @@
 
         {% if similarEventsData.count > 0 %}
             {{ include('location/widget/similar-events.html.twig') }}
+        {% endif %}
+
+        {# On a phone, once the booking button under the title (or the actions under the poster) has scrolled away
+           (action-bar.ts): booking and going stay a thumb away #}
+        {% if not hasEnded %}
+            <div class="action-bar d-lg-none" data-action-bar="{{ bestOffer ? '#event-tickets' : '#event-actions' }}">
+                <div class="container-lg d-flex align-items-center gap-2">
+                    {{ include('location/event/_going.html.twig', {intent: false}) }}
+                    {% if bestOffer %}
+                        <a href="{{ bestOffer.url }}" class="btn btn-primary flex-fill text-truncate" data-umami-event="ticket-click" data-umami-event-seller="{{ bestOffer.seller }}"{% if bestOffer.affiliate %} rel="sponsored"{% else %} target="_blank" rel="noopener nofollow"{% endif %}>
+                            <twig:Icon name="lucide:ticket" />
+                            Réserver
+                            {%- if bestOffer.priceLabel %} · {{ bestOffer.priceLabel.label }}{% endif %}
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn flex-fill" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}">
+                            <twig:Icon name="lucide:share-2" />
+                            Partager
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
         {% endif %}
     {% endif %}
 {%- endblock %}

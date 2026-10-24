@@ -36,6 +36,12 @@ export default {
                 btn.attr('disabled', msg.success ? null : 'disabled')
                 if (msg.success) {
                     btn.toggleClass(options.css_active_class, msg.like)
+                    // The page's other buttons of the same event (the action bar of a phone) follow
+                    for (const other of document.querySelectorAll<HTMLElement>(options.css_selector_like)) {
+                        if (other.dataset.href === btn.data('href')) {
+                            other.classList.toggle(options.css_active_class, msg.like)
+                        }
+                    }
                     if (msg.like) {
                         app.get('toastManager').createToast('success', 'Ajouté à vos sorties')
                     }

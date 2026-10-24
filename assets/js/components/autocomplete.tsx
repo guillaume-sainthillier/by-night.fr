@@ -206,6 +206,9 @@ export default function init({
         detachedMediaQuery: '',
         translations: {
             detachedCancelButtonText: 'Annuler',
+            detachedSearchButtonTitle: 'Rechercher',
+            clearButtonTitle: 'Effacer',
+            submitButtonTitle: 'Rechercher',
         },
         plugins: [recentSearchesPlugin],
         // Build the panel with the app's Preact: autocomplete-js otherwise creates its vnodes with its own Preact,
