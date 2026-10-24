@@ -6,6 +6,7 @@
 import { describe, expect, test } from 'vitest'
 import activeChip from '@/js/listeners/active-chip'
 import { fake } from '@/js/test/fake'
+import { connectListenerWithoutCleanup } from '@/js/test/listener'
 
 const connect = ({
     scrollWidth,
@@ -21,7 +22,8 @@ const connect = ({
         scrollLeft: 0,
         querySelector: () => active,
     }
-    activeChip.connect(fake<HTMLElement>(row))
+    // Scrolled once: nothing to undo
+    connectListenerWithoutCleanup(activeChip, fake<HTMLElement>(row))
 
     return row
 }

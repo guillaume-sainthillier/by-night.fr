@@ -7,10 +7,12 @@ import type { App } from '@silarhi/app-js'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import share from '@/js/listeners/share'
 import { fake } from '@/js/test/fake'
+import { connectListener, connectListenerWithoutCleanup } from '@/js/test/listener'
 
 type Handler = () => void
 
-const connect = ({ sheet, nativeOnly = false }: { sheet: boolean; nativeOnly?: boolean }) => {
+/** A share button, on a phone with a share sheet or a computer without, and the app handing its toast manager */
+const setUp = ({ sheet, nativeOnly = false }: { sheet: boolean; nativeOnly?: boolean }) => {
     const shareSheet = vi.fn(() => Promise.resolve())
     const writeText = vi.fn(() => Promise.resolve())
     vi.stubGlobal('navigator', { clipboard: { writeText }, ...(sheet ? { share: shareSheet } : {}) })
@@ -32,9 +34,24 @@ const connect = ({ sheet, nativeOnly = false }: { sheet: boolean; nativeOnly?: b
         removeEventListener: vi.fn(),
     }
     const toastManager = { createToast: vi.fn() }
-    share.connect(fake<HTMLButtonElement>(button), { app: fake<App>({ get: () => toastManager }) })
+    const app = fake<App>({ get: () => toastManager })
 
-    return { button, fallback, handlers, shareSheet, writeText, toastManager }
+    return {
+        button,
+        element: fake<HTMLButtonElement>(button),
+        app,
+        fallback,
+        handlers,
+        shareSheet,
+        writeText,
+        toastManager,
+    }
+}
+
+const connect = (options: { sheet: boolean; nativeOnly?: boolean }) => {
+    const setup = setUp(options)
+
+    return { ...setup, cleanup: connectListener(share, setup.element, setup.app) }
 }
 
 describe('share listener', () => {
@@ -72,10 +89,20 @@ describe('share listener', () => {
     })
 
     test('leaves the share menu to a computer', () => {
-        const { button, fallback, handlers } = connect({ sheet: false, nativeOnly: true })
+        const { button, element, app, fallback, handlers } = setUp({ sheet: false, nativeOnly: true })
+
+        connectListenerWithoutCleanup(share, element, app)
 
         expect(button.hidden).toBe(true)
         expect(fallback.hidden).toBe(false)
         expect(handlers.click).toBeUndefined()
+    })
+
+    test('stops listening once disconnected', () => {
+        const { button, handlers, cleanup } = connect({ sheet: false })
+
+        cleanup()
+
+        expect(button.removeEventListener).toHaveBeenCalledWith('click', handlers.click)
     })
 })

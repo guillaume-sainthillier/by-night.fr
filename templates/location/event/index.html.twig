@@ -570,7 +570,7 @@
                 <div class="container-lg d-flex align-items-center gap-2">
                     {{ include('location/event/_going.html.twig', {intent: false}) }}
                     {% if bestOffer %}
-                        <a href="{{ bestOffer.url }}" class="btn btn-primary flex-fill text-truncate" data-umami-event="ticket-click" data-umami-event-seller="{{ bestOffer.seller }}"{% if bestOffer.affiliate %} rel="sponsored"{% else %} target="_blank" rel="noopener nofollow"{% endif %}>
+                        <a href="{{ bestOffer.url }}" class="btn btn-primary flex-fill text-truncate" data-analytics-event="ticket-click" data-analytics-seller="{{ bestOffer.seller }}"{% if bestOffer.affiliate %} rel="sponsored"{% else %} target="_blank" rel="noopener nofollow"{% endif %}>
                             <twig:Icon name="lucide:ticket" />
                             Réserver
                             {%- if bestOffer.priceLabel %} · {{ bestOffer.priceLabel.label }}{% endif %}

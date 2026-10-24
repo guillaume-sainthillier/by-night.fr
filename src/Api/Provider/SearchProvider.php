@@ -20,6 +20,7 @@ use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Tag;
 use App\Entity\User;
+use App\Repository\EventRepository;
 use App\SearchRepository\CityElasticaRepository;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\ResultWindow;
@@ -43,6 +44,7 @@ final readonly class SearchProvider implements ProviderInterface
         private LazyLocationFactory $lazyLocationFactory,
         private UrlGeneratorInterface $urlGenerator,
         private Pagination $pagination,
+        private EventRepository $eventRepository,
     ) {
     }
 
@@ -170,9 +172,13 @@ final readonly class SearchProvider implements ProviderInterface
      */
     private function transformEventResults(PagerfantaInterface $paginator): array
     {
+        /** @var list<HybridResult<Event>> $hits */
+        $hits = iterator_to_array($paginator, false);
+        // Asked on each keystroke, uncached: their sessions (NextSessionLabel), venues and cities in a query each
+        $this->eventRepository->loadAllEager(array_map(static fn (HybridResult $hit): Event => $hit->getTransformed(), $hits), ['view' => 'events:search:suggestions']);
+
         $results = [];
-        foreach ($paginator as $result) {
-            /** @var Event $event */
+        foreach ($hits as $result) {
             $event = $result->getTransformed();
             $highlights = $result->getResult()->getHighlights();
 

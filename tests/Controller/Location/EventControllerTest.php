@@ -416,9 +416,9 @@ final class EventControllerTest extends AppWebTestCase
         self::assertNotNull($duplicate->getId());
         // Umami counts a click on any of them for the event's author (EventVisitSync): the two lists, the two booking
         // buttons and the one of the phone's action bar
-        self::assertSelectorCount(7, 'a[data-umami-event="ticket-click"]');
-        self::assertSelectorExists('a.btn-primary[data-umami-event="ticket-click"][data-umami-event-seller="CDiscount"]');
-        self::assertSelectorExists('.action-bar a.btn-primary[rel="sponsored"][data-umami-event-seller="CDiscount"]');
+        self::assertSelectorCount(7, 'a[data-analytics-event="ticket-click"]');
+        self::assertSelectorExists('a.btn-primary[data-analytics-event="ticket-click"][data-analytics-seller="CDiscount"]');
+        self::assertSelectorExists('.action-bar a.btn-primary[rel="sponsored"][data-analytics-seller="CDiscount"]');
     }
 
     public function testTheAffiliateLinksAreLabelled(): void
@@ -569,7 +569,7 @@ final class EventControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         // Ended: a week (EventPageCache), served stale while Cloudflare asks again or the origin is down
         self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=604800, stale-if-error=86400, stale-while-revalidate=86400');
-        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d', $event->getId(), $event->getPlace()?->getId()));
+        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d,publisher-%d', $event->getId(), $event->getPlace()?->getId(), $event->getPublisher()?->getId()));
         self::assertSame([], $client->getResponse()->headers->getCookies());
     }
 
@@ -580,7 +580,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->request('GET', $this->eventUrl($event));
 
-        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d', $event->getId(), $event->getPlace()?->getId()));
+        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d,publisher-%d', $event->getId(), $event->getPlace()?->getId(), $event->getPublisher()?->getId()));
     }
 
     public function testAMembersPageStaysPrivate(): void

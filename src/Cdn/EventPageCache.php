@@ -47,6 +47,11 @@ final readonly class EventPageCache
         return 'place-' . $placeId;
     }
 
+    public static function publisherTag(int $publisherId): string
+    {
+        return 'publisher-' . $publisherId;
+    }
+
     public function applyTo(Response $response, Event $event): Response
     {
         $response->setSharedMaxAge($this->sharedMaxAge($event));
@@ -84,6 +89,9 @@ final readonly class EventPageCache
         }
         if (null !== $placeId = $event->getPlace()?->getId()) {
             $tags[] = self::placeTag($placeId);
+        }
+        if (null !== $publisherId = $event->getPublisher()?->getId()) {
+            $tags[] = self::publisherTag($publisherId);
         }
 
         // The page shows the picture of another member of its family: a new one there must reach it

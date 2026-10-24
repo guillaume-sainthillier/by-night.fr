@@ -6,10 +6,12 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import readMore from '@/js/listeners/read-more'
 import { fake } from '@/js/test/fake'
+import { connectListener, connectListenerWithoutCleanup } from '@/js/test/listener'
 
 type Handler = () => void
 
-const connect = (scrollHeight: number, clientHeight: number) => {
+/** A text of that height, cut to that one, and the button the listener would create */
+const setUp = (scrollHeight: number, clientHeight: number) => {
     const handlers: Record<string, Handler | undefined> = {}
     const button = {
         type: '',
@@ -23,9 +25,8 @@ const connect = (scrollHeight: number, clientHeight: number) => {
     vi.stubGlobal('document', { createElement: () => button })
     const classes = new Set<string>()
     const text = { scrollHeight, clientHeight, classList: { add: (name: string) => classes.add(name) }, after: vi.fn() }
-    const cleanup = readMore.connect(fake<HTMLElement>(text))
 
-    return { text, button, classes, handlers, cleanup }
+    return { text, button, classes, handlers }
 }
 
 describe('read-more listener', () => {
@@ -34,7 +35,8 @@ describe('read-more listener', () => {
     })
 
     test('offers the rest of a text cut short, and shows it', () => {
-        const { text, button, classes, handlers } = connect(240, 96)
+        const { text, button, classes, handlers } = setUp(240, 96)
+        connectListener(readMore, fake<HTMLElement>(text))
 
         expect(text.after).toHaveBeenCalledWith(button)
         expect(button.textContent).toBe('Lire la suite')
@@ -46,9 +48,19 @@ describe('read-more listener', () => {
     })
 
     test('adds nothing to a text that fits', () => {
-        const { text, cleanup } = connect(96, 96)
+        const { text } = setUp(96, 96)
+
+        connectListenerWithoutCleanup(readMore, fake<HTMLElement>(text))
 
         expect(text.after).not.toHaveBeenCalled()
-        expect(cleanup).toBeUndefined()
+    })
+
+    test('takes its button away once disconnected', () => {
+        const { text, button } = setUp(240, 96)
+        const cleanup = connectListener(readMore, fake<HTMLElement>(text))
+
+        cleanup()
+
+        expect(button.remove).toHaveBeenCalled()
     })
 })

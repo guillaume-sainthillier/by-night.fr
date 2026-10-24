@@ -156,6 +156,14 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             $loadPictureLenders();
         }
 
+        // The header search and its suggestions (/api/search, /api/search/suggestions): the next session
+        // (NextSessionLabel), the venue and the city of the link, not a query per event on each keystroke
+        if ('events:search:suggestions' === $view) {
+            $loadTimesheets();
+            $loadPlaces();
+            $loadCities();
+        }
+
         // The organizer's list names the category under each event
         if ('events:personal-space:list' === $view) {
             $loadCategories();

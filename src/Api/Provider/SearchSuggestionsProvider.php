@@ -147,11 +147,16 @@ final readonly class SearchSuggestionsProvider implements ProviderInterface
     private function findEvents(QueryBuilder $queryBuilder): array
     {
         // Both queries join the place as "p": its name and its city (the link of the event) come with the event
-        return $queryBuilder
+        /** @var list<Event> $events */
+        $events = $queryBuilder
             ->addSelect('p', 'suggestion_city')
             ->leftJoin('p.city', 'suggestion_city')
             ->setMaxResults(self::EVENTS)
             ->getQuery()
             ->getResult();
+        // Their sessions in one query, for NextSessionLabel
+        $this->eventRepository->loadAllEager($events, ['view' => 'events:search:suggestions']);
+
+        return $events;
     }
 }

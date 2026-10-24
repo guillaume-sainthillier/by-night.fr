@@ -12,6 +12,7 @@ import { collectionListener } from '@silarhi/app-js/form'
 // Per-element listeners (connected on every mount)
 import actionBar from '@/js/listeners/action-bar'
 import activeChip from '@/js/listeners/active-chip'
+import analytics from '@/js/listeners/analytics'
 import bulkActions from '@/js/listeners/bulk-actions'
 import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
@@ -89,6 +90,7 @@ const app = new App({
     listeners: [
         actionBar,
         activeChip,
+        analytics,
         bulkActions,
         citySwitcher,
         contentRemovalRequest,

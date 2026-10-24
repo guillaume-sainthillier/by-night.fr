@@ -7,7 +7,8 @@ import type { MapVenue } from '@/js/utils/venues'
 
 /**
  * OpenFreeMap's vector styles: free for any use, without a key or a quota (https://openfreemap.org), the attribution
- * coming with the style. Positron's greys leave the markers in sight; Dark is for a map inside a dark theme.
+ * coming with the style. Positron's greys leave the markers in sight; Dark is for a map inside a dark theme. It sees
+ * the visitor's IP once they open the map: the cookies and privacy pages name it among the third parties.
  */
 const STYLES = {
     light: 'https://tiles.openfreemap.org/styles/positron',

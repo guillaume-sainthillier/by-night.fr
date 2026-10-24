@@ -6,6 +6,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import actionBar from '@/js/listeners/action-bar'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 type Observed = (entries: { isIntersecting: boolean; boundingClientRect: { bottom: number } }[]) => void
 
@@ -28,7 +29,7 @@ const connect = () => {
         dataset: { actionBar: '#event-tickets' },
         classList: { toggle: (name: string, on: boolean) => (on ? classes.add(name) : classes.delete(name)) },
     }
-    const cleanup = actionBar.connect(fake<HTMLElement>(bar))
+    const cleanup = connectListener(actionBar, fake<HTMLElement>(bar))
 
     return {
         classes,
@@ -65,7 +66,7 @@ describe('action-bar listener', () => {
     test('stops watching once disconnected', () => {
         const { disconnect, cleanup } = connect()
 
-        cleanup?.()
+        cleanup()
 
         expect(disconnect).toHaveBeenCalled()
     })

@@ -196,7 +196,8 @@ cookie, so no consent and every visitor counted.
   The sites it answers for are `TRACKER_HOSTS` in that directory's `.env`, a Traefik rule (``Host(`by-night.fr`)``):
   another site behind this Traefik joins by adding its host there, then `docker compose up -d app`. Umami reads the
   visitor's IP from `CF-Connecting-IP`, which Traefik passes on. The ticketing links carry
-  `data-umami-event="ticket-click"`.
+  `data-analytics-event="ticket-click"` and `data-analytics-seller`, which `assets/js/listeners/analytics.ts` sends with
+  `umami.track()` (the templates never name the tool: no `data-umami-*`).
 - **API**: `UMAMI_API_URL=https://analytics.silarhi.fr/` (the worker is not on the `web` network, so not
   `http://analytics:3000`), read as `by-night-api`, a view-only user of the "BY NIGHT" team, which holds the by-night
   website only (`UMAMI_USERNAME`, `UMAMI_PASSWORD`, `UMAMI_WEBSITE_ID` in `app.env`).

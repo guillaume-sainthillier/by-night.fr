@@ -1,10 +1,10 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * A text the stylesheet cuts short on a phone (`[data-read-more]`, the copy of a location's first page): a "Lire la
  * suite" button under it shows the rest. Nothing where the whole text fits, on a larger screen.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-read-more]',
     connect(text) {
         if (text.scrollHeight <= text.clientHeight + 1) {
@@ -24,4 +24,4 @@ export default {
 
         return () => button.remove()
     },
-} satisfies Listener<HTMLElement>
+})

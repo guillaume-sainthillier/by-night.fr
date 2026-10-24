@@ -16,6 +16,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Entity\Place;
+use App\Entity\Publisher;
 use App\Entity\UserEvent;
 use App\Handler\EventImageDownloadScheduler;
 use App\Message\PurgeCdnCacheTags;
@@ -27,8 +28,8 @@ use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Purges from Cloudflare the event pages a flush changed, which it otherwise keeps up to a week (EventPageCache):
- * the event row itself (an edit, a cancellation, a deletion), its sessions, comments and participants, and the
- * address of its place. Bulk DQL updates (the nightly agenda classification) bypass the unit of work, so they
+ * the event row itself (an edit, a cancellation, a deletion), its sessions, comments and participants, the
+ * address of its place, and the name, logo and links of its publisher. Bulk DQL updates (the nightly agenda classification) bypass the unit of work, so they
  * purge nothing, and neither does an event row whose change the page does not show (a parser version bump stamps
  * every event the source still lists). An imported event whose new image is still to download is purged once
  * that image is stored, not twice (EventImageDownloadScheduler::defersPagePurge(), EventImageDownloader). A
@@ -40,6 +41,9 @@ final class EventPageCachePurgeListener implements ResetInterface
 {
     /** What an event page shows of its place */
     private const array PLACE_FIELDS = ['name', 'street', 'cityName', 'cityPostalCode', 'city', 'country', 'latitude', 'longitude'];
+
+    /** What an event page and its JSON-LD organizer show of its publisher: a new logo has a new name (SmartUniqueNamer) */
+    private const array PUBLISHER_FIELDS = ['name', 'website', 'socialLinks', 'logo.name'];
 
     /** What an event row holds for the import and the back office only */
     private const array UNSHOWN_EVENT_FIELDS = ['updatedAt', 'parserVersion', 'externalUpdatedAt', 'identityHash'];
@@ -95,6 +99,9 @@ final class EventPageCachePurgeListener implements ResetInterface
             } elseif ($entity instanceof Place && null !== $entity->getId()
                 && [] !== array_intersect(self::PLACE_FIELDS, array_keys($unitOfWork->getEntityChangeSet($entity)))) {
                 $this->tags[EventPageCache::placeTag($entity->getId())] = true;
+            } elseif ($entity instanceof Publisher && null !== $entity->getId()
+                && [] !== array_intersect(self::PUBLISHER_FIELDS, array_keys($unitOfWork->getEntityChangeSet($entity)))) {
+                $this->tags[EventPageCache::publisherTag($entity->getId())] = true;
             }
         }
 
