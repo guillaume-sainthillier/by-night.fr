@@ -569,7 +569,7 @@ final class EventControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         // Ended: a week (EventPageCache), served stale while Cloudflare asks again or the origin is down
         self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=604800, stale-if-error=86400, stale-while-revalidate=86400');
-        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d', $event->getId(), $event->getPlace()?->getId()));
+        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d,publisher-%d', $event->getId(), $event->getPlace()?->getId(), $event->getPublisher()?->getId()));
         self::assertSame([], $client->getResponse()->headers->getCookies());
     }
 
@@ -580,7 +580,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->request('GET', $this->eventUrl($event));
 
-        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d', $event->getId(), $event->getPlace()?->getId()));
+        self::assertResponseHeaderSame('Cache-Tag', \sprintf('event,event-%d,place-%d,publisher-%d', $event->getId(), $event->getPlace()?->getId(), $event->getPublisher()?->getId()));
     }
 
     public function testAMembersPageStaysPrivate(): void

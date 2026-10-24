@@ -12,6 +12,7 @@ namespace App\Tests\Cdn;
 
 use App\Cdn\EventPageCache;
 use App\Entity\Event;
+use App\Entity\Publisher;
 use App\SEO\EventIndexingPolicy;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -89,5 +90,15 @@ final class EventPageCacheTest extends TestCase
         $tags = new EventPageCache(new MockClock(self::NOW))->tags(new Event()->setPictureFrom($lender));
 
         self::assertSame(['event', 'event-42'], $tags);
+    }
+
+    public function testAPageShowingItsPublisherIsPurgedWithIt(): void
+    {
+        $publisher = new Publisher();
+        new ReflectionProperty(Publisher::class, 'id')->setValue($publisher, 7);
+
+        $tags = new EventPageCache(new MockClock(self::NOW))->tags(new Event()->setPublisher($publisher));
+
+        self::assertSame(['event', 'publisher-7'], $tags);
     }
 }

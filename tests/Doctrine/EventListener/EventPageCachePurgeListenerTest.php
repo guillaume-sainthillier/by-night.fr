@@ -15,6 +15,7 @@ use App\Factory\CommentFactory;
 use App\Factory\EventFactory;
 use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PublisherFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
@@ -24,6 +25,7 @@ use App\Message\DownloadEventImages;
 use App\Message\PurgeCdnCacheTags;
 use App\Tests\AppKernelTestCase;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\flush_after;
@@ -163,6 +165,54 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         save($place);
 
         self::assertSame([], $this->purgedTags());
+    }
+
+    public function testARenamedPublisherPurgesTheEventPagesShowingIt(): void
+    {
+        $publisher = PublisherFactory::createOne(['name' => 'Le Bikini']);
+        $this->transport()->reset();
+
+        $publisher->setName('Bikini');
+        save($publisher);
+
+        self::assertSame(['publisher-' . $publisher->getId()], $this->purgedTags());
+    }
+
+    public function testAPublishersNewLinksPurgeTheEventPagesShowingThem(): void
+    {
+        $publisher = PublisherFactory::createOne();
+        $this->transport()->reset();
+
+        $publisher->setWebsite('https://www.lebikini.com');
+        $publisher->setSocialLinks(['instagram' => 'https://www.instagram.com/lebikini']);
+        save($publisher);
+
+        self::assertSame(['publisher-' . $publisher->getId()], $this->purgedTags());
+    }
+
+    public function testAPublishersNewLogoPurgesTheEventPagesShowingIt(): void
+    {
+        $publisher = PublisherFactory::createOne();
+        $this->transport()->reset();
+
+        // As Vich stores an upload: the old logo is deleted, the pages must stop pointing at it
+        $logo = new EmbeddedFile();
+        $logo->setName('logo-6718f2.webp');
+        $publisher->setLogo($logo);
+        save($publisher);
+
+        self::assertSame(['publisher-' . $publisher->getId()], $this->purgedTags());
+    }
+
+    public function testAPublisherChangeTheEventPageDoesNotShowPurgesNothing(): void
+    {
+        $publisher = PublisherFactory::createOne();
+        $this->transport()->reset();
+
+        $publisher->setDescription('Salle de concerts à Toulouse');
+        save($publisher);
+
+        self::assertSame([], $this->purgedTags(), 'only its own page shows it');
     }
 
     public function testPurgesDoNotQueueBehindTheSearchIndexUpdates(): void
