@@ -17,14 +17,13 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Utils\HoursLabel;
 use App\Utils\HtmlFormatter;
-use App\Utils\Util;
+use App\Utils\StringManipulator;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 final readonly class Cleaner
 {
     public function __construct(
-        private Util $util,
         private HtmlFormatter $htmlFormatter,
     ) {
     }
@@ -67,8 +66,8 @@ final readonly class Cleaner
         }));
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
         $dto->prices = mb_substr($dto->prices ?? '', 0, 255) ?: null;
-        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
-        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
+        $dto->latitude = $dto->latitude ?: null;
+        $dto->longitude = $dto->longitude ?: null;
 
         // Clean timesheets
         foreach ($dto->timesheets as $timesheet) {
@@ -246,8 +245,8 @@ final readonly class Cleaner
     {
         $dto->name = $this->fit($this->cleanNormalString($dto->name ?? ''), 255);
         $dto->street = $this->fit($this->cleanNormalString($dto->street ?? ''), 127);
-        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
-        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
+        $dto->latitude = $dto->latitude ?: null;
+        $dto->longitude = $dto->longitude ?: null;
     }
 
     public function cleanCity(CityDto $dto): void
@@ -273,11 +272,11 @@ final readonly class Cleaner
             return '';
         }
 
-        $step1 = $this->util->utf8TitleCase($string);
-        $step2 = $this->util->deleteMultipleSpaces($step1);
-        $step3 = $this->util->deleteSpaceBetween($step2, $delimiters);
-
-        return trim($step3);
+        return trim(new StringManipulator($string)
+            ->titleCase()
+            ->deleteMultipleSpaces()
+            ->deleteMultipleSpacesBetween($delimiters)
+            ->toString());
     }
 
     private function cleanPostalString(?string $string): string
