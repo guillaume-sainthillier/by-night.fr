@@ -13,6 +13,7 @@ namespace App\Tests\Command;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\UserEventFactory;
+use App\Factory\UserFactory;
 use App\Outing\OutingState;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -42,6 +43,19 @@ final class OutingAlertsSendCommandTest extends AppKernelTestCase
         self::assertEmailCount(1);
     }
 
+    public function testTheAlertsSkippedForAnInvalidAddressAreListed(): void
+    {
+        $this->cancelledOuting(['email' => 'First Last@example.com']);
+
+        $tester = $this->tester();
+        $tester->execute([]);
+
+        self::assertSame(Command::SUCCESS, $tester->getStatusCode());
+        self::assertStringContainsString('1 alert(s) skipped, their address is invalid', $tester->getDisplay());
+        self::assertStringContainsString('First Last@example.com', $tester->getDisplay());
+        self::assertStringContainsString('0 alert(s) sent.', $tester->getDisplay());
+    }
+
     public function testARunStartedWhileAnotherRunsStops(): void
     {
         $this->cancelledOuting();
@@ -59,11 +73,13 @@ final class OutingAlertsSendCommandTest extends AppKernelTestCase
 
     /**
      * A member going to a concert cancelled a minute ago.
+     *
+     * @param array<string, mixed> $member
      */
-    private function cancelledOuting(): void
+    private function cancelledOuting(array $member = []): void
     {
         $concert = EventFactory::new()->withDates(new DateTimeImmutable('+5 days'))->create();
-        UserEventFactory::createOne(['event' => $concert, 'going' => true, 'knownState' => OutingState::fromEvent($concert)]);
+        UserEventFactory::createOne(['event' => $concert, 'user' => UserFactory::new($member), 'going' => true, 'knownState' => OutingState::fromEvent($concert)]);
 
         self::mockTime('-1 minute');
         $concert->setStatus(EventStatus::Cancelled);

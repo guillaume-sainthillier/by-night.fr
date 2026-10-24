@@ -13,8 +13,8 @@ namespace App\Outing;
 use App\Entity\UserEvent;
 
 /**
- * What a run of the outing alerts did (OutingChangeNotifier::sendFlagged()): the alerts sent, and those that could not
- * leave, which the next run tries again.
+ * What a run of the outing alerts did (OutingChangeNotifier::sendFlagged()): the alerts sent, those that could not
+ * leave, which the next run tries again, and those skipped for an address the mailer refuses, which no run tries again.
  */
 final class OutingAlertRun
 {
@@ -23,6 +23,9 @@ final class OutingAlertRun
     /** @var list<array{event: ?int, member: ?int, email: ?string, error: string}> */
     private array $failures = [];
 
+    /** @var list<array{event: ?int, member: ?int, email: ?string, error: string}> */
+    private array $skipped = [];
+
     public function recordSent(): void
     {
         ++$this->sent;
@@ -30,12 +33,12 @@ final class OutingAlertRun
 
     public function recordFailure(UserEvent $outing, string $error): void
     {
-        $this->failures[] = [
-            'event' => $outing->getEvent()?->getId(),
-            'member' => $outing->getUser()?->getId(),
-            'email' => $outing->getUser()?->getEmail(),
-            'error' => $error,
-        ];
+        $this->failures[] = self::row($outing, $error);
+    }
+
+    public function recordSkipped(UserEvent $outing, string $error): void
+    {
+        $this->skipped[] = self::row($outing, $error);
     }
 
     public function getSent(): int
@@ -49,5 +52,26 @@ final class OutingAlertRun
     public function getFailures(): array
     {
         return $this->failures;
+    }
+
+    /**
+     * @return list<array{event: ?int, member: ?int, email: ?string, error: string}>
+     */
+    public function getSkipped(): array
+    {
+        return $this->skipped;
+    }
+
+    /**
+     * @return array{event: ?int, member: ?int, email: ?string, error: string}
+     */
+    private static function row(UserEvent $outing, string $error): array
+    {
+        return [
+            'event' => $outing->getEvent()?->getId(),
+            'member' => $outing->getUser()?->getId(),
+            'email' => $outing->getUser()?->getEmail(),
+            'error' => $error,
+        ];
     }
 }

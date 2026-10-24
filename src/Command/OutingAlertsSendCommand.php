@@ -49,6 +49,11 @@ final readonly class OutingAlertsSendCommand
             $lock->release();
         }
 
+        if ([] !== $run->getSkipped()) {
+            $io->note(\sprintf('%d alert(s) skipped, their address is invalid: no run tries them again.', \count($run->getSkipped())));
+            $io->table(['Event', 'Member', 'E-mail', 'Error'], $run->getSkipped());
+        }
+
         if ([] !== $run->getFailures()) {
             $io->warning(\sprintf('%d alert(s) could not be sent: the next run tries them again.', \count($run->getFailures())));
             $io->table(['Event', 'Member', 'E-mail', 'Error'], $run->getFailures());

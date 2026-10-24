@@ -18,6 +18,7 @@ use App\Repository\UserEventRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 
 /**
  * Tells the members following events what changed in them since they last heard of it (OutingChanges), by e-mail: a
@@ -30,9 +31,9 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
  * alert is recorded as soon as it left.
  *
  * One alert a day at most per member and event: a change after the day's alert is told by the first run of the next
- * day, in one alert with whatever else changed by then. Members who turned the alerts off are told nothing, but what
- * they know follows the event all the same, so that turning them on again does not bring back the changes of the
- * meantime.
+ * day, in one alert with whatever else changed by then. Members who turned the alerts off, or whose address is
+ * refused by the mailer, are told nothing, but what they know follows the event all the same, so that turning them on
+ * again does not bring back the changes of the meantime.
  */
 final readonly class OutingChangeNotifier
 {
@@ -106,6 +107,13 @@ final readonly class OutingChangeNotifier
 
             try {
                 $this->mailerManager->sendOutingChangedEmail($outing, $changes, $known);
+            } catch (RfcComplianceException $e) {
+                // An address the mailer refuses (a legacy one, "First Last@domain") would stop every run at this
+                // follower: skipped, they know the event as it is, as when the alerts are off
+                $run->recordSkipped($outing, $e->getMessage());
+                $outing->setKnownState($state);
+
+                continue;
             } catch (TransportExceptionInterface $e) {
                 $run->recordFailure($outing, $e->getMessage());
                 $untold[(int) $event->getId()] = true;
