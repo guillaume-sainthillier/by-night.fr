@@ -1440,6 +1440,55 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The events whose followers are still to hear of a change made before a time (Event::$flaggedForAlertAt). Strictly
+     * before: the column keeps whole seconds, so a change made in the second the run started waits for the next run.
+     *
+     * Walked by id, from the last event of the previous page: the flags a run clears take events out of the query, and
+     * those it keeps are passed over, not read again.
+     *
+     * @return CursorPagination<array{id: int}>
+     */
+    public function findFlaggedForAlert(DateTimeImmutable $before, int $batchSize): CursorPagination
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('e')
+            ->select('e.id')
+            ->where('e.flaggedForAlertAt < :before')
+            ->setParameter('before', $before);
+
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(new OrderConfiguration('e.id', static fn (array $event): int => $event['id'])),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
+    }
+
+    /**
+     * Clears the flag of the events whose followers heard of their change (OutingChangeNotifier), unless it moved past
+     * the start of the run that read them: a change made meanwhile is told by the next run.
+     *
+     * @param list<int> $ids
+     */
+    public function clearAlertFlags(array $ids, DateTimeImmutable $before): void
+    {
+        if ([] === $ids) {
+            return;
+        }
+
+        $this
+            ->createQueryBuilder('e')
+            ->update()
+            ->set('e.flaggedForAlertAt', 'NULL')
+            ->where('e.id IN (:ids)')
+            ->andWhere('e.flaggedForAlertAt < :before')
+            ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+            ->setParameter('before', $before)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
      * The cities of a country with the most events to come.
      *
      * @return list<array{0: City, events: int|string}> each city, and its number of events to come

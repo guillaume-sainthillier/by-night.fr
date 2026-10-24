@@ -221,6 +221,10 @@ A member's event belongs to a **publisher** (`App\Entity\Publisher`: a venue, a 
 - **Export** (`EventExporter`, `RunEventExport`): the member's events of a scope, as the import's columns (CSV/XLSX, so export → edit → import updates them) or as a calendar (ICS, `EventCalendarWriter`)
 - A member runs one job at a time; starting an import is a conditional UPDATE (`EventImportRepository::transition()`). `app:transfers:cleanup` (daily host cron) fails the jobs stuck for 2 h and deletes those older than 30 days with their files
 
+### Outing Alerts
+
+The members going to an event or keeping it as a favourite (`UserEvent`) are e-mailed when its dates, venue or status change (`App\Outing`). `OutingChangeListener` only flags the event (`Event::$flaggedForAlertAt`, moved to each change's time, written by the same UPDATE; hiding it or publishing it again flags it too); `app:outing-alerts:send` (host cron, four times a day, see the README) runs `OutingChangeNotifier::sendFlagged()`: the events flagged before the run started (strictly: the flag keeps whole seconds), 500 at a time, are compared to what each follower knows (`UserEvent::$knownState`, `OutingChanges`), then unflagged, unless a change came meanwhile, a follower already heard of the event today (one alert a day: told by the next day's first run) or an e-mail could not leave (tried again by the next run). Each alert records `knownState` and `alertedAt` as soon as it left, so a run again sends nothing twice; a lock keeps two runs apart. A DQL bulk update flags nothing
+
 ### DTO/Entity Pattern
 
 DTOs (`src/Dto/`) represent imported data before persistence. Key DTOs:
