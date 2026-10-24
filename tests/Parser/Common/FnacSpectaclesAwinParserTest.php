@@ -47,6 +47,20 @@ final class FnacSpectaclesAwinParserTest extends TestCase
         self::assertMatchesRegularExpression('/^[0-9a-f]{40}$/', (string) $event->externalId);
     }
 
+    public function testTheLinesAndSentencesTheFeedGluedArePartedAgain(): void
+    {
+        $row = $this->row('1', 'Arnaud Gidoin - 55 ans', '25.7', '2026-10-24', '20:30');
+        $row['description'] = 'Durée : 1H20De Arnaud GidoinMise en scène Nicolas Nebot';
+        $row['product_short_description'] = 'Trop bruyant, trop complexe.Une guitare (L-R-20-7502).« Je joue » https://gauchorestaurants.com/menus/PiccadillyMenu';
+
+        $event = $this->groupEvents([$row])[0];
+
+        self::assertSame(
+            "Durée : 1H20<br />\nDe Arnaud Gidoin<br />\nMise en scène Nicolas Nebot<br />\n<br />\nTrop bruyant, trop complexe. Une guitare (L-R-20-7502). « Je joue » https://gauchorestaurants.com/menus/PiccadillyMenu",
+            $event->description,
+        );
+    }
+
     public function testSameShowAcrossSeveralDatesProducesMultipleTimesheets(): void
     {
         // Same show, three dates, two price tiers, one duplicated date.

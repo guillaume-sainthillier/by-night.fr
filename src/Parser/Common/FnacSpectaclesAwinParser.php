@@ -160,7 +160,7 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         $event->timesheets = [$timesheet];
         $event->source = $data['aw_deep_link'];
         $event->name = $data['product_name'];
-        $event->description = nl2br(trim(\sprintf("%s\n\n%s", $data['description'] ?? '', $data['product_short_description'] ?? '')));
+        $event->description = nl2br(trim(\sprintf("%s\n\n%s", self::unglue($data['description'] ?? ''), self::unglue($data['product_short_description'] ?? ''))));
         // As served: the feed links 222x222 thumbnails with no larger variant, so there is
         // nothing to look up (a "grand/" to "600/" rewrite once checked each poster with a HEAD)
         $event->imageUrl = self::posterUrl($data['merchant_image_url'] ?? null);
@@ -281,5 +281,26 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         // Reflect the full ticket price range gathered across the duplicate rows.
         $event->prices = self::formatPriceRange($prices);
+    }
+
+    /**
+     * The feed loses the line breaks of its texts and some spaces after a full stop: "Durée : 1H20De Arnaud GidoinMise
+     * en scène Nicolas Nebot", "trop complexe.Une guitare". A word glued to the next one's capital starts a line again,
+     * a sentence glued to the next one gets its space back. Of 7,034 distinct glued words in the feed of 2026-09-24,
+     * nearly all were two lines; a few names written in camel case get parted ("BurnOut", "PortAventura"). The links
+     * of the text (755 of its texts have one) are left as they are.
+     */
+    private static function unglue(string $text): string
+    {
+        $parts = preg_split('~((?:https?://|www\.)\S+)~u', $text, -1, \PREG_SPLIT_DELIM_CAPTURE) ?: [$text];
+        foreach ($parts as $index => $part) {
+            // The links are the odd parts
+            if (0 === $index % 2) {
+                $part = (string) preg_replace('/(?<=[\p{Ll}\d])(?=\p{Lu}\p{Ll})/u', "\n", $part);
+                $parts[$index] = (string) preg_replace('/(?<=[\p{Ll})»"”])([.!?…])(?=(?:[«"“]\s*)?\p{Lu})/u', '$1 ', $part);
+            }
+        }
+
+        return implode('', $parts);
     }
 }
