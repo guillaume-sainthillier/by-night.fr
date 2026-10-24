@@ -37,6 +37,22 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
         self::assertSame(0, PublisherNewsDeliveryFactory::count());
     }
 
+    public function testTheAddressesThatCannotBeReachedAreLeftOut(): void
+    {
+        $this->publisher(new DateTimeImmutable('-1 year'));
+        // A tenth of the addresses this old bounced
+        $this->publisher(new DateTimeImmutable('2017-06-01'));
+        // Made up for the members of the former Twitter and Facebook logins
+        $this->publisher(new DateTimeImmutable('-1 year'), ['email' => 'someone@twitter.fr']);
+        $this->publisher(new DateTimeImmutable('-1 month'), ['email' => 'First Last@facebook.fr']);
+
+        $comeback = $this->execute(['editions' => ['2026-10-retour']]);
+        $monthly = $this->execute(['editions' => ['2026-10']]);
+
+        self::assertStringContainsString('1 e-mail(s) to send', $comeback->getDisplay());
+        self::assertStringContainsString('0 e-mail(s) to send', $monthly->getDisplay());
+    }
+
     public function testAnUnknownEditionIsRefused(): void
     {
         $tester = $this->execute(['editions' => ['1999-01']]);
@@ -119,8 +135,8 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
     #[RequiresPhpExtension('mjml')]
     public function testAnInvalidAddressIsSkippedWithoutTakingAPlace(): void
     {
-        // A legacy address, as some old social logins stored them
-        $invalid = $this->publisher(new DateTimeImmutable('-1 month'), ['email' => 'First Last@facebook.fr']);
+        // A legacy address, with a space
+        $invalid = $this->publisher(new DateTimeImmutable('-1 month'), ['email' => 'First Last@example.fr']);
         $valid = $this->publisher(new DateTimeImmutable('-1 month'));
 
         $tester = $this->execute(['editions' => ['2026-10'], '--send' => true, '--limit' => 1]);
