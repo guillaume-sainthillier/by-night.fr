@@ -71,6 +71,7 @@ const visit = (hash: string) => {
 }
 
 beforeEach(() => {
+    vi.stubGlobal('document', { querySelectorAll: () => [] })
     state.handlers = {}
     state.requests = []
     state.response = { success: true, like: true }
@@ -91,6 +92,19 @@ describe('like listener', () => {
         expect(JSON.parse(state.requests[0].data)).toEqual({ like: true })
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(toastManager.createToast).toHaveBeenCalledWith('success', 'Ajouté à vos sorties')
+    })
+
+    test('keeps the other buttons of the event in step', () => {
+        visit('')
+        const other = { dataset: { href: '/api/events/42/participer' }, classList: { toggle: vi.fn() } }
+        const elsewhere = { dataset: { href: '/api/events/7/participer' }, classList: { toggle: vi.fn() } }
+        vi.stubGlobal('document', { querySelectorAll: () => [other, elsewhere] })
+        connect()
+
+        state.handlers['click.like']?.()
+
+        expect(other.classList.toggle).toHaveBeenCalledWith('btn-primary', true)
+        expect(elsewhere.classList.toggle).not.toHaveBeenCalled()
     })
 
     test('records the click made before the login, once, and forgets the fragment', () => {

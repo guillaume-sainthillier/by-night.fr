@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/browser'
 import { App, type ErrorContext } from '@silarhi/app-js'
 import { collectionListener } from '@silarhi/app-js/form'
 // Per-element listeners (connected on every mount)
+import actionBar from '@/js/listeners/action-bar'
 import bulkActions from '@/js/listeners/bulk-actions'
 import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
@@ -34,6 +35,7 @@ import otpAutosubmit from '@/js/listeners/otp-autosubmit'
 import passwordMeter from '@/js/listeners/password-meter'
 import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
+import share from '@/js/listeners/share'
 import toc from '@/js/listeners/toc'
 import tooltip from '@/js/listeners/tooltip'
 import transferToasts from '@/js/listeners/transfer-toasts'
@@ -83,6 +85,7 @@ const parameters = window.appParameters
 const app = new App({
     modules: [autocomplete, scrollToTop, viewTransitions],
     listeners: [
+        actionBar,
         bulkActions,
         citySwitcher,
         contentRemovalRequest,
@@ -109,6 +112,7 @@ const app = new App({
         passwordMeter,
         passwordReveal,
         popup,
+        share,
         toc,
         tooltip,
         transferToasts,
