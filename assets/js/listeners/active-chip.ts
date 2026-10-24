@@ -1,10 +1,10 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * A row of chips scrolled sideways on a phone (`.chips-scroll-mobile`, the agenda's dates) opens on its active chip:
  * "Ce mois", the last of the row, would be out of sight on the page it leads to.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '.chips-scroll-mobile',
     connect(row) {
         const active = row.querySelector<HTMLElement>('.active')
@@ -15,4 +15,4 @@ export default {
         // The chip before it stays in sight, showing where the row comes from
         row.scrollLeft = Math.max(0, active.offsetLeft - row.offsetLeft - active.offsetWidth / 2)
     },
-} satisfies Listener<HTMLElement>
+})

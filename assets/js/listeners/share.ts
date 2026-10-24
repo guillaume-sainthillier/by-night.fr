@@ -1,4 +1,5 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
+import { copyLink } from '@/js/listeners/copy-url'
 
 /** A phone or a tablet: there the share sheet of the system knows the visitor's apps; a computer keeps the site's menu */
 const hasShareSheet = (): boolean =>
@@ -11,7 +12,7 @@ const hasShareSheet = (): boolean =>
  * A button marked `data-share-native-only` starts hidden and shows only with a share sheet, hiding in its place the
  * `[data-share-fallback]` of its `[data-share]` group (the event page's share menu and copy button).
  */
-export default {
+export default defineListener<HTMLButtonElement>({
     selector: '[data-share-url]',
     connect(button, { app }) {
         const url = button.dataset.shareUrl ?? ''
@@ -37,15 +38,11 @@ export default {
                 return
             }
 
-            const toastManager = app.get('toastManager')
-            navigator.clipboard.writeText(url).then(
-                () => toastManager.createToast('success', 'Lien copié !'),
-                () => toastManager.createToast('error', 'Impossible de copier le lien')
-            )
+            copyLink(app, url)
         }
 
         button.addEventListener('click', share)
 
         return () => button.removeEventListener('click', share)
     },
-} satisfies Listener<HTMLButtonElement>
+})
