@@ -158,10 +158,97 @@ jobs:
             - name: Build app image
               run: docker build --build-arg "BASE_IMAGE_TAG=${{ steps.base.outputs.tag }}" -t by-night:pr .
 
+    phpunit:
+        # Runs the suite in docker/base, which bakes ext-mjml in: the tests that send an e-mail
+        # (#[RequiresPhpExtension('mjml')]) are skipped wherever it is missing, as in the laminas containers of the
+        # QA Checks, which no longer run PHPUnit (.laminas-ci.json). The base is pulled or built as in the image job.
+        name: PHPUnit (base image)
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        permissions:
+            contents: read
+        env:
+            DOCKER_BUILDKIT: '1'
+            # Secrets can't be tested in `if:`; empty on fork PRs.
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  # HEAD^1 is the base branch tip on a PR (HEAD is the merge commit) and the previous commit on a push
+                  # to main, so `git diff HEAD^1 HEAD` is exactly what the change brings.
+                  fetch-depth: 2
+
+            # Pull public Docker Hub images through Google's mirror (see the image job).
+            - name: Use the mirror.gcr.io registry mirror
+              run: |
+                  config=$(sudo cat /etc/docker/daemon.json 2> /dev/null | grep . || echo '{}')
+                  jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' <<< "$config" | sudo tee /etc/docker/daemon.json > /dev/null
+                  sudo systemctl restart docker
+                  docker info --format 'Registry mirrors: {{.RegistryConfig.Mirrors}}'
+
+            # The base image is private. Without credentials (fork PRs) the pull below
+            # fails and the base is built locally instead.
+            - name: Login to Docker Hub
+              if: env.DOCKER_USERNAME != ''
+              uses: docker/login-action@v4
+              with:
+                  username: ${{ env.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Pull or build base image
+              id: base
+              run: |
+                  TAG=$(cat docker/base/VERSION)
+                  if [ -z "$TAG" ]; then echo "::error::docker/base/VERSION is empty"; exit 1; fi
+                  IMAGE="guystlr/by-night-base:$TAG"
+                  echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+                  # On a push to main that bumps VERSION, the new tag is published by build-base-image.yml at the
+                  # same time: until then the pull fails and the base is built here.
+                  if git diff --quiet HEAD^1 HEAD -- docker/base/; then
+                      if docker pull --quiet "$IMAGE"; then
+                          echo "::notice::docker/base/ unchanged — reusing published $IMAGE"
+                          exit 0
+                      fi
+                      echo "::warning::$IMAGE could not be pulled (unpublished, or no registry credentials) — building it locally"
+                  fi
+
+                  docker build -t "$IMAGE" docker/base
+
+            # One container for every step, the checkout mounted at /app. The base loads no php.ini: memory_limit is
+            # PHP's 128M default, too little to compile the Symfony container (Composer's cache:clear script, the
+            # console) or to run the suite (324 MB). Its CLI opcache is off, so the sources are read as they are.
+            - name: Start PHP container
+              run: |
+                  docker run --detach --name php -v "$GITHUB_WORKSPACE:/app" -w /app "${{ steps.base.outputs.image }}" tail -f /dev/null
+                  docker exec php sh -c 'echo "memory_limit = -1" > "$PHP_INI_DIR/conf.d/zz-ci.ini"'
+
+            - name: Install Composer dependencies
+              env:
+                  # Authenticated GitHub downloads: the hosted runners share their public IPs.
+                  COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+              run: docker exec -e COMPOSER_AUTH php composer install --no-interaction --no-progress --prefer-dist
+
+            - name: Create test database
+              run: docker exec php bin/console doctrine:schema:create --env=test --no-interaction
+
+            # CI never runs "pnpm build": stub the Reprise manifests so tests that render a full page
+            # (asset() / reprise_entry_*_tags()) do not fail on a missing file. The manifest can be an
+            # empty array, but Reprise validates entrypoints.json and throws unless "isProd",
+            # "publicPath" and "entryPoints" are present with the right types.
+            - name: Stub frontend build manifests
+              run: |
+                  mkdir -p public/build
+                  echo '[]' > public/build/manifest.json
+                  echo '{"isProd":true,"devServer":null,"publicPath":"/build/","entryPoints":{}}' > public/build/entrypoints.json
+
+            - name: PHPUnit
+              run: docker exec php vendor/bin/phpunit
+
     ci-passed:
         name: CI passed
         # image is skipped on pushes to main: skipped jobs pass, only a failed or cancelled one fails this check
-        needs: [matrix, qa, lint, test, image]
+        needs: [matrix, qa, lint, test, image, phpunit]
         if: always()
         runs-on: ubuntu-latest
         timeout-minutes: 5
