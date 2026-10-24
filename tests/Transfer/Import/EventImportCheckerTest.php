@@ -78,6 +78,21 @@ final class EventImportCheckerTest extends AppKernelTestCase
         self::assertSame('ID', $import->getErrors()[0]['column']);
     }
 
+    /**
+     * The column holds 100 characters: a longer reference passing the check would fail the import's save.
+     */
+    public function testAReferenceTooLongForItsColumnIsRefused(): void
+    {
+        $date = (new DateTimeImmutable('+1 month'))->format('d/m/Y');
+        $long = str_repeat('é', 101);
+        $import = $this->check(self::HEADER
+            . "{$long};;Soirée jazz;Deux soirs de jazz en plein air.;{$date};20:30;La Guinguette;31000;Toulouse\n"
+            . mb_substr($long, 1) . ";;Soirée blues;Une soirée de blues en plein air.;{$date};20:30;La Guinguette;31000;Toulouse\n");
+
+        self::assertSame([1, 1], [$import->getValidCount(), $import->getInvalidCount()]);
+        self::assertSame([2, 'Référence externe', 'La référence ne peut pas dépasser 100 caractères.'], [$import->getErrors()[0]['row'], $import->getErrors()[0]['column'], $import->getErrors()[0]['message']]);
+    }
+
     public function testAnEventLookingLikeOneOnlineIsKeptWithAWarning(): void
     {
         $date = new DateTimeImmutable('+1 month');

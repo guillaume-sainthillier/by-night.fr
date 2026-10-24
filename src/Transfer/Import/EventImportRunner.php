@@ -23,6 +23,7 @@ use App\Transfer\Sheet\SheetReader;
 use App\Transfer\TransferFiles;
 use App\Transfer\TransferNotifier;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -32,8 +33,8 @@ use Throwable;
  * is exactly what the member saw checked. Each event is read again against the member's events as they are now
  * (one may have been deleted meanwhile), then saved in batches through the import pipeline.
  *
- * The events of a batch are saved together: a batch the pipeline cannot save is saved again event by event, so
- * one bad event fails alone. Run again (a worker killed halfway, the member resuming), the import matches the
+ * The events of a batch are saved together: a batch the pipeline cannot save is rolled back and saved again event by
+ * event, so one bad event fails alone. Run again (a worker killed halfway, the member resuming), the import matches the
  * events it already wrote by their ID or reference, and they come out unchanged.
  */
 final readonly class EventImportRunner
@@ -42,6 +43,7 @@ final readonly class EventImportRunner
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private EventImportRepository $importRepository,
         private TransferFiles $files,
         private SheetReader $reader,
@@ -101,6 +103,7 @@ final readonly class EventImportRunner
             $import->setStatus(EventImportStatus::Completed);
         } catch (Throwable $e) {
             $this->logger->error('The event import {id} failed: {message}', ['id' => $id, 'message' => $e->getMessage(), 'exception' => $e]);
+            $this->resetClosedManager();
             $import = $this->progress($id, $outcomes);
             $import->setStatus(EventImportStatus::Failed)->setFailureReason($e instanceof InvalidSheetException
                 ? $e->getMessage()
@@ -142,12 +145,14 @@ final readonly class EventImportRunner
             $ids = $this->memberEventPublisher->saveImported($user, $publisher, array_map(self::item(...), $toSave));
         } catch (Throwable $e) {
             $this->logger->warning('A batch of the event import failed, its events are saved one by one: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+            $this->resetClosedManager();
             $ids = [];
             foreach ($toSave as $mapped) {
                 try {
                     $ids[] = $this->memberEventPublisher->saveImported($user, $publisher, [self::item($this->mapper->map($mapped->group, $user, $publisher))])[0];
                 } catch (Throwable $e) {
                     $this->logger->error('An event of an import could not be saved: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+                    $this->resetClosedManager();
                     $ids[] = null;
                 }
             }
@@ -202,5 +207,16 @@ final readonly class EventImportRunner
     {
         $this->entityManager->flush();
         $this->notifier->importChanged($import);
+    }
+
+    /**
+     * A failed flush closes the entity manager: it is reset before anything else is written, or every save after it
+     * fails with "EntityManager is closed", the import's own included (it would stay "Importing" until the cleanup).
+     */
+    private function resetClosedManager(): void
+    {
+        if (!$this->entityManager->isOpen()) {
+            $this->managerRegistry->resetManager();
+        }
     }
 }

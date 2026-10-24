@@ -10,10 +10,12 @@
 
 namespace App\Tests\Transfer\Import;
 
+use App\Entity\Event;
 use App\Enum\EventImportStatus;
 use App\Enum\EventStatus;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventImportFactory;
 use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Repository\EventImportRepository;
@@ -21,6 +23,10 @@ use App\Tests\AppKernelTestCase;
 use App\Tests\Transfer\TransferTestTrait;
 use App\Transfer\Import\EventImportRunner;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
+use RuntimeException;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\refresh;
@@ -163,6 +169,41 @@ final class EventImportRunnerTest extends AppKernelTestCase
         $references = array_map(static fn ($event): ?string => $event->getExternalReference(), EventFactory::findBy(['user' => $this->user]));
         sort($references);
         self::assertSame(['JAZZ', 'ROCK'], $references);
+    }
+
+    /**
+     * A batch whose save fails is rolled back whole, what makes the events the member's with it: none is left online
+     * without its publisher, out of the member's reach. The entity manager the failure closed is reset, the batch's
+     * events are saved one by one, and the import completes.
+     */
+    public function testABatchThatFailsLeavesNothingBehindAndItsEventsAreSavedOneByOne(): void
+    {
+        $import = $this->check(self::HEADER
+            . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
+            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+        $id = $import->getId();
+        // The UPDATE giving BLUES its publisher fails, as a value too long for its column does in MySQL: the flush
+        // throws and closes the entity manager
+        self::getContainer()->get(EntityManagerInterface::class)->getEventManager()->addEventListener(Events::preUpdate, new class {
+            public function preUpdate(PreUpdateEventArgs $args): void
+            {
+                $event = $args->getObject();
+                if ($event instanceof Event && 'Soirée blues' === $event->getName() && $args->hasChangedField('publisher')) {
+                    throw new RuntimeException('Data too long for column');
+                }
+            }
+        });
+        self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
+
+        self::getContainer()->get(EventImportRunner::class)->run($import);
+
+        $import = EventImportFactory::find(['id' => $id]);
+        self::assertSame(EventImportStatus::Completed, $import->getStatus());
+        self::assertSame(['JAZZ' => 'created', 'BLUES' => 'failed'], array_column($import->getOutcomes(), 'outcome', 'reference'));
+        self::assertSame(0, EventFactory::count(['name' => 'Soirée blues']));
+        $jazz = EventFactory::find(['externalReference' => 'JAZZ']);
+        self::assertTrue($jazz->isDraft());
+        self::assertSame($this->user->getId(), $jazz->getPublisher()?->getOwner()?->getId());
     }
 
     public function testAnEventDeletedSinceTheCheckIsNotImported(): void

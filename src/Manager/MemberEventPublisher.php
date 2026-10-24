@@ -95,9 +95,12 @@ final readonly class MemberEventPublisher
 
     /**
      * Saves a batch of a member's imported events (App\Transfer\Import\EventImportRunner) in one go through the
-     * pipeline, then gives each what only a member's event has: a new one is the import's publisher's, a draft unless
+     * pipeline, and gives each what only a member's event has: a new one is the import's publisher's, a draft unless
      * the file says otherwise, and its author goes; a changed one keeps its draft state unless the file says otherwise.
      * Both take the member's reference.
+     *
+     * In the pipeline's transaction: a batch that fails leaves nothing behind, never a new event online without its
+     * publisher (out of its member's reach).
      *
      * @param list<array{dto: EventDto, new: bool, draft: ?bool, reference: ?string}> $items
      *
@@ -111,8 +114,23 @@ final readonly class MemberEventPublisher
             }
         }
 
-        $this->doctrineEventHandler->handleMany(array_column($items, 'dto'));
+        $ids = [];
+        $this->doctrineEventHandler->handleMany(array_column($items, 'dto'), function () use ($author, $publisher, $items, &$ids): void {
+            $ids = $this->completeImported($author, $publisher, $items);
+        });
 
+        return $ids;
+    }
+
+    /**
+     * Gives the imported events, just saved by the pipeline, what only a member's event has.
+     *
+     * @param list<array{dto: EventDto, new: bool, draft: ?bool, reference: ?string}> $items
+     *
+     * @return list<?int>
+     */
+    private function completeImported(User $author, Publisher $publisher, array $items): array
+    {
         $author = $this->entityManager->getReference(User::class, $author->getId());
         $publisher = $this->entityManager->getReference(Publisher::class, $publisher->getId());
         $ids = [];
