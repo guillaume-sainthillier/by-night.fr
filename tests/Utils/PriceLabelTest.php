@@ -55,6 +55,27 @@ final class PriceLabelTest extends TestCase
         yield 'paying for some only' => ['10 € adultes, gratuit pour les enfants', "10\u{a0}€"];
     }
 
+    #[DataProvider('provideTexts')]
+    public function testTheTextOfThePricesWritesItsAmountsTheFrenchWay(?string $prices, ?string $text): void
+    {
+        self::assertSame($text, PriceLabel::formatText($prices));
+    }
+
+    /**
+     * @return iterable<string, array{string|null, string|null}>
+     */
+    public static function provideTexts(): iterable
+    {
+        yield 'as an affiliate feed formats it' => ['50.0€', "50\u{a0}€"];
+        yield 'with cents' => ['25.70€', "25,70\u{a0}€"];
+        yield 'a range' => ['De 15€ à 25€', "De 15\u{a0}€ à 25\u{a0}€"];
+        yield 'the words around kept' => ['Tarif plein : 12.5€ - Tarif réduit : 8€', "Tarif plein : 12,50\u{a0}€ - Tarif réduit : 8\u{a0}€"];
+        yield 'in words' => ['12 euros sur place', "12\u{a0}€ sur place"];
+        yield 'thousands left as typed' => ['Loge : 1.500€', 'Loge : 1.500€'];
+        yield 'no amount' => ['Sur inscription', 'Sur inscription'];
+        yield 'nothing' => [null, null];
+    }
+
     #[DataProvider('provideNotes')]
     public function testAShortNoteWithoutAmountIsItsOwnLabel(string $prices, string $label): void
     {

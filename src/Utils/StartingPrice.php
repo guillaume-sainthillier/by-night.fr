@@ -20,7 +20,7 @@ final class StartingPrice
     private const string FREE_PATTERN = '/\b(gratuite?|entr[ée]e libre|acc[èe]s libre|free)\b/iu';
 
     /** An amount in euros: "39€", "22.0000€", "27,50 €", "12 euros" */
-    private const string AMOUNT_PATTERN = '/(\d+(?:[.,]\d+)?)\s*(?:€|euros?\b|eur\b)/iu';
+    public const string AMOUNT_PATTERN = '/(\d+(?:[.,]\d+)?)\s*(?:€|euros?\b|eur\b)/iu';
 
     /**
      * 0 for a free entry, the lowest amount to pay, or null when the text names neither ("Sur inscription"): the
@@ -60,6 +60,6 @@ final class StartingPrice
     {
         preg_match_all(self::AMOUNT_PATTERN, $prices, $matches);
 
-        return array_map(static fn (string $amount): float => (float) str_replace(',', '.', $amount), $matches[1]);
+        return array_map(DecimalNumber::parse(...), $matches[1]);
     }
 }

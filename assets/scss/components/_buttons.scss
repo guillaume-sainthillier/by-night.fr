@@ -111,3 +111,33 @@
         transform: rotate(180deg);
     }
 }
+
+// A row of chips on one line on a phone, scrolled sideways (the agenda's dates, _dates.html.twig): its end fades out,
+// showing there is more
+.chips-scroll-mobile {
+    @include media-breakpoint-down(md) {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scrollbar-width: none;
+        mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+        // The last chip clears the fade once scrolled to the end
+        padding-right: 2rem;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        > * {
+            flex-shrink: 0;
+        }
+
+        // The button of the filters stays at the start of the row, the chips scroll under it
+        > [data-bs-toggle='offcanvas'] {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background-color: $white;
+            box-shadow: 0.5rem 0 0.5rem -0.25rem var(--body-bg);
+        }
+    }
+}

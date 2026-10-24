@@ -50,4 +50,14 @@ final readonly class StringExtension
     {
         return PriceLabel::fromPrices($prices, $startingPrice);
     }
+
+    /**
+     * The prices of an event as its page lists them: the source's text, its amounts written the French way
+     * (PriceLabel::formatText()).
+     */
+    #[AsTwigFilter(name: 'prices_text')]
+    public function pricesText(?string $prices): ?string
+    {
+        return PriceLabel::formatText($prices);
+    }
 }

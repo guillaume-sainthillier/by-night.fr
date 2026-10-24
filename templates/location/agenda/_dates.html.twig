@@ -1,12 +1,13 @@
 {# The date shortcuts of the agenda, the first way through it ("what's on tonight?"), each with its count of the page's
    other filters (EventElasticaRepository::getFacets()). "Tous les jours" leaves the period out of the URL. Not followed,
    their dates changing every day, but for the date pages of a busy location ("/toulouse/ce-week-end"): those are meant
-   to be found (DatePageIndexingPolicy). Wrapped, all in sight: no line to scroll sideways.
+   to be found (DatePageIndexingPolicy). Above the events, a phone shows them on one line scrolled sideways (they took
+   three lines before the first event); the filters panel wraps them, all in sight.
 
    Twice on a page: above the events, headed on a phone by the button of the filters ({withFilters: true}, the id the
    tests and the links read), and in the phone's filters panel ({withFilters: false}). #}
 {% set withFilters = withFilters ?? true %}
-<div class="d-flex flex-wrap align-items-center gap-2"{% if withFilters %} id="agenda-dates"{% endif %} role="group" aria-label="Dates">
+<div class="d-flex flex-wrap align-items-center gap-2{{ withFilters ? ' chips-scroll-mobile' }}"{% if withFilters %} id="agenda-dates"{% endif %} role="group" aria-label="Dates">
     {% if withFilters %}
         <button type="button" class="btn btn-sm btn-pill d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
             <twig:Icon name="lucide:sliders-horizontal" />
