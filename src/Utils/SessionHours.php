@@ -44,6 +44,16 @@ final class SessionHours
     }
 
     /**
+     * When the session starts, written short for a list ("20h", "20h30"), null without a start time.
+     */
+    public static function start(EventTimesheet $session): ?string
+    {
+        $start = $session->getStartTime();
+
+        return null === $start ? null : self::time($start);
+    }
+
+    /**
      * The times of a slot as the site writes them, the dates aside: "À 20h30", "De 20h à 23h"… An end earlier than the
      * start goes past midnight. Null without any time.
      */

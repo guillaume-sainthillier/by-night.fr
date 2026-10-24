@@ -42,6 +42,13 @@ final class SessionHoursTest extends TestCase
         yield 'an end alone' => [null, '23:00', "Jusqu'à 23h"];
     }
 
+    public function testASessionStartIsWrittenShortForAList(): void
+    {
+        self::assertSame('20h30', SessionHours::start(self::session('20:30', '23:00', null)));
+        self::assertSame('minuit', SessionHours::start(self::session('00:00', null, null)));
+        self::assertNull(SessionHours::start(self::session(null, '23:00', 'À 20h')), 'Only a start time says when it starts');
+    }
+
     public function testASessionShowsItsTimesThenWhatTheyCannotSay(): void
     {
         $session = self::session('20:00', '23:00', 'Ouverture des portes à 19h');

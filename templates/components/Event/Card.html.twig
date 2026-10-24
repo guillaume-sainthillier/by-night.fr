@@ -22,6 +22,10 @@
         {%- endif %}
     {%- endif -%}
 {% endapply %}{% endset %}
+{# A row of the agenda sits under its day: a session of that day says when it starts ("20h30", nothing without a time),
+   a run still says its dates #}
+{% set singleDay = session and session.startAt|date('Y-m-d') >= 'now'|date('Y-m-d') and (session.endAt ?? session.startAt)|date('Y-m-d') == session.startAt|date('Y-m-d') %}
+{% set rowWhen = singleDay ? session_start(session) : when %}
 <article {{ attributes.defaults({class: 'card card-event card-layout h-100 mb-0' ~ (compact ? ' card-event-compact')}) }}>
     {% if event.status or event.statusMessage %}
         <twig:Event:StatusAlert event="{{ event }}" class="rounded-0 py-2 small" />
@@ -52,11 +56,11 @@
             <h3 class="card-title line-clamp-2 {{ compact ? 'mb-1 mb-md-2' : 'mb-2' }}">
                 <a href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" class="stretched-link" title="Tous les détails de {{ event.name }}">{{ event.name }}</a>
             </h3>
-            {% if compact and (session or price) %}
+            {% if compact and (rowWhen or price) %}
                 {# The overlay's date and price, which would hide a row's small picture #}
                 <div class="d-flex flex-wrap align-items-center gap-2 small d-md-none">
-                    {% if session %}
-                        <span class="text-primary fw-medium"><twig:Icon name="lucide:calendar-days" /> {{ when }}</span>
+                    {% if rowWhen %}
+                        <span class="text-primary fw-medium"><twig:Icon name="{{ singleDay ? 'lucide:clock' : 'lucide:calendar-days' }}" /> {{ rowWhen }}</span>
                     {% endif %}
                     {% if price %}
                         <span class="{{ price.free ? 'text-green fw-medium' : 'text-body' }}">{{ price.label }}</span>
