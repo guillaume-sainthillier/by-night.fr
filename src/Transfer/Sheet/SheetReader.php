@@ -19,11 +19,13 @@ use OpenSpout\Common\Exception\OpenSpoutException;
 use OpenSpout\Reader\CSV\Options as CsvOptions;
 use OpenSpout\Reader\CSV\Reader as CsvReader;
 use OpenSpout\Reader\ReaderInterface;
+use OpenSpout\Reader\XLSX\Options as XlsxOptions;
 use OpenSpout\Reader\XLSX\Reader as XlsxReader;
 
 /**
- * Reads a member's spreadsheet: its first sheet, the header on the first row. Every value comes out as text, the
- * dates as JJ/MM/AAAA and the times as HH:MM whatever Excel stored, so the mapping reads one shape.
+ * Reads a member's spreadsheet: its first sheet, the header on its first row that is not empty, each row numbered as
+ * the spreadsheet shows it. Every value comes out as text, the dates as JJ/MM/AAAA and the times as HH:MM whatever
+ * Excel stored, so the mapping reads one shape.
  *
  * A CSV may be separated by semicolons (Excel in French), commas or tabs, and encoded in UTF-8 or Windows-1252
  * (Excel's "CSV" on Windows).
@@ -51,7 +53,13 @@ final class SheetReader
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $index => $row) {
                     if (null === $headers) {
-                        $headers = array_map(static fn (mixed $value): string => trim(self::toText($value, null)), $row->toArray());
+                        $labels = array_map(static fn (mixed $value): string => trim(self::toText($value, null)), $row->toArray());
+                        // An empty row above the header
+                        if ('' === implode('', $labels)) {
+                            continue;
+                        }
+
+                        $headers = $labels;
                         foreach ($headers as $i => $header) {
                             $column = EventColumn::fromHeader($header);
                             // The first of two columns with the same header wins
@@ -105,10 +113,14 @@ final class SheetReader
         return ['headers' => $headers, 'rows' => $rows];
     }
 
+    /**
+     * Both readers keep the empty rows, which they would otherwise skip without counting them: a row's number is the
+     * one the member sees, an empty CSV line or a blank Excel row (left out of the file) included.
+     */
     private function createReader(string $path, TransferFormat $format): ReaderInterface
     {
         return match ($format) {
-            TransferFormat::Xlsx => new XlsxReader(),
+            TransferFormat::Xlsx => new XlsxReader(new XlsxOptions(SHOULD_PRESERVE_EMPTY_ROWS: true)),
             TransferFormat::Csv => new CsvReader(self::csvOptions($path)),
             TransferFormat::Ics => throw new InvalidArgumentException('A calendar is not imported.'),
         };
@@ -122,6 +134,7 @@ final class SheetReader
         arsort($delimiters);
 
         return new CsvOptions(
+            SHOULD_PRESERVE_EMPTY_ROWS: true,
             FIELD_DELIMITER: (string) array_key_first($delimiters),
             ENCODING: mb_check_encoding($sample, 'UTF-8') ? 'UTF-8' : 'Windows-1252',
         );
