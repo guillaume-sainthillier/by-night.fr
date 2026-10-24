@@ -100,11 +100,10 @@ final class SowProgParser extends AbstractParser
             $free = $free || true === ($date['freeAdmission'] ?? false);
             foreach ($date['prices'] ?? [] as $price) {
                 $prices[] = \sprintf(
-                    '%s : %s%s',
+                    '%s : %s',
                     // Some labels end with their own colon ("Tarif concert à 21h :")
                     preg_replace('/[\s:]+$/u', '', (string) $price['label']),
-                    self::formatPrice($price['price']),
-                    'EUR' === ($price['currency'] ?? 'EUR') ? '€' : $price['currency'],
+                    self::formatAmount($price['price'], $price['currency'] ?? 'EUR'),
                 );
             }
         }

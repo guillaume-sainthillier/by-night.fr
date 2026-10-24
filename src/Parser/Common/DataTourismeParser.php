@@ -394,11 +394,7 @@ final class DataTourismeParser extends AbstractParser
 
         // Only zeros say it is free, as a free policy does: "Gratuit", not "Gratuit : 0€"
         if ([] !== $amounts && max($amounts) > 0) {
-            $currency = mb_strtoupper($this->string($specification['priceCurrency'] ?? null) ?? 'EUR');
-            $unit = 'EUR' === $currency ? '€' : ' ' . $currency;
-            $min = self::formatPrice(min($amounts)) . $unit;
-            $max = self::formatPrice(max($amounts)) . $unit;
-            $amount = $min === $max ? $min : \sprintf('De %s à %s', $min, $max);
+            $amount = self::formatAmountRange(min($amounts), max($amounts), $this->string($specification['priceCurrency'] ?? null) ?? 'EUR');
 
             return [null !== $label ? \sprintf('%s : %s', $label, $amount) : $amount, true];
         }

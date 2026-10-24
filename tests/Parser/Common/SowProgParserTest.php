@@ -75,6 +75,16 @@ final class SowProgParserTest extends AppKernelTestCase
         self::assertSame('Tarif concert à 21h : 12€', $event->prices);
     }
 
+    public function testAnotherCurrencyIsWrittenAsDataTourismeWritesIt(): void
+    {
+        $event = $this->map(self::record(['dates' => [self::date('2026-06-15', '21:00', null, [
+            ['label' => 'Tarif plein', 'price' => 25, 'currency' => 'CHF'],
+            ['label' => 'Tarif réduit', 'price' => 15, 'currency' => null],
+        ])]]));
+
+        self::assertSame('Tarif plein : 25 CHF - Tarif réduit : 15€', $event->prices);
+    }
+
     public function testAFreeAdmissionWithoutPricesIsFree(): void
     {
         $date = self::date('2026-06-15', '21:00', null, []);
