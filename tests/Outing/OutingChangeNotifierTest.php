@@ -137,6 +137,30 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     }
 
     /**
+     * A run clears the flags of each page before reading the next: the cursor reads every event once all the same,
+     * those it keeps flagged included.
+     */
+    public function testTheFlaggedEventsAreReadOnceWhileARunClearsTheirFlags(): void
+    {
+        $ids = array_map(
+            static fn (Event $event): int => (int) $event->getId(),
+            EventFactory::createMany(5, ['flaggedForAlertAt' => new DateTimeImmutable('2026-10-24 09:00')]),
+        );
+        $repository = self::getContainer()->get(EventRepository::class);
+        $startedAt = new DateTimeImmutable('2026-10-24 10:00');
+
+        $read = [];
+        foreach ($repository->findFlaggedForAlert($startedAt, 2)->getChunkResults() as $events) {
+            $page = array_values(array_intersect(array_column($events, 'id'), $ids));
+            $read = [...$read, ...$page];
+            // The first of each page stays flagged, as a follower still to tell would keep it
+            $repository->clearAlertFlags(\array_slice($page, 1), $startedAt);
+        }
+
+        self::assertSame($ids, $read);
+    }
+
+    /**
      * The flag keeps whole seconds: a change made in the second the run started may come after the run read the event.
      */
     public function testAChangeInTheSecondTheRunStartedWaitsForTheNextRun(): void
@@ -145,7 +169,7 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         $repository = self::getContainer()->get(EventRepository::class);
         $startedAt = new DateTimeImmutable('2026-10-24 10:00:00.700');
 
-        self::assertNotContains($event->getId(), $repository->findIdsFlaggedForAlert($startedAt, 0, 500));
+        self::assertNotContains($event->getId(), array_column([...$repository->findFlaggedForAlert($startedAt, 500)], 'id'));
         $repository->clearAlertFlags([(int) $event->getId()], $startedAt);
         self::assertNotNull($this->flag($event));
     }

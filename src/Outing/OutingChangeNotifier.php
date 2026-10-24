@@ -54,13 +54,12 @@ final readonly class OutingChangeNotifier
     public function sendFlagged(DateTimeImmutable $now): OutingAlertRun
     {
         $run = new OutingAlertRun();
-        $afterId = 0;
 
-        while ([] !== $eventIds = $this->eventRepository->findIdsFlaggedForAlert($now, $afterId, self::BATCH_SIZE)) {
+        foreach ($this->eventRepository->findFlaggedForAlert($now, self::BATCH_SIZE)->getChunkResults() as $events) {
+            $eventIds = array_column($events, 'id');
             $untold = $this->notify($eventIds, $now, $run);
             $this->eventRepository->clearAlertFlags(array_values(array_diff($eventIds, $untold)), $now);
             $this->entityManager->clear();
-            $afterId = $eventIds[\count($eventIds) - 1];
         }
 
         return $run;

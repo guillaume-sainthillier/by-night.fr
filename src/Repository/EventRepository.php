@@ -1440,25 +1440,28 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The events whose followers are still to hear of a change made before a time (Event::$flaggedForAlertAt), a page
-     * at a time after an id: the events kept flagged by a run are passed over, not read again. Strictly before: the
-     * column keeps whole seconds, so a change made in the second the run started waits for the next run.
+     * The events whose followers are still to hear of a change made before a time (Event::$flaggedForAlertAt). Strictly
+     * before: the column keeps whole seconds, so a change made in the second the run started waits for the next run.
      *
-     * @return list<int>
+     * Walked by id, from the last event of the previous page: the flags a run clears take events out of the query, and
+     * those it keeps are passed over, not read again.
+     *
+     * @return CursorPagination<array{id: int}>
      */
-    public function findIdsFlaggedForAlert(DateTimeImmutable $before, int $afterId, int $limit): array
+    public function findFlaggedForAlert(DateTimeImmutable $before, int $batchSize): CursorPagination
     {
-        return array_map(intval(...), $this
+        $queryBuilder = $this
             ->createQueryBuilder('e')
             ->select('e.id')
             ->where('e.flaggedForAlertAt < :before')
-            ->andWhere('e.id > :afterId')
-            ->setParameter('before', $before)
-            ->setParameter('afterId', $afterId)
-            ->orderBy('e.id')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getSingleColumnResult());
+            ->setParameter('before', $before);
+
+        return new CursorPagination(
+            $queryBuilder,
+            new OrderConfigurations(new OrderConfiguration('e.id', static fn (array $event): int => $event['id'])),
+            $batchSize,
+            fetchJoinCollection: false,
+        );
     }
 
     /**
