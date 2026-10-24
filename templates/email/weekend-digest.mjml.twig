@@ -6,10 +6,9 @@
 {# @var events \App\Entity\Event[] #}
 {# @var unsubscribeUrl string #}
 
-{# Every link says where the visit comes from; the pages' canonical URLs leave the query string out #}
-{% set utm = {utm_source: 'newsletter', utm_medium: 'email', utm_campaign: 'weekend'} %}
+{# Every link but the unsubscribe one says where the visit comes from (|utm); the pages' canonical URLs leave the query string out #}
 {# The city's own weekend page (/{city}/ce-week-end): agenda_path() names the shortcut's page, as the agenda's links do #}
-{% set agendaUrl = absolute_url(agenda_path(location.slug, filters: {when: 'this_weekend'}|merge(utm))) %}
+{% set agendaUrl = absolute_url(agenda_path(location.slug, filters: {when: 'this_weekend'}))|utm('cta') %}
 
 {% block email_title %}Ce week-end {{ location.atName }}{% endblock %}
 {% block preheader %}{{ events|slice(0, 3)|map(event => event.name)|join(', ') }}…{% endblock %}
@@ -27,7 +26,7 @@
 
 {% block body_sections %}
     {% for event in events %}
-        {% set eventUrl = url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}|merge(utm)) %}
+        {% set eventUrl = url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})|utm('event') %}
         {% set session = event.sessionFor(weekend.from, weekend.to) %}
         {% set picture = event_picture(event) %}
         <mj-section padding="0 24px 20px 24px">
@@ -71,5 +70,5 @@
     Vous recevez cet e-mail car vous avez demandé la sélection du week-end sur By Night.
     <br /><a href="{{ unsubscribeUrl }}" style="color: #a0a2ab;">Se désinscrire</a>
     &nbsp;·&nbsp;
-    <a href="{{ url('app_user_edit') }}" style="color: #a0a2ab;">Gérer mes préférences</a>
+    <a href="{{ url('app_user_edit')|utm('preferences') }}" style="color: #a0a2ab;">Gérer mes préférences</a>
 {% endblock %}

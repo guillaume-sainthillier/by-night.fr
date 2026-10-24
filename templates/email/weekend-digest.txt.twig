@@ -1,8 +1,7 @@
 {% extends 'email/layout.txt.twig' %}
 
-{% set utm = {utm_source: 'newsletter', utm_medium: 'email', utm_campaign: 'weekend'} %}
 {# The city's own weekend page (/{city}/ce-week-end): agenda_path() names the shortcut's page, as the agenda's links do #}
-{% set agendaUrl = absolute_url(agenda_path(location.slug, filters: {when: 'this_weekend'}|merge(utm))) %}
+{% set agendaUrl = absolute_url(agenda_path(location.slug, filters: {when: 'this_weekend'}))|utm('cta') %}
 
 {% block heading %}Ce week-end {{ location.atName }}{% endblock %}
 
@@ -20,7 +19,7 @@ Voici notre sélection des sorties du week-end {{ location.atName }} et autour, 
 {% if event.placeName %}
 {{ event.placeName }}{{ event.placeCity ? ', ' ~ event.placeCity }}
 {% endif %}
-{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}|merge(utm)) }}
+{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})|utm('event') }}
 {% endfor %}
 
 Toutes les sorties du week-end : {{ agendaUrl }}
@@ -28,4 +27,4 @@ Toutes les sorties du week-end : {{ agendaUrl }}
 
 {% block footer %}Vous recevez cet e-mail car vous avez demandé la sélection du week-end sur By Night.
 Se désinscrire : {{ unsubscribeUrl }}
-Gérer mes préférences : {{ url('app_user_edit') }}{% endblock %}
+Gérer mes préférences : {{ url('app_user_edit')|utm('preferences') }}{% endblock %}

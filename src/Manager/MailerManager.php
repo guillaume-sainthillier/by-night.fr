@@ -11,6 +11,7 @@
 namespace App\Manager;
 
 use App\App\Location;
+use App\Digest\WeekendDigestSender;
 use App\Entity\ContentRemovalRequest;
 use App\Entity\Event;
 use App\Entity\Publisher;
@@ -22,6 +23,7 @@ use App\Outing\OutingChange;
 use App\Outing\OutingChangeWording;
 use App\Outing\OutingState;
 use App\Search\DateRange;
+use App\Utils\EmailUtm;
 use DateTimeImmutable;
 use LogicException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -90,6 +92,7 @@ final readonly class MailerManager
                 'weekend' => $weekend,
                 'events' => $events,
                 'unsubscribeUrl' => $unsubscribeUrl,
+                'utm' => EmailUtm::campaign('weekend-digest', WeekendDigestSender::weekOf($weekend)),
             ]);
 
         $email->getHeaders()
@@ -122,6 +125,7 @@ final readonly class MailerManager
                 'headline' => $changes[0]->getSubject(),
                 'sentences' => array_map(static fn (OutingChange $change): string => OutingChangeWording::sentence($change, $known, $now), $changes),
                 'unsubscribeUrl' => $unsubscribeUrl,
+                'utm' => EmailUtm::campaign('outing-alert', $changes[0]->value),
             ]);
 
         $email->getHeaders()
@@ -233,6 +237,7 @@ final readonly class MailerManager
                 'user' => $user,
                 'publisher' => $publisher,
                 'unsubscribeUrl' => $unsubscribeUrl,
+                'utm' => EmailUtm::campaign('publisher-news', $edition->value),
             ]);
 
         $email->getHeaders()

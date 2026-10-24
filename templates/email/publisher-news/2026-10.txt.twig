@@ -9,22 +9,22 @@ Un mois chargé pour l'espace des organisateurs : vos événements ont désormai
 {% block features %}
 UNE PAGE PUBLIQUE POUR VOTRE PROGRAMMATION
 Vos événements appartiennent maintenant à une page organisateur{% if publisher %}, {{ publisher.name }}{% endif %} : un lieu, un collectif ou vous-même. Sa page publique réunit votre programmation avec votre logo, une couverture, votre présentation et vos liens, et vos événements la signent. Vous en gérez plusieurs ? Passez de l'une à l'autre depuis le menu.
-Compléter ma page : {{ url('app_personal_space_publisher') }}
+Compléter ma page : {{ url('app_personal_space_publisher')|utm('publisher-page') }}
 
 L'AUDIENCE DE VOS ÉVÉNEMENTS
 Pour chaque événement, les visiteurs de sa page et les clics vers votre billetterie, sur la période de votre choix, en courbe et jour par jour.
-Voir mes événements : {{ url('app_personal_space_events') }}
+Voir mes événements : {{ url('app_personal_space_events')|utm('events') }}
 
 VOS ÉVÉNEMENTS DEPUIS UN TABLEUR
 Importez un fichier Excel ou CSV : il est vérifié avant l'import, vous corrigez les lignes refusées depuis le rapport, et un message vous prévient quand c'est fini. L'export reprend les événements de votre liste, filtres compris.
-Importer des événements : {{ url('app_personal_space_imports') }}
+Importer des événements : {{ url('app_personal_space_imports')|utm('imports') }}
 
 PLUSIEURS ÉVÉNEMENTS À LA FOIS
 Cochez des événements de votre liste pour les publier, les masquer ou les supprimer d'un coup.
 
 UN FORMULAIRE PLUS SIMPLE
 Une date ou plusieurs ? Le formulaire le demande d'abord. Les horaires se saisissent séance par séance, et un avertissement vous évite de publier un événement déjà en ligne.
-Publier un événement : {{ url('app_personal_space_event_new') }}
+Publier un événement : {{ url('app_personal_space_event_new')|utm('event-new') }}
 
 PLUS DE CHEMINS VERS VOS ÉVÉNEMENTS
 La recherche trouve vos événements même avec une faute de frappe et favorise ceux de la ville du visiteur. Leur page compare les billetteries du moins cher au plus cher, et « J'y vais » les ajoute aux sorties du visiteur.

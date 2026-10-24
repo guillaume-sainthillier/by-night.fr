@@ -14,7 +14,7 @@
     {% for sentence in sentences %}
         <mj-text padding="0 0 8px 16px">• {{ sentence }}</mj-text>
     {% endfor %}
-    <mj-button href="{{ eventUrl }}">
+    <mj-button href="{{ eventUrl|utm('event') }}">
         Voir l'événement
     </mj-button>
     <mj-text mj-class="muted">

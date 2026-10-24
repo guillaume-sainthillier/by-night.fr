@@ -8,7 +8,7 @@ Bonjour {{ user.username }},
 {% block intro %}{% endblock %}
 
 {% block features %}{% endblock %}
-{% block cta 'Voir mon espace organisateur' %} : {{ url('app_personal_space_events') }}
+{% block cta 'Voir mon espace organisateur' %} : {{ url('app_personal_space_events')|utm('cta') }}
 {% block outro %}{% endblock %}
 
 Une idée, une question sur ces nouveautés ? Répondez à cet e-mail, nous lisons tout.

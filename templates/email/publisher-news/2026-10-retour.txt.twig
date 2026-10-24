@@ -9,27 +9,27 @@ Vous avez publié des événements sur By Night. Depuis votre dernière visite, 
 {% block features %}
 UN SITE ENTIÈREMENT REDESSINÉ
 Plus clair, plus rapide et pensé pour le téléphone. Les visiteurs filtrent l'agenda par date, par prix et par catégorie, retrouvent vos événements même avec une faute de frappe, et marquent ceux où ils vont d'un « J'y vais ».
-{{ url('app_index') }}
+{{ url('app_index')|utm('home') }}
 
 UNE PAGE QUI PRÉSENTE VOTRE PROGRAMMATION
 Vos événements sont réunis sur une page publique à votre nom{% if publisher %}, {{ publisher.name }}{% endif %} : ceux à venir, ceux passés, votre logo, une image de couverture, votre présentation et les liens vers votre site et vos réseaux. Chacun de vos événements la signe d'un « Organisé par ».
-Compléter ma page : {{ url('app_personal_space_publisher') }}
+Compléter ma page : {{ url('app_personal_space_publisher')|utm('publisher-page') }}
 
 L'AUDIENCE DE CHACUN DE VOS ÉVÉNEMENTS
 Le nombre de visiteurs de sa page et de clics vers votre billetterie, jour après jour, sur la période de votre choix.
-Voir mes événements : {{ url('app_personal_space_events') }}
+Voir mes événements : {{ url('app_personal_space_events')|utm('events') }}
 
 VOS ÉVÉNEMENTS DEPUIS UN TABLEUR
 Publiez ou mettez à jour des dizaines d'événements d'un coup depuis un fichier Excel ou CSV, vérifié avant l'import. Et exportez-les à tout moment, en tableur ou en calendrier.
-Importer des événements : {{ url('app_personal_space_imports') }}
+Importer des événements : {{ url('app_personal_space_imports')|utm('imports') }}
 
 UN FORMULAIRE PLUS SIMPLE
 Une date ou plusieurs, les horaires de chaque séance, un calendrier plus pratique, et un avertissement quand l'événement est déjà en ligne. Vous publiez, masquez ou supprimez aussi plusieurs événements à la fois.
-Publier un événement : {{ url('app_personal_space_event_new') }}
+Publier un événement : {{ url('app_personal_space_event_new')|utm('event-new') }}
 {% endblock %}
 
 {% block cta 'Revenir sur mon espace' %}
 
 {% block outro %}
-Mot de passe oublié ? Choisissez-en un nouveau : {{ url('app_forgot_password_request') }}
+Mot de passe oublié ? Choisissez-en un nouveau : {{ url('app_forgot_password_request')|utm('forgot-password') }}
 {% endblock %}
