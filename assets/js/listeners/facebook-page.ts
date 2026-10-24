@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 const SDK_URL = 'https://connect.facebook.net/fr_FR/sdk.js'
 
@@ -66,7 +66,7 @@ const loadSdk = (settings: FacebookInitSettings): Promise<FacebookSdk> => {
  * the page plugin only renders, once the visitor clicks "Afficher la page Facebook". `data-facebook-page` carries the
  * FB.init() settings.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-facebook-page]',
     connect(element) {
         const button = element.querySelector<HTMLButtonElement>('[data-facebook-page-load]')
@@ -91,4 +91,4 @@ export default {
 
         return () => button.removeEventListener('click', onClick)
     },
-} satisfies Listener<HTMLElement>
+})

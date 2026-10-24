@@ -80,8 +80,8 @@ const parameters = window.appParameters
 
 /**
  * Application entry point: modules run once at boot, listeners are `{selector, connect}` pairs connected per element
- * by `mount(container)` and torn down by `unmount(container)`, and the `data-page` markers of `load_page()` run the
- * initializers the page entries register (`registerPage()`). See @silarhi/app-js.
+ * by `mount(container)` and torn down by `unmount(container)`, and the page initializers named by `load_page()` are
+ * imported on the first page that declares them. See @silarhi/app-js.
  */
 const app = new App({
     modules: [autocomplete, scrollToTop, viewTransitions],
@@ -121,6 +121,20 @@ const app = new App({
         videoFacade,
         webauthn,
     ],
+    pages: {
+        admin_infos: () => import('@/js/pages/admin_infos'),
+        agenda: () => import('@/js/pages/agenda'),
+        // The map of the agenda's results (location/agenda/_map.html.twig), in the chunk of the agenda
+        agenda_map: () => import('@/js/pages/agenda').then(({ agendaMap }) => ({ default: agendaMap })),
+        event_details: () => import('@/js/pages/event_details'),
+        event_stats: () => import('@/js/pages/event_stats'),
+        event_transfers: () => import('@/js/pages/event_transfers'),
+        index: () => import('@/js/pages/index'),
+        personal_space_event: () => import('@/js/pages/personal_space_event'),
+        personal_space_list: () => import('@/js/pages/personal_space_list'),
+        profile: () => import('@/js/pages/profile'),
+        user: () => import('@/js/pages/user'),
+    },
     services,
     parameters,
     onError: reportError,
@@ -162,8 +176,8 @@ if (parameters) {
         Sentry.getCurrentScope().setUser(parameters.user)
     }
 
-    // A module script: the document is parsed. The page entries load after this one, and their data-page markers wait
-    // for registerPage(), which runs them once their own chunk has been evaluated
+    // A module script: the document is parsed. Each data-page marker imports its page from `pages`, a chunk its
+    // template's entry tag has already preloaded
     app.start()
     app.mount(document)
 }

@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * Google's Funding Choices API (the consent message of AdSense's Privacy & messaging), as far as it is used here: the
@@ -20,7 +20,7 @@ declare global {
  * The message comes from Privacy & messaging in AdSense, loaded by the AdSense tag in base.html.twig; until it has
  * loaded, the call waits in its callback queue.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-cookie-consent]',
     connect(element) {
         const onClick = (event: MouseEvent) => {
@@ -38,4 +38,4 @@ export default {
 
         return () => element.removeEventListener('click', onClick)
     },
-} satisfies Listener<HTMLElement>
+})

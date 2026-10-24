@@ -73,6 +73,8 @@ COPY --from=php_builder --link /app/vendor ./vendor
 COPY --from=node_assets_builder --link /app/public/build ./public/build
 
 COPY --link --exclude=assets --exclude=docker . .
+# ux_icon() reads the SVG files at runtime (and on cache warmup): without them, every icon comes from the Iconify API
+COPY --link assets/icons ./assets/icons
 
 # Config
 COPY --link docker/Caddyfile /etc/frankenphp/Caddyfile

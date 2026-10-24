@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * A link whose href is the SEO page crawlers follow ("Concerts à Toulouse"), and whose data-filtered-href is the page a
@@ -6,7 +6,7 @@ import type { Listener } from '@silarhi/app-js'
  * The href is swapped as the visitor reaches for the link, before the browser reads it: pointerdown comes before a
  * click, a middle click or a context menu ("Open in a new tab"), focus before the Enter key.
  */
-export default {
+export default defineListener<HTMLAnchorElement>({
     selector: 'a[data-filtered-href]',
     connect(element) {
         const swap = () => element.setAttribute('href', element.dataset.filteredHref ?? '')
@@ -19,4 +19,4 @@ export default {
             element.removeEventListener('focus', swap)
         }
     },
-} satisfies Listener<HTMLAnchorElement>
+})

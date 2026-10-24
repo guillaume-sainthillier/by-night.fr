@@ -6,6 +6,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import otpAutosubmit from '@/js/listeners/otp-autosubmit'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 // No DOM in the Node environment: the fake element records its listeners and finds its form
 const connect = (form: { requestSubmit: () => void } | null) => {
@@ -19,7 +20,7 @@ const connect = (form: { requestSubmit: () => void } | null) => {
         }),
         closest: () => form,
     }
-    const cleanup = otpAutosubmit.connect(fake<HTMLElement>(element))
+    const cleanup = connectListener(otpAutosubmit, fake<HTMLElement>(element))
 
     return { listeners, element, cleanup }
 }

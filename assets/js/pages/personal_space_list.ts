@@ -1,7 +1,7 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import $ from 'jquery'
 
-const initialize: Page = () => {
+export default definePage(() => {
     $('.draft').change((event) => {
         const self = $(event.currentTarget)
 
@@ -28,6 +28,4 @@ const initialize: Page = () => {
             self.prop('disabled', false)
         })
     })
-}
-
-window.App.registerPage('personal_space_list', initialize)
+})

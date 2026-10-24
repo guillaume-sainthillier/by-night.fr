@@ -1,4 +1,4 @@
-import type { Module } from '@silarhi/app-js'
+import { defineModule } from '@silarhi/app-js'
 
 /**
  * Names the card picture the cross-document view transition morphs into the event's poster, and back
@@ -8,7 +8,7 @@ import type { Module } from '@silarhi/app-js'
  * The poster names itself in CSS: `pagereveal` fires on the event page's first render, before App.start(). Here, it
  * only fires on a page restored from the back/forward cache, whose listeners are still there: back to a listing.
  */
-const viewTransitions: Module = () => {
+export default defineModule(function viewTransitions() {
     let styled: HTMLElement[] = []
 
     const style = (element: HTMLElement, name: string) => {
@@ -67,6 +67,4 @@ const viewTransitions: Module = () => {
             name(e.viewTransition, card(from))
         }
     })
-}
-
-export default viewTransitions
+})

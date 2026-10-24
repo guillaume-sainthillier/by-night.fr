@@ -1,11 +1,11 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import $ from 'jquery'
 
 /**
  * Send a verification email when the element is clicked, then dismiss its
  * alert (or remove the element).
  */
-export default {
+export default defineListener<HTMLAnchorElement | HTMLButtonElement>({
     selector: 'a.email-verify, button.email-verify',
     connect(element, { app }) {
         const $element = $(element)
@@ -25,4 +25,4 @@ export default {
 
         return () => $element.off('.emailVerify')
     },
-} satisfies Listener<HTMLAnchorElement | HTMLButtonElement>
+})

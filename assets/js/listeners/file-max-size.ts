@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 const FEEDBACK_CLASS = 'file-max-size-feedback'
 
@@ -31,7 +31,7 @@ export function oversizeMessage(file: { size: number; type?: string } | undefine
  * is picked, with the reason under it. Sent, it went over PHP's post_max_size: the request reached the form empty
  * and the member lost everything filled in (BY-NIGHTFR-4MP).
  */
-export default {
+export default defineListener<HTMLInputElement>({
     selector: 'input[type="file"][data-max-size]',
     connect(input) {
         const feedback = document.createElement('div')
@@ -66,4 +66,4 @@ export default {
             feedback.remove()
         }
     },
-} satisfies Listener<HTMLInputElement>
+})

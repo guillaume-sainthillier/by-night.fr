@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 // A section counts as current once its top has gone above this line: below the sticky header, and far enough down
 // the screen that the section filling it is the one marked rather than the end of the previous one
@@ -9,7 +9,7 @@ const currentLine = () => Math.max(120, window.innerHeight * 0.3)
  * aria-current: the last section whose top has gone above a line near the top of the screen. A sidebar too long for
  * the screen scrolls on its own to keep that entry in view.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-toc]',
     connect(toc) {
         const links = [...toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')]
@@ -56,4 +56,4 @@ export default {
 
         return () => document.removeEventListener('scroll', update)
     },
-} satisfies Listener<HTMLElement>
+})

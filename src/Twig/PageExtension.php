@@ -16,13 +16,15 @@ use Twig\Attribute\AsTwigFunction;
 final class PageExtension
 {
     /**
-     * Emit the HTML attributes consumed by `listeners/pages.js` to wire a
-     * page initializer. Attach to any element; the JS listener scans for
-     * `[data-page]` markers on every mount.
+     * Emit the HTML attributes consumed by the `data-page` listener of the
+     * `@silarhi/app-js` package to wire a page initializer. Attach to any
+     * element; the listener scans for `[data-page]` markers on every mount,
+     * imports the page chunk declared in the `pages` of assets/js/app.ts, and
+     * hands the element to the initializer as its `container`.
      *
      * Usage:
-     *   <div {{ load_page('search') }}></div>
-     *   <div class="row" {{ load_page('user', {datas: places}) }}>
+     *   <div id="agenda" {{ load_page('agenda') }}>
+     *   <div class="mb-4" {{ load_page('agenda_map', {events: mapEvents}) }}>
      *
      * @param string|array<string>      $pageIds
      * @param array<string, mixed>|null $params

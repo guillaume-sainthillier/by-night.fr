@@ -1,11 +1,11 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import Swal from 'sweetalert2'
 import { create } from '@/js/services/ui/AutocompleteService'
 
 /**
  * Open a user-search dialog and switch to the selected user.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '.js-impersonate',
     connect(el) {
         const onClick = async (e: MouseEvent) => {
@@ -53,4 +53,4 @@ export default {
 
         return () => el.removeEventListener('click', onClick)
     },
-} satisfies Listener<HTMLElement>
+})

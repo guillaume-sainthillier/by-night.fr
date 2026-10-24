@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import { Modal } from '@tabler/core'
 import $ from 'jquery'
 
@@ -23,7 +23,7 @@ interface RemovalError {
  * Content removal request modal: captures the triggering event data on open,
  * validates the form and submits the request via AJAX.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '#modalContentRemovalRequest',
     connect(modalEl) {
         const modal = Modal.getOrCreateInstance(modalEl)
@@ -178,4 +178,4 @@ export default {
             submitBtn.removeEventListener('click', onSubmit)
         }
     },
-} satisfies Listener<HTMLElement>
+})

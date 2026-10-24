@@ -6,6 +6,7 @@
 import { describe, expect, test } from 'vitest'
 import filteredLink from '@/js/listeners/filtered-link'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 const SEO_HREF = '/toulouse/agenda/sortir/concert'
 const FILTERED_HREF = '/toulouse/agenda/sortir-a/le-bikini?type=concert'
@@ -40,14 +41,14 @@ describe('filtered-link listener', () => {
 
     test('leaves the SEO href to crawlers', () => {
         const link = fakeLink()
-        filteredLink.connect(fake<HTMLAnchorElement>(link))
+        connectListener(filteredLink, fake<HTMLAnchorElement>(link))
 
         expect(link.getAttribute('href')).toBe(SEO_HREF)
     })
 
     test.each(['pointerdown', 'focus'])('gives the filtered href to a visitor reaching for the link (%s)', (type) => {
         const link = fakeLink()
-        filteredLink.connect(fake<HTMLAnchorElement>(link))
+        connectListener(filteredLink, fake<HTMLAnchorElement>(link))
 
         link.dispatch(type)
 
@@ -56,7 +57,7 @@ describe('filtered-link listener', () => {
 
     test('stops listening once disconnected', () => {
         const link = fakeLink()
-        const cleanup = filteredLink.connect(fake<HTMLAnchorElement>(link))
+        const cleanup = connectListener(filteredLink, fake<HTMLAnchorElement>(link))
 
         cleanup()
         link.dispatch('pointerdown')

@@ -7,6 +7,7 @@ import type { App } from '@silarhi/app-js'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import copyUrl from '@/js/listeners/copy-url'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 type Handler = () => void
 
@@ -21,7 +22,7 @@ const connect = (url: string, writeText: (text: string) => Promise<void>) => {
         removeEventListener: vi.fn(),
     }
     const toastManager = { createToast: vi.fn() }
-    const cleanup = copyUrl.connect(fake<HTMLButtonElement>(button), { app: fake<App>({ get: () => toastManager }) })
+    const cleanup = connectListener(copyUrl, fake<HTMLButtonElement>(button), fake<App>({ get: () => toastManager }))
 
     return { button, handlers, toastManager, cleanup }
 }

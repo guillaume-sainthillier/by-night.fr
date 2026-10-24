@@ -6,6 +6,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import cookieSettings from '@/js/listeners/cookie-settings'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 type Handler = (event: { preventDefault: () => void }) => void
 
@@ -40,7 +41,7 @@ describe('cookie-settings listener', () => {
     test("reopens Google's consent message once its API is ready", () => {
         vi.stubGlobal('window', {})
         const link = fakeLink()
-        cookieSettings.connect(fake<HTMLElement>(link))
+        connectListener(cookieSettings, fake<HTMLElement>(link))
 
         const event = link.click()
 
@@ -56,7 +57,7 @@ describe('cookie-settings listener', () => {
         const pageCallback = { CONSENT_MODE_DATA_READY: () => {} }
         vi.stubGlobal('window', { googlefc: { callbackQueue: [pageCallback] } })
         const link = fakeLink()
-        cookieSettings.connect(fake<HTMLElement>(link))
+        connectListener(cookieSettings, fake<HTMLElement>(link))
 
         link.click()
 
@@ -67,7 +68,7 @@ describe('cookie-settings listener', () => {
     test('stops listening on cleanup', () => {
         vi.stubGlobal('window', {})
         const link = fakeLink()
-        const cleanup = cookieSettings.connect(fake<HTMLElement>(link))
+        const cleanup = connectListener(cookieSettings, fake<HTMLElement>(link))
 
         cleanup()
         const event = link.click()

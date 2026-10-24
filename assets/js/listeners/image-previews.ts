@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import type { create } from '@/js/services/ui/FancyboxService'
 
 /**
@@ -10,7 +10,7 @@ import type { create } from '@/js/services/ui/FancyboxService'
  * also covers galleries mounted after an AJAX insert: agenda pagination,
  * the "Plus de sorties" and "Plus de membres" buttons.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '.image-gallery',
     connect(element) {
         let lightbox: ReturnType<typeof create> | null = null
@@ -30,4 +30,4 @@ export default {
             lightbox?.destroy()
         }
     },
-} satisfies Listener<HTMLElement>
+})

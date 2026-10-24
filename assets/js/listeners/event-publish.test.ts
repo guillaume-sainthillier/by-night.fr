@@ -7,6 +7,7 @@ import type { App } from '@silarhi/app-js'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import eventPublish from '@/js/listeners/event-publish'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 import { confirmPublication } from '@/js/utils/duplicates'
 
 vi.mock('@/js/utils/duplicates', () => ({ confirmPublication: vi.fn() }))
@@ -36,9 +37,11 @@ const connect = (dataset: Record<string, string> = {}) => {
     const toastManager = { createToast: vi.fn() }
     const modalManager = {}
     const services: Record<string, object> = { toastManager, modalManager }
-    const cleanup = eventPublish.connect(fake<HTMLButtonElement>(button), {
-        app: fake<App>({ get: (name: string) => services[name] }),
-    })
+    const cleanup = connectListener(
+        eventPublish,
+        fake<HTMLButtonElement>(button),
+        fake<App>({ get: (name: string) => services[name] })
+    )
 
     return { button, notice, toastManager, modalManager, cleanup, click: () => listeners.click?.() }
 }

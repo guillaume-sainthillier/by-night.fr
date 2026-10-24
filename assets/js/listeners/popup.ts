@@ -1,11 +1,11 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import $ from 'jquery'
 import { popup } from '@/js/utils/utils'
 
 /**
  * Open the link in a centered popup window.
  */
-export default {
+export default defineListener<HTMLAnchorElement>({
     selector: 'a.popup',
     connect(element) {
         const $element = $(element)
@@ -18,4 +18,4 @@ export default {
 
         return () => $element.off('.popup')
     },
-} satisfies Listener<HTMLAnchorElement>
+})

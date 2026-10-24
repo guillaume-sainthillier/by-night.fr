@@ -6,6 +6,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import videoFacade from '@/js/listeners/video-facade'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 const fakeButton = () => {
     const listeners: Record<string, () => void> = {}
@@ -33,7 +34,8 @@ const fakePlaceholder = (src: string) => {
     }
 }
 
-const connect = (placeholder: ReturnType<typeof fakePlaceholder>) => videoFacade.connect(fake<HTMLElement>(placeholder))
+const connect = (placeholder: ReturnType<typeof fakePlaceholder>) =>
+    connectListener(videoFacade, fake<HTMLElement>(placeholder))
 
 afterEach(() => {
     vi.unstubAllGlobals()

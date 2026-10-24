@@ -1,5 +1,5 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import $ from 'jquery'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
@@ -111,7 +111,7 @@ type Escape = (text: string) => string
 /** The parts of an address, from the Places API (New) or from the geocoder */
 type AddressComponent = google.maps.places.AddressComponent | google.maps.GeocoderAddressComponent
 
-const initialize: Page = ({ app }) => {
+export default definePage(({ app }) => {
     initDatepickers()
     initTimepickers()
     initTagInputs()
@@ -414,6 +414,4 @@ const initialize: Page = ({ app }) => {
             marker.position = { lat, lng }
         }
     }
-}
-
-window.App.registerPage('personal_space_event', initialize)
+})

@@ -1,11 +1,11 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import $ from 'jquery'
 
 /**
  * Load the next page of results and insert it before the button, then mount
  * the new content.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '.more',
     connect(element, { app }) {
         const $element = $(element)
@@ -31,4 +31,4 @@ export default {
 
         return () => $element.off('.loadMore')
     },
-} satisfies Listener<HTMLElement>
+})

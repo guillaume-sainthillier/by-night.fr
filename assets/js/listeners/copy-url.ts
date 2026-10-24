@@ -1,9 +1,9 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * Copy the address a button carries in `data-copy-url` (the share menu of an event, the calendar of "Mes sorties").
  */
-export default {
+export default defineListener<HTMLButtonElement>({
     selector: '[data-copy-url]',
     connect(button, { app }) {
         const copy = () => {
@@ -18,4 +18,4 @@ export default {
 
         return () => button.removeEventListener('click', copy)
     },
-} satisfies Listener<HTMLButtonElement>
+})

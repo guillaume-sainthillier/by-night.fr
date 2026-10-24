@@ -33,6 +33,8 @@ const prefixScssCustomProperties = (): Plugin => {
 }
 prefixScssCustomProperties.postcss = true
 
+// Page initializers of load_page(), also lazy chunks of app.ts (its `pages` option). As entries, their pages preload
+// them with reprise_entry_script_tags() instead of waiting for app.ts to import them: same file, loaded once.
 const pages = [
     'index',
     'admin_infos',

@@ -263,7 +263,7 @@ Elasticsearch indexes defined in `config/packages/fos_elastica.yaml`:
 
 ### JavaScript Application Structure
 
-The frontend uses a modular listener-based architecture with dependency injection, on top of `@silarhi/app-js` (`App`, its service container, and the `Listener`, `Module`, `Page`, `Cleanup` types; also its DOM helpers `findOne`, `findAll`, `on`, `trigger`, `appendHTML`).
+The frontend uses a modular listener-based architecture with dependency injection, on top of `@silarhi/app-js` (`App`, its service container, and the `defineListener()`, `defineModule()`, `definePage()` helpers; also its DOM helpers `findOne`, `findAll`, `on`, `trigger`, `appendHTML`).
 
 **Main App** (`assets/js/app.ts`, exposed as `window.App`):
 
@@ -275,11 +275,11 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 **Building Blocks**:
 
-1. **Modules** (`assets/js/modules/`): Functions run once at `start()`, bound to `document`/`window`, never to elements inside `body`
+1. **Modules** (`assets/js/modules/`): Functions run once at `start()`, declared with `defineModule(function name() {…})` (a named function: its name tags the errors sent to Sentry), bound to `document`/`window`, never to elements inside `body`
     - `autocomplete.ts` - Algolia autocomplete search
     - `scroll-to-top.ts` - Scroll behavior
 
-2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects registered in `app.ts`; a listener is typed `Listener<E>`, `E` being the element its selector matches; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
+2. **Listeners** (`assets/js/listeners/`): `{selector, connect}` objects declared with `defineListener<E>({…})` and registered in `app.ts`, `E` being the element its selector matches; `connect(element, {app})` runs once per matching element and may return a cleanup. The selector is only evaluated when a container mounts, so it must not match on state JS toggles later
     - `form-confirm.ts` - Confirmation before a form is sent
     - `form-errors.ts` - Client-side form validation
     - `like.ts` - Event favoriting
@@ -297,8 +297,8 @@ The frontend uses a modular listener-based architecture with dependency injectio
 **Page-Specific Scripts** (`assets/js/pages/`):
 
 - Separate entry points for each major page (agenda, event_details, profile, etc.), included only on their routes to reduce bundle size
-- Each registers its initializer with `window.App.registerPage('agenda', initialize)`
-- A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the app's built-in `data-page` listener calls the initializer (after every other listener) with `{app, container, ...params}` once the entry has loaded; the initializer may return a cleanup
+- Each default-exports its initializer (`export default definePage(…)`), imported by the `pages` loaders of `app.ts`: the entry tag of its template only preloads that chunk (same file, loaded once). A second page of the same file is a named export its loader picks (`agenda_map`)
+- A template runs it with the `load_page()` Twig function (`src/Twig/PageExtension.php`): `<div {{ load_page('agenda', {…}) }}>` emits a `data-page` marker, and the app's built-in `data-page` listener calls the initializer (after every other listener) with `{app, container, ...params}` once its chunk has loaded; the initializer may return a cleanup
 
 **Dependency Injection** (the `@silarhi/app-js` container):
 
@@ -324,7 +324,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 **Code Style**:
 
-- TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`, jQuery plugins on `JQuery` in `jquery-plugins.d.ts`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`)
+- TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`, jQuery plugins on `JQuery` in `jquery-plugins.d.ts`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`) and connect a listener with `connectListener()` (`assets/js/test/listener.ts`)
 - Icons are the SVG files of `assets/icons/`, rendered by `<twig:Icon>` in Twig and, in TypeScript, from the dump `silarhi/ux-icons-js-bundle` writes into `assets/js/icons/index.js` with the `ux_icons` attributes, on every cache rebuild or with `bin/console ux-icons-js:dump` (`lucide:trash-2` is `LucideTrash2Icon`): `renderIcon()` of `@silarhi/ux-icons-js` for HTML strings, `UXIcon` of `@silarhi/ux-icons-js/preact` in the Preact components, never drawn by hand. The dump is committed, so the frontend builds without PHP: commit it again after adding an SVG or changing `ux_icons` (prod dumps to `var/icons` instead, see `config/packages/silarhi_ux_icons_js.yaml`). A `class` replaces the configured `icon` class, as in Twig
 - Biome (`biome.json`) lints and formats TypeScript: 120 char width, single quotes, 4 space indent, no semicolons
 - Prettier only for non-JS files (SCSS, Markdown, YAML)
