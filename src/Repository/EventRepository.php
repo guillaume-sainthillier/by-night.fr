@@ -1393,7 +1393,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     /**
      * The best of the events a search found: those with a picture first, then the most followed, then in the order of
-     * the search. Drafts and duplicates are left out, as the index may lag behind.
+     * the search. Drafts and duplicates are left out, as the index may lag behind, and so are the events whose status
+     * says they may not take place as listed (cancelled, postponed, rescheduled, moved online): only those without a
+     * status, or sold out, are put forward.
      *
      * @param list<int> $ids the events found, in the order of the search
      *
@@ -1412,7 +1414,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.id IN (:ids)')
             ->andWhere('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
+            ->andWhere('e.status IS NULL OR e.status = :soldOut')
             ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+            ->setParameter('soldOut', EventStatus::SoldOut->value)
             ->getQuery()
             ->getScalarResult();
 

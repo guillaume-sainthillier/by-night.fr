@@ -11,6 +11,7 @@
 namespace App\Tests\Digest;
 
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Search\DateRange;
@@ -52,6 +53,19 @@ final class WeekendDigestSelectorTest extends AppKernelTestCase
         $selection = $this->weekendSelector($events)->select(CityFactory::toulouse()->create(), $this->weekend(), 2);
 
         self::assertSame(['One', 'Two'], array_map(static fn (Event $event): ?string => $event->getName(), $selection));
+    }
+
+    public function testAnEventThatMayNotTakePlaceAsListedIsLeftOut(): void
+    {
+        $events = [$this->event('Plain'), $this->event('Sold out', ['status' => EventStatus::SoldOut])];
+        foreach ([EventStatus::Cancelled, EventStatus::Postponed, EventStatus::Rescheduled, EventStatus::MovedOnline] as $status) {
+            // The most followed, with a picture: first if it were kept
+            $events[] = $this->event($status->getLabel(), ['status' => $status, 'participations' => 50, 'image' => $this->picture()]);
+        }
+
+        $selection = $this->weekendSelector($events)->select(CityFactory::toulouse()->create(), $this->weekend());
+
+        self::assertSame(['Plain', 'Sold out'], array_map(static fn (Event $event): ?string => $event->getName(), $selection));
     }
 
     public function testNothingFoundIsAnEmptySelection(): void
