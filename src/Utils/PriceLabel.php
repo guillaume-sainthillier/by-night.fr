@@ -90,7 +90,7 @@ final class PriceLabel
                 return $match[0];
             }
 
-            return self::formatAmount((float) str_replace(',', '.', $match[1]));
+            return self::formatAmount(DecimalNumber::parse($match[1]));
         }, $prices);
     }
 

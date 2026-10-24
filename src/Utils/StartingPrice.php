@@ -60,6 +60,6 @@ final class StartingPrice
     {
         preg_match_all(self::AMOUNT_PATTERN, $prices, $matches);
 
-        return array_map(static fn (string $amount): float => (float) str_replace(',', '.', $amount), $matches[1]);
+        return array_map(DecimalNumber::parse(...), $matches[1]);
     }
 }
