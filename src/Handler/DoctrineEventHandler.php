@@ -25,6 +25,7 @@ use App\Reject\Reject;
 use App\Utils\ChunkUtils;
 use App\Utils\MemoryUtils;
 use App\Utils\Monitor;
+use Closure;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -76,9 +77,12 @@ final readonly class DoctrineEventHandler
     }
 
     /**
-     * @param EventDto[] $dtos
+     * @param EventDto[]             $dtos
+     * @param (Closure(): void)|null $beforeCommit run in the batch's transaction once its events are saved (their
+     *                                             DTOs hold their ids, the entity manager is cleared): what it writes
+     *                                             commits with them, or neither does
      */
-    public function handleMany(array $dtos): void
+    public function handleMany(array $dtos, ?Closure $beforeCommit = null): void
     {
         if ([] === $dtos) {
             return;
@@ -98,6 +102,10 @@ final readonly class DoctrineEventHandler
 
         try {
             $this->doHandleMany($dtos);
+            if (null !== $beforeCommit) {
+                $beforeCommit();
+            }
+
             $connection->commit();
         } catch (Throwable $e) {
             $this->messageDispatcher->rollBack();

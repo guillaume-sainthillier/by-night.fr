@@ -72,6 +72,9 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     final public const string INDEX_FROM = '-6 months';
 
+    /** The characters an external reference holds */
+    final public const int EXTERNAL_REFERENCE_LENGTH = 100;
+
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue]
@@ -88,7 +91,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      * The publisher's own key for its event (its ticketing's id, a row of its spreadsheet), unique among its events: an
      * import matches the event by it. Unlike externalId, which belongs to the source it was imported from.
      */
-    #[ORM\Column(type: Types::STRING, length: 100, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: self::EXTERNAL_REFERENCE_LENGTH, nullable: true)]
     private ?string $externalReference = null;
 
     #[ORM\Column(length: 255)]

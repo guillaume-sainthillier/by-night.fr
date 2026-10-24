@@ -76,6 +76,10 @@ final class EventRowMapper
         $first = $group->first();
         $reference = $group->reference();
         $errors = $group->errors;
+        // Too long for its column: the event would pass the check, then fail the import's save
+        if (null !== $reference && mb_strlen($reference) > Event::EXTERNAL_REFERENCE_LENGTH) {
+            $errors[] = RowProblem::at($first, EventColumn::Reference, \sprintf('La référence ne peut pas dépasser %d caractères.', Event::EXTERNAL_REFERENCE_LENGTH));
+        }
 
         $event = [] === $errors ? $this->findEvent($group, $publisher, $errors) : null;
         $dto = null === $event ? $this->memberEventPublisher->createDto($user) : $this->eventDtoFactory->create($event);

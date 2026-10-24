@@ -10,10 +10,12 @@
 
 namespace App\Tests\Transfer\Import;
 
+use App\Entity\Event;
 use App\Enum\EventImportStatus;
 use App\Enum\EventStatus;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventImportFactory;
 use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Repository\EventImportRepository;
@@ -21,6 +23,10 @@ use App\Tests\AppKernelTestCase;
 use App\Tests\Transfer\TransferTestTrait;
 use App\Transfer\Import\EventImportRunner;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
+use RuntimeException;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\refresh;
@@ -134,21 +140,70 @@ final class EventImportRunnerTest extends AppKernelTestCase
         self::assertSame(1, EventFactory::count(['user' => $this->user]));
     }
 
+    /**
+     * The member ticks a warned event on the check, whose rows are those of their file; the import reads the check's
+     * file of kept rows, without the refused and blank ones, numbered afresh: the event is left out by its reference.
+     */
     public function testTheEventsTheMemberLeftOutAreSkipped(): void
     {
+        $date = DateTimeImmutable::createFromFormat('!d/m/Y', $this->day);
+        $this->lookalikes = [EventFactory::createOne(['name' => 'Soirée blues', 'startDate' => $date, 'endDate' => $date, 'latitude' => 43.6, 'longitude' => 1.44])];
         $import = $this->check(self::HEADER
+            . ";;Sans référence;Une description assez longue.;{$this->day};;;Salle;31000;Toulouse;;;\n"
+            . ";;;;;;;;;;;;\n"
+            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
             . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
-            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
-        $import->setSkippedRows([3]);
+            . "ROCK;;Soirée rock;Une soirée de rock en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+        self::assertSame([[4, 'BLUES']], array_map(static fn (array $warning): array => [$warning['row'], $warning['reference']], $import->getWarnings()));
+
+        // What the warning's box sends
+        $import->setSkippedReferences(['BLUES']);
         save($import);
         self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
 
         self::getContainer()->get(EventImportRunner::class)->run($import);
         refresh($import);
 
-        self::assertSame([1, 1], [$import->getCreatedCount(), $import->getSkippedCount()]);
-        self::assertSame('skipped', $import->getOutcomes()[1]['outcome']);
-        self::assertSame(['JAZZ'], array_map(static fn ($event) => $event->getExternalReference(), EventFactory::findBy(['user' => $this->user])));
+        self::assertSame([2, 1], [$import->getCreatedCount(), $import->getSkippedCount()]);
+        self::assertSame(['BLUES' => 'skipped', 'JAZZ' => 'created', 'ROCK' => 'created'], array_column($import->getOutcomes(), 'outcome', 'reference'));
+        $references = array_map(static fn ($event): ?string => $event->getExternalReference(), EventFactory::findBy(['user' => $this->user]));
+        sort($references);
+        self::assertSame(['JAZZ', 'ROCK'], $references);
+    }
+
+    /**
+     * A batch whose save fails is rolled back whole, what makes the events the member's with it: none is left online
+     * without its publisher, out of the member's reach. The entity manager the failure closed is reset, the batch's
+     * events are saved one by one, and the import completes.
+     */
+    public function testABatchThatFailsLeavesNothingBehindAndItsEventsAreSavedOneByOne(): void
+    {
+        $import = $this->check(self::HEADER
+            . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
+            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+        $id = $import->getId();
+        // The UPDATE giving BLUES its publisher fails, as a value too long for its column does in MySQL: the flush
+        // throws and closes the entity manager
+        self::getContainer()->get(EntityManagerInterface::class)->getEventManager()->addEventListener(Events::preUpdate, new class {
+            public function preUpdate(PreUpdateEventArgs $args): void
+            {
+                $event = $args->getObject();
+                if ($event instanceof Event && 'Soirée blues' === $event->getName() && $args->hasChangedField('publisher')) {
+                    throw new RuntimeException('Data too long for column');
+                }
+            }
+        });
+        self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
+
+        self::getContainer()->get(EventImportRunner::class)->run($import);
+
+        $import = EventImportFactory::find(['id' => $id]);
+        self::assertSame(EventImportStatus::Completed, $import->getStatus());
+        self::assertSame(['JAZZ' => 'created', 'BLUES' => 'failed'], array_column($import->getOutcomes(), 'outcome', 'reference'));
+        self::assertSame(0, EventFactory::count(['name' => 'Soirée blues']));
+        $jazz = EventFactory::find(['externalReference' => 'JAZZ']);
+        self::assertTrue($jazz->isDraft());
+        self::assertSame($this->user->getId(), $jazz->getPublisher()?->getOwner()?->getId());
     }
 
     public function testAnEventDeletedSinceTheCheckIsNotImported(): void

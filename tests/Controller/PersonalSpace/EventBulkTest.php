@@ -85,23 +85,72 @@ final class EventBulkTest extends AppWebTestCase
         self::assertResponseRedirects(self::organizerPath($user));
     }
 
-    public function testTheReportOfAnImportPublishesItsEvents(): void
+    /**
+     * The report's bar takes the events the import created: those it updated, or found unchanged, the member had before.
+     */
+    public function testTheReportOfAnImportPublishesTheEventsItCreated(): void
     {
         $client = self::createClient();
         $user = UserFactory::createOne();
-        $events = EventFactory::createMany(2, ['user' => $user, 'draft' => true]);
+        [$created, $updated] = EventFactory::createMany(2, ['user' => $user, 'draft' => true]);
         $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Completed, 'outcomes' => [
-            ['row' => 2, 'reference' => 'A', 'id' => $events[0]->getId(), 'name' => 'A', 'outcome' => 'created'],
-            ['row' => 3, 'reference' => 'B', 'id' => $events[1]->getId(), 'name' => 'B', 'outcome' => 'updated'],
+            ['row' => 2, 'reference' => 'A', 'id' => $created->getId(), 'name' => 'A', 'outcome' => 'created'],
+            ['row' => 3, 'reference' => 'B', 'id' => $updated->getId(), 'name' => 'B', 'outcome' => 'updated'],
             ['row' => 4, 'reference' => 'C', 'id' => null, 'name' => 'C', 'outcome' => 'failed'],
         ]]);
         $client->loginUser($user);
 
         $crawler = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()));
-        self::assertSelectorTextContains('#import-bulk-form', 'Les 2 événements importés');
+        self::assertSelectorTextContains('#import-bulk-form', 'L’événement créé');
         $client->submit($crawler->filter('#import-bulk-form')->selectButton('Publier')->form());
 
         self::assertResponseRedirects(self::organizerPath($user, 'imports/' . $import->getId()));
-        self::assertSame(0, EventFactory::count(['user' => $user, 'draft' => true]));
+        self::assertFalse(EventFactory::find(['id' => $created->getId()])->isDraft());
+        self::assertTrue(EventFactory::find(['id' => $updated->getId()])->isDraft());
+    }
+
+    /**
+     * An export imported again finds its events unchanged or updates them: deleting "the import's events" must not
+     * delete them.
+     */
+    public function testTheReportOfAnImportDeletesTheEventsItCreatedOnly(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        [$created, $updated, $unchanged] = EventFactory::createMany(3, ['user' => $user]);
+        $createdId = $created->getId();
+        $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Completed, 'outcomes' => [
+            ['row' => 2, 'reference' => 'A', 'id' => $createdId, 'name' => 'A', 'outcome' => 'created'],
+            ['row' => 3, 'reference' => 'B', 'id' => $updated->getId(), 'name' => 'B', 'outcome' => 'updated'],
+            ['row' => 4, 'reference' => 'C', 'id' => $unchanged->getId(), 'name' => 'C', 'outcome' => 'unchanged'],
+        ]]);
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()));
+        $client->submit($crawler->filter('#import-bulk-form')->selectButton('Supprimer')->form());
+
+        self::assertSame(0, EventFactory::count(['id' => $createdId]));
+        self::assertSame(2, EventFactory::count(['user' => $user]));
+    }
+
+    /**
+     * The bulk forms ask before deleting through bulk-actions.ts, with their own attributes: form-confirm.ts, which
+     * `data-confirm-message` calls, would ask on every button and send the form without the action clicked.
+     */
+    public function testTheBulkFormsAreNotConfirmedByTheGenericListener(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $event = EventFactory::createOne(['user' => $user]);
+        $import = EventImportFactory::createOne(['user' => $user, 'status' => EventImportStatus::Completed, 'outcomes' => [
+            ['row' => 2, 'reference' => 'A', 'id' => $event->getId(), 'name' => 'A', 'outcome' => 'created'],
+        ]]);
+        $client->loginUser($user);
+
+        foreach ([self::organizerPath($user) => '#event-bulk-form', self::organizerPath($user, 'imports/' . $import->getId()) => '#import-bulk-form'] as $path => $form) {
+            $bulkForm = $client->request('GET', $path)->filter($form);
+            self::assertNotEmpty($bulkForm->attr('data-bulk-confirm-message'), $path);
+            self::assertNull($bulkForm->attr('data-confirm-message'), $path);
+        }
     }
 }
