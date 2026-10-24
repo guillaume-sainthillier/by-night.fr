@@ -151,22 +151,23 @@
             </div>
         {% endif %}
 
-        {# The events the import wrote, all at once: imported as drafts, they are published here #}
-        {% set imported_ids = import.outcomes|filter(outcome => outcome.id and outcome.outcome != 'failed')|map(outcome => outcome.id) %}
-        {% if imported_ids is not empty and not import.status.running %}
+        {# The events the import created, all at once: drafts unless the file said otherwise, they are published here.
+           Never those it updated or found unchanged, which the member had before (an export imported again) #}
+        {% set created_ids = import.outcomes|filter(outcome => outcome.id and outcome.outcome == 'created')|map(outcome => outcome.id) %}
+        {% if created_ids is not empty and not import.status.running %}
             <form method="post" action="{{ path('app_event_bulk') }}" id="import-bulk-form" class="card mb-4"
                   data-bulk-form
-                  data-confirm-title="{{ 'Supprimer les événements de cet import ?'|trans }}"
-                  data-confirm-message="{{ '{count, plural, one {L’événement importé sera supprimé} other {Les {count, number} événements importés seront supprimés}}, avec toutes les données rattachées.'|trans({count: imported_ids|length}, 'messages+intl-icu') }}"
-                  data-confirm-button="{{ 'Supprimer'|trans }}">
+                  data-bulk-confirm-title="{{ 'Supprimer les événements créés par cet import ?'|trans }}"
+                  data-bulk-confirm-message="{{ '{count, plural, one {L’événement créé sera supprimé} other {Les {count, number} événements créés seront supprimés}}, avec toutes les données rattachées.'|trans({count: created_ids|length}, 'messages+intl-icu') }}"
+                  data-bulk-confirm-button="{{ 'Supprimer'|trans }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('event-bulk') }}">
                 <input type="hidden" name="_target_path" value="{{ path('app_event_import_show', {id: import.id}) }}">
-                {% for id in imported_ids %}
+                {% for id in created_ids %}
                     <input type="hidden" name="ids[]" value="{{ id }}">
                 {% endfor %}
                 <div class="card-body d-flex flex-wrap align-items-center gap-2">
                     <span class="fw-bold me-auto">
-                        {{ '{count, plural, one {L’événement importé} other {Les {count, number} événements importés}}'|trans({count: imported_ids|length}, 'messages+intl-icu') }}
+                        {{ '{count, plural, one {L’événement créé} other {Les {count, number} événements créés}}'|trans({count: created_ids|length}, 'messages+intl-icu') }}
                     </span>
                     <button type="submit" name="action" value="publish" class="btn btn-teal">
                         <twig:Icon name="lucide:eye" />

@@ -16,7 +16,9 @@ export function selectionLabel(count: number): string {
  *   `[data-bulk-count]`.
  * - Fixed (an import's events, in hidden fields): the form is always shown.
  *
- * Its "delete" button asks for a confirmation first (`data-confirm-*` on the form, as form-confirm.js).
+ * Its "delete" button asks for a confirmation first, worded by `data-bulk-confirm-title`, `-message` and `-button` on
+ * the form. Never `data-confirm-*`: form-confirm.ts would ask on every button, delete included (a second dialog), and
+ * submit the form without the button that names the action.
  */
 export default defineListener<HTMLFormElement>({
     selector: 'form[data-bulk-form]',
@@ -62,11 +64,11 @@ export default defineListener<HTMLFormElement>({
 
             // Before any await: only a synchronous call cancels the submission
             e.preventDefault()
-            const { confirmTitle, confirmMessage, confirmButton } = form.dataset
+            const { bulkConfirmTitle, bulkConfirmMessage, bulkConfirmButton } = form.dataset
             const confirmed = await app.get('modalManager').createConfirm({
-                text: confirmMessage,
-                ...(confirmTitle && { title: confirmTitle }),
-                ...(confirmButton && { confirmButtonText: confirmButton }),
+                text: bulkConfirmMessage,
+                ...(bulkConfirmTitle && { title: bulkConfirmTitle }),
+                ...(bulkConfirmButton && { confirmButtonText: bulkConfirmButton }),
             })
             if (!confirmed) {
                 return

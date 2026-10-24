@@ -91,9 +91,9 @@
                 {# The events picked in the table below (their checkboxes join it through form="event-bulk-form") #}
                 <form method="post" action="{{ path('app_event_bulk') }}" id="event-bulk-form" class="border-top pt-3 mt-3" hidden
                       data-bulk-form
-                      data-confirm-title="{{ 'Supprimer ces événements ?'|trans }}"
-                      data-confirm-message="{{ 'Les événements sélectionnés seront supprimés, avec toutes les données rattachées.'|trans }}"
-                      data-confirm-button="{{ 'Supprimer'|trans }}">
+                      data-bulk-confirm-title="{{ 'Supprimer ces événements ?'|trans }}"
+                      data-bulk-confirm-message="{{ 'Les événements sélectionnés seront supprimés, avec toutes les données rattachées.'|trans }}"
+                      data-bulk-confirm-button="{{ 'Supprimer'|trans }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('event-bulk') }}">
                     <input type="hidden" name="_target_path" value="{{ app.request.requestUri }}">
                     <div class="d-flex flex-wrap align-items-center gap-2">
