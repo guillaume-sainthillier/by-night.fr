@@ -24,7 +24,7 @@ body {
 
 #autocomplete {
     position: relative;
-    max-width: 400px;
+    max-width: 25rem;
     flex: 0 1 auto;
     min-width: 0;
     overflow: hidden;
@@ -185,8 +185,8 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 2.5rem;
+        height: 2.5rem;
         border-radius: $border-radius;
         background-color: var(--light-bg-subtle);
         margin-right: 0.75rem;
