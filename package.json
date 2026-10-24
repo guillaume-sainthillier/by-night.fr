@@ -75,5 +75,5 @@
         "*.php": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "*.twig": "vendor/bin/twig-cs-fixer lint --fix --config=.twig-cs-fixer.php"
     },
-    "packageManager": "pnpm@12.14.0"
+    "packageManager": "pnpm@12.15.0"
 }
