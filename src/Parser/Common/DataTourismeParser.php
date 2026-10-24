@@ -19,6 +19,7 @@ use App\Dto\RemovedEventDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
+use App\Utils\DecimalNumber;
 use App\Utils\StartingPrice;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -245,8 +246,8 @@ final class DataTourismeParser extends AbstractParser
         }
 
         $event->source = $this->string($data['uri'] ?? null);
-        $event->latitude = (float) ($location['geo']['latitude'] ?? 0);
-        $event->longitude = (float) ($location['geo']['longitude'] ?? 0);
+        $event->latitude = DecimalNumber::fromValue($location['geo']['latitude'] ?? null);
+        $event->longitude = DecimalNumber::fromValue($location['geo']['longitude'] ?? null);
         $event->imageUrl = $this->first($data['hasMainRepresentation'][0]['hasRelatedResource'][0]['locator'] ?? null);
         $event->websiteContacts = array_values(array_unique(array_filter($websites)));
         $event->ticketUrl = $ticketUrl;
@@ -394,11 +395,7 @@ final class DataTourismeParser extends AbstractParser
 
         // Only zeros say it is free, as a free policy does: "Gratuit", not "Gratuit : 0€"
         if ([] !== $amounts && max($amounts) > 0) {
-            $currency = mb_strtoupper($this->string($specification['priceCurrency'] ?? null) ?? 'EUR');
-            $unit = 'EUR' === $currency ? '€' : ' ' . $currency;
-            $min = self::formatPrice(min($amounts)) . $unit;
-            $max = self::formatPrice(max($amounts)) . $unit;
-            $amount = $min === $max ? $min : \sprintf('De %s à %s', $min, $max);
+            $amount = self::formatAmountRange(min($amounts), max($amounts), $this->string($specification['priceCurrency'] ?? null) ?? 'EUR');
 
             return [null !== $label ? \sprintf('%s : %s', $label, $amount) : $amount, true];
         }

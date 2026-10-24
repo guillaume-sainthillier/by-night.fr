@@ -17,7 +17,7 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Utils\HoursLabel;
 use App\Utils\HtmlFormatter;
-use App\Utils\Util;
+use App\Utils\StringManipulator;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -27,7 +27,6 @@ final readonly class Cleaner
     private const float PLACEHOLDER_SPAN = 1.0;
 
     public function __construct(
-        private Util $util,
         private HtmlFormatter $htmlFormatter,
     ) {
     }
@@ -253,8 +252,8 @@ final readonly class Cleaner
      */
     private function cleanCoordinates(?float $latitude, ?float $longitude): array
     {
-        $latitude = (float) $this->util->replaceNonNumericChars($latitude) ?: null;
-        $longitude = (float) $this->util->replaceNonNumericChars($longitude) ?: null;
+        $latitude = $latitude ?: null;
+        $longitude = $longitude ?: null;
         if (abs($latitude ?? 0.0) <= self::PLACEHOLDER_SPAN && abs($longitude ?? 0.0) <= self::PLACEHOLDER_SPAN) {
             return [null, null];
         }
@@ -292,11 +291,11 @@ final readonly class Cleaner
             return '';
         }
 
-        $step1 = $this->util->utf8TitleCase($string);
-        $step2 = $this->util->deleteMultipleSpaces($step1);
-        $step3 = $this->util->deleteSpaceBetween($step2, $delimiters);
-
-        return trim($step3);
+        return trim(new StringManipulator($string)
+            ->titleCase()
+            ->deleteMultipleSpaces()
+            ->deleteMultipleSpacesBetween($delimiters)
+            ->toString());
     }
 
     private function cleanPostalString(?string $string): string

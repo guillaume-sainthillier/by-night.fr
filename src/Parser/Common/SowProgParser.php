@@ -19,6 +19,7 @@ use App\Dto\TagDto;
 use App\Enum\EventStatus;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
+use App\Utils\DecimalNumber;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
@@ -100,11 +101,10 @@ final class SowProgParser extends AbstractParser
             $free = $free || true === ($date['freeAdmission'] ?? false);
             foreach ($date['prices'] ?? [] as $price) {
                 $prices[] = \sprintf(
-                    '%s : %s%s',
+                    '%s : %s',
                     // Some labels end with their own colon ("Tarif concert à 21h :")
                     preg_replace('/[\s:]+$/u', '', (string) $price['label']),
-                    self::formatPrice($price['price']),
-                    'EUR' === ($price['currency'] ?? 'EUR') ? '€' : $price['currency'],
+                    self::formatAmount($price['price'], $price['currency'] ?? 'EUR'),
                 );
             }
         }
@@ -139,8 +139,8 @@ final class SowProgParser extends AbstractParser
         $event->endDate = max(array_map(static fn (EventTimesheetDto $timesheet) => $timesheet->endAt, $timesheets));
         $event->prices = [] !== $prices ? implode(' - ', array_unique($prices)) : ($free ? 'Gratuit' : null);
         $event->websiteContacts = array_values(array_unique(array_column($links, 'url')));
-        $event->latitude = isset($venue['latitude']) ? (float) $venue['latitude'] : null;
-        $event->longitude = isset($venue['longitude']) ? (float) $venue['longitude'] : null;
+        $event->latitude = DecimalNumber::fromValue($venue['latitude'] ?? null);
+        $event->longitude = DecimalNumber::fromValue($venue['longitude'] ?? null);
 
         $country = new CountryDto();
         // "FR" as the docs show it; a name would still be resolved (CountryDto::getUniqueKey())

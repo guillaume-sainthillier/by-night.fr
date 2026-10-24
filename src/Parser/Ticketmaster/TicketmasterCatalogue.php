@@ -10,6 +10,7 @@
 
 namespace App\Parser\Ticketmaster;
 
+use App\Utils\DecimalNumber;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -141,8 +142,8 @@ final readonly class TicketmasterCatalogue
                 $id = $matches[1];
                 $shows[$id] ??= [
                     'image' => '' !== ($row['EVENT_IMAGE_URL'] ?? '') ? $row['EVENT_IMAGE_URL'] : null,
-                    'latitude' => is_numeric($row['VENUE_LATITUDE'] ?? null) ? (float) $row['VENUE_LATITUDE'] : null,
-                    'longitude' => is_numeric($row['VENUE_LONGITUDE'] ?? null) ? (float) $row['VENUE_LONGITUDE'] : null,
+                    'latitude' => DecimalNumber::fromValue($row['VENUE_LATITUDE'] ?? null),
+                    'longitude' => DecimalNumber::fromValue($row['VENUE_LONGITUDE'] ?? null),
                     'performances' => [],
                 ];
                 $shows[$id]['performances'][] = new TicketmasterPerformance(

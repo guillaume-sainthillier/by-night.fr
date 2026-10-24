@@ -23,4 +23,25 @@ final class DecimalNumber
     {
         return (float) str_replace(',', '.', $number);
     }
+
+    /**
+     * A number of a feed's column or a form's field, whatever its shape: 43.6047, "43.6047", "43,6047", " 1.47 ".
+     * The coordinates of the sources go through it: (float) "43,6047" would put a venue at 43.0.
+     *
+     * @return float|null null when the value names no number (null, "", …)
+     */
+    public static function fromValue(mixed $value): ?float
+    {
+        if (\is_int($value) || \is_float($value)) {
+            return (float) $value;
+        }
+
+        if (!\is_string($value)) {
+            return null;
+        }
+
+        $number = str_replace(',', '.', trim($value));
+
+        return is_numeric($number) ? (float) $number : null;
+    }
 }

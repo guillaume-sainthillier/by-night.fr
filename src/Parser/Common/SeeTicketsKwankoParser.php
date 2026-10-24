@@ -17,6 +17,7 @@ use App\Dto\PlaceDto;
 use App\Enum\EventStatus;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
+use App\Utils\DecimalNumber;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
@@ -167,8 +168,8 @@ final class SeeTicketsKwankoParser extends AbstractParser
         $event->startDate = $dateOnly;
         $event->endDate = $dateOnly;
         $event->startTime = $startDate;
-        $event->latitude = (float) ($data['latitude'] ?? 0);
-        $event->longitude = (float) ($data['longitude'] ?? 0);
+        $event->latitude = DecimalNumber::fromValue($data['latitude'] ?? null);
+        $event->longitude = DecimalNumber::fromValue($data['longitude'] ?? null);
         $event->status = EventStatus::fromStatusMessage($data['onsale'] ?? null);
         // The headliner, then the other artists of the bill separated by "|" (the Cleaner drops the repeats)
         $event->performers = array_values(array_filter(

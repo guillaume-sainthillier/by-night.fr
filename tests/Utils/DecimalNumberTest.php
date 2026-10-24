@@ -32,4 +32,29 @@ final class DecimalNumberTest extends TestCase
         yield 'the zeros of a feed' => ['22.0000', 22.0];
         yield 'a whole number' => ['39', 39.0];
     }
+
+    #[DataProvider('provideValues')]
+    public function testAValueReadsWhateverItsShape(mixed $value, ?float $expected): void
+    {
+        self::assertSame($expected, DecimalNumber::fromValue($value));
+    }
+
+    /**
+     * @return iterable<string, array{mixed, ?float}>
+     */
+    public static function provideValues(): iterable
+    {
+        yield 'a float of a JSON feed' => [43.6047, 43.6047];
+        yield 'an integer' => [1, 1.0];
+        yield 'a decimal point' => ['43.6047', 43.6047];
+        yield 'a decimal comma' => ['43,6047', 43.6047];
+        yield 'a negative longitude' => ['-1,5536', -1.5536];
+        yield 'spaces around it' => [' 1.47 ', 1.47];
+        yield 'zero stays a number' => ['0', 0.0];
+        yield 'no value' => [null, null];
+        yield 'an empty column' => ['', null];
+        yield 'a word' => ['inconnu', null];
+        yield 'a unit after it' => ['43.6°', null];
+        yield 'a thousands separator and a decimal one' => ['1,234.5', null];
+    }
 }

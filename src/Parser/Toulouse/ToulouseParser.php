@@ -17,6 +17,7 @@ use App\Dto\PlaceDto;
 use App\Dto\TagDto;
 use App\Enum\EventStatus;
 use App\Parser\AbstractParser;
+use App\Utils\DecimalNumber;
 use DateTimeImmutable;
 use ForceUTF8\Encoding;
 use Override;
@@ -98,8 +99,8 @@ final class ToulouseParser extends AbstractParser
         $event->endDate = $endDate;
         $event->hours = implode('.', array_unique(explode('.', (string) $tab[7])));
         $event->status = EventStatus::fromStatusMessage($tab[9]);
-        $event->latitude = (float) $tab[20];
-        $event->longitude = (float) $tab[21];
+        $event->latitude = DecimalNumber::fromValue($tab[20]);
+        $event->longitude = DecimalNumber::fromValue($tab[21]);
         $event->type = $tab[16];
         $categoryLabel = $tab[17] ?? null;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {

@@ -270,12 +270,28 @@ abstract class AbstractParser implements ParserInterface
     }
 
     /**
-     * A price as the feeds serve it ("27.5000", "39.00", "15.0"), without its trailing zeros:
-     * "27.5", "39", "15".
+     * An amount as the feeds serve it ("27.5000", "39.00", "15.0"), without its trailing zeros and with its currency:
+     * "27.5€", "39€", "15 CHF".
+     *
+     * @param string $currency its ISO code, as the feeds give it ("EUR", "CHF")
      */
-    protected static function formatPrice(float|string $price): string
+    protected static function formatAmount(float|string $price, string $currency = 'EUR'): string
     {
-        return rtrim(rtrim(number_format((float) $price, 2, '.', ''), '0'), '.');
+        $amount = rtrim(rtrim(number_format((float) $price, 2, '.', ''), '0'), '.');
+        $currency = mb_strtoupper($currency);
+
+        return 'EUR' === $currency ? $amount . '€' : $amount . ' ' . $currency;
+    }
+
+    /**
+     * "22€" when both ends are the same, else "De 15€ à 25€".
+     */
+    protected static function formatAmountRange(float $min, float $max, string $currency = 'EUR'): string
+    {
+        $min = self::formatAmount($min, $currency);
+        $max = self::formatAmount($max, $currency);
+
+        return $min === $max ? $min : \sprintf('De %s à %s', $min, $max);
     }
 
     /**
@@ -289,14 +305,8 @@ abstract class AbstractParser implements ParserInterface
     protected static function formatPriceRange(array $prices): ?string
     {
         $prices = array_filter(array_map(floatval(...), $prices), static fn (float $price): bool => $price > 0);
-        if ([] === $prices) {
-            return null;
-        }
 
-        $min = self::formatPrice(min($prices));
-        $max = self::formatPrice(max($prices));
-
-        return $min === $max ? $min . '€' : \sprintf('De %s€ à %s€', $min, $max);
+        return [] === $prices ? null : self::formatAmountRange(min($prices), max($prices));
     }
 
     protected function logException(Throwable $exception, array $context = []): void

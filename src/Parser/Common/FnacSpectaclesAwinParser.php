@@ -16,6 +16,7 @@ use App\Dto\EventDto;
 use App\Dto\EventTimesheetDto;
 use App\Dto\PlaceDto;
 use App\Handler\EventHandler;
+use App\Utils\DecimalNumber;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
@@ -165,8 +166,8 @@ final class FnacSpectaclesAwinParser extends AbstractAwinParser
         // nothing to look up (a "grand/" to "600/" rewrite once checked each poster with a HEAD)
         $event->imageUrl = self::posterUrl($data['merchant_image_url'] ?? null);
         $event->prices = self::formatPriceRange([$data['search_price']]);
-        $event->latitude = (float) ($data['Tickets:latitude'] ?? 0);
-        $event->longitude = (float) ($data['Tickets:longitude'] ?? 0);
+        $event->latitude = DecimalNumber::fromValue($data['Tickets:latitude'] ?? null);
+        $event->longitude = DecimalNumber::fromValue($data['Tickets:longitude'] ?? null);
 
         // CSV mapping:
         // - Tickets:venue_name = venue name
