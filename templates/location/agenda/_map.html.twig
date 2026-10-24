@@ -34,8 +34,8 @@
         </div>
         <div class="card mt-3" id="carte" data-map hidden>
             {# MapLibre needs a box with a height; its controls and markers stay below the header and the menus of the
-               page #}
-            <div class="rounded" data-map-canvas style="height: min(60vh, 480px); isolation: isolate"></div>
+               page. Its corners follow the card's #}
+            <div data-map-canvas style="height: min(60vh, 480px); isolation: isolate; border-radius: var(--bs-card-inner-border-radius)"></div>
         </div>
     </div>
 {% endif %}

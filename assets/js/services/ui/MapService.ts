@@ -1,5 +1,6 @@
 import { LngLatBounds, MapLibreMap, Marker, NavigationControl, Popup, setWorkerUrl } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import '@/scss/lazy-components/_map.scss'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import { plural } from '@/js/utils/plural'
 import type { MapVenue } from '@/js/utils/venues'
@@ -16,8 +17,8 @@ const STYLES = {
 /** Close enough to see the streets around a venue (MapLibre's 512 px tiles: Leaflet's 15) */
 const VENUE_ZOOM = 14
 
-/** Narrow enough for the map of a phone, whose popups the map pans into sight */
-const POPUP_WIDTH = '260px'
+/** Narrow enough for the map of a phone, whose popups the map pans into sight; in rem, as the text it holds */
+const POPUP_WIDTH = '16.25rem'
 
 /**
  * MapLibre's own labels are English ("Zoom in", "Close popup", the map's "Map" region): those of its controls the map
@@ -67,14 +68,15 @@ function createMarker(venue: MapVenue): HTMLElement {
  */
 function createPopup(venue: MapVenue): HTMLElement {
     const popup = document.createElement('div')
-    // The page's text rather than the map's own (MapLibre sets a 12 px Helvetica on the whole map), in the colours of a
+    // The page's text size rather than the map's own (MapLibre sets 12px/20px on the whole map), in the colours of a
     // light theme whatever the page's: MapLibre's popup stays white on the dark map too
     popup.dataset.bsTheme = 'light'
     popup.style.font = 'var(--bs-body-font-size) / var(--bs-body-line-height) var(--bs-body-font-family)'
     popup.style.color = 'var(--bs-body-color)'
 
     const title = document.createElement('div')
-    title.className = 'fw-bold mb-1'
+    // Clear of the close button in the corner
+    title.className = 'fw-bold mb-1 pe-4'
     title.textContent = venue.name || 'Lieu'
     const count = document.createElement('div')
     count.className = 'text-secondary small mb-2'

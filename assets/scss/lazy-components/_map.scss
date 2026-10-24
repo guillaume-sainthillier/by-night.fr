@@ -1,0 +1,46 @@
+@use '../core' as *;
+
+// MapLibre's own look (maplibre-gl.css) in the site's: the agenda's map (MapService)
+
+// Its markers and controls in the site's font, instead of the Helvetica MapLibre sets on the whole map
+.maplibregl-map {
+    font-family: var(--body-font-family);
+}
+
+// The zoom buttons are action buttons: the buttons' radius, instead of 4px
+.maplibregl-ctrl-group {
+    border-radius: var(--border-radius);
+
+    button:first-child {
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+
+    button:last-child {
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+
+    button:only-child {
+        border-radius: inherit;
+    }
+}
+
+// A popup is a popover: its radius, its shadow and room around the text, instead of 3px and 10-15px
+.maplibregl-popup-content {
+    padding: 0.75rem 1rem;
+    border-radius: $popover-border-radius;
+    box-shadow: $box-shadow-dropdown;
+}
+
+// Its close button: 24px to tap (WCAG 2.5.8) and a 20px cross, instead of a 12px one in 19x22px. Muted as the popup's
+// own text, which stays light on a dark map too (MapService)
+.maplibregl-popup-close-button {
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: $text-secondary;
+    border-radius: var(--border-radius-sm);
+}
