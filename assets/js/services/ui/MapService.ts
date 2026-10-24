@@ -1,5 +1,6 @@
 import { LngLatBounds, MapLibreMap, Marker, NavigationControl, Popup, setWorkerUrl } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import '@/scss/lazy-components/_map.scss'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import { plural } from '@/js/utils/plural'
 import type { MapVenue } from '@/js/utils/venues'
@@ -16,8 +17,20 @@ const STYLES = {
 /** Close enough to see the streets around a venue (MapLibre's 512 px tiles: Leaflet's 15) */
 const VENUE_ZOOM = 14
 
-/** Narrow enough for the map of a phone, whose popups the map pans into sight */
-const POPUP_WIDTH = '260px'
+/** Narrow enough for the map of a phone, whose popups the map pans into sight; in rem, as the text it holds */
+const POPUP_WIDTH = '16.25rem'
+
+/**
+ * MapLibre's own labels are English ("Zoom in", "Close popup", the map's "Map" region): those of its controls the map
+ * shows, in French
+ */
+const LOCALE = {
+    'Map.Title': 'Carte',
+    'NavigationControl.ZoomIn': 'Zoom avant',
+    'NavigationControl.ZoomOut': 'Zoom arrière',
+    'AttributionControl.ToggleAttribution': 'Afficher les crédits de la carte',
+    'Popup.Close': 'Fermer',
+}
 
 const dayFormat = new Intl.DateTimeFormat('fr', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
 
@@ -30,13 +43,19 @@ export interface MapServiceOptions {
 }
 
 /**
- * The marker of a venue: its number of events in a disc.
+ * The marker of a venue: its number of events in a disc. MapLibre makes it a keyboard stop that opens its popup with
+ * Enter or Space; a button named after the venue, rather than its bare count.
  */
 function createMarker(venue: MapVenue): HTMLElement {
     const marker = document.createElement('span')
     marker.className = 'avatar avatar-sm rounded-circle bg-primary text-white shadow fw-bold'
     marker.style.cursor = 'pointer'
     marker.textContent = String(venue.events.length)
+    marker.setAttribute('role', 'button')
+    marker.setAttribute(
+        'aria-label',
+        `${venue.name || 'Lieu'} : ${plural(venue.events.length, { one: '# sortie', other: '# sorties' })}`
+    )
     if (venue.name) {
         marker.title = venue.name
     }
@@ -49,14 +68,15 @@ function createMarker(venue: MapVenue): HTMLElement {
  */
 function createPopup(venue: MapVenue): HTMLElement {
     const popup = document.createElement('div')
-    // The page's text rather than the map's own (MapLibre sets a 12 px Helvetica on the whole map), in the colours of a
+    // The page's text size rather than the map's own (MapLibre sets 12px/20px on the whole map), in the colours of a
     // light theme whatever the page's: MapLibre's popup stays white on the dark map too
     popup.dataset.bsTheme = 'light'
     popup.style.font = 'var(--bs-body-font-size) / var(--bs-body-line-height) var(--bs-body-font-family)'
     popup.style.color = 'var(--bs-body-color)'
 
     const title = document.createElement('div')
-    title.className = 'fw-bold mb-1'
+    // Clear of the close button in the corner
+    title.className = 'fw-bold mb-1 pe-4'
     title.textContent = venue.name || 'Lieu'
     const count = document.createElement('div')
     count.className = 'text-secondary small mb-2'
@@ -109,17 +129,32 @@ export function create({ element, venues }: MapServiceOptions): {
         pitchWithRotate: false,
         touchPitch: false,
         attributionControl: { compact: true },
+        locale: LOCALE,
     })
     map.touchZoomRotate.disableRotation()
     map.addControl(new NavigationControl({ showCompass: false }), 'top-left')
 
     const bounds = new LngLatBounds()
     for (const venue of venues) {
-        // Opened by a click on a marker, which is no keyboard stop: no focus to move into it
-        const popup = new Popup({ maxWidth: POPUP_WIDTH, offset: 18, focusAfterOpen: false }).setDOMContent(
-            createPopup(venue)
-        )
-        new Marker({ element: createMarker(venue) }).setLngLat([venue.lng, venue.lat]).setPopup(popup).addTo(map)
+        const element = createMarker(venue)
+        const content = createPopup(venue)
+        // Opened from the keyboard, the focus moves to its first event (a click leaves no focus ring on it)
+        const popup = new Popup({ maxWidth: POPUP_WIDTH, offset: 18 }).setDOMContent(content)
+        // Escape closes it, as it would a menu
+        content.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                popup.remove()
+            }
+        })
+        // Closed from inside (Escape, its close button), its focus goes back to the marker instead of the page's top
+        popup.on('close', () => {
+            if (document.activeElement === document.body) {
+                element.focus({ preventScroll: true })
+            }
+        })
+        // The popup after addTo(): addTo() starts with remove(), which drops the marker's Enter/Space listener that
+        // setPopup() put there
+        new Marker({ element }).setLngLat([venue.lng, venue.lat]).addTo(map).setPopup(popup)
         bounds.extend([venue.lng, venue.lat])
     }
 
