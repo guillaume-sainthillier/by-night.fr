@@ -58,14 +58,14 @@ final class OutingAlertsSendCommandTest extends AppKernelTestCase
     }
 
     /**
-     * A member going to a concert cancelled 20 minutes ago.
+     * A member going to a concert cancelled a minute ago.
      */
     private function cancelledOuting(): void
     {
         $concert = EventFactory::new()->withDates(new DateTimeImmutable('+5 days'))->create();
         UserEventFactory::createOne(['event' => $concert, 'going' => true, 'knownState' => OutingState::fromEvent($concert)]);
 
-        self::mockTime('-20 minutes');
+        self::mockTime('-1 minute');
         $concert->setStatus(EventStatus::Cancelled);
         save($concert);
         self::mockTime(false);

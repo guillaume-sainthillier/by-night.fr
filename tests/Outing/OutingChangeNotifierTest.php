@@ -84,18 +84,18 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     }
 
     #[RequiresPhpExtension('mjml')]
-    public function testAChangeStillSettlingWaitsForTheNextRun(): void
+    public function testAChangeMadeAfterTheRunStartedWaitsForTheNextRun(): void
     {
         [$event] = $this->outing();
         $event->setStatus(EventStatus::Cancelled);
         save($event);
 
-        $this->runAlerts();
+        $this->runAlerts('-1 minute');
 
         self::assertEmailCount(0);
         self::assertNotNull($this->flag($event), 'left to the next run');
 
-        $this->runAlerts('+20 minutes');
+        $this->runAlerts('+1 minute');
 
         self::assertEmailCount(1);
     }
@@ -134,6 +134,20 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
 
         self::assertEmailCount(1);
         self::assertNull($this->flag($event));
+    }
+
+    /**
+     * The flag keeps whole seconds: a change made in the second the run started may come after the run read the event.
+     */
+    public function testAChangeInTheSecondTheRunStartedWaitsForTheNextRun(): void
+    {
+        $event = EventFactory::createOne(['flaggedForAlertAt' => new DateTimeImmutable('2026-10-24 10:00:00')]);
+        $repository = self::getContainer()->get(EventRepository::class);
+        $startedAt = new DateTimeImmutable('2026-10-24 10:00:00.700');
+
+        self::assertNotContains($event->getId(), $repository->findIdsFlaggedForAlert($startedAt, 0, 500));
+        $repository->clearAlertFlags([(int) $event->getId()], $startedAt);
+        self::assertNotNull($this->flag($event));
     }
 
     public function testAChangeMadeWhileTheRunReadTheEventKeepsItsFlag(): void
@@ -295,11 +309,11 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     }
 
     /**
-     * Saves the change as made 20 minutes ago: settled by the time of the next run.
+     * Saves the change as made a minute before the run.
      */
     private function changed(Event $event): void
     {
-        self::mockTime('-20 minutes');
+        self::mockTime('-1 minute');
         save($event);
         self::mockTime(false);
     }

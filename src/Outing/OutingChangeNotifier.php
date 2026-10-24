@@ -25,9 +25,9 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
  * (UserEvent::$knownState) then becomes the event as it is, alert or not, so that the next change is told from there.
  *
  * The events are those their change flagged (Event::$flaggedForAlertAt, OutingChangeListener), told a few times a day
- * by app:outing-alerts:send: a run takes the events flagged long enough ago for the change to have settled, then clears
- * their flag, unless a change came while it ran (told by the next run) or a follower is still to hear of it. Run again,
- * it sends nothing twice: each alert is recorded as soon as it left.
+ * by app:outing-alerts:send: a run takes every event flagged before it started, then clears its flag, unless a change
+ * came while it ran (told by the next run) or a follower is still to hear of it. Run again, it sends nothing twice: each
+ * alert is recorded as soon as it left.
  *
  * One alert a day at most per member and event: a change after the day's alert is told by the first run of the next
  * day, in one alert with whatever else changed by then. Members who turned the alerts off are told nothing, but what
@@ -36,9 +36,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
  */
 final readonly class OutingChangeNotifier
 {
-    /** How long a change has to settle: an import's batch and its families' flush are long done */
-    private const string SETTLING = '15 minutes';
-
     /** Events per batch: their followers in one query, the entity manager cleared after */
     private const int BATCH_SIZE = 500;
 
@@ -50,15 +47,18 @@ final readonly class OutingChangeNotifier
     ) {
     }
 
+    /**
+     * @param DateTimeImmutable $now when the run starts: the events flagged before are told, those flagged since wait
+     *                               for the next run
+     */
     public function sendFlagged(DateTimeImmutable $now): OutingAlertRun
     {
-        $flaggedBy = $now->modify('-' . self::SETTLING);
         $run = new OutingAlertRun();
         $afterId = 0;
 
-        while ([] !== $eventIds = $this->eventRepository->findIdsFlaggedForAlert($flaggedBy, $afterId, self::BATCH_SIZE)) {
+        while ([] !== $eventIds = $this->eventRepository->findIdsFlaggedForAlert($now, $afterId, self::BATCH_SIZE)) {
             $untold = $this->notify($eventIds, $now, $run);
-            $this->eventRepository->clearAlertFlags(array_values(array_diff($eventIds, $untold)), $flaggedBy);
+            $this->eventRepository->clearAlertFlags(array_values(array_diff($eventIds, $untold)), $now);
             $this->entityManager->clear();
             $afterId = $eventIds[\count($eventIds) - 1];
         }

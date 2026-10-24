@@ -1440,19 +1440,20 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
-     * The events whose followers are still to hear of a change made by a time (Event::$flaggedForAlertAt), a page at a
-     * time after an id: the events kept flagged by a run are passed over, not read again.
+     * The events whose followers are still to hear of a change made before a time (Event::$flaggedForAlertAt), a page
+     * at a time after an id: the events kept flagged by a run are passed over, not read again. Strictly before: the
+     * column keeps whole seconds, so a change made in the second the run started waits for the next run.
      *
      * @return list<int>
      */
-    public function findIdsFlaggedForAlert(DateTimeImmutable $flaggedBy, int $afterId, int $limit): array
+    public function findIdsFlaggedForAlert(DateTimeImmutable $before, int $afterId, int $limit): array
     {
         return array_map(intval(...), $this
             ->createQueryBuilder('e')
             ->select('e.id')
-            ->where('e.flaggedForAlertAt <= :flaggedBy')
+            ->where('e.flaggedForAlertAt < :before')
             ->andWhere('e.id > :afterId')
-            ->setParameter('flaggedBy', $flaggedBy)
+            ->setParameter('before', $before)
             ->setParameter('afterId', $afterId)
             ->orderBy('e.id')
             ->setMaxResults($limit)
@@ -1462,11 +1463,11 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
     /**
      * Clears the flag of the events whose followers heard of their change (OutingChangeNotifier), unless it moved past
-     * the time the run read them by: a change made meanwhile is told by the next run.
+     * the start of the run that read them: a change made meanwhile is told by the next run.
      *
      * @param list<int> $ids
      */
-    public function clearAlertFlags(array $ids, DateTimeImmutable $flaggedBy): void
+    public function clearAlertFlags(array $ids, DateTimeImmutable $before): void
     {
         if ([] === $ids) {
             return;
@@ -1477,9 +1478,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->update()
             ->set('e.flaggedForAlertAt', 'NULL')
             ->where('e.id IN (:ids)')
-            ->andWhere('e.flaggedForAlertAt <= :flaggedBy')
+            ->andWhere('e.flaggedForAlertAt < :before')
             ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
-            ->setParameter('flaggedBy', $flaggedBy)
+            ->setParameter('before', $before)
             ->getQuery()
             ->execute();
     }
