@@ -24,7 +24,7 @@
                 {{ include('fragments/_header-user-dropdown.html.twig', {show_username: false}) }}
             </ul>
         </div>
-        <nav class="offcanvas-lg offcanvas-end flex-grow-1" id="navbar-main" aria-label="Menu principal">
+        <nav class="offcanvas-lg offcanvas-start flex-grow-1" id="navbar-main" aria-label="Menu principal">
             <div class="offcanvas-header">
                 <div class="site-brand">
                     {# Hidden until the menu opens: lazy #}
@@ -75,7 +75,28 @@
                     {% endif %}
                 </ul>
 
-                <div id="autocomplete" class="mx-lg-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0" data-search-url="{{ path('api_search', city ? {city: city.slug} : {}) }}" data-suggestions-url="{{ path('api_search_suggestions', city ? {city: city.slug} : {}) }}" data-search-page-url="{{ path('app_search_index', city ? {city: city.slug} : {}) }}"></div>
+                {# The phone's menu only: where to go out in the current location, its date pages and its universes (the
+                   header of a computer has no room for them, its pages link to them) #}
+                {% set menuLocation = app_context.location %}
+                {% if menuLocation %}
+                    <div class="d-lg-none w-100 border-top pt-3 mt-1">
+                        <div class="subheader mb-2">Sortir {{ menuLocation.atName }}</div>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            {% for preset in [constant('App\\Enum\\DateRangePreset::Today'), constant('App\\Enum\\DateRangePreset::ThisWeekend')] %}
+                                <a class="btn btn-sm btn-pill btn-chip" href="{{ path('app_agenda_by_date', {location: menuLocation.slug, dateSlug: preset.pageSlug}) }}">{{ preset.pageLabel|ucfirst }}</a>
+                            {% endfor %}
+                        </div>
+                        <ul class="navbar-nav align-items-start">
+                            {% for type in enum_cases('App\\Enum\\AgendaType') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_agenda_by_type', {typeSlug: type.slug, location: menuLocation.slug}) }}">{{ type.label }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div id="autocomplete"class="mx-lg-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0" data-search-url="{{ path('api_search', city ? {city: city.slug} : {}) }}" data-suggestions-url="{{ path('api_search_suggestions', city ? {city: city.slug} : {}) }}" data-search-page-url="{{ path('app_search_index', city ? {city: city.slug} : {}) }}"></div>
 
                 {% if is_granted('ROLE_ADMIN') %}
                     <ul class="navbar-nav align-items-start align-items-lg-center">
