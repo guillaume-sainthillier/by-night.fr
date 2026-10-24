@@ -14,6 +14,7 @@ use App\Dto\CountryDto;
 use App\Dto\PlaceDto;
 use App\Entity\Country;
 use App\Repository\CountryRepository;
+use App\Utils\DecimalNumber;
 use SortDirection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -64,13 +65,13 @@ final class PlaceType extends AbstractType
             ]);
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            static fn ($latitude) => (float) $latitude ?: null,
-            static fn ($latitude) => (float) $latitude ?: null
+            static fn ($latitude) => DecimalNumber::fromValue($latitude) ?: null,
+            static fn ($latitude) => DecimalNumber::fromValue($latitude) ?: null
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            static fn ($latitude) => (float) $latitude ?: null,
-            static fn ($latitude) => (float) $latitude ?: null
+            static fn ($latitude) => DecimalNumber::fromValue($latitude) ?: null,
+            static fn ($latitude) => DecimalNumber::fromValue($latitude) ?: null
         ));
 
         $builder->get('country')

@@ -19,6 +19,7 @@ use App\Dto\RemovedEventDto;
 use App\Dto\TagDto;
 use App\Handler\EventHandler;
 use App\Parser\AbstractParser;
+use App\Utils\DecimalNumber;
 use App\Utils\StartingPrice;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -245,8 +246,8 @@ final class DataTourismeParser extends AbstractParser
         }
 
         $event->source = $this->string($data['uri'] ?? null);
-        $event->latitude = (float) ($location['geo']['latitude'] ?? 0);
-        $event->longitude = (float) ($location['geo']['longitude'] ?? 0);
+        $event->latitude = DecimalNumber::fromValue($location['geo']['latitude'] ?? null);
+        $event->longitude = DecimalNumber::fromValue($location['geo']['longitude'] ?? null);
         $event->imageUrl = $this->first($data['hasMainRepresentation'][0]['hasRelatedResource'][0]['locator'] ?? null);
         $event->websiteContacts = array_values(array_unique(array_filter($websites)));
         $event->ticketUrl = $ticketUrl;
