@@ -1,0 +1,34 @@
+{#
+    The top of an error page: its code, a title and an explanation, then whatever leads the visitor on (a search,
+    buttons), and a way to reach us. The code shows large beside it on a computer, a picture rather than text.
+
+    <twig:ErrorPage code="404" label="Page introuvable" title="Cette page n'existe pas" description="…" />
+
+    Composed:
+    <twig:ErrorPage code="404" label="Page introuvable" icon="lucide:compass">
+        <twig:ErrorPage:Title>Cette page n'existe pas</twig:ErrorPage:Title>
+        <twig:ErrorPage:Description>…</twig:ErrorPage:Description>
+        <twig:ErrorPage:Search city="toulouse" />
+        <twig:ErrorPage:Actions>
+            <a class="btn btn-primary" href="…">…</a>
+        </twig:ErrorPage:Actions>
+    </twig:ErrorPage>
+#}
+{% props code, label = null, icon = 'lucide:compass', title = null, description = null, contact = true %}
+<section {{ attributes.defaults({class: 'hero-glow error-hero py-5'}) }}>
+    <div class="container-lg">
+        <div class="row g-4 g-lg-5 align-items-center">
+            <div class="col-lg-8">
+                <twig:ErrorPage:Code code="{{ code }}" label="{{ label }}" icon="{{ icon }}" />
+                {% block content %}
+                    {% if title %}<twig:ErrorPage:Title>{{ title }}</twig:ErrorPage:Title>{% endif %}
+                    {% if description %}<twig:ErrorPage:Description>{{ description }}</twig:ErrorPage:Description>{% endif %}
+                {% endblock %}
+                {% if contact %}<twig:ErrorPage:Contact />{% endif %}
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center" aria-hidden="true">
+                <span class="error-code">{{ code }}</span>
+            </div>
+        </div>
+    </div>
+</section>

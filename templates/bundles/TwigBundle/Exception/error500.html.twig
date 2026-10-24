@@ -1,6 +1,24 @@
-{% set title = 'Erreur 500 (Inaccessible)' %}
-{% set code = 500 %}
-{% set message = 'Houston, on a un problème !' %}
-{% set description = 'La page que vous demandez est temporairement inaccessible.' %}
+{% extends 'bundles/TwigBundle/Exception/_server-error.html.twig' %}
 
-{{ include('bundles/TwigBundle/Exception/errorXXX.html.twig', {title: title, code: code, message: message, description: description}) }}
+{% block title 'Erreur du serveur' %}
+
+{% block body %}
+    <twig:ErrorPage code="500" label="Erreur du serveur" icon="lucide:wrench">
+        <twig:ErrorPage:Title>Un imprévu de notre côté</twig:ErrorPage:Title>
+        <twig:ErrorPage:Description>
+            Cette page n'a pas pu s'afficher. L'erreur nous a été signalée et nous la corrigeons au plus vite&nbsp;:
+            réessayez dans un instant, ou cherchez votre sortie autrement.
+        </twig:ErrorPage:Description>
+        <twig:ErrorPage:Search />
+        <twig:ErrorPage:Actions>
+            <a class="btn btn-primary" href="{{ app.request.requestUri }}">
+                <twig:Icon name="lucide:rotate-cw" />
+                Réessayer
+            </a>
+            <a class="btn btn-outline-secondary" href="{{ path('app_index') }}">
+                <twig:Icon name="lucide:home" />
+                Retour à l'accueil
+            </a>
+        </twig:ErrorPage:Actions>
+    </twig:ErrorPage>
+{% endblock %}

@@ -1,6 +1,29 @@
-{% set title = 'Erreur 404 (Introuvable)' %}
-{% set code = 404 %}
-{% set message = 'Oups ! Vous êtes perdu.' %}
-{% set description = 'La page que vous demandez est introuvable.' %}
+{% extends 'bundles/TwigBundle/Exception/_client-error.html.twig' %}
 
-{{ include('bundles/TwigBundle/Exception/errorXXX.html.twig', {title: title, code: code, message: message, description: description}) }}
+{% block title 'Page introuvable' %}
+
+{% block body %}
+    {% set location = app_context.location %}
+    <twig:ErrorPage code="404" label="Page introuvable" icon="lucide:compass">
+        <twig:ErrorPage:Title>Cette page n'existe pas (ou plus)</twig:ErrorPage:Title>
+        <twig:ErrorPage:Description>
+            L'adresse est peut-être mal saisie, ou l'événement a été retiré par son organisateur.
+            Cherchez une sortie, ou repartez de l'agenda{% if location %} {{ location.atName }}{% endif %}.
+        </twig:ErrorPage:Description>
+        <twig:ErrorPage:Search city="{{ location.city.slug ?? null }}" />
+        <twig:ErrorPage:Actions>
+            {% if location %}
+                <a class="btn btn-primary" href="{{ path('app_location_index', {location: location.slug}) }}">
+                    <twig:Icon name="lucide:calendar-days" />
+                    Sortir {{ location.atName }}
+                </a>
+            {% endif %}
+            <a class="btn {{ location ? 'btn-outline-secondary' : 'btn-primary' }}" href="{{ path('app_index') }}">
+                <twig:Icon name="lucide:home" />
+                Retour à l'accueil
+            </a>
+        </twig:ErrorPage:Actions>
+    </twig:ErrorPage>
+
+    {{ include('bundles/TwigBundle/Exception/_lost-links.html.twig') }}
+{% endblock %}

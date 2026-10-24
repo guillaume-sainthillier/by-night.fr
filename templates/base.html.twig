@@ -80,7 +80,10 @@ _______     __  _   _ _____ _____ _    _ _______
     {% block meta_robots '' %}
     {{ llms_txt_link() }}
 
-    <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
+    {# The error pages have no route to point at #}
+    {% block canonical %}
+        <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
+    {% endblock %}
 
     <!-- CSS -->
     {{ reprise_entry_link_tags('app') }}

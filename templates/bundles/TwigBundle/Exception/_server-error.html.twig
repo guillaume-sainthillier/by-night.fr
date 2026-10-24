@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{# The pages of a server error (5xx), which may come from the database, the cache or the search engine: a shell of the
+   site's look that reads none of them, as the header and the footer of base.html.twig do (the city, the countries,
+   the member). Nothing on it may fail, or Symfony shows its bare page instead. No script: the app only boots from
+   base.html.twig #}
+<html lang="fr" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>{% block title '' %} - By Night</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2.0">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2.0">
+    <link rel="shortcut icon" href="/favicon.ico?v=2.0">
+    <meta name="theme-color" content="#d94826">
+
+    {{ reprise_entry_link_tags('app') }}
+</head>
+<body id="page">
+<div class="page">
+    <header class="navbar navbar-expand sticky-top" data-bs-theme="light">
+        <div class="container-lg">
+            <a href="{{ path('app_index') }}" title="By Night&nbsp;: agenda des sorties, concerts et spectacles en France" class="navbar-brand site-brand flex-shrink-0">
+                <img src="{{ asset('build/images/logo-icon.svg') }}" width="40" height="40" alt="">
+                <span class="site-brand-text">
+                    <span class="site-brand-name">By Night</span>
+                    <span class="site-brand-tagline d-none d-sm-block">L'agenda de vos sorties</span>
+                </span>
+            </a>
+            {# The search page and the publication, without the header's search field and menus, which need the app #}
+            <ul class="navbar-nav flex-row align-items-center gap-3 ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_search_index') }}" aria-label="Rechercher">
+                        <twig:Icon name="lucide:search" />
+                        <span class="d-none d-sm-inline ms-1">Rechercher</span>
+                    </a>
+                </li>
+                <li class="nav-item d-none d-md-block">
+                    <a class="btn btn-primary" title="Publiez votre événement gratuitement" href="{{ path('app_personal_space_event_new') }}">
+                        <twig:Icon name="lucide:circle-plus" />
+                        Publier un événement
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="page-wrapper">
+        <main id="main" class="page-main">
+            {% block body '' %}
+        </main>
+        <footer id="footer" class="footer">
+            <div class="container-lg">
+                <div class="row g-4 g-lg-5">
+                    <div class="col-lg-8">
+                        <a href="{{ path('app_index') }}" class="site-brand mb-3" title="By Night&nbsp;: agenda des sorties, concerts et spectacles en France">
+                            <img src="{{ asset('build/images/logo-icon.svg') }}" width="36" height="36" alt="">
+                            <span class="site-brand-name">By Night</span>
+                        </a>
+                        <p class="text-secondary">
+                            L'agenda indépendant de vos concerts, spectacles, expos, marchés et soirées, depuis 2013.
+                        </p>
+                    </div>
+                    <nav class="col-lg-4" aria-labelledby="footer-site">
+                        <div id="footer-site" class="subheader mb-3">By Night</div>
+                        {{ include('fragments/_footer-site-links.html.twig') }}
+                    </nav>
+                </div>
+                {{ include('fragments/_footer-credits.html.twig') }}
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

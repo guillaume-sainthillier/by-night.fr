@@ -1,0 +1,5 @@
+{# The code of an error page and what it means, above its title: <twig:ErrorPage:Code code="404" label="Page introuvable" /> #}
+{% props code, label = null, icon = null %}
+<twig:Section:Eyebrow icon="{{ icon }}" badge="{{ true }}" {{ ...attributes }}>
+    Erreur {{ code }}{% if label %} · {{ label }}{% endif %}
+</twig:Section:Eyebrow>

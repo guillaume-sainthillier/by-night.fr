@@ -1,6 +1,38 @@
-{% set title = 'Erreur 403 (Interdit)' %}
-{% set code = 403 %}
-{% set message = 'Accès interdit.' %}
-{% set description = "L'accès à cette page requiert une autorisation." %}
+{% extends 'bundles/TwigBundle/Exception/_client-error.html.twig' %}
 
-{{ include('bundles/TwigBundle/Exception/errorXXX.html.twig', {title: title, code: code, message: message, description: description}) }}
+{% block title 'Accès refusé' %}
+
+{% block body %}
+    {% set member = is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+    <twig:ErrorPage code="403" label="Accès refusé" icon="lucide:lock">
+        {% if member %}
+            <twig:ErrorPage:Title>Cette page ne vous est pas ouverte</twig:ErrorPage:Title>
+            <twig:ErrorPage:Description>
+                Votre compte n'a pas accès à cette page&nbsp;: elle est réservée à un autre membre, ou à l'équipe de By Night.
+            </twig:ErrorPage:Description>
+        {% else %}
+            <twig:ErrorPage:Title>Cette page est réservée aux membres</twig:ErrorPage:Title>
+            <twig:ErrorPage:Description>
+                Connectez-vous pour y accéder&nbsp;: vous reviendrez ici juste après.
+            </twig:ErrorPage:Description>
+        {% endif %}
+        <twig:ErrorPage:Actions>
+            {% if member %}
+                <a class="btn btn-primary" href="{{ path('app_personal_space_events') }}">
+                    <twig:Icon name="lucide:list-checks" />
+                    Mes événements publiés
+                </a>
+            {% else %}
+                <a class="btn btn-primary" href="{{ path('app_login', {_target_path: app.request.requestUri}) }}">
+                    <twig:Icon name="lucide:log-in" />
+                    Se connecter
+                </a>
+                <a class="btn btn-outline-secondary" href="{{ path('app_register') }}">Créer un compte</a>
+            {% endif %}
+            <a class="btn btn-outline-secondary" href="{{ path('app_index') }}">
+                <twig:Icon name="lucide:home" />
+                Retour à l'accueil
+            </a>
+        </twig:ErrorPage:Actions>
+    </twig:ErrorPage>
+{% endblock %}

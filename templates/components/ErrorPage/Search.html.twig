@@ -1,0 +1,18 @@
+{#
+    The site's search on an error page: by GET to the search page, which only reads the query string. "city" (a slug)
+    puts the events of that city and around first, as the header's search does.
+
+    <twig:ErrorPage:Search city="{{ city.slug }}" />
+#}
+{% props city = null, placeholder = 'Un concert, un lieu, un artiste…' %}
+<form method="get" action="{{ path('app_search_index') }}" role="search" {{ attributes.defaults({class: 'mt-4'}) }}>
+    <label class="visually-hidden" for="error-search">Rechercher une sortie sur By Night</label>
+    {% if city %}<input type="hidden" name="city" value="{{ city }}">{% endif %}
+    <div class="input-group input-group-flat shadow-sm">
+        <span class="input-group-text">
+            <twig:Icon name="lucide:search" />
+        </span>
+        <input type="search" id="error-search" name="q" class="form-control" placeholder="{{ placeholder }}" autocomplete="off" enterkeyhint="search">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+    </div>
+</form>

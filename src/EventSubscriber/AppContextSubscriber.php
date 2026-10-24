@@ -15,6 +15,7 @@ use App\App\CountrySlugs;
 use App\App\LazyLocationFactory;
 use App\App\Location;
 use App\Entity\Country;
+use App\Exception\CityMovedException;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -130,12 +132,38 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
 
     /**
      * What is not found under "/unknown" was deleted: gone tells search engines to forget it sooner than not found.
+     *
+     * The page of a client error (4xx) has the site's header, which names the location of the URL: a slug no city has
+     * ("/nowhere") would fail there again, and the error page with it, and "/unknown" is nowhere. That page takes the
+     * member's city instead.
      */
     public function onKernelException(ExceptionEvent $event): void
     {
-        if ($event->isMainRequest() && $event->getThrowable() instanceof NotFoundHttpException
-            && self::UNKNOWN_LOCATION === $event->getRequest()->attributes->get('location')) {
-            $event->setThrowable(new GoneHttpException($event->getThrowable()->getMessage(), $event->getThrowable()));
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $throwable = $event->getThrowable();
+        $unknownLocation = self::UNKNOWN_LOCATION === $event->getRequest()->attributes->get('location');
+        if ($unknownLocation && $throwable instanceof NotFoundHttpException) {
+            $event->setThrowable($throwable = new GoneHttpException($throwable->getMessage(), $throwable));
+        }
+
+        if (!$throwable instanceof HttpExceptionInterface || $throwable->getStatusCode() >= 500) {
+            return;
+        }
+
+        if ($unknownLocation) {
+            $this->appContext->reset();
+
+            return;
+        }
+
+        try {
+            // Loads the city or the country of the URL, which were only lazy so far
+            $this->appContext->getLocation()?->getName();
+        } catch (NotFoundHttpException|CityMovedException) {
+            $this->appContext->reset();
         }
     }
 }

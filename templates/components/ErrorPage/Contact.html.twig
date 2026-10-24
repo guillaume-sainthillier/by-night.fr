@@ -1,0 +1,7 @@
+{# How to reach us from an error page, under its actions; its content replaces the sentence #}
+<p {{ attributes.defaults({class: 'small text-secondary mt-4 mb-0'}) }}>
+    {% block content %}
+        Un lien cassé, un souci qui dure&nbsp;?
+        <a href="mailto:support@by-night.fr" title="Écrire à l'équipe de By Night">Écrivez-nous</a>, nous regardons au plus vite.
+    {% endblock %}
+</p>

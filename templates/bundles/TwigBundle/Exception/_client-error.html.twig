@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{# The pages of a client error (4xx): the site's own header and footer around them, which read the database as any
+   page does. A server error (5xx) may come from the database: those pages have their own shell, _server-error. Their
+   request is Symfony's copy of the one that failed, without its route: no canonical URL, no breadcrumb #}
+
+{% block meta_robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block canonical '' %}
+{% block breadcrumb_widget '' %}
+{% block layout_top '' %}
+
+{% block layout_body %}
+    {% block body '' %}
+{% endblock %}

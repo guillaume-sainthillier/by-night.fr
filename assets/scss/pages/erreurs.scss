@@ -1,29 +1,15 @@
 @use '../core' as *;
 
-body.error-page {
-    display: flex;
-    padding: 0;
-    background: white;
-}
-
-.box-error {
-    margin-top: 12.5rem;
-    margin-top: 30vh;
-    max-width: 30em;
-    margin-left: auto;
-    margin-right: auto;
-
-    h1 {
-        font-size: 3rem;
-        margin: 0 1.25rem 0 0;
-    }
-
-    h2 {
-        font-size: 1.75rem;
-    }
-
-    p {
-        margin-top: -8px;
-        font-weight: 300;
-    }
+// Error pages (templates/components/ErrorPage): the code drawn large beside the title on a computer, in the gradient
+// of the brand; a picture, hidden from screen readers, which read it in the eyebrow
+.error-code {
+    display: inline-block;
+    font-size: 10rem;
+    font-weight: $font-weight-bold;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, $primary, #f59e0b);
+    background-clip: text;
+    color: transparent;
+    user-select: none;
 }
