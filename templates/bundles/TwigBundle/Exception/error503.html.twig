@@ -1,6 +1,25 @@
-{% set title = 'Erreur 503 (Indisponible)' %}
-{% set code = 503 %}
-{% set message = 'Un instant, on revient !' %}
-{% set description = 'La page que vous demandez est momentanément indisponible. Réessayez dans quelques minutes.' %}
+{% extends 'bundles/TwigBundle/Exception/_server-error.html.twig' %}
 
-{{ include('bundles/TwigBundle/Exception/errorXXX.html.twig', {title: title, code: code, message: message, description: description}) }}
+{% block title 'Service indisponible' %}
+
+{# Maintenance, or the search engine restarting (ElasticsearchUnavailableSubscriber, Retry-After): no search box, the
+   search may well be what is down #}
+{% block body %}
+    <twig:ErrorPage code="503" label="Maintenance" icon="lucide:hourglass">
+        <twig:ErrorPage:Title>By Night fait une courte pause</twig:ErrorPage:Title>
+        <twig:ErrorPage:Description>
+            Le site est en maintenance, ou l'un de nos services redémarre. Tout revient dans quelques minutes&nbsp;:
+            merci de réessayer un peu plus tard.
+        </twig:ErrorPage:Description>
+        <twig:ErrorPage:Actions>
+            <a class="btn btn-primary" href="{{ app.request.requestUri }}">
+                <twig:Icon name="lucide:rotate-cw" />
+                Réessayer
+            </a>
+            <a class="btn btn-outline-secondary" href="{{ path('app_index') }}">
+                <twig:Icon name="lucide:home" />
+                Retour à l'accueil
+            </a>
+        </twig:ErrorPage:Actions>
+    </twig:ErrorPage>
+{% endblock %}

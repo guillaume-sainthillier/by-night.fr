@@ -1,0 +1,46 @@
+{# Where a lost visitor may go on: the agenda of the location of the URL (else of the member's city), its date pages
+   and its universes; without any, the metropolises of the home page #}
+{% set location = app_context.location %}
+{% if location %}
+    {% set tones = ['pink', 'purple', 'blue', 'green', 'yellow'] %}
+    <twig:Section eyebrow="Pour rebondir" icon="lucide:map-pin" title="Envie de sortir {{ location.atName }} ?" description="Les sorties de ce soir, du week-end, ou par univers.">
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            {% for preset in [constant('App\\Enum\\DateRangePreset::Today'), constant('App\\Enum\\DateRangePreset::ThisWeekend')] %}
+                <twig:Chip href="{{ path('app_agenda_by_date', {location: location.slug, dateSlug: preset.pageSlug}) }}" icon="lucide:calendar">Sortir {{ preset.pageLabel }}</twig:Chip>
+            {% endfor %}
+        </div>
+        <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-lg-5">
+            {% for type in enum_cases('App\\Enum\\AgendaType') %}
+                <div class="col">
+                    <twig:Tile
+                        href="{{ path('app_agenda_by_type', {typeSlug: type.slug, location: location.slug}) }}"
+                        title="{{ type.label }}"
+                        icon="{{ type.icon }}"
+                        tone="{{ tones[loop.index0 % tones|length] }}"
+                        meta="Voir l'agenda"
+                    />
+                </div>
+            {% endfor %}
+        </div>
+    </twig:Section>
+{% else %}
+    {% set cities = error_page_cities() %}
+    {% if cities %}
+        {% set tones = ['primary', 'teal', 'yellow', 'blue', 'purple'] %}
+        <twig:Section eyebrow="Pour rebondir" icon="lucide:building-2" title="Sortir par métropole" description="Les grandes villes et leurs agendas.">
+            <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-lg-5">
+                {% for city in cities %}
+                    <div class="col">
+                        <twig:Tile
+                            href="{{ path('app_location_index', {location: city.slug}) }}"
+                            title="{{ city.name }}"
+                            description="{{ city|department }}"
+                            tone="{{ tones[loop.index0 % tones|length] }}"
+                            meta="Voir l'agenda"
+                        />
+                    </div>
+                {% endfor %}
+            </div>
+        </twig:Section>
+    {% endif %}
+{% endif %}

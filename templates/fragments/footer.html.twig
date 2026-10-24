@@ -49,19 +49,7 @@
             </nav>
             <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footer-site">
                 <div id="footer-site" class="subheader mb-3">By Night</div>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a class="link-secondary" title="Publiez votre événement gratuitement" href="{{ path('app_personal_space_event_new') }}">Publier un événement</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Comment publier un événement" href="{{ path('app_plus') }}">Comment ça marche</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="À propos de By Night" href="{{ path('app_about') }}">À propos</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Organisateurs, billetteries et marques : nos formats de partenariat" href="{{ path('app_advertisers') }}">Annonceurs</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Accéder aux mentions légales" href="{{ path('app_legal_mentions') }}">Mentions légales</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Les conditions d'utilisation du compte et des publications" href="{{ path('app_terms') }}">CGU</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Accéder à notre politique de confidentialité" href="{{ path('app_privacy_policy') }}">Confidentialité</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Accéder à notre politique sur les cookies" href="{{ path('app_main_cookie') }}">Cookies</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Comment By Night est financé et classe les événements" href="{{ path('app_transparency') }}">Transparence</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Accepter ou refuser les cookies de mesure d'audience et de publicité" href="{{ path('app_main_cookie') }}" data-cookie-consent>Gérer mes cookies</a></li>
-                    <li class="mb-2"><a class="link-secondary" title="Un problème, une question&nbsp;? Contactez-nous" href="mailto:support@by-night.fr">Contact</a></li>
-                </ul>
+                {{ include('fragments/_footer-site-links.html.twig') }}
             </nav>
         </div>
         <div class="border-top mt-5 pt-4">
@@ -79,15 +67,6 @@
                 <li class="list-inline-item"><a class="link-secondary" title="Comparatif banque" href="https://avis-banque.fr">Comparatif banque</a></li>
             </ul>
         </div>
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top mt-4 pt-4 small text-secondary">
-            <p class="mb-0">
-                <a class="link-secondary" href="{{ path('app_index') }}">By Night v{{ app_version }}</a>
-                · © {{ 'now'|date('Y') }} ARNOVA · Tous droits réservés
-            </p>
-            <p class="mb-0">
-                Fait avec <span title="passion" class="text-primary">♥</span> par un
-                <a class="link-secondary" href="https://sainthillier.fr">développeur Web Freelance à Toulouse</a>
-            </p>
-        </div>
+        {{ include('fragments/_footer-credits.html.twig') }}
     </div>
 </footer>

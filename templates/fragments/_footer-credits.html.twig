@@ -1,0 +1,11 @@
+{# The last line of the footer; only routes and parameters, no query: the server error pages show it too #}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top mt-4 pt-4 small text-secondary">
+    <p class="mb-0">
+        <a class="link-secondary" href="{{ path('app_index') }}">By Night v{{ app_version }}</a>
+        · © {{ 'now'|date('Y') }} ARNOVA · Tous droits réservés
+    </p>
+    <p class="mb-0">
+        Fait avec <span title="passion" class="text-primary">♥</span> par un
+        <a class="link-secondary" href="https://sainthillier.fr">développeur Web Freelance à Toulouse</a>
+    </p>
+</div>
