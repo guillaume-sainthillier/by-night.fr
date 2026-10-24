@@ -22,13 +22,17 @@ use App\Entity\Tag;
 use App\Entity\User;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventTimesheetFactory;
+use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
+use App\Repository\EventRepository;
 use App\SearchRepository\CityElasticaRepository;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
+use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use Elastica\Query;
 use Elastica\Result;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
@@ -107,6 +111,35 @@ final class SearchProviderTest extends AppKernelTestCase
         self::assertStringNotContainsString('Dupont', $json);
     }
 
+    /**
+     * The header search asks on each keystroke, uncached: the sessions (for the next date), venues and cities of the
+     * page's events come in a query each, not in a query per event.
+     */
+    public function testThePagesEventsComeWithTheirSessionsVenuesAndCitiesInAQueryEach(): void
+    {
+        $ids = [];
+        foreach (range(1, 4) as $i) {
+            $event = EventFactory::createOne(['place' => PlaceFactory::createOne(['city' => CityFactory::createOne()])]);
+            EventTimesheetFactory::new()->on('+' . $i . ' days')->create(['event' => $event]);
+            EventTimesheetFactory::new()->on('+' . ($i + 10) . ' days')->create(['event' => $event]);
+            $ids[] = $event->getId();
+        }
+        // A fresh kernel, so nothing comes from the identity map: the events as Elasticsearch's hits load them, by id
+        self::bootKernel();
+        $events = self::getContainer()->get(EventRepository::class)->findBy(['id' => $ids]);
+        $provider = $this->createProvider([Event::class => array_map(self::hit(...), $events)]);
+
+        $queries = self::getContainer()->get('doctrine.debug_data_holder');
+        self::assertInstanceOf(BacktraceDebugDataHolder::class, $queries);
+        $queries->reset();
+
+        $results = iterator_to_array($provider->provide(new GetCollection(paginationItemsPerPage: self::ITEMS_PER_PAGE), context: ['filters' => ['q' => 'jazz']]));
+
+        self::assertCount(4, $results);
+        self::assertNotNull($results[0]->description, 'the next session');
+        self::assertCount(3, $queries->getData()['default'] ?? [], 'the sessions, the venues, the cities');
+    }
+
     public function testAnEmptyQueryFindsNothing(): void
     {
         $provider = $this->createProvider([]);
@@ -151,7 +184,7 @@ final class SearchProviderTest extends AppKernelTestCase
         $repositoryManager = $this->createStub(RepositoryManagerInterface::class);
         $repositoryManager->method('getRepository')->willReturnCallback(static fn (string $indexName): Repository => $repositories[$indexName]);
 
-        return new SearchProvider($repositoryManager, self::getContainer()->get(LazyLocationFactory::class), self::getContainer()->get(UrlGeneratorInterface::class), new Pagination());
+        return new SearchProvider($repositoryManager, self::getContainer()->get(LazyLocationFactory::class), self::getContainer()->get(UrlGeneratorInterface::class), new Pagination(), self::getContainer()->get(EventRepository::class));
     }
 
     /**

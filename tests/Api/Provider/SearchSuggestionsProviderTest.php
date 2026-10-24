@@ -20,11 +20,13 @@ use App\Entity\Tag;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
+use App\Factory\EventTimesheetFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\TagFactory;
 use App\Tests\AppKernelTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
+use Doctrine\Bundle\DoctrineBundle\Middleware\BacktraceDebugDataHolder;
 use IntlDateFormatter;
 
 /**
@@ -100,6 +102,32 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
             ], \array_slice($suggestions, 0, 3));
             self::assertSame(['events', 'Cette semaine en France', 'Soirée électro'], \array_slice($suggestions[3], 0, 3));
         }
+    }
+
+    /**
+     * The panel opens on every page: the sessions of its events (for their next date) come in one query, not in a query
+     * per event.
+     */
+    public function testTheEventsComeWithTheirSessionsInOneQuery(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $place = PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        foreach (range(1, 5) as $i) {
+            EventTimesheetFactory::new()->on('today')->create(['event' => $this->event('Soirée ' . $i, $place, TagFactory::createOne(), 'today', 'today')]);
+        }
+        self::counter()->refresh();
+        // A fresh kernel, so nothing comes from the identity map
+        self::bootKernel();
+
+        $queries = self::getContainer()->get('doctrine.debug_data_holder');
+        self::assertInstanceOf(BacktraceDebugDataHolder::class, $queries);
+        $queries->reset();
+
+        $events = array_values(array_filter($this->suggest('toulouse'), static fn (SearchResult $result): bool => 'events' === $result->type));
+
+        self::assertCount(5, $events);
+        self::assertStringStartsWith(self::day('EEE d MMM'), (string) $events[0]->description, 'the next session');
+        self::assertCount(4, $queries->getData()['default'] ?? [], 'the city, its categories, its events of the week, their sessions');
     }
 
     /**
