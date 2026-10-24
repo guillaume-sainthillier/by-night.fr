@@ -117,6 +117,22 @@ final class PublishersSendNewsCommandTest extends AppKernelTestCase
     }
 
     #[RequiresPhpExtension('mjml')]
+    public function testAnInvalidAddressIsSkippedWithoutTakingAPlace(): void
+    {
+        // A legacy address, as some old social logins stored them
+        $invalid = $this->publisher(new DateTimeImmutable('-1 month'), ['email' => 'First Last@facebook.fr']);
+        $valid = $this->publisher(new DateTimeImmutable('-1 month'));
+
+        $tester = $this->execute(['editions' => ['2026-10'], '--send' => true, '--limit' => 1]);
+
+        $tester->assertCommandIsSuccessful();
+        self::assertStringContainsString('1 member(s) skipped', $tester->getDisplay());
+        self::assertEmailCount(1);
+        self::assertEmailAddressContains(self::getMailerMessage(), 'To', (string) $valid->getEmail());
+        self::assertSame(0, PublisherNewsDeliveryFactory::count(['user' => $invalid->getId()]));
+    }
+
+    #[RequiresPhpExtension('mjml')]
     public function testAPreviewGoesToTheAddressAndRecordsNothing(): void
     {
         $member = $this->publisher(new DateTimeImmutable('-1 month'));

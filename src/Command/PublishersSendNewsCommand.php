@@ -19,6 +19,7 @@ use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 
 /**
  * Sends editions of the publishers' news to their audience (App\Enum\PublisherNewsEdition), in the order given: the
@@ -63,7 +64,7 @@ final readonly class PublishersSendNewsCommand
             $news[] = $edition;
         }
 
-        $budget = null === $limit ? null : max(0, $limit);
+        $limit = null === $limit ? null : max(0, $limit);
         $batches = [];
         foreach ($news as $edition) {
             $ids = $this->sender->findRecipientIds($edition);
@@ -77,11 +78,6 @@ final readonly class PublishersSendNewsCommand
                 continue;
             }
 
-            if (null !== $budget) {
-                $ids = \array_slice($ids, 0, $budget);
-                $budget -= \count($ids);
-            }
-
             if ([] !== $ids) {
                 $batches[] = [$edition, $ids];
             }
@@ -92,23 +88,46 @@ final readonly class PublishersSendNewsCommand
         }
 
         $total = array_sum(array_map(static fn (array $batch): int => \count($batch[1]), $batches));
+        if (null !== $limit) {
+            $total = min($total, $limit);
+        }
+
         if (!$send) {
             $io->success(\sprintf('Dry run: %d e-mail(s) to send. Run again with --send.', $total));
 
             return Command::SUCCESS;
         }
 
+        // The limit counts the e-mails handed to the mail provider: an invalid address (a legacy one, "First
+        // Last@domain") is skipped without taking a place, and skipped again on the next run
         $sent = 0;
         $failures = [];
+        $skipped = [];
+        $io->progressStart($total);
         foreach ($batches as [$edition, $ids]) {
-            foreach ($io->progressIterate($this->sender->loadRecipients($ids), \count($ids)) as $user) {
+            foreach ($this->sender->loadRecipients($ids) as $user) {
+                if (null !== $limit && $sent + \count($failures) >= $limit) {
+                    break 2;
+                }
+
                 try {
                     $this->sender->deliver($edition, $user);
                     ++$sent;
+                    $io->progressAdvance();
+                } catch (RfcComplianceException) {
+                    $skipped[] = [$edition->value, $user->getId(), $user->getEmail()];
                 } catch (TransportExceptionInterface $e) {
                     $failures[] = [$edition->value, $user->getId(), $user->getEmail(), $e->getMessage()];
+                    $io->progressAdvance();
                 }
             }
+        }
+
+        $io->progressFinish();
+
+        if ([] !== $skipped) {
+            $io->note(\sprintf('%d member(s) skipped, their address is invalid.', \count($skipped)));
+            $io->table(['Edition', 'Member', 'E-mail'], $skipped);
         }
 
         if ([] !== $failures) {
