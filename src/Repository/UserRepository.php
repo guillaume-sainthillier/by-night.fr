@@ -74,8 +74,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     /**
      * The members an edition of the publishers' news is for, by id: the owners of a publisher whose account is open
      * and who did not opt out, of the edition's audience (the last login before or after $dormantSince), who have
-     * not had it yet. The addresses that cannot be reached are left out (PublisherNewsAudience::REACHABLE_SINCE,
-     * PLACEHOLDER_EMAIL_DOMAINS).
+     * not had it yet.
      *
      * @return list<int>
      */
@@ -92,16 +91,10 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->setParameter('since', $dormantSince)
             ->orderBy('u.id');
 
-        foreach (PublisherNewsAudience::PLACEHOLDER_EMAIL_DOMAINS as $i => $domain) {
-            $qb->andWhere(\sprintf('u.email NOT LIKE :placeholder%d', $i))->setParameter('placeholder' . $i, '%@' . $domain);
-        }
-
-        match ($edition->getAudience()) {
-            PublisherNewsAudience::Dormant => $qb
-                ->andWhere('u.lastLogin < :since AND u.lastLogin >= :reachableSince')
-                ->setParameter('reachableSince', new DateTimeImmutable(PublisherNewsAudience::REACHABLE_SINCE)),
-            PublisherNewsAudience::Active => $qb->andWhere('u.lastLogin >= :since'),
-        };
+        $qb->andWhere(match ($edition->getAudience()) {
+            PublisherNewsAudience::Dormant => '(u.lastLogin IS NULL OR u.lastLogin < :since)',
+            PublisherNewsAudience::Active => 'u.lastLogin >= :since',
+        });
 
         return array_map(intval(...), $qb->getQuery()->getSingleColumnResult());
     }
