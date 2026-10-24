@@ -1,4 +1,4 @@
-import type { Module } from '@silarhi/app-js'
+import { defineModule } from '@silarhi/app-js'
 import debounce from 'lodash/debounce'
 
 /** How far down the page the button shows, in pixels */
@@ -8,7 +8,7 @@ export const SHOW_AFTER = 200
  * Show the scroll-to-top button once the page is scrolled down, hide it back near the top. Runs once at App.start().
  * The stylesheet hides it until `.is-visible`: shown from the start, it covered the bottom of the first screen.
  */
-const scrollToTop: Module = () => {
+export default defineModule(function scrollToTop() {
     const toTop = document.getElementById('toTop')
 
     if (!toTop) {
@@ -24,6 +24,4 @@ const scrollToTop: Module = () => {
     window.addEventListener('scroll', debounce(update, 100, { leading: true, maxWait: 200 }), { passive: true })
     // A page reloaded halfway down starts scrolled
     update()
-}
-
-export default scrollToTop
+})

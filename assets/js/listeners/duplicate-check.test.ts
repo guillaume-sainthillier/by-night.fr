@@ -7,6 +7,7 @@ import type { App } from '@silarhi/app-js'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import duplicateCheck from '@/js/listeners/duplicate-check'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 import { confirmPublication } from '@/js/utils/duplicates'
 
 vi.mock('@/js/utils/duplicates', () => ({
@@ -35,7 +36,7 @@ const connect = () => {
         },
     }
     const modalManager = {}
-    const cleanup = duplicateCheck.connect(fake<HTMLFormElement>(form), { app: fake<App>({ get: () => modalManager }) })
+    const cleanup = connectListener(duplicateCheck, fake<HTMLFormElement>(form), fake<App>({ get: () => modalManager }))
 
     // The async handler returns a promise that settles once the check has been answered
     const submit = (submitter: Submitter | null = null) => {

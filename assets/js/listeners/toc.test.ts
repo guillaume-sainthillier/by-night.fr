@@ -6,6 +6,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import toc from '@/js/listeners/toc'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 const fakeLink = (id: string, offsetTop: number) => {
     const attributes: Record<string, string> = {}
@@ -73,7 +74,7 @@ describe('toc listener', () => {
     test('marks the first entry before any section reached the line', () => {
         const { element, links } = setUp([400, 900, 1400])
 
-        toc.connect(element)
+        connectListener(toc, element)
 
         expect(current(links)).toBe(0)
     })
@@ -81,7 +82,7 @@ describe('toc listener', () => {
     test('marks the last section whose top went above the line, and follows the scroll', () => {
         const { element, links, listeners, tops } = setUp([-600, 100, 900])
 
-        toc.connect(element)
+        connectListener(toc, element)
         expect(current(links)).toBe(1)
 
         tops.splice(0, 3, -1400, -700, 200)
@@ -94,7 +95,7 @@ describe('toc listener', () => {
     test('stops listening once disconnected', () => {
         const { element, listeners } = setUp([0, 900])
 
-        const cleanup = toc.connect(element)
+        const cleanup = connectListener(toc, element)
         cleanup?.()
 
         expect(listeners.scroll).toBeUndefined()

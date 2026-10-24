@@ -1,9 +1,9 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * Show or hide what was typed in a password field (components/PasswordInput.html.twig).
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-password-reveal]',
     connect(button) {
         const input = button.closest('.input-group')?.querySelector('input')
@@ -31,4 +31,4 @@ export default {
             input.form?.removeEventListener('submit', hide)
         }
     },
-} satisfies Listener<HTMLElement>
+})

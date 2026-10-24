@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import { confirmPublication } from '@/js/utils/duplicates'
 
 /**
@@ -19,7 +19,7 @@ async function publish(url: string): Promise<boolean> {
  * "Publish" button of a draft's preview: publishes the event, then drops the preview notice. When it carries
  * `data-duplicates-href`, it first asks for the events already online the draft likely repeats.
  */
-export default {
+export default defineListener<HTMLButtonElement>({
     selector: 'button[data-publish-href]',
     connect(button, { app }) {
         const onClick = async () => {
@@ -45,4 +45,4 @@ export default {
 
         return () => button.removeEventListener('click', onClick)
     },
-} satisfies Listener<HTMLButtonElement>
+})

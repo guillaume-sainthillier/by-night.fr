@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import { Alert, Modal } from '@tabler/core'
 import $ from 'jquery'
 
@@ -14,7 +14,7 @@ interface FeedbackError {
  * Feedback modal of the personal space layout: validates the message, posts it
  * via AJAX, then closes the modal and the banner that opens it.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '#feedbackModal',
     connect(modalEl, { app }) {
         const modal = Modal.getOrCreateInstance(modalEl)
@@ -90,4 +90,4 @@ export default {
             modalEl.removeEventListener('hidden.bs.modal', onHidden)
         }
     },
-} satisfies Listener<HTMLElement>
+})

@@ -6,6 +6,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import imagePreviews from '@/js/listeners/image-previews'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 // Fancybox is a jQuery plugin with CSS: it cannot load in Node, so the lazy import is mocked
 const { create, lightbox } = vi.hoisted(() => {
@@ -16,7 +17,8 @@ const { create, lightbox } = vi.hoisted(() => {
 vi.mock('@/js/services/ui/FancyboxService', () => ({ create }))
 
 // The listener reads nothing of the element: it only hands it to Fancybox
-const connect = (listener: typeof imagePreviews, element: object = {}) => listener.connect(fake<HTMLElement>(element))
+const connect = (listener: typeof imagePreviews, element: object = {}) =>
+    connectListener(listener, fake<HTMLElement>(element))
 
 describe('image-previews listener', () => {
     beforeEach(() => {

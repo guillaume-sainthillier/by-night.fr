@@ -7,6 +7,7 @@ import type { App } from '@silarhi/app-js'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import like from '@/js/listeners/like'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 // jQuery needs a DOM, which the Node environment lacks: the fake wraps the button's classes, records the handlers
 // bound by namespace and answers $.ajax with the response the test sets
@@ -55,7 +56,7 @@ const connect = ({ intent, active = false }: { intent?: string; active?: boolean
         attributes: {},
     }
     const toastManager = { createToast: vi.fn() }
-    like.connect(fake<HTMLElement>(button), { app: fake<App>({ get: () => toastManager }) })
+    connectListener(like, fake<HTMLElement>(button), fake<App>({ get: () => toastManager }))
 
     return { button, toastManager }
 }

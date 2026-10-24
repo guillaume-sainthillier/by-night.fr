@@ -1,11 +1,11 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * Click-to-load facade of the YouTube players of event descriptions: `HtmlFormatter::deferVideoPlayers()` renders a
  * placeholder carrying the player's youtube-nocookie.com address in `data-video-facade`, and the player only loads,
  * and starts, once the visitor clicks "Lire la vidéo YouTube".
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-video-facade]',
     connect(element) {
         const button = element.querySelector('[data-video-facade-play]')
@@ -30,4 +30,4 @@ export default {
 
         return () => button.removeEventListener('click', onClick)
     },
-} satisfies Listener<HTMLElement>
+})

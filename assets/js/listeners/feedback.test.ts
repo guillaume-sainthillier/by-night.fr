@@ -7,6 +7,7 @@ import type { App } from '@silarhi/app-js'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import feedback from '@/js/listeners/feedback'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 interface AjaxOptions {
     url: string
@@ -104,7 +105,7 @@ const connect = (message: string) => {
         querySelector: (selector: string) => modalParts[selector],
     })
     const toastManager = { createToast: vi.fn() }
-    const cleanup = feedback.connect(fake<HTMLElement>(modalEl), { app: fake<App>({ get: () => toastManager }) })
+    const cleanup = connectListener(feedback, fake<HTMLElement>(modalEl), fake<App>({ get: () => toastManager }))
 
     const submit = () => {
         const event = { preventDefault: vi.fn() }

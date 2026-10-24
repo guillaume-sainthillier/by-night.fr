@@ -6,6 +6,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import citySwitcher from '@/js/listeners/city-switcher'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 const { createAutocomplete } = vi.hoisted(() => ({ createAutocomplete: vi.fn() }))
 
@@ -37,7 +38,7 @@ const connect = () => {
         closest: (selector: string) => (selector === '.dropdown' ? dropdown : null),
         focus: vi.fn(),
     })
-    const cleanup = citySwitcher.connect(fake<HTMLInputElement>(input))
+    const cleanup = connectListener(citySwitcher, fake<HTMLInputElement>(input))
 
     return { input, dropdown, cleanup }
 }

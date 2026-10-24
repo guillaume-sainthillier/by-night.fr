@@ -1,10 +1,10 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import $ from 'jquery'
 
 /**
  * Submit the form designated by `data-target` when the element is clicked.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: 'input[data-target], button[data-target], a[data-target]',
     connect(elem) {
         const onClick = (e: MouseEvent) => {
@@ -22,4 +22,4 @@ export default {
 
         return () => elem.removeEventListener('click', onClick)
     },
-} satisfies Listener<HTMLElement>
+})

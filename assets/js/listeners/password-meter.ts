@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * The rules a password meets, in order. The patterns are PasswordRequirements::RULES, read with the flags the server
@@ -30,7 +30,7 @@ const TONES = ['bg-danger', 'bg-warning', 'bg-success']
  * Fill the strength meter of a new password (form theme block "new_password_row") as the member types: the bar grows
  * with each rule met and each rule gets its check.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-password-meter]',
     connect(meter) {
         const input = document.getElementById(meter.dataset.passwordMeter ?? '')
@@ -71,4 +71,4 @@ export default {
 
         return () => input.removeEventListener('input', update)
     },
-} satisfies Listener<HTMLElement>
+})

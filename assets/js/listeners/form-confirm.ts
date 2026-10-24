@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import $ from 'jquery'
 
 /**
@@ -7,7 +7,7 @@ import $ from 'jquery'
  *
  * Bound through jQuery: form-target.ts submits its target with `$(form).submit()`, which only runs jQuery handlers.
  */
-export default {
+export default defineListener<HTMLFormElement>({
     selector: 'form[data-confirm-message]',
     connect(form, { app }) {
         const $form = $(form)
@@ -32,4 +32,4 @@ export default {
 
         return () => $form.off('.confirm')
     },
-} satisfies Listener<HTMLFormElement>
+})

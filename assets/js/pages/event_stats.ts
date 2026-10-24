@@ -1,4 +1,4 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { formatDay } from '@/js/utils/days'
 
@@ -12,7 +12,7 @@ const inputById = (id: string | undefined): HTMLInputElement | null => {
  * The statistics of an event (personal-space/stats.html.twig): the dates picked show at once, in place of the shortcut
  * of the chips (AudienceQuery::getPreset())
  */
-const initialize: Page = ({ container }) => {
+export default definePage(({ container }) => {
     container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
@@ -30,6 +30,4 @@ const initialize: Page = ({ container }) => {
         })
     })
     return undefined
-}
-
-window.App.registerPage('event_stats', initialize)
+})

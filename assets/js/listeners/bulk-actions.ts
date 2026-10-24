@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import { plural } from '@/js/utils/plural'
 
 /**
@@ -18,7 +18,7 @@ export function selectionLabel(count: number): string {
  *
  * Its "delete" button asks for a confirmation first (`data-confirm-*` on the form, as form-confirm.js).
  */
-export default {
+export default defineListener<HTMLFormElement>({
     selector: 'form[data-bulk-form]',
     connect(form, { app }) {
         const items = () => [...document.querySelectorAll<HTMLInputElement>(`[data-bulk-item][form="${form.id}"]`)]
@@ -90,4 +90,4 @@ export default {
             form.removeEventListener('submit', onSubmit)
         }
     },
-} satisfies Listener<HTMLFormElement>
+})

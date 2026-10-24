@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 const DROPZONE_SELECTOR = '.dropzone'
 const FILE_INPUT_SELECTOR = 'input[type="file"]'
@@ -202,7 +202,7 @@ const handleClick = (e: MouseEvent) => {
  * Dropzone: drag & drop or click-to-pick a single file, of the types its field accepts (images when it says
  * nothing), with a preview: the image, or the file's name and weight.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: DROPZONE_SELECTOR,
     connect(dropzone) {
         const fileInput = dropzone.querySelector(FILE_INPUT_SELECTOR)
@@ -228,4 +228,4 @@ export default {
             }
         }
     },
-} satisfies Listener<HTMLElement>
+})

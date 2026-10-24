@@ -1,8 +1,8 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import $ from 'jquery'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 
-const initialize: Page<{ apiCityURL: string; agendaURL: string }> = ({ apiCityURL, agendaURL }) => {
+export default definePage<{ apiCityURL: string; agendaURL: string }>(({ apiCityURL, agendaURL }) => {
     $('.form-city-picker').each((_index, element) => {
         const form = $(element)
         const btn = form.find('.choose-city-action')
@@ -39,6 +39,4 @@ const initialize: Page<{ apiCityURL: string; agendaURL: string }> = ({ apiCityUR
             },
         })
     })
-}
-
-window.App.registerPage('index', initialize)
+})

@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * The passkey ceremonies of `form.js-webauthn`: on submit, ask the browser for a passkey with the options of
@@ -86,7 +86,7 @@ const MESSAGES: Record<string, string> = {
     InvalidStateError: 'Cette clé d’accès est déjà enregistrée sur votre compte.',
 }
 
-export default {
+export default defineListener<HTMLFormElement>({
     selector: 'form.js-webauthn',
     connect(form) {
         const errorAlert = form.querySelector<HTMLElement>('[data-webauthn-error]')
@@ -147,4 +147,4 @@ export default {
             controller.abort()
         }
     },
-} satisfies Listener<HTMLFormElement>
+})

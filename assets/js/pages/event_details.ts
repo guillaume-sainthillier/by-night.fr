@@ -1,9 +1,9 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import $ from 'jquery'
 import CommentApp from '@/js/components/CommentApp'
 import Widgets from '@/js/components/Widgets'
 
-const initialize: Page = () => {
+export default definePage(() => {
     new Widgets().init()
 
     new CommentApp().init()
@@ -23,6 +23,4 @@ const initialize: Page = () => {
                 .css('border', 0)
                 .appendTo($('#googleMap').empty())
         })
-}
-
-window.App.registerPage('event_details', initialize)
+})

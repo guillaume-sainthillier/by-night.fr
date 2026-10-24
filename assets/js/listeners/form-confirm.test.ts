@@ -7,6 +7,7 @@ import type { App } from '@silarhi/app-js'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import formConfirm from '@/js/listeners/form-confirm'
 import { fake } from '@/js/test/fake'
+import { connectListener } from '@/js/test/listener'
 
 // jQuery needs a DOM, which the Node environment lacks: the fake records the handlers bound by namespace
 const { $, handlers } = vi.hoisted(() => {
@@ -31,7 +32,7 @@ vi.mock('jquery', () => ({ default: $ }))
 const connect = (dataset: Record<string, string>, confirmed: true | undefined) => {
     const form = { dataset, submit: vi.fn() }
     const modalManager = { createConfirm: vi.fn((_params: object) => Promise.resolve(confirmed)) }
-    const cleanup = formConfirm.connect(fake<HTMLFormElement>(form), { app: fake<App>({ get: () => modalManager }) })
+    const cleanup = connectListener(formConfirm, fake<HTMLFormElement>(form), fake<App>({ get: () => modalManager }))
 
     return { form, modalManager, cleanup }
 }

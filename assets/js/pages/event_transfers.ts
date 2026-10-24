@@ -1,4 +1,4 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import { coalesce, followTransfers } from '@/js/utils/transfers'
 
 /**
@@ -6,31 +6,25 @@ import { coalesce, followTransfers } from '@/js/utils/transfers'
  * from `refreshUrl` when the member's channel says a job changed. Without `hub` (a job already done), nothing to
  * follow.
  */
-const initialize: Page<{ hub?: string; refreshUrl?: string; iri?: string | null }> = ({
-    app,
-    container,
-    hub,
-    refreshUrl,
-    iri = null,
-}) => {
-    const target = container.querySelector('[data-transfer-refresh]')
-    if (!hub || !refreshUrl || !target) {
-        return undefined
-    }
-
-    const refresh = coalesce(async () => {
-        const response = await fetch(refreshUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        if (!response.ok) {
-            return
+export default definePage<{ hub?: string; refreshUrl?: string; iri?: string | null }>(
+    ({ app, container, hub, refreshUrl, iri = null }) => {
+        const target = container.querySelector('[data-transfer-refresh]')
+        if (!hub || !refreshUrl || !target) {
+            return undefined
         }
 
-        const html = await response.text()
-        app.unmount(target)
-        target.innerHTML = html
-        app.mount(target)
-    })
+        const refresh = coalesce(async () => {
+            const response = await fetch(refreshUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            if (!response.ok) {
+                return
+            }
 
-    return followTransfers({ hub, iri, onChange: refresh })
-}
+            const html = await response.text()
+            app.unmount(target)
+            target.innerHTML = html
+            app.mount(target)
+        })
 
-window.App.registerPage('event_transfers', initialize)
+        return followTransfers({ hub, iri, onChange: refresh })
+    }
+)

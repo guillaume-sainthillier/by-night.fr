@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import $ from 'jquery'
 
 const options = {
@@ -19,7 +19,7 @@ interface LikeResponse {
  * leads back to the page with that fragment (LoginTargetPath), and the button is clicked once for them, unless the
  * event is already in their outings.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: options.css_selector_like,
     connect(element, { app }) {
         const $element = $(element)
@@ -58,4 +58,4 @@ export default {
 
         return () => $element.off('.like')
     },
-} satisfies Listener<HTMLElement>
+})

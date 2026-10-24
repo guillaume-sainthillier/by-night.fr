@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import type { SweetAlertIcon } from 'sweetalert2'
 import { followTransfers, type TransferState } from '@/js/utils/transfers'
 
@@ -50,7 +50,7 @@ export function transferToast(state: ToastedState): TransferToast | null {
  * an import or an export of theirs is done, whatever their publisher, linking to it. Not on the import / export pages,
  * which show it.
  */
-export default {
+export default defineListener<HTMLElement>({
     selector: '[data-transfer-toasts]',
     connect(element, { app }) {
         if (document.querySelector('[data-transfer-refresh]')) {
@@ -86,4 +86,4 @@ export default {
             },
         })
     },
-} satisfies Listener<HTMLElement>
+})

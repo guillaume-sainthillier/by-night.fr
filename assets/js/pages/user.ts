@@ -1,10 +1,10 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import { Tab } from '@tabler/core'
 import $ from 'jquery'
 import { LucideLoader2Icon } from '@/js/icons'
 
-const initialize: Page = ({ app }) => {
+export default definePage(({ app }) => {
     init()
 
     function init() {
@@ -67,6 +67,4 @@ const initialize: Page = ({ app }) => {
                 })
             })
     }
-}
-
-window.App.registerPage('user', initialize)
+})

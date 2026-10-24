@@ -1,16 +1,16 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import { Tab } from '@tabler/core'
 import SocialLogin from '@/js/components/SocialLogin'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 
-const initialize: Page = () => {
+export default definePage(() => {
     new SocialLogin().init()
 
     initTabs()
     initDeleteConfirmation()
     initAvatarPreview()
     initCityPicker()
-}
+})
 
 // The tabs follow the URL: a link to #password opens that tab (the failed deletion redirects to #delete), and the
 // open tab survives a reload
@@ -99,5 +99,3 @@ function initCityPicker() {
         })
     }
 }
-
-window.App.registerPage('profile', initialize)

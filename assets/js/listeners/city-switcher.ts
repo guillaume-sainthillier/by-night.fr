@@ -1,11 +1,11 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 
 /**
  * The header's city switcher (fragments/header.html.twig): the field of its dropdown suggests the cities as one types,
  * and picking one opens its page, which is its agenda. The autocomplete loads with the first focus, the dropdown
  * focuses the field as it opens.
  */
-export default {
+export default defineListener<HTMLInputElement>({
     selector: 'input[data-city-switcher]',
     connect(input) {
         const { citiesUrl = '', locationUrl = '' } = input.dataset
@@ -42,4 +42,4 @@ export default {
             dropdown?.removeEventListener('shown.bs.dropdown', focus)
         }
     },
-} satisfies Listener<HTMLInputElement>
+})

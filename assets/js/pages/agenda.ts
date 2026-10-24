@@ -1,4 +1,4 @@
-import type { Page } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
 import { Offcanvas } from '@tabler/core'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
@@ -84,11 +84,11 @@ function initSliders(markDirty: () => void, container: ParentNode = document) {
     })
 }
 
-const initialize: Page = () => {
+export default definePage(() => {
     const markDirty = initFiltersBar()
     initDatepickers(markDirty)
     initSliders(markDirty)
-}
+})
 
 /** The hash of a page whose map is open: a link to it opens the map too, and no search engine reads it as a page */
 const MAP_HASH = '#carte'
@@ -97,7 +97,7 @@ const MAP_HASH = '#carte'
  * The map of the events the page lists (location/agenda/_map.html.twig), shown above them on demand. MapLibre and the
  * tiles are only fetched when the visitor opens it.
  */
-const initializeMap: Page<{ events?: MapEvent[] }> = ({ container, events = [] }) => {
+export const agendaMap = definePage<{ events?: MapEvent[] }>(({ container, events = [] }) => {
     const button = container.querySelector<HTMLButtonElement>('[data-map-toggle]')
     const panel = container.querySelector<HTMLElement>('[data-map]')
     const canvas = panel?.querySelector<HTMLElement>('[data-map-canvas]')
@@ -158,7 +158,4 @@ const initializeMap: Page<{ events?: MapEvent[] }> = ({ container, events = [] }
         button.removeEventListener('click', toggle)
         map?.destroy()
     }
-}
-
-window.App.registerPage('agenda', initialize)
-window.App.registerPage('agenda_map', initializeMap)
+})

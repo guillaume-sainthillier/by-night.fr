@@ -1,4 +1,4 @@
-import type { Listener } from '@silarhi/app-js'
+import { defineListener } from '@silarhi/app-js'
 import { confirmPublication, duplicatesSearchBody } from '@/js/utils/duplicates'
 
 /**
@@ -6,7 +6,7 @@ import { confirmPublication, duplicatesSearchBody } from '@/js/utils/duplicates'
  * that this one likely repeats, and let the member confirm. A button carrying `data-skip-duplicates` (the draft one)
  * saves without asking: a draft is not online.
  */
-export default {
+export default defineListener<HTMLFormElement>({
     selector: 'form[data-duplicates-url]',
     connect(form, { app }) {
         let checking = false
@@ -49,4 +49,4 @@ export default {
 
         return () => form.removeEventListener('submit', onSubmit)
     },
-} satisfies Listener<HTMLFormElement>
+})
