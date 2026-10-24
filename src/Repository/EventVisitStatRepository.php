@@ -53,8 +53,9 @@ final class EventVisitStatRepository extends ServiceEntityRepository implements 
     }
 
     /**
-     * Replaces the audience of a day with $stats: a day read again (today, every hour) overwrites what was read before.
-     * The events that no longer exist are left out.
+     * Replaces the audience of a day read from Umami with $stats: a day read again (today, every hour) overwrites what
+     * was read before. The rows read once from Google Analytics stay, nothing else having that history: an event that
+     * has one that day keeps it. The events that no longer exist are left out.
      *
      * @param array<int, array{visitors: int, ticketClicks: int}> $stats by event id
      *
@@ -66,11 +67,15 @@ final class EventVisitStatRepository extends ServiceEntityRepository implements 
         $day = $day->setTime(0, 0);
 
         return $connection->transactional(static function () use ($connection, $day, $stats): int {
-            $connection->executeStatement('DELETE FROM event_visit_stat WHERE day = :day', ['day' => $day], ['day' => Types::DATE_IMMUTABLE]);
+            $connection->executeStatement('DELETE FROM event_visit_stat WHERE day = :day AND from_google_analytics = 0', ['day' => $day], ['day' => Types::DATE_IMMUTABLE]);
 
             $written = 0;
             foreach (array_chunk(array_keys($stats), self::INSERT_BATCH_SIZE) as $ids) {
-                $existing = $connection->fetchFirstColumn('SELECT id FROM event WHERE id IN (:ids)', ['ids' => $ids], ['ids' => ArrayParameterType::INTEGER]);
+                $existing = $connection->fetchFirstColumn(
+                    'SELECT id FROM event WHERE id IN (:ids) AND NOT EXISTS (SELECT 1 FROM event_visit_stat s WHERE s.event_id = event.id AND s.day = :day)',
+                    ['ids' => $ids, 'day' => $day],
+                    ['ids' => ArrayParameterType::INTEGER, 'day' => Types::DATE_IMMUTABLE],
+                );
                 if ([] === $existing) {
                     continue;
                 }
