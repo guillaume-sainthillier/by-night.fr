@@ -151,7 +151,7 @@ final class ImportControllerTest extends AppWebTestCase
         $client->submit($form);
 
         $saved = EventImportFactory::find(['id' => $import->getId()]);
-        self::assertSame([4], $saved->getSkippedRows());
+        self::assertSame(['JAZZ'], $saved->getSkippedReferences());
         self::assertSame(EventImportStatus::Importing, $saved->getStatus());
     }
 

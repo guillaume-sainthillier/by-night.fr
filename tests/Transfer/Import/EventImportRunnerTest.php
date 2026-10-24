@@ -134,21 +134,35 @@ final class EventImportRunnerTest extends AppKernelTestCase
         self::assertSame(1, EventFactory::count(['user' => $this->user]));
     }
 
+    /**
+     * The member ticks a warned event on the check, whose rows are those of their file; the import reads the check's
+     * file of kept rows, without the refused and blank ones, numbered afresh: the event is left out by its reference.
+     */
     public function testTheEventsTheMemberLeftOutAreSkipped(): void
     {
+        $date = DateTimeImmutable::createFromFormat('!d/m/Y', $this->day);
+        $this->lookalikes = [EventFactory::createOne(['name' => 'Soirée blues', 'startDate' => $date, 'endDate' => $date, 'latitude' => 43.6, 'longitude' => 1.44])];
         $import = $this->check(self::HEADER
+            . ";;Sans référence;Une description assez longue.;{$this->day};;;Salle;31000;Toulouse;;;\n"
+            . ";;;;;;;;;;;;\n"
+            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
             . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
-            . "BLUES;;Soirée blues;Une soirée de blues en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
-        $import->setSkippedRows([3]);
+            . "ROCK;;Soirée rock;Une soirée de rock en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+        self::assertSame([[4, 'BLUES']], array_map(static fn (array $warning): array => [$warning['row'], $warning['reference']], $import->getWarnings()));
+
+        // What the warning's box sends
+        $import->setSkippedReferences(['BLUES']);
         save($import);
         self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
 
         self::getContainer()->get(EventImportRunner::class)->run($import);
         refresh($import);
 
-        self::assertSame([1, 1], [$import->getCreatedCount(), $import->getSkippedCount()]);
-        self::assertSame('skipped', $import->getOutcomes()[1]['outcome']);
-        self::assertSame(['JAZZ'], array_map(static fn ($event) => $event->getExternalReference(), EventFactory::findBy(['user' => $this->user])));
+        self::assertSame([2, 1], [$import->getCreatedCount(), $import->getSkippedCount()]);
+        self::assertSame(['BLUES' => 'skipped', 'JAZZ' => 'created', 'ROCK' => 'created'], array_column($import->getOutcomes(), 'outcome', 'reference'));
+        $references = array_map(static fn ($event): ?string => $event->getExternalReference(), EventFactory::findBy(['user' => $this->user]));
+        sort($references);
+        self::assertSame(['JAZZ', 'ROCK'], $references);
     }
 
     public function testAnEventDeletedSinceTheCheckIsNotImported(): void

@@ -77,12 +77,13 @@ final readonly class EventImportRunner
             $local = $this->files->download($import->getSuccessFilePath() ?? throw new InvalidSheetException('Le fichier vérifié manque : vérifiez le fichier à nouveau.'), $format);
             $groups = $this->grouper->group($this->reader->read($local, $format)['rows']);
 
-            // The events the member chose not to import (warned of on the check) come out skipped
-            $skipped = array_flip($import->getSkippedRows());
+            // The events the member chose not to import (warned of on the check) come out skipped, by their reference
+            // as EventRowGrouper tells events apart: their rows here are those of the check's file, numbered afresh
+            $skipped = array_flip(array_map(mb_strtolower(...), $import->getSkippedReferences()));
             foreach (array_chunk($groups, self::CHUNK) as $chunk) {
                 $chunkOutcomes = [];
                 foreach ($chunk as $i => $group) {
-                    if (isset($skipped[$group->first()->number])) {
+                    if (isset($skipped[mb_strtolower($group->reference() ?? '')])) {
                         $chunkOutcomes[] = ['row' => $group->first()->number, 'reference' => $group->reference(), 'id' => null, 'name' => $group->first()->get(EventColumn::Name), 'outcome' => 'skipped'];
                         unset($chunk[$i]);
                     }

@@ -246,9 +246,12 @@
                             {% for problem in list.problems %}
                                 <tr>
                                     {% if list.skippable %}
-                                        {# Joins the import's form above: the event of this row is left out #}
+                                        {# Joins the import's form above: the event is left out by its reference, not its
+                                           row, which the check's file of kept rows numbers afresh #}
                                         <td class="text-center">
-                                            <input class="form-check-input m-0" type="checkbox" name="skip[]" value="{{ problem.row }}" form="import-run-form" aria-label="{{ 'Ne pas importer l’événement de la ligne {row}'|trans({row: problem.row}, 'messages+intl-icu') }}">
+                                            {% if problem.reference is not null %}
+                                                <input class="form-check-input m-0" type="checkbox" name="skip[]" value="{{ problem.reference }}" form="import-run-form" aria-label="{{ 'Ne pas importer l’événement de la ligne {row}'|trans({row: problem.row}, 'messages+intl-icu') }}">
+                                            {% endif %}
                                         </td>
                                     {% endif %}
                                     <td class="text-secondary">{{ problem.row }}</td>

@@ -102,9 +102,12 @@ class EventImport
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     private int $skippedCount = 0;
 
-    /** @var list<int>|null the first rows of the events the member chose not to import */
+    /**
+     * @var list<string>|null the references of the events the member chose not to import: not their rows, which the
+     *                        check's file of kept rows numbers afresh
+     */
     #[ORM\Column(type: Types::JSON, nullable: true)]
-    private ?array $skippedRows = null;
+    private ?array $skippedReferences = null;
 
     /** @var list<RowProblem> */
     #[ORM\Column(type: Types::JSON)]
@@ -295,21 +298,20 @@ class EventImport
     }
 
     /**
-     * @return list<int>
+     * @return list<string>
      */
-    public function getSkippedRows(): array
+    public function getSkippedReferences(): array
     {
-        return $this->skippedRows ?? [];
+        return $this->skippedReferences ?? [];
     }
 
     /**
-     * @param list<int> $rows the first rows of the events not to import
+     * @param list<string> $references the references of the events not to import, as the warnings name them
      */
-    public function setSkippedRows(array $rows): self
+    public function setSkippedReferences(array $references): self
     {
-        $rows = array_values(array_unique(array_filter($rows, static fn (int $row): bool => $row > 1)));
-        sort($rows);
-        $this->skippedRows = [] === $rows ? null : $rows;
+        $references = array_values(array_unique(array_filter(array_map(trim(...), $references), static fn (string $reference): bool => '' !== $reference)));
+        $this->skippedReferences = [] === $references ? null : $references;
 
         return $this;
     }

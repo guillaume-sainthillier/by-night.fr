@@ -160,8 +160,8 @@ final class ImportController extends AbstractTransferController
             // The status moved in the database (a conditional UPDATE): read it back before writing anything else
             $this->getEntityManager()->refresh($import);
             if ($firstRun) {
-                // The warned events the member unticked
-                $import->setSkippedRows(array_map(intval(...), $request->getPayload()->all('skip')));
+                // The warned events the member unticked, by their reference
+                $import->setSkippedReferences(array_values(array_filter($request->getPayload()->all('skip'), is_string(...))));
                 $this->getEntityManager()->flush();
             }
 
