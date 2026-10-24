@@ -32,14 +32,19 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
 /**
  * The second factors of the logged-in member, all opt-in: the recovery codes first, then an authenticator app (TOTP)
  * and/or passkeys. Once one of these is on, each login asks for it (config/packages/scheb_2fa.yaml). Their overview
  * is the "Sécurité" tab of the account (profile/_security.html.twig), where each page here leads back.
+ *
+ * Only after a login in this session: a session a remember-me cookie opened never went through the second factor, and
+ * a stolen cookie would otherwise read new recovery codes or turn the second factor off. It is sent to the login.
  */
 #[Route(path: '/profile/securite')]
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class SecurityController extends AbstractController
 {
     /**

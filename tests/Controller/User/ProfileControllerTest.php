@@ -16,6 +16,7 @@ use App\Factory\PublisherFactory;
 use App\Factory\UserFactory;
 use App\Form\Type\DeleteAccountFormType;
 use App\Tests\AppWebTestCase;
+use App\Tests\Security\LogsInByRememberMe;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -24,6 +25,46 @@ use function Zenstruck\Foundry\Persistence\refresh;
 
 final class ProfileControllerTest extends AppWebTestCase
 {
+    use LogsInByRememberMe;
+
+    public function testAMemberLoggedInCanChangeTheirEmail(): void
+    {
+        $client = self::createClient();
+        $client->loginUser(UserFactory::createOne());
+
+        $client->request('GET', '/profile/edit');
+
+        self::assertSelectorExists('input[name="profile_form[email]"]:not([disabled])');
+        self::assertSelectorNotExists('#profile a[href^="/login"]');
+    }
+
+    /**
+     * The address receives the recovery link of the second factor: a stolen remember-me cookie must not redirect it.
+     * The rest of the profile is still saved
+     */
+    public function testARememberedSessionCannotChangeTheEmail(): void
+    {
+        $client = self::createClient();
+        $member = self::createRememberedMember();
+        $email = $member->getEmail();
+        self::logInByRememberMe($client, $member);
+
+        $crawler = $client->request('GET', '/profile/edit');
+        self::assertSelectorExists('input[name="profile_form[email]"][disabled]');
+        self::assertSelectorExists('#profile a[href="/login?_target_path=/profile/edit"]');
+
+        // The field sent anyway, as a forged request would
+        $form = $crawler->selectButton('Enregistrer les modifications')->form();
+        $values = $form->getPhpValues();
+        $values['profile_form']['email'] = 'intrus@example.com';
+        $values['profile_form']['firstname'] = 'Lou';
+        $client->request('POST', $form->getUri(), $values, $form->getPhpFiles());
+
+        self::assertResponseIsSuccessful();
+        self::assertSame($email, $member->getEmail());
+        self::assertSame('Lou', $member->getFirstname());
+    }
+
     public function testAnInvalidDeletionShowsItsErrorOnTheProfile(): void
     {
         $client = self::createClient();

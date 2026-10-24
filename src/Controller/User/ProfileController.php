@@ -57,6 +57,9 @@ final class ProfileController extends AbstractController
         $user = $this->getAppUser();
         $form = $this->createForm(ProfileFormType::class, $user, [
             'publisher' => null !== $publisherRepository->findOneByOwner($user),
+            // The address receives the recovery link of the second factor: a session a remember-me cookie opened (a
+            // stolen cookie) does not change it, the member logs in again first
+            'email_editable' => $this->isGranted('IS_AUTHENTICATED_FULLY'),
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

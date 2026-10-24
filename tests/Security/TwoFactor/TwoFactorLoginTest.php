@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Factory\UserFactory;
 use App\Factory\WebauthnKeyFactory;
 use App\Tests\AppWebTestCase;
+use App\Tests\Security\LogsInByRememberMe;
 use OTPHP\TOTP;
 use Override;
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorTokenInterface;
@@ -31,6 +32,8 @@ use function Zenstruck\Foundry\Persistence\save;
  */
 final class TwoFactorLoginTest extends AppWebTestCase
 {
+    use LogsInByRememberMe;
+
     private const string PASSWORD = 'mot-de-passe';
 
     private KernelBrowser $client;
@@ -218,6 +221,52 @@ final class TwoFactorLoginTest extends AppWebTestCase
         $this->client->submit($this->form($crawler, 'totp'), ['_auth_code' => '123456']);
 
         self::assertResponseRedirects('/2fa');
+    }
+
+    /**
+     * The remember-me cookie is issued once the second factor is passed, and logs in again once the session is gone
+     */
+    public function testTheRememberMeCookieOfALoginWithItsSecondFactorLogsInAgain(): void
+    {
+        self::logInByRememberMe($this->client, self::createRememberedMember(['googleAuthenticatorSecret' => TOTP::generate()->getSecret()]));
+
+        $this->client->request('GET', '/profile/edit');
+
+        self::assertResponseIsSuccessful();
+    }
+
+    /**
+     * A cookie issued before the second factor was turned on would skip it: the cookies are signed with the secret of
+     * the app (config/packages/security.yaml), it no longer logs in
+     */
+    public function testTurningOnTheAuthenticatorAppInvalidatesTheRememberMeCookies(): void
+    {
+        $member = self::createRememberedMember();
+        self::logInRemembered($this->client, $member);
+
+        // From another session: the one the login rebooted the kernel for no longer holds the member
+        $member = UserFactory::find(['email' => $member->getEmail()]);
+        $member->setGoogleAuthenticatorSecret(TOTP::generate()->getSecret());
+        save($member);
+        self::forgetSession($this->client);
+        $this->client->request('GET', '/profile/edit');
+
+        self::assertResponseRedirects('/login');
+    }
+
+    /**
+     * Signed with the passkeys of the account too
+     */
+    public function testAddingAPasskeyInvalidatesTheRememberMeCookies(): void
+    {
+        $member = self::createRememberedMember();
+        self::logInRemembered($this->client, $member);
+
+        WebauthnKeyFactory::createOne(['user' => $member]);
+        self::forgetSession($this->client);
+        $this->client->request('GET', '/profile/edit');
+
+        self::assertResponseRedirects('/login');
     }
 
     public function testCancellingTheSecondFactorLogsOut(): void
