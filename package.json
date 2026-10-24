@@ -48,7 +48,7 @@
         "postcss": "^8.5.31",
         "postcss-prefix-custom-properties": "^0.1.0",
         "prettier": "^3.9.10",
-        "sass": "1.105.*",
+        "sass": "1.106.*",
         "typescript": "^7.0.2",
         "vite": "^8.3.4",
         "vitest": "^5.0.5"
