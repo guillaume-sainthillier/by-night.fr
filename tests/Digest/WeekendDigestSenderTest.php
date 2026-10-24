@@ -61,10 +61,11 @@ final class WeekendDigestSenderTest extends AppKernelTestCase
         self::assertEmailAddressContains($email, 'To', (string) $user->getEmail());
         self::assertSame("Ce week-end à Toulouse\u{a0}: 3 sorties à ne pas manquer", $email->getSubject());
         self::assertEmailHtmlBodyContains($email, 'Concert 1');
-        self::assertEmailHtmlBodyContains($email, 'utm_source=newsletter');
-        // The city's weekend page itself, not the agenda's shortcut that redirects to it
-        self::assertEmailHtmlBodyContains($email, 'https://by-night.test/toulouse/ce-week-end?utm_source=newsletter');
-        self::assertEmailTextBodyContains($email, 'https://by-night.test/toulouse/ce-week-end?utm_source=newsletter');
+        // The city's weekend page itself, not the agenda's shortcut that redirects to it, tagged with the week sent
+        $week = WeekendDigestSender::weekOf($this->weekend());
+        self::assertEmailHtmlBodyContains($email, 'https://by-night.test/toulouse/ce-week-end?utm_source=weekend-digest');
+        self::assertEmailTextBodyContains($email, 'https://by-night.test/toulouse/ce-week-end?utm_source=weekend-digest&utm_medium=email&utm_campaign=' . $week . '&utm_content=cta');
+        self::assertEmailTextBodyContains($email, 'utm_campaign=' . $week . '&utm_content=event');
         self::assertEmailTextBodyContains($email, 'Concert 3');
 
         $unsubscribeUrl = self::getContainer()->get(WeekendDigestUnsubscribeUrl::class)->generate($user);

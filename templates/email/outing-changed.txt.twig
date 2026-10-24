@@ -9,7 +9,7 @@ Vous avez dit « J'y vais ! » à {{ event.name }}. Depuis, voici ce qui a chang
 - {{ sentence }}
 {% endfor %}
 
-Voir l'événement : {{ eventUrl }}
+Voir l'événement : {{ eventUrl|utm('event') }}
 
 Les informations viennent de l'organisateur ou de l'agenda qui l'annonce : en cas de doute, vérifiez auprès de lui avant de vous déplacer.
 {% endblock %}

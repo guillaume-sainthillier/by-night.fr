@@ -14,7 +14,7 @@
     {% block intro %}{% endblock %}
     <mj-divider />
     {% block features %}{% endblock %}
-    <mj-button href="{{ url('app_personal_space_events') }}">
+    <mj-button href="{{ url('app_personal_space_events')|utm('cta') }}">
         {% block cta 'Voir mon espace organisateur' %}
     </mj-button>
     {% block outro %}{% endblock %}
