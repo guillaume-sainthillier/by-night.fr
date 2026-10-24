@@ -15,12 +15,16 @@ use Override;
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorTokenInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\AuthenticationContextInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Condition\TwoFactorConditionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Asks for the second factor when someone logs in, not when a member already logged in is authenticated again:
  * UserSocialAuthenticator::login() reloads their roles after a network is disconnected, and connecting a network from
  * their account goes through the social login. Their session already passed the second factor.
+ *
+ * Unless a remember-me cookie opened it, which never asks for the second factor: logging in again from it is a login,
+ * the one the pages needing a fresh login (SecurityController) send to.
  */
 final readonly class LoginTwoFactorCondition implements TwoFactorConditionInterface
 {
@@ -33,7 +37,7 @@ final readonly class LoginTwoFactorCondition implements TwoFactorConditionInterf
     {
         // The token of the session, not yet replaced by the one being created
         $current = $this->tokenStorage->getToken();
-        if (null === $current || $current instanceof TwoFactorTokenInterface) {
+        if (null === $current || $current instanceof TwoFactorTokenInterface || $current instanceof RememberMeToken) {
             return true;
         }
 

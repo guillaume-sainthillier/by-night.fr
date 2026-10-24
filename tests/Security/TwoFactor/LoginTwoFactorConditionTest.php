@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorToken;
 use Scheb\TwoFactorBundle\Security\TwoFactor\AuthenticationContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
@@ -64,6 +65,16 @@ final class LoginTwoFactorConditionTest extends TestCase
         $pending = new TwoFactorToken(new PostAuthenticationToken($member, 'main', ['ROLE_USER']), null, 'main', ['google']);
 
         self::assertTrue($this->shouldAsk($pending, $member));
+    }
+
+    /**
+     * A remember-me cookie never asked for the second factor: logging in again from the session it opened is a login
+     */
+    public function testTheMemberARememberMeCookieLoggedInIsAsked(): void
+    {
+        $member = $this->member('membre@example.com');
+
+        self::assertTrue($this->shouldAsk(new RememberMeToken($member, 'main'), $member));
     }
 
     private function shouldAsk(?TokenInterface $current, User $loggingIn): bool

@@ -13,6 +13,7 @@ namespace App\Tests\Controller\User;
 use App\Factory\UserFactory;
 use App\Factory\WebauthnKeyFactory;
 use App\Tests\AppWebTestCase;
+use App\Tests\Security\LogsInByRememberMe;
 use App\Tests\Security\TwoFactor\SoftwarePasskey;
 use OTPHP\TOTP;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -25,6 +26,8 @@ use function Zenstruck\Foundry\Persistence\refresh_all;
  */
 final class SecurityControllerTest extends AppWebTestCase
 {
+    use LogsInByRememberMe;
+
     #[DataProvider('provideSecurityPages')]
     public function testTheSecurityPagesAskAnonymousVisitorsToLogIn(string $url): void
     {
@@ -33,6 +36,103 @@ final class SecurityControllerTest extends AppWebTestCase
         $client->request('GET', $url);
 
         self::assertResponseRedirects('/login');
+    }
+
+    /**
+     * A remember-me cookie never asked for the second factor: a stolen one would read new recovery codes, or set up an
+     * app of the thief's
+     */
+    #[DataProvider('provideSetupPages')]
+    public function testTheSetupPagesAskARememberedSessionToLogInAgain(string $url): void
+    {
+        $client = self::createClient();
+        self::logInByRememberMe($client, self::createRememberedMember(['backupCodes' => ['AAAA-BBBB']]));
+
+        $client->request('GET', '/profile/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#security .alert-info', 'reconnectez-vous');
+
+        $client->request('GET', $url);
+
+        self::assertResponseRedirects('/login');
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideSetupPages(): iterable
+    {
+        yield 'recovery codes' => ['/profile/securite/codes-de-secours'];
+        yield 'authenticator app' => ['/profile/securite/application'];
+        yield 'new passkey' => ['/profile/securite/cles/nouvelle'];
+    }
+
+    /**
+     * The buttons of the "Sécurité" tab, sent with their CSRF token by a session a remember-me cookie opened: nothing
+     * is turned off
+     */
+    public function testARememberedSessionTurnsNoSecondFactorOff(): void
+    {
+        $client = self::createClient();
+        $secret = TOTP::generate()->getSecret();
+        $member = self::createRememberedMember(['googleAuthenticatorSecret' => $secret, 'backupCodes' => ['AAAA-BBBB']]);
+        WebauthnKeyFactory::createOne(['user' => $member, 'name' => 'iPhone']);
+        refresh_all();
+        self::logInByRememberMe($client, $member);
+
+        foreach (['Désactiver', 'Supprimer les codes', 'Supprimer iPhone'] as $button) {
+            $client->request('GET', '/profile/edit');
+            $client->submitForm($button);
+
+            self::assertResponseRedirects('/login');
+        }
+
+        self::assertSame($secret, $member->getGoogleAuthenticatorSecret());
+        self::assertSame(['AAAA-BBBB'], $member->getBackupCodes());
+        WebauthnKeyFactory::assert()->count(1);
+    }
+
+    /**
+     * The login a remembered session is sent to is a whole one, second factor included, then leads to the page
+     */
+    public function testARememberedMemberLogsInAgainWithTheirSecondFactor(): void
+    {
+        $client = self::createClient();
+        $member = self::createRememberedMember([
+            'googleAuthenticatorSecret' => TOTP::generate()->getSecret(),
+            'backupCodes' => ['AAAA-BBBB'],
+        ]);
+        self::logInByRememberMe($client, $member);
+
+        $client->request('GET', '/profile/securite/codes-de-secours');
+        self::assertResponseRedirects('/login');
+        $client->followRedirect();
+        $client->submitForm('Se connecter', ['username' => (string) $member->getEmail(), 'password' => self::REMEMBERED_PASSWORD]);
+        self::assertResponseRedirects('/2fa');
+        self::passTheAuthenticatorApp($client, $member);
+
+        self::assertResponseRedirects('https://by-night.test/profile/securite/codes-de-secours');
+        $client->followRedirect();
+        self::assertResponseIsSuccessful();
+    }
+
+    /**
+     * Disconnecting a network logs the member in again to reload their roles: a session a remember-me cookie opened
+     * stays one, not a session logged in afresh
+     */
+    public function testDisconnectingANetworkKeepsARememberedSessionRemembered(): void
+    {
+        $client = self::createClient();
+        self::logInByRememberMe($client, self::createRememberedMember(['backupCodes' => ['AAAA-BBBB']]));
+        $client->request('GET', '/profile/edit');
+
+        $client->request('POST', '/social/facebook/deconnexion');
+        self::assertResponseIsSuccessful();
+
+        $client->request('GET', '/profile/securite/codes-de-secours');
+        self::assertResponseRedirects('/login');
+        $client->request('GET', '/profile/edit');
+        self::assertResponseIsSuccessful();
     }
 
     /**

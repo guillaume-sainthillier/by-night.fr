@@ -108,6 +108,12 @@
                                             <button type="button" data-href="{{ path('app_send_verification_email') }}" class="btn btn-link btn-sm p-0 align-baseline email-verify">Envoyer l'e-mail de vérification</button>
                                         </div>
                                     {% endif %}
+                                    {% if form.email.vars.disabled %}
+                                        {# Connected by "Se souvenir de moi" only: changing the address takes a login (ProfileController) #}
+                                        <div class="form-text">
+                                            Pour la changer, <a href="{{ path('app_login', {_target_path: path('app_user_edit')}) }}">reconnectez-vous</a>.
+                                        </div>
+                                    {% endif %}
                                     {{ form_errors(form.email) }}
                                 </div>
                             </div>

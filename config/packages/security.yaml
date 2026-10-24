@@ -38,6 +38,9 @@ security:
                 - App\Security\UserFormAuthenticator
             remember_me:
                 secret: '%kernel.secret%'
+                # A cookie no longer logs in once the password or a second factor changes (turned on or off, another
+                # app, a passkey added or removed): the cookies issued before can no longer skip the new one
+                signature_properties: [password, googleAuthenticatorSecret, webauthnKeysFingerprint]
 
             # Nothing slowed down guessing a member's password: 5 logins a minute per account
             # (the "login" rate limiter), counted per account only, see LoginRateLimiter
