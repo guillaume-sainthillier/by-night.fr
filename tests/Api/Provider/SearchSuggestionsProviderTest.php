@@ -25,6 +25,7 @@ use App\Factory\TagFactory;
 use App\Tests\AppKernelTestCase;
 use App\Tests\Stats\CountsUpcomingEvents;
 use DateTimeImmutable;
+use IntlDateFormatter;
 
 /**
  * GET /api/search/suggestions fills the search panel before a word is typed: around the city of the page when it
@@ -53,7 +54,7 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
         self::assertSame([
             ['tags', 'Catégories', 'Concert', '2', null, \sprintf('/toulouse/agenda/tag/%s--%d', $concert->getSlug(), $concert->getId())],
             ['tags', 'Catégories', 'Théâtre', '1', null, \sprintf('/toulouse/agenda/tag/%s--%d', $theatre->getSlug(), $theatre->getId())],
-            ['events', 'Cette semaine à Toulouse', 'Soirée électro', 'Le Bikini', new DateTimeImmutable('today')->format('d/m/Y'), \sprintf('/toulouse/soiree/%s--%d', $tonight->getSlug(), $tonight->getId())],
+            ['events', 'Cette semaine à Toulouse', 'Soirée électro', 'Le Bikini', self::day('EEE d MMM'), \sprintf('/toulouse/soiree/%s--%d', $tonight->getSlug(), $tonight->getId())],
         ], $this->summarize($this->suggest('toulouse')));
     }
 
@@ -76,7 +77,7 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
 
         $events = array_values(array_filter($this->suggest('toulouse'), static fn (SearchResult $result): bool => 'events' === $result->type));
 
-        self::assertSame('Jusqu\'au ' . new DateTimeImmutable('today')->format('d/m/Y'), $events[0]->description);
+        self::assertSame('Jusqu\'au ' . self::day('d MMM'), $events[0]->description);
     }
 
     public function testWithoutACityTheBiggestCitiesOfFranceThenItsTopEventsOfTheWeek(): void
@@ -99,6 +100,14 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
             ], \array_slice($suggestions, 0, 3));
             self::assertSame(['events', 'Cette semaine en France', 'Soirée électro'], \array_slice($suggestions[3], 0, 3));
         }
+    }
+
+    /**
+     * Today as the suggestions write it
+     */
+    private static function day(string $pattern): string
+    {
+        return (string) new IntlDateFormatter('fr_FR', IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, $pattern)->format(new DateTimeImmutable('today'));
     }
 
     private function event(string $name, Place $place, Tag $category, string $start, string $end): Event

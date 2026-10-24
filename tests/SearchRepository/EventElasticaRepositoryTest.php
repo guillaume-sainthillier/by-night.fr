@@ -502,6 +502,11 @@ final class EventElasticaRepositoryTest extends TestCase
 
         $near = $this->headerQuery('orel', new City()->setLatitude(43.60426)->setLongitude(1.44367));
         self::assertArrayHasKey('function_score', $near['query']['bool']['must'][0]);
+        // The events around the city come first, whatever the words weigh
+        self::assertEquals([
+            'filter' => ['geo_distance' => ['place.city.location' => '43.604260,1.443670', 'distance' => '30km']],
+            'weight' => 100.0,
+        ], $near['query']['bool']['must'][0]['function_score']['functions'][2]);
     }
 
     /**

@@ -25,6 +25,7 @@ use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\ResultWindow;
 use App\SearchRepository\TagElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
+use App\Utils\NextSessionLabel;
 use FOS\ElasticaBundle\HybridResult;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use MessageFormatter;
@@ -181,7 +182,7 @@ final readonly class SearchProvider implements ProviderInterface
                 category: 'Événements',
                 label: $event->getName(),
                 shortDescription: $event->getPlace()?->getName() ?? '',
-                description: $event->getStartDate()?->format('d/m/Y'),
+                description: NextSessionLabel::of($event),
                 url: $this->urlGenerator->generate('app_event_details', [
                     'slug' => $event->getSlug(),
                     'id' => $event->getId(),
