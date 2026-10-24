@@ -35,6 +35,7 @@ import otpAutosubmit from '@/js/listeners/otp-autosubmit'
 import passwordMeter from '@/js/listeners/password-meter'
 import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
+import readMore from '@/js/listeners/read-more'
 import share from '@/js/listeners/share'
 import toc from '@/js/listeners/toc'
 import tooltip from '@/js/listeners/tooltip'
@@ -112,6 +113,7 @@ const app = new App({
         passwordMeter,
         passwordReveal,
         popup,
+        readMore,
         share,
         toc,
         tooltip,
