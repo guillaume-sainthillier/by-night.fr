@@ -201,10 +201,10 @@ This is configured in `phpunit.xml.dist` and works automatically.
 
 ### CI/CD Integration
 
-CI is configured via Laminas CI:
+CI runs the tests in the `PHPUnit (base image)` job of `.github/workflows/continuous-integration.yml`:
 
-1. **`.laminas-ci.json`**: Declares `pdo_sqlite` extension requirement
-2. **`.laminas-ci/pre-run.sh`**: Creates database schema before tests (SQLite database file is created automatically)
+1. **`docker/base`**: The runtime base image the suite runs in (`pdo_sqlite`, `ext-mjml`)
+2. **`doctrine:schema:create --env=test`**: Creates database schema before tests (SQLite database file is created automatically)
 3. **`.env.test`**: Configures SQLite database for fast, reliable testing
 4. **DAMA Bundle**: Provides automatic transaction rollback for test isolation
 5. **Messenger**: Uses in-memory transport (no RabbitMQ/AMQP needed in tests)
@@ -280,7 +280,7 @@ mkdir -p var
 chmod -R 777 var
 ```
 
-This is automatically handled by `.laminas-ci/pre-run.sh` in CI.
+CI runs the tests as root in the base image, so it never hits this.
 
 ### Explicit Change Tracking on the Geography
 

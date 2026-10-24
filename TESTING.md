@@ -186,10 +186,10 @@ Before running database tests:
 
 ### How It Works in CI
 
-CI automatically:
+The `PHPUnit (base image)` job of `.github/workflows/continuous-integration.yml`:
 
-- Installs the `pdo_sqlite` extension (via `.laminas-ci.json`)
-- Creates the database schema (via `.laminas-ci/pre-run.sh`)
+- Runs the suite in the runtime base image (`docker/base`), which has `pdo_sqlite` and `ext-mjml`, so the e-mail tests run too
+- Creates the database schema (`doctrine:schema:create --env=test`)
 - Runs all tests including integration tests with full database isolation (via DAMA bundle)
 
 ## Notes
