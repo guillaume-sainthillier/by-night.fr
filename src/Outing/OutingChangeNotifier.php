@@ -31,9 +31,9 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
  * alert is recorded as soon as it left.
  *
  * One alert a day at most per member and event: a change after the day's alert is told by the first run of the next
- * day, in one alert with whatever else changed by then. Members who turned the alerts off, or whose address is
- * refused by the mailer, are told nothing, but what they know follows the event all the same, so that turning them on
- * again does not bring back the changes of the meantime.
+ * day, in one alert with whatever else changed by then. Members who turned the alerts off, or whose address would not
+ * reach them (User::hasDeliverableEmail()) or is refused by the mailer, are told nothing, but what they know follows
+ * the event all the same, so that turning them on again does not bring back the changes of the meantime.
  */
 final readonly class OutingChangeNotifier
 {
@@ -139,6 +139,6 @@ final readonly class OutingChangeNotifier
 
     private function wantsAlerts(User $user): bool
     {
-        return $user->isOutingAlerts() && $user->isEnabled() && null !== $user->getEmail() && '' !== $user->getEmail();
+        return $user->isOutingAlerts() && $user->isEnabled() && $user->hasDeliverableEmail();
     }
 }

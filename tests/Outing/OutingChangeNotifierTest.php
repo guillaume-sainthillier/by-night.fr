@@ -246,6 +246,19 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         self::assertSame('cancelled', UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
     }
 
+    public function testAMemberWhoseAddressWouldNotReachThemHearsNothingButKnowsTheEventAsItIs(): void
+    {
+        [$event, , $outing] = $this->outing(member: UserFactory::createOne(['email' => 'ada@facebook.fr']));
+        $event->setStatus(EventStatus::Cancelled);
+        $this->changed($event);
+
+        $this->runAlerts();
+
+        self::assertEmailCount(0);
+        self::assertSame('cancelled', UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
+        self::assertNull($this->flag($event));
+    }
+
     /**
      * The mailer refuses a legacy address ("First Last@domain"): the run goes on with the next followers, and the
      * event is told all the same, or every run would stop at this follower.

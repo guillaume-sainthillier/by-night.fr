@@ -11,11 +11,15 @@
 namespace App\Tests\Repository;
 
 use App\Entity\User;
+use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Repository\UserRepository;
 use App\Tests\AppKernelTestCase;
+use App\Tests\Entity\UserTest;
+use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 
 final class UserRepositoryTest extends AppKernelTestCase
 {
@@ -55,6 +59,24 @@ final class UserRepositoryTest extends AppKernelTestCase
             [$third->getId(), $second->getId()],
             array_map(static fn (User $user): ?int => $user->getId(), $participants),
         );
+    }
+
+    /**
+     * The recipients' queries keep the members User::hasDeliverableEmail() keeps.
+     */
+    #[DataProviderExternal(UserTest::class, 'provideAddresses')]
+    public function testTheRecipientsAreTheMembersAnEmailMayReach(string $email, ?string $lastLogin, bool $deliverable): void
+    {
+        $member = UserFactory::createOne([
+            'email' => $email,
+            'lastLogin' => null === $lastLogin ? null : new DateTimeImmutable($lastLogin),
+            'city' => CityFactory::toulouse()->create(),
+            'weekendDigest' => true,
+        ]);
+
+        $recipients = self::getContainer()->get(UserRepository::class)->findWeekendDigestRecipientIds('2026-W43');
+
+        self::assertSame($deliverable, \in_array($member->getId(), $recipients, true));
     }
 
     private function loadId(string $identifier): ?int

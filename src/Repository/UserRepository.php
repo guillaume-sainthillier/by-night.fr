@@ -178,17 +178,17 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     /**
-     * The members who asked for the weekend selection and have not been sent the one of this week.
+     * The members who asked for the weekend selection and have not been sent the one of this week, whose address may
+     * reach them.
      *
      * @return list<int>
      */
     public function findWeekendDigestRecipientIds(string $week): array
     {
         /* @var list<int> */
-        return array_map('intval', $this
-            ->createQueryBuilder('u')
+        return array_map('intval', $this->andWhereDeliverableEmail($this->createQueryBuilder('u'))
             ->select('u.id')
-            ->where('u.weekendDigest = true')
+            ->andWhere('u.weekendDigest = true')
             ->andWhere('u.enabled = true')
             ->andWhere('u.city IS NOT NULL')
             ->andWhere('u.weekendDigestSentWeek IS NULL OR u.weekendDigestSentWeek <> :week')
@@ -196,6 +196,22 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
             ->orderBy('u.id')
             ->getQuery()
             ->getSingleColumnResult());
+    }
+
+    /**
+     * Keeps the members of `u` an e-mail may reach: User::hasDeliverableEmail() in a query.
+     */
+    private function andWhereDeliverableEmail(QueryBuilder $qb): QueryBuilder
+    {
+        $qb
+            ->andWhere("u.email <> ''")
+            ->andWhere('u.lastLogin >= :reachableSince')
+            ->setParameter('reachableSince', new DateTimeImmutable(User::REACHABLE_SINCE));
+        foreach (User::UNREACHABLE_EMAIL_DOMAINS as $i => $domain) {
+            $qb->andWhere("u.email NOT LIKE :unreachableDomain$i")->setParameter("unreachableDomain$i", '%@' . $domain);
+        }
+
+        return $qb;
     }
 
     public function getUsersWithInfoQueryBuilder(DateTimeInterface $from): QueryBuilder

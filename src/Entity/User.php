@@ -59,6 +59,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
     final public const string KEY_PREFIX = 'user';
 
+    /** The domains of the addresses made up for the former Twitter and Facebook logins: no mail server behind them */
+    final public const array UNREACHABLE_EMAIL_DOMAINS = ['twitter.fr', 'facebook.fr'];
+
+    /**
+     * The addresses last logged in before that day hard-bounced ten times as often as the later ones (the publishers'
+     * news of 2026-10-24): a login since makes them reachable again.
+     */
+    final public const string REACHABLE_SINCE = '2018-01-01';
+
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue]
@@ -673,6 +682,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         $this->email = $email;
 
         return $this;
+    }
+
+    /**
+     * Whether the e-mails the site sends on its own (the outing alerts, the weekend selection) may reach the member:
+     * not to an address made up for a former social login, nor to one not logged in since REACHABLE_SINCE.
+     * UserRepository::andWhereDeliverableEmail() is the same check in a query. The publishers' news unsubscribed the
+     * same members once instead (Version20261024101431).
+     */
+    public function hasDeliverableEmail(): bool
+    {
+        if (null === $this->email || '' === $this->email) {
+            return false;
+        }
+
+        $domain = mb_strtolower(substr((string) strrchr($this->email, '@'), 1));
+        if (\in_array($domain, self::UNREACHABLE_EMAIL_DOMAINS, true)) {
+            return false;
+        }
+
+        return null !== $this->lastLogin && $this->lastLogin >= new DateTimeImmutable(self::REACHABLE_SINCE);
     }
 
     public function setUsername(?string $username): self

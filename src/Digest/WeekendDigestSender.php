@@ -43,13 +43,13 @@ final readonly class WeekendDigestSender
 
     /**
      * @return bool whether the e-mail was sent: not to a member who gave it up, lost their city or got it already, nor
-     *              when their city has too little that weekend
+     *              to an address it would not reach, nor when their city has too little that weekend
      */
     public function send(User $user, DateRange $weekend): bool
     {
         $week = self::weekOf($weekend);
         $city = $user->getCity();
-        if (!$user->isEnabled() || !$user->isWeekendDigest() || null === $city || $week === $user->getWeekendDigestSentWeek()) {
+        if (!$user->isEnabled() || !$user->isWeekendDigest() || !$user->hasDeliverableEmail() || null === $city || $week === $user->getWeekendDigestSentWeek()) {
             return false;
         }
 
