@@ -1440,6 +1440,51 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The events whose followers are still to hear of a change made by a time (Event::$flaggedForAlertAt), a page at a
+     * time after an id: the events kept flagged by a run are passed over, not read again.
+     *
+     * @return list<int>
+     */
+    public function findIdsFlaggedForAlert(DateTimeImmutable $flaggedBy, int $afterId, int $limit): array
+    {
+        return array_map(intval(...), $this
+            ->createQueryBuilder('e')
+            ->select('e.id')
+            ->where('e.flaggedForAlertAt <= :flaggedBy')
+            ->andWhere('e.id > :afterId')
+            ->setParameter('flaggedBy', $flaggedBy)
+            ->setParameter('afterId', $afterId)
+            ->orderBy('e.id')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getSingleColumnResult());
+    }
+
+    /**
+     * Clears the flag of the events whose followers heard of their change (OutingChangeNotifier), unless it moved past
+     * the time the run read them by: a change made meanwhile is told by the next run.
+     *
+     * @param list<int> $ids
+     */
+    public function clearAlertFlags(array $ids, DateTimeImmutable $flaggedBy): void
+    {
+        if ([] === $ids) {
+            return;
+        }
+
+        $this
+            ->createQueryBuilder('e')
+            ->update()
+            ->set('e.flaggedForAlertAt', 'NULL')
+            ->where('e.id IN (:ids)')
+            ->andWhere('e.flaggedForAlertAt <= :flaggedBy')
+            ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+            ->setParameter('flaggedBy', $flaggedBy)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
      * The cities of a country with the most events to come.
      *
      * @return list<array{0: City, events: int|string}> each city, and its number of events to come

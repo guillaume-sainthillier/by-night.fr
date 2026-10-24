@@ -168,6 +168,21 @@ A daily host cron fails the jobs a worker left halfway and deletes those older t
 docker compose exec -T worker /app/bin/console app:transfers:cleanup -vv
 ```
 
+### Outing alerts
+
+The members going to an event, or keeping it as a favourite, hear by e-mail when its dates, venue or status change. A
+change only flags the event (`event.flagged_for_alert_at`); a host cron tells the changes four times a day, at 8:00,
+12:00, 16:00 and 20:00 (`0 8,12,16,20 * * *`):
+
+```bash
+docker compose exec -T worker /app/bin/console app:outing-alerts:send -vv
+```
+
+A run takes the events flagged at least 15 minutes before, so that an import has settled. Run again, by hand or after a
+crash, it sends nothing twice, and two runs never overlap (a lock in Redis). The e-mails that could not leave are
+listed in its output and tried again by the next run. A member hears of an event once a day at most: a change after
+the day's alert waits for the first run of the next day.
+
 ### Event audience (Umami)
 
 The event pages' visitors and ticketing clicks are shown to their authors (`/espace-perso/{id}/statistiques`). They

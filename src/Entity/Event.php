@@ -58,6 +58,8 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_identity_hash_idx', columns: ['identity_hash'])]
 #[ORM\Index(name: 'event_image_name_idx', columns: ['image_name'])]
 #[ORM\Index(name: 'event_image_system_name_idx', columns: ['image_system_name'])]
+// The events whose followers are still to hear of a change (OutingChangeNotifier::sendFlagged()): a handful at a time
+#[ORM\Index(name: 'event_flagged_for_alert_at_idx', columns: ['flagged_for_alert_at'])]
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: '`event`')]
 #[ORM\HasLifecycleCallbacks]
@@ -258,6 +260,13 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $imageRemovedAt = null;
+
+    /**
+     * When its dates, venue or status last changed, until the members following it have heard of it
+     * (OutingChangeListener sets it, the run of OutingChangeNotifier that tells them clears it).
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $flaggedForAlertAt = null;
 
     /**
      * The member of its family whose picture its page shows, much larger than its own (a CDiscount poster in 2048px
@@ -1499,6 +1508,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function setImageRemovedAt(?DateTimeImmutable $imageRemovedAt): self
     {
         $this->imageRemovedAt = $imageRemovedAt;
+
+        return $this;
+    }
+
+    public function getFlaggedForAlertAt(): ?DateTimeImmutable
+    {
+        return $this->flaggedForAlertAt;
+    }
+
+    public function setFlaggedForAlertAt(?DateTimeImmutable $flaggedForAlertAt): self
+    {
+        $this->flaggedForAlertAt = $flaggedForAlertAt;
 
         return $this;
     }

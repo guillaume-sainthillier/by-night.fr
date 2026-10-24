@@ -11,46 +11,71 @@
 namespace App\Outing;
 
 use App\Entity\User;
+use App\Entity\UserEvent;
 use App\Manager\MailerManager;
-use App\Message\CheckOutingChanges;
+use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Clock\ClockInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 /**
  * Tells the members following events what changed in them since they last heard of it (OutingChanges), by e-mail: a
  * cancellation, a venue or dates that leave out the day they may have chosen. What they know of each event
  * (UserEvent::$knownState) then becomes the event as it is, alert or not, so that the next change is told from there.
  *
- * One alert a day at most per member and event: a change after the day's alert is told the next morning, in one
- * alert with whatever else changed by then. Members who turned the alerts off are told nothing, but what they know
- * follows the event all the same, so that turning them on again does not bring back the changes of the meantime.
+ * The events are those their change flagged (Event::$flaggedForAlertAt, OutingChangeListener), told a few times a day
+ * by app:outing-alerts:send: a run takes the events flagged long enough ago for the change to have settled, then clears
+ * their flag, unless a change came while it ran (told by the next run) or a follower is still to hear of it. Run again,
+ * it sends nothing twice: each alert is recorded as soon as it left.
+ *
+ * One alert a day at most per member and event: a change after the day's alert is told by the first run of the next
+ * day, in one alert with whatever else changed by then. Members who turned the alerts off are told nothing, but what
+ * they know follows the event all the same, so that turning them on again does not bring back the changes of the
+ * meantime.
  */
 final readonly class OutingChangeNotifier
 {
-    /** When the changes held back by the day's alert are told, the next day */
-    private const string NEXT_ALERT = 'tomorrow 09:00';
+    /** How long a change has to settle: an import's batch and its families' flush are long done */
+    private const string SETTLING = '15 minutes';
+
+    /** Events per batch: their followers in one query, the entity manager cleared after */
+    private const int BATCH_SIZE = 500;
 
     public function __construct(
+        private EventRepository $eventRepository,
         private UserEventRepository $userEventRepository,
         private EntityManagerInterface $entityManager,
         private MailerManager $mailerManager,
-        private MessageBusInterface $messageBus,
-        private ClockInterface $clock,
     ) {
+    }
+
+    public function sendFlagged(DateTimeImmutable $now): OutingAlertRun
+    {
+        $flaggedBy = $now->modify('-' . self::SETTLING);
+        $run = new OutingAlertRun();
+        $afterId = 0;
+
+        while ([] !== $eventIds = $this->eventRepository->findIdsFlaggedForAlert($flaggedBy, $afterId, self::BATCH_SIZE)) {
+            $untold = $this->notify($eventIds, $now, $run);
+            $this->eventRepository->clearAlertFlags(array_values(array_diff($eventIds, $untold)), $flaggedBy);
+            $this->entityManager->clear();
+            $afterId = $eventIds[\count($eventIds) - 1];
+        }
+
+        return $run;
     }
 
     /**
      * @param list<int> $eventIds
+     *
+     * @return list<int> the events with a change still to tell: hidden for now, held back until tomorrow, or whose
+     *                   e-mail could not leave
      */
-    public function notify(array $eventIds): void
+    private function notify(array $eventIds, DateTimeImmutable $now, OutingAlertRun $run): array
     {
-        $now = $this->clock->now();
         $today = $now->setTime(0, 0);
-        $heldBack = [];
+        $untold = [];
 
         foreach ($this->userEventRepository->findFollowersOfEvents($eventIds) as $outing) {
             $event = $outing->getEvent();
@@ -59,8 +84,8 @@ final readonly class OutingChangeNotifier
                 continue;
             }
 
-            // Hidden by its author, for now: nothing to tell until it is published again. Hidden because its source
-            // no longer lists it is a change to tell
+            // Hidden by its author, for now: told once published again, which flags it. Hidden because its source no
+            // longer lists it is a change to tell
             if ($event->isDraft() && !$event->isRemovedAtSource()) {
                 continue;
             }
@@ -68,30 +93,41 @@ final readonly class OutingChangeNotifier
             $state = OutingState::fromEvent($event);
             $known = $outing->getKnownState();
             $changes = null === $known ? [] : OutingChanges::between($known, $state, $today);
-            if (null !== $known && [] !== $changes && $this->wantsAlerts($user)) {
-                if (null !== $outing->getAlertedAt() && $outing->getAlertedAt() >= $today) {
-                    $heldBack[(int) $event->getId()] = true;
-
-                    continue;
-                }
-
-                $this->mailerManager->sendOutingChangedEmail($outing, $changes, $known);
-                $outing->setKnownState($state)->setAlertedAt($now);
-                // Sent is sent: a retry of the message after a failed e-mail does not send it again
-                $this->entityManager->flush();
+            if (null === $known || [] === $changes || !$this->wantsAlerts($user)) {
+                $outing->setKnownState($state);
 
                 continue;
             }
 
-            $outing->setKnownState($state);
+            if ($this->heardOfItToday($outing, $today)) {
+                $untold[(int) $event->getId()] = true;
+
+                continue;
+            }
+
+            try {
+                $this->mailerManager->sendOutingChangedEmail($outing, $changes, $known);
+            } catch (TransportExceptionInterface $e) {
+                $run->recordFailure($outing, $e->getMessage());
+                $untold[(int) $event->getId()] = true;
+
+                continue;
+            }
+
+            $outing->setKnownState($state)->setAlertedAt($now);
+            // Sent is sent: a run again after a crash does not send it twice
+            $this->entityManager->flush();
+            $run->recordSent();
         }
 
         $this->entityManager->flush();
 
-        if ([] !== $heldBack) {
-            $delay = $now->modify(self::NEXT_ALERT)->getTimestamp() - $now->getTimestamp();
-            $this->messageBus->dispatch(Envelope::wrap(new CheckOutingChanges(array_keys($heldBack)), [new DelayStamp($delay * 1000)]));
-        }
+        return array_keys($untold);
+    }
+
+    private function heardOfItToday(UserEvent $outing, DateTimeImmutable $today): bool
+    {
+        return null !== $outing->getAlertedAt() && $outing->getAlertedAt() >= $today;
     }
 
     private function wantsAlerts(User $user): bool

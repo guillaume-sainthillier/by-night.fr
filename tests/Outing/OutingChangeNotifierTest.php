@@ -19,28 +19,30 @@ use App\Factory\PlaceFactory;
 use App\Factory\PublisherFactory;
 use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
-use App\Message\CheckOutingChanges;
+use App\Outing\OutingAlertRun;
 use App\Outing\OutingChangeNotifier;
 use App\Outing\OutingState;
+use App\Repository\EventRepository;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
-use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Mime\Email;
 
 use function Zenstruck\Foundry\Persistence\save;
 
 final class OutingChangeNotifierTest extends AppKernelTestCase
 {
+    use ClockSensitiveTrait;
+
     #[RequiresPhpExtension('mjml')]
     public function testAMemberGoingToACancelledEventHearsOfIt(): void
     {
         [$event, $member, $outing] = $this->outing();
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        self::assertSame(1, $this->runAlerts()->getSent());
 
         self::assertEmailCount(1);
         $email = self::getMailerMessage();
@@ -58,6 +60,7 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         $outing = UserEventFactory::find(['id' => $outing->getId()]);
         self::assertSame('cancelled', $outing->getKnownState()?->status);
         self::assertNotNull($outing->getAlertedAt());
+        self::assertNull($this->flag($event), 'told, so no longer flagged');
     }
 
     #[RequiresPhpExtension('mjml')]
@@ -68,9 +71,9 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
             ->setStartDate(new DateTimeImmutable('+20 days'))
             ->setEndDate(new DateTimeImmutable('+20 days'))
             ->setPlace(PlaceFactory::createOne(['name' => 'Le Zénith']));
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(1);
         $email = self::getMailerMessage();
@@ -80,13 +83,87 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         self::assertEmailTextBodyContains($email, "Nouveau lieu\u{a0}: Le Zénith");
     }
 
+    #[RequiresPhpExtension('mjml')]
+    public function testAChangeStillSettlingWaitsForTheNextRun(): void
+    {
+        [$event] = $this->outing();
+        $event->setStatus(EventStatus::Cancelled);
+        save($event);
+
+        $this->runAlerts();
+
+        self::assertEmailCount(0);
+        self::assertNotNull($this->flag($event), 'left to the next run');
+
+        $this->runAlerts('+20 minutes');
+
+        self::assertEmailCount(1);
+    }
+
+    #[RequiresPhpExtension('mjml')]
+    public function testARunAgainSendsNothingTwice(): void
+    {
+        [$event] = $this->outing();
+        $event->setStatus(EventStatus::Cancelled);
+        $this->changed($event);
+
+        $this->runAlerts();
+        $second = $this->runAlerts();
+
+        self::assertSame(0, $second->getSent());
+        self::assertEmailCount(1);
+    }
+
+    #[RequiresPhpExtension('mjml')]
+    public function testAChangeAfterTheDaysAlertIsToldByTheFirstRunOfTheNextDay(): void
+    {
+        [$event, , $outing] = $this->outing();
+        $outing->setAlertedAt(new DateTimeImmutable());
+        save($outing);
+        $event->setStatus(EventStatus::Cancelled);
+        $this->changed($event);
+
+        $this->runAlerts();
+
+        self::assertEmailCount(0);
+        // Still to tell
+        self::assertNull(UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
+        self::assertNotNull($this->flag($event), 'kept flagged for tomorrow');
+
+        $this->runAlerts('tomorrow 08:00');
+
+        self::assertEmailCount(1);
+        self::assertNull($this->flag($event));
+    }
+
+    public function testAChangeMadeWhileTheRunReadTheEventKeepsItsFlag(): void
+    {
+        $event = EventFactory::createOne(['flaggedForAlertAt' => new DateTimeImmutable('2026-10-24 10:05')]);
+
+        // The run read the events flagged by 10:00, then this one changed again at 10:05
+        self::getContainer()->get(EventRepository::class)->clearAlertFlags([(int) $event->getId()], new DateTimeImmutable('2026-10-24 10:00'));
+
+        self::assertEquals(new DateTimeImmutable('2026-10-24 10:05'), $this->flag($event));
+    }
+
+    public function testAnEventNobodyFollowsIsNoLongerFlagged(): void
+    {
+        $event = EventFactory::createOne();
+        $event->setStatus(EventStatus::Cancelled);
+        $this->changed($event);
+
+        $this->runAlerts();
+
+        self::assertNull($this->flag($event));
+    }
+
     public function testNothingChangedSendsNothing(): void
     {
         [$event] = $this->outing();
         $event->setName('Concert du samedi soir');
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
     }
@@ -96,9 +173,9 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         $author = UserFactory::createOne();
         [$event] = $this->outing(member: $author, event: ['user' => $author]);
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
     }
@@ -111,9 +188,9 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         $manager = UserFactory::createOne();
         [$event] = $this->outing(member: $manager, event: ['publisher' => PublisherFactory::createOne(['owner' => $manager])]);
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
     }
@@ -122,9 +199,9 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     {
         [$event, , $outing] = $this->outing(member: UserFactory::createOne(['outingAlerts' => false]));
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
         // Turned on again, the alerts would not tell this cancellation
@@ -135,9 +212,9 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     {
         [$event, , $outing] = $this->outing(known: false);
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
         self::assertSame('cancelled', UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
@@ -147,32 +224,41 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     {
         [$event] = $this->outing(day: '-3 days');
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
     }
 
-    public function testAnEventItsAuthorHidHasNothingToTellYet(): void
+    #[RequiresPhpExtension('mjml')]
+    public function testAnEventItsAuthorHidIsToldOncePublishedAgain(): void
     {
         [$event, , $outing] = $this->outing();
         $event->setDraft(true)->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
-        self::assertNull(UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status, 'told once published again');
+        self::assertNull(UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
+
+        $event = EventFactory::find(['id' => $event->getId()]);
+        $event->setDraft(false);
+        $this->changed($event);
+        $this->runAlerts();
+
+        self::assertEmailCount(1);
+        self::assertSame('cancelled', UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
     }
 
     public function testAMemberTakingBackTheirJyVaisHearsNothing(): void
     {
         [$event] = $this->outing(going: false);
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
     }
@@ -181,36 +267,11 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
     {
         [$event] = $this->outing(event: ['duplicateOf' => EventFactory::createOne()]);
         $event->setStatus(EventStatus::Cancelled);
-        save($event);
+        $this->changed($event);
 
-        $this->notifier()->notify([(int) $event->getId()]);
-
-        self::assertEmailCount(0);
-    }
-
-    public function testAChangeAfterTheDaysAlertIsToldTheNextMorning(): void
-    {
-        [$event, , $outing] = $this->outing();
-        $outing->setAlertedAt(new DateTimeImmutable());
-        save($outing);
-        $event->setStatus(EventStatus::Cancelled);
-        save($event);
-        $transport = self::getContainer()->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $transport);
-        $transport->reset();
-
-        $this->notifier()->notify([(int) $event->getId()]);
+        $this->runAlerts();
 
         self::assertEmailCount(0);
-        // Still to tell
-        self::assertNull(UserEventFactory::find(['id' => $outing->getId()])->getKnownState()?->status);
-        $held = array_values(array_filter($transport->getSent(), static fn ($envelope): bool => $envelope->getMessage() instanceof CheckOutingChanges));
-        self::assertCount(1, $held);
-        $message = $held[0]->getMessage();
-        self::assertInstanceOf(CheckOutingChanges::class, $message);
-        self::assertSame([$event->getId()], $message->eventIds);
-        $delay = (int) $held[0]->last(DelayStamp::class)?->getDelay();
-        self::assertSame(new DateTimeImmutable('tomorrow 09:00')->format('Y-m-d H'), new DateTimeImmutable()->modify(\sprintf('+%d seconds', intdiv($delay, 1000)))->format('Y-m-d H'));
     }
 
     /**
@@ -233,8 +294,23 @@ final class OutingChangeNotifierTest extends AppKernelTestCase
         return [$concert, $member, $outing];
     }
 
-    private function notifier(): OutingChangeNotifier
+    /**
+     * Saves the change as made 20 minutes ago: settled by the time of the next run.
+     */
+    private function changed(Event $event): void
     {
-        return self::getContainer()->get(OutingChangeNotifier::class);
+        self::mockTime('-20 minutes');
+        save($event);
+        self::mockTime(false);
+    }
+
+    private function runAlerts(string $at = 'now'): OutingAlertRun
+    {
+        return self::getContainer()->get(OutingChangeNotifier::class)->sendFlagged(new DateTimeImmutable($at));
+    }
+
+    private function flag(Event $event): ?DateTimeImmutable
+    {
+        return EventFactory::find(['id' => $event->getId()])->getFlaggedForAlertAt();
     }
 }

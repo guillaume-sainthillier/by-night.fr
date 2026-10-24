@@ -13,22 +13,22 @@ namespace App\Tests\Doctrine\EventListener;
 use App\Enum\EventStatus;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
-use App\Message\CheckOutingChanges;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
-use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 use function Zenstruck\Foundry\Persistence\save;
 
 final class OutingChangeListenerTest extends AppKernelTestCase
 {
-    public function testAChangeOfDatesVenueOrStatusIsCheckedOnceSettled(): void
+    use ClockSensitiveTrait;
+
+    public function testAChangeOfDatesVenueOrStatusFlagsTheEvent(): void
     {
         $dated = EventFactory::createOne();
         $moved = EventFactory::createOne();
         $cancelled = EventFactory::createOne();
-        $this->transport()->reset();
+        self::mockTime('2026-10-24 10:00');
 
         $dated->setStartDate(new DateTimeImmutable('+10 days'));
         save($dated);
@@ -37,56 +37,52 @@ final class OutingChangeListenerTest extends AppKernelTestCase
         $cancelled->setStatus(EventStatus::Cancelled);
         save($cancelled);
 
-        self::assertEqualsCanonicalizing([$dated->getId(), $moved->getId(), $cancelled->getId()], $this->checkedEventIds());
-        foreach ($this->transport()->getSent() as $envelope) {
-            if ($envelope->getMessage() instanceof CheckOutingChanges) {
-                self::assertSame(15 * 60 * 1000, $envelope->last(DelayStamp::class)?->getDelay());
-            }
+        foreach ([$dated, $moved, $cancelled] as $event) {
+            self::assertEquals(new DateTimeImmutable('2026-10-24 10:00'), EventFactory::find(['id' => $event->getId()])->getFlaggedForAlertAt());
         }
     }
 
-    public function testAnotherChangeIsNotChecked(): void
+    public function testEachChangeMovesTheFlagToItsTime(): void
     {
         $event = EventFactory::createOne();
-        $this->transport()->reset();
+        self::mockTime('2026-10-24 10:00');
+        $event->setStatus(EventStatus::Postponed);
+        save($event);
+
+        self::mockTime('2026-10-24 10:30');
+        $event->setStatus(EventStatus::Cancelled);
+        save($event);
+
+        self::assertEquals(new DateTimeImmutable('2026-10-24 10:30'), EventFactory::find(['id' => $event->getId()])->getFlaggedForAlertAt());
+    }
+
+    public function testHidingTheEventOrPublishingItAgainFlagsIt(): void
+    {
+        $event = EventFactory::createOne();
+
+        $event->setDraft(true);
+        save($event);
+
+        self::assertNotNull(EventFactory::find(['id' => $event->getId()])->getFlaggedForAlertAt());
+    }
+
+    public function testAnotherChangeFlagsNothing(): void
+    {
+        $event = EventFactory::createOne();
 
         $event->setName('Nouveau nom');
         save($event);
 
-        self::assertSame([], $this->checkedEventIds());
+        self::assertNull(EventFactory::find(['id' => $event->getId()])->getFlaggedForAlertAt());
     }
 
-    public function testADuplicateIsNotChecked(): void
+    public function testADuplicateIsNotFlagged(): void
     {
         $duplicate = EventFactory::createOne(['duplicateOf' => EventFactory::createOne()]);
-        $this->transport()->reset();
 
         $duplicate->setStatus(EventStatus::Cancelled);
         save($duplicate);
 
-        self::assertSame([], $this->checkedEventIds());
-    }
-
-    /**
-     * @return list<int>
-     */
-    private function checkedEventIds(): array
-    {
-        $ids = [];
-        foreach ($this->transport()->getSent() as $envelope) {
-            if ($envelope->getMessage() instanceof CheckOutingChanges) {
-                $ids = [...$ids, ...$envelope->getMessage()->eventIds];
-            }
-        }
-
-        return $ids;
-    }
-
-    private function transport(): InMemoryTransport
-    {
-        $transport = self::getContainer()->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $transport);
-
-        return $transport;
+        self::assertNull(EventFactory::find(['id' => $duplicate->getId()])->getFlaggedForAlertAt());
     }
 }
