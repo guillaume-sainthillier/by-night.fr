@@ -11,6 +11,7 @@ import { App, type ErrorContext } from '@silarhi/app-js'
 import { collectionListener } from '@silarhi/app-js/form'
 // Per-element listeners (connected on every mount)
 import actionBar from '@/js/listeners/action-bar'
+import activeChip from '@/js/listeners/active-chip'
 import bulkActions from '@/js/listeners/bulk-actions'
 import citySwitcher from '@/js/listeners/city-switcher'
 import contentRemovalRequest from '@/js/listeners/content-removal-request'
@@ -87,6 +88,7 @@ const app = new App({
     modules: [autocomplete, scrollToTop, viewTransitions],
     listeners: [
         actionBar,
+        activeChip,
         bulkActions,
         citySwitcher,
         contentRemovalRequest,
