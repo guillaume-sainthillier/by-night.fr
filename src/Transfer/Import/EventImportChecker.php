@@ -108,7 +108,9 @@ final readonly class EventImportChecker
                 return;
             }
 
-            $import->setSuccessFilePath($this->writeRows($import, 'valides', $sheet['headers'], self::sorted($kept), $locals));
+            $kept = self::sorted($kept);
+            $import->setSuccessFilePath($this->writeRows($import, 'valides', $sheet['headers'], $kept, $locals))
+                ->setKeptRows(array_map(static fn (SheetRow $row): int => $row->number, $kept));
             $import->setErrorFilePath([] === $turnedDown ? null : $this->writeErrors($import, $sheet['headers'], $turnedDown, $locals));
             $import->setStatus(EventImportStatus::Checked);
         } catch (InvalidSheetException $e) {

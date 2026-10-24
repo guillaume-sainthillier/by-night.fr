@@ -20,6 +20,7 @@ use App\Repository\EventImportRepository;
 use App\Transfer\Sheet\EventColumn;
 use App\Transfer\Sheet\InvalidSheetException;
 use App\Transfer\Sheet\SheetReader;
+use App\Transfer\Sheet\SheetRow;
 use App\Transfer\TransferFiles;
 use App\Transfer\TransferNotifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -77,10 +78,10 @@ final readonly class EventImportRunner
         try {
             $format = $import->getFormat() ?? throw new InvalidSheetException('Format inconnu.');
             $local = $this->files->download($import->getSuccessFilePath() ?? throw new InvalidSheetException('Le fichier vérifié manque : vérifiez le fichier à nouveau.'), $format);
-            $groups = $this->grouper->group($this->reader->read($local, $format)['rows']);
+            $groups = $this->grouper->group(self::originalRows($this->reader->read($local, $format)['rows'], $import->getKeptRows()));
 
             // The events the member chose not to import (warned of on the check) come out skipped, by their reference
-            // as EventRowGrouper tells events apart: their rows here are those of the check's file, numbered afresh
+            // as EventRowGrouper tells events apart
             $skipped = array_flip(array_map(mb_strtolower(...), $import->getSkippedReferences()));
             foreach (array_chunk($groups, self::CHUNK) as $chunk) {
                 $chunkOutcomes = [];
@@ -115,6 +116,25 @@ final readonly class EventImportRunner
         }
 
         $this->save($import);
+    }
+
+    /**
+     * The rows of the check's file under their rows in the member's file, those the check's errors and warnings name:
+     * the check's file leaves the refused and blank rows out, its own rows drift from the member's after the first.
+     * An import checked before the check kept them, or a file read otherwise, keeps the check's file's rows.
+     *
+     * @param list<SheetRow> $rows
+     * @param list<int>      $keptRows the member's row of each, in order
+     *
+     * @return list<SheetRow>
+     */
+    private static function originalRows(array $rows, array $keptRows): array
+    {
+        if (\count($rows) !== \count($keptRows)) {
+            return $rows;
+        }
+
+        return array_map(static fn (SheetRow $row, int $number): SheetRow => new SheetRow($number, $row->cells, $row->values), $rows, $keptRows);
     }
 
     /**
