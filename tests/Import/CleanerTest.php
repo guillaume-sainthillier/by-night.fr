@@ -216,6 +216,35 @@ final class CleanerTest extends AppKernelTestCase
         ];
     }
 
+    #[DataProvider('placeholderPointsProvider')]
+    public function testAPointInTheGulfOfGuineaIsNoPlace(float $latitude, float $longitude, ?float $expectedLatitude, ?float $expectedLongitude): void
+    {
+        $dto = new EventDto();
+        $dto->startDate = new DateTimeImmutable('2024-01-15');
+        $dto->latitude = $latitude;
+        $dto->longitude = $longitude;
+        $place = new PlaceDto();
+        $place->latitude = $latitude;
+        $place->longitude = $longitude;
+
+        $this->cleaner->cleanEvent($dto);
+        $this->cleaner->cleanPlace($place);
+
+        self::assertSame([$expectedLatitude, $expectedLongitude], [$dto->latitude, $dto->longitude]);
+        self::assertSame([$expectedLatitude, $expectedLongitude], [$place->latitude, $place->longitude]);
+    }
+
+    /**
+     * @return iterable<string, array{float, float, float|null, float|null}>
+     */
+    public static function placeholderPointsProvider(): iterable
+    {
+        yield 'the placeholder of SeeTickets' => [1.0, 1.0, null, null];
+        yield 'a latitude alone at 0' => [0.0, 0.5, null, null];
+        yield 'a venue on the Greenwich meridian' => [44.84, 0.0, 44.84, null];
+        yield 'Toulouse' => [43.604652, 1.444209, 43.604652, 1.444209];
+    }
+
     private function cleanAll(EventDto $dto): void
     {
         // Mirror EventHandler::cleanEvent, the entry point used on both sides of the queue.

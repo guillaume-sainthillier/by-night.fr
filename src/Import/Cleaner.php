@@ -23,6 +23,9 @@ use DateTimeInterface;
 
 final readonly class Cleaner
 {
+    /** Degrees around 0,0 in which no venue lies (cleanCoordinates()) */
+    private const float PLACEHOLDER_SPAN = 1.0;
+
     public function __construct(
         private Util $util,
         private HtmlFormatter $htmlFormatter,
@@ -67,8 +70,7 @@ final readonly class Cleaner
         }));
         $dto->hours = mb_substr($dto->hours ?? '', 0, 255) ?: null;
         $dto->prices = mb_substr($dto->prices ?? '', 0, 255) ?: null;
-        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
-        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
+        [$dto->latitude, $dto->longitude] = $this->cleanCoordinates($dto->latitude, $dto->longitude);
 
         // Clean timesheets
         foreach ($dto->timesheets as $timesheet) {
@@ -242,12 +244,29 @@ final readonly class Cleaner
         return '' === $url || mb_strlen($url) > $length ? null : $url;
     }
 
+    /**
+     * The coordinates, or none: a point within a degree of 0,0 lies in the Gulf of Guinea, where no venue is. Feeds
+     * fill it in for a venue they cannot place: SeeTickets sends 1,1, as Digitick did; 265 events stood there in
+     * 2026-10, their "Itinéraire" leading to the sea.
+     *
+     * @return array{?float, ?float}
+     */
+    private function cleanCoordinates(?float $latitude, ?float $longitude): array
+    {
+        $latitude = (float) $this->util->replaceNonNumericChars($latitude) ?: null;
+        $longitude = (float) $this->util->replaceNonNumericChars($longitude) ?: null;
+        if (abs($latitude ?? 0.0) <= self::PLACEHOLDER_SPAN && abs($longitude ?? 0.0) <= self::PLACEHOLDER_SPAN) {
+            return [null, null];
+        }
+
+        return [$latitude, $longitude];
+    }
+
     public function cleanPlace(PlaceDto $dto): void
     {
         $dto->name = $this->fit($this->cleanNormalString($dto->name ?? ''), 255);
         $dto->street = $this->fit($this->cleanNormalString($dto->street ?? ''), 127);
-        $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
-        $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
+        [$dto->latitude, $dto->longitude] = $this->cleanCoordinates($dto->latitude, $dto->longitude);
     }
 
     public function cleanCity(CityDto $dto): void
