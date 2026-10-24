@@ -356,7 +356,7 @@
                                     <twig:Icon name="lucide:ticket" class="text-primary" />
                                     <div>
                                         <div class="subheader">Tarifs</div>
-                                        <div>{{ event.prices }}</div>
+                                        <div>{{ event.prices|prices_text }}</div>
                                     </div>
                                 </div>
                             {% endif %}

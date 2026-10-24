@@ -74,6 +74,27 @@ final class PriceLabel
     }
 
     /**
+     * The prices as the source wrote them, each amount written as the badges write it: "50.0€" reads "50 €",
+     * "Tarif plein : 12.5€ - Tarif réduit : 8€" reads "Tarif plein : 12,50 € - Tarif réduit : 8 €". An amount with
+     * three decimals is left as typed: "1.500€" is a thousand and a half, not 1,50 €.
+     */
+    public static function formatText(?string $prices): ?string
+    {
+        $prices = trim((string) $prices);
+        if ('' === $prices) {
+            return null;
+        }
+
+        return (string) preg_replace_callback(StartingPrice::AMOUNT_PATTERN, static function (array $match): string {
+            if (1 === preg_match('/[.,]\d{3}$/', $match[1])) {
+                return $match[0];
+            }
+
+            return self::formatAmount((float) str_replace(',', '.', $match[1]));
+        }, $prices);
+    }
+
+    /**
      * "39 €", "27,50 €": the cents only when there are some.
      */
     private static function formatAmount(float $amount): string

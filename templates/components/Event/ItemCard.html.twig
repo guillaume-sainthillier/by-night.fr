@@ -74,7 +74,7 @@
             {% if event.prices %}
                 <div class="detail-item">
                     <twig:Icon name="lucide:ticket" />
-                    <div>{{ event.prices }}</div>
+                    <div>{{ event.prices|prices_text }}</div>
                 </div>
             {% endif %}
             {% if event.publisher %}
