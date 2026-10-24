@@ -416,9 +416,9 @@ final class EventControllerTest extends AppWebTestCase
         self::assertNotNull($duplicate->getId());
         // Umami counts a click on any of them for the event's author (EventVisitSync): the two lists, the two booking
         // buttons and the one of the phone's action bar
-        self::assertSelectorCount(7, 'a[data-umami-event="ticket-click"]');
-        self::assertSelectorExists('a.btn-primary[data-umami-event="ticket-click"][data-umami-event-seller="CDiscount"]');
-        self::assertSelectorExists('.action-bar a.btn-primary[rel="sponsored"][data-umami-event-seller="CDiscount"]');
+        self::assertSelectorCount(7, 'a[data-analytics-event="ticket-click"]');
+        self::assertSelectorExists('a.btn-primary[data-analytics-event="ticket-click"][data-analytics-seller="CDiscount"]');
+        self::assertSelectorExists('.action-bar a.btn-primary[rel="sponsored"][data-analytics-seller="CDiscount"]');
     }
 
     public function testTheAffiliateLinksAreLabelled(): void
