@@ -5,6 +5,7 @@
 @use 'ui/tabler';
 
 //Components
+@use 'components/action-bar';
 @use 'components/avatar';
 @use 'components/icons';
 @use 'components/alert';
@@ -94,8 +95,9 @@ h1 {
     bottom: 2%;
     right: 2%;
     z-index: 100;
-    width: 4rem;
-    height: 4rem;
+    // A thumb's target, no more: it covers the end of the cards and buttons under it
+    width: 2.75rem;
+    height: 2.75rem;
     display: flex;
     justify-content: center;
     align-content: center;
