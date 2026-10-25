@@ -46,7 +46,7 @@
         "doctrine/doctrine-bundle": "^3.3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0.1",
         "doctrine/orm": "^3.7.5",
-        "easycorp/easyadmin-bundle": "^5.7.0",
+        "easycorp/easyadmin-bundle": "^5.8.0",
         "eluceo/ical": "^2.17",
         "erusev/parsedown": "^1.8.0",
         "friendsofsymfony/elastica-bundle": "^7.2",
