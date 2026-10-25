@@ -38,9 +38,7 @@ form {
 // Chrome paints autofilled fields light blue (!important, so no background-color can win) over the input only, not
 // its icons. Delaying the change for a week keeps the field's own background and text colours.
 input:-webkit-autofill {
-    transition:
-        background-color 0s 604800s,
-        color 0s 604800s;
+    transition: background-color 0s 604800s, color 0s 604800s;
 }
 
 .required:after {

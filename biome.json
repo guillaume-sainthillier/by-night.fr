@@ -1,6 +1,6 @@
 {
     "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
-    "files": { "includes": ["assets/**", "!assets/js/icons", "!**/*.scss"] },
+    "files": { "includes": ["assets/**", "!assets/js/icons"] },
     "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
     "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 4, "lineEnding": "lf", "lineWidth": 120 },
     "linter": {
@@ -10,6 +10,12 @@
             "a11y": {
                 "noSvgWithoutTitle": "off",
                 "noLabelWithoutControl": "off"
+            },
+            "complexity": {
+                "noImportantStyles": "off"
+            },
+            "style": {
+                "noDescendingSpecificity": "off"
             },
             "suspicious": {
                 "useIterableCallbackReturn": "off",
@@ -28,5 +34,22 @@
             "bracketSpacing": true,
             "quoteProperties": "asNeeded"
         }
-    }
+    },
+    "css": {
+        "formatter": {
+            "quoteStyle": "single"
+        }
+    },
+    "overrides": [
+        {
+            "includes": ["**/*.scss"],
+            "linter": {
+                "rules": {
+                    "correctness": {
+                        "noUnknownFunction": "off"
+                    }
+                }
+            }
+        }
+    ]
 }

@@ -48,16 +48,11 @@
     overflow: hidden;
     border-radius: 1rem;
     border: 1px solid rgba($card-border-color, 0.6);
-    transition:
-        border-color 0.3s ease,
-        box-shadow 0.3s ease,
-        transform 0.3s ease-out;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease-out;
 
     &:hover {
         border-color: rgba($primary, 0.3);
-        box-shadow:
-            $box-shadow,
-            0 10px 15px -3px rgba($primary, 0.05);
+        box-shadow: $box-shadow, 0 10px 15px -3px rgba($primary, 0.05);
     }
 
     .card-img-container {
