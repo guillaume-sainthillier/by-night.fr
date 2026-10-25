@@ -103,9 +103,7 @@ h1 {
     // Out of sight at the top of the page: scroll-to-top.js shows it once the page is scrolled down
     opacity: 0;
     visibility: hidden;
-    transition:
-        opacity 0.3s,
-        visibility 0.3s;
+    transition: opacity 0.3s, visibility 0.3s;
 
     &.is-visible {
         opacity: 1;

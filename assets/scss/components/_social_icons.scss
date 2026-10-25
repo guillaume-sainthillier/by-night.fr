@@ -12,9 +12,7 @@
     color: gray;
     border: 1px solid lightgray;
     border-radius: $border-radius;
-    transition:
-        color 0.25s ease,
-        background-color 0.5s ease;
+    transition: color 0.25s ease, background-color 0.5s ease;
 
     &:hover {
         text-decoration: none;

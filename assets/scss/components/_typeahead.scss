@@ -31,9 +31,7 @@
             padding: $dropdown-item-padding-y $dropdown-item-padding-x;
             color: $dropdown-link-color;
             cursor: pointer;
-            transition:
-                background-color 0.15s ease-in-out,
-                color 0.15s ease-in-out;
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 
             &:hover,
             &[aria-selected='true'] {
