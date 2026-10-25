@@ -63,7 +63,7 @@
         "prepare": "husky",
         "lint": "biome check --write assets",
         "lint-ci": "biome check assets",
-        "prettier": "prettier --write \"assets/**/*.{md,yaml,yml}\"",
+        "prettier": "prettier --write \"assets/**/*.{md,yaml,yml}\" --no-error-on-unmatched-pattern",
         "format": "pnpm lint && pnpm prettier",
         "test": "vitest run",
         "test:watch": "vitest",
