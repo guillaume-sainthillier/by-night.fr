@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Exception\RedirectException;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -30,6 +31,7 @@ final readonly class UserRedirectManager
      * Get user entity, throwing RedirectException if URL needs correction.
      *
      * @throws RedirectException     when URL needs to be redirected (SEO)
+     * @throws GoneHttpException     when the member's account was deleted
      * @throws NotFoundHttpException when user is not found
      */
     public function getUser(
@@ -47,6 +49,11 @@ final readonly class UserRedirectManager
         }
 
         if (null === $user) {
+            // MySQL never gives an id again: one up to the highest was a member's, whose account is deleted
+            if (null !== $userId && $userId > 0 && $userId <= $this->userRepository->findMaxId()) {
+                throw new GoneHttpException(\sprintf('User with id "%d" was deleted', $userId));
+            }
+
             throw new NotFoundHttpException(null === $userId ? \sprintf('User with username "%s" not found', $userUsername) : \sprintf('User with id "%d" not found', $userId));
         }
 

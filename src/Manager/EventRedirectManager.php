@@ -15,6 +15,7 @@ use App\Exception\RedirectException;
 use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -38,6 +39,7 @@ final readonly class EventRedirectManager
      * exist.
      *
      * @throws RedirectException     when URL needs to be redirected (SEO)
+     * @throws GoneHttpException     when the event was deleted
      * @throws NotFoundHttpException when event is not found
      */
     public function getEvent(
@@ -55,6 +57,12 @@ final readonly class EventRedirectManager
         }
 
         if (null === $event) {
+            // MySQL never gives an id again: one up to the highest was an event's, since deleted (or a row whose
+            // insert was rolled back, which no page ever showed)
+            if (null !== $eventId && $eventId > 0 && $eventId <= $this->eventRepository->findMaxId()) {
+                throw new GoneHttpException(\sprintf('Event with id "%d" was deleted', $eventId));
+            }
+
             throw $this->createNotFoundException($eventId, $eventSlug);
         }
 

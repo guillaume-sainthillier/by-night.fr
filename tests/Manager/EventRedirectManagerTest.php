@@ -21,8 +21,11 @@ use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+
+use function Zenstruck\Foundry\Persistence\delete;
 
 /**
  * An event has one URL: /{city}/soiree/{slug}--{id}. Any other way to reach it is sent there
@@ -160,6 +163,18 @@ final class EventRedirectManagerTest extends AppKernelTestCase
         self::getContainer()->get('security.token_storage')->setToken(new UsernamePasswordToken($author, 'main', $author->getRoles()));
 
         self::assertSame($draft, $this->manager->getVisibleEvent($draft->getId(), $draft->getSlug(), 'toulouse', 'app_widget_next_events'));
+    }
+
+    public function testADeletedEventIsGone(): void
+    {
+        $deleted = $this->createEvent('Concert annulé');
+        $this->createEvent('Concert suivant');
+        $id = (int) $deleted->getId();
+        delete($deleted);
+
+        $this->expectException(GoneHttpException::class);
+
+        $this->manager->getEvent($id, 'concert-annule', 'toulouse', 'app_event_details');
     }
 
     public function testAnUnknownEventIsNotFound(): void
