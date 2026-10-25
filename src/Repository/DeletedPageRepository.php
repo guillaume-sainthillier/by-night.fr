@@ -13,6 +13,7 @@ namespace App\Repository;
 use App\Entity\DeletedPage;
 use App\Enum\DeletedPageKind;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -33,6 +34,29 @@ final class DeletedPageRepository extends ServiceEntityRepository
     public function isDeleted(DeletedPageKind $kind, string $identifier): bool
     {
         return null !== $this->findOneBy(['kind' => $kind, 'identifier' => $identifier]);
+    }
+
+    /**
+     * Those of $identifiers already recorded.
+     *
+     * @param list<string> $identifiers
+     *
+     * @return list<string>
+     */
+    public function findRecordedIdentifiers(DeletedPageKind $kind, array $identifiers): array
+    {
+        if ([] === $identifiers) {
+            return [];
+        }
+
+        return array_map('strval', $this->createQueryBuilder('d')
+            ->select('d.identifier')
+            ->where('d.kind = :kind')
+            ->andWhere('d.identifier IN (:identifiers)')
+            ->setParameter('kind', $kind)
+            ->setParameter('identifiers', $identifiers, ArrayParameterType::STRING)
+            ->getQuery()
+            ->getSingleColumnResult());
     }
 
     /**

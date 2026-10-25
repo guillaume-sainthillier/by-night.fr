@@ -146,7 +146,6 @@ final class UserControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $deleted = UserFactory::createOne(['username' => 'parti']);
-        UserFactory::createOne();
         $path = $this->profilePath($deleted);
         delete($deleted);
 

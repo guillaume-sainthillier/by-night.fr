@@ -16,13 +16,14 @@ use App\Factory\DeletedPageFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\PublisherFactory;
+use App\Factory\UserFactory;
 use App\Tests\AppKernelTestCase;
 
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\flush_after;
 
 /**
- * The publishers and venues deleted leave their page behind, which answers 410 Gone.
+ * The events, members, publishers and venues deleted leave their page behind, which answers 410 Gone.
  */
 final class DeletedPageListenerTest extends AppKernelTestCase
 {
@@ -64,13 +65,41 @@ final class DeletedPageListenerTest extends AppKernelTestCase
         self::assertSame(1, DeletedPageFactory::count(['identifier' => 'toulouse/salle-des-fetes']));
     }
 
-    /**
-     * Events are found by id: an id up to the highest is a deleted one, no record needed.
-     */
-    public function testADeletedEventLeavesNothing(): void
+    public function testADeletedEventLeavesItsId(): void
     {
-        delete(EventFactory::createOne());
+        $event = EventFactory::createOne();
+        $id = (string) $event->getId();
 
-        self::assertSame(0, DeletedPageFactory::count());
+        delete($event);
+
+        self::assertSame(1, DeletedPageFactory::count(['kind' => DeletedPageKind::Event, 'identifier' => $id]));
+    }
+
+    public function testADeletedAccountLeavesItsId(): void
+    {
+        $member = UserFactory::createOne();
+        $id = (string) $member->getId();
+
+        delete($member);
+
+        self::assertSame(1, DeletedPageFactory::count(['kind' => DeletedPageKind::User, 'identifier' => $id]));
+    }
+
+    /**
+     * A cleanup deletes thousands of events in one flush, some of them perhaps recorded already.
+     */
+    public function testTheEventsDeletedInOneFlushAreRecordedOnceEach(): void
+    {
+        [$first, $second] = EventFactory::createMany(2);
+        $ids = [(string) $first->getId(), (string) $second->getId()];
+        DeletedPageFactory::createOne(['kind' => DeletedPageKind::Event, 'identifier' => $ids[0]]);
+
+        flush_after(static function () use ($first, $second): void {
+            delete($first);
+            delete($second);
+        });
+
+        self::assertSame(1, DeletedPageFactory::count(['kind' => DeletedPageKind::Event, 'identifier' => $ids[0]]));
+        self::assertSame(1, DeletedPageFactory::count(['kind' => DeletedPageKind::Event, 'identifier' => $ids[1]]));
     }
 }

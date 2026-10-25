@@ -92,7 +92,6 @@ final class ErrorPageTest extends AppWebTestCase
         $client = self::createClient(['debug' => false]);
         $toulouse = CityFactory::toulouse()->create();
         $deleted = EventFactory::createOne(['place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()])]);
-        EventFactory::createOne();
         $url = \sprintf('/toulouse/soiree/%s--%d', $deleted->getSlug(), $deleted->getId());
         delete($deleted);
 

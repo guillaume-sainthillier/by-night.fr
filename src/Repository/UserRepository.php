@@ -59,18 +59,6 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     /**
-     * Highest id of the table, disabled members included.
-     */
-    public function findMaxId(): int
-    {
-        return (int) $this
-            ->createQueryBuilder('u')
-            ->select('MAX(u.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    /**
      * The members whose account is open: the disabled ones left out.
      */
     public function countEnabled(): int

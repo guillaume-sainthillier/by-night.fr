@@ -168,7 +168,6 @@ final class EventRedirectManagerTest extends AppKernelTestCase
     public function testADeletedEventIsGone(): void
     {
         $deleted = $this->createEvent('Concert annulé');
-        $this->createEvent('Concert suivant');
         $id = (int) $deleted->getId();
         delete($deleted);
 

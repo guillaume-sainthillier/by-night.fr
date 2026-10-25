@@ -11,7 +11,9 @@
 namespace App\Manager;
 
 use App\Entity\User;
+use App\Enum\DeletedPageKind;
 use App\Exception\RedirectException;
+use App\Repository\DeletedPageRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
@@ -24,6 +26,7 @@ final readonly class UserRedirectManager
         private RequestStack $requestStack,
         private UrlGeneratorInterface $router,
         private UserRepository $userRepository,
+        private DeletedPageRepository $deletedPageRepository,
     ) {
     }
 
@@ -49,8 +52,7 @@ final readonly class UserRedirectManager
         }
 
         if (null === $user) {
-            // MySQL never gives an id again: one up to the highest was a member's, whose account is deleted
-            if (null !== $userId && $userId > 0 && $userId <= $this->userRepository->findMaxId()) {
+            if (null !== $userId && $this->deletedPageRepository->isDeleted(DeletedPageKind::User, (string) $userId)) {
                 throw new GoneHttpException(\sprintf('User with id "%d" was deleted', $userId));
             }
 
