@@ -13,6 +13,8 @@ namespace App\Controller\Publisher;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
 use App\Entity\Publisher;
+use App\Enum\DeletedPageKind;
+use App\Repository\DeletedPageRepository;
 use App\Repository\EventRepository;
 use App\Repository\PublisherLegacySlugRepository;
 use App\Repository\PublisherRepository;
@@ -20,6 +22,7 @@ use App\Stats\PublisherProfileProvider;
 use Pagerfanta\PagerfantaInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -32,12 +35,15 @@ final class PublisherController extends BaseController
     public const int EVENTS_PER_PAGE = 6;
 
     #[Route(path: '/{slug<%patterns.slug%>}', name: 'app_publisher_index', methods: ['GET'])]
-    public function index(string $slug, PublisherRepository $publisherRepository, PublisherLegacySlugRepository $legacySlugRepository, EventRepository $eventRepository, PublisherProfileProvider $publisherProfileProvider): Response
+    public function index(string $slug, PublisherRepository $publisherRepository, PublisherLegacySlugRepository $legacySlugRepository, DeletedPageRepository $deletedPageRepository, EventRepository $eventRepository, PublisherProfileProvider $publisherProfileProvider): Response
     {
         $publisher = $publisherRepository->findOneBy(['slug' => $slug]);
         if (null === $publisher) {
-            // A deleted publisher's page leads to the one that took its events
-            $heir = $legacySlugRepository->findPublisherBySlug($slug) ?? throw $this->createNotFoundException(\sprintf('No publisher "%s".', $slug));
+            // A deleted publisher's page leads to the one that took its events, else is gone
+            $heir = $legacySlugRepository->findPublisherBySlug($slug);
+            if (null === $heir) {
+                throw $deletedPageRepository->isDeleted(DeletedPageKind::Publisher, $slug) ? new GoneHttpException(\sprintf('Publisher "%s" was deleted.', $slug)) : $this->createNotFoundException(\sprintf('No publisher "%s".', $slug));
+            }
 
             return $this->redirectToRoute('app_publisher_index', ['slug' => $heir->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }

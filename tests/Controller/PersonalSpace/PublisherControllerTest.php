@@ -262,7 +262,7 @@ final class PublisherControllerTest extends AppWebTestCase
         self::assertSame(0, EventFactory::count(['id' => $event->getId()]));
 
         $client->request('GET', '/organisateurs/le-ramier');
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(410);
     }
 
     public function testAPageIsKeptWhenItsNameIsMistyped(): void

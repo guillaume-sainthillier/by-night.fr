@@ -18,7 +18,9 @@ use App\Factory\PublisherFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
+use Symfony\Component\HttpFoundation\Response;
 
+use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\save;
 
 final class PublisherControllerTest extends AppWebTestCase
@@ -108,6 +110,16 @@ final class PublisherControllerTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]');
+    }
+
+    public function testADeletedPublisherIsGone(): void
+    {
+        $client = self::createClient();
+        delete(PublisherFactory::createOne(['slug' => 'le-collectif']));
+
+        $client->request('GET', '/organisateurs/le-collectif');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_GONE);
     }
 
     public function testAnUnknownPublisherIsNotFound(): void
