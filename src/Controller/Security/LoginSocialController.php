@@ -31,6 +31,13 @@ final class LoginSocialController extends AbstractController
     #[Route(path: '/{service<%patterns.social%>}', name: 'login_social_start', methods: ['GET', 'POST'])]
     public function connect(string $service, Request $request, ClientRegistry $clientRegistry, LoginTargetPath $loginTargetPath): Response
     {
+        // Connecting a network from the account takes a login of this session: a member a remember-me cookie logged in
+        // goes through the login first, then back here. The network would otherwise log them in to the account of its
+        // own address (UserSocialAuthenticator)
+        if ($this->isGranted('IS_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
+        }
+
         // The login dialog of a page names it: the network leads back to it once the member is logged in
         $loginTargetPath->saveFromQuery($request);
 

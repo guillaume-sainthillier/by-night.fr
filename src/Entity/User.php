@@ -912,6 +912,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     }
 
     /**
+     * Which passkeys the account has, signed into its remember-me cookies (config/packages/security.yaml): adding or
+     * removing one invalidates them. Their UUIDs, not their signature counters, which change on every use
+     */
+    public function getWebauthnKeysFingerprint(): string
+    {
+        $uuids = $this->webauthnKeys->map(static fn (WebauthnKey $key): string => $key->getUuid()->toString())->toArray();
+        sort($uuids);
+
+        return implode(',', $uuids);
+    }
+
+    /**
      * The account the passkeys are bound to: its handle is the id, never the e-mail, which can change
      */
     public function getWebauthnUser(): PublicKeyCredentialUserEntity

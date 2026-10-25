@@ -35,6 +35,7 @@ final class ProfileFormType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Adresse e-mail',
+                'disabled' => !$options['email_editable'],
             ])
             ->add('firstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])
@@ -109,7 +110,9 @@ final class ProfileFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'publisher' => false,
+            'email_editable' => true,
         ]);
         $resolver->setAllowedTypes('publisher', 'bool');
+        $resolver->setAllowedTypes('email_editable', 'bool');
     }
 }

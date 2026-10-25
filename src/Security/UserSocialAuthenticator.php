@@ -88,8 +88,10 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                     throw new CustomUserMessageAuthenticationException('La connexion a échoué, le réseau social n\'a pas transmis votre profil. Réessayez plus tard ou utilisez un autre moyen de connexion.', [], 0, $e);
                 }
 
-                // In case of adding new socials in profile
-                if (null !== $this->security->getUser()) {
+                // In case of adding new socials in profile: only to a member fully logged in. Not to one whose second
+                // factor is still to come (the password alone would link someone else's network to the account) nor
+                // to one a remember-me cookie logged in (a stolen cookie would), LoginSocialController logs them in first
+                if ($this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
                     /** @var User $existingUser */
                     $existingUser = $this->security->getUser();
                 } else {

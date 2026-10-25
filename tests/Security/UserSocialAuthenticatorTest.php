@@ -31,6 +31,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
@@ -142,6 +145,57 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
 
         self::assertInstanceOf(RedirectResponse::class, $response);
         self::assertSame('/2fa', $response->getTargetUrl());
+    }
+
+    /**
+     * Connecting a network from the account links it to the member logged in, whatever its address
+     */
+    public function testAMemberLoggedInConnectsTheNetworkToTheirAccount(): void
+    {
+        $member = UserFactory::createOne(['email' => 'lou@example.com', 'verified' => true]);
+        $this->setCurrentToken(new PostAuthenticationToken($member, 'main', ['ROLE_USER']));
+
+        $user = $this->signIn(['sub' => 'google-7', 'name' => 'Lou', 'email' => 'lou.perso@example.com']);
+
+        self::assertSame($member->getId(), $user->getId());
+        self::assertSame('google-7', $member->getOAuth()?->getGoogleId());
+    }
+
+    /**
+     * Only the password of the account was given, its second factor is still to come: whoever knows the password only
+     * would link their own network to it, then log in with it
+     */
+    public function testALoginWaitingForItsSecondFactorLinksNoNetwork(): void
+    {
+        $member = UserFactory::createOne(['email' => 'lou@example.com', 'verified' => true, 'googleAuthenticatorSecret' => 'SECRET']);
+        $this->setCurrentToken(new TwoFactorToken(new PostAuthenticationToken($member, 'main', ['ROLE_USER']), null, 'main', ['google']));
+
+        $user = $this->signIn(['sub' => 'google-8', 'name' => 'Intrus', 'email' => 'intrus@example.com']);
+
+        self::assertNotSame($member->getId(), $user->getId());
+        self::assertNull($member->getOAuth()?->getGoogleId());
+    }
+
+    /**
+     * A remember-me cookie never asked for the second factor: a stolen one links no network either
+     */
+    public function testARememberedSessionLinksNoNetwork(): void
+    {
+        $member = UserFactory::createOne(['email' => 'lou@example.com', 'verified' => true]);
+        $this->setCurrentToken(new RememberMeToken($member, 'main'));
+
+        $user = $this->signIn(['sub' => 'google-9', 'name' => 'Intrus', 'email' => 'intrus@example.com']);
+
+        self::assertNotSame($member->getId(), $user->getId());
+        self::assertNull($member->getOAuth()?->getGoogleId());
+    }
+
+    /**
+     * The session the network signs in over, before the authenticator replaces its token
+     */
+    private function setCurrentToken(TokenInterface $token): void
+    {
+        self::getContainer()->get(TokenStorageInterface::class)->setToken($token);
     }
 
     /**

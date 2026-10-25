@@ -71,7 +71,9 @@ final class DatePageTest extends AppWebTestCase
 
         $friday = new DateTimeImmutable('friday this week');
         $from = max($friday, new DateTimeImmutable('today'));
-        self::assertSelectorTextContains('.agenda-header-card p', '3 sorties à Toulouse du ' . strtolower(new IntlDateFormatter('fr', pattern: 'EEEE d')->format($from)));
+        // On Sunday the weekend left is that day alone: "dimanche 25 octobre", without "du … au"
+        $days = $from == new DateTimeImmutable('sunday this week') ? '' : 'du ';
+        self::assertSelectorTextContains('.agenda-header-card p', '3 sorties à Toulouse ' . $days . strtolower(new IntlDateFormatter('fr', pattern: 'EEEE d')->format($from)));
     }
 
     public function testAQuietLocationLinksItsDatePagesWithoutFollowingThem(): void

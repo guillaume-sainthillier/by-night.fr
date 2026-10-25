@@ -7,6 +7,14 @@
     réseau social, chaque connexion demande aussi le code de votre application d’authentification ou votre clé d’accès.
 </p>
 
+{# Connected by "Se souvenir de moi" only: every page of this tab takes a login first (SecurityController) #}
+{% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+    <div class="alert alert-info" role="alert">
+        Pour modifier ces réglages, confirmez d’abord qu’il s’agit bien de vous&nbsp;:
+        <a href="{{ path('app_login', {_target_path: path('app_user_edit') ~ '#security'}) }}" class="alert-link">reconnectez-vous</a>.
+    </div>
+{% endif %}
+
 <twig:FormCard icon="lucide:life-buoy" tone="teal" title="Codes de secours"
                description="Chaque code remplace une fois votre second facteur, si vous perdez votre téléphone ou votre clé. À configurer en premier."
                badge="{{ user.backupCodeEnabled ? user.backupCodes|length ~ ' restant' ~ (user.backupCodes|length > 1 ? 's') : 'Non configurés' }}"
