@@ -20,6 +20,9 @@ use App\Factory\UserEventFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
 use DateTimeImmutable;
+use Symfony\Component\HttpFoundation\Response;
+
+use function Zenstruck\Foundry\Persistence\delete;
 
 final class UserControllerTest extends AppWebTestCase
 {
@@ -137,6 +140,27 @@ final class UserControllerTest extends AppWebTestCase
 
         $client->request('GET', $this->profilePath($drafter));
         self::assertSelectorTextNotContains('body', 'Contributeur Pro');
+    }
+
+    public function testTheProfileOfADeletedAccountIsGone(): void
+    {
+        $client = self::createClient();
+        $deleted = UserFactory::createOne(['username' => 'parti']);
+        $path = $this->profilePath($deleted);
+        delete($deleted);
+
+        $client->request('GET', $path);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_GONE);
+    }
+
+    public function testAnIdNoMemberEverHadIsNotFound(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/membres/personne--999999999');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
     private function profilePath(User $user): string

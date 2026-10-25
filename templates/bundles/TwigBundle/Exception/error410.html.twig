@@ -1,0 +1,33 @@
+{% extends 'bundles/TwigBundle/Exception/_client-error.html.twig' %}
+
+{# A page we deleted (an event, a member's account, a publisher, a venue, the listings without a country): it will not
+   come back, so search engines drop it, and its visitors are led to what else is going on. Nothing is said of what it
+   showed, which may have been taken down on request #}
+
+{% block title 'Page supprimée' %}
+
+{% block body %}
+    {% set location = app_context.location %}
+    <twig:ErrorPage code="410" label="Page supprimée" icon="lucide:calendar-x">
+        <twig:ErrorPage:Title>Cette page n'existe plus</twig:ErrorPage:Title>
+        <twig:ErrorPage:Description>
+            Ce qu'elle présentait a été retiré du site, par son auteur ou par notre équipe.
+            Cherchez une autre sortie, ou repartez de l'agenda{% if location %} {{ location.atName }}{% endif %}.
+        </twig:ErrorPage:Description>
+        <twig:ErrorPage:Search city="{{ location.city.slug ?? null }}" />
+        <twig:ErrorPage:Actions>
+            {% if location %}
+                <a class="btn btn-primary" href="{{ path('app_location_index', {location: location.slug}) }}">
+                    <twig:Icon name="lucide:calendar-days" />
+                    Sortir {{ location.atName }}
+                </a>
+            {% endif %}
+            <a class="btn {{ location ? 'btn-outline-secondary' : 'btn-primary' }}" href="{{ path('app_index') }}">
+                <twig:Icon name="lucide:home" />
+                Retour à l'accueil
+            </a>
+        </twig:ErrorPage:Actions>
+    </twig:ErrorPage>
+
+    {{ include('bundles/TwigBundle/Exception/_lost-links.html.twig') }}
+{% endblock %}

@@ -17,12 +17,16 @@ use App\Factory\CityFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\PlaceLegacySlugFactory;
 use App\Manager\PlaceRedirectManager;
+use App\Repository\DeletedPageRepository;
 use App\Repository\PlaceRepository;
 use App\Tests\AppKernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+use function Zenstruck\Foundry\Persistence\delete;
 
 final class PlaceRedirectManagerTest extends AppKernelTestCase
 {
@@ -120,6 +124,35 @@ final class PlaceRedirectManagerTest extends AppKernelTestCase
         }
     }
 
+    /**
+     * Another city's place of that slug would take its visitors elsewhere: the venue is gone from this one.
+     */
+    public function testAVenueDeletedFromTheCityIsGone(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $ramonville = CityFactory::createOne(['name' => 'Ramonville-Saint-Agne', 'country' => $toulouse->getCountry()]);
+        PlaceFactory::createOne(['slug' => 'salle-des-fetes', 'city' => $ramonville, 'country' => $ramonville->getCountry()]);
+        delete(PlaceFactory::createOne(['slug' => 'salle-des-fetes', 'city' => $toulouse, 'country' => $toulouse->getCountry()]));
+
+        $this->expectException(GoneHttpException::class);
+
+        $this->createManager()->getPlace('salle-des-fetes', $this->locationOf($toulouse));
+    }
+
+    public function testTheSlugOfADeletedVenueMergedIntoAnotherStillRedirects(): void
+    {
+        $toulouse = CityFactory::toulouse()->create();
+        $bikini = PlaceFactory::createOne(['slug' => 'le-bikini', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+        delete(PlaceFactory::createOne(['slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]));
+        PlaceLegacySlugFactory::createOne(['place' => $bikini, 'slug' => 'le-bikini-1', 'city' => $toulouse, 'country' => $toulouse->getCountry()]);
+
+        $this->assertRedirects(
+            '/toulouse/agenda/sortir-a/le-bikini',
+            Response::HTTP_MOVED_PERMANENTLY,
+            fn () => $this->createManager()->getPlace('le-bikini-1', $this->locationOf($toulouse)),
+        );
+    }
+
     private function createManager(string $uri = '/'): PlaceRedirectManager
     {
         $requestStack = new RequestStack();
@@ -129,6 +162,7 @@ final class PlaceRedirectManagerTest extends AppKernelTestCase
             $requestStack,
             self::getContainer()->get(UrlGeneratorInterface::class),
             self::getContainer()->get(PlaceRepository::class),
+            self::getContainer()->get(DeletedPageRepository::class),
         );
     }
 

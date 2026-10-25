@@ -11,10 +11,13 @@
 namespace App\Manager;
 
 use App\Entity\Event;
+use App\Enum\DeletedPageKind;
 use App\Exception\RedirectException;
+use App\Repository\DeletedPageRepository;
 use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -25,6 +28,7 @@ final readonly class EventRedirectManager
         private RequestStack $requestStack,
         private UrlGeneratorInterface $router,
         private EventRepository $eventRepository,
+        private DeletedPageRepository $deletedPageRepository,
         private AuthorizationCheckerInterface $authorizationChecker,
     ) {
     }
@@ -38,6 +42,7 @@ final readonly class EventRedirectManager
      * exist.
      *
      * @throws RedirectException     when URL needs to be redirected (SEO)
+     * @throws GoneHttpException     when the event was deleted
      * @throws NotFoundHttpException when event is not found
      */
     public function getEvent(
@@ -55,6 +60,10 @@ final readonly class EventRedirectManager
         }
 
         if (null === $event) {
+            if (null !== $eventId && $this->deletedPageRepository->isDeleted(DeletedPageKind::Event, (string) $eventId)) {
+                throw new GoneHttpException(\sprintf('Event with id "%d" was deleted', $eventId));
+            }
+
             throw $this->createNotFoundException($eventId, $eventSlug);
         }
 

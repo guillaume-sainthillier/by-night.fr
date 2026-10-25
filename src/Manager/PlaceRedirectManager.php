@@ -12,10 +12,13 @@ namespace App\Manager;
 
 use App\App\Location;
 use App\Entity\Place;
+use App\Enum\DeletedPageKind;
 use App\Exception\RedirectException;
+use App\Repository\DeletedPageRepository;
 use App\Repository\PlaceRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -28,12 +31,14 @@ final readonly class PlaceRedirectManager
         private RequestStack $requestStack,
         private UrlGeneratorInterface $router,
         private PlaceRepository $placeRepository,
+        private DeletedPageRepository $deletedPageRepository,
     ) {
     }
 
     /**
      * @throws RedirectException when the URL has to change: to the venue's own (301, its filters kept), or to the
      *                           location's page when no venue answers to it
+     * @throws GoneHttpException when the venue of the location was deleted
      */
     public function getPlace(?string $placeSlug, Location $location): Place
     {
@@ -70,8 +75,8 @@ final readonly class PlaceRedirectManager
     /**
      * Place slugs are not unique ("salle-des-fetes" names hundreds of places): the place in the city the URL names (or
      * without a city, in its country) comes first, then a place of that city merged into another one under that slug;
-     * another one is only a fallback, which getPlace() redirects to its own URL. The location's city and country are
-     * lazy proxies, hence their ids rather than the objects.
+     * another one is only a fallback, which getPlace() redirects to its own URL, unless a venue of that slug was deleted
+     * from the location. The location's city and country are lazy proxies, hence their ids rather than the objects.
      */
     private function findPlace(string $slug, Location $location): ?Place
     {
@@ -83,9 +88,18 @@ final readonly class PlaceRedirectManager
             default => null,
         };
 
-        return $place
-            ?? $this->placeRepository->findOneByLegacySlug($slug, $location)
-            ?? $this->placeRepository->findOneBy(['slug' => $slug]);
+        $place ??= $this->placeRepository->findOneByLegacySlug($slug, $location);
+        if (null !== $place) {
+            return $place;
+        }
+
+        // A venue deleted from this location is gone, though a place elsewhere has its slug
+        $locationSlug = $location->getSlug();
+        if (null !== $locationSlug && $this->deletedPageRepository->isDeleted(DeletedPageKind::Place, DeletedPageRepository::placeIdentifier($locationSlug, $slug))) {
+            throw new GoneHttpException(\sprintf('Place "%s" of "%s" was deleted.', $slug, $locationSlug));
+        }
+
+        return $this->placeRepository->findOneBy(['slug' => $slug]);
     }
 
     /**

@@ -11,9 +11,12 @@
 namespace App\Manager;
 
 use App\Entity\User;
+use App\Enum\DeletedPageKind;
 use App\Exception\RedirectException;
+use App\Repository\DeletedPageRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -23,6 +26,7 @@ final readonly class UserRedirectManager
         private RequestStack $requestStack,
         private UrlGeneratorInterface $router,
         private UserRepository $userRepository,
+        private DeletedPageRepository $deletedPageRepository,
     ) {
     }
 
@@ -30,6 +34,7 @@ final readonly class UserRedirectManager
      * Get user entity, throwing RedirectException if URL needs correction.
      *
      * @throws RedirectException     when URL needs to be redirected (SEO)
+     * @throws GoneHttpException     when the member's account was deleted
      * @throws NotFoundHttpException when user is not found
      */
     public function getUser(
@@ -47,6 +52,10 @@ final readonly class UserRedirectManager
         }
 
         if (null === $user) {
+            if (null !== $userId && $this->deletedPageRepository->isDeleted(DeletedPageKind::User, (string) $userId)) {
+                throw new GoneHttpException(\sprintf('User with id "%d" was deleted', $userId));
+            }
+
             throw new NotFoundHttpException(null === $userId ? \sprintf('User with username "%s" not found', $userUsername) : \sprintf('User with id "%d" not found', $userId));
         }
 

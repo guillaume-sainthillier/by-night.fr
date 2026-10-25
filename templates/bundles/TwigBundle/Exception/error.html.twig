@@ -1,10 +1,9 @@
-{# Every other code: a client error (400, 405, 410, 429…) in the site's layout, a server error (502, 504…) in its shell #}
+{# Every other code: a client error (400, 405, 429…) in the site's layout, a server error (502, 504…) in its shell #}
 {% extends status_code >= 500 ? 'bundles/TwigBundle/Exception/_server-error.html.twig' : 'bundles/TwigBundle/Exception/_client-error.html.twig' %}
 
 {% set error = {
     400: {label: 'Requête invalide', icon: 'lucide:circle-alert', title: "Cette demande n'a pas pu aboutir", description: "Le lien suivi ou le formulaire envoyé est incomplet. Revenez en arrière et réessayez, ou repartez de l'accueil."},
     405: {label: 'Méthode non autorisée', icon: 'lucide:circle-alert', title: "Cette demande n'a pas pu aboutir", description: "Cette page ne s'ouvre pas de cette façon. Revenez en arrière et réessayez, ou repartez de l'accueil."},
-    410: {label: 'Page supprimée', icon: 'lucide:compass', title: "Cette page n'existe plus", description: "Ce qu'elle présentait a été retiré du site. Cherchez une autre sortie, ou repartez de l'accueil.", lost: true},
     429: {label: 'Trop de requêtes', icon: 'lucide:hourglass', title: 'Doucement !', description: 'Beaucoup de demandes nous sont parvenues de votre part en peu de temps. Patientez une minute, puis réessayez.'},
 }[status_code] ?? (status_code >= 500 ? {
     label: 'Erreur du serveur', icon: 'lucide:wrench', title: 'Un imprévu de notre côté', description: "Cette page n'a pas pu s'afficher. Réessayez dans un instant, ou repartez de l'accueil.",
@@ -26,8 +25,4 @@
             </a>
         </twig:ErrorPage:Actions>
     </twig:ErrorPage>
-
-    {% if error.lost ?? false %}
-        {{ include('bundles/TwigBundle/Exception/_lost-links.html.twig') }}
-    {% endif %}
 {% endblock %}
