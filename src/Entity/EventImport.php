@@ -61,6 +61,13 @@ class EventImport
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $successFilePath = null;
 
+    /**
+     * @var list<int>|null the row of the member's file of each row of the kept rows' file, in its order: that file
+     *                     leaves the refused and blank rows out, the import's report names the member's rows
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $keptRows = null;
+
     /** The rows the check turned down, with an "Erreurs" column */
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $errorFilePath = null;
@@ -205,6 +212,24 @@ class EventImport
     public function setSuccessFilePath(?string $successFilePath): self
     {
         $this->successFilePath = $successFilePath;
+
+        return $this;
+    }
+
+    /**
+     * @return list<int> empty for an import checked before they were kept
+     */
+    public function getKeptRows(): array
+    {
+        return $this->keptRows ?? [];
+    }
+
+    /**
+     * @param list<int> $rows
+     */
+    public function setKeptRows(array $rows): self
+    {
+        $this->keptRows = [] === $rows ? null : $rows;
 
         return $this;
     }

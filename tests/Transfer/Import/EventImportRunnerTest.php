@@ -141,6 +141,22 @@ final class EventImportRunnerTest extends AppKernelTestCase
     }
 
     /**
+     * The import reads the check's file of kept rows, without the refused and blank ones: its report still names the
+     * rows of the member's file, as the check's errors do.
+     */
+    public function testTheReportNamesTheRowsOfTheMembersFile(): void
+    {
+        $import = $this->import(self::HEADER
+            . ";;Sans référence;Une description assez longue.;{$this->day};;;Salle;31000;Toulouse;;;\n"
+            . ";;;;;;;;;;;;\n"
+            . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n"
+            . "ROCK;;Soirée rock;Une soirée de rock en plein air.;{$this->day};;;La Guinguette;31000;Toulouse;;;\n");
+
+        self::assertSame([2], array_column($import->getErrors(), 'row'));
+        self::assertSame(['JAZZ' => 4, 'ROCK' => 5], array_column($import->getOutcomes(), 'row', 'reference'));
+    }
+
+    /**
      * The member ticks a warned event on the check, whose rows are those of their file; the import reads the check's
      * file of kept rows, without the refused and blank ones, numbered afresh: the event is left out by its reference.
      */
