@@ -98,7 +98,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', $url);
 
         self::assertResponseStatusCodeSame(Response::HTTP_GONE);
-        $this->assertClientErrorPage($crawler, "Cette page n'existe plus");
+        $this->assertClientErrorPage($crawler, "Cette page n'existe plus", 'not-found');
         self::assertCount(1, $crawler->filter('main a.btn[href="/toulouse"]'));
     }
 
