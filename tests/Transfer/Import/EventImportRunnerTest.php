@@ -175,7 +175,7 @@ final class EventImportRunnerTest extends AppKernelTestCase
         // What the warning's box sends
         $import->setSkippedReferences(['BLUES']);
         save($import);
-        self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
+        self::getContainer()->get(EventImportRepository::class)->transition($import, EventImportStatus::Importing);
 
         self::getContainer()->get(EventImportRunner::class)->run($import);
         refresh($import);
@@ -209,7 +209,7 @@ final class EventImportRunnerTest extends AppKernelTestCase
                 }
             }
         });
-        self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
+        self::getContainer()->get(EventImportRepository::class)->transition($import, EventImportStatus::Importing);
 
         self::getContainer()->get(EventImportRunner::class)->run($import);
 
@@ -227,7 +227,7 @@ final class EventImportRunnerTest extends AppKernelTestCase
         $event = EventFactory::createOne(['user' => $this->user, 'placeCountry' => CountryFactory::find(['id' => 'FR'])]);
         $import = $this->check(self::HEADER . ";{$event->getId()};Concert;Une soirée de jazz manouche.;{$this->day};;;Le Bikini;31520;Ramonville;;;\n");
         delete($event);
-        self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing);
+        self::getContainer()->get(EventImportRepository::class)->transition($import, EventImportStatus::Importing);
 
         self::getContainer()->get(EventImportRunner::class)->run($import);
         refresh($import);

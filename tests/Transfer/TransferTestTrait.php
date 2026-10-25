@@ -85,7 +85,7 @@ trait TransferTestTrait
     private function import(string $csv): EventImport
     {
         $import = $this->check($csv);
-        self::assertTrue(self::getContainer()->get(EventImportRepository::class)->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing));
+        self::assertTrue(self::getContainer()->get(EventImportRepository::class)->transition($import, EventImportStatus::Importing));
 
         self::getContainer()->get(EventImportRunner::class)->run($import);
         refresh($import);

@@ -156,7 +156,7 @@ final class ImportController extends AbstractTransferController
         $firstRun = EventImportStatus::Checked === $import->getStatus();
         if (0 === $import->getValidCount()) {
             $this->addFlash('error', 'Aucun événement valide à importer : corrigez le fichier des erreurs, puis importez-le.');
-        } elseif ($importRepository->transition($import, [EventImportStatus::Checked, EventImportStatus::Failed], EventImportStatus::Importing)) {
+        } elseif ($importRepository->transition($import, EventImportStatus::Importing)) {
             // The status moved in the database (a conditional UPDATE): read it back before writing anything else
             $this->getEntityManager()->refresh($import);
             if ($firstRun) {
@@ -181,7 +181,7 @@ final class ImportController extends AbstractTransferController
         $this->denyUnlessInContext($import);
         $this->denyUnlessValidToken($request, 'event-import-cancel-' . $import->getId());
 
-        if ($importRepository->transition($import, [EventImportStatus::Uploaded, EventImportStatus::Checking, EventImportStatus::Checked], EventImportStatus::Cancelled)) {
+        if ($importRepository->transition($import, EventImportStatus::Cancelled)) {
             $this->getEntityManager()->refresh($import);
             $notifier->importChanged($import);
         }
