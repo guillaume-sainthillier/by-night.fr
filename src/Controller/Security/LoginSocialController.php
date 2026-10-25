@@ -15,11 +15,9 @@ use App\Entity\User;
 use App\Security\LoginTargetPath;
 use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/login-social')]
 final class LoginSocialController extends AbstractController
@@ -30,15 +28,16 @@ final class LoginSocialController extends AbstractController
         throw new Exception('This code should not be reach!');
     }
 
-    /**
-     * Connecting a network from the account takes a login of this session: a member a remember-me cookie logged in goes
-     * through the login first, then back here. The network would otherwise log them in to the account of its own address
-     * (UserSocialAuthenticator)
-     */
     #[Route(path: '/{service<%patterns.social%>}', name: 'login_social_start', methods: ['GET', 'POST'])]
-    #[IsGranted(new Expression('not is_remember_me()'))]
     public function connect(string $service, Request $request, ClientRegistry $clientRegistry, LoginTargetPath $loginTargetPath): Response
     {
+        // Connecting a network from the account takes a login of this session: a member a remember-me cookie logged in
+        // goes through the login first, then back here. The network would otherwise log them in to the account of its
+        // own address (UserSocialAuthenticator)
+        if ($this->isGranted('IS_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
+        }
+
         // The login dialog of a page names it: the network leads back to it once the member is logged in
         $loginTargetPath->saveFromQuery($request);
 
