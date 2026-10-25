@@ -77,6 +77,7 @@ final class OutingControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.empty-title', 'Aucune sortie prévue');
         self::assertSelectorNotExists('#outings');
+        self::assertSelectorExists('.empty-img img.illustration[src*="/illustrations/outings."][alt=""][loading="lazy"]');
     }
 
     public function testTheOutingsNeedALogin(): void

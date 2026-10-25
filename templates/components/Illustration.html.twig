@@ -1,0 +1,20 @@
+{#
+    A drawing of assets/images/illustrations/: an unDraw illustration (undraw.co, free licence, no credit owed), its
+    purple turned to the orange of the brand and its slate to the night of the logo. Decorative, so its alt is empty.
+    "name" is the file; "width" the size it shows at, its height following the drawing's so that the page keeps its
+    place; "priority" for one in the first screen, which is then not lazy loaded. A plain file of the build: the 5xx
+    pages show it too, where nothing may read the database.
+
+    <twig:Illustration name="not-found" width="{{ 360 }}" priority="{{ true }}" />
+#}
+{% props name, width = 200, priority = false %}
+{% set ratios = {
+    events: 667.553 / 799.835,
+    forbidden: 774.848 / 798.922,
+    maintenance: 661.187 / 800,
+    'no-results': 717.701 / 960,
+    'not-found': 745.55 / 960,
+    outings: 800 / 675.834,
+    'server-error': 718.672 / 960,
+} %}
+<img {{ attributes.defaults({class: 'illustration img-fluid'}) }} src="{{ asset('build/images/illustrations/' ~ name ~ '.svg') }}" width="{{ width }}" height="{{ (width * ratios[name])|round }}" alt="" decoding="async" {% if priority %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>

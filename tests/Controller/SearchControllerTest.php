@@ -51,6 +51,22 @@ final class SearchControllerTest extends AppWebTestCase
         self::assertSelectorNotExists('form input[name="city"]');
     }
 
+    /**
+     * Nothing found among the events: other words, or the whole site.
+     */
+    public function testASearchWithoutResultSaysSoWithADrawing(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+
+        $client->request('GET', '/recherche/?q=jazz&type=evenements');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextSame('.empty h2.empty-title', 'Aucune sortie trouvée');
+        self::assertSelectorExists('.empty-img img.illustration[src*="/illustrations/no-results."]');
+        self::assertSelectorExists('.empty-action a[href="/recherche/?q=jazz"]');
+    }
+
     public function testASearchPagePastTheResultWindowIsNotFound(): void
     {
         $client = self::createClient();

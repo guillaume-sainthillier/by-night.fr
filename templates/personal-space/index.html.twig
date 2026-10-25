@@ -226,7 +226,7 @@
                 </div>
             {% elseif q or filter %}
                 <div class="empty">
-                    <div class="empty-icon"><twig:Icon name="lucide:search" /></div>
+                    <div class="empty-img"><twig:Illustration name="no-results" width="{{ 200 }}" /></div>
                     <p class="empty-title">{{ 'Aucun événement ne correspond à votre recherche'|trans }}</p>
                     <p class="empty-subtitle text-secondary">{{ 'Modifiez votre recherche ou réinitialisez les filtres pour retrouver tous vos événements.'|trans }}</p>
                     <div class="empty-action">
@@ -238,7 +238,7 @@
                 </div>
             {% else %}
                 <div class="empty">
-                    <div class="empty-icon"><twig:Icon name="lucide:calendar-days" /></div>
+                    <div class="empty-img"><twig:Illustration name="events" width="{{ 200 }}" /></div>
                     <p class="empty-title">{{ "Vous n'avez pas encore créé d'événement"|trans }}</p>
                     <p class="empty-subtitle text-secondary">{{ "Publiez le vôtre : il rejoindra gratuitement l'agenda de sa ville."|trans }}</p>
                     {% if is_granted(constant('\\App\\Security\\Voter\\EventVoter::CREATE')) %}
