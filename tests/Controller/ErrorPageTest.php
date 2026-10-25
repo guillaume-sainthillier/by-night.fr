@@ -11,6 +11,8 @@
 namespace App\Tests\Controller;
 
 use App\Factory\CityFactory;
+use App\Factory\EventFactory;
+use App\Factory\PlaceFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
 use FOS\ElasticaBundle\Elastica\Client;
@@ -21,6 +23,8 @@ use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
+
+use function Zenstruck\Foundry\Persistence\delete;
 
 /**
  * The error pages as production renders them (no debug): a client error in the site's layout, with the way back to an
@@ -81,6 +85,22 @@ final class ErrorPageTest extends AppWebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_GONE);
         $this->assertClientErrorPage($crawler, "Cette page n'existe plus");
         self::assertCount(1, $crawler->filter('main a[href="/lyon"]'));
+    }
+
+    public function testADeletedEventLeadsToTheAgendaOfItsCity(): void
+    {
+        $client = self::createClient(['debug' => false]);
+        $toulouse = CityFactory::toulouse()->create();
+        $deleted = EventFactory::createOne(['place' => PlaceFactory::createOne(['city' => $toulouse, 'country' => $toulouse->getCountry()])]);
+        EventFactory::createOne();
+        $url = \sprintf('/toulouse/soiree/%s--%d', $deleted->getSlug(), $deleted->getId());
+        delete($deleted);
+
+        $crawler = $client->request('GET', $url);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_GONE);
+        $this->assertClientErrorPage($crawler, "Cette page n'existe plus");
+        self::assertCount(1, $crawler->filter('main a.btn[href="/toulouse"]'));
     }
 
     public function testAMemberRefusedAPageKeepsTheirMenu(): void

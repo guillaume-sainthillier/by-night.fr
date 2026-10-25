@@ -20,7 +20,7 @@ framework:
 
     # A refused API input is answered with its violations (422): logged below the "error" level, it
     # neither reaches Sentry nor triggers the fingers_crossed handler. Other client errors (404, 405,
-    # 400) stay errors, monitored in Sentry.
+    # 400) stay errors, monitored in Sentry, but the 410 of a deleted page.
     exceptions:
         ApiPlatform\Validator\Exception\ValidationException:
             log_level: info
@@ -34,6 +34,9 @@ framework:
         # 5xx as critical, which would reach Sentry for every thumbnail requested during the outage.
         Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException:
             log_level: warning
+        # A page we deleted (410): known, nothing to fix, unlike the 404s of broken links Sentry is there for
+        Symfony\Component\HttpKernel\Exception\GoneHttpException:
+            log_level: info
 
 when@test:
     framework:
