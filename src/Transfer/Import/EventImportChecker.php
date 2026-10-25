@@ -58,7 +58,7 @@ final readonly class EventImportChecker
 
     public function check(EventImport $import): void
     {
-        if (!$this->importRepository->transition($import, [EventImportStatus::Uploaded], EventImportStatus::Checking)) {
+        if (!$this->importRepository->transition($import, EventImportStatus::Checking)) {
             // Cancelled meanwhile, or already checked by a former delivery of the message
             return;
         }

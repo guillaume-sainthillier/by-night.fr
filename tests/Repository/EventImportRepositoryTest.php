@@ -25,11 +25,21 @@ final class EventImportRepositoryTest extends AppKernelTestCase
         $import = EventImportFactory::createOne(['status' => EventImportStatus::Checked]);
         $repository = self::getContainer()->get(EventImportRepository::class);
 
-        self::assertTrue($repository->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing));
-        self::assertFalse($repository->transition($import, [EventImportStatus::Checked], EventImportStatus::Importing));
+        self::assertTrue($repository->transition($import, EventImportStatus::Importing));
+        self::assertFalse($repository->transition($import, EventImportStatus::Importing));
 
         refresh($import);
         self::assertSame(EventImportStatus::Importing, $import->getStatus());
+    }
+
+    public function testACompletedImportCannotBeCancelled(): void
+    {
+        $import = EventImportFactory::createOne(['status' => EventImportStatus::Completed]);
+
+        self::assertFalse(self::getContainer()->get(EventImportRepository::class)->transition($import, EventImportStatus::Cancelled));
+
+        refresh($import);
+        self::assertSame(EventImportStatus::Completed, $import->getStatus());
     }
 
     public function testAnImportLeftRunningWithoutNewsIsStuck(): void

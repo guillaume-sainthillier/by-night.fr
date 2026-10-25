@@ -53,6 +53,25 @@ enum EventImportStatus: string
         };
     }
 
+    /**
+     * The statuses it can be reached from: the whole graph, in one place. An import resumes from failed; a check
+     * that lost its worker fails from uploaded (`app:transfers:cleanup`).
+     *
+     * @return list<self>
+     */
+    public function allowedFrom(): array
+    {
+        return match ($this) {
+            self::Uploaded => [],
+            self::Checking => [self::Uploaded],
+            self::Checked => [self::Checking],
+            self::CheckFailed => [self::Uploaded, self::Checking],
+            self::Cancelled => [self::Uploaded, self::Checking, self::Checked],
+            self::Importing => [self::Checked, self::Failed],
+            self::Completed, self::Failed => [self::Importing],
+        };
+    }
+
     /** Whether a worker is on it (or about to be): the page follows its progress */
     public function isRunning(): bool
     {

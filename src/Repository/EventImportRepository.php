@@ -52,15 +52,19 @@ final class EventImportRepository extends ServiceEntityRepository
     }
 
     /**
-     * Moves it from one of the given statuses to another, in one conditional UPDATE: of two requests (a double
-     * click, two tabs), only one moves it. The entity is left as is: refresh it when it matters.
-     *
-     * @param list<EventImportStatus> $from
+     * Moves it to a status, from one of those it can be reached from (`EventImportStatus::allowedFrom()`), in one
+     * conditional UPDATE: of two requests (a double click, two tabs), only one moves it. The entity is left as is:
+     * refresh it when it matters.
      *
      * @return bool whether it moved
      */
-    public function transition(EventImport $entity, array $from, EventImportStatus $to): bool
+    public function transition(EventImport $entity, EventImportStatus $to): bool
     {
+        $from = $to->allowedFrom();
+        if ([] === $from) {
+            return false;
+        }
+
         return 1 === $this->createQueryBuilder('t')
             ->update()
             ->set('t.status', ':to')
