@@ -19,7 +19,7 @@ use App\Form\Type\RecoveryCodesType;
 use App\Form\Type\TotpActivationType;
 use App\Manager\Security\QrCodeManager;
 use App\Manager\Security\TwoFactorSetupManager;
-use App\Security\TwoFactor\Webauthn\WebauthnRegistration;
+use Jbtronics\TFAWebauthn\Services\TFAWebauthnRegistrationHelper;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
 use Symfony\Component\Form\FormError;
@@ -170,7 +170,7 @@ final class SecurityController extends AbstractController
     }
 
     #[Route(path: '/cles/nouvelle', name: 'app_user_security_passkey_new', methods: ['GET', 'POST'])]
-    public function newPasskey(Request $request, WebauthnRegistration $registration, LoggerInterface $logger): Response
+    public function newPasskey(Request $request, TFAWebauthnRegistrationHelper $registration, LoggerInterface $logger): Response
     {
         $user = $this->getAppUser();
         if (null !== ($redirect = $this->requireRecoveryCodes($user))) {
@@ -185,7 +185,7 @@ final class SecurityController extends AbstractController
                 $form->get('name')->addError(new FormError('Vous avez déjà une clé d\'accès de ce nom.'));
             } else {
                 try {
-                    $registration->register($user, (string) $form->get('credential')->getData(), $name);
+                    WebauthnKey::register($registration->checkRegistrationResponse((string) $form->get('credential')->getData()), $user, $name);
                     $this->getEntityManager()->flush();
 
                     $this->addFlash('success', 'La clé d\'accès est enregistrée : elle vous sera proposée à chaque connexion.');
@@ -201,7 +201,7 @@ final class SecurityController extends AbstractController
         // A new challenge on each display: the previous one was used, or never answered
         return $this->render('profile/security/passkey-new.html.twig', [
             'form' => $form,
-            'creationOptions' => $registration->createOptionsJson($user),
+            'creationOptions' => $registration->generateRegistrationRequestAsJSON($user),
         ], new Response(status: $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK));
     }
 

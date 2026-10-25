@@ -19,7 +19,7 @@ use OpenSSLAsymmetricKey;
 use RuntimeException;
 
 /**
- * A passkey in software, as a browser and its authenticator answer the ceremonies of App\Security\TwoFactor\Webauthn:
+ * A passkey in software, as a browser and its authenticator answer the ceremonies of jbtronics/2fa-webauthn:
  * an ES256 key pair, a "none" attestation on registration, a real signature on each login. The options are the JSON of
  * the data-webauthn-options attribute of the page.
  */

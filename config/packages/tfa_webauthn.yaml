@@ -1,0 +1,7 @@
+# The passkey second factor of scheb/2fa-bundle (provider "webauthn_two_factor_provider"), for a User who registered one
+# (App\Entity\WebauthnKey). The relying party has no id: the browser and the validators use the host of the request, the
+# same on every environment, as for the passkeys registered before.
+tfa_webauthn:
+    rpName: 'By Night'
+    # Its form is the TOTP one: both live on the same page (App\Security\TwoFactor\TwoFactorProviderSelectionListener)
+    template: security/2fa-login.html.twig

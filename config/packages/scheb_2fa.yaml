@@ -1,7 +1,7 @@
 # See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/current/configuration.html
 # 2FA is opt-in: a member turns it on from the "Sécurité" tab of their account (App\Controller\User\SecurityController).
 # The second factor is a code of an authenticator app (TOTP), one of the recovery codes, or a passkey
-# (App\Security\TwoFactor\Webauthn).
+# (jbtronics/2fa-webauthn, config/packages/tfa_webauthn.yaml).
 scheb_two_factor:
     backup_codes:
         enabled: true

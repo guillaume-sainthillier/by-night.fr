@@ -205,6 +205,9 @@
     "huluti/breadcrumbs-bundle": {
         "version": "1.7.0"
     },
+    "jbtronics/2fa-webauthn": {
+        "version": "v3.4.0"
+    },
     "jean85/pretty-package-versions": {
         "version": "1.5.1"
     },
