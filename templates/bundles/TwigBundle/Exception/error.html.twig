@@ -14,7 +14,7 @@
 {% block title %}{{ error.label ?: 'Erreur ' ~ status_code }}{% endblock %}
 
 {% block body %}
-    <twig:ErrorPage code="{{ status_code }}" label="{{ error.label }}" icon="{{ error.icon }}">
+    <twig:ErrorPage code="{{ status_code }}" illustration="{{ status_code >= 500 ? 'server-error' : 'not-found' }}" label="{{ error.label }}" icon="{{ error.icon }}">
         <twig:ErrorPage:Title>{{ error.title }}</twig:ErrorPage:Title>
         <twig:ErrorPage:Description>{{ error.description }}</twig:ErrorPage:Description>
         {% if status_code != 429 %}<twig:ErrorPage:Search />{% endif %}

@@ -4,7 +4,7 @@
 
 {% block body %}
     {% set member = is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-    <twig:ErrorPage code="403" label="Accès refusé" icon="lucide:lock">
+    <twig:ErrorPage code="403" illustration="forbidden" label="Accès refusé" icon="lucide:lock">
         {% if member %}
             <twig:ErrorPage:Title>Cette page ne vous est pas ouverte</twig:ErrorPage:Title>
             <twig:ErrorPage:Description>

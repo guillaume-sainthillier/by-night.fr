@@ -39,7 +39,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/a/b/c/d/e');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        $this->assertClientErrorPage($crawler, "Cette page n'existe pas (ou plus)");
+        $this->assertClientErrorPage($crawler, "Cette page n'existe pas (ou plus)", 'not-found');
         self::assertSame('/recherche/', $crawler->filter('form[role="search"]')->attr('action'));
     }
 
@@ -55,7 +55,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/nulle-part/agenda/sortir/concert');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        $this->assertClientErrorPage($crawler, "Cette page n'existe pas (ou plus)");
+        $this->assertClientErrorPage($crawler, "Cette page n'existe pas (ou plus)", 'not-found');
         self::assertSelectorTextContains('main', 'Sortir par métropole');
         self::assertCount(1, $crawler->filter('main a[href="/lyon"]'));
     }
@@ -68,7 +68,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/toulouse/soiree/introuvable--999999999');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        $this->assertClientErrorPage($crawler, "Cette page n'existe pas (ou plus)");
+        $this->assertClientErrorPage($crawler, "Cette page n'existe pas (ou plus)", 'not-found');
         self::assertSelectorTextContains('main', 'Envie de sortir à Toulouse');
         self::assertCount(1, $crawler->filter('main a.btn[href="/toulouse"]'));
         self::assertCount(1, $crawler->filter('main a[href="/toulouse/agenda/sortir/concert"]'));
@@ -83,7 +83,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/unknown/soiree/introuvable--999999999');
 
         self::assertResponseStatusCodeSame(Response::HTTP_GONE);
-        $this->assertClientErrorPage($crawler, "Cette page n'existe plus");
+        $this->assertClientErrorPage($crawler, "Cette page n'existe plus", 'not-found');
         self::assertCount(1, $crawler->filter('main a[href="/lyon"]'));
     }
 
@@ -111,7 +111,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', self::organizerPath(UserFactory::createOne()));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
-        $this->assertClientErrorPage($crawler, 'Cette page ne vous est pas ouverte');
+        $this->assertClientErrorPage($crawler, 'Cette page ne vous est pas ouverte', 'forbidden');
         // The member's menu, not the login of a visitor
         self::assertCount(0, $crawler->filter('a[href^="/login"]'));
         self::assertGreaterThan(0, $crawler->filter('header .nav-avatar')->count());
@@ -124,7 +124,7 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/recherche/?q=concert');
 
         self::assertResponseStatusCodeSame(Response::HTTP_SERVICE_UNAVAILABLE);
-        $this->assertServerErrorPage($crawler, 'By Night fait une courte pause');
+        $this->assertServerErrorPage($crawler, 'By Night fait une courte pause', 'maintenance');
         self::assertCount(0, $crawler->filter('form[role="search"]'));
     }
 
@@ -138,13 +138,14 @@ final class ErrorPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/recherche/?q=concert');
 
         self::assertResponseStatusCodeSame(Response::HTTP_INTERNAL_SERVER_ERROR);
-        $this->assertServerErrorPage($crawler, 'Un imprévu de notre côté');
+        $this->assertServerErrorPage($crawler, 'Un imprévu de notre côté', 'server-error');
         self::assertSame('/recherche/?q=concert', $crawler->filter('main a.btn-primary')->attr('href'));
     }
 
-    private function assertClientErrorPage(Crawler $crawler, string $title): void
+    private function assertClientErrorPage(Crawler $crawler, string $title, string $illustration): void
     {
         self::assertSelectorTextSame('h1', $title);
+        $this->assertIllustration($crawler, $illustration);
         self::assertSame('noindex', $crawler->filter('meta[name="robots"]')->attr('content'));
         self::assertCount(0, $crawler->filter('link[rel="canonical"]'));
         // The site's own header (its search field) and footer (its countries)
@@ -153,14 +154,27 @@ final class ErrorPageTest extends AppWebTestCase
         self::assertCount(1, $crawler->filter('main a[href="mailto:support@by-night.fr"]'));
     }
 
-    private function assertServerErrorPage(Crawler $crawler, string $title): void
+    private function assertServerErrorPage(Crawler $crawler, string $title, string $illustration): void
     {
         self::assertSelectorTextSame('h1', $title);
+        // A file of the build, which reads no database
+        $this->assertIllustration($crawler, $illustration);
         self::assertSame('noindex', $crawler->filter('meta[name="robots"]')->attr('content'));
         // Neither the header nor the footer of the site, which read the database
         self::assertCount(0, $crawler->filter('#autocomplete, #footer-countries, script'));
         self::assertCount(1, $crawler->filter('main a[href="/"]'));
         self::assertCount(1, $crawler->filter('main a[href="mailto:support@by-night.fr"]'));
+    }
+
+    /**
+     * The drawing of the error beside its title, first in the page: not lazy loaded. Vite adds a hash to its name.
+     */
+    private function assertIllustration(Crawler $crawler, string $name): void
+    {
+        $illustration = $crawler->filter('.error-hero img.illustration[src*="/illustrations/' . $name . '."]');
+        self::assertCount(1, $illustration);
+        self::assertSame('', $illustration->attr('alt'));
+        self::assertSame('high', $illustration->attr('fetchpriority'));
     }
 
     /**

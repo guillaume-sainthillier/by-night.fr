@@ -48,7 +48,22 @@
         </div>
     </div>
 
-    {% if term %}
+    {% if term and result.count == 0 %}
+        {# Nothing found: other words, or the whole site when the search kept to events or members #}
+        <div class="empty">
+            <div class="empty-img"><twig:Illustration name="no-results" width="{{ 200 }}" /></div>
+            <h2 class="empty-title">{{ result.message|trans({count: result.count}, 'messages+intl-icu') }}</h2>
+            <p class="empty-subtitle text-secondary">Vérifiez l'orthographe, ou essayez un mot plus court ou plus courant.</p>
+            {% if currentType %}
+                <div class="empty-action">
+                    <a class="btn" href="{{ path('app_search_index', {q: term}) }}">
+                        <twig:Icon name="lucide:search" />
+                        Chercher sur tout le site
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% elseif term %}
         <h2>
             {{ result.message|trans({count: result.count}, 'messages+intl-icu') }}
         </h2>

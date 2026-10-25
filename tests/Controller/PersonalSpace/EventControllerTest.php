@@ -131,6 +131,20 @@ final class EventControllerTest extends AppWebTestCase
         self::assertSame('Masqués 1', $crawler->filter('#event-counters a[aria-current="page"]')->text());
         self::assertSame('hidden', $crawler->filter('#event-filters input[name="status"]')->attr('value'));
         self::assertSelectorTextContains('.empty-title', 'Aucun événement ne correspond à votre recherche');
+        self::assertSelectorExists('.empty-img img.illustration[src*="/illustrations/no-results."]');
+    }
+
+    public function testAMemberWithoutEventsLearnsHowToPublishOne(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        $client->loginUser($user);
+
+        $client->request('GET', self::organizerPath($user));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.empty-title', "Vous n'avez pas encore créé d'événement");
+        self::assertSelectorExists('.empty-img img.illustration[src*="/illustrations/events."][loading="lazy"]');
     }
 
     public function testADeletionWithoutTheTokenOfItsPageIsRefused(): void
