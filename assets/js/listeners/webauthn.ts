@@ -2,7 +2,7 @@ import { defineListener } from '@silarhi/app-js'
 
 /**
  * The passkey ceremonies of `form.js-webauthn`: on submit, ask the browser for a passkey with the options of
- * `data-webauthn-options` (JSON from App\Security\TwoFactor\Webauthn), write its answer as JSON in the form's
+ * `data-webauthn-options` (JSON from jbtronics/2fa-webauthn), write its answer as JSON in the form's
  * `[data-webauthn-response]` field, then submit the form.
  *
  * - `data-webauthn-action="register"`: a new passkey (navigator.credentials.create)

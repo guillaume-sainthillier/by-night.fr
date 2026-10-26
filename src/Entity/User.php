@@ -15,7 +15,7 @@ use App\Contracts\PrefixableObjectKeyInterface;
 use App\Doctrine\EntityListener\UserEmailEntityListener;
 use App\Picture\ImageFormats;
 use App\Repository\UserRepository;
-use App\Security\TwoFactor\Webauthn\WebauthnTwoFactorProvider;
+use App\Security\TwoFactor\TwoFactorProviders;
 use App\Utils\ObjectKey;
 use App\Utils\UnitOfWorkOptimizer;
 use DateTimeImmutable;
@@ -25,6 +25,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\ElasticaBundle\Doctrine\ConditionalUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Jbtronics\TFAWebauthn\Model\NoLegacyU2FKeys;
+use Jbtronics\TFAWebauthn\Model\TwoFactorInterface as WebauthnTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
 use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
@@ -52,9 +54,10 @@ use Webauthn\PublicKeyCredentialUserEntity;
 #[ORM\Index(name: 'user_image_system_name_idx', columns: ['image_system_name'])]
 #[ORM\UniqueConstraint(name: 'user_calendar_token_unique', columns: ['calendar_token'])]
 #[ORM\EntityListeners([UserEmailEntityListener::class])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate, GoogleTwoFactorInterface, BackupCodeInterface, PreferredProviderInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface, ConditionalUpdate, GoogleTwoFactorInterface, WebauthnTwoFactorInterface, BackupCodeInterface, PreferredProviderInterface
 {
     use EntityTimestampableTrait;
+    use NoLegacyU2FKeys;
 
     /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
     final public const string KEY_PREFIX = 'user';
@@ -906,7 +909,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function isWebauthnAuthenticatorEnabled(): bool
+    public function isWebAuthnAuthenticatorEnabled(): bool
     {
         return !$this->webauthnKeys->isEmpty();
     }
@@ -926,7 +929,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     /**
      * The account the passkeys are bound to: its handle is the id, never the e-mail, which can change
      */
-    public function getWebauthnUser(): PublicKeyCredentialUserEntity
+    public function getWebAuthnUser(): PublicKeyCredentialUserEntity
     {
         return PublicKeyCredentialUserEntity::create(
             $this->getUserIdentifier(),
@@ -937,7 +940,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     public function hasSecondFactor(): bool
     {
-        return $this->isGoogleAuthenticatorEnabled() || $this->isWebauthnAuthenticatorEnabled();
+        return $this->isGoogleAuthenticatorEnabled() || $this->isWebAuthnAuthenticatorEnabled();
     }
 
     /**
@@ -945,6 +948,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
      */
     public function getPreferredTwoFactorProvider(): ?string
     {
-        return $this->isWebauthnAuthenticatorEnabled() ? WebauthnTwoFactorProvider::ALIAS : null;
+        return $this->isWebAuthnAuthenticatorEnabled() ? TwoFactorProviders::WEBAUTHN : null;
     }
 }

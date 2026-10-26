@@ -26,17 +26,19 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Webauthn\CredentialRecord;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\TrustPath\TrustPath;
 
 /**
- * A passkey of a User, their second factor (App\Security\TwoFactor\Webauthn). The credential itself is the mapped
- * superclass of web-auth/webauthn-symfony-bundle: its columns, and its Doctrine types (base64, trust_path, aaguid).
+ * A passkey of a User, their second factor (jbtronics/2fa-webauthn). The credential itself is the mapped superclass
+ * Webauthn\CredentialRecord of web-auth/webauthn-symfony-bundle: its columns, and its Doctrine types (base64, trust_path,
+ * aaguid). The entity extends it through PublicKeyCredentialSource, unmapped, which the library reads the passkeys as.
  */
 #[Entity(repositoryClass: WebauthnKeyRepository::class)]
 #[Table(name: 'webauthn_key')]
 #[UniqueConstraint(name: 'webauthn_key_user_name', columns: ['user_id', 'name'])]
 #[UniqueEntity(fields: ['user', 'name'], message: 'Vous avez déjà une clé d\'accès de ce nom.')]
-class WebauthnKey extends CredentialRecord
+class WebauthnKey extends PublicKeyCredentialSource
 {
     #[Id]
     #[GeneratedValue]
@@ -100,7 +102,7 @@ class WebauthnKey extends CredentialRecord
         $this->createdAt = new DateTimeImmutable();
     }
 
-    public static function fromCredentialRecord(CredentialRecord $record, User $user, string $name): self
+    public static function register(CredentialRecord $record, User $user, string $name): self
     {
         $key = new self(
             publicKeyCredentialId: $record->publicKeyCredentialId,
@@ -169,11 +171,10 @@ class WebauthnKey extends CredentialRecord
     }
 
     /**
-     * After a login: the signature counter the authenticator returned, against cloned authenticators
+     * After a login, which also set the signature counter the authenticator returned (against cloned authenticators)
      */
-    public function markAsUsed(int $counter): self
+    public function markAsUsed(): self
     {
-        $this->counter = $counter;
         $this->lastUsedAt = new DateTimeImmutable();
 
         return $this;

@@ -10,7 +10,6 @@
 
 namespace App\Security\TwoFactor;
 
-use App\Security\TwoFactor\Webauthn\WebauthnTwoFactorProvider;
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorTokenInterface;
 use Scheb\TwoFactorBundle\Security\Http\Authenticator\Passport\Credentials\TwoFactorCodeCredentials;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
@@ -37,13 +36,9 @@ use Symfony\Component\Security\Http\Event\CheckPassportEvent;
  */
 final readonly class TwoFactorProviderSelectionListener
 {
-    private const string TOTP_PROVIDER = 'google';
-
-    private const string WEBAUTHN_PROVIDER = WebauthnTwoFactorProvider::ALIAS;
-
     private const array PROVIDER_BY_AUTH_TYPE = [
-        'totp' => self::TOTP_PROVIDER,
-        'webauthn' => self::WEBAUTHN_PROVIDER,
+        'totp' => TwoFactorProviders::TOTP,
+        'webauthn' => TwoFactorProviders::WEBAUTHN,
     ];
 
     public function __construct(private RequestStack $requestStack)
@@ -55,8 +50,8 @@ final readonly class TwoFactorProviderSelectionListener
     {
         $token = $event->getToken();
         if ($token instanceof TwoFactorTokenInterface
-            && \in_array(self::WEBAUTHN_PROVIDER, $token->getTwoFactorProviders(), true)) {
-            $token->preferTwoFactorProvider(self::WEBAUTHN_PROVIDER);
+            && \in_array(TwoFactorProviders::WEBAUTHN, $token->getTwoFactorProviders(), true)) {
+            $token->preferTwoFactorProvider(TwoFactorProviders::WEBAUTHN);
         }
     }
 

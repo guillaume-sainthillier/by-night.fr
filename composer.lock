@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9cfa9e5a6408b31cbe48256016be89e7",
+    "content-hash": "5a80359ec12350e305e154f74177f8c7",
     "packages": [
         {
             "name": "api-platform/core",
@@ -3198,6 +3198,73 @@
                 "source": "https://github.com/ircmaxell/SecurityLib/tree/master"
             },
             "time": "2015-03-20T14:31:23+00:00"
+        },
+        {
+            "name": "jbtronics/2fa-webauthn",
+            "version": "v3.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jbtronics/2fa-webauthn.git",
+                "reference": "476871ed332511ce364ddd6a6b7abfab9f3cb8d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jbtronics/2fa-webauthn/zipball/476871ed332511ce364ddd6a6b7abfab9f3cb8d9",
+                "reference": "476871ed332511ce364ddd6a6b7abfab9f3cb8d9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "nyholm/psr7": "^1.5",
+                "php": "^8.2",
+                "psr/log": "^3.0.0|^2.0.0",
+                "scheb/2fa-bundle": "^6.0.0|^7.0.0|^8.0.0",
+                "symfony/framework-bundle": "^6.4|^7.0|^8.0",
+                "symfony/psr-http-message-bridge": "^2.1|^6.1|^7.0|^8.0",
+                "symfony/security-bundle": "^6.4|^7.0|^8.0",
+                "symfony/twig-bundle": "^6.4|^7.0|^8.0",
+                "symfony/uid": "^6.0|^7.0|^8.0",
+                "web-auth/webauthn-lib": "^5.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.89",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-symfony": "^2.0",
+                "phpunit/phpunit": "^11.5.2 || ^12.4",
+                "symfony/translation": "^6.4 || ^7.0 || ^8.0",
+                "symfony/yaml": "^6.4 || ^7.0 || ^8.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Jbtronics\\TFAWebauthn\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Böhmer",
+                    "email": "mail@jan-boehmer.de"
+                }
+            ],
+            "description": "Webauthn Two-Factor-Authentication Plugin for scheb/2fa",
+            "keywords": [
+                "2fa",
+                "scheb-2fa",
+                "symfony",
+                "symfony-bundle",
+                "two-factor-authentication",
+                "webauthn"
+            ],
+            "support": {
+                "issues": "https://github.com/jbtronics/2fa-webauthn/issues",
+                "source": "https://github.com/jbtronics/2fa-webauthn/tree/v3.4.0"
+            },
+            "time": "2026-10-25T19:38:23+00:00"
         },
         {
             "name": "jcupitt/vips",

@@ -166,8 +166,8 @@ final class TwoFactorLoginTest extends AppWebTestCase
     }
 
     /**
-     * A TOTP code typed in the passkey form, or the empty field of a cancelled prompt, would make the library throw a
-     * TypeError: it is a wrong code instead
+     * A TOTP code typed in the passkey form, or the empty field of a cancelled prompt, is a wrong code, refused before
+     * the library (App\Security\TwoFactor\PasskeyAuthenticator)
      */
     public function testAMalformedPasskeyAnswerIsAWrongCode(): void
     {

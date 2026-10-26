@@ -13,8 +13,8 @@
 
 {% block body %}
     {% set checkUrl = checkPathUrl ?: path(checkPathRoute) %}
-    {% set hasTotp = 'google' in availableTwoFactorProviders %}
-    {% set hasPasskey = constant('App\\Security\\TwoFactor\\Webauthn\\WebauthnTwoFactorProvider::ALIAS') in availableTwoFactorProviders %}
+    {% set hasTotp = constant('App\\Security\\TwoFactor\\TwoFactorProviders::TOTP') in availableTwoFactorProviders %}
+    {% set hasPasskey = constant('App\\Security\\TwoFactor\\TwoFactorProviders::WEBAUTHN') in availableTwoFactorProviders %}
     <div class="container-tight py-4 py-lg-5">
         <div class="card card-md mb-0">
             <div class="card-body">
@@ -26,8 +26,8 @@
                     <div class="alert alert-danger" role="alert">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</div>
                 {% endif %}
 
-                {% if hasPasskey and webauthnRequestOptions is defined %}
-                    <form class="js-webauthn" action="{{ checkUrl }}" method="post" data-webauthn-action="authenticate" data-webauthn-options="{{ webauthnRequestOptions }}">
+                {% if hasPasskey and webauthn_request_data is defined %}
+                    <form class="js-webauthn" action="{{ checkUrl }}" method="post" data-webauthn-action="authenticate" data-webauthn-options="{{ webauthn_request_data }}">
                         <input type="hidden" name="auth_type" value="webauthn">
                         <input type="hidden" name="{{ authCodeParameterName }}" data-webauthn-response>
                         {% if isCsrfProtectionEnabled %}
