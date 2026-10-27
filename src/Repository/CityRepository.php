@@ -18,6 +18,7 @@ use App\Entity\CityLegacySlug;
 use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Enum\AgendaType;
 use App\Utils\CityManipulator;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -220,10 +221,11 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     }
 
     /**
-     * Cities with at least one published event ending on or after $from, with that event count and the count of events to
-     * come UpcomingEventCounter last stored (DatePageIndexingPolicy).
+     * Cities with at least one published event ending on or after $from, with that event count, the count of events to
+     * come UpcomingEventCounter last stored (DatePageIndexingPolicy), and the count of these events per agenda type
+     * ("type_concert"…): the types stored on the events (Event::$agendaTypes), which their type page lists.
      *
-     * @return CursorPagination<array{slug: string, nb: int|string, upcoming: int|string}>
+     * @return CursorPagination<array{slug: string, nb: int|string, upcoming: int|string, type_concert: int|string, type_show: int|string, type_exhibition: int|string, type_family: int|string, type_student: int|string}>
      */
     public function findAllSitemap(DateTimeInterface $from, int $batchSize): CursorPagination
     {
@@ -237,6 +239,13 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             ->andWhere('e.draft = false')
             ->setParameter('from', $from->format('Y-m-d'))
             ->groupBy('c.slug');
+
+        // A simple_array column: "concert,family", matched whole between commas
+        foreach (AgendaType::cases() as $type) {
+            $queryBuilder
+                ->addSelect(\sprintf("SUM(CASE WHEN CONCAT(',', e.agendaTypes, ',') LIKE :type_%1\$s THEN 1 ELSE 0 END) AS type_%1\$s", $type->value))
+                ->setParameter('type_' . $type->value, '%,' . $type->value . ',%');
+        }
 
         return new CursorPagination(
             $queryBuilder,
