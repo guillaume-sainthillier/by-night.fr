@@ -14,6 +14,7 @@ use App\Repository\OAuthRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Index(name: 'recherche_info_idx', columns: ['facebook_id', 'twitter_id', 'google_id'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -31,9 +32,11 @@ abstract class OAuth implements Stringable
     private ?string $facebook_id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Ignore]
     private ?string $facebook_access_token = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Ignore]
     private ?string $facebook_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -52,9 +55,11 @@ abstract class OAuth implements Stringable
     private ?string $google_id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Ignore]
     private ?string $google_access_token = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Ignore]
     private ?string $google_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -74,9 +79,11 @@ abstract class OAuth implements Stringable
     private ?string $twitter_id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Ignore]
     private ?string $twitter_access_token = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Ignore]
     private ?string $twitter_refresh_token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
