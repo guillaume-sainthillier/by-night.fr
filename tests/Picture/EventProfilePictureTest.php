@@ -48,6 +48,20 @@ final class EventProfilePictureTest extends AppKernelTestCase
         self::assertSame($canonical, $this->service()->getPicturePathAndSource($canonical)['entity']);
     }
 
+    public function testTheSizeIsTheShownPicturesOwn(): void
+    {
+        [$canonical, $lender] = $this->borrowing();
+        $lender->getImageSystem()->setDimensions([3840, 2560]);
+        save($lender);
+
+        self::assertSame([3840, 2560], $this->service()->getOriginalPictureDimensions($canonical));
+    }
+
+    public function testAPlaceholderHasNoKnownSize(): void
+    {
+        self::assertNull($this->service()->getOriginalPictureDimensions(EventFactory::createOne()));
+    }
+
     /**
      * @return array{Event, Event}
      */
