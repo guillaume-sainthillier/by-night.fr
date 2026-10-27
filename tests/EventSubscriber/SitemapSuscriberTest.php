@@ -87,16 +87,31 @@ final class SitemapSuscriberTest extends AppKernelTestCase
 
     public function testCategoryPagesNeedAFullPageOfUpcomingEvents(): void
     {
+        $toulouse = CityFactory::toulouse()->create();
+        $bordeaux = CityFactory::createOne(['name' => 'Bordeaux', 'country' => $toulouse->getCountry()]);
+        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS, ['place' => $this->createPlace($toulouse, 'Le Bikini'), 'agendaTypes' => ['concert']] + $this->dates(10));
+        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS - 1, ['place' => $this->createPlace($bordeaux, 'Le Rocher'), 'agendaTypes' => ['concert']] + $this->dates(10));
+
+        $paths = $this->collectSection('agenda');
+
+        self::assertContains('/toulouse/agenda/sortir/concert', $paths);
+        self::assertNotContains('/bordeaux/agenda/sortir/concert', $paths);
+    }
+
+    public function testCategoryPagesNeedAnUpcomingEventOfTheirType(): void
+    {
         $place = $this->createPlace(CityFactory::toulouse()->create(), 'Le Bikini');
-        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS, ['place' => $place] + $this->dates(10));
+        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS - 2, ['place' => $place, 'agendaTypes' => []] + $this->dates(10));
+        // Both types of "concert,family", "show" alone, and nothing for a past student party
+        EventFactory::createOne(['place' => $place, 'agendaTypes' => ['concert', 'family']] + $this->dates(10));
+        EventFactory::createOne(['place' => $place, 'agendaTypes' => ['show']] + $this->dates(10));
+        EventFactory::createOne(['place' => $place, 'agendaTypes' => ['student']] + $this->dates(-10));
 
         self::assertSame([
             '/toulouse',
             '/toulouse/agenda/sortir/concert',
             '/toulouse/agenda/sortir/spectacle',
-            '/toulouse/agenda/sortir/exposition',
             '/toulouse/agenda/sortir/famille',
-            '/toulouse/agenda/sortir/etudiant',
         ], $this->collectSection('agenda'));
     }
 

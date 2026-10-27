@@ -40,7 +40,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
 {
     /**
      * A city needs a full agenda page of upcoming events before its per-category pages are
-     * submitted: with fewer, most of those five pages would be empty listings.
+     * submitted, and each of them one event of its type at least: an empty one is noindex.
      */
     public const int CATEGORY_PAGES_MIN_EVENTS = AgendaController::EVENT_PER_PAGE;
 
@@ -147,6 +147,10 @@ final class SitemapSuscriber implements EventSubscriberInterface
             }
 
             foreach (AgendaType::cases() as $type) {
+                if ((int) $city['type_' . $type->value] < 1) {
+                    continue;
+                }
+
                 $this->addUrl($section, 'app_agenda_by_type', ['typeSlug' => $type->getSlug(), 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
             }
         }
