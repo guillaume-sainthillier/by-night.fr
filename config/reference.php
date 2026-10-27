@@ -2847,6 +2847,387 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     dump_typescript?: bool|Param, // Whether TypeScript types are dumped alongside the icons. Disable this if you do not use TypeScript (e.g. in production when using AssetMapper). // Default: true
  *     scan_directories?: list<scalar|Param|null>,
  * }
+ * @psalm-type TfaWebauthnConfig = array{
+ *     enabled?: scalar|Param|null, // Default: false
+ *     timeout?: int|Param, // Default: 60000
+ *     rpID?: scalar|Param|null, // Default: null
+ *     rpName?: scalar|Param|null, // Default: "Webauthn Application"
+ *     rpIcon?: scalar|Param|null, // Default: null
+ *     template?: scalar|Param|null, // Default: "@TFAWebauthn/Authentication/form.html.twig"
+ *     U2FAppID?: scalar|Param|null, // Default: null
+ * }
+ * @psalm-type DoctrineDoctorConfig = array{
+ *     enabled?: bool|Param, // Enable or disable Doctrine Doctor // Default: true
+ *     analysis?: array{
+ *         exclude_third_party_entities?: bool|Param, // Exclude entities from vendor/ directory during analysis (recommended for cleaner reports) // Default: true
+ *         exclude_paths?: list<scalar|Param|null>,
+ *     },
+ *     analyzers?: array{
+ *         n_plus_one?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             threshold?: int|Param, // Minimum number of similar queries to trigger N+1 detection // Default: 5
+ *         },
+ *         n_plus_one_sql?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             threshold?: int|Param, // Minimum repeated SQL pattern count to trigger DBAL N+1 detection // Default: 3
+ *         },
+ *         missing_transaction_on_batch?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             threshold?: int|Param, // Minimum number of writes without transaction to trigger the issue // Default: 10
+ *         },
+ *         nested_relationship_n1?: array{
+ *             enabled?: bool|Param, // Detect nested N+1 chains across multiple relationship levels // Default: true
+ *             threshold?: int|Param, // Minimum number of repeated queries per table to detect nested N+1 // Default: 3
+ *         },
+ *         unused_eager_load?: array{
+ *             enabled?: bool|Param, // Detect unused eager JOIN loading and over-eager collection fetches // Default: true
+ *         },
+ *         slow_query?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             threshold?: int|Param, // Threshold in milliseconds for slow query detection // Default: 100
+ *         },
+ *         missing_index?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             slow_query_threshold?: int|Param, // Only run EXPLAIN on queries slower than this (ms) // Default: 50
+ *             explain_queries?: bool|Param, // Execute EXPLAIN to detect missing indexes // Default: true
+ *             min_rows_scanned?: int|Param, // Minimum rows scanned to suggest an index // Default: 1000
+ *         },
+ *         structural_missing_index?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         order_by_nullable_leading_column?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         hydration?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             row_threshold?: int|Param, // Number of rows to consider for hydration analysis // Default: 99
+ *             critical_threshold?: int|Param, // Number of rows to mark as critical // Default: 999
+ *         },
+ *         eager_loading?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             join_threshold?: int|Param, // Maximum number of JOINs before warning // Default: 4
+ *             critical_join_threshold?: int|Param, // Number of JOINs to mark as critical // Default: 7
+ *         },
+ *         eager_loading_mapping?: array{
+ *             enabled?: bool|Param, // Detect fetch: EAGER declared directly in entity mapping attributes // Default: true
+ *         },
+ *         find_all?: array{
+ *             enabled?: bool|Param, // Enable findAll() detection // Default: true
+ *             threshold?: int|Param, // Maximum number of rows before flagging as issue // Default: 99
+ *         },
+ *         entity_manager_clear?: array{
+ *             enabled?: bool|Param, // Enable EntityManager::clear() detection for batch operations // Default: true
+ *             batch_size_threshold?: int|Param, // Minimum number of INSERT/UPDATE operations to trigger detection // Default: 50
+ *         },
+ *         get_reference?: array{
+ *             enabled?: bool|Param, // Enable getReference() optimization detection // Default: true
+ *             threshold?: int|Param, // Minimum number of simple SELECT by ID queries to suggest getReference() // Default: 2
+ *         },
+ *         flush_in_loop?: array{
+ *             enabled?: bool|Param, // Enable flush() in loop detection (anti-pattern) // Default: true
+ *             flush_count_threshold?: int|Param, // Minimum number of flush calls to trigger detection // Default: 5
+ *             time_window_ms?: int|Param, // Time window in milliseconds to consider flushes as being in a loop // Default: 1000
+ *         },
+ *         lazy_loading?: array{
+ *             enabled?: bool|Param, // Enable lazy loading in loop detection // Default: true
+ *             threshold?: int|Param, // Minimum number of lazy load queries to trigger detection // Default: 10
+ *         },
+ *         dql_injection?: array{
+ *             enabled?: bool|Param, // Enable DQL/SQL injection vulnerability detection (security) // Default: true
+ *         },
+ *         bulk_insert?: array{
+ *             enabled?: bool|Param, // Enable detection of single-row INSERTs that a multi-row DBAL INSERT would batch // Default: true
+ *             threshold?: int|Param, // Minimum number of single-row INSERTs into one table to suggest DBAL batching // Default: 100
+ *         },
+ *         bulk_operation?: array{
+ *             enabled?: bool|Param, // Enable bulk operation optimization detection // Default: true
+ *             threshold?: int|Param, // Minimum number of UPDATE/DELETE to suggest bulk operations // Default: 20
+ *         },
+ *         strict_mode?: array{
+ *             enabled?: bool|Param, // Check MySQL/MariaDB SQL strict moconfiguration // Default: true
+ *         },
+ *         charset?: array{
+ *             enabled?: bool|Param, // Check database charset (utf8 vs utf8mb4) // Default: true
+ *         },
+ *         inno_db_engine?: array{
+ *             enabled?: bool|Param, // Check if tables use InnoDB engine // Default: true
+ *         },
+ *         connection_pooling?: array{
+ *             enabled?: bool|Param, // Analyze connection pool configuration // Default: true
+ *         },
+ *         lazy_ghost_objects_disabled?: array{
+ *             enabled?: bool|Param, // Detect when enable_lazy_ghost_objects is not enabled (Symfony 6.2+) // Default: true
+ *         },
+ *         collection_initialization?: array{
+ *             enabled?: bool|Param, // Detect uninitialized entity collections // Default: true
+ *         },
+ *         cascade_configuration?: array{
+ *             enabled?: bool|Param, // Analyze cascaconfiguration on associations // Default: true
+ *         },
+ *         sensitive_data_exposure?: array{
+ *             enabled?: bool|Param, // Detect sensitive data exposure in serialization // Default: true
+ *             sensitive_patterns?: list<scalar|Param|null>,
+ *         },
+ *         insecure_random?: array{
+ *             enabled?: bool|Param, // Detect insecure random generators for security operations // Default: true
+ *         },
+ *         sql_injection_in_raw_queries?: array{
+ *             enabled?: bool|Param, // Detect SQL injection vulnerabilities in raw queries // Default: true
+ *         },
+ *         foreign_key_mapping?: array{
+ *             enabled?: bool|Param, // Detect foreign keys mapped as primitives instead of object relations // Default: true
+ *         },
+ *         partial_object?: array{
+ *             enabled?: bool|Param, // Detect queries loading full entities when partial objects would be more efficient // Default: true
+ *             threshold?: int|Param, // Minimum number of queries to trigger detection // Default: 5
+ *         },
+ *         dto_hydration?: array{
+ *             enabled?: bool|Param, // Detect aggregation queries that should use DTO hydration // Default: true
+ *         },
+ *         cascade_all?: array{
+ *             enabled?: bool|Param, // Detect dangerous cascade="all" usage // Default: true
+ *         },
+ *         cascade_persist_on_independent_entity?: array{
+ *             enabled?: bool|Param, // Detect cascade="persist" on independent entities (risk of duplicates) // Default: true
+ *             independent_entity_patterns?: list<scalar|Param|null>,
+ *         },
+ *         missing_orphan_removal_on_composition?: array{
+ *             enabled?: bool|Param, // Detect composition relationships without orphanRemoval // Default: true
+ *         },
+ *         cascade_remove_on_independent_entity?: array{
+ *             enabled?: bool|Param, // Detect cascade="remove" on independent entities (data loss risk) // Default: true
+ *         },
+ *         bidirectional_consistency?: array{
+ *             enabled?: bool|Param, // Detect inconsistencies in bidirectional associations // Default: true
+ *         },
+ *         orphan_removal_without_cascade_remove?: array{
+ *             enabled?: bool|Param, // Detect orphanRemoval without cascade="remove" // Default: true
+ *         },
+ *         on_delete_cascade_mismatch?: array{
+ *             enabled?: bool|Param, // Detect mismatches between ORM cascade and database onDelete // Default: true
+ *         },
+ *         join_optimization?: array{
+ *             enabled?: bool|Param, // Detect suboptimal JOIN usage (LEFT JOIN on NOT NULL, too many JOINs, unused JOINs) // Default: true
+ *             max_joins_recommended?: int|Param, // Maximum recommended number of JOINs in a single query // Default: 5
+ *             max_joins_critical?: int|Param, // Number of JOINs to mark as critical // Default: 8
+ *         },
+ *         cartesian_product?: array{
+ *             enabled?: bool|Param, // Detect cartesian product from multiple collection JOINs // Default: true
+ *             n1_collection_threshold?: int|Param, // Minimum N+1 queries per collection to consider it a risk group // Default: 3
+ *         },
+ *         doctrine_cache?: array{
+ *             enabled?: bool|Param, // Detect ArrayCache in production (causes 50-80% performance loss) // Default: true
+ *         },
+ *         naming_convention?: array{
+ *             enabled?: bool|Param, // Detect naming convention violations (tables/columns should be snake_case) // Default: true
+ *         },
+ *         missing_embeddable_opportunity?: array{
+ *             enabled?: bool|Param, // Detect groups of properties that should be refactored into Embeddables (Address, Money, PersonName, etc.) // Default: true
+ *             min_entities?: int|Param, // Minimum number of entities sharing the same pattern before suggesting an Embeddable (reduces false positives for single-entity patterns like a lone User with firstName/lastName) // Default: 2
+ *         },
+ *         blameable_trait?: array{
+ *             enabled?: bool|Param, // Detect missing blameable/timestampable traits and bad practices in existing implementations // Default: true
+ *         },
+ *         query_caching_opportunity?: array{
+ *             enabled?: bool|Param, // Detect queries that could benefit from result caching. Disabled by default as the heuristic for static tables is not reliable enough. // Default: false
+ *             static_tables?: list<scalar|Param|null>,
+ *             frequency_threshold?: int|Param, // Minimum query executions to suggest caching // Default: 3
+ *             second_level_cache_threshold?: int|Param, // Minimum repeated fast SELECT executions (with varying params) to suggest Doctrine second-level cache // Default: 5
+ *             second_level_cache_max_avg_ms?: float|Param, // Maximum average query time in ms to consider a repeated SELECT pattern as 2LC candidate // Default: 2.0
+ *         },
+ *         float_for_money?: array{
+ *             enabled?: bool|Param, // Detect float/double types used for monetary values // Default: true
+ *             money_field_patterns?: list<scalar|Param|null>,
+ *             money_entity_patterns?: list<scalar|Param|null>,
+ *         },
+ *         transaction_boundary?: array{
+ *             enabled?: bool|Param, // Detect transaction boundary violations // Default: true
+ *             max_flush_per_transaction?: int|Param, // Maximum number of flush() calls allowed per transaction // Default: 1
+ *             max_transaction_duration?: float|Param, // Maximum transaction duration in seconds before warning // Default: 1.0
+ *         },
+ *         auto_generate_proxy_classes?: array{ // Deprecated: The "auto_generate_proxy_classes" option has no effect: DoctrineBundle 3 removed auto_generate_proxy_classes, so its analyzer was removed. Remove the option from your configuration.
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         collection_empty_access?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         decimal_precision?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         entity_state_consistency?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         final_entity?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         property_type_mismatch?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         query_builder_best_practices?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         set_max_results_with_collection_join?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         type_hint_mismatch?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         cascade?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         collation?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         column_type?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             excluded_fields?: list<scalar|Param|null>,
+ *         },
+ *         division_by_zero?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         embeddable_mutability?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         embeddable_without_value_object?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         entity_manager_in_entity?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         float_in_money_embeddable?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         flush_in_loop_analyzer_modern?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         ineffective_like?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         join_type_consistency?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         null_comparison?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         order_by_without_limit?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             min_execution_time_ms?: float|Param, // Minimum execution time (ms) before flagging ORDER BY without LIMIT in array-result queries. Fast queries on small reference tables are intentional. // Default: 10.0
+ *         },
+ *         deep_offset_pagination?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             offset_warning_threshold?: int|Param, // OFFSET value above which the analyzer warns about deep pagination cost. // Default: 1000
+ *             offset_critical_threshold?: int|Param, // OFFSET value above which the analyzer flags deep pagination as critical. // Default: 10000
+ *         },
+ *         pagination_without_order_by?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         function_on_predicate_column?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             min_execution_time_ms?: float|Param, // Minimum execution time (ms) before flagging a function wrapping a predicate column (LOWER, COALESCE, CAST, ISNULL, etc.). // Default: 10.0
+ *         },
+ *         not_in_subquery?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         implicit_type_conversion?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         primary_key_strategy?: array{
+ *             enabled?: bool|Param, // Educational alert about auto-increment vs UUID strategy. Disabled by default as auto-increment is a valid choice for most applications. // Default: false
+ *         },
+ *         composite_key_complexity?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         one_to_one_inverse_side?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         soft_deleteable_trait?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         time_zone?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         timestampable_trait?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         year_function_optimization?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         overprivileged_database_user?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         hardcoded_database_credentials?: array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         join_column_non_primary_key?: array{
+ *             enabled?: bool|Param, // Detect join columns referencing non-primary key columns (causes incorrect lazy-loading proxies) // Default: true
+ *         },
+ *         duplicate_private_field_in_hierarchy?: array{
+ *             enabled?: bool|Param, // Detect duplicate private field names in entity class hierarchies (causes MappingException) // Default: true
+ *         },
+ *         single_table_inheritance_sparse_table?: array{
+ *             enabled?: bool|Param, // Detect sparse Single Table Inheritance hierarchies where most columns are NULL per subtype // Default: true
+ *             sparse_threshold?: float|Param, // Ratio of unused columns (0.0-1.0) above which to flag a STI hierarchy as sparse // Default: 0.6
+ *             min_unused_columns?: int|Param, // Minimum number of unused columns before flagging (avoids false positives on small hierarchies) // Default: 5
+ *         },
+ *         class_table_inheritance_thin_subclass?: array{
+ *             enabled?: bool|Param, // Detect Class Table Inheritance subclasses that add very few fields // Default: true
+ *             min_fields_threshold?: int|Param, // Subclasses adding this many fields or fewer are flagged as thin // Default: 2
+ *         },
+ *         class_table_inheritance_depth?: array{
+ *             enabled?: bool|Param, // Detect Class Table Inheritance hierarchies that are too deep // Default: true
+ *             max_depth?: int|Param, // Maximum CTI hierarchy depth before flagging (WARNING at this level, CRITICAL at level+1) // Default: 3
+ *         },
+ *         mapped_superclass_as_target_entity?: array{
+ *             enabled?: bool|Param, // Detect associations targeting a Mapped Superclass (causes MappingException) // Default: true
+ *         },
+ *         inheritance_type_on_non_root_entity?: array{
+ *             enabled?: bool|Param, // Detect #[InheritanceType] placed on non-root entities (silently ignored by Doctrine) // Default: true
+ *         },
+ *         single_table_inheritance_nullable_column?: array{
+ *             enabled?: bool|Param, // Detect non-nullable columns on STI subclasses (causes insert failures for other subtypes) // Default: true
+ *         },
+ *         discriminator_column?: array{
+ *             enabled?: bool|Param, // Detect discriminator columns too short for their map values, and unindexed STI discriminator columns // Default: true
+ *         },
+ *         nullable_primary_key?: array{
+ *             enabled?: bool|Param, // Detect primary key columns mapped as nullable (deprecated since Doctrine ORM 3.6) // Default: true
+ *         },
+ *         string_default_expression?: array{
+ *             enabled?: bool|Param, // Detect raw SQL string defaults on temporal columns (deprecated since Doctrine ORM 3.6) // Default: true
+ *         },
+ *         mapped_superclass_one_to_many?: array{
+ *             enabled?: bool|Param, // Detect OneToMany associations on Mapped Superclasses (not supported by Doctrine) // Default: true
+ *         },
+ *         unique_entity_without_database_index?: array{
+ *             enabled?: bool|Param, // Detect #[UniqueEntity] constraints without corresponding database UNIQUE index // Default: true
+ *         },
+ *         denormalized_aggregate_without_locking?: array{
+ *             enabled?: bool|Param, // Detect denormalized aggregate fields updated alongside collections without a locking mechanism // Default: true
+ *         },
+ *         flush_in_event_listener?: array{
+ *             enabled?: bool|Param, // Detect flush() calls inside Doctrine lifecycle callbacks which can cause infinite loops // Default: true
+ *         },
+ *         gedmo_extension_performance?: array{
+ *             enabled?: bool|Param, // Detect entities using Gedmo Loggable or Translatable extensions. Disabled by default as it only applies to projects using Gedmo and the advice is not actionable in a profiler. // Default: false
+ *         },
+ *         many_to_many_with_extra_columns?: array{
+ *             enabled?: bool|Param, // Detect ManyToMany join tables with extra columns beyond the two FKs // Default: true
+ *         },
+ *         missing_version_field_for_concurrency?: array{
+ *             enabled?: bool|Param, // Detect entities without #[ORM\Version] involved in concurrent write patterns // Default: true
+ *         },
+ *         ...<string, mixed>
+ *     },
+ *     profiler?: array{
+ *         show_in_toolbar?: bool|Param, // Show Doctrine Doctor in the Symfony profiler toolbar // Default: true
+ *         show_debug_info?: bool|Param, // Show debug information (for bundle maintainers and debugging purposes) // Default: false
+ *         analysis_timing?: "auto"|"request"|"after_response"|"on_view"|Param, // When runtime analysis runs: "auto" (after the response on php-fpm, when the profile is viewed elsewhere), "request" (blocks the request), "after_response" (lateCollect) or "on_view" (when opened in the toolbar/profiler) // Default: "auto"
+ *     },
+ *     debug?: array{ // Debug settings for contributors and advanced users
+ *         enabled?: bool|Param, // Enable debug mode (verbose logging, detailed error messages). Keep disabled for production. // Default: false
+ *         internal_logging?: bool|Param, // Enable internal logging for Doctrine Doctor analyzers. Can add ~133ms overhead. Enable only for debugging. // Default: false
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -2881,6 +3262,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     scheb_two_factor?: SchebTwoFactorConfig,
  *     webauthn?: WebauthnConfig,
  *     silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
+ *     tfa_webauthn?: TfaWebauthnConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2919,6 +3301,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         webauthn?: WebauthnConfig,
  *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
+ *         tfa_webauthn?: TfaWebauthnConfig,
+ *         doctrine_doctor?: DoctrineDoctorConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2955,6 +3339,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         webauthn?: WebauthnConfig,
  *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
+ *         tfa_webauthn?: TfaWebauthnConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2994,6 +3379,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         webauthn?: WebauthnConfig,
  *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
+ *         tfa_webauthn?: TfaWebauthnConfig,
+ *         doctrine_doctor?: DoctrineDoctorConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
