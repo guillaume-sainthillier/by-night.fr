@@ -5,6 +5,7 @@
 {% set schedules = event_seo.getEventDateTime(event) %}
 {% set eventDescription = event.description|parse_tags|raw %}
 {% set original = eventProfilePicture.originalPicture(event) %}
+{% set originalDimensions = eventProfilePicture.originalPictureDimensions(event) %}
 
 {% set place = event.place %}
 {# The way back after a login: "#participer" records the "J'y vais" clicked before it (like.js), "#comments" opens on the
@@ -66,6 +67,9 @@
    scraped it now send the shares made once the event is published to that other page #}
 {% block og_url url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) %}
 {% block og_image isHiddenDraft ? parent() : original %}
+{# The poster's own size, not the default image's: none when it is unknown (a source's placeholder) #}
+{% block og_image_width %}{{ isHiddenDraft ? parent() : (originalDimensions[0] ?? '') }}{% endblock %}
+{% block og_image_height %}{{ isHiddenDraft ? parent() : (originalDimensions[1] ?? '') }}{% endblock %}
 
 {# The poster morphs from the card the visitor clicked (scss/components/_view-transitions.scss): the first render, which
    the view transition captures, waits for it to be parsed #}

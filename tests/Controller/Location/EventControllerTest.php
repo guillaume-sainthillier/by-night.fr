@@ -249,6 +249,30 @@ final class EventControllerTest extends AppWebTestCase
         self::assertStringNotContainsString((string) $event->getName(), (string) $client->getResponse()->getContent());
     }
 
+    public function testTheSocialImageDeclaresThePostersOwnSize(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent(poster: 'poster.jpg');
+        $event->getImage()->setDimensions([3840, 2560]);
+        save($event);
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorExists('meta[property="og:image"][content*="poster.jpg"]');
+        self::assertSelectorExists('meta[property="og:image:width"][content="3840"]');
+        self::assertSelectorExists('meta[property="og:image:height"][content="2560"]');
+    }
+
+    public function testTheSocialImageOfAPlaceholderDeclaresNoSize(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', $this->eventUrl($this->createEvent()));
+
+        self::assertSelectorExists('meta[property="og:image"]');
+        self::assertSelectorNotExists('meta[property="og:image:width"]');
+    }
+
     public function testTryingTheIdOfADraftGivesNothingAway(): void
     {
         $client = self::createClient();

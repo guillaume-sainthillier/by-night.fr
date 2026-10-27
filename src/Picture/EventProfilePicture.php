@@ -58,6 +58,30 @@ final readonly class EventProfilePicture
     }
 
     /**
+     * Width and height of the picture getOriginalPicture() returns (og:image:width/height), null for a build
+     * placeholder or an upload whose size was never recorded.
+     *
+     * @return array{int, int}|null
+     */
+    public function getOriginalPictureDimensions(Event $event): ?array
+    {
+        [
+            'source' => $source,
+            'entity' => $entity,
+            'field' => $field,
+        ] = $this->getPicturePathAndSource($event);
+
+        if ('upload' !== $source) {
+            return null;
+        }
+
+        $image = 'imageSystemFile' === $field ? $entity->getImageSystem() : $entity->getImage();
+        $dimensions = $image->getDimensions();
+
+        return $dimensions ? [(int) $dimensions[0], (int) $dimensions[1]] : null;
+    }
+
+    /**
      * @param bool $own the event's own picture (its edit form), not the one its page shows, which may come from
      *                  another member of its family (Event::getShownPictureEvent())
      */
