@@ -30,6 +30,9 @@ final readonly class LocationPortalProvider
 
     private const int NEIGHBOURS = 5;
 
+    /** The towns next door, under the neighbours */
+    private const int NEAREST = 12;
+
     private const int METROPOLISES = 5;
 
     public function __construct(
@@ -50,23 +53,31 @@ final readonly class LocationPortalProvider
 
     /**
      * What introduces a location on its first page: the busiest cities of a country, and its neighbours, the cities
-     * around a city or the other countries.
+     * around a city or the other countries; for a city, the nearest towns too.
      *
      * @return array{
      *     cities: list<array{0: City, events: int|string}>,
      *     neighbours: list<array{0: City, events: int|string}>|list<array{0: Country, events: int|string, cities: list<City>}>,
+     *     nearest: list<array{0: City, events: int|string}>,
      * }
      */
     public function getPortal(Location $location): array
     {
         $city = $location->getCity();
         if (null !== $city) {
-            return ['cities' => [], 'neighbours' => $this->eventRepository->findUpcomingCitiesAround($city, self::NEIGHBOURS)];
+            $neighbours = $this->eventRepository->findUpcomingCitiesAround($city, self::NEIGHBOURS);
+            $listed = array_map(static fn (array $row): int => (int) $row[0]->getId(), $neighbours);
+
+            return [
+                'cities' => [],
+                'neighbours' => $neighbours,
+                'nearest' => $this->eventRepository->findUpcomingCitiesNearest($city, self::NEAREST, $listed),
+            ];
         }
 
         $country = $location->getCountry();
         if (null === $country) {
-            return ['cities' => [], 'neighbours' => []];
+            return ['cities' => [], 'neighbours' => [], 'nearest' => []];
         }
 
         $cities = $this->eventRepository->findUpcomingCitiesOfCountry($country, self::CITIES_PER_COUNTRY);
@@ -76,6 +87,7 @@ final readonly class LocationPortalProvider
             'cities' => \count($cities) >= self::MIN_CITIES ? $cities : [],
             // The other countries, as the home page lists them
             'neighbours' => $this->eventRepository->findUpcomingCountries(self::CITIES_PER_COUNTRY, $country),
+            'nearest' => [],
         ];
     }
 
