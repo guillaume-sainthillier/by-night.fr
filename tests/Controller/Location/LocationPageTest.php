@@ -146,6 +146,35 @@ final class LocationPageTest extends AppWebTestCase
         self::assertSelectorTextSame('#neighbours .col-lg-4 > a.card.h-auto:not(.flex-fill) h3', 'Suisse');
     }
 
+    public function testACityLinksTheTownsNextDoor(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch();
+        $france = CountryFactory::france()->create();
+        // Five busier cities beyond 30 km, the neighbours, then a town next door with one event
+        $cities = [
+            'Aix-en-Provence' => [43.5297, 5.4474, 1],
+            'Toulon' => [43.1242, 5.9280, 2],
+            'Avignon' => [43.9493, 4.8055, 2],
+            'Arles' => [43.6766, 4.6278, 2],
+            'Apt' => [43.8760, 5.3960, 2],
+            'Manosque' => [43.8336, 5.7839, 2],
+            'Bouc-Bel-Air' => [43.4522, 5.4144, 1],
+        ];
+        foreach ($cities as $name => [$latitude, $longitude, $events]) {
+            $city = CityFactory::createOne(['name' => $name, 'latitude' => $latitude, 'longitude' => $longitude, 'country' => $france]);
+            EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->many($events)->create(['place' => PlaceFactory::createOne(['city' => $city, 'country' => $france])]);
+        }
+        self::counter()->refresh();
+
+        $crawler = $client->request('GET', '/aix-en-provence');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextSame('#neighbours h3.h4', 'Tout près d\'Aix-en-Provence');
+        self::assertSame(['Bouc-Bel-Air'], $crawler->filter('#neighbours .btn-chip')->each(static fn ($chip): string => trim($chip->text())));
+        self::assertSelectorExists('#neighbours .btn-chip[href="/bouc-bel-air"]');
+    }
+
     #[DataProvider('provideLocationAgendas')]
     public function testTheUniversesLeadToTheAgendasOfTheLocation(string $url, string $agenda): void
     {

@@ -1579,6 +1579,49 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The cities next to a city (about 30 km) with events to come, the closest first, the city itself and $excluded
+     * left out: the small towns around, which findUpcomingCitiesAround() never lists, the bigger cities always
+     * busier. Without them, a town page was only linked from its own events (Ahrefs: orphan pages).
+     *
+     * @param list<int> $excluded the ids of cities already listed
+     *
+     * @return list<array{0: City, events: int|string}> each city, and its number of events to come
+     */
+    public function findUpcomingCitiesNearest(City $city, int $limit, array $excluded = []): array
+    {
+        $latitude = (float) $city->getLatitude();
+        $longitude = (float) $city->getLongitude();
+        $latitudeDelta = 0.3;
+        // A degree of longitude shrinks with the latitude: the squared distance weighs it by cos²
+        $cos = max(0.2, cos(deg2rad($latitude)));
+        $longitudeDelta = $latitudeDelta / $cos;
+
+        return $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c', 'c.upcomingEvents AS events')
+            ->addSelect('(c.latitude - :latitude) * (c.latitude - :latitude) + (c.longitude - :longitude) * (c.longitude - :longitude) * :cos2 AS HIDDEN distance')
+            ->from(City::class, 'c')
+            ->where('c.upcomingEvents > 0')
+            ->andWhere('c.id NOT IN (:excluded)')
+            ->andWhere('c.latitude BETWEEN :minLatitude AND :maxLatitude')
+            ->andWhere('c.longitude BETWEEN :minLongitude AND :maxLongitude')
+            ->setParameter('excluded', [$city->getId(), ...$excluded], ArrayParameterType::INTEGER)
+            ->setParameter('latitude', $latitude)
+            ->setParameter('longitude', $longitude)
+            ->setParameter('cos2', $cos * $cos)
+            ->setParameter('minLatitude', $latitude - $latitudeDelta)
+            ->setParameter('maxLatitude', $latitude + $latitudeDelta)
+            ->setParameter('minLongitude', $longitude - $longitudeDelta)
+            ->setParameter('maxLongitude', $longitude + $longitudeDelta)
+            ->orderBy('distance', SortDirection::Ascending)
+            ->addOrderBy('c.id', SortDirection::Ascending)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * The events to come, and the cities and venues that host them: the key figures of the home page.
      *
      * @return array{events: int, cities: int, places: int}

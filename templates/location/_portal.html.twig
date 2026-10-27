@@ -51,7 +51,7 @@
         </twig:Section>
     {% endif %}
 
-    {% if portal.neighbours %}
+    {% if portal.neighbours or portal.nearest %}
         {% if location.isCity %}
             <twig:Section id="neighbours" eyebrow="Aux alentours" icon="lucide:compass" title="Sortir autour {{ location.name|of_place }}">
                 <div class="row row-cards row-cols-2 row-cols-md-3 row-cols-xl-6">
@@ -80,6 +80,15 @@
                         </a>
                     </div>
                 </div>
+                {% if portal.nearest %}
+                    <h3 class="h4 mt-4 mb-3">Tout près {{ location.name|of_place }}</h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for row in portal.nearest %}
+                            {% set city = row[0] %}
+                            <twig:Chip href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }} ?">{{ city.name }}</twig:Chip>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </twig:Section>
         {% else %}
             <twig:Section id="neighbours" eyebrow="Pays & territoires" icon="lucide:globe" title="Explorer les autres pays">
