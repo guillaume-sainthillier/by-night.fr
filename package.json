@@ -67,7 +67,8 @@
         "format": "pnpm lint && pnpm prettier",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:coverage": "vitest run --coverage"
+        "test:coverage": "vitest run --coverage",
+        "og-image": "node scripts/og-image.mjs"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,mjs,json,scss}": "biome check --write --no-errors-on-unmatched",
