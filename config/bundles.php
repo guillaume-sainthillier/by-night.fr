@@ -48,4 +48,5 @@ return [
     Webauthn\Bundle\WebauthnBundle::class => ['all' => true],
     Silarhi\UxIconsJsBundle\SilarhiUxIconsJsBundle::class => ['all' => true],
     Jbtronics\TFAWebauthn\TFAWebauthnBundle::class => ['all' => true],
+    AhmedBhs\DoctrineDoctor\DoctrineDoctorBundle::class => ['dev' => true, 'test' => true],
 ];

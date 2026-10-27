@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a80359ec12350e305e154f74177f8c7",
+    "content-hash": "1bbd995dbaee303a82b690e4c1919c3d",
     "packages": [
         {
             "name": "api-platform/core",
@@ -14944,6 +14944,131 @@
     ],
     "packages-dev": [
         {
+            "name": "ahmed-bhs/doctrine-doctor",
+            "version": "v2.11.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ahmed-bhs/doctrine-doctor.git",
+                "reference": "82f942a43fb35b17e94b319be5a8aec93597fdfb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ahmed-bhs/doctrine-doctor/zipball/82f942a43fb35b17e94b319be5a8aec93597fdfb",
+                "reference": "82f942a43fb35b17e94b319be5a8aec93597fdfb",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "^3.0",
+                "nikic/php-parser": "^5.6",
+                "php": "^8.4",
+                "phpmyadmin/sql-parser": "^6.0",
+                "symfony/framework-bundle": "^6.0|^7.0|^8.0",
+                "webmozart/assert": "^1.12 || ^2.0"
+            },
+            "require-dev": {
+                "deptrac/deptrac": "^4.2",
+                "doctrine/orm": "^3.0",
+                "pdepend/pdepend": "3.x-dev",
+                "php-parallel-lint/php-parallel-lint": "^1.4",
+                "phpmd/phpmd": "3.x-dev",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-doctrine": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-symfony": "^2.0",
+                "phpunit/phpunit": "^10.0",
+                "rector/rector": "^2.3",
+                "symfony/ai-symfony-mate-extension": "^0.13.0",
+                "symfony/stopwatch": "^6.0|^7.0|^8.0",
+                "symfony/validator": "^8.0",
+                "symfony/var-dumper": "^6.0|^7.0|^8.0",
+                "symfony/var-exporter": "^6.4|^7.0|^8.0",
+                "symplify/easy-coding-standard": "^13.2",
+                "twig/twig": "^3.0"
+            },
+            "suggest": {
+                "doctrine/orm": "Required for ORM-specific analyzers (N+1 detection via metadata, eager loading, entity mapping checks). Without it, only DBAL-native analyzers run.",
+                "symfony/ai-symfony-mate-extension": "Required for AI Mate / MCP integration of Doctrine Doctor profiler issues"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "ai-mate": {
+                    "includes": [
+                        "src/AiMate/config.php"
+                    ],
+                    "scan-dirs": [
+                        "src/AiMate/Capability"
+                    ]
+                },
+                "symfony": {
+                    "require": "^6.0|^7.0|^8.0",
+                    "allow-contrib": false
+                },
+                "branch-alias": {
+                    "dev-main": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AhmedBhs\\DoctrineDoctor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ahmed EBEN HASSINE",
+                    "email": "ahmedbhs123@gmail.com",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Doctrine ORM checks for Symfony: inspect real request queries in the Web Profiler and run source, mapping, and optional database audits in CI.",
+            "homepage": "https://github.com/ahmed-bhs/doctrine-doctor",
+            "keywords": [
+                "Best-Practices",
+                "analyzer",
+                "code-quality",
+                "database-performance",
+                "debugging",
+                "developer-tools",
+                "development-tools",
+                "doctrine",
+                "doctrine-analyzer",
+                "doctrine-orm",
+                "dql",
+                "missing-indexes",
+                "n-plus-one",
+                "n-plus-one-detection",
+                "orm-debugging",
+                "performance",
+                "performance-monitoring",
+                "profiler",
+                "query-analysis",
+                "query-analyzer",
+                "query-optimization",
+                "runtime-analysis",
+                "security",
+                "slow-queries",
+                "sql-profiler",
+                "symfony",
+                "symfony-bundle",
+                "web-profiler"
+            ],
+            "support": {
+                "issues": "https://github.com/ahmed-bhs/doctrine-doctor/issues",
+                "source": "https://github.com/ahmed-bhs/doctrine-doctor"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ahmed-bhs",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-07T19:43:40+00:00"
+        },
+        {
             "name": "clue/ndjson-react",
             "version": "v1.3.0",
             "source": {
@@ -16019,6 +16144,96 @@
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
             "time": "2022-02-21T01:04:05+00:00"
+        },
+        {
+            "name": "phpmyadmin/sql-parser",
+            "version": "6.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpmyadmin/sql-parser.git",
+                "reference": "ae022ff35c8107110fb73baf96c16c3ae71b9b95"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpmyadmin/sql-parser/zipball/ae022ff35c8107110fb73baf96c16c3ae71b9b95",
+                "reference": "ae022ff35c8107110fb73baf96c16c3ae71b9b95",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "symfony/polyfill-mbstring": "^1.24"
+            },
+            "conflict": {
+                "phpmyadmin/motranslator": "<5.2"
+            },
+            "require-dev": {
+                "phpbench/phpbench": "^1.2",
+                "phpmyadmin/coding-standard": "^4.0",
+                "phpmyadmin/motranslator": "^5.3",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^11.5",
+                "psalm/plugin-phpunit": "^0.19.2",
+                "vimeo/psalm": "^6.0",
+                "zumba/json-serializer": "^3.2"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance",
+                "phpmyadmin/motranslator": "Translate messages to your favorite locale"
+            },
+            "bin": [
+                "bin/sql-parser"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "6.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpMyAdmin\\SqlParser\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "The phpMyAdmin Team",
+                    "email": "developers@phpmyadmin.net",
+                    "homepage": "https://www.phpmyadmin.net/team/"
+                }
+            ],
+            "description": "A validating SQL lexer and parser with a focus on MySQL dialect.",
+            "homepage": "https://github.com/phpmyadmin/sql-parser",
+            "keywords": [
+                "analysis",
+                "lexer",
+                "parser",
+                "query linter",
+                "sql",
+                "sql lexer",
+                "sql linter",
+                "sql parser",
+                "sql syntax highlighter",
+                "sql tokenizer"
+            ],
+            "support": {
+                "issues": "https://github.com/phpmyadmin/sql-parser/issues",
+                "source": "https://github.com/phpmyadmin/sql-parser"
+            },
+            "funding": [
+                {
+                    "url": "https://www.phpmyadmin.net/donate/",
+                    "type": "other"
+                }
+            ],
+            "time": "2026-10-07T15:34:04+00:00"
         },
         {
             "name": "phpstan/extension-installer",

@@ -1,0 +1,58 @@
+# Doctrine Doctor - Runtime Analysis for Doctrine ORM
+# Full documentation: https://github.com/ahmed-bhs/doctrine-doctor/blob/main/docs/CONFIGURATION.md
+
+# dev and test only, the environments config/bundles.php registers the bundle for
+when@dev: &doctrine_doctor
+    doctrine_doctor:
+        enabled: '%kernel.debug%'
+
+        # Analyzers turned off because their findings don't apply to this project (see
+        # `bin/console config:dump-reference doctrine_doctor` for the full list)
+        analyzers:
+            # Style opinions: table names, value objects, Gedmo-like traits
+            naming_convention:
+                enabled: false
+            missing_embeddable_opportunity:
+                enabled: false
+            embeddable_mutability:
+                enabled: false
+            embeddable_without_value_object:
+                enabled: false
+            blameable_trait:
+                enabled: false
+            timestampable_trait:
+                enabled: false
+            soft_deleteable_trait:
+                enabled: false
+            # Cascade advice: cascade persist on every required ManyToOne, orphanRemoval on every OneToMany
+            # (wrong when children move between parents), and a DB onDelete on every ORM cascade remove
+            entity_state_consistency:
+                enabled: false
+            cascade_persist_on_independent_entity:
+                enabled: false
+            missing_orphan_removal_on_composition:
+                enabled: false
+            on_delete_cascade_mismatch:
+                enabled: false
+            # False positives: ?string slugs filled before flush, DBAL 4 bigint as int, vendor entities
+            property_type_mismatch:
+                enabled: false
+            type_hint_mismatch:
+                enabled: false
+            # Without metadata_cache_driver, DoctrineBundle 3 warms a PhpArrayAdapter metadata cache in prod
+            doctrine_cache:
+                enabled: false
+            # Reads the local DATABASE_URL (root in dev), not the production credentials
+            overprivileged_database_user:
+                enabled: false
+            # Flags User::$oAuth cascade remove: UserOAuth only exists for its user
+            cascade_configuration:
+                enabled: false
+            # City's STI columns have a DB default, so AdminZone rows insert fine
+            single_table_inheritance_nullable_column:
+                enabled: false
+            # Event::$startingPrice is a display and search-filter price, never computed with
+            float_for_money:
+                enabled: false
+
+when@test: *doctrine_doctor

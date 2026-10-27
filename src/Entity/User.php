@@ -38,6 +38,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
@@ -102,6 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private array $roles = [];
 
     #[ORM\Column(type: Types::STRING)]
+    #[Ignore]
     private ?string $password = null;
 
     #[ORM\Column(length: 128, unique: true)]
@@ -131,6 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
     /** The secret of the authenticator app: null while the TOTP second factor is off */
     #[ORM\Column(type: Types::STRING, length: 64, nullable: true)]
+    #[Ignore]
     private ?string $googleAuthenticatorSecret = null;
 
     /**
@@ -207,6 +210,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
      * them, so the member can change it. Made the first time the member's outings show it.
      */
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    #[Ignore]
     private ?string $calendarToken = null;
 
     /** Whether the member hears by e-mail of the changes of their outings (OutingChangeNotifier) */

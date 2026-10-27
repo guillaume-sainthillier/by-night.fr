@@ -12,7 +12,9 @@ namespace App\Entity;
 
 use App\Repository\ResetPasswordRequestRepository;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestTrait;
 
@@ -21,6 +23,15 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
 {
     use EntityIdentityTrait;
     use ResetPasswordRequestTrait;
+
+    /**
+     * The trait's own mapping, redeclared to keep the hash out of serialized output (untyped, as in the trait).
+     *
+     * @var string
+     */
+    #[ORM\Column(type: Types::STRING, length: 100)]
+    #[Ignore]
+    protected $hashedToken;
 
     // A pending request must not keep its user from being deleted
     #[ORM\ManyToOne(targetEntity: User::class)]
