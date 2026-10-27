@@ -400,7 +400,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
      * The duplicate event is kept for SEO purposes (existing URLs continue to work).
      */
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'duplicates')]
-    #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'duplicate_of_id', nullable: true, onDelete: 'CASCADE')]
     private ?Event $duplicateOf = null;
 
     /**
@@ -412,10 +412,11 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     /**
      * The rows redirecting to this event: one page with it, deleted along with it. Left behind,
-     * the foreign key only emptied their duplicate_of_id and each came back as a page of its
-     * own, until the next import elected one in place of the deleted event: a takedown or an
-     * admin deletion did not hold. Removed through the entity manager, each is also recorded
-     * as deleted in its exploration (EventParserDataListener), so no import brings it back.
+     * each came back as a page of its own, until the next import elected one in place of the
+     * deleted event: a takedown or an admin deletion did not hold. Removed through the entity
+     * manager, each is also recorded as deleted in its exploration (EventParserDataListener),
+     * so no import brings it back; the foreign key (ON DELETE CASCADE) only covers an event
+     * deleted in SQL, which records nothing.
      *
      * @var Collection<int, Event>
      */

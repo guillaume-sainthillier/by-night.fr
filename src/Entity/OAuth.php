@@ -17,6 +17,7 @@ use Stringable;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Index(name: 'recherche_info_idx', columns: ['facebook_id', 'twitter_id', 'google_id'])]
+#[ORM\Index(name: 'discr_idx', columns: ['discr'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['user' => 'UserOAuth', 'site' => 'AppOAuth'])]
