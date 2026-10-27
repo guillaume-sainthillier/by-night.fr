@@ -42,7 +42,12 @@ final readonly class ImageExtension
     #[AsTwigFunction(name: 'event_card_url')]
     public function eventCardUrl(Event $event): string
     {
-        return $this->urlGenerator->generate('app_event_card', ['id' => $event->getId(), 'hash' => $this->eventCard->hash($event)], UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->urlGenerator->generate('app_event_card', [
+            'location' => $event->getLocationSlug(),
+            'slug' => $event->getSlug(),
+            'id' => $event->getId(),
+            'v' => $this->eventCard->hash($event),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     /**

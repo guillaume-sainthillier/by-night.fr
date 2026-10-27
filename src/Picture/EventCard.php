@@ -26,9 +26,10 @@ use Vich\UploaderBundle\Storage\StorageInterface;
  * whose comments give the boxes this class draws in). The poster alone, as og:image, was cropped to the 1.91:1 of the
  * networks, often through its title.
  *
- * A card is drawn on the first request of its URL (EventCardController) into the share dir, kept across deploys. Its
- * file name carries a hash of everything drawn on it: a new date, title or poster makes a new URL, which the networks
- * fetch again, and the old file is deleted.
+ * A card is a JPEG of about 60 KB, drawn on the first request of its URL (EventCardController, next to the event's
+ * page) into the share dir (`var/share/og`, a volume kept across deploys). Its file name carries a hash of everything
+ * drawn on it, which the og:image links as `?v=`: a new date, title or poster makes a new file and a new URL, which the
+ * networks fetch again, and the old file is deleted. Deleting the event deletes its cards (EventCardRemovalListener).
  */
 final readonly class EventCard
 {
@@ -77,14 +78,21 @@ final readonly class EventCard
     {
         $path = \sprintf('%s/%d-%s.jpg', $this->directory, $event->getId(), $this->hash($event));
         if (!is_file($path)) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir($this->directory);
+            new Filesystem()->mkdir($this->directory);
             // The card of a former date or poster, which no page links to anymore
-            $filesystem->remove(glob(\sprintf('%s/%d-*.jpg', $this->directory, $event->getId())) ?: []);
+            $this->remove((int) $event->getId());
             $this->draw($event, $path);
         }
 
         return $path;
+    }
+
+    /**
+     * Deletes the cards of an event: once it is deleted, nothing links to them.
+     */
+    public function remove(int $eventId): void
+    {
+        new Filesystem()->remove(glob(\sprintf('%s/%d-*.jpg', $this->directory, $eventId)) ?: []);
     }
 
     /**

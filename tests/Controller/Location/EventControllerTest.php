@@ -250,8 +250,8 @@ final class EventControllerTest extends AppWebTestCase
     }
 
     /**
-     * The og:image is the card of the event (App\Picture\EventCard), at the size of the site's image: the poster
-     * alone was cropped by the networks.
+     * The og:image is the card of the event (App\Picture\EventCard), next to its page and versioned by `?v=`: the
+     * poster alone was cropped by the networks.
      */
     public function testTheSocialImageIsTheCardOfTheEvent(): void
     {
@@ -261,7 +261,7 @@ final class EventControllerTest extends AppWebTestCase
         $crawler = $client->request('GET', $this->eventUrl($event));
 
         $image = (string) $crawler->filter('meta[property="og:image"]')->attr('content');
-        self::assertMatchesRegularExpression(\sprintf('#^https://by-night\.test/og/soiree/%d-[0-9a-f]{10}\.jpg$#', $event->getId()), $image);
+        self::assertMatchesRegularExpression(\sprintf('#^https://by-night\.test%s/og-image\.jpg\?v=[0-9a-f]{10}$#', preg_quote($this->eventUrl($event), '#')), $image);
         self::assertSelectorExists('meta[property="og:image:width"][content="1200"]');
 
         $client->request('GET', $image);
@@ -271,14 +271,15 @@ final class EventControllerTest extends AppWebTestCase
         self::assertStringContainsString('immutable', (string) $client->getResponse()->headers->get('Cache-Control'));
     }
 
-    public function testTheCardOfAFormerDateLeadsToTheCurrentOne(): void
+    public function testAFormerVersionOfTheCardLeadsToTheCurrentOne(): void
     {
         $client = self::createClient();
         $event = $this->createEvent();
 
-        $client->request('GET', \sprintf('/og/soiree/%d-0123456789.jpg', $event->getId()));
+        $client->request('GET', $this->eventUrl($event) . '/og-image.jpg?v=0123456789');
 
-        self::assertResponseStatusCodeSame(301);
+        self::assertResponseStatusCodeSame(302);
+        self::assertMatchesRegularExpression('#/og-image\.jpg\?v=[0-9a-f]{10}$#', (string) $client->getResponse()->headers->get('Location'));
     }
 
     public function testTheCardOfADraftGivesNothingAway(): void
@@ -286,7 +287,7 @@ final class EventControllerTest extends AppWebTestCase
         $client = self::createClient();
         $event = $this->createEvent(draft: true, poster: 'draft-poster.jpg');
 
-        $client->request('GET', \sprintf('/og/soiree/%d-0123456789.jpg', $event->getId()));
+        $client->request('GET', $this->eventUrl($event) . '/og-image.jpg');
 
         self::assertResponseStatusCodeSame(404);
     }
@@ -328,7 +329,7 @@ final class EventControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertPageTitleContains((string) $event->getName());
         // Its card, the author being allowed to see it (EventCardController)
-        self::assertSelectorExists(\sprintf('meta[property="og:image"][content*="/og/soiree/%d-"]', $event->getId()));
+        self::assertSelectorExists(\sprintf('meta[property="og:image"][content*="%s/og-image.jpg"]', $this->eventUrl($event)));
         self::assertTrue($this->hasEventJsonLd($crawler));
     }
 
