@@ -128,7 +128,7 @@
         "web-auth/webauthn-symfony-bundle": "^5.3.9"
     },
     "require-dev": {
-        "ahmed-bhs/doctrine-doctor": "^2.11",
+        "ahmed-bhs/doctrine-doctor": "^2.11.2",
         "api-platform/test": "5.0.5",
         "dama/doctrine-test-bundle": "^8.7.0",
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
