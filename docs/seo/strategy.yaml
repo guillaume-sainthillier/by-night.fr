@@ -1,0 +1,758 @@
+# SEO strategy of by-night.fr, as data.
+#
+# Read by:
+#   - ~/Sites/silarhi/seo-monitor (only `clusters`: contract in src/Strategy.php). Weekly report:
+#     `bin/seo-monitor opportunities --site=by-night.fr`; lint: `bin/seo-monitor strategy --site=by-night.fr`
+#   - whoever changes the templates, the indexing policies (src/SEO/*IndexingPolicy.php) or the sitemap
+#     (src/EventSubscriber/SitemapSuscriber.php), and the agents that help them.
+# The reasoning, the findings behind every number and the 90-day roadmap are in STRATEGY.md next to this file.
+#
+# Drafted 2026-10-28 from Search Console (sc-domain:by-night.fr): 16 months through the API (2025-06-16 →
+# 2026-10-27: daily totals, page × month, query × month, query × page per half-year), the 95-day store of
+# seo-monitor (data/seo.sqlite: gsc_pages, gsc_queries, the 305,139 sitemap URLs fetched 2026-10-28, Bing crawl and
+# traffic), the 2026-10-28 opportunities report, the code of origin/main (49f23f48) and a few SERP checks (indicative:
+# the search tool is not google.fr). Search Console is the only volume source: every "impressions" figure is GSC
+# impressions. Google hides most long-tail event queries (only 11% of clicks and 35% of impressions of the 95 days
+# carry a query), so query figures undercount and page figures are the reference. No paid keyword tool was used;
+# nothing here is an estimated search volume.
+#
+# Rules for editing:
+#   - change a cluster id only if you accept losing its week-over-week history in the reports;
+#   - seo-monitor gives a page to the first cluster that claims it, clusters sorted by priority and, within a
+#     priority, in file order. Explicit page lists (date, seasonal, type, place pages) therefore come before the
+#     city prefixes, and the catch-all `evenements-longue-traine` (`/*`) must stay the LAST cluster with the lowest
+#     priority, or it swallows everything after it. Its priority 3 is that technical constraint, not its weight: it
+#     carries 47% of the clicks (STRATEGY.md 3).
+
+version: 1
+updated: 2026-10-28
+owner: Guillaume Sainthillier (ARNOVA, publisher)
+review_dates: [2026-11-23, 2026-12-21, 2027-01-25]
+
+positioning: >
+  The most complete agenda of what is on tonight, this weekend and next month in any French town, big or small:
+  every event of OpenAgenda, DataTourisme, the ticketing partners (Fnac Spectacles via Awin, SeeTickets) and the
+  members, deduplicated, with its venue, dates, hours, prices and every ticketing site selling it. City halls and
+  tourism offices are exhaustive for their own territory and nowhere else; Sortir à Paris, Le Petit Bulletin, JDS or
+  local media are edited but cover a few cities; Shotgun, Fever and Billetréduc only list what they sell. By Night's
+  edge is breadth (some 11,000 locations with an upcoming event) and the long tail of small-town events nobody else
+  aggregates. The strategy leans on that edge (event and venue pages, date pages of busy towns) rather than on head
+  terms of big cities, where tourism offices and city media win (STRATEGY.md 2.6).
+
+audience:
+  - who: someone looking for a precise event, venue or organiser (name + town, often + year)
+    intent: "dates, hours, place, price, tickets of « marché de Houlgate », « club hippique Pibrac », « run from the dead 2026 »"
+    share_of_demand: "~93% of Google clicks land on event pages (95 days: 5,444 of 5,850); 45% of the query impressions of event pages contain the town's name"
+  - who: someone looking for what to do somewhere, at a time
+    intent: "« sortir à Bordeaux », « que faire ce soir à Lyon », « que faire ce week-end », « concert Strasbourg »"
+    share_of_demand: "~30,000 query impressions in 95 days (24% of attributed impressions) at an average position of 32: almost no clicks yet (98)"
+  - who: brand
+    intent: "« by night », « bynight », « <ville> by night »"
+    share_of_demand: "6,380 impressions, 76 clicks in 95 days (home page, position 6)"
+  - who: niche communities (libertine clubs, LGBT nights, naturism, tantric massage workshops)
+    intent: named venues and nights
+    share_of_demand: "small but steady clicks on member-posted events; see risks.adult_content in STRATEGY.md 10"
+
+monetization:
+  - "Google AdSense on every page (per page view): traffic volume on any page counts, including past events."
+  - "Affiliate ticketing links (Fnac Spectacles through Awin, SeeTickets), labelled « Lien affilié », rel=sponsored:
+    value is on upcoming events with a ticket, mostly concerts and shows in big cities."
+  - "Not monetized directly: the weekend selection and the outing alerts (e-mails), which bring members back."
+
+traffic_sources:
+  # Bing is the larger search engine for this site. Strategy decisions that touch indexing (noindex, removals) must be
+  # checked against Bing's page data first: seo-monitor stores only Bing's daily totals.
+  google_28d_to_2026-10-25: {clicks: 1410, impressions: 84679}
+  bing_october_2026_1_to_25: {clicks: 4235, impressions: 172390, crawled_pages_per_day: "345,000-420,000", in_index: 2931137}
+  bing_vs_google: "Bing sends about 3 times Google's clicks since April 2026 (5,400-5,900 a month in April-June 2026)"
+
+page_types:
+  event:
+    path: /{location}/soiree/{slug}--{id}
+    role: The product. Owns the event's name, its venue and organiser names while no place page answers them.
+    today: >
+      Title "[status] Name - Venue - By Night" (src/SEO/EventSEO.php), description "Découvrez … Venue, City. Date.
+      Tags.", Event JSON-LD (subtype, dates, location Place + geo, offers, performer, organizer, image), breadcrumb.
+      Indexable whatever its age once published (decision of 2026-09-22, 55b1e3a6); in the sitemap until 30 days
+      after its end; 200 with an "événement terminé" notice when past; 410 when deleted; 301 to its canonical when a
+      duplicate.
+    must_have:
+      - "the town in the title when neither the name nor the venue contains it (45% of event query impressions name the town)"
+      - "the year of the event in the title when the name is a recurring one (« vogue Pontaix 2026 », « run from the dead 2026 »)"
+      - "past event: first screen says it ended, then « Prochainement à <venue> » and « Prochainement à <ville> » before the old description; link to the venue page"
+      - "JSON-LD dates with the timezone offset (+01:00 / +02:00), eventStatus EventScheduled / EventCancelled / EventPostponed, a ticket offer only when one exists"
+      - "one URL per real-world event: cross-source duplicates (two « marché hebdomadaire de Houlgate ») merged with a 301"
+    title_pattern_proposal: "<Name>[ <year>] à <Ville>[ - <Venue>] | By Night (only the parts the name lacks; 50-65 characters before the brand)"
+  city_hub:
+    path: /{location} (the former /{location}/agenda 301s here since 2026-10-05; trailing slash 301s away)
+    role: Owns « sortir à <ville> », « que faire à <ville> », « agenda <ville> », « événement(s) <ville> », « <ville> by night ».
+    today: >
+      Title "Agenda des sorties à <Ville> : concerts, spectacles, expos et soirées" (about 80 characters with the brand, cut in
+      results; the head term « sortir » is absent), H1 "Que faire à <Ville> ?", fixed description, a hero and the portal
+      block of nearby towns, 15 events per page, events within 25 km. Indexable with at least one result.
+    must_have:
+      - "title test: « Sortir à <Ville> : agenda des concerts, soirées et sorties » on half of the hubs (A/B by city list, see roadmap)"
+      - "a 2-3 sentence intro per busy city (check which busy cities have their own hero copy today)"
+      - "links above the fold to its date pages (ce soir, ce week-end) and type pages (concerts, spectacles, expos, famille)"
+      - "ItemList JSON-LD of the events listed (url + position), never Event markup copied on the listing"
+    indexable_when: "at least 1 result (today); proposal: at least 15 upcoming events within the radius, judged on the nightly count like DatePageIndexingPolicy (stable, not page by page)"
+  date_page:
+    path: /{location}/ce-soir, /{location}/ce-week-end (since 2026-10-22)
+    role: Owns « <ville> ce soir », « que faire ce week-end à <ville> », « sortir ce soir <ville> », « soirée ce soir <ville> ».
+    today: "Indexable and in the sitemap when the location has >= 100 upcoming events (DatePageIndexingPolicy: 202 cities on 2026-10-22). Title « Que faire ce week-end à <Ville> ? Concerts, spectacles et soirées », description with the count and the days."
+    must_have:
+      - "stable URL, refreshed content (the right format: fixed URL, the SERP leaders do the same)"
+      - "the dates covered in the H1 or the first line (« du vendredi 30 octobre au dimanche 1er novembre »)"
+      - "links from the hub's first screen and from every event page of the city"
+  type_page:
+    path: /{location}/agenda/sortir/{concert|spectacle|exposition|famille|etudiant}
+    role: Owns « concert(s) <ville> », « agenda concert <ville> », « spectacle <ville> », « expo <ville> », « sortie famille <ville> ».
+    today: "Indexable with results; in the sitemap when the city has >= 15 upcoming events and >= 1 of the type (380e78a6, 2026-10-27). 21 shown in 95 days (new)."
+    must_have:
+      - "title « Concerts à <Ville> : agenda <mois> <année> » style, the month refreshed by the template"
+      - "the source tags that mean the same thing redirect here (tag concert--5, concerts--840, spectacle--1… → type page)"
+  tag_page:
+    path: /{location}/agenda/tag/{slug}--{id}
+    role: Seasonal and thematic landings that the 5 types do not cover (Noël, Halloween, Nouvel An, jazz, théâtre, cirque, brocante).
+    today: "Every city × tag with 1 upcoming event goes to the sitemap: 10,286 URLs, 61 shown in 95 days, 7 clicks. Title « <Tag> à <Ville> », boilerplate description."
+    must_have:
+      - "whitelist of tags that people search (seasonal + genres); descriptor tags from DataTourisme (dans-le-village, a-la-campagne, en-ville, peripherie-de-la-ville, art-de-vivre, culture, environnement-et-nature…) noindex, follow and out of the sitemap"
+      - "at least 5 upcoming events within the radius to be indexed, judged on the nightly count"
+      - "seasonal titles with the year: « Marchés de Noël et animations à Reims 2026 »"
+  place_page:
+    path: /{location}/agenda/sortir-a/{placeSlug}
+    role: Should own the venue's name (« triskell montpellier », « ferme des briques », « médiathèque hélène berr »), which old event pages answer today with a near-zero CTR.
+    today: "Indexable with at least 1 event, in the sitemap with an upcoming one: 40,280 URLs, 390 shown in 95 days, 10 clicks. Title « Sortir au <lieu>, <ville> », Place JSON-LD. Le Bataclan ranks 47th."
+    must_have:
+      - "title « <Lieu> (<Ville>) : programme et prochains événements »"
+      - "address, map, the venue's own website and phone when the source gives them, upcoming events, then the last 20 past events (a venue page with history answers the venue query even between two events)"
+      - "a link from every event page of the venue (« Tous les événements à <lieu> »)"
+    indexable_when: "proposal: >= 1 upcoming event OR >= 5 events in the last 24 months, and a real venue name (not an address or a town: « 300 rte de levignac 31820 pibrac france », « besancon-centre-ville »)"
+  home:
+    path: /
+    role: Brand queries (« by night », « bynight »). Not a generic target.
+  cms_page:
+    path: /p/{slug}
+    role: Editorial pages (one in the sitemap today, « est-ce que le handpan est illégal »). No blog plan in this strategy (see blog).
+  search:
+    path: /recherche/
+    role: Tool. Proposal - noindex, follow and out of the sitemap (Google's guidance on internal search results); today indexable and submitted.
+  member_and_organizer:
+    paths: ["/membres/{slug}--{id}", "/organisateurs/{slug}"]
+    role: Not a search target. noindex when without events (today); out of the sitemap (proposal).
+  widgets:
+    paths: ["…/prochaines-soirees", "…/autres-soirees"]
+    role: "X-Robots-Tag: noindex since 2026-09-22; their old impressions fade out"
+  emails:
+    role: "The weekend selection and the outing alerts are e-mails, not pages: no SEO role; their landing links carry UTM tags."
+
+indexing_policy:
+  # The central question. 305,139 URLs in the sitemap (2026-10-28), 9,121 of them shown at least once in 90 days; and 92%
+  # of the 95-day clicks (5,378 of 5,850) landed on URLs that are NOT in today's sitemap (past events, old hub URLs).
+  principle: >
+    Submit what deserves a crawl now; let indexed pages that earn impressions stay; take out of the index only what is
+    empty, duplicated, spam or a tool. Indexability is decided on stable counts (nightly upcoming-event counts), never
+    on the page's results of the day, so a URL does not flip between index and noindex week to week.
+  tiers:
+    submit_and_index:
+      - "events: published, not duplicate, endDate >= today - 30 days (today; keep)"
+      - "city hubs: >= 15 upcoming events within the radius (proposal; today >= 1)"
+      - "date pages: location >= 100 upcoming events (today; keep, review the threshold at 2026-12-21 with the data)"
+      - "type pages: city >= 15 upcoming events and >= 5 of the type (proposal; today >= 1)"
+      - "tag pages: whitelisted tag and >= 5 upcoming events within the radius (proposal; today any tag with >= 1)"
+      - "place pages: >= 1 upcoming event and a real venue name (today >= 1)"
+    index_not_submitted:
+      - "past events (ended > 30 days): indexable whatever their age (decision 2026-09-22), never in the sitemap"
+      - "place pages with history only (>= 5 events in 24 months, no upcoming one): proposal, to build"
+    noindex_follow:
+      - "empty listings, drafts, duplicates, widget fragments, members and organizers without events (today)"
+      - "descriptor tags and tags under the threshold (proposal)"
+      - "internal search /recherche (proposal)"
+      - "date pages of quiet locations (today)"
+    gone_410:
+      - "deleted events and places (today); spam events once deleted (offre de prêt entre particulier… is live and indexed today)"
+    pilot_to_decide:
+      what: "noindex past events that ended more than 18 months ago AND had 0 Google impressions in 16 months AND 0 Bing clicks"
+      why: "Bing holds 2.93 M URLs of this site and crawls 350-420k a day; Google shows 3% of what is submitted. Pages with no demand in 16 months cost crawl and quality signals without earning anything."
+      conditions: "only after Bing page data is stored (decision 3 of STRATEGY.md 13); on one cohort first (events created before 2020), measured 8 weeks on fresh-event indexing and on Bing clicks; reversible"
+      status: proposed, not decided
+  estimated_effect: >
+    Tags 10,286 → at most 4,185 with a generous whitelist (counted on the 2026-10-28 sitemap), fewer with the 5-event threshold (needs a production count), places 40,280 →
+    to count in production, type pages 4,985 → fewer, hubs 11,407 → to count (cities with >= 15 events within 25 km).
+    Events (237,637) stay: they are the product. Sitemap lastmod must move only when the content does.
+
+crawl_budget:
+  facts:
+    - "Bingbot crawls 345,000-420,000 pages a day (October 2026), 2.93 M URLs in Bing's index"
+    - "Bing saw ~40,000 5xx a day from 2026-09-04 to 2026-10-16 (about 20% of its crawl), ~2,300 a day since 2026-10-17 (Cloudflare 521/522, 503 when Elasticsearch is down)"
+    - "226,664 of the 237,637 event URLs of the sitemap carry a lastmod of October 2026: backfills (images, websites, sessions) moved updatedAt, so lastmod tells crawlers nothing"
+    - "Google crawl stats are not available through the API: not verified (STRATEGY.md 12)"
+  rules:
+    - "sitemap lastmod = the date the visible content changed (name, dates, venue, description, status, offers), from a dedicated field, not updatedAt"
+    - "IndexNow ping (Bing, Yandex) for new, changed, cancelled and deleted events: Bing is the bigger engine and IndexNow is its fast lane"
+    - "5xx under 0.2% of Bing's crawl (about 700 a day): serve stale (stale-if-error is set on listings; extend it to event pages) and answer 503 + Retry-After only during real outages"
+    - "no URL scheme change in the 90 days (hub merge, trailing slash, country prefix, CH/BE/MC under their country, date pages: all between 2026-10-05 and 2026-10-27): let both engines settle"
+
+seasonality:
+  # Google clicks per month (all pages): 2025-07 3,651 · 08 3,308 · 09 3,314 · 10 2,997 · 11 2,199 · 12 2,068 ·
+  # 2026-01 1,872 · 02 1,900 · 03 1,821 · 04 1,773 · 05 1,663 · 06 1,500 · 07 1,334 · 08 2,118 · 09 2,096 · 10 (1-27) 1,340.
+  # Only one year of data: the seasonal shape is mixed with the 2025-2026 decline.
+  peaks:
+    - "summer (July-August): festivals, fêtes, markets, open-air events; the highest months of 2025"
+    - "Journées européennes du patrimoine (third weekend of September): JEP pages made 101 clicks and 3,419 impressions in September 2026, first shown from mid-August"
+    - "Halloween (late October): 81 event clicks in October 2025"
+    - "Christmas markets (late November-December) and New Year's Eve: 460 of the 1,944 event clicks of December 2025 (24%) went to Noël and réveillon events; réveillon queries peak in the last two weeks of December"
+  troughs: "January to June: 1,500-1,900 clicks a month in 2026"
+  rule: "seasonal events must be imported, deduplicated and linked from the hub 4-8 weeks before the date (Google showed JEP pages from mid-August for a mid-September date)"
+
+capacity:
+  people: "One person (Guillaume) plus Claude Code; by-night competes with the other sites for that time."
+  realistic_week: "4-6 hours on by-night SEO: one template or policy change a week (code, tests, deploy), the Monday report (30 min), data checks"
+  not_possible: "hand-written copy for thousands of pages; per-event editing. Everything goes through templates, policies, data quality and imports."
+
+refresh_policy:
+  templates_first: "A title, description or JSON-LD change is made in the template, shipped to a test half of the cities or pages when it can be split, and judged after 28 days against the other half."
+  wait: "28 days after a template change before judging it or changing the same template again"
+  per_page: "Only the 50 busiest city hubs get hand-written intros, refreshed once a year (or when a venue opens / closes)."
+
+pruning_policy:
+  spam: "events with loan, crypto or marabout offers, phone-number titles: delete (410) and block the author; review the members' events weekly (the loan scam event ranks on its own query today)"
+  duplicates: "same venue + same title + overlapping dates across sources: merge, 301 the duplicate (report: two Houlgate markets, two Auchy-les-Mines riding-school stages share their queries)"
+  dead_tags: "descriptor tags: noindex, follow, out of the sitemap; synonym tags of a type: 301 to the type page"
+  legacy_urls: "/c--* (country prefix), /{location}/agenda, trailing slashes: 301 in place since 2026-10-05; track that their impressions fall to ~0 (cluster elagage-index)"
+  past_events: "kept indexable (2026-09-22); see indexing_policy.tiers.pilot_to_decide"
+
+cannibalization_rules:
+  - "« sortir à / que faire à / agenda / événement(s) <ville> » → the city hub"
+  - "« <ville> ce soir », « ce week-end <ville> », « aujourd'hui » → the date page; the hub links to it, never the other way round for these words"
+  - "« concert(s) / spectacle / expo <ville> » → the type page; synonym tag pages 301 to it"
+  - "a venue's name → the place page; event pages of the venue link to it with the venue's name as anchor"
+  - "two event pages for one real event → merge (301)"
+  - "seasonal « marché de Noël <ville> » → the event page of that market when there is one market, the Noël tag page of the city when there are several"
+
+blog:
+  decision: >
+    No blog. The demand is for events, venues and « what's on » listings, which the database answers better than
+    articles; one person cannot keep a city-media cadence against Sortir à Paris or the tourism offices. The CMS (/p/)
+    stays for evergreen pages that answer a question with proven demand (>= 100 GSC impressions in 90 days) and for
+    the legal pages.
+
+measurement:
+  source: seo-monitor weekly opportunities report (Monday), Search Console 28 days vs the 28 before; Bing totals from bing_daily / bing_crawl
+  signals:
+    pages_to_push:
+      meaning: page in positions 4-20 with impressions
+      action: >
+        Event page: do not edit the page; look at its queries. A venue or organiser name → the place page must take it
+        (create or improve the place page, link it from the event); an event name + year → check the title template
+        has the town and year. City hub, date or type page: check its title and its links from the hub and events,
+        then wait 28 days. At most 5 a week, highest impressions first.
+    weak_snippets:
+      meaning: top-5 position, CTR under a third of the expected CTR
+      action: >
+        Event page on a venue/person query (studio mustard, thibault frisoni): the page answers another intent; fix
+        it on the place page, not the event. Hub on a brand + city query (« by night nimes » → /nimes at position 5,
+        0 clicks): title test of the hubs. CMS page: rewrite title and description.
+    cannibalization:
+      meaning: 2+ pages each with >= 15% of a query's impressions
+      action: "duplicates of one real event → merge (301); several events of one venue → the place page must own the venue name; hub vs date/type page → apply cannibalization_rules"
+    uncovered_queries:
+      meaning: best page beyond position 20
+      action: >
+        « sortir à / événements à <ville> » with the hub beyond 20 → the city is a candidate for the hand-written intro
+        and the title test (concert strasbourg, sortir à bordeaux, événements à mulhouse, sortir à strasbourg today).
+        Otherwise log it in STRATEGY.md and wait.
+    declining_pages:
+      meaning: -30% clicks or worse vs the previous 28 days
+      action: "a season ending is normal (Halloween, JEP, réveillon): check the date first; otherwise indexing (URL inspection), 5xx in the logs, then the SERP"
+    new_pages:
+      meaning: first impressions in the window
+      action: "check the URL is the intended type (not a widget, a query-string variant or a legacy URL); new hub/date/type pages are expected; count the new event pages created < 30 days ago (freshness KPI)"
+    sitemap_urls_never_shown:
+      meaning: in the sitemap, 0 impressions in 90 days
+      action: "per type, not per URL: tags and places above the share of the indexing_policy thresholds → tighten the threshold; events → freshness pipeline (IndexNow, lastmod, internal links from hubs and date pages)"
+    target_wrong_page:
+      meaning: a target query is answered by another page than the one in `targets`
+      action: treat as cannibalization; for hub targets in their first 8 weeks (date pages are new), wait
+    unclustered_share:
+      meaning: share of clicks on pages no cluster claims
+      action: >
+        Empty by construction: evenements-longue-traine claims every path left (`/*`). Its replacement signal is the
+        catch-all's share of the site's clicks: if it passes 55% two weeks running, a city or a page type grew outside
+        its cluster, add it to this file.
+  freshness_kpi:
+    meaning: clicks and distinct pages of events created in the last 6 months (the engine that broke in April-July 2026)
+    how: "SQL in STRATEGY.md 9 (event id above the highest id seen 6 months earlier)"
+    baseline: {2026-06: {clicks: 109, pages: 2715}, 2026-09: {clicks: 601, pages: 12492}, 2026-10_1_to_27: {clicks: 300, pages: 8510}}
+  site_kpis:
+    baseline:
+      google_28d_to_2026-10-25: {clicks: 1410, impressions: 84679}
+      google_same_months_2025: {2025-10: {clicks: 2997, impressions: 147504}, 2025-11: {clicks: 2199, impressions: 105860}, 2025-12: {clicks: 2068, impressions: 125461}}
+      bing_october_2026: {clicks_per_day: 169, crawl_5xx_per_day: 2300}
+    targets:
+      - {date: 2026-11-23, google_clicks_28d: 1250, bing_5xx_per_day: "< 1,000", freshness_clicks_28d: 350}
+      - {date: 2026-12-21, google_clicks_28d: 1300, bing_clicks_28d: 4500, freshness_clicks_28d: 450, non_event_sitemap_urls: "< 40,000 (67,502 on 2026-10-28)"}
+      - {date: 2027-01-25, google_clicks_28d: 1250, google_impressions_28d: 85000, bing_clicks_28d: 4500, freshness_clicks_28d: 500}
+    note: >
+      Holding Google clicks flat from October to January is the goal: last year October → January fell by 38% (part
+      season, part decline). Reaching 1,250 a month in January is +40% on that trajectory.
+
+clusters:
+  # ---------------------------------------------------------------- priority 1
+  - id: ce-soir-ce-week-end
+    name: Date pages (ce soir, ce week-end) of the busy cities
+    priority: 1
+    goal: launch
+    # Launched 2026-10-22. The generic "when" intent is the biggest non-brand demand: « ce week end » 12,327
+    # impressions in 16 months (position 46), « sortir ce soir » 5,723 (42), « soirée ce soir » 5,534 (31, 102 clicks),
+    # « que faire aujourd'hui » 3,373 (47), all answered today by the city hubs at positions 30-45.
+    pages:
+      - /paris/ce-soir
+      - /paris/ce-week-end
+      - /marseille/ce-soir
+      - /marseille/ce-week-end
+      - /lyon/ce-soir
+      - /lyon/ce-week-end
+      - /toulouse/ce-soir
+      - /toulouse/ce-week-end
+      - /nice/ce-soir
+      - /nice/ce-week-end
+      - /nantes/ce-soir
+      - /nantes/ce-week-end
+      - /montpellier/ce-soir
+      - /montpellier/ce-week-end
+      - /strasbourg/ce-soir
+      - /strasbourg/ce-week-end
+      - /bordeaux/ce-soir
+      - /bordeaux/ce-week-end
+      - /lille/ce-soir
+      - /lille/ce-week-end
+      - /rennes/ce-soir
+      - /rennes/ce-week-end
+      - /reims/ce-soir
+      - /reims/ce-week-end
+      - /mulhouse/ce-soir
+      - /mulhouse/ce-week-end
+      - /nancy/ce-soir
+      - /nancy/ce-week-end
+      - /metz/ce-soir
+      - /metz/ce-week-end
+      - /rouen/ce-soir
+      - /rouen/ce-week-end
+      - /caen/ce-soir
+      - /caen/ce-week-end
+      - /amiens/ce-soir
+      - /amiens/ce-week-end
+      - /orleans/ce-soir
+      - /orleans/ce-week-end
+      - /beziers/ce-soir
+      - /beziers/ce-week-end
+      - /aix-en-provence/ce-soir
+      - /aix-en-provence/ce-week-end
+      - /besancon/ce-soir
+      - /besancon/ce-week-end
+      - /grenoble/ce-soir
+      - /grenoble/ce-week-end
+      - /toulon/ce-soir
+      - /toulon/ce-week-end
+    targets:
+      - query: bordeaux ce soir             # 2,811 impr in 16 months, pos 35; 95 days: 520 at pos 30, all on /bordeaux
+        page: /bordeaux/ce-soir
+      - query: bordeaux ce week end         # 965, pos 50; 95 days 293 at pos 43 ("weekend" in one word is another word)
+        page: /bordeaux/ce-week-end
+      - query: nantes ce week end           # 791, pos 52; 95 days 124 at pos 36
+        page: /nantes/ce-week-end
+      - query: lyon ce soir                 # 1,867, pos 46; 95 days 259 at pos 33
+        page: /lyon/ce-soir
+      - query: marseille ce soir            # 2,777, pos 54; 95 days 212 at pos 32
+        page: /marseille/ce-soir
+      - query: lille ce soir                # 1,054, pos 43; 95 days 111 at pos 31
+        page: /lille/ce-soir
+      - query: sortir ce soir               # 5,723, pos 42, 34 clicks; Google localises it: no single page
+      - query: que faire ce week end        # 2,668, pos 57; same
+
+  - id: saisons-fetes
+    name: Seasonal events (Noël, réveillon, Halloween, JEP, fête de la musique)
+    priority: 1
+    goal: grow
+    # 24% of December 2025's event clicks were Noël and réveillon events. The demand is town by town (« marché de
+    # noël lambres-lez-douai », « réveillon saint sylvestre le pouliguen » 1,069 impr at pos 7): the targets have no
+    # page and measure the intent wherever it lands. The pages are the Noël / Halloween / Nouvel An tag pages that
+    # exist today; more appear when the markets get imported (only cities with an upcoming tagged event have one).
+    pages:
+      - /amiens/agenda/tag/noel--53
+      - /colmar/agenda/tag/noel--53
+      - /metz/agenda/tag/noel--53
+      - /metz/agenda/tag/halloween--269
+      - /montpellier/agenda/tag/noel--53
+      - /montpellier/agenda/tag/halloween--269
+      - /montpellier/agenda/tag/nouvel-an--1171
+      - /mulhouse/agenda/tag/noel--53
+      - /nancy/agenda/tag/noel--53
+      - /nancy/agenda/tag/halloween--269
+      - /paris/agenda/tag/halloween--269
+      - /reims/agenda/tag/noel--53
+      - /reims/agenda/tag/halloween--269
+      - /rouen/agenda/tag/noel--53
+      - /strasbourg/agenda/tag/noel--53
+      - /strasbourg/agenda/tag/halloween--269
+      - /toulouse/agenda/tag/noel--53
+    targets:
+      - query: marché de noël               # 2,628 impr in 16 months, pos 18, 8 clicks (Nov-Dec 2025)
+      - query: reveillon                    # 2,887, pos 25, 25 clicks
+      - query: saint sylvestre              # 2,902, pos 25, 14 clicks
+      - query: nouvel an                    # 381, pos 44
+      - query: halloween                    # 1,037, pos 33
+      - query: journées du patrimoine       # 507, pos 32 (September; JEP pages: 101 clicks in Sept. 2026)
+      - query: fête de la musique           # 860, pos 41 (June)
+
+  - id: hubs-metropoles
+    name: City hubs of the 11 biggest cities
+    priority: 1
+    goal: grow
+    # Hubs never carried the site: 30-120 clicks a month in 16 months, positions 40-50 in 2025, 25-30 since April
+    # 2026. Head terms of big cities are held by tourism offices, city media and Billetréduc (STRATEGY.md 2.6): grow,
+    # with modest targets. Legacy /{city}/agenda URLs are listed so the 2026-10-05 merge stays visible here.
+    pages:
+      - /paris
+      - /paris/agenda
+      - /marseille
+      - /marseille/agenda
+      - /lyon
+      - /lyon/agenda
+      - /toulouse
+      - /toulouse/agenda
+      - /nice
+      - /nice/agenda
+      - /nantes
+      - /nantes/agenda
+      - /montpellier
+      - /montpellier/agenda
+      - /strasbourg
+      - /bordeaux
+      - /bordeaux/agenda
+      - /lille
+      - /lille/agenda
+      - /rennes
+      - /rennes/agenda
+    targets:
+      - query: sortir à bordeaux            # 2,147 impr in 16 months, pos 42; 95 days 433 at pos 37 (report: uncovered)
+        page: /bordeaux
+        match: exact
+      - query: sortir à strasbourg          # 742, pos 43; 95 days 211 at pos 31
+        page: /strasbourg
+        match: exact
+      - query: sortir à nantes              # 715, pos 46; 95 days 127 at pos 37
+        page: /nantes
+        match: exact
+      - query: sortir à lyon                # 553, pos 48; 95 days 194 at pos 40
+        page: /lyon
+        match: exact
+      - query: sortir à rennes              # 395, pos 46; 95 days 139 at pos 39
+        page: /rennes
+        match: exact
+      - query: sortir à toulouse            # 639, pos 62; 95 days 31 at pos 46
+        page: /toulouse
+        match: exact
+      - query: evenement bordeaux           # 1,054, pos 46; 95 days 355 at pos 35 (événement(s) à bordeaux, … ce soir)
+        page: /bordeaux
+      - query: agenda lille                 # 279, pos 25; 95 days 60 at pos 14, the best-placed metro hub
+        page: /lille
+
+  - id: hubs-villes-moyennes
+    name: City hubs of the medium cities (less competition, better positions)
+    priority: 1
+    goal: grow
+    # Medium cities rank better than the metros: Mulhouse 12-15 on « soirée / ce soir », Roanne 23-29, Sète 14.
+    # « sortir à reims » alone: 2,689 impressions in 16 months. Toulon, Pau, La Rochelle, Troyes, Colmar,
+    # Valence, Bayonne, Vannes, Saint-Malo and Chartres had 0 hub impressions in 95 days: watch whether they appear.
+    pages:
+      - /reims
+      - /mulhouse
+      - /nancy
+      - /metz
+      - /rouen
+      - /caen
+      - /amiens
+      - /orleans
+      - /beziers
+      - /roanne
+      - /nimes
+      - /aix-en-provence
+      - /besancon
+      - /limoges
+      - /brest
+      - /biarritz
+      - /perpignan
+      - /angers
+      - /dijon
+      - /tours
+      - /grenoble
+      - /poitiers
+      - /toulon
+      - /saint-etienne
+      - /clermont-ferrand
+      - /le-mans
+      - /le-havre
+      - /villeurbanne
+      - /avignon
+      - /pau
+      - /la-rochelle
+      - /annecy
+      - /bastia
+      - /ajaccio
+      - /sete
+      - /arles
+      - /albi
+      - /troyes
+      - /colmar
+      - /valence
+      - /bayonne
+      - /vannes
+      - /quimper
+      - /saint-malo
+      - /chartres
+    targets:
+      - query: sortir à reims               # 2,689 impr in 16 months, pos 56; 95 days 164 at pos 32
+        page: /reims
+        match: exact
+      - query: evenement mulhouse           # 1,501, pos 55; 95 days 276 at pos 28 (report: uncovered « événements à mulhouse »)
+        page: /mulhouse
+      - query: sortir à rouen               # 704, pos 41; 95 days 142 at pos 32
+        page: /rouen
+        match: exact
+      - query: sortir à besançon            # 388, pos 36; 95 days 150 at pos 30
+        page: /besancon
+        match: exact
+      - query: sortir à metz                # 510, pos 47; 95 days 128 at pos 35
+        page: /metz
+        match: exact
+      - query: sortir à nancy               # 527, pos 41; 95 days 109 at pos 33
+        page: /nancy
+        match: exact
+      - query: sortir à béziers             # 290, pos 47; 95 days 131 at pos 36
+        page: /beziers
+        match: exact
+      - query: soirée roanne                # 512, pos 27; 95 days 103 at pos 23
+        page: /roanne
+
+  # ---------------------------------------------------------------- priority 2
+  - id: marque-accueil
+    name: Brand and home page
+    priority: 2
+    goal: defend
+    # « by night » 16,206 impressions and 174 clicks in 16 months at position 7, shared with the Toulouse tourism
+    # office's guided tour « Toulouse by night » and other brands. « <ville> by night » goes to the hub.
+    pages:
+      - /
+    targets:
+      - query: by night
+        page: /
+        match: exact
+      - query: bynight                      # 1,300, pos 5.5, 71 clicks
+        page: /
+      - query: nancy by night               # 266, pos 12, the brand + city query with demand; 95 days 118 at pos 9
+        page: /nancy
+
+  - id: sorties-par-type
+    name: Type pages (concerts, spectacles, expos, famille, étudiant) of the busy cities
+    priority: 2
+    goal: launch
+    # Submitted since 2026-10-22/27. « concert » queries: 25,568 impressions in 16 months (402 clicks), spread over
+    # event pages; « concert <ville> » lands on hubs or one event at positions 40-60. JDS and fest.fr win these with
+    # an agenda listing (indicative SERP read).
+    pages:
+      - /paris/agenda/sortir/*
+      - /marseille/agenda/sortir/*
+      - /lyon/agenda/sortir/*
+      - /toulouse/agenda/sortir/*
+      - /nice/agenda/sortir/*
+      - /nantes/agenda/sortir/*
+      - /montpellier/agenda/sortir/*
+      - /strasbourg/agenda/sortir/*
+      - /bordeaux/agenda/sortir/*
+      - /lille/agenda/sortir/*
+      - /rennes/agenda/sortir/*
+      - /reims/agenda/sortir/*
+      - /mulhouse/agenda/sortir/*
+      - /nancy/agenda/sortir/*
+      - /rouen/agenda/sortir/*
+      - /grenoble/agenda/sortir/*
+      - /aix-en-provence/agenda/sortir/*
+    targets:
+      - query: concert strasbourg           # 371 impr in 16 months; 95 days 119, 100 of them in the last 28 (report: uncovered, pos 40)
+        page: /strasbourg/agenda/sortir/concert
+      - query: concert lyon                 # 1,436, pos 48
+        page: /lyon/agenda/sortir/concert
+      - query: concert nantes               # 635, pos 42; 95 days 112 at pos 37
+        page: /nantes/agenda/sortir/concert
+      - query: concert toulouse             # 785, pos 51 (report: « concert toulouse ce mois » uncovered)
+        page: /toulouse/agenda/sortir/concert
+      - query: concert bordeaux             # 589, pos 58
+        page: /bordeaux/agenda/sortir/concert
+      - query: concert rennes               # 505, pos 34 (one event page at pos 4-9 today)
+        page: /rennes/agenda/sortir/concert
+      - query: spectacle toulouse           # 1,263, pos 51
+        page: /toulouse/agenda/sortir/spectacle
+      - query: soirée étudiante             # 435, pos 43; best page today /paris/agenda/sortir/etudiant
+
+  - id: lieux-salles
+    name: Venue pages (salles, clubs, bars, médiathèques)
+    priority: 2
+    goal: grow
+    # Venue names are a large hidden demand answered by old event pages with a near-zero CTR: « triskell
+    # montpellier » 3,318 impressions at position 8 and 0 clicks, « ferme des briques » 2,688 at 12, « stade jean
+    # pierre rives » 2,059 at 10, « apero du mistral » 6,252 at 10 (22 clicks). Place pages (40,280 submitted) earn
+    # 10 clicks in 95 days. Goal: the place page takes the venue name. Targets without `page`: no place page today
+    # (no upcoming event, or the venue is stored under another name).
+    pages:
+      - /paris/agenda/sortir-a/le-bataclan
+      - /paris/agenda/sortir-a/mediatheque-helene-berr
+      - /fecamp/agenda/sortir-a/salle-des-galets
+      - /lille/agenda/sortir-a/lille-grand-palais-salle-louis-pasteur
+      - /reims/agenda/sortir-a/comedy-club-du-clos
+      - /amiens/agenda/sortir-a/patinoire-coliseum-amiens
+      - /toulouse/agenda/sortir-a/theatre-les-3t-d-a-cote
+      - /poitiers/agenda/sortir-a/parc-des-expositions-poitiers
+      - /arles/agenda/sortir-a/cinemas-le-mejan-actes-sud
+    targets:
+      - query: médiathèque hélène berr     # 780 impr in 16 months at pos 14, 0 clicks, on an event page
+        page: /paris/agenda/sortir-a/mediatheque-helene-berr
+      - query: bataclan                     # 213, pos 44
+        page: /paris/agenda/sortir-a/le-bataclan
+      - query: salle des galets             # 657, pos 10, 4 clicks
+        page: /fecamp/agenda/sortir-a/salle-des-galets
+      - query: triskell montpellier         # 3,318, pos 8, 0 clicks
+      - query: ferme des briques            # 2,688, pos 12, 0 clicks (report: cannibalization between 2 events)
+      - query: stade jean pierre rives      # 2,059, pos 10, 0 clicks
+      - query: club hippique pibrac         # 837, pos 13, 0 clicks
+      - query: apero du mistral             # 6,252, pos 10, 22 clicks (Aix-en-Provence)
+
+  - id: evenements-grandes-villes
+    name: Events, venues and listings of the ~45 big cities
+    priority: 2
+    goal: defend
+    # Everything under the city prefix that the clusters above do not list: event pages first (paris alone: 420
+    # clicks in 95 days). Work here is template-level (title with town and year, past events → venue, JSON-LD,
+    # duplicates), shared with the long tail. Targets are the evergreen pages that carry these cities today.
+    pages:
+      - /paris/*
+      - /paris-0*
+      - /paris-1*
+      - /paris-2*
+      - /saint-denis-1/*
+      - /marseille/*
+      - /marseille-0*
+      - /marseille-1*
+      - /lyon/*
+      - /villeurbanne/*
+      - /toulouse/*
+      - /nice/*
+      - /nantes/*
+      - /montpellier/*
+      - /strasbourg/*
+      - /bordeaux/*
+      - /lille/*
+      - /rennes/*
+      - /reims/*
+      - /mulhouse/*
+      - /nancy/*
+      - /metz/*
+      - /rouen/*
+      - /caen/*
+      - /amiens/*
+      - /orleans/*
+      - /beziers/*
+      - /roanne/*
+      - /nimes/*
+      - /aix-en-provence/*
+      - /besancon/*
+      - /limoges/*
+      - /brest/*
+      - /biarritz/*
+      - /perpignan/*
+      - /angers/*
+      - /dijon/*
+      - /tours/*
+      - /grenoble/*
+      - /poitiers/*
+      - /toulon/*
+      - /saint-etienne/*
+      - /clermont-ferrand/*
+      - /le-mans/*
+      - /le-havre/*
+      - /le-havre-1/*
+      - /avignon/*
+      - /issy-les-moulineaux/*
+      - /versailles/*
+      - /sete/*
+    targets:
+      - query: nephael                      # 2,088 impr in 16 months, 83 clicks, pos 13 (a 2014 TV report page, Nantes)
+      - query: droles de dames              # 2,724, pos 8, 15 clicks (Paris party night)
+      - query: after paris                  # 2,824, pos 18, 28 clicks
+      - query: bokit montpellier            # 1,468, pos 11
+      - query: run from the dead            # 611, pos 7, 34 clicks (Grenoble; « run from the dead 2026 » 19 clicks)
+      - query: salle limayrac               # 1,369, pos 10, 0 clicks (Toulouse venue answered by an event)
+
+  # ---------------------------------------------------------------- priority 3
+  - id: elagage-index
+    name: URLs to take out of the index (legacy redirects, tools, spam)
+    priority: 3
+    goal: prune
+    # Their impressions must fall to ~0: legacy country prefix /c--* (301 since 2026-10-05; /c--france events still
+    # had 69 clicks in the last 28 days, they move to /france/…), internal search, member and organizer profiles,
+    # and the loan-scam event (spam, ranks on its own query; it is claimed by evenements-grandes-villes in the
+    # scorecard because /paris/* comes first, and listed here for the record). No target: nothing to win.
+    pages:
+      - /c--*
+      - /recherche*
+      - /membres/*
+      - /organisateurs/*
+      - /paris/soiree/offre-de-pret-entre-particulier-serieux-et-honnete--846104
+    targets: []
+
+  - id: evenements-longue-traine
+    name: Events of every other town (the long tail, ~4,000 locations)
+    priority: 3
+    goal: defend
+    # The catch-all: every path no cluster above claims (events, venues and listings of ~4,000 smaller locations,
+    # /france, the overseas departments). 47% of the clicks. Clicks are spread thin: the top 50 locations carry half
+    # of the site's clicks, the top 250 two thirds, and it takes 1,500 locations to reach 88% (28 days to 2026-10-25). It stays one cluster because it is managed
+    # through templates, imports and the indexing policy, not page by page. MUST stay last. Targets: the generic
+    # intents of small towns, which land on event pages.
+    pages:
+      - /*
+    targets:
+      - query: marché                       # 25,940 impr in 16 months at pos 22, 23 clicks: weekly markets (« marché houlgate »)
+      - query: brocante                     # 4,947, pos 16
+      - query: vide grenier                 # 920, pos 23
+      - query: loto                         # 2,902, pos 14, 18 clicks
+      - query: salon                        # 4,555, pos 31, 36 clicks
+      - query: festival                     # 4,632, pos 53
+      - query: salle des fêtes              # 1,046, pos 21
+      - query: soirée célibataire           # 672, pos 32, 9 clicks
+
+kpis:
+  # Per cluster, 28-day window ending on the review date (seo-monitor cluster scorecard). Baseline: the 28 days
+  # 2026-09-28 → 2026-10-25 of the 2026-10-28 report (previous 28 days in brackets: the end of summer and the JEP).
+  # Last year November ran 24% below October and January 38% below: "hold" on the event clusters is a real target.
+  # Clicks outside the two event clusters are small numbers: judge them on impressions and positions first.
+  ce-soir-ce-week-end:       {baseline_28d: {impr: 0, clicks: 0, note: "launched 2026-10-22; the hubs answer its targets at pos 30-44"},
+                              targets: {2026-11-23: {impr: 300}, 2026-12-21: {impr: 1000, clicks: 10}, 2027-01-25: {impr: 1500, clicks: 25, targets_on_their_date_page: ">= 4 of 6"}}}
+  saisons-fetes:             {baseline_28d: {impr: 0, clicks: 0, note: "tag pages only; the seasonal event pages are in the event clusters"},
+                              targets: {2026-12-21: {tag_pages_impr: 500, target_impr_marche_de_noel_reveillon_saint_sylvestre: ">= 1,500"}, 2027-01-25: {noel_reveillon_event_clicks_december_2026: ">= 460 (December 2025)"}}}
+  hubs-metropoles:           {baseline_28d: {impr: 3509, clicks: 16, previous: "3,260 impr / 9 clicks"},
+                              targets: {2026-11-23: {impr: 3500}, 2026-12-21: {impr: 4000, position_sortir_a_bordeaux: "<= 30"}, 2027-01-25: {impr: 5000, clicks: 40, position_sortir_a_bordeaux: "<= 25", position_sortir_a_strasbourg: "<= 20"}}}
+  hubs-villes-moyennes:      {baseline_28d: {impr: 3880, clicks: 20, previous: "3,833 impr / 12 clicks"},
+                              targets: {2026-12-21: {hubs_with_impressions: ">= 40 of 45"}, 2027-01-25: {impr: 5000, clicks: 45, position_sortir_a_reims: "<= 20", position_soiree_roanne: "<= 15"}}}
+  marque-accueil:            {baseline_28d: {impr: 1646, clicks: 45, previous: "1,323 impr / 15 clicks"}, targets: {2027-01-25: {clicks: ">= 40", position_by_night: "<= 6"}}}
+  sorties-par-type:          {baseline_28d: {impr: 77, clicks: 0},
+                              targets: {2026-12-21: {impr: 800}, 2027-01-25: {impr: 1500, clicks: 15, targets_on_their_type_page: ">= 3 of 7"}}}
+  lieux-salles:              {baseline_28d: {impr: 31, clicks: 0, note: "the venue targets total ~2,000 impressions on event pages, 0 clicks"},
+                              targets: {2026-12-21: {place_page_template_live: true}, 2027-01-25: {impr: 1000, clicks: 15, targets_on_a_place_page: ">= 3 of 8"}}}
+  evenements-grandes-villes: {baseline_28d: {impr: 30629, clicks: 589, previous: "47,511 impr / 897 clicks"},
+                              targets: {2026-11-23: {clicks: ">= 520"}, 2026-12-21: {clicks: ">= 540"}, 2027-01-25: {clicks: ">= 520", impr: ">= 30000"}}}
+  elagage-index:             {baseline_28d: {impr: 4166, clicks: 71, note: "mostly /c--france events that 301 to /france/…"},
+                              targets: {2026-12-21: {impr: "< 2,000"}, 2027-01-25: {impr: "< 500", spam_event: "410"}}}
+  evenements-longue-traine:  {baseline_28d: {impr: 40741, clicks: 669, previous: "52,943 impr / 978 clicks"},
+                              targets: {2026-11-23: {clicks: ">= 580"}, 2026-12-21: {clicks: ">= 620"}, 2027-01-25: {clicks: ">= 580", freshness_clicks_28d: 500}}}
