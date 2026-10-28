@@ -60,11 +60,11 @@ final class AdvertiserFiguresProviderTest extends AppKernelTestCase
         self::assertSame(1, $figures->members);
         self::assertSame(2, $figures->memberEvents);
         // The ticketing feeds apart from the agendas, the development parser left out
-        self::assertEqualsCanonicalizing(['Fnac Spectacles', 'Billets Reduc', 'SeeTickets (ex Digitick)', 'CDiscount'], $figures->ticketingSources);
+        self::assertEqualsCanonicalizing(['Fnac Spectacles', 'Billets Reduc', 'SeeTickets (ex Digitick)', 'CDiscount', 'Fever'], $figures->ticketingSources);
         self::assertContains('Open Agenda', $figures->agendaSources);
         self::assertContains('Data Tourisme', $figures->agendaSources);
         self::assertNotContains('test', $figures->agendaSources);
-        self::assertSame(\count($figures->agendaSources) + 4, $figures->sources());
+        self::assertSame(\count($figures->agendaSources) + 5, $figures->sources());
     }
 
     public function testKeepsTheFiguresADay(): void
