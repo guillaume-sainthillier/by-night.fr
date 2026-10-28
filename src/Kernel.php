@@ -12,6 +12,7 @@ namespace App;
 
 use App\DependencyInjection\Compiler\AsyncElasticaPersisterPass;
 use App\DependencyInjection\Compiler\BatchResetCompilerPass;
+use App\DependencyInjection\Compiler\TwoFactorAccessListenerPass;
 use Locale;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -37,6 +38,7 @@ final class Kernel extends BaseKernel
     {
         $container->addCompilerPass(new AsyncElasticaPersisterPass());
         $container->addCompilerPass(new BatchResetCompilerPass());
+        $container->addCompilerPass(new TwoFactorAccessListenerPass());
     }
 
     /**

@@ -64,7 +64,11 @@ final class TwoFactorLoginTest extends AppWebTestCase
         $this->logInWithPassword();
         self::assertResponseRedirects('/2fa');
 
-        // Only between the password and the second factor: the referrer pages stay closed
+        // Between the password and the second factor, even a page without rule of access_control is closed: the access
+        // listener of scheb/2fa still finds the token, through the untracked token storage (TwoFactorAccessListenerPass)
+        $this->client->request('GET', '/');
+        self::assertResponseRedirects('/2fa');
+        // The member pages too
         $this->client->request('GET', '/espace-perso/mes-soirees');
         self::assertResponseRedirects('/2fa');
 
