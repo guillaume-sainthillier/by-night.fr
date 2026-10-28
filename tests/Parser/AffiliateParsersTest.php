@@ -15,6 +15,7 @@ use App\Entity\Event;
 use App\Parser\AffiliateParsers;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
+use App\Parser\Common\FeverImpactParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Parser\Common\OpenAgendaParser;
 use App\Parser\Common\SeeTicketsKwankoParser;
@@ -32,6 +33,7 @@ final class AffiliateParsersTest extends TestCase
         yield 'SeeTickets' => [SeeTicketsKwankoParser::getParserName(), true];
         yield 'BilletsReduc' => [BilletsReducAwinParser::getParserName(), true];
         yield 'CDiscount' => [CDiscountAwinParser::getParserName(), true];
+        yield 'Fever' => [FeverImpactParser::getParserName(), true];
         yield 'OpenAgenda' => [OpenAgendaParser::getParserName(), false];
     }
 
@@ -48,10 +50,11 @@ final class AffiliateParsersTest extends TestCase
 
     public function testTheAgendasShowAnEventBestThenTheFeedsInOrder(): void
     {
-        self::assertSame([0, 1, 2, 3, 4], array_map(AffiliateParsers::pageRank(...), [
+        self::assertSame([0, 1, 2, 3, 4, 5], array_map(AffiliateParsers::pageRank(...), [
             OpenAgendaParser::getParserName(),
             FnacSpectaclesAwinParser::getParserName(),
             BilletsReducAwinParser::getParserName(),
+            FeverImpactParser::getParserName(),
             SeeTicketsKwankoParser::getParserName(),
             CDiscountAwinParser::getParserName(),
         ]));

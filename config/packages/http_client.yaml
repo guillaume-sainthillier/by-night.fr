@@ -34,6 +34,15 @@ framework:
                     Accept: 'application/json'
                 rate_limiter: 'sowprog_api'
 
+            # Impact's Partner API (https://integrations.impact.com/partner-api-reference), used by
+            # App\Parser\Common\FeverImpactParser to download Fever's catalogue (~140 MB unzipped).
+            impact.client:
+                base_uri: 'https://api.impact.com/'
+                auth_basic: '%env(IMPACT_ACCOUNT_SID)%:%env(IMPACT_AUTH_TOKEN)%'
+                headers:
+                    Accept: 'application/json'
+                timeout: 120
+
             # Umami's API (App\Analytics\UmamiClient): https://analytics.silarhi.fr/ in production, which the worker
             # reaches (unlike the "web" network). A day's metrics of every page take a while: no default 30 s idle timeout.
             umami.client:
