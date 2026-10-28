@@ -41,7 +41,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta property="og:type" content="{% block og_type 'website' %}">
     <meta property="og:url" content="{% block og_url url('app_index') %}">
     <meta property="og:locale" content="fr" />
-    <meta property="og:image" content="{% block og_image absolute_url(asset('build/images/share.png')) %}">
+    <meta property="og:image" content="{% block og_image absolute_url(asset('build/images/og-image.jpg')) %}">
     {# A page whose picture has no known size empties both blocks: platforms trust the size they are given #}
     {% set ogImageWidth %}{% block og_image_width '1200' %}{% endset %}
     {% set ogImageHeight %}{% block og_image_height '630' %}{% endset %}

@@ -75,6 +75,8 @@ COPY --from=node_assets_builder --link /app/public/build ./public/build
 COPY --link --exclude=assets --exclude=docker . .
 # ux_icon() reads the SVG files at runtime (and on cache warmup): without them, every icon comes from the Iconify API
 COPY --link assets/icons ./assets/icons
+# App\Picture\EventCard draws the events' social images on this layer, with these fonts, at runtime
+COPY --link assets/og ./assets/og
 
 # Config
 COPY --link docker/Caddyfile /etc/frankenphp/Caddyfile

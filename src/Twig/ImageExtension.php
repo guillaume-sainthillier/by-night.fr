@@ -15,10 +15,12 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\User;
+use App\Picture\EventCard;
 use App\Picture\EventProfilePicture;
 use App\Picture\LocationPicture;
 use App\Picture\UserProfilePicture;
 use InvalidArgumentException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Attribute\AsTwigFunction;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 
@@ -29,7 +31,23 @@ final readonly class ImageExtension
         private UserProfilePicture $userProfilePicture,
         private LocationPicture $locationPicture,
         private PropertyMappingFactoryInterface $propertyMappingFactory,
+        private EventCard $eventCard,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
+    }
+
+    /**
+     * The absolute URL of the social image of an event: see EventCard.
+     */
+    #[AsTwigFunction(name: 'event_card_url')]
+    public function eventCardUrl(Event $event): string
+    {
+        return $this->urlGenerator->generate('app_event_card', [
+            'location' => $event->getLocationSlug(),
+            'slug' => $event->getSlug(),
+            'id' => $event->getId(),
+            'v' => $this->eventCard->hash($event),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     /**

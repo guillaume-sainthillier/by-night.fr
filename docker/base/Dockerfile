@@ -29,6 +29,7 @@ RUN IPE_GD_WITHOUTAVIF=1 \
         exif \
         ffi \
         gd \
+        imagick \
         intl \
         opcache \
         pcntl \

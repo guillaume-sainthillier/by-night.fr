@@ -1,0 +1,360 @@
+<!doctype html>
+<!--
+    Social images of the site, in the layout of sainthillier.fr's og:image, drawn by `pnpm og-image`
+    (scripts/og-image.mjs):
+
+    ?layer=default  the image of every page without one of its own: assets/images/og-image.jpg
+    ?layer=event    the fixed layer of an event's card: assets/og/event.png. App\Picture\EventCard draws the event on
+                    it (its city and category, name, date, hours and venue, the poster and the figures of the card): the
+                    boxes below marked "drawn by EventCard" are its coordinates, keep both in step.
+-->
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            @font-face {
+                font-family: 'Epilogue';
+                font-weight: 100 900;
+                src: url('../../node_modules/@fontsource-variable/epilogue/files/epilogue-latin-wght-normal.woff2')
+                    format('woff2');
+            }
+
+            :root {
+                --primary: #c43d1d;
+                --primary-strong: #ae2a08;
+                --primary-soft: #ffdad2;
+                --accent: #006a65;
+                --ink: #191c22;
+                --muted: #5a413b;
+                --surface: #f9f9ff;
+                --surface-low: #f2f3fd;
+                --hairline: #e7e8f0;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 1200px;
+                height: 630px;
+                overflow: hidden;
+            }
+
+            body {
+                position: relative;
+                background: var(--surface);
+                color: var(--ink);
+                font-family: 'Epilogue', sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            svg {
+                width: 1em;
+                height: 1em;
+                flex-shrink: 0;
+            }
+
+            .blob {
+                position: absolute;
+                border-radius: 9999px;
+                filter: blur(64px);
+            }
+
+            .blob-primary {
+                top: -160px;
+                right: -80px;
+                width: 620px;
+                height: 620px;
+                background: rgb(217 72 38 / 0.1);
+            }
+
+            .blob-accent {
+                bottom: -200px;
+                left: -120px;
+                width: 460px;
+                height: 460px;
+                background: rgb(0 106 101 / 0.14);
+            }
+
+            /* Drawn by EventCard on an event card: the city and the category, from (72, 64), 36 px high */
+            .badges {
+                position: absolute;
+                top: 64px;
+                left: 72px;
+                display: flex;
+                gap: 10px;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                height: 36px;
+                padding: 0 16px;
+                border-radius: 9999px;
+                background: var(--surface-low);
+                font-size: 16px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                white-space: nowrap;
+            }
+
+            .badge-status {
+                background: var(--primary-soft);
+                text-transform: uppercase;
+            }
+
+            .badge-topic {
+                color: var(--primary);
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 9999px;
+                background: var(--primary);
+            }
+
+            .site {
+                position: absolute;
+                top: 488px;
+                left: 72px;
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 22px;
+                border-radius: 12px;
+                background: var(--primary);
+                color: #ffffff;
+                font-size: 24px;
+                font-weight: 800;
+            }
+
+            /* The card: 340 × 340 at (788, 140). Its panel is 250 px high, the figures take the 90 px below */
+            .card-glow {
+                position: absolute;
+                top: 130px;
+                left: 778px;
+                width: 360px;
+                height: 360px;
+                border-radius: 28px;
+                background: linear-gradient(to top right, rgb(217 72 38 / 0.14), rgb(0 106 101 / 0.16), transparent);
+                filter: blur(16px);
+            }
+
+            .card {
+                position: absolute;
+                top: 140px;
+                left: 788px;
+                width: 340px;
+                height: 340px;
+                overflow: hidden;
+                border: 1px solid var(--hairline);
+                border-radius: 20px;
+                background: #ffffff;
+                box-shadow:
+                    0 20px 25px -5px rgb(11 28 48 / 0.1),
+                    0 8px 10px -6px rgb(11 28 48 / 0.1);
+            }
+
+            .panel {
+                height: 250px;
+                background: var(--surface-low);
+                border-bottom: 1px solid var(--hairline);
+            }
+
+            .stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                height: 89px;
+            }
+
+            .stats div {
+                position: relative;
+            }
+
+            .stats div + div {
+                border-left: 1px solid var(--hairline);
+            }
+
+            /* Drawn by EventCard: the value of each figure, centred at x 845, 958, 1071, baseline 440 */
+            .stats dd {
+                position: absolute;
+                top: 22px;
+                width: 100%;
+                font-size: 22px;
+                font-weight: 800;
+                line-height: 1.2;
+                text-align: center;
+            }
+
+            .stats dd.accent {
+                color: var(--primary);
+            }
+
+            /* Labels, baseline 457 */
+            .stats dt {
+                position: absolute;
+                top: 56px;
+                width: 100%;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-align: center;
+                text-transform: uppercase;
+                color: #8a8f98;
+            }
+
+            .profile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                height: 100%;
+                padding: 26px 24px 24px;
+                text-align: center;
+            }
+
+            .profile img {
+                width: 112px;
+                height: 112px;
+            }
+
+            .name {
+                font-size: 28px;
+                font-weight: 800;
+                letter-spacing: -0.01em;
+            }
+
+            .role {
+                margin-top: -6px;
+                font-size: 18px;
+                color: var(--muted);
+            }
+
+            .intro {
+                position: absolute;
+                top: 140px;
+                left: 72px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                width: 668px;
+                height: 330px;
+            }
+
+            h1 {
+                font-size: 62px;
+                font-weight: 800;
+                line-height: 1.06;
+                letter-spacing: -0.03em;
+            }
+
+            .highlight {
+                color: var(--primary);
+            }
+
+            .lead {
+                margin-top: 24px;
+                font-size: 26px;
+                line-height: 1.4;
+                color: var(--muted);
+            }
+
+            .lead strong {
+                color: var(--ink);
+                font-weight: 700;
+            }
+
+            body:not(.default) .only-default,
+            body.default .only-event {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            if (new URLSearchParams(location.search).get('layer') === 'default') {
+                document.body.classList.add('default')
+            }
+        </script>
+        <div class="blob blob-primary"></div>
+        <div class="blob blob-accent"></div>
+
+        <div class="badges only-default">
+            <span class="badge badge-status"><span class="dot"></span>Partout en France</span>
+            <span class="badge badge-topic"
+                ><svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" /></svg
+                >Concerts, expos &amp; soirées</span
+            >
+        </div>
+
+        <!-- Drawn by EventCard on an event card: its name, date and hours, and venue, in the box (72, 140) 668 × 330 -->
+        <div class="intro only-default">
+            <h1>Trouvez votre <span class="highlight">prochaine sortie</span></h1>
+            <p class="lead">
+                L’agenda <strong>gratuit</strong> des concerts, spectacles et sorties en famille
+                <strong>près de chez vous</strong>.
+            </p>
+        </div>
+
+        <span class="site"
+            ><svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg
+            >by-night.fr</span
+        >
+
+        <div class="card-glow"></div>
+        <div class="card">
+            <div class="panel">
+                <!-- Drawn by EventCard on an event card: the poster in (804, 156) 308 × 150, the venue at baseline 340,
+                     its city at 366 -->
+                <div class="profile only-default">
+                    <img src="../../assets/images/logo-icon.svg" alt="" />
+                    <p class="name">By Night</p>
+                    <p class="role">L’agenda de vos sorties</p>
+                </div>
+            </div>
+            <dl class="stats">
+                <div>
+                    <dt class="only-default">Accès</dt>
+                    <dt class="only-event">Date</dt>
+                    <dd class="accent only-default">Gratuit</dd>
+                </div>
+                <div>
+                    <dt class="only-default">Partout</dt>
+                    <dt class="only-event">Heure</dt>
+                    <dd class="only-default">France</dd>
+                </div>
+                <div>
+                    <dt class="only-default">Sorties</dt>
+                    <dt class="only-event">Ville</dt>
+                    <dd class="accent only-default">Ce soir</dd>
+                </div>
+            </dl>
+        </div>
+    </body>
+</html>
