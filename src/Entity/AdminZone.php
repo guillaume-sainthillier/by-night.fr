@@ -31,6 +31,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\Index(name: 'admin_zone_type_upcoming_idx', columns: ['type', 'upcoming_events', 'population'])]
 #[ORM\Index(name: 'admin_zone_type_country_upcoming_idx', columns: ['type', 'country_id', 'upcoming_events', 'population'])]
 #[ORM\Index(name: 'admin_zone_type_metropolis_idx', columns: ['type', 'is_metropolis'])]
+#[ORM\Index(name: 'admin_zone_country_official_code_idx', columns: ['country_id', 'official_code'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string', length: 10)]
 #[ORM\DiscriminatorMap(['PPL' => 'City', 'ADM1' => 'AdminZone1', 'ADM2' => 'AdminZone2'])]

@@ -49,6 +49,15 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     #[ORM\OneToMany(targetEntity: ZipCity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY')]
     protected Collection $zipCities;
 
+    /**
+     * The code of the commune the city belongs to, as its country's statistics office numbers it (GeoNames carries it):
+     * INSEE in France and overseas, INS in Belgium, OFS in Switzerland. The villages merged into a commune share its
+     * code, which leads its official names to them (CityAlias)
+     */
+    #[ORM\Column(type: Types::STRING, length: 10, nullable: true)]
+    #[Ignore]
+    private ?string $officialCode = null;
+
     /** Punchline of the city portal, under its name */
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Ignore]
@@ -198,6 +207,18 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
                 $zipCity->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOfficialCode(): ?string
+    {
+        return $this->officialCode;
+    }
+
+    public function setOfficialCode(?string $officialCode): static
+    {
+        $this->officialCode = $officialCode;
 
         return $this;
     }
