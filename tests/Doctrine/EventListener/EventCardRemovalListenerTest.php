@@ -21,12 +21,12 @@ final class EventCardRemovalListenerTest extends AppKernelTestCase
     public function testDeletingAnEventDeletesItsCard(): void
     {
         $event = EventFactory::createOne();
-        $card = self::getContainer()->get(EventCard::class);
-        $path = $card->path($event);
-        self::assertFileExists($path);
+        $storage = self::getContainer()->get('og.storage');
+        $location = self::getContainer()->get(EventCard::class)->location($event);
+        self::assertTrue($storage->fileExists($location));
 
         delete($event);
 
-        self::assertFileDoesNotExist($path);
+        self::assertFalse($storage->fileExists($location));
     }
 }

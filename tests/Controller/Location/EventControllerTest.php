@@ -269,6 +269,8 @@ final class EventControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'image/jpeg');
         self::assertStringContainsString('immutable', (string) $client->getResponse()->headers->get('Cache-Control'));
+        // Streamed from og.storage: a JPEG of the size of the og:image
+        self::assertSame([1200, 630, \IMAGETYPE_JPEG], \array_slice(getimagesizefromstring($client->getInternalResponse()->getContent()) ?: [], 0, 3));
     }
 
     public function testAFormerVersionOfTheCardLeadsToTheCurrentOne(): void

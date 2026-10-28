@@ -16,8 +16,9 @@ use App\Utils\SessionHours;
 use Imagick;
 use ImagickDraw;
 use ImagickPixel;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
 /**
@@ -27,9 +28,9 @@ use Vich\UploaderBundle\Storage\StorageInterface;
  * networks, often through its title.
  *
  * A card is a JPEG of about 60 KB, drawn on the first request of its URL (EventCardController, next to the event's
- * page) into the share dir (`var/share/og`, a volume kept across deploys). Its file name carries a hash of everything
- * drawn on it, which the og:image links as `?v=`: a new date, title or poster makes a new file and a new URL, which the
- * networks fetch again, and the old file is deleted. Deleting the event deletes its cards (EventCardRemovalListener).
+ * page) into `og.storage`, the `og/` prefix of the bucket: `<event id>/<hash>.jpg`, the hash covering everything drawn
+ * on it, which the og:image links as `?v=`. A new date, title or poster makes a new file and a new URL, which the
+ * networks fetch again, and the former file is deleted. Deleting the event deletes its folder (EventCardRemovalListener).
  */
 final readonly class EventCard
 {
@@ -58,8 +59,8 @@ final readonly class EventCard
         private StorageInterface $storage,
         #[Autowire('%kernel.project_dir%')]
         private string $projectDir,
-        #[Autowire('%kernel.share_dir%/og')]
-        private string $directory,
+        #[Target('og.storage')]
+        private FilesystemOperator $ogStorage,
     ) {
     }
 
@@ -72,19 +73,28 @@ final readonly class EventCard
     }
 
     /**
-     * The path of the card of the event, drawn when it is not yet.
+     * Where the card of the event is in `og.storage`, drawn when it is not yet.
      */
-    public function path(Event $event): string
+    public function location(Event $event): string
     {
-        $path = \sprintf('%s/%d-%s.jpg', $this->directory, $event->getId(), $this->hash($event));
-        if (!is_file($path)) {
-            new Filesystem()->mkdir($this->directory);
+        $location = \sprintf('%d/%s.jpg', $event->getId(), $this->hash($event));
+        if (!$this->ogStorage->fileExists($location)) {
             // The card of a former date or poster, which no page links to anymore
             $this->remove((int) $event->getId());
-            $this->draw($event, $path);
+            $this->ogStorage->write($location, $this->draw($event));
         }
 
-        return $path;
+        return $location;
+    }
+
+    /**
+     * The card of the event, drawn when it is not yet.
+     *
+     * @return resource
+     */
+    public function read(Event $event)
+    {
+        return $this->ogStorage->readStream($this->location($event));
     }
 
     /**
@@ -92,7 +102,7 @@ final readonly class EventCard
      */
     public function remove(int $eventId): void
     {
-        new Filesystem()->remove(glob(\sprintf('%s/%d-*.jpg', $this->directory, $eventId)) ?: []);
+        $this->ogStorage->deleteDirectory((string) $eventId);
     }
 
     /**
@@ -156,7 +166,10 @@ final readonly class EventCard
         return $image;
     }
 
-    private function draw(Event $event, string $path): void
+    /**
+     * The card as a JPEG.
+     */
+    private function draw(Event $event): string
     {
         $texts = $this->texts($event);
         $card = new Imagick($this->projectDir . '/assets/og/event.png');
@@ -179,11 +192,10 @@ final readonly class EventCard
         $card->setImageCompressionQuality(88);
         $card->setInterlaceScheme(Imagick::INTERLACE_PLANE);
         $card->stripImage();
-        // Written aside then moved: a request reading it meanwhile never gets half a file
-        $tmp = $path . '.' . bin2hex(random_bytes(4)) . '.tmp';
-        $card->writeImage($tmp);
-        rename($tmp, $path);
+        $jpeg = $card->getImageBlob();
         $card->clear();
+
+        return $jpeg;
     }
 
     /**

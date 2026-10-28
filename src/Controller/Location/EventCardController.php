@@ -15,9 +15,9 @@ use App\Controller\AbstractController as BaseController;
 use App\Manager\EventRedirectManager;
 use App\Picture\EventCard;
 use App\Security\Voter\EventVoter;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -50,7 +50,11 @@ final class EventCardController extends BaseController
             ]);
         }
 
-        $response = new BinaryFileResponse($card->path($event), headers: ['Content-Type' => 'image/jpeg']);
+        $stream = $card->read($event);
+        $response = new StreamedResponse(static function () use ($stream): void {
+            fpassthru($stream);
+            fclose($stream);
+        }, headers: ['Content-Type' => 'image/jpeg']);
         $response->setPublic();
         $response->setMaxAge(31536000);
         $response->setSharedMaxAge(31536000);

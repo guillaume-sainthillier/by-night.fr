@@ -59,6 +59,15 @@ flysystem:
                 bucket: '%env(S3_BUCKET_NAME)%'
                 prefix: 'private/transfers'
 
+        # The social images of the events (App\Picture\EventCard): streamed by the route next to their page, which
+        # checks who may see a draft's, never read from the bucket
+        og.storage:
+            visibility: private
+            aws:
+                client: 's3_client' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(S3_BUCKET_NAME)%'
+                prefix: 'og'
+
         thumbs.s3_storage:
             visibility: public # objects must be readable anonymously: served straight from the bucket (picasso public_cache)
             aws:
@@ -90,6 +99,8 @@ when@test:
             cities.storage:
                 memory: ~
             transfers.storage:
+                memory: ~
+            og.storage:
                 memory: ~
             # Rendered thumbnails too (APP_THUMB_STORAGE_SOURCE=local in .env.test): nothing written to var/
             thumbs.local_storage:
