@@ -12,6 +12,7 @@ namespace App\Parser;
 
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
+use App\Parser\Common\FeverImpactParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Parser\Common\SeeTicketsKwankoParser;
 
@@ -38,8 +39,8 @@ final class AffiliateParsers
     }
 
     /**
-     * The feeds, the one whose page shows an event best first: Fnac and BilletsReduc title their shows as they are
-     * spelled, SeeTickets in capitals, CDiscount in lower case ("Claudio capeo").
+     * The feeds, the one whose page shows an event best first: Fnac, BilletsReduc and Fever title their shows as they
+     * are spelled, SeeTickets in capitals, CDiscount in lower case ("Claudio capeo").
      *
      * @return list<string>
      */
@@ -48,6 +49,7 @@ final class AffiliateParsers
         return [
             FnacSpectaclesAwinParser::getParserName(),
             BilletsReducAwinParser::getParserName(),
+            FeverImpactParser::getParserName(),
             SeeTicketsKwankoParser::getParserName(),
             CDiscountAwinParser::getParserName(),
         ];
