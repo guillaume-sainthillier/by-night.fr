@@ -301,12 +301,13 @@ abstract class AbstractParser implements ParserInterface
      * (Fnac sells "Grévin - Billet Daté" at 22 € while a row of it says 0), and "0€" shows as "Gratuit" on the cards.
      *
      * @param list<float|string> $prices
+     * @param string             $currency their ISO code, as the feeds give it ("EUR", "CHF")
      */
-    protected static function formatPriceRange(array $prices): ?string
+    protected static function formatPriceRange(array $prices, string $currency = 'EUR'): ?string
     {
         $prices = array_filter(array_map(floatval(...), $prices), static fn (float $price): bool => $price > 0);
 
-        return [] === $prices ? null : self::formatAmountRange(min($prices), max($prices));
+        return [] === $prices ? null : self::formatAmountRange(min($prices), max($prices), $currency);
     }
 
     protected function logException(Throwable $exception, array $context = []): void
