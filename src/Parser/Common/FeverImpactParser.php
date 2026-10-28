@@ -65,6 +65,17 @@ final class FeverImpactParser extends AbstractParser
     private const int LISTED_SESSIONS_PER_DAY = 3;
 
     /**
+     * The countries an address may end with ("1 Rue Porte Reine, 73000 Chambéry, France"), or be ("France// 75004").
+     */
+    private const array COUNTRY_NAMES = ['France', 'Belgique', 'Belgium', 'Suisse', 'Switzerland', 'Monaco'];
+
+    /**
+     * A part of an address that is no town: a number, a street ("Rue de Rivoli", "Waldenburgerstrasse") or a landmark
+     * ("Port de Solférino", "Jardin Tuileries"). A word joined by a hyphen names a town: "Château-Thierry", "Port-Vendres".
+     */
+    private const string NO_TOWN = '/\d|^\P{L}*$|^(?:au|cour|rue|avenue|av\.|boulevard|bd|place|quai|chemin|all[ée]es?|impasse|route|cours|square|passage|promenade|esplanade|parvis|port|pont|jardin|parc|pyramide|[ée]glise|centre|ch[âa]teau|sortie|galerie|mus[ée]e|th[ée][âa]tre|tous|[îi]le-de-france)\b(?!-)|(?:strasse|straße|straat|laan|plein|gasse|platz|weg|street|road)\b/iu';
+
+    /**
      * The type of a plan, from the first of its tags ("Subcategory", in no order) that names one. The others are
      * Fever's marketing ("Mother's Day", "On A Budget", "Fever Originals").
      */
@@ -334,8 +345,9 @@ final class FeverImpactParser extends AbstractParser
     /**
      * "Rue Pascal Duverger, Aix-en-Provence// 13090": the street, the town and its postal code. The "City" column is
      * Fever's market, not the town: a venue in Lyon is sold in Annecy's, "Brussels" is "Bruxelles" in the address.
-     * An address of one part ("Bruxelles// 1000", "Saint-Émilion// 33330") is the street when it has a number or a
-     * street word, else the town; the postal code finds the town when its name does not (CityComparator).
+     * The last part of the address is the town when it reads as one ("Saint-Émilion// 33330"), else the address has
+     * none ("Champ de Mars, 5 Avenue Anatole France// 75007", "Jardin Tuileries// 75001") and the town is the market:
+     * the postal code would not find it, Paris sharing each of its codes with its arrondissement (CityComparator).
      *
      * @return array{?string, ?string, ?string} the street, the town, the postal code
      */
@@ -349,27 +361,19 @@ final class FeverImpactParser extends AbstractParser
         }
 
         $parts = array_values(array_filter(array_map(trim(...), explode(',', $address)), static fn (string $part): bool => '' !== $part));
-        // "1 Rue Porte Reine, 73000 Chambéry, France"
-        if (\count($parts) > 1 && \in_array($parts[\count($parts) - 1], ['France', 'Belgique', 'Belgium', 'Suisse', 'Switzerland', 'Monaco'], true)) {
+        // "1 Rue Porte Reine, 73000 Chambéry, France", "36 Rue Dalayrac, Paris, 2" (the arrondissement)
+        while ([] !== $parts && (\in_array($parts[\count($parts) - 1], self::COUNTRY_NAMES, true) || ctype_digit($parts[\count($parts) - 1]))) {
             array_pop($parts);
         }
 
-        if (\count($parts) > 1) {
-            $town = (string) preg_replace('/^\d{4,5}\s+/', '', (string) array_pop($parts));
-
-            return [implode(', ', $parts), $town, $postalCode];
+        $town = (string) preg_replace('/^\d{4,5}\s+/', '', $parts[\count($parts) - 1] ?? '');
+        if ('' !== $town && 1 !== preg_match(self::NO_TOWN, $town)) {
+            array_pop($parts);
+        } else {
+            $town = $market;
         }
 
-        $part = $parts[0] ?? null;
-        if (null === $part) {
-            return [null, $market ?: null, $postalCode];
-        }
-
-        if (1 === preg_match('/\d|^(?:rue|avenue|av\.|boulevard|bd|place|quai|chemin|all[ée]es?|impasse|route|cours|square|passage|promenade|esplanade|parvis)\b|(?:strasse|straße|straat|laan|plein|gasse|platz|weg)\b/iu', $part)) {
-            return [$part, $market ?: null, $postalCode];
-        }
-
-        return [null, $part, $postalCode];
+        return [[] === $parts ? null : implode(', ', $parts), '' === $town ? null : $town, $postalCode];
     }
 
     /**

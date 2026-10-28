@@ -188,6 +188,16 @@ final class FeverImpactParserTest extends TestCase
         yield 'a town alone' => ['Saint-Émilion// 33330', 'Bordeaux', null, 'Saint-Émilion', '33330'];
         yield 'no postal code' => ['Bruxelles// ', 'Brussels', null, 'Bruxelles', null];
         yield 'a blank postal code' => ['Place Charles Rogier 20// 0000', 'Brussels', 'Place Charles Rogier 20', 'Brussels', null];
+        yield 'a landmark and its street' => ['Champ de Mars, 5 Avenue Anatole France// 75007', 'Paris', 'Champ de Mars, 5 Avenue Anatole France', 'Paris', '75007'];
+        yield 'a number apart from its street' => ['1, Boulevard Poissonnière// 75002', 'Paris', '1, Boulevard Poissonnière', 'Paris', '75002'];
+        yield 'the arrondissement after the town' => ['36 Rue Dalayrac, Paris, 2// 75002', 'Paris', '36 Rue Dalayrac', 'Paris', '75002'];
+        yield 'a landmark alone' => ['Jardin Tuileries// 75001', 'Paris', 'Jardin Tuileries', 'Paris', '75001'];
+        yield 'a court alone' => ['Cour Napoléon// 75001', 'Paris', 'Cour Napoléon', 'Paris', '75001'];
+        yield 'a dot for an address' => ['.// 78770', 'Paris', '.', 'Paris', '78770'];
+        yield 'a quay alone' => ['Port de la Bourdonnais// 75007', 'Paris', 'Port de la Bourdonnais', 'Paris', '75007'];
+        yield 'a town of a hyphenated landmark word' => ['Château-Thierry// 02400', 'Reims', null, 'Château-Thierry', '02400'];
+        yield 'the country alone' => ['France// 75004', 'Paris', null, 'Paris', '75004'];
+        yield 'an English street' => ['Andre Turcat Street// 31700', 'Toulouse', 'Andre Turcat Street', 'Toulouse', '31700'];
     }
 
     #[DataProvider('addresses')]
