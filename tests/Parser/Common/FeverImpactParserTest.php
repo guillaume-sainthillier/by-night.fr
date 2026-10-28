@@ -17,9 +17,12 @@ use App\Utils\HoursLabel;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\JsonMockResponse;
 
 /**
- * Rows shaped as Fever's catalogue on Impact served them on 2026-10-28 ("2024 Impact Catalog", advertiser format).
+ * Plans shaped as Fever's catalogue on Impact served them on 2026-10-28 ("2024 Impact Catalog"): its own columns, and
+ * the items of the Partner API that file them under Impact's product fields.
  */
 final class FeverImpactParserTest extends TestCase
 {
@@ -54,6 +57,77 @@ final class FeverImpactParserTest extends TestCase
         'Photo 2' => '',
         'Country2' => 'France',
     ];
+
+    /**
+     * The same Candlelight as the Partner API serves it.
+     */
+    private const array ITEM = [
+        'Id' => 'product_15532_412345',
+        'CatalogItemId' => '412345',
+        'Name' => 'Candlelight : Hommage à Coldplay',
+        'Description' => "⭐ Les concerts Candlelight à la lueur des bougies.\nPlacement par zone.",
+        'Bullets' => ['high'],
+        'Labels' => ['26.41 EUR', ' 29.71 EUR'],
+        'Manufacturer' => '2027-02-13 20:00, 2026-12-19 18:00, 2026-12-19 20:00, 2027-02-13 18:00',
+        'Url' => 'https://fever.pxf.io/c/8024471/1928078/16345?u=https%3A%2F%2Ffeverup.com%2Fm%2F412345',
+        'ImageUrl' => 'https://applications-media.feverup.com/image/upload/f_auto,w_550,h_550/fever2/plan/photo/5c755a1c.jpg',
+        'AdditionalImageUrls' => [],
+        'CurrentPrice' => '29.71',
+        'Currency' => 'EUR',
+        'ShippingLabel' => '160 Rue Pascal Duverger, Aix-en-Provence// 13090',
+        'Category' => 'Tier 2: Candlelight Concerts',
+        'SubCategory' => "Mother's Day, Concerts, Candlelight Concerts, Music Events",
+        'Colors' => ['https://feverup.com/m/412345'],
+        'Material' => '6MIC',
+        'Pattern' => '(43.5192132; 5.4224053)',
+        'Size' => 'France',
+        'Text1' => 'France',
+        'Text2' => 'Aix-en-Provence',
+        'Text3' => '',
+    ];
+
+    public function testAnItemOfTheApiReadsAsTheCatalogueRow(): void
+    {
+        $columns = new ReflectionClass(FeverImpactParser::class)->getMethod('columns')->invoke(null, self::ITEM);
+
+        self::assertEquals($this->parse(self::ROW), $this->parse($columns));
+    }
+
+    /**
+     * Each country is asked for apart, and its pages followed to the last.
+     */
+    public function testEveryCountryIsReadPageAfterPage(): void
+    {
+        $requests = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$requests): JsonMockResponse {
+            $requests[] = urldecode($url);
+            if (str_contains($url, 'AfterId=')) {
+                return new JsonMockResponse(['Items' => [[...self::ITEM, 'CatalogItemId' => '2']], '@nextpageuri' => '']);
+            }
+
+            if (str_contains(urldecode($url), "Text1 = 'France'")) {
+                return new JsonMockResponse([
+                    'Items' => [[...self::ITEM, 'CatalogItemId' => '1']],
+                    '@nextpageuri' => '/Mediapartners/SID/Catalogs/15532/Items?PageSize=1000&Query=Text1+%3D+%27France%27&AfterId=MQ==',
+                ]);
+            }
+
+            return new JsonMockResponse(['Items' => [], '@nextpageuri' => '']);
+        }, 'https://api.impact.com/');
+
+        $ref = new ReflectionClass(FeverImpactParser::class);
+        $parser = $ref->newInstanceWithoutConstructor();
+        $ref->getProperty('impactClient')->setValue($parser, $client);
+        $ref->getProperty('accountSid')->setValue($parser, 'SID');
+
+        $events = iterator_to_array($ref->getMethod('fetchEvents')->invoke($parser, null, false), false);
+
+        self::assertSame(['1', '2'], array_map(static fn (?EventDto $event): ?string => $event?->externalId, $events));
+        self::assertCount(5, $requests, 'France on two pages, then Belgium, Switzerland and Monaco');
+        self::assertStringStartsWith('https://api.impact.com/Mediapartners/SID/Catalogs/15532/Items?', $requests[0]);
+        self::assertStringContainsString("Query=Text1 = 'France'", $requests[0]);
+        self::assertStringContainsString("Query=Text1 = 'Monaco'", $requests[4]);
+    }
 
     public function testACandlelightBecomesAnEvent(): void
     {

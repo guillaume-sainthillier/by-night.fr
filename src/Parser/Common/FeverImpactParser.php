@@ -22,18 +22,17 @@ use App\Utils\SessionHours;
 use DateTimeImmutable;
 use Override;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Fever (Candlelight, The Jazz Room, The Jury Experience, its partners' shows) through its affiliate program on
- * Impact. Its catalogue "2024 Impact Catalog" lists every plan of every country in Fever's own columns (36,301 rows on
- * 2026-10-28, 2,379 in France): one row per plan, every session of it in "Sessions", the venue's address and
- * coordinates, an affiliate link. Read through the Partner API ("impact.client" scoped client).
+ * Impact. Its catalogue "2024 Impact Catalog" lists every plan of every country (36,301 on 2026-10-28, 2,379 in
+ * France): one item per plan, every session of it, the venue's address and coordinates, an affiliate link. Read
+ * country by country from the Partner API ("impact.client" scoped client); the files of the catalogue are only served
+ * over FTP.
  *
  * Left out: the gift cards (a plan tagged "Gift Cards", at a "Localisation secrète"), the vouchers without a venue
  * (cinema seats at a "Localisation secrète") and the plans whose sales earn nothing ("Tier 4: Non-commissionable
@@ -122,75 +121,70 @@ final class FeverImpactParser extends AbstractParser
     #[Override]
     protected function fetchEvents(?DateTimeImmutable $since, bool $includePast): iterable
     {
-        $path = $this->downloadCatalogue();
+        foreach (array_keys(self::COUNTRIES) as $country) {
+            foreach ($this->items($country) as $item) {
+                $data = self::columns($item);
 
-        // Removed once the stream is consumed, or abandoned on a failure downstream
-        try {
-            yield from $this->readEvents($path);
-        } finally {
-            new Filesystem()->remove($path);
+                // A malformed item is logged and skipped; a failure to publish stops the run
+                yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($data), ['sku' => $data['SKU']]);
+            }
         }
     }
 
     /**
-     * The catalogue as Fever submitted it (gzipped CSV, ~140 MB unzipped), saved to a temporary file.
+     * The items of a country, page after page (the API serves ~600 an answer whatever the PageSize asked: 4 calls for
+     * France's 2,379 on 2026-10-28).
+     *
+     * @return iterable<array<string, mixed>>
      */
-    private function downloadCatalogue(): string
+    private function items(string $country): iterable
     {
-        $catalogue = $this->impactClient->request('GET', \sprintf('Mediapartners/%s/Catalogs/%d', $this->accountSid, self::CATALOG_ID))->toArray();
-        $url = $catalogue['Locations'][0] ?? throw new RuntimeException(\sprintf('Impact catalog %d has no download location', self::CATALOG_ID));
+        $url = \sprintf('Mediapartners/%s/Catalogs/%d/Items', $this->accountSid, self::CATALOG_ID);
+        $query = ['PageSize' => 1000, 'Query' => \sprintf("Text1 = '%s'", $country)];
+        while (null !== $url) {
+            $page = $this->impactClient->request('GET', $url, ['query' => $query])->toArray();
+            yield from $page['Items'] ?? [];
 
-        $path = \sprintf('%s/impact_fever_%d.csv.gz', sys_get_temp_dir(), self::CATALOG_ID);
-        $handle = fopen($path, 'w');
-        if (false === $handle) {
-            throw new RuntimeException(\sprintf('Unable to open file for writing: %s', $path));
+            // The next page's path holds its query
+            $url = ($page['@nextpageuri'] ?? '') ?: null;
+            $query = [];
         }
-
-        try {
-            foreach ($this->impactClient->stream($this->impactClient->request('GET', $url)) as $chunk) {
-                fwrite($handle, $chunk->getContent());
-            }
-        } finally {
-            fclose($handle);
-        }
-
-        return $path;
     }
 
     /**
-     * @return iterable<EventDto|null>
+     * An item of the API with the columns of the catalogue as Fever submits it (the "advertiser format" its CSV
+     * keeps): Impact files them under its own product fields, the sessions as the "Manufacturer", the venue as the
+     * "Material", the coordinates as the "Pattern".
+     *
+     * @param array<string, mixed> $item
+     *
+     * @return array<string, string>
      */
-    private function readEvents(string $path): iterable
+    private static function columns(array $item): array
     {
-        $handle = gzopen($path, 'r');
-        if (false === $handle) {
-            throw new RuntimeException(\sprintf('Unable to open gzipped file: %s', $path));
-        }
+        $first = static fn (mixed $values): string => \is_array($values) ? (string) ($values[0] ?? '') : '';
 
-        try {
-            $headers = fgetcsv($handle, 0, ',', '"', '');
-            if (false === $headers) {
-                throw new RuntimeException('Unable to read CSV headers');
-            }
-
-            while (false !== ($row = fgetcsv($handle, 0, ',', '"', ''))) {
-                if (\count($row) !== \count($headers)) {
-                    continue;
-                }
-
-                $data = array_combine($headers, $row);
-
-                // Nine rows in ten are of other countries: not even a record to map
-                if (!isset(self::COUNTRIES[$data['Country']])) {
-                    continue;
-                }
-
-                // A malformed row is logged and skipped; a failure to publish stops the run
-                yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($data), ['sku' => $data['SKU'] ?? null]);
-            }
-        } finally {
-            gzclose($handle);
-        }
+        return [
+            'Country' => (string) ($item['Text1'] ?? ''),
+            'City' => (string) ($item['Text2'] ?? ''),
+            'Venue' => (string) ($item['Material'] ?? ''),
+            'Location' => (string) ($item['ShippingLabel'] ?? ''),
+            'Coordinates' => (string) ($item['Pattern'] ?? ''),
+            'SKU' => (string) ($item['CatalogItemId'] ?? ''),
+            'Plan Name' => (string) ($item['Name'] ?? ''),
+            'Affiliate URL' => (string) ($item['Url'] ?? ''),
+            'Fever URL' => $first($item['Colors'] ?? null),
+            'Description' => (string) ($item['Description'] ?? ''),
+            'Sessions' => (string) ($item['Manufacturer'] ?? ''),
+            'Currency' => (string) ($item['Currency'] ?? ''),
+            'Ticket prices' => implode(',', \is_array($item['Labels'] ?? null) ? $item['Labels'] : []),
+            'Availability of tickets' => $first($item['Bullets'] ?? null),
+            'Category' => (string) ($item['Category'] ?? ''),
+            'Subcategory' => (string) ($item['SubCategory'] ?? ''),
+            'Additional Notes' => (string) ($item['Text3'] ?? ''),
+            'Photo 1' => (string) ($item['ImageUrl'] ?? ''),
+            'Photo 2' => $first($item['AdditionalImageUrls'] ?? null),
+        ];
     }
 
     /**
