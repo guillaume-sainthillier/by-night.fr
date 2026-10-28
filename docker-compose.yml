@@ -26,7 +26,7 @@ services:
     # Mercure hub (protocol 1.0) for the live progress of imports and exports. Browsers reach it on the site's
     # origin, /.well-known/mercure proxied to port 3000 (see README), so the subscriber cookie is sent to it.
     mercure:
-        image: dunglas/mercure:v1.1.4
+        image: dunglas/mercure:v1.1.5
         environment:
             SERVER_NAME: ':80'
             # Behind the local proxy: the hub takes its public URL (the tokens' audience) from X-Forwarded-*
