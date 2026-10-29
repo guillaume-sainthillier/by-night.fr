@@ -206,9 +206,9 @@ importers:
       '@tarekraafat/autocomplete.js':
         specifier: ^10.2.10
         version: 10.2.10
-      fancybox:
-        specifier: ^3.0.1
-        version: 3.0.1
+      glightbox:
+        specifier: ^3.3.1
+        version: 3.3.1
       hotkeys-js:
         specifier: ^4.0.8
         version: 4.0.8
@@ -1306,9 +1306,6 @@ packages:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
 
-  fancybox@3.0.1:
-    resolution: {integrity: sha512-HZ57O6j5Zk4Uvusd5pNUgWi7CCjKx+HFlCzjMPeRJ//0bQWUK+xVpkn3EzXWJate4ZSKNFP9kU2l49MP1g+oow==}
-
   fd-package-json@2.0.0:
     resolution: {integrity: sha512-jKmm9YtsNXN789RS/0mSzOC1NUq9mkVd65vbSSVsKdjGvYXBuE4oWe2QOEoFeRmJg+lPuZxpmrfFclNhoRMneQ==}
 
@@ -1347,6 +1344,9 @@ packages:
 
   gl-matrix@3.4.4:
     resolution: {integrity: sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==}
+
+  glightbox@3.3.1:
+    resolution: {integrity: sha512-nXoKfJRnQTDaAFAw5799hjpfAAHx5aLvOLG0SIGudeMCwtHgO3P2/avNYapJ+SL4UEZxO2YNBPtq6pzMhSx42g==}
 
   glob-all@3.3.1:
     resolution: {integrity: sha512-Y+ESjdI7ZgMwfzanHZYQ87C59jOO0i+Hd+QYtVt9PhLi6d8wlOpzQnfBxWUlaTuAoR3TkybLqqbIoWveU4Ji7Q==}
@@ -2670,8 +2670,6 @@ snapshots:
 
   expect-type@1.4.0: {}
 
-  fancybox@3.0.1: {}
-
   fd-package-json@2.0.0:
     dependencies:
       walk-up-path: 4.0.0
@@ -2702,6 +2700,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   gl-matrix@3.4.4: {}
+
+  glightbox@3.3.1: {}
 
   glob-all@3.3.1:
     dependencies:
