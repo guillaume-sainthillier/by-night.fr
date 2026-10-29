@@ -3230,7 +3230,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     http_client?: scalar|Param|null, // PSR-18 HTTP client service ID calling /siteverify. Defaults to Symfony's psr18.http_client. // Default: null
  *     request_factory?: scalar|Param|null, // PSR-17 request factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
  *     stream_factory?: scalar|Param|null, // PSR-17 stream factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
- *     adapters?: list<"turbo"|Param>,
+ *     adapters?: list<"live"|"turbo"|Param>,
  *     render_scripts?: bool|Param, // Renders the <script> of the bundle with each widget. false when the Stimulus controller or your own install() call loads it. // Default: true
  *     widget?: array{ // Where the browser loads the Cap widget from: an asset path (the copies the bundle ships, by default) or a URL.
  *         script?: scalar|Param|null, // The cap-widget script, e.g. https://<your-instance>/assets/widget.js. null when your application imports cap-widget itself. // Default: "bundles/silarhicap/widget/cap.min.js"

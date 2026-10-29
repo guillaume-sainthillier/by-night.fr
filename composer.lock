@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "82e16f636139e527bb9de8ac9ec131e3",
+    "content-hash": "dd3bc6aca3071150d6fe3d59fa374ec5",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6700,16 +6700,16 @@
         },
         {
             "name": "silarhi/cap-bundle",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/cap-bundle.git",
-                "reference": "8f461119ca7c3604dfd7ab44a6e1117865eb8d7f"
+                "reference": "98c871a663598bb1ac3bff74eaf881059e7879bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/cap-bundle/zipball/8f461119ca7c3604dfd7ab44a6e1117865eb8d7f",
-                "reference": "8f461119ca7c3604dfd7ab44a6e1117865eb8d7f",
+                "url": "https://api.github.com/repos/silarhi/cap-bundle/zipball/98c871a663598bb1ac3bff74eaf881059e7879bc",
+                "reference": "98c871a663598bb1ac3bff74eaf881059e7879bc",
                 "shasum": ""
             },
             "require": {
@@ -6788,7 +6788,7 @@
                 "issues": "https://github.com/silarhi/cap-bundle/issues",
                 "source": "https://github.com/silarhi/cap-bundle"
             },
-            "time": "2026-10-29T16:59:36+00:00"
+            "time": "2026-10-29T18:49:50+00:00"
         },
         {
             "name": "silarhi/cursor-pagination",
@@ -17585,21 +17585,21 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.7.0",
+            "version": "2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "4d6a39b7fff302cac0ce90cd959a53c2f6a32776"
+                "reference": "10c96546bb72b38b4e2e9960fcd3f884d7fa02eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/4d6a39b7fff302cac0ce90cd959a53c2f6a32776",
-                "reference": "4d6a39b7fff302cac0ce90cd959a53c2f6a32776",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/10c96546bb72b38b4e2e9960fcd3f884d7fa02eb",
+                "reference": "10c96546bb72b38b4e2e9960fcd3f884d7fa02eb",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4|^8.0",
-                "phpstan/phpstan": "^2.3.0"
+                "phpstan/phpstan": "^2.3.2"
             },
             "conflict": {
                 "rector/rector-doctrine": "*",
@@ -17630,7 +17630,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.7.0"
+                "source": "https://github.com/rectorphp/rector/tree/2.8.1"
             },
             "funding": [
                 {
@@ -17638,7 +17638,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-06T08:46:45+00:00"
+            "time": "2026-10-26T13:03:01+00:00"
         },
         {
             "name": "rector/swiss-knife",
