@@ -88,6 +88,18 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
         self::assertSame([$montaigu->getId()], $this->aliasCities('Montaigu-Vendée'));
     }
 
+    public function testAVillageFiledUnderAFormerCommuneGetsItsCommuneNouvelle(): void
+    {
+        $lire = $this->city(2998165, 'Liré', $this->france, 2_365);
+        $champtoceaux = $this->city(3027008, 'Champtoceaux', $this->france, 1_840);
+
+        $this->import(['FR']);
+
+        self::assertSame('49126', refresh($lire)->getOfficialCode(), 'Orée d\'Anjou\'s, not Champtoceaux\'s 49069');
+        self::assertSame([$lire->getId()], $this->aliasCities('Orée d\'Anjou'));
+        self::assertSame([$champtoceaux->getId()], $this->aliasCities('Champtoceaux'));
+    }
+
     public function testAnArrondissementLeadsToItsCityUnderEverySpelling(): void
     {
         $paris = $this->city(2988507, 'Paris', $this->france, 2_138_551);
@@ -179,6 +191,8 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
                 [2975000, 'Segré', 'P', 'PPL', '52', '49', '494', '49331', 6_000],
                 [2975001, 'Sainte-Gemmes-d’Andigné', 'P', 'PPL', '52', '49', '494', '49331', 7_000],
                 [2975002, 'Les Hameaux', 'P', 'PPL', '52', '49', '494', '49999', 0],
+                [2998165, 'Liré', 'P', 'PPL', '52', '49', '491', '49069', 2_365],
+                [3027008, 'Champtoceaux', 'P', 'PPL', '52', '49', '491', '49069', 1_840],
             ])),
             str_contains($url, '/dump/CH.zip') => new MockResponse(self::dump('CH', [
                 [2659099, 'Rapperswil', 'P', 'PPL', 'SG', '1726', '3340', '', 34_776],
@@ -194,9 +208,12 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
                 ['nom' => 'Pointe-à-Pitre', 'code' => '97120', 'type' => 'commune-actuelle'],
                 ['nom' => 'Segré-en-Anjou Bleu', 'code' => '49331', 'type' => 'commune-actuelle'],
                 ['nom' => 'Val-des-Hameaux', 'code' => '49999', 'type' => 'commune-actuelle'],
+                ['nom' => 'Orée d\'Anjou', 'code' => '49126', 'type' => 'commune-actuelle'],
             ]),
             CityOfficialDataImporter::DELEGATED_COMMUNES_URL === $url => new JsonMockResponse([
                 ['nom' => 'Saint-Georges-de-Montaigu', 'code' => '85214', 'chefLieu' => '85146', 'type' => 'commune-deleguee'],
+                ['nom' => 'Champtoceaux', 'code' => '49069', 'chefLieu' => '49126', 'type' => 'commune-deleguee'],
+                ['nom' => 'Drain', 'code' => '49126', 'chefLieu' => '49126', 'type' => 'commune-deleguee'],
             ]),
             default => self::fail(\sprintf('Unexpected request to %s', $url)),
         });

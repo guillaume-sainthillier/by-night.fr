@@ -26,7 +26,8 @@ use ZipArchive;
  * names, "Dunkirk", "Geneva", and add its quarters.
  *
  * - The code (City::$officialCode) is read from GeoNames' dump: INSEE (admin4) in France and overseas, INS (admin4)
- *   in Belgium, OFS (admin3) in Switzerland, the villages merged into a commune bearing the commune's.
+ *   in Belgium, OFS (admin3) in Switzerland, the villages merged into a commune bearing the commune's (in France, the
+ *   code of a former commune GeoNames still gives is replaced by its commune nouvelle's).
  * - The aliases (CityAlias) are the names of the communes, given to a city of their code (aliases()): France's from the official geography (geo.api.gouv.fr, the INSEE's COG: communes, municipal arrondissements
  *   and their spellings, communes déléguées and associées), Belgium's and Switzerland's from GeoNames' communes (ADM4,
  *   ADM3), which follow Statbel's and the OFS's lists.
@@ -76,15 +77,22 @@ final readonly class CityOfficialDataImporter
      */
     public function import(array $countryIds): array
     {
+        $french = [] !== array_intersect($countryIds, self::FRENCH_COUNTRIES);
+        /** @var list<array{nom: string, code: string, chefLieu: string}> $delegated */
+        $delegated = $french ? $this->httpClient->request('GET', self::DELEGATED_COMMUNES_URL)->toArray() : [];
+        // GeoNames still files some villages under the commune they merged into, not under the commune nouvelle:
+        // Liré under Champtoceaux's 49069, not Orée d'Anjou's 49126
+        $currentCodes = array_column($delegated, 'chefLieu', 'code');
+
         $codes = [];
         $communes = [];
         foreach ($countryIds as $countryId) {
-            [$cityCodes, $communes[$countryId]] = $this->readDump($countryId);
+            [$cityCodes, $communes[$countryId]] = $this->readDump($countryId, \in_array($countryId, self::FRENCH_COUNTRIES, true) ? $currentCodes : []);
             $codes[$countryId] = $this->saveCodes($countryId, $cityCodes);
         }
 
-        if ([] !== array_intersect($countryIds, self::FRENCH_COUNTRIES)) {
-            foreach ($this->readFrenchCommunes() as [$countryId, $code, $name]) {
+        if ($french) {
+            foreach ($this->readFrenchCommunes($delegated) as [$countryId, $code, $name]) {
                 if (\in_array($countryId, $countryIds, true)) {
                     $communes[$countryId][] = [$code, $name];
                 }
@@ -95,10 +103,12 @@ final readonly class CityOfficialDataImporter
     }
 
     /**
+     * @param array<string, string> $currentCodes the code of the current commune, by the code of a former one
+     *
      * @return array{array<int, string>, list<array{string, string}>} the code of each city by its id, the communes
      *                                                                GeoNames lists for the country (code and name)
      */
-    private function readDump(string $countryId): array
+    private function readDump(string $countryId, array $currentCodes): array
     {
         $filesystem = new Filesystem();
         $zipPath = $filesystem->tempnam(sys_get_temp_dir(), 'geonames-', '.zip');
@@ -138,7 +148,7 @@ final readonly class CityOfficialDataImporter
                 }
 
                 if ('P' === ($row[6] ?? null)) {
-                    $codes[(int) $row[0]] = $code;
+                    $codes[(int) $row[0]] = $currentCodes[$code] ?? $code;
                 } elseif (null !== $communeFeature && $communeFeature === ($row[7] ?? null)) {
                     $communes[] = [$code, $row[1]];
                 }
@@ -185,9 +195,11 @@ final readonly class CityOfficialDataImporter
      * The French communes, their municipal arrondissements and their communes déléguées or associées, with the code
      * of the commune whose town they name.
      *
+     * @param list<array{nom: string, code: string, chefLieu: string}> $delegated the communes déléguées and associées
+     *
      * @return iterable<array{string, string, string}> the country, the code and the name
      */
-    private function readFrenchCommunes(): iterable
+    private function readFrenchCommunes(array $delegated): iterable
     {
         foreach ($this->httpClient->request('GET', self::COMMUNES_URL)->toArray() as $commune) {
             $code = 'arrondissement-municipal' === $commune['type'] ? $commune['codeParent'] : $commune['code'];
@@ -196,7 +208,7 @@ final readonly class CityOfficialDataImporter
             }
         }
 
-        foreach ($this->httpClient->request('GET', self::DELEGATED_COMMUNES_URL)->toArray() as $commune) {
+        foreach ($delegated as $commune) {
             yield [$this->frenchCountry($commune['chefLieu']), $commune['chefLieu'], $commune['nom']];
         }
     }
