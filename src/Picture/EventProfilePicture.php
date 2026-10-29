@@ -15,6 +15,7 @@ use App\Entity\Event;
 use App\Parser\Common\BilletsReducAwinParser;
 use App\Parser\Common\CDiscountAwinParser;
 use App\Parser\Common\DataTourismeParser;
+use App\Parser\Common\FeverImpactParser;
 use App\Parser\Common\OpenAgendaParser;
 use App\Parser\Common\SeeTicketsKwankoParser;
 use App\Parser\Common\SowProgParser;
@@ -107,6 +108,8 @@ final readonly class EventProfilePicture
             SeeTicketsKwankoParser::getParserName() => 'build/images/parsers/digitick.jpg',
             BilletsReducAwinParser::getParserName() => 'build/images/parsers/billet-reduc.jpg',
             CDiscountAwinParser::getParserName() => 'build/images/parsers/cdiscount.jpg',
+            // A plan Fever resells (a tour, a museum ticket) comes without its picture
+            FeverImpactParser::getParserName() => 'build/images/parsers/fever.jpg',
             default => 'build/images/empty_event.png',
         };
 
