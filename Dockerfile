@@ -11,7 +11,7 @@ ARG BASE_IMAGE=guystlr/by-night-base
 ARG BASE_IMAGE_TAG
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_TAG} AS php_base
-FROM node:24-alpine AS node_upstream
+FROM node:26-alpine AS node_upstream
 
 # Node base with pnpm (it switches itself to the version pinned in package.json "packageManager")
 FROM node_upstream AS node_base
