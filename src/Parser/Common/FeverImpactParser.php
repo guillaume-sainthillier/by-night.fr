@@ -97,6 +97,50 @@ final class FeverImpactParser extends AbstractParser
         'Live Shows' => 'Spectacle',
     ];
 
+    /**
+     * An emoji opening a line of Fever's lists ("📍 Lieu : …", "✔️ Ingrédients fournis"), with its variation selector.
+     */
+    private const string BULLET = '[\x{2300}-\x{23FF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{1F000}-\x{1FAFF}]\x{FE0F}?';
+
+    /**
+     * The headings of Fever's pages, in the languages it writes them (a plan in Zürich or Antwerp is in German or in
+     * Dutch, a tour sold to tourists in English), the longest first.
+     */
+    private const array HEADINGS = [
+        'Informations supplémentaires', 'Informations générales', 'Ce qui est inclus', 'Ce qui t\'attend', 'Ce qui t’attend',
+        'Ce qui vous attend', 'Offre spéciale', 'Infos', 'Description', 'Programme',
+        'Additional Information', 'General Information', 'What\'s included?', 'What’s included?', 'Highlights',
+        'Allgemeine Informationen', 'Beschreibung', 'Programm', 'Algemene Info', 'Beschrijving', 'Programma',
+        ...self::FEVER_PROMOTION,
+    ];
+
+    /**
+     * The headings of the lists that sell Fever, not the plan: left out with their lines.
+     */
+    private const array FEVER_PROMOTION = ['Pourquoi choisir Fever ?', 'Why choose Fever?', 'Warum Fever?', 'Waarom Fever?'];
+
+    /**
+     * The lines that only made sense on Fever's page: its links ("Consulte la FAQ de cet événement ici", "clique ici").
+     */
+    private const string PAGE_ONLY = '/\b(?:ici|here|hier)$/iu';
+
+    /**
+     * How Fever's tickets are delivered ("📱 Billets sur ton smartphone ⚡ Accès instantané à tes billets"), run into
+     * the text that follows.
+     */
+    private const string DELIVERY = '/\X\s*(?:Billets sur ton smartphone|Accès instantané à tes billets|Smartphone tickets|Instant access to your tickets)\s*/u';
+
+    /**
+     * The style sheet some pages open with, kept as text ("* { box-sizing: border-box; } .tje-wrap { … }"): rules,
+     * media queries and comments, from the start of the text.
+     */
+    private const string STYLE_SHEET = '/^(?:\s*+(?:\/\*.*?\*\/|@media[^{}]*+\{(?:[^{}]*+\{[^{}]*+\})*+\s*+\}|[\w\s.#*,:>+~()\[\]="\'-]++\{[^{}]*+\}))++/su';
+
+    /**
+     * What ends the text after its last line: the seating plan's caption, a promotion's code ("BlackFriday2026").
+     */
+    private const string TRAILER = '/(?:\s+(?:Plan de la salle|Sitzplan|Zaalindeling|Seating plan)|\s+\p{Lu}\p{Ll}+\p{Lu}\p{L}*\d{4})+\s*$/u';
+
     public function __construct(
         LoggerInterface $logger,
         MessageBusInterface $messageBus,
@@ -224,7 +268,7 @@ final class FeverImpactParser extends AbstractParser
         $event->fromData = self::getParserName();
         $event->externalId = $data['SKU'];
         $event->name = $data['Plan Name'];
-        $event->description = nl2br(trim($data['Description'] ?? ''));
+        $event->description = self::description($data['Description'] ?? '');
         $event->type = self::type($tags);
         $event->source = $data['Affiliate URL'];
         $event->imageUrl = self::originalPicture($data['Photo 1'] ?? '') ?? self::originalPicture($data['Photo 2'] ?? '');
@@ -260,6 +304,49 @@ final class FeverImpactParser extends AbstractParser
         $event->place = $place;
 
         return $event;
+    }
+
+    /**
+     * A line of a list, not a paragraph: a long text ending with "ici" would be its last sentence.
+     */
+    private static function isPageOnly(string $line): bool
+    {
+        return mb_strlen($line) <= 160 && 1 === preg_match(self::PAGE_ONLY, $line);
+    }
+
+    /**
+     * Fever's text comes without its page's markup, in one line: "Infos 📍 Lieu : Hôtel Carlton ⏳ Durée : 60 minutes
+     * Description Imagine-toi…". Its headings go back to their own lines, each emoji opening a line of a list too
+     * ("✔️ Ingrédients fournis"); the lines selling Fever or pointing to its page are left out.
+     */
+    private static function description(string $text): ?string
+    {
+        // "Offre spéciale&nbsp; 🎂": the entity is a space like the others
+        $text = trim((string) preg_replace([self::STYLE_SHEET, self::TRAILER, self::DELIVERY], '', str_replace('&nbsp;', "\u{a0}", trim($text))));
+        $headings = implode('|', array_map(static fn (string $heading): string => preg_quote($heading, '/'), self::HEADINGS));
+        // A heading is followed by a line of a list or by a sentence: "Infos 📍", "Description Imagine-toi"
+        $parts = preg_split(\sprintf('/\s+(?=(?:%1$s)\s+(?:%2$s|\p{Lu}))|(?<=^|\s)(%1$s)\s+(?=%2$s|\p{Lu})|\s+(?=%2$s)/u', $headings, self::BULLET), $text, -1, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) ?: [];
+
+        $paragraphs = [];
+        $list = [];
+        $promotion = false;
+        foreach ($parts as $part) {
+            // "⚖️ Au cœur du drame | 🗳️ Exprime ton vote": the separators of a line of badges
+            $part = (string) preg_replace('/^[\s|]+|[\s|]+$/u', '', $part);
+            if (\in_array($part, self::HEADINGS, true)) {
+                $paragraphs[] = implode('<br>', $list);
+                $list = [];
+                $promotion = \in_array($part, self::FEVER_PROMOTION, true);
+                $paragraphs[] = $promotion ? '' : \sprintf('<strong>%s</strong>', $part);
+            } elseif (!$promotion && '' !== $part && !self::isPageOnly($part)) {
+                $list[] = $part;
+            }
+        }
+
+        $paragraphs[] = implode('<br>', $list);
+        $paragraphs = array_filter($paragraphs, static fn (string $paragraph): bool => '' !== $paragraph);
+
+        return [] === $paragraphs ? null : implode("\n", array_map(static fn (string $paragraph): string => \sprintf('<p>%s</p>', $paragraph), $paragraphs));
     }
 
     /**
