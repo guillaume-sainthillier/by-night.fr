@@ -60,29 +60,66 @@ final class CityComparator extends AbstractComparator
             return null;
         }
 
-        $slug = $this->slug($dto->name);
+        $namesakes = $this->getNamesakes($entities, $dto, $this->slug($dto->name), false);
+        if ([] !== $namesakes) {
+            return new Matching($this->best($namesakes, $dto->postalCode), 100.0);
+        }
+
+        return $this->getCityOfPostalCode($entities, $dto) ?? $this->getCityOfGluedName($entities, $dto);
+    }
+
+    /**
+     * The city the postal code agrees with most, then the most populated.
+     *
+     * @param non-empty-list<City> $cities
+     */
+    private function best(array $cities, ?string $postalCode): City
+    {
+        if (\count($cities) > 1) {
+            $ranks = [];
+            foreach ($cities as $city) {
+                $ranks[spl_object_id($city)] = [$this->getPostalCodeAgreement($city, $postalCode), $city->getPopulation() ?? 0, -($city->getId() ?? 0)];
+            }
+
+            usort($cities, static fn (City $a, City $b): int => $ranks[spl_object_id($b)] <=> $ranks[spl_object_id($a)]);
+        }
+
+        return $cities[0];
+    }
+
+    /**
+     * @param iterable<object> $entities
+     *
+     * @return list<City>
+     */
+    private function getNamesakes(iterable $entities, CityDto $dto, string $slug, bool $glued): array
+    {
         $namesakes = [];
         foreach ($entities as $entity) {
             \assert($entity instanceof City);
-            if ($this->isNamesake($entity, $dto, $slug)) {
+            if ($this->isNamesake($entity, $dto, $slug, $glued)) {
                 $namesakes[] = $entity;
             }
         }
 
-        if ([] === $namesakes) {
-            return $this->getCityOfPostalCode($entities, $dto);
-        }
+        return $namesakes;
+    }
 
-        if (\count($namesakes) > 1) {
-            $ranks = [];
-            foreach ($namesakes as $city) {
-                $ranks[spl_object_id($city)] = [$this->getPostalCodeAgreement($city, $dto->postalCode), $city->getPopulation() ?? 0, -($city->getId() ?? 0)];
-            }
+    /**
+     * Last resort, once no city bears the name and the postal code names none: the cities whose
+     * name gives the same words, whatever separates them. sanitize() drops hyphens and apostrophes
+     * but keeps spaces, so "Bourg Saint Maurice" is no namesake of Bourg-Saint-Maurice, nor
+     * "Le Cap D Agde" of Le Cap d'Agde. Coming last, it never changes a town found before: tried
+     * first, a spelling that already found a namesake (Moulin-Neuf, in the Dordogne) would let in
+     * another (Moulin Neuf, in Moselle) that outranks it.
+     *
+     * @param iterable<object> $entities
+     */
+    private function getCityOfGluedName(iterable $entities, CityDto $dto): ?MatchingInterface
+    {
+        $namesakes = $this->getNamesakes($entities, $dto, self::glued($this->slug((string) $dto->name)), true);
 
-            usort($namesakes, static fn (City $a, City $b): int => $ranks[spl_object_id($b)] <=> $ranks[spl_object_id($a)]);
-        }
-
-        return new Matching($namesakes[0], 100.0);
+        return [] === $namesakes ? null : new Matching($this->best($namesakes, $dto->postalCode), 100.0);
     }
 
     /**
@@ -167,18 +204,32 @@ final class CityComparator extends AbstractComparator
         return new Matching($entity, 100.0);
     }
 
-    private function isNamesake(City $city, CityDto $dto, string $slug): bool
+    /**
+     * @param bool $glued whether $slug is glued (glued()), to compare with the city's glued slug
+     */
+    private function isNamesake(City $city, CityDto $dto, string $slug, bool $glued = false): bool
     {
         // We don't compare cities of different countries
         if ($dto->country?->entityId !== $city->getCountry()?->getId() || null === $city->getName()) {
             return false;
         }
 
-        return ($this->citySlugs[$city] ??= $this->slug($city->getName())) === $slug;
+        $citySlug = $this->citySlugs[$city] ??= $this->slug($city->getName());
+
+        return ($glued ? self::glued($citySlug) : $citySlug) === $slug;
     }
 
     private function slug(string $name): string
     {
         return $this->sluggerUtils->generateSlug($this->sanitize($name));
+    }
+
+    /**
+     * A slug without its separators: "bourg-saint-maurice" and "bourgsaintmaurice" (what
+     * "Bourg-Saint-Maurice" gives) are the same words.
+     */
+    private static function glued(string $slug): string
+    {
+        return str_replace('-', '', $slug);
     }
 }
