@@ -777,6 +777,27 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
     }
 
     /**
+     * Every spelling of a name has one slug, and a place named after its town has one: in a big city the fuzzy
+     * fallback, capped, rarely holds the place, and each spelling was a place of its own.
+     */
+    public function testThePlaceSlugHoldsEverySpellingOfItsName(): void
+    {
+        $country = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        CityFactory::createOne(['name' => 'Toulouse', 'country' => $country]);
+
+        $this->handler->handleOne($this->makeEventWithPlace('spelling-evt-1', "Église Saint-Honoré-d'Eylau"));
+        $this->handler->handleOne($this->makeEventWithPlace('spelling-evt-2', "Eglise Saint-Honoré d'Eylau"));
+        $this->handler->handleOne($this->makeEventWithPlace('town-evt', 'Toulouse'));
+
+        $placeRepository = self::getContainer()->get(PlaceRepository::class);
+        $this->assertSame(2, $placeRepository->count([]));
+        [$church, $town] = $placeRepository->findBy([], ['id' => 'ASC']);
+        $this->assertTrue($church->hasNameSlug('eglise saint honore d eylau'));
+        $this->assertCount(1, $church->getNameSlugs(), 'Both spellings have one slug');
+        $this->assertTrue($town->hasNameSlug('toulouse'));
+    }
+
+    /**
      * Genuinely different venues in the same city must NOT be merged (the slug index
      * narrows candidates but the comparator still guards against over-merging).
      */
