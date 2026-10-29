@@ -14,7 +14,7 @@ By Night is an event management platform for France (https://by-night.fr). It ag
 - **Caching**: Redis (application cache), HTTP cache headers + Cloudflare CDN
 - **Message Queue**: RabbitMQ via Symfony Messenger (`symfony/amqp-messenger`, transports in `config/packages/messenger.yaml`)
 - **File Storage**: S3-compatible bucket via Flysystem, exposed as `data.by-night.fr`
-- **Frontend**: TypeScript (strict), Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, jQuery, Sass, Preact (for reactive components), Stimulus
+- **Frontend**: TypeScript (strict), Vite with `@symfony/reprise`, Bootstrap 5 + Tabler, Sass, Preact (for reactive components), Stimulus
 - **Real-time**: Mercure hub (protocol 1.0, own `mercure` container, `symfony/mercure-bundle`) on the site's origin under `/.well-known/mercure` (setup in the README). Members' updates are private, published with the resource's IRI as canonical topic and the member's channel as alternate (`App\Mercure\UserChannel::update()`); a page subscribes to the channel with `{{ user_channel_hub(app.user) }}` (the hub's URL; sets the subscriber cookie once per request, as the Twig `mercure()` bridge would, which throws when asked twice). Every personal-space page listens for its jobs and toasts when one is done (`assets/js/listeners/transfer-toasts.ts`)
 - **Error Tracking**: Sentry
 - **Audience**: self-hosted Umami (cookieless, no consent), tracker same-origin at `/a/script.js` + `/a/api/send`, routed by Traefik straight to the Umami container (not through the app); GA4 (Tag Manager, after consent) stays for the site-wide analysis. Event authors see their pages' visitors and ticketing clicks (`/espace-perso/{id}/statistiques`, `App\Analytics\EventAudienceReport`: a period of shortcuts looking back, `AudiencePeriod`, or dates picked, `AudienceQuery`; a line chart drawn server side as SVG, `AudienceChart`), copied hourly from Umami's API into `event_visit_stat` by `app:events:sync-visits` (`App\Analytics\EventVisitSync`; setup in the README). A click worth counting carries `data-analytics-event="<name>"` and its properties as `data-analytics-<prop>` (the ticketing links: `ticket-click` and `seller`, the event and property the sync reads), sent by `assets/js/listeners/analytics.ts`, the only file that knows Umami (`window.umami`): never `data-umami-*` in a template. The e-mails worth measuring (weekend selection, outing alerts, publishers' news) get their UTM parameters from `MailerManager` as the `utm` context (`App\Utils\EmailUtm::campaign(<kind>, <week, change or edition>)`), and their templates tag each link with `|utm('<which link>')` (`App\Twig\UtmExtension`), a no-op in the other e-mails, so the layouts tag theirs; never on a signed URL (unsubscribe), whose signature covers the query
@@ -301,9 +301,9 @@ The frontend uses a modular listener-based architecture with dependency injectio
     - `DatepickerService.ts` - Date and date range picker (vanilla-calendar-pro)
     - `SliderService.ts` - Range sliders (nouislider)
     - `TagsService.ts` - Tag inputs (tom-select)
-    - `WysiwygService.ts` - Rich text editor (summernote)
+    - `WysiwygService.ts` - Rich text editor (Jodit)
     - `AutocompleteService.ts` - Autocomplete inputs (@tarekraafat/autocomplete.js)
-    - `FancyboxService.ts` - Image lightbox (fancybox)
+    - `LightboxService.ts` - Image lightbox (GLightbox)
 
 **Page-Specific Scripts** (`assets/js/pages/`):
 
@@ -335,7 +335,7 @@ The frontend uses a modular listener-based architecture with dependency injectio
 
 **Code Style**:
 
-- TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`, jQuery plugins on `JQuery` in `jquery-plugins.d.ts`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`) and connect a listener with `connectListener()` (`assets/js/test/listener.ts`; `connectListenerWithoutCleanup()` where it leaves nothing to clean up), never with its own `connect()`
+- TypeScript (`tsconfig.json`): `strict`, no `any`, no `@ts-ignore`; untyped third-party code gets a narrow shim in `assets/types/` (`declare module`). No jQuery: AJAX goes through `assets/js/utils/http.ts` (`getHtml`, `getJson`, `sendJson`, `postForm`), which sends `X-Requested-With` as the server expects and fails on an answer outside 2xx with an `HttpError` (`statusOf()`, `errorBody()`). Tests pass their plain-object doubles through `fake<T>()` (`assets/js/test/fake.ts`) and connect a listener with `connectListener()` (`assets/js/test/listener.ts`; `connectListenerWithoutCleanup()` where it leaves nothing to clean up), never with its own `connect()`
 - Icons are the SVG files of `assets/icons/`, rendered by `<twig:Icon>` in Twig and, in TypeScript, from the dump `silarhi/ux-icons-js-bundle` writes into `assets/js/icons/index.js` with the `ux_icons` attributes, on every cache rebuild or with `bin/console ux-icons-js:dump` (`lucide:trash-2` is `LucideTrash2Icon`): `renderIcon()` of `@silarhi/ux-icons-js` for HTML strings, `UXIcon` of `@silarhi/ux-icons-js/preact` in the Preact components, never drawn by hand. The dump is committed, so the frontend builds without PHP: commit it again after adding an SVG or changing `ux_icons` (prod dumps to `var/icons` instead, see `config/packages/silarhi_ux_icons_js.yaml`). A `class` replaces the configured `icon` class, as in Twig
 - Biome (`biome.json`) lints and formats TypeScript and SCSS: 120 char width, single quotes, 4 space indent, no semicolons. `noImportantStyles` and `noDescendingSpecificity` are off (the `!important` are deliberate Bootstrap/Tabler overrides), `noUnknownFunction` is off for SCSS (Sass functions)
 - Prettier only for Markdown and YAML

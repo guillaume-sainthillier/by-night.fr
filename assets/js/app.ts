@@ -3,7 +3,8 @@ import '@/scss/app.scss'
 // Symfony UX Stimulus
 import '@/stimulus_bootstrap'
 
-import '@/js/vendors'
+// Bootstrap's data attributes (dropdowns, collapses, modals…)
+import '@tabler/core'
 import '@/js/overrides'
 
 import * as Sentry from '@sentry/browser'

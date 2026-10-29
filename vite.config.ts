@@ -8,9 +8,9 @@ const assets = fileURLToPath(new URL('./assets', import.meta.url))
 const scss = fileURLToPath(new URL('./assets/scss/', import.meta.url))
 
 // Tabler's Sass sources write custom properties bare (--primary, var(--btn-bg)), and so do ours: its own build adds
-// the prefix afterwards, with this plugin. We keep Bootstrap's --bs-, which the Bootstrap themes of Tom Select and
-// summernote read. Only the stylesheets of assets/scss are rewritten: the vendor CSS the JS imports on its own
-// (Algolia autocomplete, fancybox…) reads its variables by their own name.
+// the prefix afterwards, with this plugin. We keep Bootstrap's --bs-, which the Bootstrap theme of Tom Select
+// reads. Only the stylesheets of assets/scss are rewritten: the vendor CSS the JS imports on its own
+// (Algolia autocomplete, Jodit, GLightbox…) reads its variables by their own name.
 const prefixScssCustomProperties = (): Plugin => {
     const plugin = prefixCustomProperties({
         prefix: 'bs-',
@@ -110,9 +110,6 @@ export default defineConfig(({ mode }) => {
                     admin: `${assets}/js/admin.ts`,
                     ...Object.fromEntries(pages.map((page) => [page, `${assets}/js/pages/${page}.ts`])),
                 },
-                // Rolldown does not keep side-effect import order across chunks by default;
-                // jquery-global.ts must run before Bootstrap and the jQuery plugins evaluate.
-                output: { strictExecutionOrder: true },
             },
 
             // Dev build profile, used by `pnpm dev` and `pnpm watch`.

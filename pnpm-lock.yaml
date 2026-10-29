@@ -163,7 +163,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  jquery: 3.7.1
   '@algolia/autocomplete-js>preact': ^11.0.0
 
 importers:
@@ -215,9 +214,6 @@ importers:
       jodit:
         specifier: ^4.18.11
         version: 4.18.11
-      jquery:
-        specifier: 3.7.1
-        version: 3.7.1
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -252,9 +248,6 @@ importers:
       '@types/google.maps':
         specifier: ^3.66.7
         version: 3.66.7
-      '@types/jquery':
-        specifier: ^3.5.34
-        version: 3.5.34
       '@types/lodash':
         specifier: ^4.17.27
         version: 4.17.27
@@ -1066,17 +1059,11 @@ packages:
   '@types/google.maps@3.66.7':
     resolution: {integrity: sha512-4EhLRkBtF5TMBAifddMeK+tn5MS6Sa6cMwrg4TbQiPlV4nU9IbKwHJ5csBfnpykNmXwqy+a9y0/38ZezOwtxmg==}
 
-  '@types/jquery@3.5.34':
-    resolution: {integrity: sha512-3m3939S3erqmTLJANS/uy0B6V7BorKx7RorcGZVjZ62dF5PAGbKEDZK1CuLtKombJkFA2T1jl8LAIIs7IV6gBQ==}
-
   '@types/lodash@4.17.27':
     resolution: {integrity: sha512-VenMRv/eKNrspX9v3H4dbmjsrnCOYdYBG3kxXKk3dG6X+urBGcj2Prww3xw1U5K4FV/mE4h5GbWd0szEKf+9ew==}
 
   '@types/node@24.19.2':
     resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
-
-  '@types/sizzle@2.3.10':
-    resolution: {integrity: sha512-TC0dmN0K8YcWEAEfiPi5gJP14eJe30TTGjkvek3iM/1NdHHsdCA/Td6GvNndMOo/iSnIsZ4HuuhrYPDAmbxzww==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -1395,9 +1382,6 @@ packages:
 
   jodit@4.18.11:
     resolution: {integrity: sha512-Yi41FmNpm80K+Khhl9NZ7FD9hRKxzMPYTRgRtBTiTG8CbdC0tlSULaZTBJouXCsOHoRRJ3p0o4nfJMbs/1PvTg==}
-
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -2489,17 +2473,11 @@ snapshots:
 
   '@types/google.maps@3.66.7': {}
 
-  '@types/jquery@3.5.34':
-    dependencies:
-      '@types/sizzle': 2.3.10
-
   '@types/lodash@4.17.27': {}
 
   '@types/node@24.19.2':
     dependencies:
       undici-types: 7.24.6
-
-  '@types/sizzle@2.3.10': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -2745,8 +2723,6 @@ snapshots:
   jiti@2.7.0: {}
 
   jodit@4.18.11: {}
-
-  jquery@3.7.1: {}
 
   js-tokens@10.0.0: {}
 
