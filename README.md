@@ -242,6 +242,21 @@ Umami's event-data values stop at the top 100, so the sync pages through `metric
 `/soiree/` page) and `events?event=ticket-click` (one row per click), and finds the event by the `--{id}` ending
 the path.
 
+### Sign-up CAPTCHA (Cap)
+
+The sign-up form is protected by [Cap](https://trycap.dev), a proof-of-work CAPTCHA, through `silarhi/cap-bundle`
+(`CapType` in invisible mode: solved while the visitor fills the form, nothing to tick). No cookie and no third party:
+the widget and its WebAssembly solvers are served from `/bundles/silarhicap/widget/`, loaded by the lazy listener
+`assets/js/listeners/cap.ts` on the sign-up page only (the Stimulus controller of the bundle is disabled in
+`assets/controllers.json`).
+
+- **Server**: Cap Standalone in `/apps/cap.silarhi.fr` (container `cap`, with its own Valkey), dashboard on
+  `cap.silarhi.fr` behind the Traefik basic auth. by-night has its site key `by-night.fr`, reached on
+  `cap.by-night.fr`, which serves only the `/<site key>/challenge|redeem|siteverify` endpoints (the `cap-sites`
+  router, `SITE_HOSTS` in that directory's `.env`).
+- **Env**: `CAP_ENDPOINT` (public, in `.env`) and `CAP_SECRET_KEY` (the secret of the site key, in `app.env`). Disabled
+  in dev and test (`config/packages/cap.yaml`): every submission is accepted.
+
 ## Setup
 
 ```bash

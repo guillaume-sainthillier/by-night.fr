@@ -11,8 +11,8 @@
 namespace App\Form\Type;
 
 use App\Entity\User;
-use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
-use Karser\Recaptcha3Bundle\Validator\Constraints\Recaptcha3;
+use Silarhi\CapBundle\Form\CapMode;
+use Silarhi\CapBundle\Form\CapType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -71,9 +71,9 @@ final class RegistrationFormType extends AbstractType
                 'label' => "J'accepte les conditions générales d'utilisation de By Night.",
                 'constraints' => [new IsTrue(message: "Veuillez accepter les conditions générales d'utilisation.")],
             ])
-            ->add('captcha', Recaptcha3Type::class, [
-                'constraints' => new Recaptcha3(),
-                'action_name' => 'register',
+            // Cap (cap.by-night.fr, our own server): solved while the visitor fills the form, nothing to tick
+            ->add('captcha', CapType::class, [
+                'mode' => CapMode::Invisible,
             ]);
     }
 

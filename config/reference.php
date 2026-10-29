@@ -2543,6 +2543,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         error_max_age?: scalar|Param|null, // Seconds clients and CDNs may cache a 404. Null keeps 404s uncacheable. // Default: null
  *     },
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
+ *     preload?: bool|Param, // Preload priority images through a Link header (and 103 Early Hints when sent). Needs symfony/web-link, does nothing without it. // Default: true
  *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
@@ -2560,7 +2561,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     }>,
  *     loaders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
- *         type?: "filesystem"|"flysystem"|"vich"|"url"|"chain"|Param, // Loader type. Inferred from name when it matches a known type. // Default: null
+ *         type?: "filesystem"|"flysystem"|"vich"|"url"|"asset_mapper"|"chain"|Param, // Loader type. Inferred from name when it matches a known type. // Default: null
  *         path?: scalar|Param|null, // Directory a filesystem loader reads images from. // Default: null
  *         paths?: mixed, // Removed in 2.0: declare one filesystem loader per directory, each with its own "path". // Default: null
  *         loaders?: list<scalar|Param|null>,
@@ -2573,7 +2574,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         default_transformer?: scalar|Param|null, // Default transformer name for this loader. Overrides the global default_transformer. // Default: null
  *         url_alias?: scalar|Param|null, // Public name of this loader in image URLs and public-cache keys, instead of its name (e.g. "p" for /image/glide/p/…). // Default: null
  *         private?: bool|Param, // Only your own routes serve the images of this loader (through ImageServer, e.g. behind security voters): the bundle image route refuses it, and rendering requires a "route". // Default: false
- *         resolve_metadata?: scalar|Param|null, // Whether to resolve image metadata for this loader. Null inherits from global. Filesystem loaders default to true. // Default: null
+ *         resolve_metadata?: scalar|Param|null, // Whether to resolve image metadata for this loader. Null inherits from global. Filesystem and asset_mapper loaders default to true. // Default: null
  *     }>,
  *     transformers?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2601,13 +2602,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             prefix?: scalar|Param|null, // Path prepended to every cache key, so keys mirror the URL path (e.g. "image" when the bundle routes are served under /image and the cache storage is a bucket served at the site root). // Default: ""
  *         },
  *     }>,
- * }
- * @psalm-type KarserRecaptcha3Config = array{
- *     site_key?: scalar|Param|null,
- *     secret_key?: scalar|Param|null,
- *     score_threshold?: float|Param, // Default: 0.5
- *     host?: scalar|Param|null, // Default host is "www.google.com", if it is not reachable then use "www.recaptcha.net" instead. // Default: "www.google.com"
- *     enabled?: bool|Param, // Default: true
  * }
  * @psalm-type MjmlConfig = array{
  *     renderer?: "binary"|"service"|"mjml_php"|Param, // Default: "binary"
@@ -3228,6 +3222,22 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         internal_logging?: bool|Param, // Enable internal logging for Doctrine Doctor analyzers. Can add ~133ms overhead. Enable only for debugging. // Default: false
  *     },
  * }
+ * @psalm-type CapConfig = array{
+ *     endpoint?: scalar|Param|null, // The API endpoint of the site key, as the browser reaches it: https://<your-instance>/<site-key>/ // Default: "%env(CAP_ENDPOINT)%"
+ *     secret_key?: scalar|Param|null, // The secret key of the site key (not the ADMIN_KEY of the dashboard). // Default: "%env(CAP_SECRET_KEY)%"
+ *     verify_url?: scalar|Param|null, // The /siteverify URL, as the server reaches it (e.g. http://cap:3000/<site-key>/siteverify in Docker). Defaults to <endpoint>siteverify. // Default: null
+ *     enabled?: bool|Param, // false renders no widget and accepts every submission: for the test environment. // Default: true
+ *     http_client?: scalar|Param|null, // PSR-18 HTTP client service ID calling /siteverify. Defaults to Symfony's psr18.http_client. // Default: null
+ *     request_factory?: scalar|Param|null, // PSR-17 request factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
+ *     stream_factory?: scalar|Param|null, // PSR-17 stream factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
+ *     adapters?: list<"live"|"turbo"|Param>,
+ *     render_scripts?: bool|Param, // Renders the <script> of the bundle with each widget. false when the Stimulus controller or your own install() call loads it. // Default: true
+ *     widget?: array{ // Where the browser loads the Cap widget from: an asset path (the copies the bundle ships, by default) or a URL.
+ *         script?: scalar|Param|null, // The cap-widget script, e.g. https://<your-instance>/assets/widget.js. null when your application imports cap-widget itself. // Default: "bundles/silarhicap/widget/cap.min.js"
+ *         wasm_url?: scalar|Param|null, // The cap_wasm_bg.wasm solver (window.CAP_CUSTOM_WASM_URL). null for the widget's default, jsDelivr. // Default: "bundles/silarhicap/widget/cap_wasm_bg.wasm"
+ *         hashwx_url?: scalar|Param|null, // The hashwx.wasm solver (window.CAP_CUSTOM_HASHWX_URL). null for the widget's default, jsDelivr. // Default: "bundles/silarhicap/widget/hashwx.wasm"
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -3254,7 +3264,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     stimulus?: StimulusConfig,
  *     ux_icons?: UxIconsConfig,
  *     picasso?: PicassoConfig,
- *     karser_recaptcha3?: KarserRecaptcha3Config,
  *     mjml?: MjmlConfig,
  *     reprise?: RepriseConfig,
  *     llms_txt?: LlmsTxtConfig,
@@ -3263,6 +3272,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     webauthn?: WebauthnConfig,
  *     silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *     tfa_webauthn?: TfaWebauthnConfig,
+ *     cap?: CapConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -3293,7 +3303,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
- *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
  *         reprise?: RepriseConfig,
  *         llms_txt?: LlmsTxtConfig,
@@ -3303,6 +3312,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *         tfa_webauthn?: TfaWebauthnConfig,
  *         doctrine_doctor?: DoctrineDoctorConfig,
+ *         cap?: CapConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -3331,7 +3341,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
- *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
  *         reprise?: RepriseConfig,
  *         llms_txt?: LlmsTxtConfig,
@@ -3340,6 +3349,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         webauthn?: WebauthnConfig,
  *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *         tfa_webauthn?: TfaWebauthnConfig,
+ *         cap?: CapConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -3371,7 +3381,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         stimulus?: StimulusConfig,
  *         ux_icons?: UxIconsConfig,
  *         picasso?: PicassoConfig,
- *         karser_recaptcha3?: KarserRecaptcha3Config,
  *         mjml?: MjmlConfig,
  *         reprise?: RepriseConfig,
  *         llms_txt?: LlmsTxtConfig,
@@ -3381,6 +3390,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         silarhi_ux_icons_js?: SilarhiUxIconsJsConfig,
  *         tfa_webauthn?: TfaWebauthnConfig,
  *         doctrine_doctor?: DoctrineDoctorConfig,
+ *         cap?: CapConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

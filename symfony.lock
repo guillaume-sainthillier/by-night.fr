@@ -226,18 +226,6 @@
     "jms/metadata": {
         "version": "2.3.0"
     },
-    "karser/karser-recaptcha3-bundle": {
-        "version": "0.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "0.1",
-            "ref": "c51ce07c10331d506762efe25b6f5843c1a5ea17"
-        },
-        "files": [
-            "config/packages/karser_recaptcha3.yaml"
-        ]
-    },
     "knpuniversity/oauth2-client-bundle": {
         "version": "2.20",
         "recipe": {
@@ -438,6 +426,9 @@
         "files": [
             "config/packages/sentry.yaml"
         ]
+    },
+    "silarhi/cap-bundle": {
+        "version": "v0.1.0"
     },
     "silarhi/llms-txt-bundle": {
         "version": "v1.0.0"

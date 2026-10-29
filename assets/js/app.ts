@@ -8,7 +8,7 @@ import '@tabler/core'
 import '@/js/overrides'
 
 import * as Sentry from '@sentry/browser'
-import { App, type ErrorContext } from '@silarhi/app-js'
+import { App, type ErrorContext, lazyListener } from '@silarhi/app-js'
 import { collectionListener } from '@silarhi/app-js/form'
 // Per-element listeners (connected on every mount)
 import actionBar from '@/js/listeners/action-bar'
@@ -93,6 +93,8 @@ const app = new App({
         activeChip,
         analytics,
         bulkActions,
+        // The sign-up challenge, imported with silarhi/cap-bundle on the pages of the form only
+        lazyListener('[data-silarhi-cap]', () => import('@/js/listeners/cap')),
         citySwitcher,
         contentRemovalRequest,
         cookieSettings,
