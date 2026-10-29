@@ -51,6 +51,10 @@ when@dev: &doctrine_doctor
             # City's STI columns have a DB default, so AdminZone rows insert fine
             single_table_inheritance_nullable_column:
                 enabled: false
+            # AdminZone's regions and départements are a name and codes, its cities add their geography and official
+            # code: 12 of 20 columns empty for a zone, not worth a JOINED table and a join on every city lookup
+            single_table_inheritance_sparse_table:
+                sparse_threshold: 0.7
             # Event::$startingPrice is a display and search-filter price, never computed with
             float_for_money:
                 enabled: false

@@ -15,6 +15,7 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Factory\CityAliasFactory;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\ZipCityFactory;
@@ -106,6 +107,69 @@ final class CityComparatorTest extends AppKernelTestCase
 
         self::assertNull($this->resolve([$doue, $gennes], 'Tuffalun', '49700'));
         self::assertNull($this->resolve([$doue], 'Tuffalun', null), 'Nor does a missing one');
+    }
+
+    public function testACommuneNoCityIsNamedLeadsToItsTown(): void
+    {
+        $pire = $this->city('Piré-sur-Seiche', '35', 2_065, ['35150']);
+        $janze = $this->city('Janzé', '35', 8_000, ['35150']);
+        CityAliasFactory::createOne(['city' => $pire, 'name' => 'Piré-Chancé']);
+
+        self::assertSame($pire->getId(), $this->resolve([$pire, $janze], 'Piré-Chancé', '35150'), 'The postal code is shared: the alias tells');
+        self::assertSame($pire->getId(), $this->resolve([], 'PIRE CHANCE', null), 'Written any way the sources write it');
+    }
+
+    public function testAnArrondissementLeadsToItsCity(): void
+    {
+        $paris = $this->city('Paris', '75', 2_138_551, ['75009']);
+        $quarter = $this->city('Paris 09 Opéra', '75', 0, ['75009']);
+        CityAliasFactory::createOne(['city' => $paris, 'name' => 'Paris 9ème']);
+
+        self::assertSame($paris->getId(), $this->resolve([$paris, $quarter], 'PARIS 9EME', '75009'));
+    }
+
+    public function testAnAliasReadsSpacesAsHyphens(): void
+    {
+        $bourg = $this->city('Bourg-Saint-Maurice', '73', 7_000, ['73700']);
+        $seez = $this->city('Séez', '73', 2_000, ['73700']);
+        CityAliasFactory::createOne(['city' => $bourg, 'name' => 'Bourg-Saint-Maurice']);
+
+        self::assertSame($bourg->getId(), $this->resolve([$bourg, $seez], 'Bourg Saint Maurice', '73700'), 'The city\'s name is compared hyphens and all');
+    }
+
+    public function testACityBearingTheNameWinsOverAnAlias(): void
+    {
+        $town = $this->city('Saint-Ouen', '93', 50_000, ['93400']);
+        $hamlet = $this->city('Saint-Ouen-sur-Seine', '41', 0);
+        CityAliasFactory::createOne(['city' => $town, 'name' => 'Saint-Ouen-sur-Seine']);
+
+        self::assertSame($hamlet->getId(), $this->resolve([$town, $hamlet], 'Saint-Ouen-sur-Seine', '93400'), 'Aliases only come once no city bears the name');
+    }
+
+    public function testThePostalCodeOfASingleCityWinsOverAnAlias(): void
+    {
+        $village = $this->city('Lezé', '35', 0, ['35680']);
+        $pire = $this->city('Piré-sur-Seiche', '35', 2_065, ['35150']);
+        CityAliasFactory::createOne(['city' => $pire, 'name' => 'Piré-Chancé']);
+
+        self::assertSame($village->getId(), $this->resolve([$village, $pire], 'Piré-Chancé', '35680'), 'As before the aliases');
+    }
+
+    public function testAnAliasOfAnotherDepartmentIsNoMatch(): void
+    {
+        $pire = $this->city('Piré-sur-Seiche', '35', 2_065, ['35150']);
+        CityAliasFactory::createOne(['city' => $pire, 'name' => 'Piré-Chancé']);
+
+        self::assertNull($this->resolve([], 'Piré-Chancé', '73700'));
+    }
+
+    public function testAnAliasOfAnotherCountryIsNoMatch(): void
+    {
+        $belgium = CountryFactory::createOne(['id' => 'BE', 'name' => 'Belgique']);
+        $bastogne = CityFactory::createOne(['name' => 'Bastogne', 'country' => $belgium]);
+        CityAliasFactory::createOne(['city' => $bastogne, 'name' => 'Bertogne']);
+
+        self::assertNull($this->resolve([], 'Bertogne', null));
     }
 
     public function testNamesakesInTwoDepartmentsAreTwoCitiesOfABatch(): void

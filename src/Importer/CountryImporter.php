@@ -132,6 +132,10 @@ final readonly class CountryImporter
                 ->setAdmin2Code($adminCode2)
                 ->setCountry($country);
 
+            if ($entity instanceof City) {
+                $entity->setOfficialCode(CityOfficialDataImporter::officialCode((string) $country->getId(), $data));
+            }
+
             $this->sanitizeAdminZone($entity);
 
             $this->em->persist($entity);

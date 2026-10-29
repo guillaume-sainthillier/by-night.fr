@@ -13,6 +13,7 @@ namespace App\Comparator;
 use App\Contracts\MatchingInterface;
 use App\Dto\CityDto;
 use App\Entity\City;
+use App\Repository\CityAliasRepository;
 use App\Utils\SluggerUtils;
 use Override;
 use WeakMap;
@@ -39,7 +40,18 @@ final class CityComparator extends AbstractComparator
      */
     private WeakMap $citySlugs;
 
-    public function __construct(private readonly SluggerUtils $sluggerUtils)
+    /**
+     * The names no alias bears, by country: most names a lookup gets to aliases with are none's (a street, a venue
+     * written for a town), and a batch repeats them. Bounded, as a worker lives on; an alias imported meanwhile is
+     * read once the worker restarts.
+     *
+     * @var array<string, true>
+     */
+    private array $namesWithoutAlias = [];
+
+    private const int NAMES_WITHOUT_ALIAS_KEPT = 5_000;
+
+    public function __construct(private readonly CityAliasRepository $cityAliasRepository)
     {
         $this->citySlugs = new WeakMap();
     }
@@ -70,19 +82,73 @@ final class CityComparator extends AbstractComparator
         }
 
         if ([] === $namesakes) {
-            return $this->getCityOfPostalCode($entities, $dto);
+            return $this->getCityOfPostalCode($entities, $dto) ?? $this->getCityOfAlias($dto);
         }
 
-        if (\count($namesakes) > 1) {
+        return new Matching($this->best($namesakes, $dto->postalCode), 100.0);
+    }
+
+    /**
+     * The form an alias is compared in: two names are the same town's when they give the same key ("PARIS 9EME" and
+     * "Paris 9ème", "BOURG SAINT MAURICE" and "Bourg-Saint-Maurice"). Unlike the namesakes' (slug()), which drops
+     * hyphens and keeps spaces: changing it would move towns already found.
+     */
+    public static function nameKey(string $name): string
+    {
+        return SluggerUtils::generateSlug(self::sanitized((string) preg_replace("/[-'’]/u", ' ', $name)));
+    }
+
+    /**
+     * The city the postal code agrees with most, then the most populated.
+     *
+     * @param non-empty-list<City> $cities
+     */
+    private function best(array $cities, ?string $postalCode): City
+    {
+        if (\count($cities) > 1) {
             $ranks = [];
-            foreach ($namesakes as $city) {
-                $ranks[spl_object_id($city)] = [$this->getPostalCodeAgreement($city, $dto->postalCode), $city->getPopulation() ?? 0, -($city->getId() ?? 0)];
+            foreach ($cities as $city) {
+                $ranks[spl_object_id($city)] = [$this->getPostalCodeAgreement($city, $postalCode), $city->getPopulation() ?? 0, -($city->getId() ?? 0)];
             }
 
-            usort($namesakes, static fn (City $a, City $b): int => $ranks[spl_object_id($b)] <=> $ranks[spl_object_id($a)]);
+            usort($cities, static fn (City $a, City $b): int => $ranks[spl_object_id($b)] <=> $ranks[spl_object_id($a)]);
         }
 
-        return new Matching($namesakes[0], 100.0);
+        return $cities[0];
+    }
+
+    /**
+     * Last resort, once no city bears the name and the postal code names none: the city another name of which it is
+     * (CityAlias), "Piré-Chancé" for Piré-sur-Seiche, "PARIS 9EME" for Paris. Never one of another département than
+     * the postal code's. Coming last, an alias never changes a town found before.
+     */
+    private function getCityOfAlias(CityDto $dto): ?MatchingInterface
+    {
+        $countryId = $dto->country?->entityId;
+        $nameKey = self::nameKey((string) $dto->name);
+        $key = $countryId . '|' . $nameKey;
+        if (null === $countryId || '' === $nameKey || isset($this->namesWithoutAlias[$key])) {
+            return null;
+        }
+
+        $aliases = $this->cityAliasRepository->findByCountryAndKey($countryId, $nameKey);
+        $cities = [];
+        foreach ($aliases as $alias) {
+            $city = $alias->getCity();
+            if (self::ELSEWHERE !== $this->getPostalCodeAgreement($city, $dto->postalCode)) {
+                $cities[(int) $city->getId()] = $city;
+            }
+        }
+
+        if ([] === $aliases) {
+            if (\count($this->namesWithoutAlias) >= self::NAMES_WITHOUT_ALIAS_KEPT) {
+                $this->namesWithoutAlias = [];
+            }
+
+            $this->namesWithoutAlias[$key] = true;
+        }
+
+        return [] === $cities ? null : new Matching($this->best(array_values($cities), $dto->postalCode), 100.0);
     }
 
     /**
@@ -179,6 +245,6 @@ final class CityComparator extends AbstractComparator
 
     private function slug(string $name): string
     {
-        return $this->sluggerUtils->generateSlug($this->sanitize($name));
+        return SluggerUtils::generateSlug($this->sanitize($name));
     }
 }
