@@ -67,9 +67,6 @@ security:
         - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         # The signed link of the recovery e-mail, opened without a session
         - { path: ^/connexion/recuperation/, roles: PUBLIC_ACCESS }
-        # The calendar feed of a member's outings is stateless (OutingCalendarController): declared public, scheb's
-        # 2FA access check skips it instead of reading the security token, which would start the session
-        - { path: ^/calendrier/, roles: PUBLIC_ACCESS }
         - { path: ^/login-social/service/eventbrite, roles: ROLE_ADMIN }
         - { path: ^/_administration, roles: ROLE_ADMIN }
         - { path: ^/social, roles: ROLE_USER }
