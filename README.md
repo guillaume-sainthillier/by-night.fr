@@ -246,8 +246,9 @@ the path.
 
 The sign-up form is protected by [Cap](https://trycap.dev), a proof-of-work CAPTCHA, through `silarhi/cap-bundle`
 (`CapType` in invisible mode: solved while the visitor fills the form, nothing to tick). No cookie and no third party:
-the widget and its WebAssembly solvers are served from `/bundles/silarhicap/widget/`, loaded by the lazy
-`silarhi--cap-bundle--cap` Stimulus controller of `assets/controllers.json` on the sign-up page only.
+the widget and its WebAssembly solvers are served from `/bundles/silarhicap/widget/`, loaded by the lazy listener
+`assets/js/listeners/cap.ts` on the sign-up page only (the Stimulus controller of the bundle is disabled in
+`assets/controllers.json`).
 
 - **Server**: Cap Standalone in `/apps/cap.silarhi.fr` (container `cap`, with its own Valkey), dashboard on
   `cap.silarhi.fr` behind the Traefik basic auth. by-night has its site key `by-night.fr`, reached on
