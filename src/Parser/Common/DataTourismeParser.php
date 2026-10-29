@@ -277,6 +277,7 @@ final class DataTourismeParser extends AbstractParser
         $city = new CityDto();
         $city->name = $cityName;
         $city->postalCode = $postalCode;
+        $city->officialCode = $this->string($address['hasAddressCity']['insee'] ?? null);
         $place->city = $city;
 
         $country = new CountryDto();

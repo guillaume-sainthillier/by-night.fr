@@ -82,10 +82,27 @@ final class CityComparator extends AbstractComparator
         }
 
         if ([] === $namesakes) {
-            return $this->getCityOfPostalCode($entities, $dto) ?? $this->getCityOfAlias($dto);
+            return $this->getCityOfPostalCode($entities, $dto) ?? $this->getCityOfAlias($dto) ?? $this->getCityOfOfficialCode($entities, $dto);
         }
 
-        return new Matching($this->best($namesakes, $dto->postalCode), 100.0);
+        return new Matching($this->best($namesakes, $dto), 100.0);
+    }
+
+    /**
+     * The commune an official code names: a municipal arrondissement's is its city's, the one GeoNames gives (OpenAgenda
+     * writes 75109 for Paris 9e, the cities bear Paris' 75056).
+     */
+    public static function communeCode(?string $code): ?string
+    {
+        $code = trim((string) $code);
+
+        return match (true) {
+            '' === $code => null,
+            1 === preg_match('/^751(?:0[1-9]|1\d|20)$/', $code) => '75056',
+            1 === preg_match('/^6938[1-9]$/', $code) => '69123',
+            1 === preg_match('/^132(?:0[1-9]|1[0-6])$/', $code) => '13055',
+            default => $code,
+        };
     }
 
     /**
@@ -99,16 +116,19 @@ final class CityComparator extends AbstractComparator
     }
 
     /**
-     * The city the postal code agrees with most, then the most populated.
+     * The city the postal code agrees with most, then the one of the commune the source names (its official code: after
+     * the postal code, OpenAgenda's being wrong now and then, "Bagneux" at 54170 coded as the Hauts-de-Seine's), then the
+     * most populated.
      *
      * @param non-empty-list<City> $cities
      */
-    private function best(array $cities, ?string $postalCode): City
+    private function best(array $cities, CityDto $dto): City
     {
         if (\count($cities) > 1) {
+            $officialCode = self::communeCode($dto->officialCode);
             $ranks = [];
             foreach ($cities as $city) {
-                $ranks[spl_object_id($city)] = [$this->getPostalCodeAgreement($city, $postalCode), $city->getPopulation() ?? 0, -($city->getId() ?? 0)];
+                $ranks[spl_object_id($city)] = [$this->getPostalCodeAgreement($city, $dto->postalCode), null !== $officialCode && $officialCode === $city->getOfficialCode(), $city->getPopulation() ?? 0, -($city->getId() ?? 0)];
             }
 
             usort($cities, static fn (City $a, City $b): int => $ranks[spl_object_id($b)] <=> $ranks[spl_object_id($a)]);
@@ -148,7 +168,45 @@ final class CityComparator extends AbstractComparator
             $this->namesWithoutAlias[$key] = true;
         }
 
-        return [] === $cities ? null : new Matching($this->best(array_values($cities), $dto->postalCode), 100.0);
+        return [] === $cities ? null : new Matching($this->best(array_values($cities), $dto), 100.0);
+    }
+
+    /**
+     * Last, once nothing bears the name the source wrote, nor its alias (a lieu-dit, "Les Cheix" in Manzat): the city of
+     * the commune the source names (OpenAgenda's and DATAtourisme's INSEE code) bearing that name written another way,
+     * else its most populated, when GeoNames knows its population (hamlets at 0 tell nothing). The code follows the
+     * place's coordinates, not the town written: OpenAgenda codes "BAR LE DUC" at 55000 as Nogaro, in the Gers. So it
+     * comes after every name and never leads out of the postal code's département.
+     *
+     * @param iterable<object> $entities
+     */
+    private function getCityOfOfficialCode(iterable $entities, CityDto $dto): ?MatchingInterface
+    {
+        $officialCode = self::communeCode($dto->officialCode);
+        if (null === $officialCode) {
+            return null;
+        }
+
+        $cities = [];
+        foreach ($entities as $entity) {
+            \assert($entity instanceof City);
+            if ($dto->country?->entityId === $entity->getCountry()?->getId() && $officialCode === $entity->getOfficialCode()
+                && self::ELSEWHERE !== $this->getPostalCodeAgreement($entity, $dto->postalCode)) {
+                $cities[(int) $entity->getId()] = $entity;
+            }
+        }
+
+        $nameKey = self::nameKey((string) $dto->name);
+        foreach ($cities as $city) {
+            if (self::nameKey((string) $city->getName()) === $nameKey) {
+                return new Matching($city, 100.0);
+            }
+        }
+
+        usort($cities, static fn (City $a, City $b): int => [$b->getPopulation() ?? 0, -($b->getId() ?? 0)] <=> [$a->getPopulation() ?? 0, -($a->getId() ?? 0)]);
+        $town = $cities[0] ?? null;
+
+        return null !== $town && ($town->getPopulation() ?? 0) > 0 ? new Matching($town, 100.0) : null;
     }
 
     /**

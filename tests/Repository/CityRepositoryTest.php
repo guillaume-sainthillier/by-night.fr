@@ -100,6 +100,24 @@ final class CityRepositoryTest extends AppKernelTestCase
         );
     }
 
+    public function testTheCitiesOfTheCommuneTheSourceNamesAreLoaded(): void
+    {
+        $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);
+        $lire = CityFactory::createOne(['name' => 'Liré', 'country' => $france, 'officialCode' => '49126']);
+        $drain = CityFactory::createOne(['name' => 'Drain', 'country' => $france, 'officialCode' => '49126']);
+        $paris = CityFactory::createOne(['name' => 'Paris', 'country' => $france, 'officialCode' => '75056']);
+        CityFactory::createOne(['name' => 'Ancenis', 'country' => $france, 'officialCode' => '44003']);
+
+        $orée = $this->createCityDto('49270', 'Le Fief Sauvin');
+        $orée->officialCode = '49126';
+        // An arrondissement's code stands for its city's
+        $opera = $this->createCityDto('75009', 'Opéra');
+        $opera->officialCode = '75109';
+        $cities = self::getContainer()->get(CityRepository::class)->findAllByDtos([$orée, $opera], false);
+
+        self::assertEqualsCanonicalizing([$lire->getId(), $drain->getId(), $paris->getId()], array_map(static fn (City $city) => $city->getId(), $cities));
+    }
+
     public function testCitiesAreLoadedWithTheirParentWithoutAQueryEach(): void
     {
         $france = CountryFactory::createOne(['id' => 'FR', 'name' => 'France']);

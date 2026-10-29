@@ -357,6 +357,7 @@ final class OpenAgendaParser extends AbstractParser
         $city = new CityDto();
         $city->postalCode = $location['postalCode'] ?? null;
         $city->name = $location['city'] ?? null;
+        $city->officialCode = \is_scalar($location['insee'] ?? null) && '' !== trim((string) $location['insee']) ? (string) $location['insee'] : null;
 
         $country = new CountryDto();
         $country->code = $countryCode;

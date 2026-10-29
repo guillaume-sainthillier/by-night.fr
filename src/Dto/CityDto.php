@@ -32,6 +32,12 @@ final class CityDto implements DependencyRequirableInterface, DependencyObjectIn
 
     public ?string $postalCode = null;
 
+    /**
+     * The official code of the commune, when the source gives it: OpenAgenda's and DATAtourisme's INSEE code. It locates
+     * the place once its town is not found by name (CityComparator), and is no part of its key.
+     */
+    public ?string $officialCode = null;
+
     public ?CountryDto $country = null;
 
     /**

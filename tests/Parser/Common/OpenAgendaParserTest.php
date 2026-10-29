@@ -142,6 +142,12 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         self::assertSame(['https://billetterie.parc.fr/concert', 'https://www.parc.fr'], $dto->websiteContacts);
     }
 
+    public function testTheTownKeepsItsInseeCode(): void
+    {
+        self::assertSame('31555', $this->arrayToDto(self::feedEvent(location: ['insee' => '31555']))?->place?->city?->officialCode);
+        self::assertNull($this->arrayToDto(self::feedEvent(location: ['insee' => '']))?->place?->city?->officialCode);
+    }
+
     public function testAnEventWithoutARegistrationLinkHasNoTicketing(): void
     {
         $dto = $this->arrayToDto(self::feedEvent(location: ['website' => 'https://www.parc.fr']));

@@ -172,6 +172,68 @@ final class CityComparatorTest extends AppKernelTestCase
         self::assertNull($this->resolve([], 'Bertogne', null));
     }
 
+    public function testTheInseeCodeTellsNamesakesApart(): void
+    {
+        $prefecture = $this->city('Pau', '64', 82_697, ['64000'], '64445');
+        $hamlet = $this->city('Pau', '73', 0, [], '73999');
+
+        self::assertSame($hamlet->getId(), $this->resolve([$prefecture, $hamlet], 'Pau', null, '73999'));
+        self::assertSame($prefecture->getId(), $this->resolve([$prefecture, $hamlet], 'Pau', null, '01001'), 'A code no namesake bears changes nothing');
+    }
+
+    public function testALieuDitLeadsToTheTownOfItsCommune(): void
+    {
+        $orée = $this->city('Liré', '49', 2_365, ['49530'], '49126');
+        $hamlet = $this->city('La Varenne', '49', 0, ['49270'], '49126');
+        $neighbour = $this->city('Ancenis', '44', 7_000, ['49530']);
+
+        self::assertSame($orée->getId(), $this->resolve([$orée, $hamlet, $neighbour], 'Le Fief Sauvin', '49530', '49126'), 'The postal code is shared: the INSEE code tells');
+        self::assertSame($hamlet->getId(), $this->resolve([$orée, $hamlet, $neighbour], 'La-Varenne', '49530', '49126'), 'A city of the commune written another way');
+    }
+
+    public function testACommuneOfUnpeopledHamletsIsNoMatch(): void
+    {
+        $hamlet = $this->city('Les Hameaux', '49', 0, ['49999'], '49999');
+        $other = $this->city('Les Granges', '49', 0, ['49999'], '49999');
+
+        self::assertNull($this->resolve([$hamlet, $other], 'Val-des-Hameaux', '49999', '49999'));
+    }
+
+    public function testAnArrondissementsCodeIsItsCitys(): void
+    {
+        $paris = $this->city('Paris', '75', 2_138_551, ['75009'], '75056');
+        $quarter = $this->city('Paris 09 Opéra', '75', 0, ['75009'], '75056');
+
+        self::assertSame($paris->getId(), $this->resolve([$paris, $quarter], 'Paris 9e Arrondissement', '75009', '75109'));
+        self::assertSame('69123', CityComparator::communeCode('69381'));
+        self::assertSame('13055', CityComparator::communeCode('13216'));
+        self::assertSame('13217', CityComparator::communeCode('13217'), 'Not an arrondissement');
+    }
+
+    public function testAnAliasWinsOverTheInseeCode(): void
+    {
+        $bar = $this->city('Bar-le-Duc', '55', 15_000, ['55000'], '55029');
+        $other = $this->city('Fains-Véel', '55', 2_000, ['55000'], '55186');
+        CityAliasFactory::createOne(['city' => $bar, 'name' => 'Bar-le-Duc']);
+
+        self::assertSame($bar->getId(), $this->resolve([$bar, $other], 'BAR LE DUC', '55000', '55186'), 'The code follows the coordinates, the name the town');
+    }
+
+    public function testTheInseeCodeOfAnotherDepartmentIsNoMatch(): void
+    {
+        $nogaro = $this->city('Nogaro', '32', 2_000, ['32110'], '32296');
+
+        self::assertNull($this->resolve([$nogaro], 'Le Bar', '55000', '32296'));
+    }
+
+    public function testThePostalCodeOfASingleCityWinsOverTheInseeCode(): void
+    {
+        $village = $this->city('Lezé', '35', 0, ['35680']);
+        $pire = $this->city('Piré-sur-Seiche', '35', 2_065, ['35150'], '35220');
+
+        self::assertSame($village->getId(), $this->resolve([$village, $pire], 'Piré-Chancé', '35680', '35220'), 'As before the codes');
+    }
+
     public function testNamesakesInTwoDepartmentsAreTwoCitiesOfABatch(): void
     {
         self::assertNotSame($this->dto('Pau', '64000')->getUniqueKey(), $this->dto('Pau', '73100')->getUniqueKey());
@@ -181,9 +243,9 @@ final class CityComparatorTest extends AppKernelTestCase
     /**
      * @param list<string> $postalCodes
      */
-    private function city(string $name, string $department, int $population, array $postalCodes = []): City
+    private function city(string $name, string $department, int $population, array $postalCodes = [], ?string $officialCode = null): City
     {
-        $city = CityFactory::createOne(['name' => $name, 'admin2Code' => $department, 'population' => $population, 'country' => $this->france]);
+        $city = CityFactory::createOne(['name' => $name, 'admin2Code' => $department, 'population' => $population, 'country' => $this->france, 'officialCode' => $officialCode]);
         foreach ($postalCodes as $postalCode) {
             ZipCityFactory::createOne(['parent' => $city, 'postalCode' => $postalCode, 'country' => $this->france]);
         }
@@ -194,19 +256,19 @@ final class CityComparatorTest extends AppKernelTestCase
     /**
      * @param list<City> $candidates
      */
-    private function resolve(array $candidates, string $name, ?string $postalCode): ?int
+    private function resolve(array $candidates, string $name, ?string $postalCode, ?string $officialCode = null): ?int
     {
         // A fresh kernel: the zip codes are read from the database, not from the collections the
         // factories left empty
         self::bootKernel();
         $candidates = array_map(static fn (City $city): City => CityFactory::find(['id' => $city->getId()]), $candidates);
 
-        $city = self::getContainer()->get(CityComparator::class)->getMostMatching($candidates, $this->dto($name, $postalCode))?->getEntity();
+        $city = self::getContainer()->get(CityComparator::class)->getMostMatching($candidates, $this->dto($name, $postalCode, $officialCode))?->getEntity();
 
         return $city instanceof City ? $city->getId() : null;
     }
 
-    private function dto(string $name, ?string $postalCode): CityDto
+    private function dto(string $name, ?string $postalCode, ?string $officialCode = null): CityDto
     {
         $country = new CountryDto();
         $country->entityId = 'FR';
@@ -215,6 +277,7 @@ final class CityComparatorTest extends AppKernelTestCase
         $dto = new CityDto();
         $dto->name = $name;
         $dto->postalCode = $postalCode;
+        $dto->officialCode = $officialCode;
         $dto->country = $country;
 
         return $dto;
