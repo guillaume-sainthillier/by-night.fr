@@ -1583,6 +1583,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      * left out: the small towns around, which findUpcomingCitiesAround() never lists, the bigger cities always
      * busier. Without them, a town page was only linked from its own events (Ahrefs: orphan pages).
      *
+     * admin_zone_type_latitude_idx bounds the latitude and tests the longitude and the events to come before any row
+     * is read: ~3k index entries for 1 ms. From the type index, every city was read (~88k), ~180 ms on each city page.
+     *
      * @param list<int> $excluded the ids of cities already listed
      *
      * @return list<array{0: City, events: int|string}> each city, and its number of events to come
@@ -1618,6 +1621,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->addOrderBy('c.id', SortDirection::Ascending)
             ->setMaxResults($limit)
             ->getQuery()
+            ->enableResultCache(self::PORTAL_CACHE_TTL)
             ->getResult();
     }
 
