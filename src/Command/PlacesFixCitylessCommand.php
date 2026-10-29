@@ -19,7 +19,9 @@ use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\PlaceNameSlug;
+use App\Manager\PlaceMerger;
 use App\Repository\CityRepository;
+use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Utils\PlaceNameNormalizer;
 use App\Utils\SluggerUtils;
@@ -46,7 +48,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *    place of its town (PlaceComparator now compares towns).
  * 2. Locate: a city-less place gets the city its town and postal code designate, as an import
  *    would now resolve it (CityComparator), when the postal code confirms it (the city's own or
- *    of its département) and no place of that name is already in that city.
+ *    of its département). A place of that name already in that city is the same venue when their
+ *    addresses agree (isSameVenue()): the city-less one is merged into it (PlaceMerger: events,
+ *    source identities, and its URL redirecting), else it goes beside it, another venue of that name
+ *    (DATAtourisme names a place it cannot name after its town: "Marseille 11e Arrondissement").
  *
  * Moved events and located places are re-indexed as each flush commits. Previews by default,
  * writes with --apply.
@@ -59,6 +64,12 @@ final class PlacesFixCitylessCommand extends Command
     /** A split flushes place by place: smaller chunks keep the unit of work light */
     private const int SPLIT_BATCH_SIZE = 50;
 
+    /** Two places of one name this close (km) are one venue */
+    private const float SAME_VENUE_DISTANCE = 0.3;
+
+    /** Two places of one name this far apart (km) are two venues, even when one has no street */
+    private const float OTHER_VENUE_DISTANCE = 1.0;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlaceRepository $placeRepository,
@@ -66,6 +77,8 @@ final class PlacesFixCitylessCommand extends Command
         private readonly CityComparator $cityComparator,
         private readonly PlaceComparator $placeComparator,
         private readonly PlaceNameNormalizer $placeNameNormalizer,
+        private readonly PlaceMerger $placeMerger,
+        private readonly EventRepository $eventRepository,
     ) {
         parent::__construct();
     }
@@ -108,10 +121,10 @@ final class PlacesFixCitylessCommand extends Command
         $cityless = $this->paginate($this->createCitylessPlacesQueryBuilder(), self::BATCH_SIZE);
         $total = \count($cityless);
         $io->section(\sprintf('2. %s %d city-less place(s) with a postal code', $apply ? 'Locating' : 'Previewing', $total));
-        $located = ['located' => 0, 'taken' => 0, 'unconfirmed' => 0];
+        $located = ['located' => 0, 'merged' => 0, 'beside' => 0, 'unconfirmed' => 0];
         $io->progressStart($total);
         foreach ($cityless->getChunkResults() as $chunk) {
-            foreach ($this->locate($chunk) as $key => $count) {
+            foreach ($this->locate($chunk, $apply) as $key => $count) {
                 $located[$key] += $count;
             }
 
@@ -126,7 +139,10 @@ final class PlacesFixCitylessCommand extends Command
         }
 
         $io->progressFinish();
-        $io->table(['Located', 'Left: a place of that name is already there', 'Left: postal code does not confirm'], [[$located['located'], $located['taken'], $located['unconfirmed']]]);
+        $io->table(
+            ['Located', 'Merged into the same venue there', 'Located beside another venue of that name', 'Left: postal code does not confirm'],
+            [[$located['located'], $located['merged'], $located['beside'], $located['unconfirmed']]],
+        );
 
         if ($apply) {
             $io->success('Done, the events concerned are being re-indexed.');
@@ -288,6 +304,38 @@ final class PlacesFixCitylessCommand extends Command
         return $created;
     }
 
+    /**
+     * Whether a place of the same name in the town is the same venue: on the same street, or within 300 m; else when
+     * one of them has no street and nothing says they are apart (more than 1 km). Two "Marseille 11e Arrondissement" at
+     * 196 Traverse de la Penne and at 24 Route d'Allauch are two.
+     */
+    private function isSameVenue(Place $place, Place $namesake): bool
+    {
+        $street = (string) $this->placeComparator->sanitizeStreetName($place->getStreet());
+        $namesakeStreet = (string) $this->placeComparator->sanitizeStreetName($namesake->getStreet());
+        $distance = null === $place->getLatitude() || null === $place->getLongitude() || null === $namesake->getLatitude() || null === $namesake->getLongitude()
+            ? null
+            : self::distance($place->getLatitude(), $place->getLongitude(), $namesake->getLatitude(), $namesake->getLongitude());
+
+        if (('' !== $street && $street === $namesakeStreet) || (null !== $distance && $distance <= self::SAME_VENUE_DISTANCE)) {
+            return true;
+        }
+
+        return ('' === $street || '' === $namesakeStreet) && (null === $distance || $distance <= self::OTHER_VENUE_DISTANCE);
+    }
+
+    /**
+     * The great-circle distance between two points, in kilometres.
+     */
+    private static function distance(float $latitude, float $longitude, float $otherLatitude, float $otherLongitude): float
+    {
+        $latitudeDelta = deg2rad($otherLatitude - $latitude);
+        $longitudeDelta = deg2rad($otherLongitude - $longitude);
+        $haversine = sin($latitudeDelta / 2) ** 2 + cos(deg2rad($latitude)) * cos(deg2rad($otherLatitude)) * sin($longitudeDelta / 2) ** 2;
+
+        return 2 * 6371 * asin(min(1.0, sqrt($haversine)));
+    }
+
     private function createCitylessPlacesQueryBuilder(): QueryBuilder
     {
         return $this
@@ -301,11 +349,11 @@ final class PlacesFixCitylessCommand extends Command
     /**
      * @param Place[] $places
      *
-     * @return array{located: int, taken: int, unconfirmed: int}
+     * @return array{located: int, merged: int, beside: int, unconfirmed: int}
      */
-    private function locate(array $places): array
+    private function locate(array $places, bool $apply): array
     {
-        $result = ['located' => 0, 'taken' => 0, 'unconfirmed' => 0];
+        $result = ['located' => 0, 'merged' => 0, 'beside' => 0, 'unconfirmed' => 0];
 
         $dtos = [];
         foreach ($places as $place) {
@@ -329,11 +377,22 @@ final class PlacesFixCitylessCommand extends Command
                 continue;
             }
 
-            // A place of that name there already: moving this one would make two of it
-            if (null !== $this->placeRepository->findOneBy(['city' => $city, 'slug' => $place->getSlug()])) {
-                ++$result['taken'];
+            // A place of that name there already: the same venue takes this one's events, another stays beside it
+            $namesakes = $this->placeRepository->findBy(['city' => $city, 'slug' => $place->getSlug()]);
+            $sameVenue = array_values(array_filter($namesakes, fn (Place $namesake): bool => $this->isSameVenue($place, $namesake)));
+            if ([] !== $sameVenue) {
+                if ($apply) {
+                    $target = $this->placeMerger->suggestTarget($sameVenue, $this->eventRepository->countByPlaces(array_map(static fn (Place $venue): int => (int) $venue->getId(), $sameVenue)));
+                    $this->placeMerger->merge($target, [$place]);
+                }
+
+                ++$result['merged'];
 
                 continue;
+            }
+
+            if ([] !== $namesakes) {
+                ++$result['beside'];
             }
 
             $place->setCity($city);
