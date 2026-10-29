@@ -89,6 +89,11 @@ abstract class AbstractComparator implements ComparatorInterface
 
     protected function sanitize(string $content): string
     {
+        return self::sanitized($content);
+    }
+
+    protected static function sanitized(string $content): string
+    {
         $manipulator = new StringManipulator($content);
 
         return $manipulator
