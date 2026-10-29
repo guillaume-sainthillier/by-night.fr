@@ -72,30 +72,12 @@ final class CityComparator extends AbstractComparator
             return null;
         }
 
-        $slug = $this->slug($dto->name);
-        $namesakes = [];
-        foreach ($entities as $entity) {
-            \assert($entity instanceof City);
-            if ($this->isNamesake($entity, $dto, $slug)) {
-                $namesakes[] = $entity;
-            }
+        $namesakes = $this->getNamesakes($entities, $dto, $this->slug($dto->name), false);
+        if ([] !== $namesakes) {
+            return new Matching($this->best($namesakes, $dto->postalCode), 100.0);
         }
 
-        if ([] === $namesakes) {
-            return $this->getCityOfPostalCode($entities, $dto) ?? $this->getCityOfAlias($dto);
-        }
-
-        return new Matching($this->best($namesakes, $dto->postalCode), 100.0);
-    }
-
-    /**
-     * The form an alias is compared in: two names are the same town's when they give the same key ("PARIS 9EME" and
-     * "Paris 9ème", "BOURG SAINT MAURICE" and "Bourg-Saint-Maurice"). Unlike the namesakes' (slug()), which drops
-     * hyphens and keeps spaces: changing it would move towns already found.
-     */
-    public static function nameKey(string $name): string
-    {
-        return SluggerUtils::generateSlug(self::sanitized((string) preg_replace("/[-'’]/u", ' ', $name)));
+        return $this->getCityOfPostalCode($entities, $dto) ?? $this->getCityOfAlias($dto) ?? $this->getCityOfGluedName($entities, $dto);
     }
 
     /**
@@ -118,9 +100,57 @@ final class CityComparator extends AbstractComparator
     }
 
     /**
-     * Last resort, once no city bears the name and the postal code names none: the city another name of which it is
-     * (CityAlias), "Piré-Chancé" for Piré-sur-Seiche, "PARIS 9EME" for Paris. Never one of another département than
-     * the postal code's. Coming last, an alias never changes a town found before.
+     * @param iterable<object> $entities
+     *
+     * @return list<City>
+     */
+    private function getNamesakes(iterable $entities, CityDto $dto, string $slug, bool $glued): array
+    {
+        $namesakes = [];
+        foreach ($entities as $entity) {
+            \assert($entity instanceof City);
+            if ($this->isNamesake($entity, $dto, $slug, $glued)) {
+                $namesakes[] = $entity;
+            }
+        }
+
+        return $namesakes;
+    }
+
+    /**
+     * Last resort, once no city bears the name, the postal code names none and no alias leads to
+     * one: the cities whose name gives the same words, whatever separates them. sanitize() drops
+     * hyphens and apostrophes but keeps spaces, so "Bourg Saint Maurice" is no namesake of
+     * Bourg-Saint-Maurice, nor "Le Cap D Agde" of Le Cap d'Agde. Coming last, it never changes a
+     * town found before: tried first, a spelling that already found a namesake (Moulin-Neuf, in the
+     * Dordogne) would let in another (Moulin Neuf, in Moselle) that outranks it; before the aliases,
+     * a Saint-André of the Bouches-du-Rhône would win over the alias of the postal code's
+     * (Sant Andreu de Sureda, for "Saint André 66690").
+     *
+     * @param iterable<object> $entities
+     */
+    private function getCityOfGluedName(iterable $entities, CityDto $dto): ?MatchingInterface
+    {
+        $namesakes = $this->getNamesakes($entities, $dto, self::glued($this->slug((string) $dto->name)), true);
+
+        return [] === $namesakes ? null : new Matching($this->best($namesakes, $dto->postalCode), 100.0);
+    }
+
+    /**
+     * The form an alias is compared in: two names are the same town's when they give the same key ("PARIS 9EME" and
+     * "Paris 9ème", "BOURG SAINT MAURICE" and "Bourg-Saint-Maurice"). Unlike the namesakes' (slug()), which drops
+     * hyphens and keeps spaces: changing it would move towns already found (their words glued are compared last
+     * instead, getCityOfGluedName()).
+     */
+    public static function nameKey(string $name): string
+    {
+        return SluggerUtils::generateSlug(self::sanitized((string) preg_replace("/[-'’]/u", ' ', $name)));
+    }
+
+    /**
+     * Once no city bears the name and the postal code names none: the city another name of which it is (CityAlias),
+     * "Piré-Chancé" for Piré-sur-Seiche, "PARIS 9EME" for Paris. Never one of another département than the postal
+     * code's. Coming after them, an alias never changes a town they find.
      */
     private function getCityOfAlias(CityDto $dto): ?MatchingInterface
     {
@@ -233,18 +263,32 @@ final class CityComparator extends AbstractComparator
         return new Matching($entity, 100.0);
     }
 
-    private function isNamesake(City $city, CityDto $dto, string $slug): bool
+    /**
+     * @param bool $glued whether $slug is glued (glued()), to compare with the city's glued slug
+     */
+    private function isNamesake(City $city, CityDto $dto, string $slug, bool $glued = false): bool
     {
         // We don't compare cities of different countries
         if ($dto->country?->entityId !== $city->getCountry()?->getId() || null === $city->getName()) {
             return false;
         }
 
-        return ($this->citySlugs[$city] ??= $this->slug($city->getName())) === $slug;
+        $citySlug = $this->citySlugs[$city] ??= $this->slug($city->getName());
+
+        return ($glued ? self::glued($citySlug) : $citySlug) === $slug;
     }
 
     private function slug(string $name): string
     {
         return SluggerUtils::generateSlug($this->sanitize($name));
+    }
+
+    /**
+     * A slug without its separators: "bourg-saint-maurice" and "bourgsaintmaurice" (what
+     * "Bourg-Saint-Maurice" gives) are the same words.
+     */
+    private static function glued(string $slug): string
+    {
+        return str_replace('-', '', $slug);
     }
 }
