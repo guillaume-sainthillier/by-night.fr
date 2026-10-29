@@ -57,6 +57,17 @@ final class PlaceNameNormalizerTest extends TestCase
         yield 'variant A' => ['Le Bikini', 'Toulouse', 'bikini'];
         yield 'variant B' => ['Bikini', 'Toulouse', 'bikini'];
 
+        // Punctuation is a space: each spelling of a name was a place of its own
+        yield 'hyphens' => ["Ancienne église Saint-Honoré-d'Eylau", 'Paris', 'ancienne eglise saint honore d eylau'];
+        yield 'hyphens written as spaces' => ["Ancienne église Saint-Honoré d'Eylau", 'Paris', 'ancienne eglise saint honore d eylau'];
+        yield 'other punctuation' => ['MPAA/Saint-Germain', 'Paris', 'mpaa saint germain'];
+        yield 'dots' => ['Place St.Aubin', 'Toulouse', 'place st aubin'];
+        yield 'hyphenated city stripped whatever its spelling' => ['Église Notre Dame de Saint Mandé', 'Saint-Mandé', 'eglise dame'];
+
+        // A place named after its town keeps its name: it is the town's place
+        yield 'named after its town' => ['Bobigny', 'Bobigny', 'bobigny'];
+        yield 'named after its town, with a stop word' => ['Saint-Laurent-du-Var', 'Saint-Laurent-du-Var', 'saint laurent var'];
+
         // Degenerate inputs collapse to null (nothing to index on).
         yield 'null name' => [null, 'Toulouse', null];
         yield 'blank name' => ['   ', null, null];

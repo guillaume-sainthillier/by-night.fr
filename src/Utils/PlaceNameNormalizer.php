@@ -19,11 +19,15 @@ use App\Contracts\BatchResetInterface;
  *  - PlaceComparator (fuzzy name matching), and
  *  - the indexed PlaceNameSlug (exact-match fast path).
  *
- * The name is sanitized (stop words removed, accents folded, non-alphanumeric
- * characters dropped, lower-cased and whitespace-collapsed), then loses its city,
- * sanitized the same way: a place name often repeats it ("Zénith de Toulouse",
- * "Salle d'Albi"). The city goes as a whole word, with the "de", "à" or "d'" that
- * ties it to the name.
+ * The name is sanitized (punctuation turned into spaces, stop words removed, accents
+ * folded, lower-cased and whitespace-collapsed), then loses its city, sanitized the
+ * same way: a place name often repeats it ("Zénith de Toulouse", "Salle d'Albi"). The
+ * city goes as a whole word, with the "de", "à" or "d'" that ties it to the name.
+ *
+ * Punctuation is a space, not dropped: the sources write "Saint-Honoré-d'Eylau" as
+ * well as "Saint-Honoré d'Eylau" or "Saint Honoré d'Eylau", and each spelling was
+ * a place of its own. A place named after its town ("Bobigny" in Bobigny) keeps
+ * its name, else it had no slug and a place of its own on every import.
  */
 final class PlaceNameNormalizer implements BatchResetInterface
 {
@@ -73,8 +77,8 @@ final class PlaceNameNormalizer implements BatchResetInterface
             // "d'" is glued to the city once the apostrophe is dropped ("salle dalbi"), and
             // only stands before a vowel, where French elides "de"
             $preposition = 1 === preg_match('/^[aeiouyh]/', $city) ? '(?:de |a |d ?)?' : '(?:de |a )?';
-            $normalized = trim((string) preg_replace('/\b' . $preposition . preg_quote($city, '/') . '\b/', ' ', $normalized));
-            $normalized = (string) preg_replace('/ {2,}/', ' ', $normalized);
+            $withoutCity = trim((string) preg_replace('/\b' . $preposition . preg_quote($city, '/') . '\b/', ' ', $normalized));
+            $normalized = '' === $withoutCity ? $normalized : (string) preg_replace('/ {2,}/', ' ', $withoutCity);
         }
 
         return '' === $normalized ? null : $normalized;
@@ -82,7 +86,7 @@ final class PlaceNameNormalizer implements BatchResetInterface
 
     private static function sanitize(string $text): string
     {
-        return trim(new StringManipulator($text)
+        return trim(new StringManipulator((string) preg_replace('/[^\p{L}\p{N}\s]+/u', ' ', $text))
             ->deleteStopWords()
             ->replaceAccents()
             ->nonAlphanumericChars()

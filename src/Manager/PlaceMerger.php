@@ -10,9 +10,11 @@
 
 namespace App\Manager;
 
+use App\Comparator\PlaceComparator;
 use App\Entity\Place;
 use App\Entity\PlaceLegacySlug;
 use App\Repository\EventRepository;
+use App\Utils\PlaceNameNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 
@@ -28,10 +30,47 @@ use InvalidArgumentException;
  */
 final readonly class PlaceMerger
 {
+    /** Two places of one name this close (km) are one venue, whatever their streets */
+    private const float SAME_VENUE_DISTANCE = 0.3;
+
+    /** Two places of one name this far apart (km) are two venues, even when one has no street */
+    private const float OTHER_VENUE_DISTANCE = 1.0;
+
     public function __construct(
         private EntityManagerInterface $entityManager,
         private EventRepository $eventRepository,
+        private PlaceComparator $placeComparator,
+        private PlaceNameNormalizer $placeNameNormalizer,
     ) {
+    }
+
+    /**
+     * Whether two places of one name in one town are the same venue: on the same street, or within 300 m; else when
+     * one of them has no street and nothing says they are apart (more than 1 km). Two "Marseille 11e Arrondissement" at
+     * 196 Traverse de la Penne and at 24 Route d'Allauch are two.
+     *
+     * A place named after its town is somewhere in it, not a venue: only one of the same street, or without one like it,
+     * is the same; one without a street is not the one of a street, whose address its events would take ("Paris" and
+     * "Paris, avenue Winston-Churchill").
+     */
+    public function isSameVenue(Place $place, Place $namesake): bool
+    {
+        $street = (string) $this->placeComparator->sanitizeStreetName($place->getStreet());
+        $namesakeStreet = (string) $this->placeComparator->sanitizeStreetName($namesake->getStreet());
+        $distance = null === $place->getLatitude() || null === $place->getLongitude() || null === $namesake->getLatitude() || null === $namesake->getLongitude()
+            ? null
+            : self::distance($place->getLatitude(), $place->getLongitude(), $namesake->getLatitude(), $namesake->getLongitude());
+
+        // Often placed at the town's centre: only its street says where it is
+        if ($this->isNamedAfterItsTown($place) || $this->isNamedAfterItsTown($namesake)) {
+            return $street === $namesakeStreet && (null === $distance || $distance <= self::OTHER_VENUE_DISTANCE);
+        }
+
+        if (('' !== $street && $street === $namesakeStreet) || (null !== $distance && $distance <= self::SAME_VENUE_DISTANCE)) {
+            return true;
+        }
+
+        return ('' === $street || '' === $namesakeStreet) && (null === $distance || $distance <= self::OTHER_VENUE_DISTANCE);
     }
 
     /**
@@ -111,6 +150,25 @@ final readonly class PlaceMerger
 
             return $result;
         });
+    }
+
+    private function isNamedAfterItsTown(Place $place): bool
+    {
+        $town = $place->getCity()?->getName() ?? $place->getCityName();
+
+        return null !== $town && $this->placeNameNormalizer->normalize($place->getName(), $town) === $this->placeNameNormalizer->normalize($town);
+    }
+
+    /**
+     * The great-circle distance between two points, in kilometres.
+     */
+    private static function distance(float $latitude, float $longitude, float $otherLatitude, float $otherLongitude): float
+    {
+        $latitudeDelta = deg2rad($otherLatitude - $latitude);
+        $longitudeDelta = deg2rad($otherLongitude - $longitude);
+        $haversine = sin($latitudeDelta / 2) ** 2 + cos(deg2rad($latitude)) * cos(deg2rad($otherLatitude)) * sin($longitudeDelta / 2) ** 2;
+
+        return 2 * 6371 * asin(min(1.0, sqrt($haversine)));
     }
 
     private function hasNameSlug(Place $place, string $slug, ?int $cityId, ?string $countryId): bool
