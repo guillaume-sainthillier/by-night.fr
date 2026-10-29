@@ -137,7 +137,7 @@
         "phpstan/phpstan": "^2.3.2",
         "phpstan/phpstan-doctrine": "^2.0.28",
         "phpstan/phpstan-strict-rules": "^2.1.0",
-        "phpstan/phpstan-symfony": "^2.1.0",
+        "phpstan/phpstan-symfony": "^2.1.1",
         "phpunit/phpunit": "^13.4.3",
         "rector/rector": "^2.7.0",
         "rector/swiss-knife": "^2.7.0",
