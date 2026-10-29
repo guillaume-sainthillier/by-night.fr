@@ -1,21 +1,44 @@
-import $ from '@/js/jquery-global'
-import 'summernote/dist/summernote-bs5'
-import 'summernote/dist/lang/summernote-fr-FR'
+import { Jodit } from 'jodit/esm/index.js'
+// Beyond the plugins jodit/esm brings (bold, lists, link, image, format block…)
+import 'jodit/esm/plugins/fullsize/fullsize.js'
+import 'jodit/esm/plugins/hr/hr.js'
+import 'jodit/esm/plugins/justify/justify.js'
+import 'jodit/esm/plugins/video/video.js'
+import fr from 'jodit/esm/langs/fr.js'
+import 'jodit/es2021/jodit.min.css'
 
 import '@/scss/lazy-components/_wysiwyg.scss'
 
+Jodit.lang.fr = fr
+
+/** The toolbar: heading, emphasis, lists and alignment, then what can be inserted */
+const BUTTONS = [
+    'paragraph',
+    '|',
+    'bold',
+    'italic',
+    'underline',
+    '|',
+    'ul',
+    'ol',
+    'align',
+    '|',
+    'link',
+    'image',
+    'video',
+    'hr',
+    '|',
+    'fullsize',
+]
+
 export interface WysiwygOptions {
     element: string | HTMLTextAreaElement
-    lang?: string
-    toolbar?: SummernoteToolbarGroup[]
     height?: number
-    codemirror?: SummernoteOptions['codemirror']
 }
 
 export interface Wysiwyg {
     getCode: () => string
     setCode: (html: string) => void
-    isEmpty: () => boolean
     destroy: () => void
 }
 
@@ -26,34 +49,41 @@ function resolveElement(element: string | HTMLTextAreaElement): HTMLTextAreaElem
     return element
 }
 
-export function create({
-    element,
-    lang = 'fr-FR',
-    toolbar = [
-        ['heading', ['style']],
-        ['style', ['bold', 'italic', 'underline']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['insert', ['link', 'picture', 'video', 'hr']],
-        ['misc', ['fullscreen']],
-    ],
-    height = 280,
-    codemirror = { mode: 'text/html', htmlMode: true },
-}: WysiwygOptions): Wysiwyg {
+/**
+ * A rich text editor in place of a textarea, which it keeps up to date: the form sends its HTML, sanitized by the
+ * server (HtmlFormatter).
+ */
+export function create({ element, height = 280 }: WysiwygOptions): Wysiwyg | null {
     const target = resolveElement(element)
-    // No element: an empty collection, on which every call does nothing
-    const $el = target ? $(target) : $()
+    if (!target) {
+        return null
+    }
 
-    $el.summernote({
-        lang,
-        toolbar,
+    const editor = Jodit.make(target, {
+        language: 'fr',
         height,
-        codemirror,
+        // The same toolbar on every width, wrapping on a phone, rather than buttons folded into a "…" menu
+        toolbarAdaptive: false,
+        buttons: BUTTONS,
+        // Pictures go into the text, as summernote put them: there is no upload endpoint
+        uploader: { insertImageAsBase64URI: true },
+        // The server rebuilds every link as a nofollow one opening in a new tab, from its href alone
+        // (HtmlFormatter::rewriteAnchors()): no fields for what it drops
+        link: { modeClassName: undefined, openInNewTabCheckbox: false, noFollowCheckbox: false },
+        // A paste keeps its formatting without asking: the server keeps what it allows
+        askBeforePasteHTML: false,
+        askBeforePasteFromWord: false,
+        showCharsCounter: false,
+        showWordsCounter: false,
+        showXPathInStatusbar: false,
+        hidePoweredByJodit: true,
     })
 
     return {
-        getCode: () => $el.summernote('code'),
-        setCode: (html) => $el.summernote('code', html),
-        isEmpty: () => $el.summernote('isEmpty'),
-        destroy: () => $el.summernote('destroy'),
+        getCode: () => editor.value,
+        setCode: (html) => {
+            editor.value = html
+        },
+        destroy: () => editor.destruct(),
     }
 }

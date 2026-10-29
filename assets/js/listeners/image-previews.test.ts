@@ -8,15 +8,15 @@ import imagePreviews from '@/js/listeners/image-previews'
 import { fake } from '@/js/test/fake'
 import { connectListener } from '@/js/test/listener'
 
-// Fancybox is a jQuery plugin with CSS: it cannot load in Node, so the lazy import is mocked
+// The lightbox comes with CSS, which Node cannot load: the lazy import is mocked
 const { create, lightbox } = vi.hoisted(() => {
     const lightbox = { open: vi.fn(), destroy: vi.fn() }
     return { lightbox, create: vi.fn((_options: object) => lightbox) }
 })
 
-vi.mock('@/js/services/ui/FancyboxService', () => ({ create }))
+vi.mock('@/js/services/ui/LightboxService', () => ({ create }))
 
-// The listener reads nothing of the element: it only hands it to Fancybox
+// The listener reads nothing of the element: it only hands it to the lightbox
 const connect = (listener: typeof imagePreviews, element: object = {}) =>
     connectListener(listener, fake<HTMLElement>(element))
 
@@ -30,7 +30,7 @@ describe('image-previews listener', () => {
         expect(imagePreviews.selector).toBe('.image-gallery')
     })
 
-    test('opens the element in a lightbox once Fancybox has loaded', async () => {
+    test('opens the element in a lightbox once the lightbox has loaded', async () => {
         const element = { className: 'image-gallery' }
 
         connect(imagePreviews, element)
@@ -48,7 +48,7 @@ describe('image-previews listener', () => {
         expect(lightbox.destroy).toHaveBeenCalledOnce()
     })
 
-    test('creates no lightbox when unmounted before Fancybox has loaded', async () => {
+    test('creates no lightbox when unmounted before the lightbox has loaded', async () => {
         const cleanup = connect(imagePreviews)
         cleanup?.()
         await vi.dynamicImportSettled()
@@ -58,10 +58,10 @@ describe('image-previews listener', () => {
     })
 
     // Vitest fails the run on an unhandled rejection, as Sentry reported it (BY-NIGHTFR-6C4)
-    test('leaves the plain link when Fancybox cannot be fetched', async () => {
+    test('leaves the plain link when the lightbox cannot be fetched', async () => {
         vi.resetModules()
-        vi.doMock('@/js/services/ui/FancyboxService', () => {
-            throw new Error('Unable to preload CSS for /build/FancyboxService.css')
+        vi.doMock('@/js/services/ui/LightboxService', () => {
+            throw new Error('Unable to preload CSS for /build/LightboxService.css')
         })
         const { default: listener } = await import('@/js/listeners/image-previews')
 
@@ -70,6 +70,6 @@ describe('image-previews listener', () => {
         cleanup?.()
 
         expect(create).not.toHaveBeenCalled()
-        vi.doUnmock('@/js/services/ui/FancyboxService')
+        vi.doUnmock('@/js/services/ui/LightboxService')
     })
 })

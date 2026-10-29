@@ -9,51 +9,47 @@ import like from '@/js/listeners/like'
 import { fake } from '@/js/test/fake'
 import { connectListener } from '@/js/test/listener'
 
-// jQuery needs a DOM, which the Node environment lacks: the fake wraps the button's classes, records the handlers
-// bound by namespace and answers $.ajax with the response the test sets
-const { $, state } = vi.hoisted(() => {
-    interface FakeButton {
-        dataset: Record<string, string>
-        classes: Set<string>
-        attributes: Record<string, string | null>
-    }
+// The Node environment has no DOM: the button is a stand-in recording its click handler, and the request answers
+// with the response the test sets
+const { state, sendJson } = vi.hoisted(() => {
     interface Response {
         success: boolean
         like: boolean
     }
-    const state: { handlers: Record<string, () => void>; requests: { data: string }[]; response: Response } = {
-        handlers: {},
+    const state: { requests: unknown[]; response: Response | Error } = {
         requests: [],
         response: { success: true, like: true },
     }
-    const $ = (element: FakeButton) => ({
-        on: (events: string, handler: (this: FakeButton) => void) => {
-            state.handlers[events] = handler.bind(element)
-        },
-        off: () => {
-            state.handlers = {}
-        },
-        attr: (name: string, value: string | null) => {
-            element.attributes[name] = value
-        },
-        data: (name: string) => element.dataset[name],
-        hasClass: (name: string) => element.classes.has(name),
-        toggleClass: (name: string, on: boolean) => (on ? element.classes.add(name) : element.classes.delete(name)),
-    })
-    $.ajax = (request: { data: string }) => {
-        state.requests.push(request)
-        return { done: (callback: (response: Response) => void) => callback(state.response) }
+    const sendJson = async (_method: string, _url: string, data: unknown) => {
+        state.requests.push(data)
+        if (state.response instanceof Error) {
+            throw state.response
+        }
+        return state.response
     }
-    return { $, state }
+    return { state, sendJson }
 })
 
-vi.mock('jquery', () => ({ default: $ }))
+vi.mock('@/js/utils/http', () => ({ sendJson }))
 
 const connect = ({ intent, active = false }: { intent?: string; active?: boolean } = {}) => {
+    const classes = new Set(active ? ['btn-primary'] : [])
     const button = {
         dataset: { href: '/api/events/42/participer', ...(intent ? { intent } : {}) },
-        classes: new Set(active ? ['btn-primary'] : []),
-        attributes: {},
+        classes,
+        classList: {
+            contains: (name: string) => classes.has(name),
+            toggle: (name: string, on: boolean) => (on ? classes.add(name) : classes.delete(name)),
+        },
+        setAttribute: vi.fn(),
+        removeAttribute: vi.fn(),
+        click: undefined as (() => Promise<void>) | undefined,
+        addEventListener(_type: 'click', handler: () => Promise<void>) {
+            this.click = handler
+        },
+        removeEventListener() {
+            this.click = undefined
+        },
     }
     const toastManager = { createToast: vi.fn() }
     connectListener(like, fake<HTMLElement>(button), fake<App>({ get: () => toastManager }))
@@ -73,7 +69,6 @@ const visit = (hash: string) => {
 
 beforeEach(() => {
     vi.stubGlobal('document', { querySelectorAll: () => [] })
-    state.handlers = {}
     state.requests = []
     state.response = { success: true, like: true }
 })
@@ -83,37 +78,48 @@ afterEach(() => {
 })
 
 describe('like listener', () => {
-    test('adds the event to the outings on a click, and says so', () => {
+    test('adds the event to the outings on a click, and says so', async () => {
         visit('')
         const { button, toastManager } = connect()
 
-        state.handlers['click.like']?.()
+        await button.click?.()
 
-        expect(state.requests).toHaveLength(1)
-        expect(JSON.parse(state.requests[0].data)).toEqual({ like: true })
+        expect(state.requests).toEqual([{ like: true }])
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(toastManager.createToast).toHaveBeenCalledWith('success', 'Ajouté à vos sorties')
     })
 
-    test('keeps the other buttons of the event in step', () => {
+    test('keeps the other buttons of the event in step', async () => {
         visit('')
         const other = { dataset: { href: '/api/events/42/participer' }, classList: { toggle: vi.fn() } }
         const elsewhere = { dataset: { href: '/api/events/7/participer' }, classList: { toggle: vi.fn() } }
         vi.stubGlobal('document', { querySelectorAll: () => [other, elsewhere] })
-        connect()
+        const { button } = connect()
 
-        state.handlers['click.like']?.()
+        await button.click?.()
 
         expect(other.classList.toggle).toHaveBeenCalledWith('btn-primary', true)
         expect(elsewhere.classList.toggle).not.toHaveBeenCalled()
     })
 
-    test('records the click made before the login, once, and forgets the fragment', () => {
+    test('gives the button back and says so when the request fails', async () => {
+        visit('')
+        state.response = new TypeError('Failed to fetch')
+        const { button, toastManager } = connect()
+
+        await button.click?.()
+
+        expect(button.removeAttribute).toHaveBeenCalledWith('disabled')
+        expect(button.classes.has('btn-primary')).toBe(false)
+        expect(toastManager.createToast).toHaveBeenCalledWith('error', 'Une erreur est survenue, veuillez réessayer.')
+    })
+
+    test('records the click made before the login, once, and forgets the fragment', async () => {
         const replaceState = visit('#participer')
         const { button } = connect({ intent: 'participer' })
+        await vi.waitFor(() => expect(button.classes.size).toBe(1))
 
-        expect(state.requests).toHaveLength(1)
-        expect(JSON.parse(state.requests[0].data)).toEqual({ like: true })
+        expect(state.requests).toEqual([{ like: true }])
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(replaceState).toHaveBeenCalledWith(null, '', '/toulouse/soiree/concert--42')
     })

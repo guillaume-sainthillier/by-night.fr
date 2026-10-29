@@ -26,12 +26,13 @@
 {% block head_js %}
     <script type="text/javascript">
         if (typeof window.opener !== "undefined" && window.opener !== null && typeof window.opener.parent_elem !== "undefined") {
-            window.opener
-                .$('body')
-                .trigger("hasConnected", {
+            // Built by the opener's CustomEvent, so that its page reads it as one of its own (SocialLogin.ts)
+            window.opener.document.body.dispatchEvent(new window.opener.CustomEvent("social.connected", {
+                detail: {
                     'user': {{ userInfo|json_encode|raw }},
                     'target': window.opener.parent_elem
-                });
+                }
+            }));
             window.close();
         } else {
             document.location = {{ targetPath|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};

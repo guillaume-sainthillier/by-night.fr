@@ -109,6 +109,45 @@ final class CityComparatorTest extends AppKernelTestCase
         self::assertNull($this->resolve([$doue], 'Tuffalun', null), 'Nor does a missing one');
     }
 
+    public function testANameWrittenWithSpacesFindsTheHyphenatedCity(): void
+    {
+        $bourg = $this->city('Bourg-Saint-Maurice', '73', 6_747, ['73700']);
+        $agde = $this->city('Le Cap d\'Agde', '34', 4_600);
+
+        self::assertSame($bourg->getId(), $this->resolve([$bourg], 'Bourg Saint Maurice', null));
+        self::assertSame($bourg->getId(), $this->resolve([$bourg], 'Bourg-Saint-Maurice', null));
+        self::assertSame($bourg->getId(), $this->resolve([$bourg], 'BOURG SAINT-MAURICE', '73000'), 'Nor does the postal code of another city matter');
+        self::assertSame($agde->getId(), $this->resolve([$agde], 'LE CAP D AGDE', null), 'An apostrophe neither');
+    }
+
+    public function testThePostalCodeTellsNamesakesWrittenWithHyphensApart(): void
+    {
+        $basque = $this->city('Saint-Jean-de-Luz', '64', 13_000, ['64500']);
+        $elsewhere = $this->city('Saint-Jean-de-Luz', '33', 20_000);
+
+        self::assertSame($basque->getId(), $this->resolve([$elsewhere, $basque], 'Saint Jean De Luz', '64122'));
+        self::assertSame($elsewhere->getId(), $this->resolve([$elsewhere, $basque], 'Saint Jean De Luz', null));
+    }
+
+    public function testTheCityOfThePostalCodeWinsOverANamesakeWrittenWithHyphensElsewhere(): void
+    {
+        $saintCloud = $this->city('Saint-Cloud', '92', 28_839, ['92210']);
+        $carbonBlanc = $this->city('Carbon-Blanc', '33', 6_760, ['33560']);
+
+        self::assertSame($saintCloud->getId(), $this->resolve([$saintCloud, $carbonBlanc], 'CARBON BLANC', '92210'));
+        self::assertSame($carbonBlanc->getId(), $this->resolve([$saintCloud, $carbonBlanc], 'Carbon-Blanc', '92210'), 'As a namesake wins over it');
+    }
+
+    public function testANameWrittenWithSpacesNeverMovesATownFoundBefore(): void
+    {
+        $dordogne = $this->city('Moulin-Neuf', '24', 740, ['24700']);
+        $somewhere = $this->city('Moulin Neuf', null, 0);
+
+        // Found by its name alone, the city of no département would outrank the one of another
+        self::assertSame($dordogne->getId(), $this->resolve([$somewhere, $dordogne], 'Moulin-Neuf', '33660'));
+        self::assertSame($somewhere->getId(), $this->resolve([$somewhere, $dordogne], 'Moulin Neuf', '33660'));
+    }
+
     public function testACommuneNoCityIsNamedLeadsToItsTown(): void
     {
         $pire = $this->city('Piré-sur-Seiche', '35', 2_065, ['35150']);
@@ -144,6 +183,17 @@ final class CityComparatorTest extends AppKernelTestCase
         CityAliasFactory::createOne(['city' => $town, 'name' => 'Saint-Ouen-sur-Seine']);
 
         self::assertSame($hamlet->getId(), $this->resolve([$town, $hamlet], 'Saint-Ouen-sur-Seine', '93400'), 'Aliases only come once no city bears the name');
+    }
+
+    public function testAnAliasWinsOverACityBearingTheWords(): void
+    {
+        $commune = $this->city('Sant Andreu de Sureda', '66', 2_757, ['66690']);
+        $neighbour = $this->city('Sorède', '66', 3_300, ['66690']);
+        $quarter = $this->city('Saint-André', '13', 4_501);
+        CityAliasFactory::createOne(['city' => $commune, 'name' => 'Saint-André']);
+
+        self::assertSame($commune->getId(), $this->resolve([$commune, $neighbour, $quarter], 'Saint André', '66690'), 'Not the namesake of another département');
+        self::assertSame($commune->getId(), $this->resolve([$commune, $neighbour, $quarter], 'Saint André', null), 'Without a postal code too');
     }
 
     public function testThePostalCodeOfASingleCityWinsOverAnAlias(): void
@@ -243,7 +293,7 @@ final class CityComparatorTest extends AppKernelTestCase
     /**
      * @param list<string> $postalCodes
      */
-    private function city(string $name, string $department, int $population, array $postalCodes = [], ?string $officialCode = null): City
+    private function city(string $name, ?string $department, int $population, array $postalCodes = [], ?string $officialCode = null): City
     {
         $city = CityFactory::createOne(['name' => $name, 'admin2Code' => $department, 'population' => $population, 'country' => $this->france, 'officialCode' => $officialCode]);
         foreach ($postalCodes as $postalCode) {

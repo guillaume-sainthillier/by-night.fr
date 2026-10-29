@@ -1,6 +1,5 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
 import { definePage } from '@silarhi/app-js'
-import $ from 'jquery'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
 import initEventDateMode from '@/js/listeners/event-date-mode'
@@ -141,14 +140,15 @@ export default definePage(({ app }) => {
 
     const eventAddress = document.querySelector<HTMLInputElement>('#app_event_address')
     const eventPlaceName = document.querySelector<HTMLInputElement>('#app_event_place_name')
-    const $eventAddress = $('#app_event_address')
-    const $eventPlaceName = $('#app_event_place_name')
-    const eventPlaceLatitude = $('#app_event_place_latitude')
-    const eventPlaceLongitude = $('#app_event_place_longitude')
-    const eventPlaceStreet = $('#app_event_place_street')
-    const eventPlaceCityName = $('#app_event_place_city_name')
-    const eventPlaceCityPostalCode = $('#app_event_place_city_postalCode')
-    const eventPlaceCountry = $('#app_event_place_country')
+    // The place's fields the map and the address search fill (a field the form lacks is left alone)
+    const field = (id: string): { value: string } =>
+        document.querySelector<HTMLInputElement | HTMLSelectElement>(`#${id}`) ?? { value: '' }
+    const eventPlaceLatitude = field('app_event_place_latitude')
+    const eventPlaceLongitude = field('app_event_place_longitude')
+    const eventPlaceStreet = field('app_event_place_street')
+    const eventPlaceCityName = field('app_event_place_city_name')
+    const eventPlaceCityPostalCode = field('app_event_place_city_postalCode')
+    const eventPlaceCountry = field('app_event_place_country')
 
     // Below the fields it reads: called above them, it met them in their temporal dead zone (a ReferenceError the
     // async function turned into a rejection, so the map and the address search never started)
@@ -226,8 +226,8 @@ export default definePage(({ app }) => {
         function updateMap(lat: number, lng: number) {
             map.setCenter({ lat, lng })
             marker.position = { lat, lng }
-            eventPlaceLatitude.val(lat)
-            eventPlaceLongitude.val(lng)
+            eventPlaceLatitude.value = String(lat)
+            eventPlaceLongitude.value = String(lng)
         }
 
         function assignAddressComponents(components: AddressComponent[] | null | undefined) {
@@ -247,10 +247,10 @@ export default definePage(({ app }) => {
                 else if (c.types.includes('route')) route = longValue
                 else if (c.types.includes('country')) country = shortValue
             }
-            eventPlaceCityName.val(city ?? '')
-            eventPlaceCityPostalCode.val(postalCode ?? '')
-            eventPlaceStreet.val(`${streetNumber} ${route}`.trim())
-            eventPlaceCountry.val(country ?? '').trigger('refresh')
+            eventPlaceCityName.value = city ?? ''
+            eventPlaceCityPostalCode.value = postalCode ?? ''
+            eventPlaceStreet.value = `${streetNumber} ${route}`.trim()
+            eventPlaceCountry.value = country ?? ''
         }
 
         async function reverseGeocode(lat: number, lng: number) {
@@ -260,7 +260,7 @@ export default definePage(({ app }) => {
                 if (!results?.[0]) return
                 const r = results[0]
                 addressSelect.addOption({ description: r.formatted_address })
-                $eventAddress.val(r.formatted_address).trigger('refresh')
+                addressSelect.setValue(r.formatted_address, true)
                 let city = '',
                     postalCode = '',
                     streetNumber = '',
@@ -273,10 +273,10 @@ export default definePage(({ app }) => {
                     if (c.types.includes('route')) route = c.long_name
                     if (c.types.includes('country')) country = c.short_name
                 }
-                eventPlaceCityName.val(city)
-                eventPlaceCityPostalCode.val(postalCode)
-                eventPlaceStreet.val(`${streetNumber} ${route}`.trim())
-                eventPlaceCountry.val(country).trigger('refresh')
+                eventPlaceCityName.value = city
+                eventPlaceCityPostalCode.value = postalCode
+                eventPlaceStreet.value = `${streetNumber} ${route}`.trim()
+                eventPlaceCountry.value = country
             } catch (e) {
                 console.error('Reverse geocode failed:', e)
             }
@@ -336,17 +336,12 @@ export default definePage(({ app }) => {
                 placeSessionToken = new AutocompleteSessionToken()
                 if (place.formattedAddress) {
                     addressSelect.addOption({ description: place.formattedAddress })
-                    $eventAddress.val(place.formattedAddress).trigger('refresh')
+                    addressSelect.setValue(place.formattedAddress, true)
                 }
                 if (place.location) updateMap(place.location.lat(), place.location.lng())
                 assignAddressComponents(place.addressComponents)
             },
         })
-        // Setup refresh event for placeNameSelect
-        $eventPlaceName.on('refresh', () => {
-            placeNameSelect.setValue(eventPlaceName.value, true)
-        })
-
         // Address autocomplete
         const addressSelect = new TomSelect(eventAddress, {
             valueField: 'description',
@@ -392,11 +387,6 @@ export default definePage(({ app }) => {
                 assignAddressComponents(place.addressComponents)
             },
         })
-        // Setup refresh event for addressSelect
-        $eventAddress.on('refresh', () => {
-            addressSelect.setValue(eventAddress.value, true)
-        })
-
         // Marker drag -> reverse geocode
         marker.addEventListener('gmp-dragend', () => {
             const { position } = marker
@@ -407,8 +397,8 @@ export default definePage(({ app }) => {
         })
 
         // Pre-populate map in edit mode
-        const lat = parseFloat(String(eventPlaceLatitude.val()))
-        const lng = parseFloat(String(eventPlaceLongitude.val()))
+        const lat = parseFloat(eventPlaceLatitude.value)
+        const lng = parseFloat(eventPlaceLongitude.value)
         if (!Number.isNaN(lat) && !Number.isNaN(lng) && (lat !== 0 || lng !== 0)) {
             map.setCenter({ lat, lng })
             marker.position = { lat, lng }

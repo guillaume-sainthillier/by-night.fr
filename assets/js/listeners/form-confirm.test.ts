@@ -9,28 +9,18 @@ import formConfirm from '@/js/listeners/form-confirm'
 import { fake } from '@/js/test/fake'
 import { connectListener } from '@/js/test/listener'
 
-// jQuery needs a DOM, which the Node environment lacks: the fake records the handlers bound by namespace
-const { $, handlers } = vi.hoisted(() => {
-    const handlers: Record<string, (event: { preventDefault: () => void }) => Promise<void>> = {}
-    const $ = () => ({
-        on: (events: string, handler: (event: { preventDefault: () => void }) => Promise<void>) => {
-            handlers[events] = handler
-        },
-        off: (namespace: string) => {
-            Object.keys(handlers)
-                .filter((events) => events.endsWith(namespace))
-                .forEach((events) => {
-                    delete handlers[events]
-                })
-        },
-    })
-    return { $, handlers }
-})
+type SubmitHandler = (event: { preventDefault: () => void }) => Promise<void>
 
-vi.mock('jquery', () => ({ default: $ }))
+// The submit handlers bound to the form, the tests running without a DOM
+const handlers = new Set<SubmitHandler>()
 
 const connect = (dataset: Record<string, string>, confirmed: true | undefined) => {
-    const form = { dataset, submit: vi.fn() }
+    const form = {
+        dataset,
+        submit: vi.fn(),
+        addEventListener: (_type: 'submit', handler: SubmitHandler) => handlers.add(handler),
+        removeEventListener: (_type: 'submit', handler: SubmitHandler) => handlers.delete(handler),
+    }
     const modalManager = { createConfirm: vi.fn((_params: object) => Promise.resolve(confirmed)) }
     const cleanup = connectListener(formConfirm, fake<HTMLFormElement>(form), fake<App>({ get: () => modalManager }))
 
@@ -40,15 +30,14 @@ const connect = (dataset: Record<string, string>, confirmed: true | undefined) =
 // The async handler returns a promise that settles once the dialog has been answered
 const submit = () => {
     const event = { preventDefault: vi.fn() }
-    const answered = handlers['submit.confirm'](event)
+    const [handler] = handlers
+    const answered = handler(event)
     return { event, answered }
 }
 
 describe('form-confirm listener', () => {
     beforeEach(() => {
-        Object.keys(handlers).forEach((events) => {
-            delete handlers[events]
-        })
+        handlers.clear()
     })
 
     test('targets forms carrying a confirmation message', () => {
@@ -99,6 +88,6 @@ describe('form-confirm listener', () => {
 
         cleanup?.()
 
-        expect(handlers).toEqual({})
+        expect(handlers.size).toBe(0)
     })
 })

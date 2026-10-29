@@ -1,18 +1,13 @@
 import { defineListener } from '@silarhi/app-js'
-import $ from 'jquery'
 
 /**
  * Ask for a confirmation in a SweetAlert dialog before submitting a form carrying `data-confirm-message`.
  * `data-confirm-title` and `data-confirm-button` set the dialog title and the confirm button label.
- *
- * Bound through jQuery: form-target.ts submits its target with `$(form).submit()`, which only runs jQuery handlers.
  */
 export default defineListener<HTMLFormElement>({
     selector: 'form[data-confirm-message]',
     connect(form, { app }) {
-        const $form = $(form)
-
-        $form.on('submit.confirm', async (e) => {
+        const onSubmit = async (e: SubmitEvent) => {
             // Before any await: only a synchronous call cancels the submission
             e.preventDefault()
 
@@ -28,8 +23,10 @@ export default defineListener<HTMLFormElement>({
             if (confirmed) {
                 form.submit()
             }
-        })
+        }
 
-        return () => $form.off('.confirm')
+        form.addEventListener('submit', onSubmit)
+
+        return () => form.removeEventListener('submit', onSubmit)
     },
 })

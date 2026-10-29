@@ -1,11 +1,9 @@
 import { renderIcon } from '@silarhi/ux-icons-js'
 import { Modal } from '@tabler/core'
-import $ from 'jquery'
 import { LucideLoader2Icon } from '@/js/icons'
 
 /**
- * Helpers added to Bootstrap's Modal for #dialog_details, also reachable through its jQuery plugin
- * (`$('#dialog_details').modal('loading')`, see assets/types/jquery-plugins.d.ts).
+ * Helpers added to Bootstrap's Modal for #dialog_details.
  */
 declare module '@tabler/core' {
     interface Modal {
@@ -13,7 +11,7 @@ declare module '@tabler/core' {
         hideButtons(selector?: string): void
         setTitle(title: string): void
         setBody(body: string): void
-        getBody(): JQuery
+        getBody(): HTMLElement | null
         setError(msg: string): void
     }
 }
@@ -27,20 +25,24 @@ Modal.prototype.loading = function () {
 }
 
 Modal.prototype.hideButtons = function (selector) {
-    const element = $(this._element)
-    element.find(`.modal-footer :not(${selector || '.btn_back'})`).addClass('hidden')
+    for (const button of this._element.querySelectorAll(`.modal-footer :not(${selector || '.btn_back'})`)) {
+        button.classList.add('hidden')
+    }
 }
 Modal.prototype.setTitle = function (title) {
-    const element = $(this._element)
-    element.find('.modal-title').html(title)
+    const element = this._element.querySelector('.modal-title')
+    if (element) {
+        element.innerHTML = title
+    }
 }
 Modal.prototype.setBody = function (body) {
-    const element = $(this._element)
-    element.find('.modal-body').html(body)
+    const element = this.getBody()
+    if (element) {
+        element.innerHTML = body
+    }
 }
 Modal.prototype.getBody = function () {
-    const element = $(this._element)
-    return element.find('.modal-body')
+    return this._element.querySelector<HTMLElement>('.modal-body')
 }
 Modal.prototype.setError = function (msg) {
     this.setTitle('Une erreur est survenue')

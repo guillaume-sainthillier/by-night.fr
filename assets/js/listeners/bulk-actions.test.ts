@@ -12,20 +12,6 @@ import { connectListener } from '@/js/test/listener'
 
 type SubmitHandler = (event: { submitter?: object; preventDefault: () => void }) => Promise<void> | undefined
 
-// form-confirm binds through jQuery, which needs a DOM: the fake records its handlers by event
-const { $, jQueryHandlers } = vi.hoisted(() => {
-    const jQueryHandlers: Record<string, SubmitHandler> = {}
-    const $ = () => ({
-        on: (events: string, handler: SubmitHandler) => {
-            jQueryHandlers[events] = handler
-        },
-        off: () => {},
-    })
-    return { $, jQueryHandlers }
-})
-
-vi.mock('jquery', () => ({ default: $ }))
-
 // The import report's bulk form, as _status.html.twig writes it: its events in hidden fields, no checkbox
 const BULK_FORM_ATTRIBUTES = [
     'data-bulk-form',
@@ -72,14 +58,12 @@ const mount = (confirmed: true | undefined) => {
     // A click on one of its buttons: every submit handler bound to the form runs, whichever listener bound it
     const submit = (action: string) => {
         const event = { submitter: Object.assign(new HTMLButtonElement(), { value: action }), preventDefault: vi.fn() }
-        const answered = Promise.all(
-            [...submitHandlers, ...Object.values(jQueryHandlers)].map((handler) => handler(event))
-        )
+        const answered = Promise.all(submitHandlers.map((handler) => handler(event)))
 
         return { event, answered }
     }
 
-    return { form, modalManager, submit }
+    return { form, modalManager, submit, submitHandlers }
 }
 
 describe('bulk actions', () => {
@@ -114,15 +98,12 @@ describe('a bulk form, with the other form listeners', () => {
 
     afterEach(() => {
         vi.unstubAllGlobals()
-        for (const events of Object.keys(jQueryHandlers)) {
-            delete jQueryHandlers[events]
-        }
     })
 
     test('is left to bulk-actions: form-confirm does not ask on its buttons', () => {
-        mount(true)
+        const { submitHandlers } = mount(true)
 
-        expect(jQueryHandlers).toEqual({})
+        expect(submitHandlers).toHaveLength(1)
     })
 
     test.each(['publish', 'draft'])('sends "%s" at once, with the button naming it', async (action) => {

@@ -1,100 +1,91 @@
-import $ from 'jquery'
-import { loadIntoDialog } from '@/js/utils/dialog'
+import { Modal } from '@tabler/core'
+import { loadErrorMessage, loadIntoDialog } from '@/js/utils/dialog'
+import { postForm, statusOf } from '@/js/utils/http'
 import { popup } from '@/js/utils/utils'
 
 /**
- * What templates/security/connect-success.html.twig sends back from the login popup
+ * What templates/security/connect-success.html.twig sends back from the login popup, as a `social.connected` event on
+ * the body of the page that opened it
  */
-interface Connected {
+interface SocialConnected {
     user: { username: string }
     target: Element
 }
 
+declare global {
+    interface HTMLElementEventMap {
+        'social.connected': CustomEvent<SocialConnected>
+    }
+}
+
 export default class SocialLogin {
     init() {
-        this.initOnOff()
-
-        // Default actions. jQuery passes the checkbox triggered along as its element (trigger() unwraps a collection)
-        $('body')
-            .on('wantConnect', (_event, checkbox: HTMLElement) => {
-                this.launchSocialConnect(checkbox)
-            })
-            .on('wantDisconnect', (_event, checkbox: HTMLElement) => {
-                this.launchSocialDisconnect(checkbox)
-            })
-            .on('hasDisconnected', (_event, checkbox: HTMLElement) => {
-                this.onDisconnectedSocial(checkbox)
-            })
-            .on('hasConnected', (_event, ui: Connected) => {
-                const checkbox = ui.target
-                const { user } = ui
-
-                const configBlock = $(checkbox).closest('.config-block')
-
-                $(checkbox).prop('checked', true)
-                configBlock.find('.username').text(user.username)
-            })
-    }
-
-    initOnOff() {
-        $('.config-block input:checkbox').each((_index, element) => {
-            $(element)
-                .off('change')
-                .change((event) => {
-                    const checkbox = $(event.currentTarget)
-                    $(checkbox).prop('checked', !$(checkbox).prop('checked'))
-                    if ($(checkbox).prop('checked')) {
-                        // Disconnect
-                        $('body').trigger('wantDisconnect', checkbox)
-                    } // Connect
-                    else {
-                        $('body').trigger('wantConnect', checkbox)
-                    }
-                })
-        })
-    }
-
-    // Deps: ['app/App']
-    launchSocialConnect(checkbox: HTMLElement) {
-        popup($(checkbox).data('href-connect'), checkbox)
-    }
-
-    launchSocialDisconnect(checkbox: HTMLElement) {
-        const dialog = $('#dialog_details').modal('loading').modal('show')
-
-        loadIntoDialog(dialog, $(checkbox).data('href-disconnect'), () => {
-            this.initModalCheckbox(dialog.modal('getBody').find('input:checkbox'))
-            dialog
-                .find('form')
-                .off('submit')
-                .submit((event) => {
-                    dialog.modal('loading')
-                    $.post($(event.currentTarget).attr('action') ?? '').done(() => {
-                        dialog.modal('hide')
-                        $('body').trigger('hasDisconnected', $(checkbox))
-                    })
-                    return false
-                })
-        })
-    }
-
-    onDisconnectedSocial(checkbox: HTMLElement) {
-        const configBlock = $(checkbox).closest('.config-block')
-
-        $(checkbox).prop('checked', false)
-        configBlock.find('.username').text('')
-    }
-
-    initModalCheckbox(checkbox: JQuery) {
-        $(checkbox)
-            .off('click')
-            .click((event) => {
-                const alert = $(event.currentTarget).closest('.modal-body').find('.alert')
-                if ($(event.currentTarget).prop('checked')) {
-                    alert.removeClass('hidden')
+        // The switch only moves once the network is connected or disconnected: until then it goes back where it was
+        for (const checkbox of document.querySelectorAll<HTMLInputElement>('.config-block input[type="checkbox"]')) {
+            checkbox.addEventListener('change', () => {
+                checkbox.checked = !checkbox.checked
+                if (checkbox.checked) {
+                    this.launchSocialDisconnect(checkbox)
                 } else {
-                    alert.addClass('hidden')
+                    this.launchSocialConnect(checkbox)
                 }
             })
+        }
+
+        document.body.addEventListener('social.connected', ({ detail: { target, user } }) => {
+            if (target instanceof HTMLInputElement) {
+                this.showAccount(target, true, user.username)
+            }
+        })
+    }
+
+    launchSocialConnect(checkbox: HTMLInputElement) {
+        popup(checkbox.dataset.hrefConnect ?? '', checkbox)
+    }
+
+    launchSocialDisconnect(checkbox: HTMLInputElement) {
+        const dialogEl = document.getElementById('dialog_details')
+        if (!dialogEl) {
+            return
+        }
+        const dialog = Modal.getOrCreateInstance(dialogEl)
+        if (!(dialog instanceof Modal)) {
+            return
+        }
+        dialog.loading()
+        dialog.show()
+
+        loadIntoDialog(dialogEl, checkbox.dataset.hrefDisconnect ?? '', () => {
+            for (const confirm of dialogEl.querySelectorAll<HTMLInputElement>('.modal-body input[type="checkbox"]')) {
+                this.initModalCheckbox(confirm)
+            }
+            dialogEl.querySelector('form')?.addEventListener('submit', async (event) => {
+                event.preventDefault()
+                const form = event.currentTarget
+                dialog.loading()
+                try {
+                    await postForm(form instanceof HTMLFormElement ? form.action : '')
+                } catch (error) {
+                    dialog.setError(loadErrorMessage(statusOf(error)))
+                    return
+                }
+                dialog.hide()
+                this.showAccount(checkbox, false, '')
+            })
+        })
+    }
+
+    showAccount(checkbox: HTMLInputElement, connected: boolean, username: string) {
+        checkbox.checked = connected
+        const account = checkbox.closest('.config-block')?.querySelector('.username')
+        if (account) {
+            account.textContent = username
+        }
+    }
+
+    initModalCheckbox(checkbox: HTMLInputElement) {
+        checkbox.addEventListener('click', () => {
+            checkbox.closest('.modal-body')?.querySelector('.alert')?.classList.toggle('hidden', !checkbox.checked)
+        })
     }
 }
