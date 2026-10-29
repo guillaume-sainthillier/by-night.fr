@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e60bd736ed9826211e4d3942e1d5b6b",
+    "content-hash": "87b105be52fe6f40cd8237b967ba63c9",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5931,7 +5931,8 @@
             "support": {
                 "source": "https://github.com/php-fig/cache/tree/3.0.0"
             },
-            "time": "2021-02-03T23:26:27+00:00"
+            "time": "2021-02-03T23:26:27+00:00",
+            "published-time": "2021-02-03T23:27:34+00:00"
         },
         {
             "name": "psr/clock",
@@ -6032,7 +6033,8 @@
                 "issues": "https://github.com/php-fig/container/issues",
                 "source": "https://github.com/php-fig/container/tree/2.0.2"
             },
-            "time": "2021-11-05T16:47:00+00:00"
+            "time": "2021-11-05T16:47:00+00:00",
+            "published-time": "2021-11-05T16:53:27+00:00"
         },
         {
             "name": "psr/event-dispatcher",
@@ -6082,7 +6084,8 @@
                 "issues": "https://github.com/php-fig/event-dispatcher/issues",
                 "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
             },
-            "time": "2019-01-08T18:20:26+00:00"
+            "time": "2019-01-08T18:20:26+00:00",
+            "published-time": "2019-03-25T15:31:44+00:00"
         },
         {
             "name": "psr/http-client",
@@ -6915,16 +6918,16 @@
         },
         {
             "name": "silarhi/picasso-bundle",
-            "version": "v2.5.0",
+            "version": "v2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/picasso-bundle.git",
-                "reference": "c3ccee8c85cdabe1bb6ecf3500ca3a6766930c3f"
+                "reference": "9de168743ef8aa299811ebec31dc9f3b5ff3ccb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/c3ccee8c85cdabe1bb6ecf3500ca3a6766930c3f",
-                "reference": "c3ccee8c85cdabe1bb6ecf3500ca3a6766930c3f",
+                "url": "https://api.github.com/repos/silarhi/picasso-bundle/zipball/9de168743ef8aa299811ebec31dc9f3b5ff3ccb9",
+                "reference": "9de168743ef8aa299811ebec31dc9f3b5ff3ccb9",
                 "shasum": ""
             },
             "require": {
@@ -6941,16 +6944,18 @@
                 "league/flysystem-bundle": "^2.1 || ^3.0",
                 "league/glide": "^2.3 || ^3.0 || ^4.0",
                 "phpstan/extension-installer": "^1.4.3",
-                "phpstan/phpstan": "^2.3.1",
+                "phpstan/phpstan": "^2.3.2",
                 "phpstan/phpstan-strict-rules": "^2.1.0",
                 "phpstan/phpstan-symfony": "^2.1.0",
                 "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
                 "psr/http-client": "^1.0.3",
                 "psr/http-factory": "^1.1",
                 "rector/rector": "^2.7.0",
+                "symfony/asset-mapper": "^6.4 || ^7.0 || ^8.0",
                 "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
                 "symfony/lock": "^6.4 || ^7.0 || ^8.0",
                 "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/web-link": "^6.4 || ^7.0 || ^8.0",
                 "vich/uploader-bundle": "^2.9 || ^3.0",
                 "vincentlanglet/twig-cs-fixer": "^4.1.1"
             },
@@ -6962,8 +6967,10 @@
                 "league/glide": "Required for the Glide transformer (local image transformation)",
                 "psr/http-client": "Required for the URL loader (PSR-18 HTTP client interface)",
                 "psr/http-factory": "Required for the URL loader (PSR-17 HTTP factory interface)",
+                "symfony/asset-mapper": "Required for the AssetMapper loader",
                 "symfony/http-client": "Provides a PSR-18 HTTP client implementation for the URL loader",
                 "symfony/lock": "Required for the Glide lock option (render each missing variant once)",
+                "symfony/web-link": "Required to preload priority images (Link header)",
                 "vich/uploader-bundle": "Required for the VichUploader loader"
             },
             "type": "symfony-bundle",
@@ -6977,11 +6984,30 @@
                 "MIT"
             ],
             "description": "Responsive image component for Symfony, inspired by next/image",
+            "keywords": [
+                "blurhash",
+                "bundle",
+                "glide",
+                "image",
+                "images",
+                "imgix",
+                "next-image",
+                "picture",
+                "placeholder",
+                "responsive",
+                "responsive-images",
+                "srcset",
+                "symfony",
+                "symfony-bundle",
+                "twig",
+                "twig-component"
+            ],
             "support": {
                 "issues": "https://github.com/silarhi/picasso-bundle/issues",
-                "source": "https://github.com/silarhi/picasso-bundle/tree/v2.5.0"
+                "source": "https://github.com/silarhi/picasso-bundle/tree/v2.6.0"
             },
-            "time": "2026-10-12T10:52:57+00:00"
+            "time": "2026-10-26T10:35:09+00:00",
+            "published-time": "2026-10-26T10:35:28+00:00"
         },
         {
             "name": "silarhi/ux-icons-js-bundle",
@@ -7793,7 +7819,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:33+00:00"
         },
         {
             "name": "symfony/clock",
@@ -8198,7 +8225,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-13T12:55:44+00:00"
+            "time": "2026-10-13T12:55:44+00:00",
+            "published-time": "2026-10-14T06:48:43+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -8269,7 +8297,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:34+00:00"
         },
         {
             "name": "symfony/doctrine-bridge",
@@ -8765,7 +8794,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:35+00:00"
         },
         {
             "name": "symfony/expression-language",
@@ -9535,7 +9565,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-04T08:41:16+00:00"
+            "time": "2026-08-04T08:41:16+00:00",
+            "published-time": "2026-08-30T19:56:36+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -10787,7 +10818,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-10T16:19:22+00:00"
+            "time": "2026-04-10T16:19:22+00:00",
+            "published-time": "2026-04-26T14:44:50+00:00"
         },
         {
             "name": "symfony/polyfill-deepclone",
@@ -10874,7 +10906,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-14T07:17:09+00:00"
+            "time": "2026-10-14T07:17:09+00:00",
+            "published-time": "2026-10-14T09:42:25+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -11301,7 +11334,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-24T15:19:04+00:00"
+            "time": "2026-09-24T15:19:04+00:00",
+            "published-time": "2026-09-30T10:23:35+00:00"
         },
         {
             "name": "symfony/polyfill-php86",
@@ -11610,7 +11644,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-30T12:40:56+00:00"
+            "time": "2026-07-30T12:40:56+00:00",
+            "published-time": "2026-08-07T18:07:42+00:00"
         },
         {
             "name": "symfony/property-info",
@@ -11696,7 +11731,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-28T19:13:15+00:00"
+            "time": "2026-09-28T19:13:15+00:00",
+            "published-time": "2026-09-29T14:10:13+00:00"
         },
         {
             "name": "symfony/psr-http-message-bridge",
@@ -12641,7 +12677,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-27T15:39:01+00:00"
+            "time": "2026-07-27T15:39:01+00:00",
+            "published-time": "2026-08-30T19:56:37+00:00"
         },
         {
             "name": "symfony/stimulus-bundle",
@@ -13048,7 +13085,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:40+00:00"
         },
         {
             "name": "symfony/twig-bridge",
@@ -13322,7 +13360,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-28T19:13:15+00:00"
+            "time": "2026-09-28T19:13:15+00:00",
+            "published-time": "2026-09-29T14:09:09+00:00"
         },
         {
             "name": "symfony/uid",
@@ -13584,7 +13623,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-12T20:12:07+00:00"
+            "time": "2026-10-12T20:12:07+00:00",
+            "published-time": "2026-10-13T08:08:56+00:00"
         },
         {
             "name": "symfony/validator",
@@ -13851,7 +13891,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-07T07:28:40+00:00"
+            "time": "2026-10-07T07:28:40+00:00",
+            "published-time": "2026-10-14T06:49:32+00:00"
         },
         {
             "name": "symfony/web-link",
@@ -14246,7 +14287,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-06T20:35:36+00:00"
+            "time": "2026-09-06T20:35:36+00:00",
+            "published-time": "2026-09-18T09:10:36+00:00"
         },
         {
             "name": "twig/intl-extra",
@@ -14457,7 +14499,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-25T13:20:01+00:00"
+            "time": "2026-09-25T13:20:01+00:00",
+            "published-time": "2026-09-25T13:20:14+00:00"
         },
         {
             "name": "vich/uploader-bundle",
