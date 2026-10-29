@@ -212,6 +212,9 @@ importers:
       hotkeys-js:
         specifier: ^4.0.8
         version: 4.0.8
+      jodit:
+        specifier: ^4.18.11
+        version: 4.18.11
       jquery:
         specifier: 3.7.1
         version: 3.7.1
@@ -227,9 +230,6 @@ importers:
       preact:
         specifier: ^11.0.2
         version: 11.0.2
-      summernote:
-        specifier: ^0.9.1
-        version: 0.9.1
       sweetalert2:
         specifier: ^11.26.25
         version: 11.26.25
@@ -1393,6 +1393,9 @@ packages:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
 
+  jodit@4.18.11:
+    resolution: {integrity: sha512-Yi41FmNpm80K+Khhl9NZ7FD9hRKxzMPYTRgRtBTiTG8CbdC0tlSULaZTBJouXCsOHoRRJ3p0o4nfJMbs/1PvTg==}
+
   jquery@3.7.1:
     resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
@@ -1671,10 +1674,6 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
-
-  summernote@0.9.1:
-    resolution: {integrity: sha512-5Hfuey6+N0XIbk8ZpkGEVDmrkRVRHZWKBhw/072i9/TJLaWUKboB+KOyyd6AzDP2CQs1O6or4zRTU8HY30kt4w==}
-    engines: {node: '>=17.0.0'}
 
   sweetalert2@11.26.25:
     resolution: {integrity: sha512-+hunCOJdJ6FLj04T9YSLvvZXRjsvIkTeTKP2e4VF8CaBias961BTnWiSFAy7F/CM5eq3QK2Rraoc5Gzftslvkg==}
@@ -2745,6 +2744,8 @@ snapshots:
 
   jiti@2.7.0: {}
 
+  jodit@4.18.11: {}
+
   jquery@3.7.1: {}
 
   js-tokens@10.0.0: {}
@@ -3042,8 +3043,6 @@ snapshots:
       ansi-regex: 5.0.1
 
   strip-json-comments@5.0.3: {}
-
-  summernote@0.9.1: {}
 
   sweetalert2@11.26.25: {}
 

@@ -7,7 +7,7 @@
 }
 
 .navbar {
-    z-index: 1000; //Conflit with z-index 500 on summernote
+    z-index: 1000; // Above the sticky elements of the pages, such as the toolbar of the event form's editor
     white-space: nowrap;
 
     .navbar-brand {
