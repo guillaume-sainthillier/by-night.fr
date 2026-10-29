@@ -12,6 +12,7 @@ namespace App\Tests\Picture;
 
 use App\Entity\Event;
 use App\Factory\EventFactory;
+use App\Parser\Common\FeverImpactParser;
 use App\Picture\EventProfilePicture;
 use App\Tests\AppKernelTestCase;
 use DateTimeImmutable;
@@ -46,6 +47,14 @@ final class EventProfilePictureTest extends AppKernelTestCase
         save($canonical);
 
         self::assertSame($canonical, $this->service()->getPicturePathAndSource($canonical)['entity']);
+    }
+
+    public function testAFeverPlanWithoutAPictureShowsFeversPlaceholder(): void
+    {
+        $event = EventFactory::createOne(['fromData' => FeverImpactParser::getParserName()]);
+
+        self::assertSame('local', $this->service()->getPicturePathAndSource($event)['source']);
+        self::assertStringEndsWith('/build/images/parsers/fever.jpg', $this->service()->getOriginalPicture($event));
     }
 
     /**
