@@ -1,6 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
 import { Alert, Modal } from '@tabler/core'
-import $ from 'jquery'
+import { errorBody, sendJson } from '@/js/utils/http'
 
 /**
  * The body of a refused message: the message of an HTTP error, or the validation's violations.
@@ -31,7 +31,7 @@ export default defineListener<HTMLElement>({
             errorEl.textContent = message
         }
 
-        const onSubmit = (e: SubmitEvent) => {
+        const onSubmit = async (e: SubmitEvent) => {
             e.preventDefault()
 
             const message = messageInput.value.trim()
@@ -43,36 +43,29 @@ export default defineListener<HTMLElement>({
             messageInput.classList.remove('is-invalid')
             submitBtn.disabled = true
 
-            $.ajax({
-                url: form.dataset.action,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ message }),
-            })
-                .done((response: { message: string }) => {
-                    app.get('toastManager').createToast('success', response.message)
-                    modal.hide()
-                    const banner = document.getElementById('feedback-banner')
-                    if (banner) {
-                        const alert = Alert.getOrCreateInstance(banner)
-                        if (alert instanceof Alert) {
-                            alert.close()
-                        }
+            try {
+                const response = await sendJson<{ message: string }>('POST', form.dataset.action ?? '', { message })
+                app.get('toastManager').createToast('success', response?.message ?? '')
+                modal.hide()
+                const banner = document.getElementById('feedback-banner')
+                if (banner) {
+                    const alert = Alert.getOrCreateInstance(banner)
+                    if (alert instanceof Alert) {
+                        alert.close()
                     }
-                })
-                .fail((xhr) => {
-                    const body: FeedbackError | undefined = xhr.responseJSON
-                    let errorMessage = 'Une erreur est survenue'
-                    if (body?.detail) {
-                        errorMessage = body.detail
-                    } else if (body?.violations) {
-                        errorMessage = body.violations.map((v) => v.message).join(', ')
-                    }
-                    showError(errorMessage)
-                })
-                .always(() => {
-                    submitBtn.disabled = false
-                })
+                }
+            } catch (error) {
+                const body = errorBody<FeedbackError>(error)
+                let errorMessage = 'Une erreur est survenue'
+                if (body?.detail) {
+                    errorMessage = body.detail
+                } else if (body?.violations) {
+                    errorMessage = body.violations.map((v) => v.message).join(', ')
+                }
+                showError(errorMessage)
+            } finally {
+                submitBtn.disabled = false
+            }
         }
 
         // Reset the form when the modal is closed

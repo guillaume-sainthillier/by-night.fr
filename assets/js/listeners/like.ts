@@ -1,5 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
-import $ from 'jquery'
+import { sendJson } from '@/js/utils/http'
 
 const options = {
     css_selector_like: '.btn-like-event',
@@ -22,46 +22,50 @@ interface LikeResponse {
 export default defineListener<HTMLElement>({
     selector: options.css_selector_like,
     connect(element, { app }) {
-        const $element = $(element)
+        const { href = '' } = element.dataset
 
-        const like = (btn: JQuery) => {
-            // attr('disabled', true|false) of jQuery: the boolean attribute set to its name, or removed
-            btn.attr('disabled', 'disabled')
-            $.ajax({
-                url: btn.data('href'),
-                type: 'PUT',
-                contentType: 'application/json',
-                data: JSON.stringify({ like: !btn.hasClass(options.css_active_class) }),
-            }).done((msg: LikeResponse) => {
-                btn.attr('disabled', msg.success ? null : 'disabled')
-                if (msg.success) {
-                    btn.toggleClass(options.css_active_class, msg.like)
-                    // The page's other buttons of the same event (the action bar of a phone) follow
-                    for (const other of document.querySelectorAll<HTMLElement>(options.css_selector_like)) {
-                        if (other.dataset.href === btn.data('href')) {
-                            other.classList.toggle(options.css_active_class, msg.like)
-                        }
-                    }
-                    if (msg.like) {
-                        app.get('toastManager').createToast('success', 'Ajouté à vos sorties')
-                    }
+        const like = async () => {
+            // A button, or a link styled as one: the attribute disables both
+            element.setAttribute('disabled', 'disabled')
+            let msg: LikeResponse | null
+            try {
+                msg = await sendJson<LikeResponse>('PUT', href, {
+                    like: !element.classList.contains(options.css_active_class),
+                })
+            } catch {
+                element.removeAttribute('disabled')
+                app.get('toastManager').createToast('error', 'Une erreur est survenue, veuillez réessayer.')
+                return
+            }
+            // Refused: the button stays disabled
+            if (!msg?.success) {
+                return
+            }
+
+            element.removeAttribute('disabled')
+            element.classList.toggle(options.css_active_class, msg.like)
+            // The page's other buttons of the same event (the action bar of a phone) follow
+            for (const other of document.querySelectorAll<HTMLElement>(options.css_selector_like)) {
+                if (other.dataset.href === href) {
+                    other.classList.toggle(options.css_active_class, msg.like)
                 }
-            })
+            }
+            if (msg.like) {
+                app.get('toastManager').createToast('success', 'Ajouté à vos sorties')
+            }
         }
 
-        $element.on('click.like', function () {
-            like($(this))
-        })
+        element.addEventListener('click', like)
 
         const { intent } = element.dataset
         if (intent && window.location.hash === `#${intent}`) {
             // Once: a reload or a shared URL must not click again
             window.history.replaceState(null, '', window.location.pathname + window.location.search)
-            if (!$element.hasClass(options.css_active_class)) {
-                like($element)
+            if (!element.classList.contains(options.css_active_class)) {
+                like()
             }
         }
 
-        return () => $element.off('.like')
+        return () => element.removeEventListener('click', like)
     },
 })

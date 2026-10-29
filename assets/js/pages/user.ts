@@ -1,8 +1,8 @@
 import { definePage } from '@silarhi/app-js'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import { Tab } from '@tabler/core'
-import $ from 'jquery'
 import { LucideLoader2Icon } from '@/js/icons'
+import { getHtml } from '@/js/utils/http'
 
 export default definePage(({ app }) => {
     init()
@@ -26,45 +26,50 @@ export default definePage(({ app }) => {
     }
 
     function initLoadMoreEvents() {
-        $('.user-events-container').each((_index, element) => {
-            const container = $(element)
+        for (const container of document.querySelectorAll<HTMLElement>('.user-events-container')) {
             bindLoadMore(container)
-        })
+        }
     }
 
-    function bindLoadMore(container: JQuery) {
-        container
-            .find('.load-more')
-            .off('click')
-            .on('click', (e) => {
-                e.preventDefault()
+    // The container's load-more button: the last page brings the next one, if any
+    function bindLoadMore(container: HTMLElement) {
+        const loadMore = container.querySelector<HTMLElement>('.load-more')
+        loadMore?.addEventListener('click', async (e) => {
+            e.preventDefault()
 
-                const loadMore = $(e.currentTarget)
-                const btn = loadMore.find('.btn')
+            const btn = loadMore.querySelector<HTMLButtonElement>('.btn')
+            if (btn?.disabled) {
+                return
+            }
 
-                // Add spinner to button
-                const originalText = btn.html()
-                btn.html(`${renderIcon(LucideLoader2Icon, { class: 'icon icon-spin' })} ${originalText}`)
-                btn.prop('disabled', true)
+            // Add spinner to button
+            const originalText = btn?.innerHTML ?? ''
+            if (btn) {
+                btn.innerHTML = `${renderIcon(LucideLoader2Icon, { class: 'icon icon-spin' })} ${originalText}`
+                btn.disabled = true
+            }
 
-                $.get(loadMore.data('url'), (html: string) => {
-                    // Remove the load-more button
-                    loadMore.remove()
+            let html: string
+            try {
+                html = await getHtml(loadMore.dataset.url ?? '')
+            } catch {
+                // Restore button on error
+                if (btn) {
+                    btn.innerHTML = originalText
+                    btn.disabled = false
+                }
+                return
+            }
 
-                    // Append new content
-                    const $newContent = $(html)
-                    container.append($newContent)
+            // Remove the load-more button, then append new content
+            loadMore.remove()
+            container.insertAdjacentHTML('beforeend', html)
 
-                    // Re-bind load-more on the new content
-                    bindLoadMore(container)
+            // Re-bind load-more on the new content
+            bindLoadMore(container)
 
-                    // Re-initialize any page listeners on new event cards
-                    app.mount(container[0])
-                }).fail(() => {
-                    // Restore button on error
-                    btn.html(originalText)
-                    btn.prop('disabled', false)
-                })
-            })
+            // Re-initialize any page listeners on new event cards
+            app.mount(container)
+        })
     }
 })

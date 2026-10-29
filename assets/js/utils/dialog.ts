@@ -1,3 +1,6 @@
+import { Modal } from '@tabler/core'
+import { getHtml, statusOf } from '@/js/utils/http'
+
 /**
  * The message the shared dialog shows when its content cannot be loaded.
  *
@@ -12,18 +15,22 @@ export function loadErrorMessage(status: number): string {
 }
 
 /**
- * Loads a page into the shared dialog (#dialog_details, showing its spinner), then runs
- * `onLoaded`. jQuery's load() only inserts a successful response: on an error the dialog kept
- * its spinner for good, and the global error handler meant to replace it never ran.
+ * Loads a page into the shared dialog (#dialog_details, showing its spinner), then runs `onLoaded`. A page that cannot
+ * be loaded replaces the spinner with an error.
  */
-export function loadIntoDialog($dialog: JQuery, url: string, onLoaded: () => void): void {
-    $dialog.load(url, (_response, status, xhr) => {
-        if ('error' === status) {
-            $dialog.modal('setError', loadErrorMessage(xhr.status))
-
-            return
+export async function loadIntoDialog(dialog: HTMLElement, url: string, onLoaded: () => void): Promise<void> {
+    let html: string
+    try {
+        html = await getHtml(url)
+    } catch (error) {
+        const modal = Modal.getOrCreateInstance(dialog)
+        if (modal instanceof Modal) {
+            modal.setError(loadErrorMessage(statusOf(error)))
         }
 
-        onLoaded()
-    })
+        return
+    }
+
+    dialog.innerHTML = html
+    onLoaded()
 }

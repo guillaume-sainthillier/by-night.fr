@@ -1,5 +1,4 @@
 import { defineListener } from '@silarhi/app-js'
-import $ from 'jquery'
 import { popup } from '@/js/utils/utils'
 
 /**
@@ -8,14 +7,14 @@ import { popup } from '@/js/utils/utils'
 export default defineListener<HTMLAnchorElement>({
     selector: 'a.popup',
     connect(element) {
-        const $element = $(element)
-
-        $element.on('click.popup', function () {
+        const onClick = (e: MouseEvent) => {
+            e.preventDefault()
             // Without an href, window.open() opens a blank page, as it does for an empty URL
-            popup($(this).attr('href') ?? '', this)
-            return false
-        })
+            popup(element.getAttribute('href') ?? '', element)
+        }
 
-        return () => $element.off('.popup')
+        element.addEventListener('click', onClick)
+
+        return () => element.removeEventListener('click', onClick)
     },
 })

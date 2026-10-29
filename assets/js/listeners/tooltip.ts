@@ -1,5 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
-import $ from 'jquery'
+import { Tooltip } from '@tabler/core'
 
 /**
  * Activate a Bootstrap tooltip on each tooltip-toggle element. Disposes it on
@@ -8,9 +8,8 @@ import $ from 'jquery'
 export default defineListener<HTMLElement>({
     selector: '[data-bs-toggle="tooltip"]',
     connect(element) {
-        const $element = $(element)
-        $element.tooltip()
+        const tooltip = Tooltip.getOrCreateInstance(element)
 
-        return () => $element.tooltip('dispose')
+        return () => tooltip.dispose()
     },
 })

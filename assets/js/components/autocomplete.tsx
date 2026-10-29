@@ -6,7 +6,6 @@ import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import { Offcanvas } from '@tabler/core'
 import hotkeys from 'hotkeys-js'
-import $ from 'jquery'
 import groupBy from 'lodash/groupBy'
 import {
     LucideChevronRightIcon,
@@ -19,6 +18,7 @@ import {
     LucideUserIcon,
 } from '@/js/icons'
 import { splitHighlights } from '@/js/utils/highlight'
+import { getJson } from '@/js/utils/http'
 import { plural } from '@/js/utils/plural'
 import { searchPageHref } from '@/js/utils/searchPage'
 
@@ -57,7 +57,7 @@ type DisplayedItem = Item & { _highlightResult?: Highlights }
 
 export interface AutocompleteInitOptions {
     autocompleteSelector?: string
-    container?: JQuery.Selector | Element | Document | JQuery
+    container?: ParentNode
     searchPlaceholder?: string
     inputPlaceholder?: string
     globalSearchUrl?: string | null
@@ -82,8 +82,9 @@ export default function init({
     searchPageUrl = null,
     enableHotkeys = true,
 }: AutocompleteInitOptions): GlobalAutocomplete | undefined {
-    const $autocomplete = $(autocompleteSelector, container)
-    if ($autocomplete.length === 0 || !$autocomplete.is(':visible')) {
+    const autocompleteEl = container.querySelector<HTMLElement>(autocompleteSelector)
+    // Hidden (no box, as jQuery's :visible saw it): nothing to search from
+    if (!autocompleteEl || 0 === autocompleteEl.getClientRects().length) {
         return
     }
 
@@ -177,17 +178,8 @@ export default function init({
             return Promise.resolve([])
         }
 
-        suggestions ??= Promise.resolve(
-            $.ajax({
-                url: suggestionsUrl,
-                method: 'GET',
-                headers: {
-                    Accept: 'application/ld+json',
-                },
-                dataType: 'json',
-            })
-        )
-            .then((response: SearchCollection) => response.member || [])
+        suggestions ??= getJson<SearchCollection>(suggestionsUrl, { accept: 'application/ld+json' })
+            .then((response) => response.member || [])
             .catch((error) => {
                 console.error('Search suggestions error:', error)
                 suggestions = null
@@ -199,7 +191,7 @@ export default function init({
     }
 
     const { destroy } = autocomplete<Item>({
-        container: $autocomplete[0],
+        container: autocompleteEl,
         placeholder: inputPlaceholder,
         openOnFocus: true,
         defaultActiveItemId: 0,
@@ -305,33 +297,19 @@ export default function init({
                 return loadSuggestions().then((results) => toSources(results, true))
             }
 
-            const request = $.ajax({
-                url: globalSearchUrl ?? undefined,
-                method: 'GET',
-                data: { q: query },
-                headers: {
-                    Accept: 'application/ld+json',
-                },
-                dataType: 'json',
+            return getJson<SearchCollection>(globalSearchUrl ?? '', {
+                params: { q: query },
+                accept: 'application/ld+json',
             })
+                .then((response) => {
+                    setContext({ error: null })
+                    // Extract results from API Platform's 'member' array
+                    return toSources(response.member || [])
+                })
+                .catch((error) => {
+                    console.error('Search API error:', error)
+                    setContext({ error: true })
 
-            const results = new Promise<SearchResult[]>((resolve, reject) => {
-                request
-                    .then((response: SearchCollection) => {
-                        setContext({ error: null })
-                        // Extract results from API Platform's 'member' array
-                        resolve(response.member || [])
-                    })
-                    .catch((error) => {
-                        console.error('Search API error:', error)
-                        setContext({ error: true })
-                        reject(error)
-                    })
-            })
-
-            return results
-                .then((results) => toSources(results))
-                .catch(() => {
                     // Return empty array on error, error state is handled in renderNoResults
                     return []
                 })
@@ -339,14 +317,18 @@ export default function init({
     })
 
     const isMacOS = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) || navigator.appVersion.indexOf('Mac') !== -1
-    const $autocompleteBtn = $autocomplete.find('.aa-Autocomplete button')
+    // The button that opens the detached search
+    const autocompleteBtn = autocompleteEl.querySelector<HTMLButtonElement>('.aa-Autocomplete button')
 
-    $autocompleteBtn.find('.aa-DetachedSearchButtonPlaceholder').text(searchPlaceholder)
+    const placeholder = autocompleteBtn?.querySelector('.aa-DetachedSearchButtonPlaceholder')
+    if (placeholder) {
+        placeholder.textContent = searchPlaceholder
+    }
 
     // Close any open offcanvas before the detached overlay opens,
     // otherwise the offcanvas focus trap steals focus from the search input
-    $autocompleteBtn.on('click', () => {
-        const offcanvasEl = $autocomplete.closest('.offcanvas-lg, .offcanvas')[0]
+    autocompleteBtn?.addEventListener('click', () => {
+        const offcanvasEl = autocompleteEl.closest<HTMLElement>('.offcanvas-lg, .offcanvas')
         if (offcanvasEl) {
             const instance = Offcanvas.getInstance(offcanvasEl)
             if (instance instanceof Offcanvas) {
@@ -356,23 +338,19 @@ export default function init({
     })
 
     if (enableHotkeys) {
-        const kbd = $('<kbd>')
-        if (isMacOS) {
-            kbd.text(`Cmd + K`)
-        } else {
-            kbd.text(`Ctrl + K`)
-        }
-        kbd.appendTo($autocompleteBtn)
+        const kbd = document.createElement('kbd')
+        kbd.textContent = isMacOS ? 'Cmd + K' : 'Ctrl + K'
+        autocompleteBtn?.append(kbd)
 
         hotkeys('ctrl+k,cmd+k', (event) => {
             event.preventDefault()
-            $autocompleteBtn.click()
+            autocompleteBtn?.click()
         })
     }
 
     return {
         show() {
-            $autocompleteBtn.click()
+            autocompleteBtn?.click()
         },
         unload() {
             if (enableHotkeys) {

@@ -1,5 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
-import $ from 'jquery'
+import { Alert } from '@tabler/core'
+import { postForm } from '@/js/utils/http'
 
 /**
  * Send a verification email when the element is clicked, then dismiss its
@@ -8,21 +9,27 @@ import $ from 'jquery'
 export default defineListener<HTMLAnchorElement | HTMLButtonElement>({
     selector: 'a.email-verify, button.email-verify',
     connect(element, { app }) {
-        const $element = $(element)
-
-        $element.on('click.emailVerify', function (this: HTMLElement, e) {
+        const onClick = async (e: Event) => {
             e.preventDefault()
-            const url = $(this).attr('href') || $(this).data('href')
-            $.post(url).done(() => {
-                app.get('toastManager').createToast('success', 'Un e-mail de vérification a bien été envoyé.')
-                if ($(this).closest('.alert').length > 0) {
-                    $(this).closest('.alert').alert('close')
-                } else {
-                    $(this).remove()
-                }
-            })
-        })
+            const url = element.getAttribute('href') || element.dataset.href || ''
+            try {
+                await postForm(url)
+            } catch {
+                app.get('toastManager').createToast('error', "L'e-mail n'a pas pu être envoyé, veuillez réessayer.")
+                return
+            }
+            app.get('toastManager').createToast('success', 'Un e-mail de vérification a bien été envoyé.')
+            const banner = element.closest<HTMLElement>('.alert')
+            const alert = banner ? Alert.getOrCreateInstance(banner) : null
+            if (alert instanceof Alert) {
+                alert.close()
+            } else {
+                element.remove()
+            }
+        }
 
-        return () => $element.off('.emailVerify')
+        element.addEventListener('click', onClick)
+
+        return () => element.removeEventListener('click', onClick)
     },
 })

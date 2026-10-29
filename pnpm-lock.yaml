@@ -163,7 +163,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  jquery: 3.7.1
   '@algolia/autocomplete-js>preact': ^11.0.0
 
 importers:
@@ -206,15 +205,15 @@ importers:
       '@tarekraafat/autocomplete.js':
         specifier: ^10.2.10
         version: 10.2.10
-      fancybox:
-        specifier: ^3.0.1
-        version: 3.0.1
+      glightbox:
+        specifier: ^3.3.1
+        version: 3.3.1
       hotkeys-js:
         specifier: ^4.0.8
         version: 4.0.8
-      jquery:
-        specifier: 3.7.1
-        version: 3.7.1
+      jodit:
+        specifier: ^4.18.11
+        version: 4.18.11
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -227,9 +226,6 @@ importers:
       preact:
         specifier: ^11.0.2
         version: 11.0.2
-      summernote:
-        specifier: ^0.9.1
-        version: 0.9.1
       sweetalert2:
         specifier: ^11.26.25
         version: 11.26.25
@@ -252,9 +248,6 @@ importers:
       '@types/google.maps':
         specifier: ^3.66.7
         version: 3.66.7
-      '@types/jquery':
-        specifier: ^3.5.34
-        version: 3.5.34
       '@types/lodash':
         specifier: ^4.17.27
         version: 4.17.27
@@ -1066,17 +1059,11 @@ packages:
   '@types/google.maps@3.66.7':
     resolution: {integrity: sha512-4EhLRkBtF5TMBAifddMeK+tn5MS6Sa6cMwrg4TbQiPlV4nU9IbKwHJ5csBfnpykNmXwqy+a9y0/38ZezOwtxmg==}
 
-  '@types/jquery@3.5.34':
-    resolution: {integrity: sha512-3m3939S3erqmTLJANS/uy0B6V7BorKx7RorcGZVjZ62dF5PAGbKEDZK1CuLtKombJkFA2T1jl8LAIIs7IV6gBQ==}
-
   '@types/lodash@4.17.27':
     resolution: {integrity: sha512-VenMRv/eKNrspX9v3H4dbmjsrnCOYdYBG3kxXKk3dG6X+urBGcj2Prww3xw1U5K4FV/mE4h5GbWd0szEKf+9ew==}
 
   '@types/node@26.6.5':
     resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
-
-  '@types/sizzle@2.3.10':
-    resolution: {integrity: sha512-TC0dmN0K8YcWEAEfiPi5gJP14eJe30TTGjkvek3iM/1NdHHsdCA/Td6GvNndMOo/iSnIsZ4HuuhrYPDAmbxzww==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -1306,9 +1293,6 @@ packages:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
 
-  fancybox@3.0.1:
-    resolution: {integrity: sha512-HZ57O6j5Zk4Uvusd5pNUgWi7CCjKx+HFlCzjMPeRJ//0bQWUK+xVpkn3EzXWJate4ZSKNFP9kU2l49MP1g+oow==}
-
   fd-package-json@2.0.0:
     resolution: {integrity: sha512-jKmm9YtsNXN789RS/0mSzOC1NUq9mkVd65vbSSVsKdjGvYXBuE4oWe2QOEoFeRmJg+lPuZxpmrfFclNhoRMneQ==}
 
@@ -1347,6 +1331,9 @@ packages:
 
   gl-matrix@3.4.4:
     resolution: {integrity: sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==}
+
+  glightbox@3.3.1:
+    resolution: {integrity: sha512-nXoKfJRnQTDaAFAw5799hjpfAAHx5aLvOLG0SIGudeMCwtHgO3P2/avNYapJ+SL4UEZxO2YNBPtq6pzMhSx42g==}
 
   glob-all@3.3.1:
     resolution: {integrity: sha512-Y+ESjdI7ZgMwfzanHZYQ87C59jOO0i+Hd+QYtVt9PhLi6d8wlOpzQnfBxWUlaTuAoR3TkybLqqbIoWveU4Ji7Q==}
@@ -1393,8 +1380,8 @@ packages:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
 
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
+  jodit@4.18.11:
+    resolution: {integrity: sha512-Yi41FmNpm80K+Khhl9NZ7FD9hRKxzMPYTRgRtBTiTG8CbdC0tlSULaZTBJouXCsOHoRRJ3p0o4nfJMbs/1PvTg==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -1671,10 +1658,6 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
-
-  summernote@0.9.1:
-    resolution: {integrity: sha512-5Hfuey6+N0XIbk8ZpkGEVDmrkRVRHZWKBhw/072i9/TJLaWUKboB+KOyyd6AzDP2CQs1O6or4zRTU8HY30kt4w==}
-    engines: {node: '>=17.0.0'}
 
   sweetalert2@11.26.25:
     resolution: {integrity: sha512-+hunCOJdJ6FLj04T9YSLvvZXRjsvIkTeTKP2e4VF8CaBias961BTnWiSFAy7F/CM5eq3QK2Rraoc5Gzftslvkg==}
@@ -2490,17 +2473,11 @@ snapshots:
 
   '@types/google.maps@3.66.7': {}
 
-  '@types/jquery@3.5.34':
-    dependencies:
-      '@types/sizzle': 2.3.10
-
   '@types/lodash@4.17.27': {}
 
   '@types/node@26.6.5':
     dependencies:
       undici-types: 8.9.0
-
-  '@types/sizzle@2.3.10': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -2671,8 +2648,6 @@ snapshots:
 
   expect-type@1.4.0: {}
 
-  fancybox@3.0.1: {}
-
   fd-package-json@2.0.0:
     dependencies:
       walk-up-path: 4.0.0
@@ -2703,6 +2678,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   gl-matrix@3.4.4: {}
+
+  glightbox@3.3.1: {}
 
   glob-all@3.3.1:
     dependencies:
@@ -2745,7 +2722,7 @@ snapshots:
 
   jiti@2.7.0: {}
 
-  jquery@3.7.1: {}
+  jodit@4.18.11: {}
 
   js-tokens@10.0.0: {}
 
@@ -3042,8 +3019,6 @@ snapshots:
       ansi-regex: 5.0.1
 
   strip-json-comments@5.0.3: {}
-
-  summernote@0.9.1: {}
 
   sweetalert2@11.26.25: {}
 

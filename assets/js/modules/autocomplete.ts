@@ -1,5 +1,4 @@
 import { defineModule } from '@silarhi/app-js'
-import $ from 'jquery'
 import initAutocomplete from '@/js/components/autocomplete'
 import { isTouchDevice } from '@/js/utils/utils'
 
@@ -7,19 +6,17 @@ import { isTouchDevice } from '@/js/utils/utils'
  * Wire the global search autocomplete. Runs once at App.start().
  */
 export default defineModule(function autocomplete() {
-    const $autocomplete = $('#autocomplete')
-    const $autocompleteMobileToggler = $('#autocomplete-mobile-toggler')
-    if ($autocomplete.length === 0) {
+    const autocompleteEl = document.getElementById('autocomplete')
+    if (!autocompleteEl) {
         return
     }
 
-    const globalSearchUrl = $autocomplete.data('searchUrl')
+    const { searchUrl: globalSearchUrl, searchPageUrl, suggestionsUrl } = autocompleteEl.dataset
     if (!globalSearchUrl) {
         console.error('Search URL not found in autocomplete element')
         return
     }
 
-    const searchPageUrl = $autocomplete.data('searchPageUrl')
     if (!searchPageUrl) {
         console.error('Search page URL not found in autocomplete element')
         return
@@ -27,7 +24,7 @@ export default defineModule(function autocomplete() {
 
     const result = initAutocomplete({
         autocompleteSelector: '#autocomplete',
-        suggestionsUrl: $autocomplete.data('suggestionsUrl'),
+        suggestionsUrl,
         searchPlaceholder: 'Recherche',
         inputPlaceholder: 'Rechercher des événements, villes, membres…',
         globalSearchUrl,
@@ -35,7 +32,7 @@ export default defineModule(function autocomplete() {
         enableHotkeys: !isTouchDevice(),
     })
 
-    $autocompleteMobileToggler.click((event) => {
+    document.getElementById('autocomplete-mobile-toggler')?.addEventListener('click', (event) => {
         event.preventDefault()
         result?.show()
     })
