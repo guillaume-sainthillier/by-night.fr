@@ -30,7 +30,8 @@ final class OutingChangeListenerTest extends AppKernelTestCase
         $cancelled = EventFactory::createOne();
         self::mockTime('2026-10-24 10:00');
 
-        $dated->setStartDate(new DateTimeImmutable('+10 days'));
+        // A day after the one the factory drew: a date of its own could be that same day, which changes nothing
+        $dated->setStartDate(DateTimeImmutable::createFromInterface($dated->getStartDate())->modify('+1 day'));
         save($dated);
         $moved->setPlace(PlaceFactory::createOne());
         save($moved);
