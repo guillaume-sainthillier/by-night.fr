@@ -49,7 +49,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * 2. Locate: a city-less place gets the city its town and postal code designate, as an import
  *    would now resolve it (CityComparator), when the postal code confirms it (the city's own or
  *    of its département). A place of that name already in that city is the same venue when their
- *    addresses agree (isSameVenue()): the city-less one is merged into it (PlaceMerger: events,
+ *    addresses agree (PlaceMerger::isSameVenue()): the city-less one is merged into it (PlaceMerger: events,
  *    source identities, and its URL redirecting), else it goes beside it, another venue of that name
  *    (DATAtourisme names a place it cannot name after its town: "Marseille 11e Arrondissement").
  *
@@ -63,12 +63,6 @@ final class PlacesFixCitylessCommand extends Command
 
     /** A split flushes place by place: smaller chunks keep the unit of work light */
     private const int SPLIT_BATCH_SIZE = 50;
-
-    /** Two places of one name this close (km) are one venue */
-    private const float SAME_VENUE_DISTANCE = 0.3;
-
-    /** Two places of one name this far apart (km) are two venues, even when one has no street */
-    private const float OTHER_VENUE_DISTANCE = 1.0;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -304,38 +298,6 @@ final class PlacesFixCitylessCommand extends Command
         return $created;
     }
 
-    /**
-     * Whether a place of the same name in the town is the same venue: on the same street, or within 300 m; else when
-     * one of them has no street and nothing says they are apart (more than 1 km). Two "Marseille 11e Arrondissement" at
-     * 196 Traverse de la Penne and at 24 Route d'Allauch are two.
-     */
-    private function isSameVenue(Place $place, Place $namesake): bool
-    {
-        $street = (string) $this->placeComparator->sanitizeStreetName($place->getStreet());
-        $namesakeStreet = (string) $this->placeComparator->sanitizeStreetName($namesake->getStreet());
-        $distance = null === $place->getLatitude() || null === $place->getLongitude() || null === $namesake->getLatitude() || null === $namesake->getLongitude()
-            ? null
-            : self::distance($place->getLatitude(), $place->getLongitude(), $namesake->getLatitude(), $namesake->getLongitude());
-
-        if (('' !== $street && $street === $namesakeStreet) || (null !== $distance && $distance <= self::SAME_VENUE_DISTANCE)) {
-            return true;
-        }
-
-        return ('' === $street || '' === $namesakeStreet) && (null === $distance || $distance <= self::OTHER_VENUE_DISTANCE);
-    }
-
-    /**
-     * The great-circle distance between two points, in kilometres.
-     */
-    private static function distance(float $latitude, float $longitude, float $otherLatitude, float $otherLongitude): float
-    {
-        $latitudeDelta = deg2rad($otherLatitude - $latitude);
-        $longitudeDelta = deg2rad($otherLongitude - $longitude);
-        $haversine = sin($latitudeDelta / 2) ** 2 + cos(deg2rad($latitude)) * cos(deg2rad($otherLatitude)) * sin($longitudeDelta / 2) ** 2;
-
-        return 2 * 6371 * asin(min(1.0, sqrt($haversine)));
-    }
-
     private function createCitylessPlacesQueryBuilder(): QueryBuilder
     {
         return $this
@@ -379,7 +341,7 @@ final class PlacesFixCitylessCommand extends Command
 
             // A place of that name there already: the same venue takes this one's events, another stays beside it
             $namesakes = $this->placeRepository->findBy(['city' => $city, 'slug' => $place->getSlug()]);
-            $sameVenue = array_values(array_filter($namesakes, fn (Place $namesake): bool => $this->isSameVenue($place, $namesake)));
+            $sameVenue = array_values(array_filter($namesakes, fn (Place $namesake): bool => $this->placeMerger->isSameVenue($place, $namesake)));
             if ([] !== $sameVenue) {
                 if ($apply) {
                     $target = $this->placeMerger->suggestTarget($sameVenue, $this->eventRepository->countByPlaces(array_map(static fn (Place $venue): int => (int) $venue->getId(), $sameVenue)));
