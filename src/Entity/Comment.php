@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use App\Validator\Constraints\NotSpamComment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -27,6 +28,7 @@ class Comment implements Stringable
 
     #[Assert\Length(min: 3, minMessage: 'Le commentaire doit faire au moins {{ limit }} caractères')]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
+    #[NotSpamComment]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $comment = null;
 

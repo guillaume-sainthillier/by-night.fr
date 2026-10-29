@@ -17,6 +17,7 @@ use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
 use App\Utils\ObjectKey;
+use App\Utils\SpamDetector;
 use DateTimeInterface;
 
 final class Firewall implements BatchResetInterface
@@ -120,12 +121,12 @@ final class Firewall implements BatchResetInterface
         }
 
         // No SPAM in description
-        if (!$dto->isAffiliate() && $this->isSPAMContent($dto->description)) {
+        if (!$dto->isAffiliate() && SpamDetector::isSpam($dto->description)) {
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
         // No SPAM in title
-        if (!$dto->isAffiliate() && $this->isSPAMContent($dto->name)) {
+        if (!$dto->isAffiliate() && SpamDetector::isSpam($dto->name)) {
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
@@ -190,30 +191,6 @@ final class Firewall implements BatchResetInterface
     public function checkMinLengthValidity(?string $str, int $min): bool
     {
         return mb_strlen(trim($str ?? '')) >= $min;
-    }
-
-    private function isSPAMContent(?string $content): bool
-    {
-        $content = mb_strtolower($content ?? '');
-        $black_list = array_map(mb_strtolower(...), [
-            'Buy && sell tickets at', 'Please join', 'Invite Friends', 'Buy Tickets',
-            'Find Local Concerts', 'reverbnation.com', 'pastaparty.com', 'evrd.us',
-            'farishams.com', 'ty-segall.com',
-            'Online-Streaming', 'DvdRip', 'Online HD Movies', 'FULL Movie Online Free', 'DvdRip-USA',
-            '4K.Downloads', 'Super.4K.Videos', 'Free Trial Access',
-            'Streaming Vf', 'vostfr', 'Film Streaming', 'Film Françaais',
-            'Films VF', 'Film gratuit en streaming', 'HD-TV', 'DVD-Rip', 'VOSTFRdotCC!',
-            'join the Illuminati', 'anti-breeze financial institution', 'call on +', 'Call Or Whats App On',
-            'fritzkalkbrenner.com', 'campusfm.fr', 'polyamour.info', 'parislanuit.fr',
-            'Please find the agenda', 'Fore More Details like our Page & Massage us',
-            'storiesdown.com', 'view Instagram stories',
-            'TEMOIGNAGE DE PRET', 'prêteur', 'prêteuse', 'preteur', 'preteuse', 'prêt entre particulier',
-            'offre de prët', 'offre de prêt', 'offres de prêt', 'RETOUR AFFECTIF', "retour d'amour", 'Retour d’affection',
-            'grand marabout', 'ENVOÛTEMENT AMOUREUX', 'faire revenir un homme', "rituel d'amour", 'Retour de l’être aimé',
-            "Retour de l'être aimé", 'valise magique',
-        ]);
-
-        return array_any($black_list, static fn ($black_word) => mb_strstr($content, (string) $black_word));
     }
 
     public function getEventExploration(EventDto $dto): ?ParserData
