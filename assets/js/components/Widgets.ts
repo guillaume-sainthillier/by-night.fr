@@ -1,74 +1,78 @@
-import $ from 'jquery'
+import { getHtml } from '@/js/utils/http'
 
 export default class Widgets {
-    init(selector?: JQuery.Selector | Element | JQuery) {
-        $(document).ready(() => {
-            this.initMoreWidgets($('.widget', selector || document))
-        })
+    init(container: ParentNode = document) {
+        this.initMoreWidgets(container.querySelectorAll<HTMLElement>('.widget'))
     }
 
     // Deps: ['scrollable']
-    initMoreWidgets(elems: JQuery) {
-        elems.each((_index, element) => {
-            const container = $(element)
-            const containerActions = container.find('.more-container')
-            const moreContentLink = container.find('.more-content')
-            const scrollArea = container.find('.scroll-area')
-            const containerBody = container.find('.scroll-area-content').length
-                ? container.find('.scroll-area-content')
-                : scrollArea
+    initMoreWidgets(widgets: Iterable<HTMLElement>) {
+        for (const container of widgets) {
+            const containerActions = container.querySelector('.more-container')
+            const moreContentLink = container.querySelector<HTMLElement>('.more-content')
+            const scrollArea = container.querySelector<HTMLElement>('.scroll-area')
+            const containerBody = container.querySelector<HTMLElement>('.scroll-area-content') ?? scrollArea
 
-            if (!containerActions.length) {
-                return
+            if (!containerActions) {
+                continue
             }
 
-            if (!moreContentLink.length) {
+            if (!moreContentLink) {
                 containerActions.remove()
-            } else {
-                const newMoreContentLink = moreContentLink.clone()
-                // What html() does with a collection
-                containerActions.empty().append(newMoreContentLink)
-                moreContentLink.remove()
-
-                // The block is either the button itself or a wrapper (progress, counter) around it
-                const moreButton = newMoreContentLink.is('button')
-                    ? newMoreContentLink
-                    : newMoreContentLink.find('button')
-                moreButton.off('click').click((e) => {
-                    moreButton
-                        .addClass('disabled')
-                        .prepend(
-                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
-                        )
-                    const scrollAreaLastItem = containerBody.find('.scroll-item').last()
-                    $.get(newMoreContentLink.data('href')).done((content: string) => {
-                        newMoreContentLink.remove()
-                        containerBody.append(content)
-                        this.initMoreWidgets(container)
-                        window.App.mount(container[0])
-                        if (scrollAreaLastItem.next().length > 0) {
-                            this.scrollTo(scrollAreaLastItem.next(), scrollArea, () => {})
-                        }
-                    })
-
-                    e.preventDefault()
-                    return false
-                })
+                continue
             }
-        })
+
+            // The link moves into the actions, alone
+            containerActions.replaceChildren(moreContentLink)
+
+            // The block is either the button itself or a wrapper (progress, counter) around it
+            const moreButton = moreContentLink.matches('button')
+                ? moreContentLink
+                : moreContentLink.querySelector('button')
+            moreButton?.addEventListener('click', async (e) => {
+                e.preventDefault()
+                if (moreButton.classList.contains('disabled')) {
+                    return
+                }
+
+                moreButton.classList.add('disabled')
+                moreButton.insertAdjacentHTML(
+                    'afterbegin',
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
+                )
+                const items = containerBody?.querySelectorAll('.scroll-item')
+                const scrollAreaLastItem = items?.[items.length - 1]
+                let content: string
+                try {
+                    content = await getHtml(moreContentLink.dataset.href ?? '')
+                } catch {
+                    // The button is offered again
+                    moreButton.querySelector('.spinner-border')?.remove()
+                    moreButton.classList.remove('disabled')
+                    window.App.get('toastManager').createToast('error', "La suite n'a pas pu être chargée.")
+                    return
+                }
+                moreContentLink.remove()
+                containerBody?.insertAdjacentHTML('beforeend', content)
+                this.initMoreWidgets([container])
+                window.App.mount(container)
+                const firstNewItem = scrollAreaLastItem?.nextElementSibling
+                if (firstNewItem instanceof HTMLElement && scrollArea) {
+                    this.scrollTo(firstNewItem, scrollArea)
+                }
+            })
+        }
     }
 
-    scrollTo(elem: JQuery, container: JQuery, callback: () => void) {
-        let options: JQuery.PlainObject<number>
+    /** Scrolls `container` until `elem` is at its start */
+    scrollTo(elem: HTMLElement, container: HTMLElement) {
+        const offset = elem.getBoundingClientRect()
+        const origin = container.getBoundingClientRect()
         // A row of cards scrolls sideways on a phone (.row-scroll-mobile) and wraps on wider screens
-        if (container.hasClass('scroll-area-horizontal') || container[0].scrollWidth > container[0].clientWidth) {
-            options = {
-                scrollLeft: ($(container).scrollLeft() ?? 0) + elem.position().left - $(container).position().left + 1,
-            }
+        if (container.classList.contains('scroll-area-horizontal') || container.scrollWidth > container.clientWidth) {
+            container.scrollBy({ left: offset.left - origin.left + 1, behavior: 'smooth' })
         } else {
-            options = { scrollTop: ($(container).scrollTop() ?? 0) + elem.position().top }
+            container.scrollBy({ top: offset.top - origin.top, behavior: 'smooth' })
         }
-
-        $(container).animate(options, 800, callback)
     }
 }

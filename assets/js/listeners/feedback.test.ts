@@ -9,22 +9,9 @@ import feedback from '@/js/listeners/feedback'
 import { fake } from '@/js/test/fake'
 import { connectListener } from '@/js/test/listener'
 
-interface AjaxOptions {
-    url: string
-    type: string
-    data: string
-}
-
-// A jqXHR stand-in that settles synchronously with the given outcome
-interface Request {
-    done: (callback: (payload: unknown) => void) => Request
-    fail: (callback: (payload: unknown) => void) => Request
-    always: (callback: () => void) => Request
-}
-
-// The Node environment has no DOM: jQuery's ajax and Tabler's widgets are faked. The widgets are classes, which the
+// The Node environment has no DOM: the request and Tabler's widgets are faked. The widgets are classes, which the
 // listener checks its instances against
-const { ajax, modal, alert, Modal, Alert } = vi.hoisted(() => {
+const { request, modal, alert, Modal, Alert, HttpError } = vi.hoisted(() => {
     class Modal {
         hide = () => {}
         static getOrCreateInstance = () => modal
@@ -36,18 +23,30 @@ const { ajax, modal, alert, Modal, Alert } = vi.hoisted(() => {
     const modal = new Modal()
     const alert = new Alert()
 
-    const ajax: { options: AjaxOptions | null; request: Request | null } = { options: null, request: null }
+    class HttpError extends Error {
+        constructor(readonly body: unknown) {
+            super('HTTP 422')
+        }
+    }
 
-    return { ajax, modal, alert, Modal, Alert }
+    // What the request was sent with, and what it answers: a body, or an HttpError it fails with
+    const request: { sent: { method: string; url: string; data: unknown } | null; outcome: unknown } = {
+        sent: null,
+        outcome: null,
+    }
+
+    return { request, modal, alert, Modal, Alert, HttpError }
 })
 
-vi.mock('jquery', () => ({
-    default: {
-        ajax: (options: AjaxOptions) => {
-            ajax.options = options
-            return ajax.request
-        },
+vi.mock('@/js/utils/http', () => ({
+    sendJson: async (method: string, url: string, data: unknown) => {
+        request.sent = { method, url, data }
+        if (request.outcome instanceof HttpError) {
+            throw request.outcome
+        }
+        return request.outcome
     },
+    errorBody: (error: unknown) => (error instanceof HttpError ? error.body : undefined),
 }))
 
 vi.mock('@tabler/core', () => ({
@@ -55,25 +54,7 @@ vi.mock('@tabler/core', () => ({
     Alert,
 }))
 
-const request = (outcome: 'done' | 'fail', payload: unknown) => {
-    const jqXHR: Request = {
-        done: (callback) => {
-            if ('done' === outcome) callback(payload)
-            return jqXHR
-        },
-        fail: (callback) => {
-            if ('fail' === outcome) callback(payload)
-            return jqXHR
-        },
-        always: (callback) => {
-            callback()
-            return jqXHR
-        },
-    }
-    return jqXHR
-}
-
-type Handler = (event?: { preventDefault: () => void }) => void
+type Handler = (event?: { preventDefault: () => void }) => Promise<void> | void
 
 const element = <P extends object>(props: P) => {
     const listeners: Record<string, Handler | undefined> = {}
@@ -107,9 +88,10 @@ const connect = (message: string) => {
     const toastManager = { createToast: vi.fn() }
     const cleanup = connectListener(feedback, fake<HTMLElement>(modalEl), fake<App>({ get: () => toastManager }))
 
-    const submit = () => {
+    // Settles once the answer is handled
+    const submit = async () => {
         const event = { preventDefault: vi.fn() }
-        form.listeners.submit?.(event)
+        await form.listeners.submit?.(event)
         return event
     }
 
@@ -118,8 +100,8 @@ const connect = (message: string) => {
 
 describe('feedback listener', () => {
     beforeEach(() => {
-        ajax.options = null
-        ajax.request = request('done', { message: 'Merci !' })
+        request.sent = null
+        request.outcome = { message: 'Merci !' }
         modal.hide = vi.fn()
         alert.close = vi.fn()
         vi.stubGlobal('document', { getElementById: () => ({}) })
@@ -133,45 +115,48 @@ describe('feedback listener', () => {
         expect(feedback.selector).toBe('#feedbackModal')
     })
 
-    test('posts the trimmed message instead of submitting the form natively', () => {
+    test('posts the trimmed message instead of submitting the form natively', async () => {
         const { submit, toastManager } = connect('  Très bonne nouvelle version  ')
 
-        const event = submit()
+        const event = await submit()
 
         expect(event.preventDefault).toHaveBeenCalled()
-        expect(ajax.options).toMatchObject({ url: '/api/feedback', type: 'POST' })
-        expect(JSON.parse(ajax.options?.data ?? '')).toEqual({ message: 'Très bonne nouvelle version' })
+        expect(request.sent).toEqual({
+            method: 'POST',
+            url: '/api/feedback',
+            data: { message: 'Très bonne nouvelle version' },
+        })
         expect(toastManager.createToast).toHaveBeenCalledWith('success', 'Merci !')
         expect(modal.hide).toHaveBeenCalled()
         expect(alert.close).toHaveBeenCalled()
     })
 
-    test('rejects a message shorter than 10 characters without posting it', () => {
+    test('rejects a message shorter than 10 characters without posting it', async () => {
         const { submit, messageInput, errorEl } = connect('   court   ')
 
-        submit()
+        await submit()
 
-        expect(ajax.options).toBeNull()
+        expect(request.sent).toBeNull()
         expect(messageInput.classList.add).toHaveBeenCalledWith('is-invalid')
         expect(errorEl.textContent).toBe('Votre message doit faire au moins 10 caractères')
     })
 
-    test('shows the violations of a rejected message and re-enables the button', () => {
-        ajax.request = request('fail', { responseJSON: { violations: [{ message: 'A' }, { message: 'B' }] } })
+    test('shows the violations of a rejected message and re-enables the button', async () => {
+        request.outcome = new HttpError({ violations: [{ message: 'A' }, { message: 'B' }] })
         const { submit, errorEl, submitBtn } = connect('Un message assez long')
 
-        submit()
+        await submit()
 
         expect(errorEl.textContent).toBe('A, B')
         expect(submitBtn.disabled).toBe(false)
         expect(modal.hide).not.toHaveBeenCalled()
     })
 
-    test('works without the banner, which the member may have dismissed', () => {
+    test('works without the banner, which the member may have dismissed', async () => {
         vi.stubGlobal('document', { getElementById: () => null })
         const { submit } = connect('Un message assez long')
 
-        submit()
+        await submit()
 
         expect(modal.hide).toHaveBeenCalled()
         expect(alert.close).not.toHaveBeenCalled()

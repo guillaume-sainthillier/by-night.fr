@@ -1,6 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
 import { Modal } from '@tabler/core'
-import $ from 'jquery'
+import { errorBody, sendJson } from '@/js/utils/http'
 
 /**
  * What the removal request API answers.
@@ -74,7 +74,7 @@ export default defineListener<HTMLElement>({
         }
 
         // Handle form submission
-        const onSubmit = () => {
+        const onSubmit = async () => {
             // Reset validation states
             emailInput.classList.remove('is-invalid')
             typeInput.classList.remove('is-invalid')
@@ -128,46 +128,43 @@ export default defineListener<HTMLElement>({
             spinner.classList.remove('d-none')
             alertEl.classList.add('d-none')
 
-            $.ajax({
-                url: `/api/events/${currentEventId}/removal-request`,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-            })
-                .done((response: RemovalResponse) => {
-                    if (response.success) {
-                        alertEl.textContent = response.message ?? ''
-                        alertEl.classList.remove('d-none', 'alert-danger')
-                        alertEl.classList.add('alert-success')
-                        form.classList.add('d-none')
-                        submitBtn.classList.add('d-none')
+            try {
+                const response = await sendJson<RemovalResponse>(
+                    'POST',
+                    `/api/events/${currentEventId}/removal-request`,
+                    data
+                )
+                if (response?.success) {
+                    alertEl.textContent = response.message ?? ''
+                    alertEl.classList.remove('d-none', 'alert-danger')
+                    alertEl.classList.add('alert-success')
+                    form.classList.add('d-none')
+                    submitBtn.classList.add('d-none')
 
-                        // Auto-close modal after 3 seconds
-                        setTimeout(() => {
-                            modal.hide()
-                            // Reset for next use
-                            form.classList.remove('d-none')
-                            submitBtn.classList.remove('d-none')
-                        }, 3000)
-                    } else {
-                        showError(response.message || 'Une erreur est survenue')
-                    }
-                })
-                .fail((xhr) => {
-                    const body: RemovalError | undefined = xhr.responseJSON
-                    let errorMessage = 'Une erreur est survenue'
-                    if (body?.violations) {
-                        errorMessage = body.violations.map((v) => v.message).join('<br>')
-                    } else if (body?.message || body?.detail) {
-                        // "detail": the message of an HTTP error, such as too many requests
-                        errorMessage = body.message || body.detail || errorMessage
-                    }
-                    showError(errorMessage)
-                })
-                .always(() => {
-                    submitBtn.disabled = false
-                    spinner.classList.add('d-none')
-                })
+                    // Auto-close modal after 3 seconds
+                    setTimeout(() => {
+                        modal.hide()
+                        // Reset for next use
+                        form.classList.remove('d-none')
+                        submitBtn.classList.remove('d-none')
+                    }, 3000)
+                } else {
+                    showError(response?.message || 'Une erreur est survenue')
+                }
+            } catch (error) {
+                const body = errorBody<RemovalError>(error)
+                let errorMessage = 'Une erreur est survenue'
+                if (body?.violations) {
+                    errorMessage = body.violations.map((v) => v.message).join('<br>')
+                } else if (body?.message || body?.detail) {
+                    // "detail": the message of an HTTP error, such as too many requests
+                    errorMessage = body.message || body.detail || errorMessage
+                }
+                showError(errorMessage)
+            } finally {
+                submitBtn.disabled = false
+                spinner.classList.add('d-none')
+            }
         }
 
         modalEl.addEventListener('show.bs.modal', onShow)
