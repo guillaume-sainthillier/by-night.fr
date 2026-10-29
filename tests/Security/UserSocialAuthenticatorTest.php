@@ -36,6 +36,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 /**
@@ -132,6 +134,17 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
     }
 
     /**
+     * The network's callback carries no "Se souvenir de moi": without the cookie, the member signed in by a network
+     * was logged out once their session expired, 24 minutes idle
+     */
+    public function testAMemberSignedInByANetworkIsRemembered(): void
+    {
+        $passport = $this->authenticateWith('google', new GoogleUser(['sub' => 'google-10', 'name' => 'Lou', 'email' => 'lou@example.com']));
+
+        self::assertTrue($passport->getBadge(RememberMeBadge::class)?->isEnabled());
+    }
+
+    /**
      * A member who turned on a second factor: the network vouched for them, the second factor is still to come
      */
     public function testAMemberWithASecondFactorGoesOnToIt(): void
@@ -208,6 +221,14 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
 
     private function signInWith(string $service, ResourceOwnerInterface|IdentityProviderException $networkAccount): User
     {
+        $user = $this->authenticateWith($service, $networkAccount)->getUser();
+        self::assertInstanceOf(User::class, $user);
+
+        return $user;
+    }
+
+    private function authenticateWith(string $service, ResourceOwnerInterface|IdentityProviderException $networkAccount): Passport
+    {
         $client = $this->createStub(OAuth2ClientInterface::class);
         $client->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 'token']));
         if ($networkAccount instanceof IdentityProviderException) {
@@ -224,10 +245,7 @@ final class UserSocialAuthenticatorTest extends AppKernelTestCase
         $request = Request::create('/login-social/check/' . $service);
         $request->attributes->set('service', $service);
 
-        $user = $authenticator->authenticate($request)->getUser();
-        self::assertInstanceOf(User::class, $user);
-
-        return $user;
+        return $authenticator->authenticate($request);
     }
 
     private function createAuthenticator(ClientRegistry $clientRegistry): UserSocialAuthenticator

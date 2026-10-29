@@ -27,6 +27,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
@@ -129,7 +130,10 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                 $this->entityManager->flush();
 
                 return $existingUser;
-            })
+            }),
+            // Remembered as the login by the form is (its "Se souvenir de moi" is checked by default): the network's
+            // callback carries no _remember_me, so the session alone, gone after 24 minutes idle, kept the member in
+            [(new RememberMeBadge())->enable()]
         );
     }
 
