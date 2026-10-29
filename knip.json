@@ -18,6 +18,7 @@
     },
     "ignoreDependencies": [
         "glob-all",
-        "@fontsource-variable/epilogue"
+        "@fontsource-variable/epilogue",
+        "@silarhi/cap-bundle"
     ]
 }

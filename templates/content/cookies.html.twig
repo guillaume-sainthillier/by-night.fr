@@ -9,7 +9,7 @@
 {% block meta_description 'Les cookies utilisés par By Night, leur rôle, leur durée et comment accepter ou refuser ceux qui demandent votre accord.' %}
 
 {% set legal_lead = 'Les cookies que By Night dépose, ceux de ses partenaires, et comment les accepter ou les refuser.' %}
-{% set legal_updated = '2026-10-24' %}
+{% set legal_updated = '2026-10-29' %}
 {% set legal_sections = [
     {id: 'cookies', title: 'Qu\'est-ce qu\'un cookie ?'},
     {id: 'necessaires', title: 'Cookies nécessaires au fonctionnement du site', number: 1},
@@ -73,6 +73,10 @@
                 La barre de recherche garde aussi vos recherches récentes dans le stockage local de votre navigateur, pour vous
                 les proposer à nouveau. Elles ne nous sont jamais transmises, et vous pouvez les effacer depuis la liste des
                 suggestions.
+            </p>
+            <p>
+                Le contrôle anti-robots du formulaire d'inscription (Cap, installé sur nos serveurs) ne dépose aucun cookie
+                et n'enregistre rien dans votre navigateur.
             </p>
         </twig:block>
     </twig:Legal:Section>
@@ -143,11 +147,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Google reCAPTCHA (v3)</td>
-                            <td>Sur le formulaire d'inscription, pour le protéger contre les robots : il se charge avec le formulaire.</td>
-                            <td>Google</td>
-                        </tr>
                         <tr>
                             <td>Google Maps</td>
                             <td>

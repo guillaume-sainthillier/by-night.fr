@@ -9,7 +9,7 @@
 {% block meta_description 'Les données personnelles que By Night collecte, dont celles reçues de Google, Facebook et X à la connexion, leur usage, leurs destinataires, leur durée de conservation et vos droits.' %}
 
 {% set legal_lead = 'Les données personnelles que By Night collecte, ce qu\'il en fait, combien de temps il les garde et comment exercer vos droits.' %}
-{% set legal_updated = '2026-10-24' %}
+{% set legal_updated = '2026-10-29' %}
 {% set legal_sections = [
     {id: 'responsable', title: 'Responsable du traitement', number: 1},
     {id: 'donnees-collectees', title: 'Données collectées', number: 2},
@@ -73,7 +73,9 @@
             </li>
             <li>
                 <strong>La sécurité</strong> : le formulaire d'inscription est protégé contre les inscriptions automatisées
-                par Google reCAPTCHA ; le formulaire de signalement compte les envois de chaque adresse IP pour en limiter
+                par Cap, un contrôle anti-robots installé sur nos serveurs : votre navigateur résout un petit calcul pendant
+                que vous remplissez le formulaire, sans cookie ni transmission à un tiers, et votre adresse IP n'est
+                utilisée que pour limiter le nombre de tentatives ; le formulaire de signalement compte les envois de chaque adresse IP pour en limiter
                 le nombre ; les erreurs techniques sont transmises à notre outil de suivi des erreurs (Sentry), sans votre
                 adresse IP, pour être corrigées.
             </li>
@@ -225,9 +227,13 @@
                             <td>90 jours, puis effacés automatiquement.</td>
                         </tr>
                         <tr>
-                            <td>La protection de l'inscription (Google reCAPTCHA)</td>
+                            <td>La protection de l'inscription (Cap, sur nos serveurs)</td>
                             <td>Intérêt légitime : empêcher les inscriptions automatisées</td>
-                            <td>Durée fixée par Google ; By Night ne conserve ni le résultat du contrôle ni les données transmises.</td>
+                            <td>
+                                Votre adresse IP : quelques secondes, le temps de limiter le nombre de tentatives. Le contrôle
+                                ne sert qu'une fois ; seuls des compteurs anonymes sont gardés (nombre de contrôles, système et
+                                type d'appareil).
+                            </td>
                         </tr>
                         <tr>
                             <td>La mesure d'audience et la publicité personnalisée</td>
@@ -249,10 +255,10 @@
             nécessaire à leur mission :
         </p>
         <ul>
-            <li>OVH (hébergement des serveurs et des fichiers, en France), où sont aussi installés nos journaux techniques et notre outil de suivi des erreurs (Sentry) ;</li>
+            <li>OVH (hébergement des serveurs et des fichiers, en France), où sont aussi installés nos journaux techniques, notre outil de suivi des erreurs (Sentry) et notre contrôle anti-robots (Cap) ;</li>
             <li>Cloudflare (diffusion des pages et protection du site) ;</li>
             <li>Mailjet (envoi des e-mails : confirmation d'adresse, mot de passe oublié, suite donnée à un signalement, sélection du week-end) ;</li>
-            <li>Google (reCAPTCHA, cartes, vidéos YouTube, mesure d'audience et publicité) ;</li>
+            <li>Google (cartes, vidéos YouTube, mesure d'audience et publicité) ;</li>
             <li>Meta (page Facebook, si vous l'affichez) ;</li>
             <li>Hyperknot (OpenFreeMap, en Hongrie : la carte des agendas, si vous l'affichez) ;</li>
             <li>Google, Meta et X pour la connexion avec ces réseaux, si vous la choisissez.</li>

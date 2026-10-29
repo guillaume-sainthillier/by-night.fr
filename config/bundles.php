@@ -39,7 +39,6 @@ return [
     Symfony\UX\StimulusBundle\StimulusBundle::class => ['all' => true],
     Symfony\UX\Icons\UXIconsBundle::class => ['all' => true],
     Silarhi\PicassoBundle\PicassoBundle::class => ['all' => true],
-    Karser\Recaptcha3Bundle\KarserRecaptcha3Bundle::class => ['all' => true],
     NotFloran\MjmlBundle\MjmlBundle::class => ['all' => true],
     Symfony\Reprise\RepriseBundle::class => ['all' => true],
     Silarhi\LlmsTxtBundle\LlmsTxtBundle::class => ['all' => true],
@@ -49,4 +48,5 @@ return [
     Silarhi\UxIconsJsBundle\SilarhiUxIconsJsBundle::class => ['all' => true],
     Jbtronics\TFAWebauthn\TFAWebauthnBundle::class => ['all' => true],
     AhmedBhs\DoctrineDoctor\DoctrineDoctorBundle::class => ['dev' => true, 'test' => true],
+    Silarhi\CapBundle\SilarhiCapBundle::class => ['all' => true],
 ];

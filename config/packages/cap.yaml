@@ -1,0 +1,14 @@
+# Cap CAPTCHA (silarhi/cap-bundle): CAP_ENDPOINT and CAP_SECRET_KEY are the site key by-night.fr of cap.silarhi.fr,
+# reached on cap.by-night.fr (see the README)
+cap:
+    # The silarhi--cap-bundle--cap controller of assets/controllers.json loads the widget, on the pages of a form only
+    render_scripts: false
+
+when@dev:
+    cap:
+        enabled: false
+
+# The functional tests submit the sign-up form: they must not ask the Cap server to verify them
+when@test:
+    cap:
+        enabled: false

@@ -1,4 +1,11 @@
 {
-    "controllers": [],
+    "controllers": {
+        "@silarhi/cap-bundle": {
+            "cap": {
+                "enabled": true,
+                "fetch": "lazy"
+            }
+        }
+    },
     "entrypoints": []
 }
