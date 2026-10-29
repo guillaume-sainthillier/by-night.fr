@@ -57,6 +57,12 @@ final class SpamDetector
         '/\billuminati/',
         '/\badopte[rz]? (?:un |des )?bebes?\b/',
         '/\bmagie (?:africaine|pour gagner)\b/',
+        // Gambling, never « casino » alone: the Casino de Paris and the Barrière casinos are venues
+        '/\b(?:machines? a sous|bookmakers?|paris sportifs|casinos? (?:en ligne|online|en argent reel))\b/',
+        '#https?://\S*(?:(?:mel|1x|don-?|lona|win|\d)bet|betting|bookmaker|starz|casino-online|online-casino|/casino/|/apk/)#',
+        // HTML, BBCode and Markdown links, which the comments do not render (their tags are stripped): only bots post them
+        '/<a\s+href|\[url=|\]\(https?:/',
+        '/\bhack\w*\b.{0,100}\brecover|\brecover\w*\b.{0,100}\bhack/',
     ];
 
     /**

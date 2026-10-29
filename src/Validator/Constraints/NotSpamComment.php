@@ -14,7 +14,8 @@ use Attribute;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * A comment none of the spam rules of App\Utils\SpamDetector catches: loan offers, mediums and spells.
+ * A comment none of the spam rules of App\Utils\SpamDetector catches: loan offers, mediums and spells, gambling, links
+ * written as HTML, BBCode or Markdown.
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD)]
 final class NotSpamComment extends Constraint

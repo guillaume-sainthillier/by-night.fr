@@ -81,6 +81,15 @@ final class SpamDetectorTest extends TestCase
         yield 'illuminati' => ["REJOIGNEZ LA FRATERNITÉ ILLUMINATIE AUJOURD'HUI"];
         yield 'baby adoption' => ['Adoptez un bébé ou enfant en 48 heures au plus'];
         yield 'lottery magic' => ['MAGIE POUR GAGNER AU LOTO ET A L’EUROMILLIONS'];
+        yield 'slots' => ['Le catalogue de machines à sous est énorme et les retraits sont rapides.'];
+        yield 'bookmakers' => ['Un coup d’œil sur les meilleurs bookmakers montre comment chaque plateforme est unique.'];
+        yield 'betting site link' => ['Je prolonge l’excitation en pariant sur les matchs via https://melbet.example/fr .'];
+        yield 'betting app link' => ['J’ai téléchargé l’appli sur https://telecharger-888starz.example/ et depuis c’est nickel.'];
+        yield 'online casino link' => ['Voir https://example.com/fr/casino/notations/ pour jouer.'];
+        yield 'HTML link' => ['D’après mon test récent, le site <a href="https://example.com/">ici</a> paie vite.'];
+        yield 'BBCode link' => ['[url=https://example.com/]example[/url]'];
+        yield 'Markdown link' => ['[example](https://example.com/)'];
+        yield 'hack recovery' => ['Recovery All your lost with the help of Quick Hack Support Team.'];
     }
 
     /**
@@ -95,5 +104,9 @@ final class SpamDetectorTest extends TestCase
         yield 'ticket request' => ['Je suis intéressée pour avoir 2 places à 10 euros, jeanne@example.com'];
         yield 'baby question' => ["Bonjour, c'est possible visiter avec bébé d'un an ? Merci"];
         yield 'funded workshop' => ["L'atelier est financé à 100% par le Salon"];
+        yield 'Casino de Paris' => ['Concert génial au Casino de Paris, billets sur https://www.casinodeparis.fr/'];
+        yield 'Barrière casino' => ['Soirée au casino Barrière de Toulouse, réservations au 05 61 00 00 00'];
+        yield 'ticketing link' => ['Billetterie en ligne : https://www.helloasso.com/associations/example/evenements/festival'];
+        yield 'Facebook event' => ['https://www.facebook.com/events/497005450909542/'];
     }
 }
