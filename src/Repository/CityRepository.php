@@ -10,6 +10,7 @@
 
 namespace App\Repository;
 
+use App\Comparator\CityComparator;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\CityDto;
@@ -107,6 +108,7 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
     {
         $cityNameWheres = [];
         $postalCodesWheres = [];
+        $officialCodesWheres = [];
 
         foreach ($dtos as $dto) {
             if (
@@ -125,12 +127,17 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             if (null !== $dto->postalCode) {
                 $postalCodesWheres[$dto->country->entityId][$dto->postalCode] = true;
             }
+
+            $officialCode = CityComparator::communeCode($dto->officialCode);
+            if (null !== $officialCode) {
+                $officialCodesWheres[$dto->country->entityId][$officialCode] = true;
+            }
         }
 
         // One query per criterion: OR-ed together, the name branch and the joined postal code
         // branch kept MySQL off both indexes and every lookup read all the cities of the country.
         $found = [];
-        foreach ([$this->findByNames($cityNameWheres), $this->findByPostalCodes($postalCodesWheres)] as $results) {
+        foreach ([$this->findByNames($cityNameWheres), $this->findByPostalCodes($postalCodesWheres), $this->findByOfficialCodes($officialCodesWheres)] as $results) {
             foreach ($results as $city) {
                 $found[$city->getId()] = $city;
             }
@@ -168,6 +175,39 @@ final class CityRepository extends ServiceEntityRepository implements DtoFindabl
             $queryBuilder
                 ->setParameter($countryPlaceholder, $countryId)
                 ->setParameter($cityNamesPlaceholder, array_map(strval(...), array_keys($cityNames)), ArrayParameterType::STRING);
+            ++$i;
+        }
+
+        return $queryBuilder
+            ->where(implode(' OR ', $wheres))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param array<string, array<string|int, true>> $officialCodesWheres the communes' official codes by country id
+     *
+     * @return City[]
+     */
+    private function findByOfficialCodes(array $officialCodesWheres): array
+    {
+        if ([] === $officialCodesWheres) {
+            return [];
+        }
+
+        $wheres = [];
+        $queryBuilder = $this->createQueryBuilder('c');
+
+        $i = 1;
+        foreach ($officialCodesWheres as $countryId => $officialCodes) {
+            $countryPlaceholder = \sprintf('official_code_country_%d', $i);
+            $officialCodesPlaceholder = \sprintf('official_code_codes_%d', $i);
+            $wheres[] = \sprintf('(c.country = :%s AND c.officialCode IN(:%s))', $countryPlaceholder, $officialCodesPlaceholder);
+
+            // Array keys turn "31555" into an int, see findByPostalCodes()
+            $queryBuilder
+                ->setParameter($countryPlaceholder, $countryId)
+                ->setParameter($officialCodesPlaceholder, array_map(strval(...), array_keys($officialCodes)), ArrayParameterType::STRING);
             ++$i;
         }
 

@@ -173,6 +173,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertMatchesRegularExpression('/^DT-[0-9a-f]{32}$/', (string) $event->place?->externalId);
         self::assertSame('Sainte-Pazanne', $event->place?->city?->name);
         self::assertSame('44680', $event->place?->city?->postalCode);
+        self::assertSame('44186', $event->place->city->officialCode, 'The commune\'s INSEE code');
         self::assertSame('France', $event->place?->country?->name);
         self::assertSame($event->place?->country, $event->place?->city?->country, 'City and place share one country DTO');
     }
