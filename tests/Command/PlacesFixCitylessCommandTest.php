@@ -17,11 +17,13 @@ use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
+use App\Factory\PlaceLegacySlugFactory;
 use App\Factory\PlaceMetadataFactory;
 use App\Factory\PlaceNameSlugFactory;
 use App\Factory\ZipCityFactory;
 use App\Tests\AppKernelTestCase;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -103,15 +105,60 @@ final class PlacesFixCitylessCommandTest extends AppKernelTestCase
         self::assertNull(PlaceFactory::find(['id' => $reunion->getId()])->getCity(), 'Saint-Denis (93) is not of 97400');
     }
 
-    public function testACitylessPlaceStaysWhenItsCityHasAPlaceOfThatName(): void
+    public function testACitylessPlaceIsMergedIntoTheSameVenueOfItsCity(): void
     {
-        PlaceFactory::createOne(['name' => 'Le Bikini', 'slug' => 'le-bikini', 'city' => $this->toulouse, 'country' => $this->france]);
-        $place = $this->citylessPlace('Le Bikini', 'Toulouse', '31000');
+        $venue = PlaceFactory::createOne(['name' => 'Le Bikini', 'slug' => 'le-bikini', 'street' => 'Rue Théodore Monod', 'city' => $this->toulouse, 'country' => $this->france]);
+        $place = $this->citylessPlace('Le Bikini', 'Toulouse', '31000', ['street' => 'rue Théodore-Monod', 'latitude' => null, 'longitude' => null]);
+        PlaceMetadataFactory::createOne(['place' => $place, 'externalId' => 'oa-bikini']);
+        $events = $this->eventAt($place, '31000', 'Toulouse', 2);
 
         $display = $this->doRunCommand(['--apply' => true])->getDisplay();
 
-        self::assertNull(PlaceFactory::find(['id' => $place->getId()])->getCity());
-        self::assertMatchesRegularExpression('/\b0\s+1\s+0\b/', $display, 'Counted as left for a place of that name');
+        self::assertSame(0, PlaceFactory::count(['id' => $place->getId()]));
+        foreach ($events as $event) {
+            self::assertSame($venue->getId(), $this->placeOf($event));
+        }
+
+        self::assertSame(1, PlaceMetadataFactory::count(['place' => $venue, 'externalId' => 'oa-bikini']), 'The next imports find the venue');
+        self::assertSame(1, PlaceLegacySlugFactory::count(['place' => $venue, 'slug' => 'le-bikini', 'city' => null, 'country' => $this->france]), 'Its page, under the country, redirects');
+        self::assertMatchesRegularExpression('/\b0\s+1\s+0\s+0\b/', $display, 'Counted as merged');
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>, array<string, mixed>, bool}>
+     */
+    public static function namesakes(): iterable
+    {
+        yield 'on the same street' => [['street' => '4 Square Violette'], ['street' => '4, square Violette'], true];
+        yield 'within 300 m' => [['street' => 'Quai François-Mauriac', 'latitude' => 43.6, 'longitude' => 1.44], ['street' => 'Site François-Mitterrand', 'latitude' => 43.6015, 'longitude' => 1.4410], true];
+        yield 'a street missing, nothing apart' => [['street' => null], ['street' => 'Rue Théodore Monod'], true];
+        yield 'a street missing, close' => [['street' => null, 'latitude' => 43.6, 'longitude' => 1.44], ['street' => 'Rue Théodore Monod', 'latitude' => 43.605, 'longitude' => 1.44], true];
+        yield 'two streets' => [['street' => '196 Traverse de la Penne'], ['street' => '24 Route d\'Allauch'], false];
+        yield 'a street missing, 5 km apart' => [['street' => null, 'latitude' => 43.6, 'longitude' => 1.44], ['street' => 'Rue Théodore Monod', 'latitude' => 43.645, 'longitude' => 1.44], false];
+    }
+
+    /**
+     * @param array<string, mixed> $citylessAddress
+     * @param array<string, mixed> $venueAddress
+     */
+    #[DataProvider('namesakes')]
+    public function testAPlaceOfThatNameInTheCityIsTheSameVenueWhenTheAddressesAgree(array $citylessAddress, array $venueAddress, bool $sameVenue): void
+    {
+        // Without coordinates unless the case gives some: the factory draws them anywhere
+        $noCoordinates = ['latitude' => null, 'longitude' => null];
+        $venue = PlaceFactory::createOne(['name' => 'Salle Paul Éluard', 'slug' => 'salle-paul-eluard', 'city' => $this->toulouse, 'country' => $this->france] + $venueAddress + $noCoordinates);
+        $place = $this->citylessPlace('Salle Paul Éluard', 'Toulouse', '31000', $citylessAddress + $noCoordinates);
+        [$event] = $this->eventAt($place, '31000', 'Toulouse', 1);
+
+        $this->doRunCommand(['--apply' => true]);
+
+        if ($sameVenue) {
+            self::assertSame($venue->getId(), $this->placeOf($event));
+            self::assertSame(0, PlaceFactory::count(['id' => $place->getId()]));
+        } else {
+            self::assertSame($place->getId(), $this->placeOf($event), 'Another venue of that name, located beside it');
+            self::assertSame($this->toulouse->getId(), PlaceFactory::find(['id' => $place->getId()])->getCity()?->getId());
+        }
     }
 
     public function testPreviewWritesNothing(): void
@@ -120,18 +167,24 @@ final class PlacesFixCitylessCommandTest extends AppKernelTestCase
         $this->eventAt($merged, '49700', 'Tuffalun', 1);
         $inBatz = $this->eventAt($merged, '44740', 'Batz Sur Mer', 1);
         $located = $this->citylessPlace('Le Bikini', 'Toulouse', '31000');
+        PlaceFactory::createOne(['name' => 'Salle Paul Éluard', 'slug' => 'salle-paul-eluard', 'city' => $this->toulouse, 'country' => $this->france]);
+        $twin = $this->citylessPlace('Salle Paul Éluard', 'Toulouse', '31000');
 
         $display = $this->doRunCommand([])->getDisplay();
 
         self::assertStringContainsString('Preview only', $display);
         self::assertSame($merged->getId(), $this->placeOf($inBatz[0]));
-        self::assertSame(2, PlaceFactory::count());
+        self::assertSame(4, PlaceFactory::count());
         self::assertNull(PlaceFactory::find(['id' => $located->getId()])->getCity());
+        self::assertNull(PlaceFactory::find(['id' => $twin->getId()])->getCity(), 'Not merged either');
     }
 
-    private function citylessPlace(string $name, string $town, string $postalCode): Place
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    private function citylessPlace(string $name, string $town, string $postalCode, array $attributes = []): Place
     {
-        return PlaceFactory::createOne(['name' => $name, 'city' => null, 'cityName' => $town, 'cityPostalCode' => $postalCode, 'country' => $this->france]);
+        return PlaceFactory::createOne(['name' => $name, 'city' => null, 'cityName' => $town, 'cityPostalCode' => $postalCode, 'country' => $this->france] + $attributes);
     }
 
     /**
