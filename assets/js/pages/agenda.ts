@@ -1,4 +1,4 @@
-import { definePage } from '@silarhi/app-js'
+import { byId, definePage } from '@silarhi/app-js'
 import { Offcanvas } from '@tabler/core'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
@@ -39,18 +39,12 @@ function initFiltersBar(): () => void {
     return markDirty
 }
 
-const inputById = (id: string | undefined): HTMLInputElement | null => {
-    const input = id ? document.getElementById(id) : null
-
-    return input instanceof HTMLInputElement ? input : null
-}
-
 function initDatepickers(markDirty: () => void, container: ParentNode = document) {
     container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
-            fromInput: inputById(el.dataset.from),
-            toInput: inputById(el.dataset.to),
+            fromInput: byId(el.dataset.from ?? '', HTMLInputElement),
+            toInput: byId(el.dataset.to ?? '', HTMLInputElement),
             singleDate: el.dataset.singleDate === 'true',
             // The dates picked replace the shortcut of the chips (SearchType's "when"), which the form would send again
             onApply: () => {

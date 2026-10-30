@@ -1,6 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
+import { postForm } from '@silarhi/app-js/http'
 import { Alert } from '@tabler/core'
-import { postForm } from '@/js/utils/http'
 
 /**
  * Send a verification email when the element is clicked, then dismiss its

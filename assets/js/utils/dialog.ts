@@ -1,5 +1,5 @@
+import { getHtml, statusOf } from '@silarhi/app-js/http'
 import { Modal } from '@tabler/core'
-import { getHtml, statusOf } from '@/js/utils/http'
 
 /**
  * The message the shared dialog shows when its content cannot be loaded.

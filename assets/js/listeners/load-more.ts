@@ -1,5 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
-import { getHtml } from '@/js/utils/http'
+import { getHtml } from '@silarhi/app-js/http'
 
 /**
  * Load the next page of results and insert it before the button, then mount

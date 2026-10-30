@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import cookieSettings from '@/js/listeners/cookie-settings'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 type Handler = (event: { preventDefault: () => void }) => void
 

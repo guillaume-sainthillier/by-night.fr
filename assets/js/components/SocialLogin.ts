@@ -1,6 +1,6 @@
+import { postForm, statusOf } from '@silarhi/app-js/http'
 import { Modal } from '@tabler/core'
 import { loadErrorMessage, loadIntoDialog } from '@/js/utils/dialog'
-import { postForm, statusOf } from '@/js/utils/http'
 import { popup } from '@/js/utils/utils'
 
 /**

@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import analytics, { readEventData, track } from '@/js/listeners/analytics'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 type Handler = () => void
 

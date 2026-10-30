@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import videoFacade from '@/js/listeners/video-facade'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 const fakeButton = () => {
     const listeners: Record<string, () => void> = {}

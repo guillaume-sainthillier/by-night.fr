@@ -21,7 +21,7 @@ const { http, modal, Modal } = vi.hoisted(() => {
     return { http, modal, Modal }
 })
 
-vi.mock('@/js/utils/http', () => ({
+vi.mock('@silarhi/app-js/http', () => ({
     getHtml: async () => {
         if (http.outcome instanceof Error) {
             throw http.outcome

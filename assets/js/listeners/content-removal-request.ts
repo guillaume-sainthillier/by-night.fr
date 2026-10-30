@@ -1,6 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
+import { errorBody, sendJson } from '@silarhi/app-js/http'
 import { Modal } from '@tabler/core'
-import { errorBody, sendJson } from '@/js/utils/http'
 
 /**
  * What the removal request API answers.

@@ -1,5 +1,5 @@
 import { type App, definePage } from '@silarhi/app-js'
-import { sendJson } from '@/js/utils/http'
+import { sendJson } from '@silarhi/app-js/http'
 
 /**
  * Switches of the list of events: each sends its state when it changes, and is disabled until the answer came back.

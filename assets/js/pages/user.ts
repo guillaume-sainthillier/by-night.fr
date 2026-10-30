@@ -1,8 +1,8 @@
 import { definePage } from '@silarhi/app-js'
+import { getHtml } from '@silarhi/app-js/http'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import { Tab } from '@tabler/core'
 import { LucideLoader2Icon } from '@/js/icons'
-import { getHtml } from '@/js/utils/http'
 
 export default definePage(({ app }) => {
     init()

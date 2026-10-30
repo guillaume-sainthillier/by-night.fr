@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import citySwitcher from '@/js/listeners/city-switcher'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 const { createAutocomplete } = vi.hoisted(() => ({ createAutocomplete: vi.fn() }))
 

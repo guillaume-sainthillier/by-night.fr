@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import toc from '@/js/listeners/toc'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 const fakeLink = (id: string, offsetTop: number) => {
     const attributes: Record<string, string> = {}

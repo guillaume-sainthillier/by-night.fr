@@ -4,10 +4,10 @@
  */
 
 import type { App } from '@silarhi/app-js'
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import feedback from '@/js/listeners/feedback'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 // The Node environment has no DOM: the request and Tabler's widgets are faked. The widgets are classes, which the
 // listener checks its instances against
@@ -38,7 +38,7 @@ const { request, modal, alert, Modal, Alert, HttpError } = vi.hoisted(() => {
     return { request, modal, alert, Modal, Alert, HttpError }
 })
 
-vi.mock('@/js/utils/http', () => ({
+vi.mock('@silarhi/app-js/http', () => ({
     sendJson: async (method: string, url: string, data: unknown) => {
         request.sent = { method, url, data }
         if (request.outcome instanceof HttpError) {

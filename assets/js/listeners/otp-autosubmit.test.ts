@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { describe, expect, test, vi } from 'vitest'
 import otpAutosubmit from '@/js/listeners/otp-autosubmit'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 // No DOM in the Node environment: the fake element records its listeners and finds its form
 const connect = (form: { requestSubmit: () => void } | null) => {

@@ -4,10 +4,10 @@
  */
 
 import type { App } from '@silarhi/app-js'
+import { connectListener } from '@silarhi/app-js/testing'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import formConfirm from '@/js/listeners/form-confirm'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 type SubmitHandler = (event: { preventDefault: () => void }) => Promise<void>
 

@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListenerWithoutCleanup } from '@silarhi/app-js/testing'
 import { describe, expect, test } from 'vitest'
 import activeChip from '@/js/listeners/active-chip'
 import { fake } from '@/js/test/fake'
-import { connectListenerWithoutCleanup } from '@/js/test/listener'
 
 const connect = ({
     scrollWidth,

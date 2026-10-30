@@ -4,10 +4,10 @@
  */
 
 import type { App } from '@silarhi/app-js'
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import copyUrl from '@/js/listeners/copy-url'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 type Handler = () => void
 
