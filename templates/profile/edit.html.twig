@@ -198,7 +198,7 @@
                         {% set forgotten %}<span class="form-label-description"><a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié&nbsp;?</a></span>{% endset %}
                         <div class="form-group">
                             {{ form_label(formChangePassword.currentPassword, formChangePassword.currentPassword.vars.label ~ forgotten, {label_html: true}) }}
-                            <twig:PasswordInput>
+                            <twig:PasswordInput inputId="{{ formChangePassword.currentPassword.vars.id }}">
                                 {{ form_widget(formChangePassword.currentPassword) }}
                             </twig:PasswordInput>
                             {{ form_errors(formChangePassword.currentPassword) }}

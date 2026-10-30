@@ -1,7 +1,7 @@
 {#
  # A one-time code in the OTP input of Tabler 1.7 (data-bs-toggle="otp"): Tabler draws one slot per digit over the
  # single real <input>, which keeps autocomplete="one-time-code" for the SMS / authenticator autofill. With autosubmit,
- # assets/js/listeners/otp-autosubmit.js submits the form once the last digit is typed.
+ # autoSubmit() of @silarhi/app-js (assets/js/app.ts) submits the form once the last digit is typed.
  #}
 {% props name, id = null, length = 6, value = '', autofocus = false, autosubmit = true, invalid = false, label = 'Code à usage unique' %}
 <div class="otp{{ invalid ? ' is-invalid' }}"
