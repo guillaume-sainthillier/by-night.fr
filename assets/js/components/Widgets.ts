@@ -1,4 +1,4 @@
-import { getHtml } from '@/js/utils/http'
+import { getHtml } from '@silarhi/app-js/http'
 
 export default class Widgets {
     init(container: ParentNode = document) {

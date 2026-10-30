@@ -4,10 +4,10 @@
  */
 
 import type { App } from '@silarhi/app-js'
+import { connectListener } from '@silarhi/app-js/testing'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import like from '@/js/listeners/like'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 // The Node environment has no DOM: the button is a stand-in recording its click handler, and the request answers
 // with the response the test sets
@@ -30,7 +30,7 @@ const { state, sendJson } = vi.hoisted(() => {
     return { state, sendJson }
 })
 
-vi.mock('@/js/utils/http', () => ({ sendJson }))
+vi.mock('@silarhi/app-js/http', () => ({ sendJson }))
 
 const connect = ({ intent, active = false }: { intent?: string; active?: boolean } = {}) => {
     const classes = new Set(active ? ['btn-primary'] : [])

@@ -8,8 +8,9 @@ import '@tabler/core'
 import '@/js/overrides'
 
 import * as Sentry from '@sentry/browser'
-import { App, type ErrorContext, lazyListener } from '@silarhi/app-js'
+import { App, type ErrorContext, lazyListener, setHiddenClass } from '@silarhi/app-js'
 import { collectionListener } from '@silarhi/app-js/form'
+import { autoSubmit, passwordToggle, webauthn } from '@silarhi/app-js/listeners'
 // Per-element listeners (connected on every mount)
 import actionBar from '@/js/listeners/action-bar'
 import activeChip from '@/js/listeners/active-chip'
@@ -34,9 +35,7 @@ import imagePreviews from '@/js/listeners/image-previews'
 import impersonate from '@/js/listeners/impersonate'
 import like from '@/js/listeners/like'
 import loadMore from '@/js/listeners/load-more'
-import otpAutosubmit from '@/js/listeners/otp-autosubmit'
 import passwordMeter from '@/js/listeners/password-meter'
-import passwordReveal from '@/js/listeners/password-reveal'
 import popup from '@/js/listeners/popup'
 import readMore from '@/js/listeners/read-more'
 import share from '@/js/listeners/share'
@@ -44,7 +43,6 @@ import toc from '@/js/listeners/toc'
 import tooltip from '@/js/listeners/tooltip'
 import transferToasts from '@/js/listeners/transfer-toasts'
 import videoFacade from '@/js/listeners/video-facade'
-import webauthn from '@/js/listeners/webauthn'
 // One-time modules (run once at boot)
 import autocomplete from '@/js/modules/autocomplete'
 import scrollToTop from '@/js/modules/scroll-to-top'
@@ -81,6 +79,9 @@ const reportError = (error: unknown, context: ErrorContext) => {
 
 const parameters = window.appParameters
 
+// Bootstrap's class for what app-js hides (the icons of passwordToggle())
+setHiddenClass('d-none')
+
 /**
  * Application entry point: modules run once at boot, listeners are `{selector, connect}` pairs connected per element
  * by `mount(container)` and torn down by `unmount(container)`, and the page initializers named by `load_page()` are
@@ -116,9 +117,11 @@ const app = new App({
         impersonate,
         like,
         loadMore,
-        otpAutosubmit,
+        // Submits the form of an OTP input (components/OtpInput.html.twig) once Tabler says its code is complete
+        autoSubmit({ selector: '[data-otp-autosubmit]', event: 'complete.bs.otpInput' }),
         passwordMeter,
-        passwordReveal,
+        // The show / hide button of components/PasswordInput.html.twig
+        passwordToggle(),
         popup,
         readMore,
         share,
@@ -126,7 +129,16 @@ const app = new App({
         tooltip,
         transferToasts,
         videoFacade,
-        webauthn,
+        // The passkey ceremonies (jbtronics/2fa-webauthn)
+        webauthn({
+            selector: 'form.js-webauthn',
+            messages: {
+                unsupported: 'Votre navigateur ne gère pas les clés d’accès.',
+                notAllowed: 'La clé d’accès n’a pas été utilisée : réessayez.',
+                alreadyRegistered: 'Cette clé d’accès est déjà enregistrée sur votre compte.',
+                failed: (message) => `La clé d’accès a échoué : ${message}`,
+            },
+        }),
     ],
     pages: {
         admin_infos: () => import('@/js/pages/admin_infos'),

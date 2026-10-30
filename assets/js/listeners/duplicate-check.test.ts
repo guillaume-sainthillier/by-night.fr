@@ -4,10 +4,10 @@
  */
 
 import type { App } from '@silarhi/app-js'
+import { connectListener } from '@silarhi/app-js/testing'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import duplicateCheck from '@/js/listeners/duplicate-check'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 import { confirmPublication } from '@/js/utils/duplicates'
 
 vi.mock('@/js/utils/duplicates', () => ({

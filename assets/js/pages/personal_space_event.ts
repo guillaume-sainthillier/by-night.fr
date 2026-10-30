@@ -1,5 +1,5 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
-import { definePage } from '@silarhi/app-js'
+import { byId, definePage } from '@silarhi/app-js'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
 import initEventDateMode from '@/js/listeners/event-date-mode'
@@ -13,18 +13,12 @@ import { create as createTimepicker } from '@/js/services/ui/TimepickerService'
 import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 
-const inputById = (id: string | undefined): HTMLInputElement | null => {
-    const input = id ? document.getElementById(id) : null
-
-    return input instanceof HTMLInputElement ? input : null
-}
-
 function initDatepickers(container: ParentNode = document) {
     container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
         createDatepicker({
             element: el,
-            fromInput: inputById(el.dataset.from),
-            toInput: inputById(el.dataset.to),
+            fromInput: byId(el.dataset.from ?? '', HTMLInputElement),
+            toInput: byId(el.dataset.to ?? '', HTMLInputElement),
             singleDate: el.dataset.singleDate === 'true',
         })
     })

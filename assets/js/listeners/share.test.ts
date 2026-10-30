@@ -4,10 +4,10 @@
  */
 
 import type { App } from '@silarhi/app-js'
+import { connectListener, connectListenerWithoutCleanup } from '@silarhi/app-js/testing'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import share from '@/js/listeners/share'
 import { fake } from '@/js/test/fake'
-import { connectListener, connectListenerWithoutCleanup } from '@/js/test/listener'
 
 type Handler = () => void
 

@@ -196,7 +196,7 @@
     {%- set rules_id = first.vars.id ~ '_rules' -%}
     <div class="form-group">
         {{- form_label(first) -}}
-        <twig:PasswordInput>
+        <twig:PasswordInput inputId="{{ first.vars.id }}">
             {{- form_widget(first, {attr: first.vars.attr|merge({'aria-describedby': rules_id})}) -}}
         </twig:PasswordInput>
         {{- form_errors(first) -}}

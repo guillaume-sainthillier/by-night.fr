@@ -1,9 +1,9 @@
+import { getHtml, postForm } from '@silarhi/app-js/http'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import type { SweetAlertIcon } from 'sweetalert2'
 import { LucideLoader2Icon } from '@/js/icons'
 import type ToastManager from '@/js/services/modals/ToastManager'
 import { loadingButtons, resetButtons } from '@/js/utils/buttons'
-import { getHtml, postForm } from '@/js/utils/http'
 import { plural } from '@/js/utils/plural'
 
 /**

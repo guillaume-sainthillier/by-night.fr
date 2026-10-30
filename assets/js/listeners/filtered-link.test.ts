@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { describe, expect, test } from 'vitest'
 import filteredLink from '@/js/listeners/filtered-link'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 const SEO_HREF = '/toulouse/agenda/sortir/concert'
 const FILTERED_HREF = '/toulouse/agenda/sortir-a/le-bikini?type=concert'

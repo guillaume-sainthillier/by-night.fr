@@ -1,5 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
-import { sendJson } from '@/js/utils/http'
+import { sendJson } from '@silarhi/app-js/http'
 
 const options = {
     css_selector_like: '.btn-like-event',

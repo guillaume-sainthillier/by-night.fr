@@ -3,10 +3,10 @@
  * Run: pnpm test
  */
 
+import { connectListener } from '@silarhi/app-js/testing'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import imagePreviews from '@/js/listeners/image-previews'
 import { fake } from '@/js/test/fake'
-import { connectListener } from '@/js/test/listener'
 
 // The lightbox comes with CSS, which Node cannot load: the lazy import is mocked
 const { create, lightbox } = vi.hoisted(() => {

@@ -4,6 +4,7 @@ import { UXIcon } from '@silarhi/ux-icons-js/preact'
 import { Fragment, h, render } from 'preact'
 import '@algolia/autocomplete-theme-classic'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
+import { getJson } from '@silarhi/app-js/http'
 import { Offcanvas } from '@tabler/core'
 import hotkeys from 'hotkeys-js'
 import groupBy from 'lodash/groupBy'
@@ -18,7 +19,6 @@ import {
     LucideUserIcon,
 } from '@/js/icons'
 import { splitHighlights } from '@/js/utils/highlight'
-import { getJson } from '@/js/utils/http'
 import { plural } from '@/js/utils/plural'
 import { searchPageHref } from '@/js/utils/searchPage'
 
@@ -178,7 +178,7 @@ export default function init({
             return Promise.resolve([])
         }
 
-        suggestions ??= getJson<SearchCollection>(suggestionsUrl, { accept: 'application/ld+json' })
+        suggestions ??= getJson<SearchCollection>(suggestionsUrl, { headers: { Accept: 'application/ld+json' } })
             .then((response) => response.member || [])
             .catch((error) => {
                 console.error('Search suggestions error:', error)
@@ -299,7 +299,7 @@ export default function init({
 
             return getJson<SearchCollection>(globalSearchUrl ?? '', {
                 params: { q: query },
-                accept: 'application/ld+json',
+                headers: { Accept: 'application/ld+json' },
             })
                 .then((response) => {
                     setContext({ error: null })

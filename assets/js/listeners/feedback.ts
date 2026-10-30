@@ -1,6 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
+import { errorBody, sendJson } from '@silarhi/app-js/http'
 import { Alert, Modal } from '@tabler/core'
-import { errorBody, sendJson } from '@/js/utils/http'
 
 /**
  * The body of a refused message: the message of an HTTP error, or the validation's violations.

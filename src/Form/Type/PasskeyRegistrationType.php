@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * A new passkey: its name, and the browser's answer to the registration options (assets/js/listeners/webauthn.js
+ * A new passkey: its name, and the browser's answer to the registration options (webauthn() of @silarhi/app-js
  * fills it before submitting)
  */
 final class PasskeyRegistrationType extends AbstractType

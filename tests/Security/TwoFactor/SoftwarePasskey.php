@@ -43,7 +43,7 @@ final class SoftwarePasskey
     }
 
     /**
-     * The answer of navigator.credentials.create(), as assets/js/listeners/webauthn.js posts it
+     * The answer of navigator.credentials.create(), as webauthn() of @silarhi/app-js posts it
      */
     public function register(string $optionsJson): string
     {
