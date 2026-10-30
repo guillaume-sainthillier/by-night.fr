@@ -274,10 +274,10 @@ importers:
         version: 17.6.0
       postcss:
         specifier: ^8.5.31
-        version: 8.5.31
+        version: 8.5.32
       postcss-prefix-custom-properties:
         specifier: ^0.1.0
-        version: 0.1.0(postcss@8.5.31)
+        version: 0.1.0(postcss@8.5.32)
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
@@ -1580,8 +1580,8 @@ packages:
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
-  postcss@8.5.31:
-    resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
+  postcss@8.5.32:
+    resolution: {integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==}
     engines: {node: ^10 || ^12 || >=14}
 
   potpack@2.1.0:
@@ -2945,14 +2945,14 @@ snapshots:
 
   picomatch@4.0.7: {}
 
-  postcss-prefix-custom-properties@0.1.0(postcss@8.5.31):
+  postcss-prefix-custom-properties@0.1.0(postcss@8.5.32):
     dependencies:
-      postcss: 8.5.31
+      postcss: 8.5.32
       postcss-value-parser: 4.2.0
 
   postcss-value-parser@4.2.0: {}
 
-  postcss@8.5.31:
+  postcss@8.5.32:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -3100,7 +3100,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.31
+      postcss: 8.5.32
       rolldown: 1.2.15
       tinyglobby: 0.2.17
     optionalDependencies:
