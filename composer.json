@@ -72,7 +72,7 @@
         "scheb/2fa-bundle": "^8.7.0",
         "scheb/2fa-google-authenticator": "^8.7.0",
         "sentry/sentry-symfony": "^5.15.0",
-        "silarhi/cap-bundle": "^0.2.0",
+        "silarhi/cap-bundle": "^0.4.0",
         "silarhi/cursor-pagination": "^2.4.0",
         "silarhi/llms-txt-bundle": "^1.4.0",
         "silarhi/picasso-bundle": "^2.7.0",
