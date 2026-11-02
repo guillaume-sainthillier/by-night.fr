@@ -2,8 +2,8 @@
 # Full documentation: https://github.com/ahmed-bhs/doctrine-doctor/blob/main/docs/CONFIGURATION.md
 
 # dev and test only, the environments config/bundles.php registers the bundle for
-when@dev: &doctrine_doctor
-    doctrine_doctor:
+when@dev:
+    doctrine_doctor: &doctrine_doctor
         enabled: '%kernel.debug%'
 
         # Analyzers turned off because their findings don't apply to this project (see
@@ -59,4 +59,10 @@ when@dev: &doctrine_doctor
             float_for_money:
                 enabled: false
 
-when@test: *doctrine_doctor
+when@test:
+    doctrine_doctor:
+        <<: *doctrine_doctor
+        # On the CLI, "auto" analyzes in collect(): since symfony/doctrine-bridge 8.1.10 collects its queries late,
+        # the analyzers' schema introspection would show up in the profiles the tests count queries of
+        profiler:
+            analysis_timing: on_view
