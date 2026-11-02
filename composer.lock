@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ebb2b2fbf1c45abf4857d803ec9b0a9",
+    "content-hash": "f035edb0901ad7df5ce92276eef2e009",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5401,7 +5401,8 @@
                 "issues": "https://github.com/php-http/discovery/issues",
                 "source": "https://github.com/php-http/discovery/tree/1.20.0"
             },
-            "time": "2024-10-02T11:20:13+00:00"
+            "time": "2024-10-02T11:20:13+00:00",
+            "published-time": "2024-10-02T11:21:00+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -5855,7 +5856,8 @@
             "support": {
                 "source": "https://github.com/php-fig/cache/tree/3.0.0"
             },
-            "time": "2021-02-03T23:26:27+00:00"
+            "time": "2021-02-03T23:26:27+00:00",
+            "published-time": "2021-02-03T23:27:34+00:00"
         },
         {
             "name": "psr/clock",
@@ -5956,7 +5958,8 @@
                 "issues": "https://github.com/php-fig/container/issues",
                 "source": "https://github.com/php-fig/container/tree/2.0.2"
             },
-            "time": "2021-11-05T16:47:00+00:00"
+            "time": "2021-11-05T16:47:00+00:00",
+            "published-time": "2021-11-05T16:53:27+00:00"
         },
         {
             "name": "psr/event-dispatcher",
@@ -6006,7 +6009,8 @@
                 "issues": "https://github.com/php-fig/event-dispatcher/issues",
                 "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
             },
-            "time": "2019-01-08T18:20:26+00:00"
+            "time": "2019-01-08T18:20:26+00:00",
+            "published-time": "2019-03-25T15:31:44+00:00"
         },
         {
             "name": "psr/http-client",
@@ -6058,7 +6062,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-client"
             },
-            "time": "2023-09-23T14:17:50+00:00"
+            "time": "2023-09-23T14:17:50+00:00",
+            "published-time": "2023-09-23T14:18:12+00:00"
         },
         {
             "name": "psr/http-factory",
@@ -6113,7 +6118,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-factory"
             },
-            "time": "2024-04-15T12:06:14+00:00"
+            "time": "2024-04-15T12:06:14+00:00",
+            "published-time": "2024-05-10T07:32:19+00:00"
         },
         {
             "name": "psr/http-message",
@@ -6166,7 +6172,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:54:51+00:00"
+            "time": "2023-04-04T09:54:51+00:00",
+            "published-time": "2023-04-04T09:55:35+00:00"
         },
         {
             "name": "psr/link",
@@ -6272,7 +6279,8 @@
             "support": {
                 "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
-            "time": "2024-09-11T13:17:53+00:00"
+            "time": "2024-09-11T13:17:53+00:00",
+            "published-time": "2024-09-11T13:21:14+00:00"
         },
         {
             "name": "ruflin/elastica",
@@ -6706,26 +6714,28 @@
         },
         {
             "name": "silarhi/cap-bundle",
-            "version": "v0.2.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/cap-bundle.git",
-                "reference": "98c871a663598bb1ac3bff74eaf881059e7879bc"
+                "reference": "a1257345f10af5b0a4b1917eda0bef9a350b6b12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/cap-bundle/zipball/98c871a663598bb1ac3bff74eaf881059e7879bc",
-                "reference": "98c871a663598bb1ac3bff74eaf881059e7879bc",
+                "url": "https://api.github.com/repos/silarhi/cap-bundle/zipball/a1257345f10af5b0a4b1917eda0bef9a350b6b12",
+                "reference": "a1257345f10af5b0a4b1917eda0bef9a350b6b12",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.2",
+                "php-http/discovery": "^1.20.0",
                 "psr/http-client": "^1.0.3",
+                "psr/http-client-implementation": "^1.0",
                 "psr/http-factory": "^1.1",
+                "psr/http-factory-implementation": "^1.0",
                 "symfony/config": "^6.4 || ^7.0 || ^8.0",
                 "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
                 "symfony/form": "^6.4 || ^7.0 || ^8.0",
-                "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
                 "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
                 "symfony/validator": "^6.4 || ^7.0 || ^8.0"
             },
@@ -6745,14 +6755,15 @@
                 "symfony/css-selector": "^6.4 || ^7.0 || ^8.0",
                 "symfony/error-handler": "^6.4 || ^7.0 || ^8.0",
                 "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
                 "symfony/translation": "^6.4 || ^7.0 || ^8.0",
                 "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0",
                 "twig/twig": "^3.0"
             },
             "suggest": {
-                "nyholm/psr7": "PSR-17 implementation that Symfony's psr18.http_client (the default HTTP client) needs, unless php-http/discovery finds another one",
                 "symfony/asset": "Versions the URL of the bundle's script (bundles/silarhicap/cap.js) like your other assets",
                 "symfony/framework-bundle": "Register Silarhi\\CapBundle\\SilarhiCapBundle for zero-config service wiring",
+                "symfony/http-client": "Provides Symfony's psr18.http_client, the default HTTP client calling /siteverify, unless cap.http_client is set",
                 "symfony/translation": "Translates the validation messages, which are translation keys (cap.validation.*)",
                 "symfony/twig-bundle": "Renders the CapType widget: the bundle adds its form theme to twig.form_themes"
             },
@@ -6794,7 +6805,8 @@
                 "issues": "https://github.com/silarhi/cap-bundle/issues",
                 "source": "https://github.com/silarhi/cap-bundle"
             },
-            "time": "2026-10-29T18:49:50+00:00"
+            "time": "2026-10-29T22:25:26+00:00",
+            "published-time": "2026-10-29T22:25:43+00:00"
         },
         {
             "name": "silarhi/cursor-pagination",
@@ -7846,7 +7858,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:33+00:00"
         },
         {
             "name": "symfony/clock",
@@ -8001,7 +8014,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-25T14:40:25+00:00"
+            "time": "2026-10-25T14:40:25+00:00",
+            "published-time": "2026-10-28T18:24:06+00:00"
         },
         {
             "name": "symfony/console",
@@ -8251,7 +8265,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-28T11:09:29+00:00"
+            "time": "2026-10-28T11:09:29+00:00",
+            "published-time": "2026-10-28T18:25:24+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -8322,7 +8337,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:34+00:00"
         },
         {
             "name": "symfony/doctrine-bridge",
@@ -8652,7 +8668,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-25T14:40:25+00:00"
+            "time": "2026-10-25T14:40:25+00:00",
+            "published-time": "2026-10-28T18:24:13+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -8818,7 +8835,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:35+00:00"
         },
         {
             "name": "symfony/expression-language",
@@ -8956,7 +8974,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-06T20:05:50+00:00"
+            "time": "2026-10-06T20:05:50+00:00",
+            "published-time": "2026-10-14T06:48:55+00:00"
         },
         {
             "name": "symfony/finder",
@@ -9588,7 +9607,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-04T08:41:16+00:00"
+            "time": "2026-08-04T08:41:16+00:00",
+            "published-time": "2026-08-30T19:56:36+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -9779,7 +9799,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-28T18:22:19+00:00"
+            "time": "2026-10-28T18:22:19+00:00",
+            "published-time": "2026-10-28T18:24:59+00:00"
         },
         {
             "name": "symfony/intl",
@@ -10840,7 +10861,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-10T16:19:22+00:00"
+            "time": "2026-04-10T16:19:22+00:00",
+            "published-time": "2026-04-26T14:44:50+00:00"
         },
         {
             "name": "symfony/polyfill-deepclone",
@@ -10927,7 +10949,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-14T07:17:09+00:00"
+            "time": "2026-10-14T07:17:09+00:00",
+            "published-time": "2026-10-14T09:42:25+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -11354,7 +11377,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-28T09:35:49+00:00"
+            "time": "2026-10-28T09:35:49+00:00",
+            "published-time": "2026-10-28T10:07:45+00:00"
         },
         {
             "name": "symfony/polyfill-php86",
@@ -12694,7 +12718,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-27T15:39:01+00:00"
+            "time": "2026-07-27T15:39:01+00:00",
+            "published-time": "2026-08-30T19:56:37+00:00"
         },
         {
             "name": "symfony/stimulus-bundle",
@@ -13101,7 +13126,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:40+00:00"
         },
         {
             "name": "symfony/twig-bridge",
@@ -13821,7 +13847,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-26T21:55:04+00:00"
+            "time": "2026-10-26T21:55:04+00:00",
+            "published-time": "2026-10-28T18:25:26+00:00"
         },
         {
             "name": "symfony/var-exporter",
@@ -13904,7 +13931,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-22T14:30:01+00:00"
+            "time": "2026-10-22T14:30:01+00:00",
+            "published-time": "2026-10-28T18:24:08+00:00"
         },
         {
             "name": "symfony/web-link",
@@ -19604,5 +19632,5 @@
     "platform-overrides": {
         "php": "8.5.3"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
