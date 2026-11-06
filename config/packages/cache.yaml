@@ -24,6 +24,11 @@ framework:
             cache.rate_limiter:
                 adapter: cache.app
 
+when@dev:
+    framework:
+        cache:
+            app: cache.adapter.filesystem
+
 when@test:
     framework:
         cache:

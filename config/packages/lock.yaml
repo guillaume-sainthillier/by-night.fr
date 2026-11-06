@@ -1,8 +1,2 @@
 framework:
-    # Picasso's Glide lock (config/packages/picasso.yaml): a thumbnail missing from the bucket is rendered once,
-    # however many requests (and containers) ask for it at the same time, so the store must be shared.
-    lock: 'redis://%env(REDIS_HOST)%'
-
-when@test:
-    framework:
-        lock: flock
+    lock: '%env(resolve:LOCK_DSN)%'
