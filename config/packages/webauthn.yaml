@@ -1,14 +1,13 @@
-# Only for its Doctrine types (aaguid, trust_path, base64) and the mapping of Webauthn\CredentialRecord, which
-# App\Entity\WebauthnKey extends. The passkey second factor is jbtronics/2fa-webauthn (config/packages/tfa_webauthn.yaml):
-# the bundle's own ceremonies and routes are not used, so these required settings are unused at runtime.
+# Please see the following page for more information: https://webauthn-doc.spomky-labs.com/the-webauthn-server/the-symfony-way#configuration
+
 webauthn:
-    credential_repository: 'Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository'
-    user_repository: 'Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository'
+    credential_repository: 'Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository' # CREATE YOUR REPOSITORY AND CHANGE THIS!
+    user_repository: 'Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository' # CREATE YOUR REPOSITORY AND CHANGE THIS!
     creation_profiles:
         default:
             rp:
-                name: null
-                id: null
+                name: '%env(RELYING_PARTY_NAME)%' # Please adapt the env file with the correct relaying party ID or set null
+                id: '%env(RELYING_PARTY_ID)%' # Please adapt the env file with the correct relaying party ID or set null
     request_profiles:
         default:
-            rp_id: null
+            rp_id: '%env(RELYING_PARTY_ID)%' # Please adapt the env file with the correct relaying party ID or set null

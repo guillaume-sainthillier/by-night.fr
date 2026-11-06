@@ -1,12 +1,8 @@
-# Mercure hub (protocol 1.0): its own container (`mercure` in docker-compose.yml), served on the site's origin under
-# /.well-known/mercure so the subscriber cookie set by the Twig mercure() function reaches it.
-# The app publishes to MERCURE_URL (internal), browsers subscribe on MERCURE_PUBLIC_URL; the bundle puts both in the
-# publisher token's "aud". MERCURE_JWT_ISSUER must equal the hub's MERCURE_TRUSTED_ISSUERS.
 mercure:
     hubs:
         default:
-            url: '%env(MERCURE_URL)%'
-            public_url: '%env(MERCURE_PUBLIC_URL)%'
+            url: '%env(default::MERCURE_URL)%'
+            public_url: '%env(default::MERCURE_PUBLIC_URL)%'
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'
