@@ -48,7 +48,6 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'event_start_date_idx', columns: ['start_date'])]
 #[ORM\Index(name: 'event_place_upcoming_idx', columns: ['place_id', 'duplicate_of_id', 'draft', 'end_date'])]
 #[ORM\Index(name: 'event_place_start_date_idx', columns: ['place_id', 'start_date'])]
-// The other events of the same day (EventRepository::findAllSimilarsQueryBuilder()): their count reads the index alone
 #[ORM\Index(name: 'event_similar_idx', columns: ['start_date', 'draft', 'duplicate_of_id', 'place_id'])]
 #[ORM\Index(name: 'event_upcoming_idx', columns: ['duplicate_of_id', 'draft', 'end_date', 'participations', 'place_id'])]
 #[ORM\Index(name: 'event_popular_idx', columns: ['duplicate_of_id', 'draft', 'has_image', 'end_date', 'start_date', 'participations', 'place_id'])]
@@ -69,8 +68,6 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
     /** The prefix of this entity's keys and of its DTO's, see ObjectKey */
     final public const string KEY_PREFIX = 'event';
-
-    final public const string INDEX_FROM = '-6 months';
 
     /** The characters an external reference holds */
     final public const int EXTERNAL_REFERENCE_LENGTH = 100;

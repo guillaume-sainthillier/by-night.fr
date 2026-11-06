@@ -16,6 +16,7 @@ use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
 use App\Factory\PlaceLegacySlugFactory;
+use App\Factory\PlaceMetadataFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -23,6 +24,93 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class PlaceCrudControllerTest extends AppWebTestCase
 {
+    public function testTheIndexListsPlaces(): void
+    {
+        $client = $this->createAdminClient();
+        PlaceFactory::createOne(['name' => 'Zénith Toulouse']);
+        PlaceFactory::createOne(['name' => 'Le Bikini']);
+
+        $client->request('GET', '/_administration/place');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('table', 'Zénith Toulouse');
+        self::assertSelectorTextContains('table', 'Le Bikini');
+    }
+
+    public function testTheDetailShowsAPlaceWithItsMetadatas(): void
+    {
+        $client = $this->createAdminClient();
+        $place = PlaceFactory::createOne(['name' => 'Zénith Toulouse']);
+        PlaceMetadataFactory::createMany(2, ['place' => $place]);
+
+        $client->request('GET', \sprintf('/_administration/place/%d', $place->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'Zénith Toulouse');
+        self::assertSelectorTextContains('body', '2');
+    }
+
+    public function testCreatingAPlaceWorks(): void
+    {
+        $client = $this->createAdminClient();
+        $city = CityFactory::toulouse()->create();
+        $country = $city->getCountry();
+
+        $crawler = $client->request('GET', '/_administration/place/new');
+        $token = $crawler->filter('input[name="Place[_token]"]')->attr('value');
+
+        $client->request('POST', '/_administration/place/new', [
+            'Place' => [
+                'name' => 'Nouveau lieu',
+                'street' => '123 Rue de la Paix',
+                'slug' => 'nouveau-lieu',
+                'city' => ['autocomplete' => (string) $city->getId()],
+                'country' => ['autocomplete' => (string) $country->getId()],
+                '_token' => $token,
+            ],
+            'saveAndReturn' => 'Sauvegarder les modifications',
+        ]);
+
+        self::assertResponseRedirects();
+        $place = PlaceFactory::find(['name' => 'Nouveau lieu']);
+        self::assertSame('123 Rue de la Paix', $place->getStreet());
+        self::assertSame($city->getId(), $place->getCity()->getId());
+        self::assertSame($country->getId(), $place->getCountry()->getId());
+    }
+
+    public function testEditingAPlaceWorks(): void
+    {
+        $client = $this->createAdminClient();
+        $place = PlaceFactory::createOne(['name' => 'Ancien nom', 'slug' => 'ancien-nom']);
+
+        $client->request('GET', \sprintf('/_administration/place/%d/edit', $place->getId()));
+        $client->submitForm('Sauvegarder les modifications', [
+            'Place[name]' => 'Nouveau nom',
+            'Place[street]' => '456 Avenue de la République',
+            'Place[facebookId]' => '123456789',
+        ]);
+
+        self::assertResponseRedirects();
+        $place = PlaceFactory::find(['id' => $place->getId()]);
+        self::assertSame('Nouveau nom', $place->getName());
+        self::assertSame('456 Avenue de la République', $place->getStreet());
+        self::assertSame('123456789', $place->getFacebookId());
+    }
+
+    public function testDeletingAPlaceWorks(): void
+    {
+        $client = $this->createAdminClient();
+        $place = PlaceFactory::createOne();
+        $placeId = $place->getId();
+
+        $crawler = $client->request('GET', \sprintf('/_administration/place/%d', $placeId));
+        $token = $crawler->filter('#action-confirmation-form input[name="token"]')->attr('value');
+        $client->request('POST', \sprintf('/_administration/place/%d/delete', $placeId), ['token' => $token]);
+
+        self::assertResponseRedirects();
+        self::assertSame(0, PlaceFactory::count(['id' => $placeId]));
+    }
+
     public function testTheMergePreselectsThePlaceWithTheMostEventsAndMergesIntoTheOneChosen(): void
     {
         $client = $this->createAdminClient();

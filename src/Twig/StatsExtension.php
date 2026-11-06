@@ -13,17 +13,12 @@ namespace App\Twig;
 use App\Repository\EventRepository;
 use MessageFormatter;
 use RuntimeException;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use Twig\Attribute\AsTwigFunction;
 
 final readonly class StatsExtension
 {
-    private const int EVENTS_COUNT_TTL = 86_400; // 1 day
-
     public function __construct(
         private EventRepository $eventRepository,
-        private CacheInterface $memoryCache,
     ) {
     }
 
@@ -42,12 +37,7 @@ final readonly class StatsExtension
     #[AsTwigFunction(name: 'events_count')]
     public function eventsCount(): int
     {
-        // Cache the raw count (not the label) so wording changes never need a cache flush.
-        return $this->memoryCache->get('stats.events_count', function (ItemInterface $item): int {
-            $item->expiresAfter(self::EVENTS_COUNT_TTL);
-
-            return $this->eventRepository->countActiveEvents();
-        });
+        return $this->eventRepository->countActiveEvents();
     }
 
     /**

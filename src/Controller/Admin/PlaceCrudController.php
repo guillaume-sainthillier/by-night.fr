@@ -166,7 +166,7 @@ final class PlaceCrudController extends AbstractCrudController
     {
         $panel1 = FormField::addFieldset('Informations');
         $id = IdField::new('id', 'ID');
-        $externalId = CollectionField::new('metadatas');
+        $externalId = CollectionField::new('metadatas')->hideOnForm();
         $slug = TextField::new('slug');
         $nom = TextField::new('name');
         $facebookId = TextField::new('facebookId');
