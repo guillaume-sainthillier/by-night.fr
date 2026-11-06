@@ -126,7 +126,7 @@
         "twig/intl-extra": "^3.30.0",
         "twig/string-extra": "^3.24",
         "vich/uploader-bundle": "^3.0.0",
-        "web-auth/webauthn-symfony-bundle": "^5.3.10"
+        "web-auth/webauthn-symfony-bundle": "^5.3.12"
     },
     "require-dev": {
         "ahmed-bhs/doctrine-doctor": "^2.11.2",
