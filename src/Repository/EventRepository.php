@@ -626,6 +626,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->where('e.duplicateOf IS NULL')
             ->andWhere('e.draft = false')
             ->getQuery()
+            ->enableResultCache(86400) // 1 day
             ->getSingleScalarResult();
     }
 
