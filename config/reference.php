@@ -1815,6 +1815,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     dsn?: scalar|Param|null, // If this value is not provided, the SDK will try to read it from the SENTRY_DSN environment variable. If that variable also does not exist, the SDK will not send any events.
  *     register_error_listener?: bool|Param, // Default: true
  *     register_error_handler?: bool|Param, // Default: true
+ *     register_monolog_handler?: bool|Param, // EXPERIMENT: automatically push a Sentry handler onto every Monolog channel (requires MonologBundle). // Default: false
  *     logger?: scalar|Param|null, // The service ID of the PSR-3 logger used to log messages coming from the SDK client. Be aware that setting the same logger of the application may create a circular loop when an event fails to be sent. // Default: null
  *     options?: array{
  *         integrations?: mixed, // Default: []
@@ -2183,7 +2184,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         reset?: array{
  *             connections?: list<scalar|Param|null>,
  *             entity_managers?: list<scalar|Param|null>,
- *             mode?: \Zenstruck\Foundry\ORM\ResetDatabase\ResetDatabaseMode::SCHEMA|\Zenstruck\Foundry\ORM\ResetDatabase\ResetDatabaseMode::MIGRATE|"schema"|"migrate"|Param, // Reset mode to use with ResetDatabase trait // Default: "schema"
+ *             mode?: null|\Zenstruck\Foundry\ORM\ResetDatabase\ResetDatabaseMode::SCHEMA|\Zenstruck\Foundry\ORM\ResetDatabase\ResetDatabaseMode::MIGRATE|\Zenstruck\Foundry\ORM\ResetDatabase\ResetDatabaseMode::AUTO|"schema"|"migrate"|"auto"|Param, // Reset mode to use with ResetDatabase trait ("auto" migrates if the app has migrations, otherwise resets the schema) // Default: null
  *             migrations?: array{
  *                 configurations?: list<scalar|Param|null>,
  *             },
@@ -2579,7 +2580,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     transformers?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
  *         type?: "glide"|"imgix"|"service"|Param, // Transformer type. Inferred from name when it matches a known type. // Default: null
- *         sign_key?: scalar|Param|null, // Default: null
+ *         sign_key?: mixed, // Glide: secret signing image URLs, required (e.g. bin2hex(random_bytes(32))); or a list of them to rotate keys, as with Symfony secrets: the first one signs, all of them validate. Imgix: optional signing token. // Default: null
  *         cache?: scalar|Param|null, // Glide cache target. Either a local path or a Flysystem storage name (resolved via FlysystemRegistry). // Default: null
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
@@ -2684,6 +2685,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     }>,
  *     default_hub?: scalar|Param|null,
  *     default_cookie_lifetime?: int|Param, // Default lifetime of the cookie containing the JWT, in seconds. Defaults to the value of "framework.session.cookie_lifetime". // Default: null
+ *     clear_cookie_on_logout?: bool|Param, // Clear the subscriber authorization cookie of every hub when the user logs out. Requires "symfony/security-http". // Default: true
  *     enable_profiler?: bool|Param, // Deprecated: The child node "enable_profiler" at path "mercure.enable_profiler" is deprecated. // Enable Symfony Web Profiler integration.
  * }
  * @psalm-type SchebTwoFactorConfig = array{
@@ -2782,6 +2784,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mds_repository?: scalar|Param|null, // The Metadata Statement repository.
  *         status_report_repository?: scalar|Param|null, // The Status Report repository.
  *         certificate_chain_checker?: scalar|Param|null, // A Certificate Chain checker. // Default: "Webauthn\\MetadataService\\CertificateChain\\PhpCertificateChainValidator"
+ *         tpm_acknowledge_insecure_algorithm?: bool|Param, // Acknowledge that RS1 (RSASSA-PKCS1-v1_5 with SHA-1) is insecure and verify the TPM attestation statements signed with it. Without this acknowledgement, verifying such a statement emits a warning, which the Symfony error handler turns into an exception in debug mode and which cose-lib v5 will replace with an exception. Enable it only when the application has to keep registering these TPMs, for instance to pass the platform attestation tests of the FIDO Conformance Tools. // Default: false
  *     },
  *     controllers?: bool|array{
  *         enabled?: bool|Param, // Default: false
