@@ -12,7 +12,6 @@ namespace App\Entity;
 
 use App\Picture\ImageFormats;
 use App\Repository\PageRepository;
-use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -153,12 +152,6 @@ class Page implements Stringable
     public function setImageFile(?File $imageFile = null): self
     {
         $this->imageFile = $imageFile;
-
-        if (null !== $imageFile) {
-            // It is required that at least one mapped field changes, otherwise the
-            // Doctrine listeners won't be called and the file is lost
-            $this->updatedAt = new DateTimeImmutable();
-        }
 
         return $this;
     }

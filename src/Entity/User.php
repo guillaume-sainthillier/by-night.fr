@@ -128,7 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     /**
      * @var Collection<int, UserEvent>
      */
-    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user', fetch: 'EXTRA_LAZY')]
     private Collection $userEvents;
 
     /** The secret of the authenticator app: null while the TOTP second factor is off */
@@ -320,12 +320,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     {
         $this->imageFile = $image;
 
-        if (null !== $image) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new DateTimeImmutable();
-        }
-
         return $this;
     }
 
@@ -344,12 +338,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     public function setImageSystemFile(?File $image): self
     {
         $this->imageSystemFile = $image;
-
-        if (null !== $image) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new DateTimeImmutable();
-        }
 
         return $this;
     }

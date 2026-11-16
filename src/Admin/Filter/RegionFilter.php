@@ -55,16 +55,21 @@ final class RegionFilter implements FilterInterface
             return;
         }
 
-        $cityAlias = 'region_city_' . $filterDataDto->getParameterName();
         $parameter = $filterDataDto->getParameterName();
+        $cityAlias = 'region_city_' . $parameter;
+        $departmentAlias = 'region_department_' . $parameter;
+
+        $expr = $queryBuilder->expr();
+        $departments = $queryBuilder->getEntityManager()->createQueryBuilder()
+            ->select($departmentAlias)
+            ->from(AdminZone2::class, $departmentAlias)
+            ->where($expr->eq($departmentAlias . '.parent', ':' . $parameter));
 
         $queryBuilder
-            ->join(\sprintf('%s.city', $filterDataDto->getEntityAlias()), $cityAlias)
-            ->andWhere(\sprintf(
-                '%1$s.parent = :%2$s OR %1$s.parent IN (SELECT d_%2$s FROM %3$s d_%2$s WHERE d_%2$s.parent = :%2$s)',
-                $cityAlias,
-                $parameter,
-                AdminZone2::class,
+            ->join($filterDataDto->getEntityAlias() . '.city', $cityAlias)
+            ->andWhere($expr->orX(
+                $expr->eq($cityAlias . '.parent', ':' . $parameter),
+                $expr->in($cityAlias . '.parent', $departments->getDQL()),
             ))
             ->setParameter($parameter, $region->getId());
     }

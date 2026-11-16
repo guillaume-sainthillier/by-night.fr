@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "132f0ffbe9974215826b6a6e18c78658",
+    "content-hash": "1593a4f337246c1c8350db9cc880ca3e",
     "packages": [
         {
             "name": "api-platform/core",
@@ -1657,16 +1657,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "3.7.7",
+            "version": "3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "9c37680a87358e5f0cf33dffc4909246deca327f"
+                "reference": "243f25157055d553da52d7c4bbe73c4623dadc61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/9c37680a87358e5f0cf33dffc4909246deca327f",
-                "reference": "9c37680a87358e5f0cf33dffc4909246deca327f",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/243f25157055d553da52d7c4bbe73c4623dadc61",
+                "reference": "243f25157055d553da52d7c4bbe73c4623dadc61",
                 "shasum": ""
             },
             "require": {
@@ -1688,6 +1688,7 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "^14.0",
+                "doctrine/orm-plugin-second-level-cache": "^1.0",
                 "phpbench/phpbench": "^1.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "2.3.5",
@@ -1697,6 +1698,7 @@
                 "symfony/cache": "^5.4 || ^6.2 || ^7.0 || ^8.0"
             },
             "suggest": {
+                "doctrine/orm-plugin-second-level-cache": "Second level cache functionality needs extra package.",
                 "ext-deepclone": "Improves performance when not using native lazy objects (Symfony 8.1+)",
                 "ext-dom": "Provides support for XSD validation for XML mapping files",
                 "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0"
@@ -1741,9 +1743,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/3.7.7"
+                "source": "https://github.com/doctrine/orm/tree/3.8.0"
             },
-            "time": "2026-11-14T09:43:29+00:00"
+            "time": "2026-11-14T11:18:54+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -15019,16 +15021,16 @@
     "packages-dev": [
         {
             "name": "ahmed-bhs/doctrine-doctor",
-            "version": "v2.11.4",
+            "version": "v2.17.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ahmed-bhs/doctrine-doctor.git",
-                "reference": "a9627183beaf8e716dd8b414e9232298e4e452fa"
+                "reference": "b1399e19a082c9cd00db22df49ec8e6a89a62231"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ahmed-bhs/doctrine-doctor/zipball/a9627183beaf8e716dd8b414e9232298e4e452fa",
-                "reference": "a9627183beaf8e716dd8b414e9232298e4e452fa",
+                "url": "https://api.github.com/repos/ahmed-bhs/doctrine-doctor/zipball/b1399e19a082c9cd00db22df49ec8e6a89a62231",
+                "reference": "b1399e19a082c9cd00db22df49ec8e6a89a62231",
                 "shasum": ""
             },
             "require": {
@@ -15041,6 +15043,7 @@
             },
             "require-dev": {
                 "deptrac/deptrac": "^4.2",
+                "doctrine/migrations": "^3.8",
                 "doctrine/orm": "^3.0",
                 "pdepend/pdepend": "3.x-dev",
                 "php-parallel-lint/php-parallel-lint": "^1.4",
@@ -15050,9 +15053,10 @@
                 "phpstan/phpstan-doctrine": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",
-                "phpunit/phpunit": "^10.0",
+                "phpunit/phpunit": "^13.4",
                 "rector/rector": "^2.3",
-                "symfony/ai-symfony-mate-extension": "^0.13.0",
+                "symfony/ai-symfony-mate-extension": "^0.15.0",
+                "symfony/serializer": "^6.4|^7.0|^8.0",
                 "symfony/stopwatch": "^6.0|^7.0|^8.0",
                 "symfony/validator": "^8.0",
                 "symfony/var-dumper": "^6.0|^7.0|^8.0",
@@ -15061,6 +15065,7 @@
                 "twig/twig": "^3.0"
             },
             "suggest": {
+                "doctrine/migrations": "Required for the migration analyzers (pending migrations, mapping changed without a migration, risky migration files).",
                 "doctrine/orm": "Required for ORM-specific analyzers (N+1 detection via metadata, eager loading, entity mapping checks). Without it, only DBAL-native analyzers run.",
                 "symfony/ai-symfony-mate-extension": "Required for AI Mate / MCP integration of Doctrine Doctor profiler issues"
             },
@@ -15140,7 +15145,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-15T08:36:28+00:00"
+            "time": "2026-11-16T10:12:03+00:00"
         },
         {
             "name": "clue/ndjson-react",
@@ -16359,11 +16364,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.3.5",
+            "version": "2.3.6",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/645a1bd6bead15fc1b8474137467961d0fa30a79",
-                "reference": "645a1bd6bead15fc1b8474137467961d0fa30a79",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/00cedebb76cc82c1592414fa4f616cefdccda16f",
+                "reference": "00cedebb76cc82c1592414fa4f616cefdccda16f",
                 "shasum": ""
             },
             "require": {
@@ -16419,7 +16424,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-03T12:14:22+00:00"
+            "time": "2026-11-15T19:58:26+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",

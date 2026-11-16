@@ -88,8 +88,9 @@ final readonly class PublishersSendNewsCommand
         }
 
         $total = array_sum(array_map(static fn (array $batch): int => \count($batch[1]), $batches));
-        if (null !== $limit) {
-            $total = min($total, $limit);
+        // Not min(): PHPStan 2.3.6 never ends analyzing it with the loop below
+        if (null !== $limit && $total > $limit) {
+            $total = $limit;
         }
 
         if (!$send) {

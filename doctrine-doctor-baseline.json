@@ -1,0 +1,152 @@
+{
+    "doctrine_doctor_baseline": 1,
+    "findings": [
+        {
+            "id": "b2ad4c00e8",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20160531172845",
+            "file": "migrations/Version20160531172845.php"
+        },
+        {
+            "id": "cb1c4dcd8e",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20160531195953",
+            "file": "migrations/Version20160531195953.php"
+        },
+        {
+            "id": "ddf84e7d12",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20160704163341",
+            "file": "migrations/Version20160704163341.php"
+        },
+        {
+            "id": "b3d6cbb0e0",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20161126205249",
+            "file": "migrations/Version20161126205249.php"
+        },
+        {
+            "id": "5c18005bcf",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20161126222316",
+            "file": "migrations/Version20161126222316.php"
+        },
+        {
+            "id": "c2def06cbb",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20161205113345",
+            "file": "migrations/Version20161205113345.php"
+        },
+        {
+            "id": "89c0701d63",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20170513134743",
+            "file": "migrations/Version20170513134743.php"
+        },
+        {
+            "id": "ea91c3c71c",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20170603104900",
+            "file": "migrations/Version20170603104900.php"
+        },
+        {
+            "id": "3f9d22cf44",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20170610095927",
+            "file": "migrations/Version20170610095927.php"
+        },
+        {
+            "id": "673de712ba",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20181128201405",
+            "file": "migrations/Version20181128201405.php"
+        },
+        {
+            "id": "28b5923b5e",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20190410132816",
+            "file": "migrations/Version20190410132816.php"
+        },
+        {
+            "id": "9c26f3319c",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20190620193021",
+            "file": "migrations/Version20190620193021.php"
+        },
+        {
+            "id": "e4e68fce91",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20190712125218",
+            "file": "migrations/Version20190712125218.php"
+        },
+        {
+            "id": "b3c5e83e94",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20190915150625",
+            "file": "migrations/Version20190915150625.php"
+        },
+        {
+            "id": "fed307f018",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20190915151919",
+            "file": "migrations/Version20190915151919.php"
+        },
+        {
+            "id": "8f42594c3b",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20191120190710",
+            "file": "migrations/Version20191120190710.php"
+        },
+        {
+            "id": "a9d8c1b741",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20220523201143",
+            "file": "migrations/Version20220523201143.php"
+        },
+        {
+            "id": "424a7bb53d",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20260411134811",
+            "file": "migrations/Version20260411134811.php"
+        },
+        {
+            "id": "c57dab8866",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20260601120000",
+            "file": "migrations/Version20260601120000.php"
+        },
+        {
+            "id": "2438246cda",
+            "severity": "warning",
+            "type": "migration_drops_data",
+            "title": "Destructive Migration: Version20261005105142",
+            "file": "migrations/Version20261005105142.php"
+        },
+        {
+            "id": "3ac3911e99",
+            "severity": "warning",
+            "type": "soft_delete_without_filter",
+            "title": "Soft Delete Without Filter: DeletedPage::$deletedAt",
+            "file": "src/Entity/DeletedPage.php"
+        }
+    ]
+}

@@ -13,7 +13,6 @@ namespace App\Entity;
 use App\Enum\PublisherNetwork;
 use App\Picture\ImageFormats;
 use App\Repository\PublisherRepository;
-use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -213,11 +212,6 @@ class Publisher implements Stringable
     {
         $this->logoFile = $logoFile;
 
-        if (null !== $logoFile) {
-            // A mapped field must change for the Doctrine listeners to store the file
-            $this->updatedAt = new DateTimeImmutable();
-        }
-
         return $this;
     }
 
@@ -246,11 +240,6 @@ class Publisher implements Stringable
     public function setCoverFile(?File $coverFile = null): self
     {
         $this->coverFile = $coverFile;
-
-        if (null !== $coverFile) {
-            // A mapped field must change for the Doctrine listeners to store the file
-            $this->updatedAt = new DateTimeImmutable();
-        }
 
         return $this;
     }
