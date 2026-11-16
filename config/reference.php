@@ -1118,11 +1118,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             class_metadata_factory_name?: scalar|Param|null, // Default: "Doctrine\\ORM\\Mapping\\ClassMetadataFactory"
  *             default_repository_class?: scalar|Param|null, // Default: "Doctrine\\ORM\\EntityRepository"
  *             auto_mapping?: scalar|Param|null, // Default: false
+ *             auto_discover_entities?: bool|Param|null, // Registers all entity classes discovered by the container scan, removing the need for explicit "mappings". When not set, enabled if neither "mappings" nor "auto_mapping" is configured and Symfony 8.2 and doctrine/orm 3.6 are available. // Default: null
  *             naming_strategy?: scalar|Param|null, // Default: "doctrine.orm.naming_strategy.default"
  *             quote_strategy?: scalar|Param|null, // Default: "doctrine.orm.quote_strategy.default"
  *             typed_field_mapper?: scalar|Param|null, // Default: "doctrine.orm.typed_field_mapper.default"
  *             entity_listener_resolver?: scalar|Param|null, // Default: null
  *             fetch_mode_subselect_batch_size?: scalar|Param|null,
+ *             use_schema_editor_api?: bool|Param|null, // Set to "true" or "false" to explicitly opt in or out of the schema editor API for schema generation. Requires doctrine/dbal 4.5 or higher and doctrine/orm 3.8 or higher. // Default: null
  *             repository_factory?: scalar|Param|null, // Default: "doctrine.orm.container_repository_factory"
  *             schema_ignore_classes?: list<scalar|Param|null>,
  *             validate_xml_mapping?: bool|Param, // Set to "true" to opt-in to the new mapping driver mode that was added in Doctrine ORM 2.14 and will be mandatory in ORM 3.0. See https://github.com/doctrine/orm/pull/6728. // Default: false
@@ -1160,7 +1162,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 mapping?: scalar|Param|null, // Default: true
  *                 type?: scalar|Param|null,
  *                 dir?: scalar|Param|null,
- *                 alias?: scalar|Param|null,
+ *                 alias?: scalar|Param|null, // Deprecated: The "doctrine.orm.entity_managers..mappings..alias.alias" option is deprecated and will be removed in DoctrineBundle 4.0, as Doctrine ORM no longer supports entity namespace aliases.
  *                 prefix?: scalar|Param|null,
  *                 is_bundle?: bool|Param,
  *             }>,
@@ -1823,7 +1825,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         prefixes?: list<scalar|Param|null>,
  *         sample_rate?: float|Param, // The sampling factor to apply to events. A value of 0 will deny sending any event, and a value of 1 will send all events.
  *         enable_tracing?: bool|Param,
- *         traces_sample_rate?: float|Param, // The sampling factor to apply to transactions. A value of 0 will deny sending any transaction, and a value of 1 will send all transactions.
+ *         traces_sample_rate?: float|Param, // The sampling factor to apply to transactions. A value of 0 will deny sending any transaction, and a value of 1 will send all transactions. A value of null disables tracing unless "traces_sampler" is set.
  *         traces_sampler?: scalar|Param|null,
  *         profiles_sample_rate?: float|Param, // The sampling factor to apply to profiles. A value of 0 will deny sending any profiles, and a value of 1 will send all profiles. Profiles are sampled in relation to traces_sample_rate
  *         enable_logs?: bool|Param,
@@ -1841,6 +1843,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         server_name?: scalar|Param|null,
  *         ignore_exceptions?: list<scalar|Param|null>,
  *         ignore_transactions?: list<scalar|Param|null>,
+ *         trace_ignore_status_codes?: list<mixed>,
  *         before_send?: scalar|Param|null,
  *         before_send_transaction?: scalar|Param|null,
  *         before_send_check_in?: scalar|Param|null,
@@ -2858,6 +2861,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     analysis?: array{
  *         exclude_third_party_entities?: bool|Param, // Exclude entities from vendor/ directory during analysis (recommended for cleaner reports) // Default: true
  *         exclude_paths?: list<scalar|Param|null>,
+ *         source_dirs?: list<scalar|Param|null>,
  *     },
  *     analyzers?: array{
  *         n_plus_one?: array{
@@ -3103,6 +3107,21 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         join_type_consistency?: array{
  *             enabled?: bool|Param, // Default: true
  *         },
+ *         missing_soft_delete_filter?: array{
+ *             enabled?: bool|Param, // Detect soft-deleted entities without an enabled SQL filter that hides deleted rows // Default: true
+ *         },
+ *         entity_manager_used_after_failure?: array{
+ *             enabled?: bool|Param, // Detect an EntityManager used again after a caught exception, when it is closed // Default: true
+ *         },
+ *         migration_state?: array{
+ *             enabled?: bool|Param, // Detect migrations not executed and mapping changes without a migration (requires doctrine/migrations and --with-database) // Default: true
+ *         },
+ *         risky_migration?: array{
+ *             enabled?: bool|Param, // Detect migrations that drop data, cannot be rolled back or use the ORM (requires doctrine/migrations) // Default: true
+ *         },
+ *         filtered_fetch_join?: array{
+ *             enabled?: bool|Param, // Detect to-many collections that are fetch-joined and filtered in WHERE, which hydrates them partially // Default: true
+ *         },
  *         null_comparison?: array{
  *             enabled?: bool|Param, // Default: true
  *         },
@@ -3202,7 +3221,24 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             enabled?: bool|Param, // Detect denormalized aggregate fields updated alongside collections without a locking mechanism // Default: true
  *         },
  *         flush_in_event_listener?: array{
- *             enabled?: bool|Param, // Detect flush() calls inside Doctrine lifecycle callbacks which can cause infinite loops // Default: true
+ *             enabled?: bool|Param, // Detect flush() calls inside lifecycle callbacks, entity listeners and Doctrine event listeners // Default: true
+ *         },
+ *         entity_manager_in_service?: array{
+ *             enabled?: bool|Param, // Detect application services that receive the EntityManager instead of a repository // Default: true
+ *             excluded_namespaces?: list<scalar|Param|null>,
+ *         },
+ *         unused_inverse_side?: array{
+ *             enabled?: bool|Param, // Detect inverse sides of to-many associations that the application never reads // Default: true
+ *         },
+ *         collection_counted_in_php?: array{
+ *             enabled?: bool|Param, // Detect to-many collections loaded entirely to be counted // Default: true
+ *         },
+ *         aggregate_in_php?: array{
+ *             enabled?: bool|Param, // Detect sums computed in PHP over loaded entities // Default: true
+ *         },
+ *         collection_filtered_in_php?: array{
+ *             enabled?: bool|Param, // Detect collections loaded entirely and filtered in PHP instead of with matching() // Default: true
+ *             methods?: list<scalar|Param|null>,
  *         },
  *         gedmo_extension_performance?: array{
  *             enabled?: bool|Param, // Detect entities using Gedmo Loggable or Translatable extensions. Disabled by default as it only applies to projects using Gedmo and the advice is not actionable in a profiler. // Default: false
