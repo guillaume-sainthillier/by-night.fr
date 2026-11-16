@@ -41,7 +41,7 @@ class ContentRemovalRequest implements Stringable
     /**
      * @var Collection<int, Event>
      */
-    #[ORM\ManyToMany(targetEntity: Event::class)]
+    #[ORM\ManyToMany(targetEntity: Event::class, fetch: 'EXTRA_LAZY')]
     #[ORM\JoinTable(name: 'content_removal_request_event')]
     private Collection $events;
 

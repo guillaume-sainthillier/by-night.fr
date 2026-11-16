@@ -291,12 +291,6 @@ class Country implements Stringable, InternalIdentifiableInterface, PrefixableOb
     {
         $this->heroImageFile = $heroImageFile;
 
-        if (null !== $heroImageFile) {
-            // At least one mapped column must change, otherwise the Doctrine listeners are not
-            // called and the file is lost
-            $this->updatedAt = new DateTimeImmutable();
-        }
-
         return $this;
     }
 

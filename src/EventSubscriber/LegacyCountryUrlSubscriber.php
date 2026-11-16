@@ -57,12 +57,9 @@ final readonly class LegacyCountryUrlSubscriber implements EventSubscriberInterf
         $path = preg_replace('#^/agenda(?=(?:/\d+)?$)#', '', rtrim($matches[2] ?? '', '/'));
         $url = $this->eventUrl('/' . $matches[1] . $path) ?? $request->getBaseUrl() . '/' . $matches[1] . $path;
 
-        $query = $request->server->getString('QUERY_STRING');
-        if ('' !== $query) {
-            $url .= '?' . $query;
-        }
+        $queryString = $request->server->getString('QUERY_STRING');
 
-        $event->setResponse(new RedirectResponse($url, Response::HTTP_MOVED_PERMANENTLY));
+        $event->setResponse(new RedirectResponse('' === $queryString ? $url : $url . '?' . $queryString, Response::HTTP_MOVED_PERMANENTLY));
     }
 
     /**

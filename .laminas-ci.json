@@ -11,7 +11,7 @@
         {
             "name": "Doctrine Doctor",
             "job": {
-                "command": "bin/console doctrine:doctor:analyze --fail-on=warning",
+                "command": "bin/console doctrine:doctor:analyze --fail-on=warning --baseline=doctrine-doctor-baseline.json",
                 "php": "@lowest"
             }
         }
