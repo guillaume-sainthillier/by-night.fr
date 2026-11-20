@@ -113,6 +113,56 @@ final class DatePageTest extends AppWebTestCase
         self::assertSame('nofollow', $crawler->filter('#agenda-dates a[href="/toulouse?when=tomorrow"]')->attr('rel'));
     }
 
+    /**
+     * Google took the location's page for "toulouse ce soir": its first screen names the date pages as people search
+     * for them.
+     */
+    public function testABusyLocationNamesItsDatePagesAtTheTopOfItsPage(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch(hits: 3);
+        $this->createBusyToulouse();
+
+        $client->request('GET', '/toulouse');
+
+        self::assertSelectorTextSame('.hero-location #hero-date-pages a[href="/toulouse/ce-soir"]', 'Ce soir à Toulouse');
+        self::assertSelectorTextSame('.hero-location #hero-date-pages a[href="/toulouse/ce-week-end"]', 'Ce week-end à Toulouse');
+        self::assertSelectorNotExists('#hero-date-pages a[rel]');
+    }
+
+    public function testAQuietLocationDoesNotPutItsDatePagesForward(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch(hits: 3);
+        CityFactory::toulouse()->create();
+
+        $client->request('GET', '/toulouse');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#hero-date-pages');
+    }
+
+    /**
+     * The location pages lost their trailing slash ("/toulouse/" 301s to "/toulouse"): no link of the page, its
+     * canonical and its JSON-LD included, goes through that redirect.
+     */
+    public function testNoLinkOfALocationPageEndsWithTheSlashItLost(): void
+    {
+        $client = self::createClient();
+        $this->stubAgendaSearch(hits: 3);
+        $this->createBusyToulouse();
+
+        $crawler = $client->request('GET', '/toulouse');
+
+        self::assertResponseIsSuccessful();
+        $links = $crawler->filter('a[href], link[href]')->each(static fn ($node): string => (string) $node->attr('href'));
+        self::assertNotEmpty($links);
+        self::assertSame([], array_values(array_filter($links, static fn (string $href): bool => 1 === preg_match('#^(?:https://by-night\.test)?/(?:toulouse|france)/(?:[?\#]|$)#', $href))));
+        foreach ($crawler->filter('script[type="application/ld+json"]')->each(static fn ($node): string => $node->text()) as $jsonLd) {
+            self::assertDoesNotMatchRegularExpression('#by-night\.test\\\\?/(?:toulouse|france)\\\\?/"#', $jsonLd);
+        }
+    }
+
     public function testABusyLocationHasItsDatePagesIndexed(): void
     {
         $client = self::createClient();

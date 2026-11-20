@@ -34,6 +34,19 @@
                             <p>L'agenda de toutes vos sorties {{ location.atName }}&nbsp;: concerts, spectacles, expositions, marchés, festivals, sorties en famille et soirées.</p>
                         {% endif %}
                     </div>
+                    {# The date pages of a busy location, named as people search for them ("Ce soir à Bordeaux"): Google
+                       took the location's page for "bordeaux ce soir", whose only links to them read "Aujourd'hui" #}
+                    {% if datePagesIndexable %}
+                        <nav class="d-flex flex-wrap gap-2 mt-3" id="hero-date-pages" aria-label="Sortir {{ location.atName }} par date">
+                            {% for preset in enum_cases('App\\Enum\\DateRangePreset')|filter(preset => preset.pageSlug) %}
+                                {% set count = facets.dates[preset.value] ?? null %}
+                                <twig:Chip href="{{ agenda_path(location.slug, filters: {when: preset.value}) }}" icon="{{ preset.value == 'today' ? 'lucide:moon' : 'lucide:calendar-days' }}">
+                                    {{ preset.pageLabel|ucfirst }} {{ location.atName }}
+                                    {% if count is not null %}<span class="chip-count">{{ count }}</span>{% endif %}
+                                </twig:Chip>
+                            {% endfor %}
+                        </nav>
+                    {% endif %}
                 </div>
                 {# Not on a phone: under the copy it pushed the first events two screens down. Hidden, it still loads:
                    "1px" makes the phone pick its smallest rendition #}
