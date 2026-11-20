@@ -83,5 +83,20 @@
 	header /*.png Cache-Control "public, max-age=31536000, immutable"
 	header /*.svg Cache-Control "public, max-age=31536000, immutable"
 
+	# The front controller in the URL ("/index.php/paris/soiree/…", "/index.php"): php_server runs index.php for it
+	# and Symfony takes "/index.php" for the base URL, so every URL the page writes, its canonical included, keeps the
+	# prefix (Google indexed some). It leads to the same URL without it, query string kept: 301, 308 for a form posted
+	# there so it is posted again. Read on the raw URI to keep its encoding; every leading slash or backslash goes, or
+	# "/index.php//host" would send to another site. "/index.phpx" is another page.
+	@frontController vars_regexp frontController {http.request.uri} (?i)^/index\.php(?:[/\\]+([^?]*))?(\?.*)?$
+	@frontControllerSafe {
+		vars_regexp frontController {http.request.uri} (?i)^/index\.php(?:[/\\]+([^?]*))?(\?.*)?$
+		method GET HEAD
+	}
+	route {
+		redir @frontControllerSafe /{re.frontController.1}{re.frontController.2} 301
+		redir @frontController /{re.frontController.1}{re.frontController.2} 308
+	}
+
 	php_server
 }
