@@ -13,6 +13,7 @@ namespace App\Repository;
 use App\App\Location;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
+use App\Doctrine\Query\IndexHintWalker;
 use App\Dto\EventDto;
 use App\Entity\City;
 use App\Entity\Country;
@@ -1585,7 +1586,8 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      * busier. Without them, a town page was only linked from its own events (Ahrefs: orphan pages).
      *
      * admin_zone_type_latitude_idx bounds the latitude and tests the longitude and the events to come before any row
-     * is read: ~3k index entries for 1 ms. From the type index, every city was read (~88k), ~180 ms on each city page.
+     * is read: ~6k index entries, ~80 rows, 2.5 ms. MySQL is told to (IndexHintWalker): left to itself, it reads every
+     * city (~88k) from the type index, ~200 ms on each city page, which it believes cheaper (prod, 2026-11).
      *
      * @param list<int> $excluded the ids of cities already listed
      *
@@ -1600,7 +1602,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         $cos = max(0.2, cos(deg2rad($latitude)));
         $longitudeDelta = $latitudeDelta / $cos;
 
-        return $this
+        $query = $this
             ->getEntityManager()
             ->createQueryBuilder()
             ->select('c', 'c.upcomingEvents AS events')
@@ -1621,7 +1623,9 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('distance', SortDirection::Ascending)
             ->addOrderBy('c.id', SortDirection::Ascending)
             ->setMaxResults($limit)
-            ->getQuery()
+            ->getQuery();
+
+        return IndexHintWalker::useIndex($query, 'c', 'admin_zone_type_latitude_idx')
             ->enableResultCache(self::PORTAL_CACHE_TTL)
             ->getResult();
     }
