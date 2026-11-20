@@ -133,7 +133,7 @@
         "api-platform/test": "5.0.7",
         "dama/doctrine-test-bundle": "^8.8.0",
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
-        "friendsofphp/php-cs-fixer": "^3.95.30",
+        "friendsofphp/php-cs-fixer": "^3.95.31",
         "phpstan/extension-installer": "^1.4.3",
         "phpstan/phpstan": "^2.3.6",
         "phpstan/phpstan-doctrine": "^2.1.2",
