@@ -203,8 +203,8 @@ importers:
         specifier: ^11.12.0
         version: 11.12.0
       '@silarhi/app-js':
-        specifier: ^0.5.1
-        version: 0.5.1
+        specifier: ^0.10.0
+        version: 0.10.0
       '@silarhi/ux-icons-js':
         specifier: ^0.3.2
         version: 0.3.2(preact@11.2.0)
@@ -1030,8 +1030,8 @@ packages:
     resolution: {integrity: sha512-SF1064TKmOvIQTKo8WelVB34IZWtYtrflInsydPeB9jMTpy2iE3LqKRizDJr3YivjMUPDgIGn67b+0kaxiwQ4g==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@silarhi/app-js@0.5.1':
-    resolution: {integrity: sha512-pWti0ukaz+lZgazvJg2DE95rl+5NTClqZC8rMe2z7zBN/5Ftssid1JZWN/2qtpCapwvoBpTvQzldJk92tw7EHg==}
+  '@silarhi/app-js@0.10.0':
+    resolution: {integrity: sha512-StKhwARAKbhSsB6+dHYQTgqGVlKsIBBzByh6yce9dHM5MlPXhzrDFw+bzRnXkMJktPpSsHF5j5SLD1kSNZKN/w==}
 
   '@silarhi/cap-bundle@file:vendor/silarhi/cap-bundle/assets':
     resolution: {directory: vendor/silarhi/cap-bundle/assets, type: directory}
@@ -2493,7 +2493,7 @@ snapshots:
       '@sentry/browser-utils': 11.12.0
       '@sentry/core': 11.12.0
 
-  '@silarhi/app-js@0.5.1': {}
+  '@silarhi/app-js@0.10.0': {}
 
   '@silarhi/cap-bundle@file:vendor/silarhi/cap-bundle/assets(@hotwired/stimulus@3.2.2)':
     optionalDependencies:
