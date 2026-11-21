@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5138660dcb7683384ab97c2a3d8169f2",
+    "content-hash": "7e9bf54a3709e0aadcb09c0d32dc1ce3",
     "packages": [
         {
             "name": "api-platform/core",
@@ -14782,16 +14782,16 @@
         },
         {
             "name": "web-auth/webauthn-lib",
-            "version": "5.3.13",
+            "version": "5.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/webauthn-lib.git",
-                "reference": "19eb8e4107467052e5b24c023832ef8164062e89"
+                "reference": "768fb8cf7bebaad8a08b3015e206dda95e3320fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/web-auth/webauthn-lib/zipball/19eb8e4107467052e5b24c023832ef8164062e89",
-                "reference": "19eb8e4107467052e5b24c023832ef8164062e89",
+                "url": "https://api.github.com/repos/web-auth/webauthn-lib/zipball/768fb8cf7bebaad8a08b3015e206dda95e3320fa",
+                "reference": "768fb8cf7bebaad8a08b3015e206dda95e3320fa",
                 "shasum": ""
             },
             "require": {
@@ -14852,7 +14852,7 @@
                 "webauthn"
             ],
             "support": {
-                "source": "https://github.com/web-auth/webauthn-lib/tree/5.3.13"
+                "source": "https://github.com/web-auth/webauthn-lib/tree/5.3.14"
             },
             "funding": [
                 {
@@ -14864,12 +14864,12 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2026-11-17T19:20:46+00:00",
-            "published-time": "2026-11-17T20:10:27+00:00"
+            "time": "2026-11-18T16:46:55+00:00",
+            "published-time": "2026-11-18T16:56:49+00:00"
         },
         {
             "name": "web-auth/webauthn-symfony-bundle",
-            "version": "5.3.13",
+            "version": "5.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/webauthn-symfony-bundle.git",
@@ -14936,7 +14936,7 @@
                 "webauthn"
             ],
             "support": {
-                "source": "https://github.com/web-auth/webauthn-symfony-bundle/tree/5.3.13"
+                "source": "https://github.com/web-auth/webauthn-symfony-bundle/tree/5.3.14"
             },
             "funding": [
                 {
@@ -14949,7 +14949,7 @@
                 }
             ],
             "time": "2026-11-17T19:20:46+00:00",
-            "published-time": "2026-11-17T20:10:05+00:00"
+            "published-time": "2026-11-18T16:53:17+00:00"
         },
         {
             "name": "webmozart/assert",
