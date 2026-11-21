@@ -148,7 +148,7 @@
         "symfony/maker-bundle": "^1.68.0",
         "symfony/web-profiler-bundle": "~8.1.11",
         "vincentlanglet/twig-cs-fixer": "^4.1.2",
-        "zenstruck/foundry": "^2.16.0"
+        "zenstruck/foundry": "^2.17.0"
     },
     "replace": {
         "symfony/polyfill-php85": "*",
