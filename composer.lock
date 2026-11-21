@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f8bfbf806c28ffaa55612da8a66159c",
+    "content-hash": "9dd75e4aa2a89f8e079aa8ac435c7e1e",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v5.0.7",
+            "version": "v5.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "4d78b9890203ff2c73f2c8d5779aba14d40683b9"
+                "reference": "422b94350dabab90637cd211d891b2b1489b9625"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/4d78b9890203ff2c73f2c8d5779aba14d40683b9",
-                "reference": "4d78b9890203ff2c73f2c8d5779aba14d40683b9",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/422b94350dabab90637cd211d891b2b1489b9625",
+                "reference": "422b94350dabab90637cd211d891b2b1489b9625",
                 "shasum": ""
             },
             "require": {
@@ -221,9 +221,10 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v5.0.7"
+                "source": "https://github.com/api-platform/core/tree/v5.0.8"
             },
-            "time": "2026-11-13T14:10:31+00:00"
+            "time": "2026-11-16T10:25:39+00:00",
+            "published-time": "2026-11-16T10:25:58+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -1410,7 +1411,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-26T08:14:14+00:00"
+            "time": "2026-10-26T08:14:14+00:00",
+            "published-time": "2026-10-26T20:06:59+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -12651,7 +12653,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-04T08:39:20+00:00"
+            "time": "2026-11-04T08:39:20+00:00",
+            "published-time": "2026-11-04T11:31:12+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -15052,7 +15055,8 @@
                 "issues": "https://github.com/willdurand/Negotiation/issues",
                 "source": "https://github.com/willdurand/Negotiation/tree/3.1.0"
             },
-            "time": "2022-01-30T20:08:53+00:00"
+            "time": "2022-01-30T20:08:53+00:00",
+            "published-time": "2022-01-30T20:14:18+00:00"
         }
     ],
     "packages-dev": [
