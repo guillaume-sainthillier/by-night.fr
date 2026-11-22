@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e9bf54a3709e0aadcb09c0d32dc1ce3",
+    "content-hash": "ad07f9c4c571552f0ea0394427e01c0d",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2880,7 +2880,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-13T03:03:24+00:00"
+            "time": "2026-11-13T03:03:24+00:00",
+            "published-time": "2026-11-13T03:06:05+00:00"
         },
         {
             "name": "huluti/breadcrumbs-bundle",
@@ -6142,7 +6143,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-factory"
             },
-            "time": "2024-04-15T12:06:14+00:00"
+            "time": "2024-04-15T12:06:14+00:00",
+            "published-time": "2024-05-10T07:32:19+00:00"
         },
         {
             "name": "psr/http-message",
@@ -6195,7 +6197,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:54:51+00:00"
+            "time": "2023-04-04T09:54:51+00:00",
+            "published-time": "2023-04-04T09:55:35+00:00"
         },
         {
             "name": "psr/link",
@@ -6630,20 +6633,21 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-11-11T15:29:22+00:00"
+            "time": "2026-11-11T15:29:22+00:00",
+            "published-time": "2026-11-11T15:35:52+00:00"
         },
         {
             "name": "sentry/sentry-symfony",
-            "version": "5.16.0",
+            "version": "5.16.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-symfony.git",
-                "reference": "8407d45b82a68cfae4761e2f8c35593b34cc8371"
+                "reference": "99303326c667253e09a081b31c66b1d06facab59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-symfony/zipball/8407d45b82a68cfae4761e2f8c35593b34cc8371",
-                "reference": "8407d45b82a68cfae4761e2f8c35593b34cc8371",
+                "url": "https://api.github.com/repos/getsentry/sentry-symfony/zipball/99303326c667253e09a081b31c66b1d06facab59",
+                "reference": "99303326c667253e09a081b31c66b1d06facab59",
                 "shasum": ""
             },
             "require": {
@@ -6720,7 +6724,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-symfony/issues",
-                "source": "https://github.com/getsentry/sentry-symfony/tree/5.16.0"
+                "source": "https://github.com/getsentry/sentry-symfony/tree/5.16.1"
             },
             "funding": [
                 {
@@ -6732,7 +6736,8 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-11-11T19:16:31+00:00"
+            "time": "2026-11-18T17:26:29+00:00",
+            "published-time": "2026-11-18T17:38:53+00:00"
         },
         {
             "name": "silarhi/cap-bundle",
@@ -11893,7 +11898,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-07T08:21:34+00:00"
+            "time": "2026-10-07T08:21:34+00:00",
+            "published-time": "2026-10-14T06:48:56+00:00"
         },
         {
             "name": "symfony/rate-limiter",
