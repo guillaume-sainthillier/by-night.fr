@@ -210,7 +210,7 @@ importers:
         version: 0.3.2(preact@11.2.0)
       '@tabler/core':
         specifier: ^1.7.5
-        version: 1.7.5(vanilla-calendar-pro@3.4.0)
+        version: 1.7.5(vanilla-calendar-pro@3.4.1)
       '@tarekraafat/autocomplete.js':
         specifier: ^10.2.10
         version: 10.2.10
@@ -243,7 +243,7 @@ importers:
         version: 2.7.0
       vanilla-calendar-pro:
         specifier: ^3.4.0
-        version: 3.4.0
+        version: 3.4.1
     devDependencies:
       '@biomejs/biome':
         specifier: 2.6.7
@@ -1776,8 +1776,8 @@ packages:
       webpack:
         optional: true
 
-  vanilla-calendar-pro@3.4.0:
-    resolution: {integrity: sha512-HLWjzHOWvMIrjI77tXK5bYzp0s5TeBSrZC247STjcTAdWI7kqEwWT6Xvu20vqdwzF498H1Da8l4WpdgVIGtc1Q==}
+  vanilla-calendar-pro@3.4.1:
+    resolution: {integrity: sha512-b+e4sQgVrjk8kmeGhV/ZLtSIrJsJ8jwdZ0tEs3UKHvYrcj9ZXwV1jHFERpq+cm3yeJo3p8PX1H4zKFjBrndLag==}
 
   vite@8.3.8:
     resolution: {integrity: sha512-LzOn3h9rG/0vhLdXrV4yJ4QFA9eEoqCl+Yx+kGJd7aB9w6nfNgVHKSYwLPZUHrz4ZGa+t+kXjV9itvcHDLQouA==}
@@ -2537,11 +2537,11 @@ snapshots:
       - unloader
       - webpack
 
-  '@tabler/core@1.7.5(vanilla-calendar-pro@3.4.0)':
+  '@tabler/core@1.7.5(vanilla-calendar-pro@3.4.1)':
     dependencies:
       '@popperjs/core': 2.11.8
     optionalDependencies:
-      vanilla-calendar-pro: 3.4.0
+      vanilla-calendar-pro: 3.4.1
 
   '@tarekraafat/autocomplete.js@10.2.10': {}
 
@@ -3176,7 +3176,7 @@ snapshots:
       rolldown: 1.2.19
       vite: 8.3.8(@types/node@26.6.6)(jiti@2.7.0)(sass@1.108.2)(yaml@2.9.1)
 
-  vanilla-calendar-pro@3.4.0: {}
+  vanilla-calendar-pro@3.4.1: {}
 
   vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)(sass@1.108.2)(yaml@2.9.1):
     dependencies:
