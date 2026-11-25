@@ -13,6 +13,7 @@ use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\Property\RemoveDefaultValueFromAssignedPropertyRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
+use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 
 return RectorConfig::configure()
     ->withImportNames(removeUnusedImports: true)
@@ -48,6 +49,10 @@ return RectorConfig::configure()
         // Same: the default of $pageEventIds is what an older queued message unserializes with
         RemoveDefaultValueFromAssignedPropertyRector::class => [
             __DIR__ . '/src/Message/DownloadEventImages.php',
+        ],
+        // User::getUsername() is the name the member typed, not the UserInterface method Symfony renamed
+        RenameMethodRector::class => [
+            __DIR__ . '/tests/SEO/EventJsonLdTest.php',
         ],
     ])
     ->reportUnusedSkips()
