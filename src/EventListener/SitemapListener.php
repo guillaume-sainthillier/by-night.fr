@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Controller\Location\AgendaController;
 use App\Enum\AgendaType;
@@ -36,7 +36,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Google ignores <priority> and <changefreq>, so being listed here is the actual signal; not
  * being listed does not remove a page from the index.
  */
-final class SitemapSuscriber
+final class SitemapListener
 {
     /**
      * A city needs a full agenda page of upcoming events before its per-category pages are

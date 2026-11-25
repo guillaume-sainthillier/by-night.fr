@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Picture\OriginUrlResolver;
 use Silarhi\PicassoBundle\Exception\ImageNotFoundException;
@@ -27,7 +27,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * shorteners — end up requesting a path we cannot serve. Redirecting to the origin
  * keeps the image resolving and the link worth something, instead of a 404.
  */
-final readonly class PicassoOriginRedirectSubscriber
+final readonly class PicassoOriginRedirectListener
 {
     /**
      * The redirect is permanent, but the target embeds the current public URL scheme,

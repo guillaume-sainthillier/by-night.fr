@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\App\AppContext;
 use App\App\CountrySlugs;
@@ -34,7 +34,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Uses PHP 8.4 LazyObject to defer database loading of City/Country entities
  * until their properties are actually accessed.
  */
-final readonly class AppContextSubscriber
+final readonly class AppContextListener
 {
     /**
      * The events filed in no country answered on "/unknown". The ones located since redirect to their city from

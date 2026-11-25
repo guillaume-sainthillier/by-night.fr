@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Entity\User;
 use DateTimeImmutable;
@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 
-final readonly class UserLastLoginSubscriber
+final readonly class UserLastLoginListener
 {
     public function __construct(private EntityManagerInterface $entityManager)
     {

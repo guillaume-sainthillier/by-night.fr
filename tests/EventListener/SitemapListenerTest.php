@@ -8,12 +8,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\EventSubscriber;
+namespace App\Tests\EventListener;
 
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
-use App\EventSubscriber\SitemapSuscriber;
+use App\EventListener\SitemapListener;
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
 use App\Factory\PlaceFactory;
@@ -35,7 +35,7 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
  * The sitemap only lists what is worth indexing now: Google ignores priorities, so a past
  * event or an empty listing must be left out rather than demoted.
  */
-final class SitemapSuscriberTest extends AppKernelTestCase
+final class SitemapListenerTest extends AppKernelTestCase
 {
     use CountsUpcomingEvents;
 
@@ -89,8 +89,8 @@ final class SitemapSuscriberTest extends AppKernelTestCase
     {
         $toulouse = CityFactory::toulouse()->create();
         $bordeaux = CityFactory::createOne(['name' => 'Bordeaux', 'country' => $toulouse->getCountry()]);
-        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS, ['place' => $this->createPlace($toulouse, 'Le Bikini'), 'agendaTypes' => ['concert']] + $this->dates(10));
-        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS - 1, ['place' => $this->createPlace($bordeaux, 'Le Rocher'), 'agendaTypes' => ['concert']] + $this->dates(10));
+        EventFactory::createMany(SitemapListener::CATEGORY_PAGES_MIN_EVENTS, ['place' => $this->createPlace($toulouse, 'Le Bikini'), 'agendaTypes' => ['concert']] + $this->dates(10));
+        EventFactory::createMany(SitemapListener::CATEGORY_PAGES_MIN_EVENTS - 1, ['place' => $this->createPlace($bordeaux, 'Le Rocher'), 'agendaTypes' => ['concert']] + $this->dates(10));
 
         $paths = $this->collectSection('agenda');
 
@@ -101,7 +101,7 @@ final class SitemapSuscriberTest extends AppKernelTestCase
     public function testCategoryPagesNeedAnUpcomingEventOfTheirType(): void
     {
         $place = $this->createPlace(CityFactory::toulouse()->create(), 'Le Bikini');
-        EventFactory::createMany(SitemapSuscriber::CATEGORY_PAGES_MIN_EVENTS - 2, ['place' => $place, 'agendaTypes' => []] + $this->dates(10));
+        EventFactory::createMany(SitemapListener::CATEGORY_PAGES_MIN_EVENTS - 2, ['place' => $place, 'agendaTypes' => []] + $this->dates(10));
         // Both types of "concert,family", "show" alone, and nothing for a past student party
         EventFactory::createOne(['place' => $place, 'agendaTypes' => ['concert', 'family']] + $this->dates(10));
         EventFactory::createOne(['place' => $place, 'agendaTypes' => ['show']] + $this->dates(10));

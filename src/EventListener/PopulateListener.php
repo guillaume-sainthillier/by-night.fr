@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Elasticsearch\ElasticaMode;
 use App\Elasticsearch\Handler\RefreshElasticaIndexHandler;
@@ -21,7 +21,7 @@ use FOS\ElasticaBundle\Index\IndexManager;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final readonly class PopulateSubscriber
+final readonly class PopulateListener
 {
     public function __construct(
         private IndexManager $indexManager,

@@ -8,12 +8,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\EventSubscriber;
+namespace App\Tests\EventListener;
 
 use App\Elasticsearch\ElasticaMode;
 use App\Elasticsearch\Handler\RefreshElasticaIndexHandler;
 use App\Elasticsearch\Pager\IdRangeCeilings;
-use App\EventSubscriber\PopulateSubscriber;
+use App\EventListener\PopulateListener;
 use Elastica\Index\Settings;
 use FOS\ElasticaBundle\Configuration\ConfigManager;
 use FOS\ElasticaBundle\Elastica\Index;
@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class PopulateSubscriberTest extends TestCase
+final class PopulateListenerTest extends TestCase
 {
     public function testAPopulateCountsItsPagesDownFromTheHighestIdAtItsStart(): void
     {
@@ -44,14 +44,14 @@ final class PopulateSubscriberTest extends TestCase
         self::assertSame(150, $ceilings->get('event', static fn (): int => 150));
     }
 
-    private function createSubscriber(IdRangeCeilings $ceilings): PopulateSubscriber
+    private function createSubscriber(IdRangeCeilings $ceilings): PopulateListener
     {
         $index = $this->createStub(Index::class);
         $index->method('getSettings')->willReturn($this->createStub(Settings::class));
         $indexManager = $this->createStub(IndexManager::class);
         $indexManager->method('getIndex')->willReturn($index);
 
-        return new PopulateSubscriber(
+        return new PopulateListener(
             $indexManager,
             new ElasticaMode(),
             $this->createStub(MessageBusInterface::class),

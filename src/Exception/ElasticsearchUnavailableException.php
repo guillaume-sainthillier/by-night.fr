@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Throwable;
 
 /**
- * Elasticsearch is restarting (ElasticsearchUnavailableSubscriber): the page answers 503 with a Retry-After, which
+ * Elasticsearch is restarting (ElasticsearchUnavailableListener): the page answers 503 with a Retry-After, which
  * crawlers honour and which lets Cloudflare serve its stale copy (stale-if-error). A warning, not an error: the outage
  * lasts a minute or two and every page that searches fails at once, which used to flood Sentry.
  */

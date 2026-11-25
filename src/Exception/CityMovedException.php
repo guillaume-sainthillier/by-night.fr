@@ -14,8 +14,8 @@ use App\Entity\City;
 use Exception;
 
 /**
- * The URL names a city by a former slug (CityLegacySlug): MovedCitySubscriber redirects to the same page under its
- * current one. Not a RuntimeException: AppContextSubscriber turns those into a 404.
+ * The URL names a city by a former slug (CityLegacySlug): MovedCityListener redirects to the same page under its
+ * current one. Not a RuntimeException: AppContextListener turns those into a 404.
  */
 final class CityMovedException extends Exception
 {

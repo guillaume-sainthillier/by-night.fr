@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Exception\RedirectException;
 use App\Manager\EventRedirectManager;
@@ -28,7 +28,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
  * straight to the URL the event answers to (EventRedirectManager): that of the page its duplicate redirects to, or its
  * city's since its place got one.
  */
-final readonly class LegacyCountryUrlSubscriber
+final readonly class LegacyCountryUrlListener
 {
     /** The routes of an event's pages, which EventRedirectManager leads to the event's own URL */
     private const array EVENT_ROUTES = ['app_event_details', 'app_widget_next_events', 'app_widget_similar_events'];
