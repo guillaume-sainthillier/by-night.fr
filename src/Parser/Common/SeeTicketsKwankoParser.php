@@ -108,7 +108,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
                 throw new RuntimeException('Unable to read CSV headers');
             }
 
-            $headers = $this->normalizeHeaders($headers);
+            $headers = self::normalizeHeaders($headers);
 
             while (false !== ($row = fgetcsv($handle, 0, ',', '"', ''))) {
                 if (\count($row) !== \count($headers)) {
@@ -134,7 +134,7 @@ final class SeeTicketsKwankoParser extends AbstractParser
      *
      * @return list<string>
      */
-    private function normalizeHeaders(array $headers): array
+    private static function normalizeHeaders(array $headers): array
     {
         return array_map(static fn (?string $header): string => preg_replace('/^.*\|/', '', (string) $header), $headers);
     }

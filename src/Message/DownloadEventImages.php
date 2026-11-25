@@ -13,16 +13,21 @@ namespace App\Message;
 final class DownloadEventImages
 {
     /**
+     * The events whose page purge waits for their image (EventImageDownloadScheduler::defersPagePurge()). Declared
+     * with a default so that a message queued before it existed unserializes with none.
+     *
+     * @var int[]
+     */
+    public array $pageEventIds = [];
+
+    /**
      * @param int[] $eventIds
      * @param int[] $pageEventIds
      */
     public function __construct(
         public readonly array $eventIds,
-        /**
-         * The events whose page purge waits for their image (EventImageDownloadScheduler::defersPagePurge()). Declared
-         * with a default so that a message queued before it existed unserializes with none.
-         */
-        public array $pageEventIds = [],
+        array $pageEventIds = [],
     ) {
+        $this->pageEventIds = $pageEventIds;
     }
 }

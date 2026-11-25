@@ -178,7 +178,7 @@ final class FeverImpactParser extends AbstractParser
     {
         foreach (array_keys(self::COUNTRIES) as $country) {
             foreach ($this->items($country) as $item) {
-                $data = $this->columns($item);
+                $data = self::columns($item);
 
                 // A malformed item is logged and skipped; a failure to publish stops the run
                 yield $this->mapRecord(fn (): ?EventDto => $this->arrayToDto($data), ['sku' => $data['SKU']]);
@@ -215,7 +215,7 @@ final class FeverImpactParser extends AbstractParser
      *
      * @return array<string, string>
      */
-    private function columns(array $item): array
+    private static function columns(array $item): array
     {
         $first = static fn (mixed $values): string => \is_array($values) ? (string) ($values[0] ?? '') : '';
 
@@ -259,7 +259,7 @@ final class FeverImpactParser extends AbstractParser
             return null;
         }
 
-        $sessions = $this->sessions($data['Sessions'] ?? '');
+        $sessions = self::sessions($data['Sessions'] ?? '');
         if ([] === $sessions) {
             return null;
         }
@@ -268,21 +268,21 @@ final class FeverImpactParser extends AbstractParser
         $event->fromData = self::getParserName();
         $event->externalId = $data['SKU'];
         $event->name = $data['Plan Name'];
-        $event->description = $this->description($data['Description'] ?? '');
-        $event->type = $this->type($tags);
+        $event->description = self::description($data['Description'] ?? '');
+        $event->type = self::type($tags);
         $event->source = $data['Affiliate URL'];
-        $event->imageUrl = $this->originalPicture($data['Photo 1'] ?? '') ?? $this->originalPicture($data['Photo 2'] ?? '');
-        $event->prices = self::formatPriceRange($this->ticketPrices($data['Ticket prices'] ?? ''), $data['Currency'] ?: 'EUR');
+        $event->imageUrl = self::originalPicture($data['Photo 1'] ?? '') ?? self::originalPicture($data['Photo 2'] ?? '');
+        $event->prices = self::formatPriceRange(self::ticketPrices($data['Ticket prices'] ?? ''), $data['Currency'] ?: 'EUR');
 
         $days = array_keys($sessions);
         $event->startDate = new DateTimeImmutable($days[0]);
         $event->endDate = new DateTimeImmutable($days[\count($days) - 1]);
         foreach ($sessions as $day => $times) {
-            array_push($event->timesheets, ...$this->timesheetsOfDay(new DateTimeImmutable($day), $times));
+            array_push($event->timesheets, ...self::timesheetsOfDay(new DateTimeImmutable($day), $times));
         }
 
-        [$street, $town, $postalCode] = $this->address($data['Location'] ?? '', $data['City'] ?? '');
-        [$latitude, $longitude] = $this->coordinates($data['Coordinates'] ?? '');
+        [$street, $town, $postalCode] = self::address($data['Location'] ?? '', $data['City'] ?? '');
+        [$latitude, $longitude] = self::coordinates($data['Coordinates'] ?? '');
 
         $country = new CountryDto();
         $country->code = $countryCode;
@@ -309,7 +309,7 @@ final class FeverImpactParser extends AbstractParser
     /**
      * A line of a list, not a paragraph: a long text ending with "ici" would be its last sentence.
      */
-    private function isPageOnly(string $line): bool
+    private static function isPageOnly(string $line): bool
     {
         return mb_strlen($line) <= 160 && 1 === preg_match(self::PAGE_ONLY, $line);
     }
@@ -319,7 +319,7 @@ final class FeverImpactParser extends AbstractParser
      * Description Imagine-toi…". Its headings go back to their own lines, each emoji opening a line of a list too
      * ("✔️ Ingrédients fournis"); the lines selling Fever or pointing to its page are left out.
      */
-    private function description(string $text): ?string
+    private static function description(string $text): ?string
     {
         // "Offre spéciale&nbsp; 🎂": the entity is a space like the others
         $text = trim((string) preg_replace([self::STYLE_SHEET, self::TRAILER, self::DELIVERY], '', str_replace('&nbsp;', "\u{a0}", trim($text))));
@@ -338,7 +338,7 @@ final class FeverImpactParser extends AbstractParser
                 $list = [];
                 $promotion = \in_array($part, self::FEVER_PROMOTION, true);
                 $paragraphs[] = $promotion ? '' : \sprintf('<strong>%s</strong>', $part);
-            } elseif (!$promotion && '' !== $part && !$this->isPageOnly($part)) {
+            } elseif (!$promotion && '' !== $part && !self::isPageOnly($part)) {
                 $list[] = $part;
             }
         }
@@ -355,7 +355,7 @@ final class FeverImpactParser extends AbstractParser
      *
      * @return array<string, list<DateTimeImmutable>> the times keep their own date (the time is what counts)
      */
-    private function sessions(string $sessions): array
+    private static function sessions(string $sessions): array
     {
         $days = [];
         foreach (explode(',', $sessions) as $session) {
@@ -384,11 +384,11 @@ final class FeverImpactParser extends AbstractParser
      *
      * @return list<EventTimesheetDto>
      */
-    private function timesheetsOfDay(DateTimeImmutable $day, array $times): array
+    private static function timesheetsOfDay(DateTimeImmutable $day, array $times): array
     {
         $hours = null;
         if (\count($times) > self::LISTED_SESSIONS_PER_DAY) {
-            $hours = $this->laterEntries($times);
+            $hours = self::laterEntries($times);
             $times = [$times[0]];
         }
 
@@ -411,7 +411,7 @@ final class FeverImpactParser extends AbstractParser
      *
      * @param list<DateTimeImmutable> $times at least two, in order
      */
-    private function laterEntries(array $times): string
+    private static function laterEntries(array $times): string
     {
         $gaps = [];
         for ($i = 1, $count = \count($times); $i < $count; ++$i) {
@@ -438,7 +438,7 @@ final class FeverImpactParser extends AbstractParser
      *
      * @return array{?string, ?string, ?string} the street, the town, the postal code
      */
-    private function address(string $location, string $market): array
+    private static function address(string $location, string $market): array
     {
         [$address, $postalCode] = array_pad(explode('//', $location, 2), 2, '');
         $postalCode = trim($postalCode);
@@ -468,7 +468,7 @@ final class FeverImpactParser extends AbstractParser
      *
      * @return array{?float, ?float}
      */
-    private function coordinates(string $coordinates): array
+    private static function coordinates(string $coordinates): array
     {
         if (1 !== preg_match('/^\(\s*(-?[\d.]+)\s*;\s*(-?[\d.]+)\s*\)$/', trim($coordinates), $matches)) {
             return [null, null];
@@ -485,7 +485,7 @@ final class FeverImpactParser extends AbstractParser
      *
      * @return list<string>
      */
-    private function ticketPrices(string $prices): array
+    private static function ticketPrices(string $prices): array
     {
         preg_match_all('/\d+(?:\.\d+)?/', $prices, $matches);
 
@@ -496,7 +496,7 @@ final class FeverImpactParser extends AbstractParser
      * Fever's pictures are served by Cloudinary as 550px squares ("…/image/upload/f_auto,w_550,h_550/fever2/plan/…"):
      * without the transformation, the picture as uploaded (768px for a Candlelight).
      */
-    private function originalPicture(string $url): ?string
+    private static function originalPicture(string $url): ?string
     {
         $url = trim($url);
 
@@ -506,7 +506,7 @@ final class FeverImpactParser extends AbstractParser
     /**
      * @param list<string> $tags
      */
-    private function type(array $tags): ?string
+    private static function type(array $tags): ?string
     {
         foreach (self::TYPES as $tag => $type) {
             if (\in_array($tag, $tags, true)) {
