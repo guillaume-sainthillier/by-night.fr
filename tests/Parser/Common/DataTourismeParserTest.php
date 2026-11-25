@@ -426,7 +426,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
     {
         self::assertSame(
             ['name' => $name, 'street' => $street],
-            new ReflectionMethod(DataTourismeParser::class, 'venue')->invoke(null, $lines, 'Sainte-Pazanne')
+            new ReflectionMethod(DataTourismeParser::class, 'venue')->invoke($this->parser, $lines, 'Sainte-Pazanne')
         );
     }
 

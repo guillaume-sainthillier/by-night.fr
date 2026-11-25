@@ -8,7 +8,6 @@
  * with this source code in the file LICENSE.
  */
 
-use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\CodeQuality\Rector\If_\ExplicitNullableObjectInstanceRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
@@ -49,12 +48,6 @@ return RectorConfig::configure()
         // Same: the default of $pageEventIds is what an older queued message unserializes with
         RemoveDefaultValueFromAssignedPropertyRector::class => [
             __DIR__ . '/src/Message/DownloadEventImages.php',
-        ],
-        // Their tests call these private static helpers through reflection, without an instance
-        LocallyCalledStaticMethodToNonStaticRector::class => [
-            __DIR__ . '/src/Parser/Common/DataTourismeParser.php',
-            __DIR__ . '/src/Parser/Common/FeverImpactParser.php',
-            __DIR__ . '/src/Parser/Common/SeeTicketsKwankoParser.php',
         ],
     ])
     ->reportUnusedSkips()

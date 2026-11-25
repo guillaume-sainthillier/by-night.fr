@@ -88,7 +88,8 @@ final class FeverImpactParserTest extends TestCase
 
     public function testAnItemOfTheApiReadsAsTheCatalogueRow(): void
     {
-        $columns = new ReflectionClass(FeverImpactParser::class)->getMethod('columns')->invoke(null, self::ITEM);
+        $ref = new ReflectionClass(FeverImpactParser::class);
+        $columns = $ref->getMethod('columns')->invoke($ref->newInstanceWithoutConstructor(), self::ITEM);
 
         self::assertEquals($this->parse(self::ROW), $this->parse($columns));
     }
