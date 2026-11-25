@@ -10,7 +10,7 @@
 
 namespace App\EventSubscriber;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -29,19 +29,12 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Members always carry one of those cookies, so the Cloudflare cache rule must not serve them from the cache
  * (it bypasses requests sending either cookie).
  */
-final readonly class SharedCacheSubscriber implements EventSubscriberInterface
+final readonly class SharedCacheSubscriber
 {
     /** The remember-me authenticator's default cookie (security.yaml sets no other name). */
     private const string REMEMBER_ME_COOKIE = 'REMEMBERME';
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            // After #[Cache] fills the headers (-10), before the session listener overrides them (-1000)
-            KernelEvents::RESPONSE => ['onKernelResponse', -100],
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::RESPONSE, priority: -100)]
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest() || !$this->isShareable($event->getRequest(), $event->getResponse())) {

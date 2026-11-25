@@ -48,6 +48,7 @@ final class SheetWriterTest extends TestCase
 
         $zip = new ZipArchive();
         $zip->open($path);
+
         $xml = (string) $zip->getFromName('xl/worksheets/sheet1.xml');
         $zip->close();
         unlink($path);

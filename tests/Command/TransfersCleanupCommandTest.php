@@ -49,6 +49,7 @@ final class TransfersCleanupCommandTest extends AppKernelTestCase
         $storage->write('imports/old/original.csv', 'Nom');
         $storage->write('imports/old/erreurs.csv', 'Nom;Erreurs');
         $storage->write('imports/recent/original.csv', 'Nom');
+
         $old = EventImportFactory::createOne(['status' => EventImportStatus::Completed, 'filePath' => 'imports/old/original.csv', 'createdAt' => new DateTimeImmutable('-31 days')]);
         EventImportFactory::createOne(['status' => EventImportStatus::Completed, 'filePath' => 'imports/recent/original.csv']);
         $oldId = $old->getId();

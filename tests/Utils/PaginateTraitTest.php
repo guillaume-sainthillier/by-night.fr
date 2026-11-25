@@ -119,7 +119,7 @@ final class PaginateTraitTest extends AppKernelTestCase
             ->leftJoin('c.children', 'children');
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('"c.children"');
+        $this->expectExceptionMessageIsOrContains('"c.children"');
 
         $this->paginate($queryBuilder, 10, false);
     }

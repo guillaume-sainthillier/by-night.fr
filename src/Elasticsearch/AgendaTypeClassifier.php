@@ -73,7 +73,7 @@ final readonly class AgendaTypeClassifier
 
         $written = 0;
         foreach ($this->eventIndex->createSearch($query)->scroll() as $results) {
-            $written += $this->store(self::typesOf($results->getResults()));
+            $written += $this->store($this->typesOf($results->getResults()));
         }
 
         return $written;
@@ -128,7 +128,7 @@ final readonly class AgendaTypeClassifier
      *
      * @return array<int, list<string>> the types of each hit, by event id, in AgendaType order
      */
-    private static function typesOf(array $hits): array
+    private function typesOf(array $hits): array
     {
         $types = [];
         foreach ($hits as $hit) {

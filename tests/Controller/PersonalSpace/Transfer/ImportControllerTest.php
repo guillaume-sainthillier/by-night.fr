@@ -124,6 +124,7 @@ final class ImportControllerTest extends AppWebTestCase
         $client->loginUser($user);
         // One container for both clicks (the client still empties the transport between requests)
         $client->disableReboot();
+
         $form = $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId()))->selectButton('Importer les 3 événements valides')->form();
 
         $client->submit($form);
@@ -224,7 +225,7 @@ final class ImportControllerTest extends AppWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('saison-erreurs.csv', (string) $client->getResponse()->headers->get('Content-Disposition'));
-        self::assertStringContainsString('la date de début manque', (string) $client->getInternalResponse()->getContent());
+        self::assertStringContainsString('la date de début manque', $client->getInternalResponse()->getContent());
     }
 
     /**
@@ -251,7 +252,7 @@ final class ImportControllerTest extends AppWebTestCase
         $client->request('GET', self::organizerPath($user, 'imports/' . $import->getId() . '/statut'));
 
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString($expected, (string) $client->getInternalResponse()->getContent());
+        self::assertStringContainsString($expected, $client->getInternalResponse()->getContent());
     }
 
     /**

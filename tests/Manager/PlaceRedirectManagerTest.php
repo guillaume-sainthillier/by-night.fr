@@ -155,8 +155,7 @@ final class PlaceRedirectManagerTest extends AppKernelTestCase
 
     private function createManager(string $uri = '/'): PlaceRedirectManager
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(Request::create($uri));
+        $requestStack = new RequestStack([Request::create($uri)]);
 
         return new PlaceRedirectManager(
             $requestStack,

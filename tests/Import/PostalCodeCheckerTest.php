@@ -34,28 +34,28 @@ final class PostalCodeCheckerTest extends AppKernelTestCase
 
     public function testEmptyPostalCodeIsAlwaysAccepted(): void
     {
-        self::assertTrue($this->checker->accepts(self::countryByCode('FR'), null));
-        self::assertTrue($this->checker->accepts(self::countryByCode('CH'), ''));
+        self::assertTrue($this->checker->accepts($this->countryByCode('FR'), null));
+        self::assertTrue($this->checker->accepts($this->countryByCode('CH'), ''));
         self::assertTrue($this->checker->accepts(null, 'n/a'), 'A code without any digit counts as missing, not as wrong.');
     }
 
     public function testFrenchCodesMustHaveFiveDigits(): void
     {
-        self::assertTrue($this->checker->accepts(self::countryByCode('FR'), '31000'));
-        self::assertTrue($this->checker->accepts(self::countryByCode('FR'), 'F-31 000'), 'Only the digits are compared.');
-        self::assertTrue($this->checker->accepts(self::countryByCode('FR'), '20000'), 'Corsica: 2A/2B are département codes, postal codes stay numeric (Ajaccio is 20000).');
-        self::assertFalse($this->checker->accepts(self::countryByCode('FR'), '2A'), 'A département code is not a postal code.');
-        self::assertFalse($this->checker->accepts(self::countryByCode('FR'), '3100'));
-        self::assertFalse($this->checker->accepts(self::countryByCode('FR'), '310000'));
+        self::assertTrue($this->checker->accepts($this->countryByCode('FR'), '31000'));
+        self::assertTrue($this->checker->accepts($this->countryByCode('FR'), 'F-31 000'), 'Only the digits are compared.');
+        self::assertTrue($this->checker->accepts($this->countryByCode('FR'), '20000'), 'Corsica: 2A/2B are département codes, postal codes stay numeric (Ajaccio is 20000).');
+        self::assertFalse($this->checker->accepts($this->countryByCode('FR'), '2A'), 'A département code is not a postal code.');
+        self::assertFalse($this->checker->accepts($this->countryByCode('FR'), '3100'));
+        self::assertFalse($this->checker->accepts($this->countryByCode('FR'), '310000'));
     }
 
     public function testSwissAndBelgianCodesHaveFourDigits(): void
     {
-        self::assertTrue($this->checker->accepts(self::countryByCode('CH'), '1200'));
-        self::assertTrue($this->checker->accepts(self::countryByCode('CH'), 'CH-8001'), 'Only the digits are compared.');
-        self::assertTrue($this->checker->accepts(self::countryByCode('BE'), '1000'));
-        self::assertFalse($this->checker->accepts(self::countryByCode('CH'), '12000'));
-        self::assertFalse($this->checker->accepts(self::countryByCode('BE'), '0100'));
+        self::assertTrue($this->checker->accepts($this->countryByCode('CH'), '1200'));
+        self::assertTrue($this->checker->accepts($this->countryByCode('CH'), 'CH-8001'), 'Only the digits are compared.');
+        self::assertTrue($this->checker->accepts($this->countryByCode('BE'), '1000'));
+        self::assertFalse($this->checker->accepts($this->countryByCode('CH'), '12000'));
+        self::assertFalse($this->checker->accepts($this->countryByCode('BE'), '0100'));
     }
 
     public function testCountryGivenByNameOrEntityIdUsesItsOwnPattern(): void
@@ -82,12 +82,12 @@ final class PostalCodeCheckerTest extends AppKernelTestCase
         CountryFactory::createOne(['id' => 'DE', 'name' => 'Allemagne', 'postalCodeRegex' => null]);
 
         self::assertFalse($this->checker->accepts(null, '31000'));
-        self::assertFalse($this->checker->accepts(self::countryByCode('XX'), '31000'));
-        self::assertFalse($this->checker->accepts(self::countryByCode('DE'), '10115'));
-        self::assertTrue($this->checker->accepts(self::countryByCode('DE'), ''), 'A missing code is still fine.');
+        self::assertFalse($this->checker->accepts($this->countryByCode('XX'), '31000'));
+        self::assertFalse($this->checker->accepts($this->countryByCode('DE'), '10115'));
+        self::assertTrue($this->checker->accepts($this->countryByCode('DE'), ''), 'A missing code is still fine.');
     }
 
-    private static function countryByCode(string $code): CountryDto
+    private function countryByCode(string $code): CountryDto
     {
         $dto = new CountryDto();
         $dto->code = $code;

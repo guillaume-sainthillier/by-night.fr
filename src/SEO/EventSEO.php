@@ -15,9 +15,9 @@ use App\Utils\SessionHours;
 use DateTimeInterface;
 use IntlDateFormatter;
 
-final class EventSEO
+final readonly class EventSEO
 {
-    public function __construct(private readonly EventIndexingPolicy $indexingPolicy)
+    public function __construct(private EventIndexingPolicy $indexingPolicy)
     {
     }
 

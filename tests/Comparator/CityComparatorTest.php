@@ -44,7 +44,7 @@ final class CityComparatorTest extends AppKernelTestCase
         $prefecture = $this->city('Pau', '64', 82_697, ['64000', '64001 CEDEX']);
 
         self::assertSame($prefecture->getId(), $this->resolve([$hamlet, $prefecture], 'Pau', '64000'));
-        self::assertSame($prefecture->getId(), $this->resolve([$hamlet, $prefecture], 'Pau', '64001'), 'A CEDEX code is the city\'s too');
+        self::assertSame($prefecture->getId(), $this->resolve([$hamlet, $prefecture], 'Pau', '64001'), "A CEDEX code is the city's too");
     }
 
     public function testAHamletIsToldApartByItsDepartment(): void
@@ -112,7 +112,7 @@ final class CityComparatorTest extends AppKernelTestCase
     public function testANameWrittenWithSpacesFindsTheHyphenatedCity(): void
     {
         $bourg = $this->city('Bourg-Saint-Maurice', '73', 6_747, ['73700']);
-        $agde = $this->city('Le Cap d\'Agde', '34', 4_600);
+        $agde = $this->city("Le Cap d'Agde", '34', 4_600);
 
         self::assertSame($bourg->getId(), $this->resolve([$bourg], 'Bourg Saint Maurice', null));
         self::assertSame($bourg->getId(), $this->resolve([$bourg], 'Bourg-Saint-Maurice', null));
@@ -173,7 +173,7 @@ final class CityComparatorTest extends AppKernelTestCase
         $seez = $this->city('Séez', '73', 2_000, ['73700']);
         CityAliasFactory::createOne(['city' => $bourg, 'name' => 'Bourg-Saint-Maurice']);
 
-        self::assertSame($bourg->getId(), $this->resolve([$bourg, $seez], 'Bourg Saint Maurice', '73700'), 'The city\'s name is compared hyphens and all');
+        self::assertSame($bourg->getId(), $this->resolve([$bourg, $seez], 'Bourg Saint Maurice', '73700'), "The city's name is compared hyphens and all");
     }
 
     public function testACityBearingTheNameWinsOverAnAlias(): void

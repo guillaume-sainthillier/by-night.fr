@@ -64,6 +64,7 @@ final class OutingAlertsSendCommandTest extends AppKernelTestCase
 
         $tester = $this->tester();
         $tester->execute([]);
+
         $running->release();
 
         self::assertSame(Command::SUCCESS, $tester->getStatusCode());

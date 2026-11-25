@@ -70,9 +70,9 @@ final class PlaceNameNormalizer implements BatchResetInterface
 
     private function doNormalize(string $name, ?string $cityName): ?string
     {
-        $normalized = self::sanitize($name);
+        $normalized = $this->sanitize($name);
 
-        $city = null === $cityName ? '' : self::sanitize($cityName);
+        $city = null === $cityName ? '' : $this->sanitize($cityName);
         if ('' !== $city) {
             // "d'" is glued to the city once the apostrophe is dropped ("salle dalbi"), and
             // only stands before a vowel, where French elides "de"
@@ -84,7 +84,7 @@ final class PlaceNameNormalizer implements BatchResetInterface
         return '' === $normalized ? null : $normalized;
     }
 
-    private static function sanitize(string $text): string
+    private function sanitize(string $text): string
     {
         return trim(new StringManipulator((string) preg_replace('/[^\p{L}\p{N}\s]+/u', ' ', $text))
             ->deleteStopWords()

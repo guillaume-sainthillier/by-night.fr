@@ -19,6 +19,7 @@ use DateTimeImmutable;
 final class EventImportCheckerTest extends AppKernelTestCase
 {
     use TransferTestTrait;
+
     private const string HEADER = "Référence externe;ID;Nom;Description;Date de début;Heure de début;Lieu;Code postal;Ville\n";
 
     protected function setUp(): void
@@ -57,7 +58,7 @@ final class EventImportCheckerTest extends AppKernelTestCase
 
     public function testRowsOfOneEventMustNotContradictEachOther(): void
     {
-        $date = (new DateTimeImmutable('+1 month'))->format('d/m/Y');
+        $date = new DateTimeImmutable('+1 month')->format('d/m/Y');
         $import = $this->check(self::HEADER
             . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$date};20:30;La Guinguette;31000;Toulouse\n"
             . "JAZZ;;Autre nom;;{$date};21:00;;;\n");
@@ -71,7 +72,7 @@ final class EventImportCheckerTest extends AppKernelTestCase
     public function testAnotherMembersEventCannotBeUpdated(): void
     {
         $someoneElses = EventFactory::createOne();
-        $date = (new DateTimeImmutable('+1 month'))->format('d/m/Y');
+        $date = new DateTimeImmutable('+1 month')->format('d/m/Y');
         $import = $this->check(self::HEADER . ";{$someoneElses->getId()};Soirée;Une description assez longue.;{$date};;Salle;31000;Toulouse\n");
 
         self::assertSame(1, $import->getInvalidCount());
@@ -83,7 +84,7 @@ final class EventImportCheckerTest extends AppKernelTestCase
      */
     public function testAReferenceTooLongForItsColumnIsRefused(): void
     {
-        $date = (new DateTimeImmutable('+1 month'))->format('d/m/Y');
+        $date = new DateTimeImmutable('+1 month')->format('d/m/Y');
         $long = str_repeat('é', 101);
         $import = $this->check(self::HEADER
             . "{$long};;Soirée jazz;Deux soirs de jazz en plein air.;{$date};20:30;La Guinguette;31000;Toulouse\n"
@@ -108,7 +109,7 @@ final class EventImportCheckerTest extends AppKernelTestCase
     public function testSearchBeingDownCostsTheHintsNotTheCheck(): void
     {
         $this->searchDownCalls = 0;
-        $date = (new DateTimeImmutable('+1 month'))->format('d/m/Y');
+        $date = new DateTimeImmutable('+1 month')->format('d/m/Y');
 
         $import = $this->check(self::HEADER
             . "JAZZ;;Soirée jazz;Deux soirs de jazz en plein air.;{$date};20:30;La Guinguette;31000;Toulouse\n"

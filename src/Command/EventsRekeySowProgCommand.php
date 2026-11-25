@@ -106,7 +106,7 @@ final class EventsRekeySowProgCommand extends Command
         // 2. The programme rows: their next date nobody took
         foreach ($rows as $externalId => $row) {
             if (null === $row['dateId'] && isset($byProgramme[$row['programmeId']])) {
-                $v2Id = self::pick(array_diff_key($byProgramme[$row['programmeId']], $claimed), $today);
+                $v2Id = $this->pick(array_diff_key($byProgramme[$row['programmeId']], $claimed), $today);
                 if (null !== $v2Id) {
                     $claim($externalId, $v2Id);
                 }
@@ -120,11 +120,11 @@ final class EventsRekeySowProgCommand extends Command
             $io->text(\sprintf('%d upcoming event(s) missing from the CSV: reading the live feed', \count($unknown)));
             $feed = $this->readFeed();
             foreach ($unknown as $externalId => $row) {
-                $candidates = array_diff_key($feed[self::normalize($row['name'])] ?? [], $claimed);
+                $candidates = array_diff_key($feed[$this->normalize($row['name'])] ?? [], $claimed);
                 $candidates = array_filter($candidates, static fn (string $date): bool => $date >= $row['startDate'] && $date <= $row['endDate']);
                 // Only on the row's own days: a title alone ("Jam session") would match other shows. The
                 // programme's dates are several v2 events of one title, its next one is taken first.
-                $v2Id = self::pick($candidates, $today);
+                $v2Id = $this->pick($candidates, $today);
                 if (null !== $v2Id) {
                     $claim($externalId, $v2Id);
                 }
@@ -176,7 +176,7 @@ final class EventsRekeySowProgCommand extends Command
      *
      * @param array<int|string, string> $dates v2 id => Y-m-d
      */
-    private static function pick(array $dates, string $today): ?string
+    private function pick(array $dates, string $today): ?string
     {
         if ([] === $dates) {
             return null;
@@ -248,8 +248,8 @@ final class EventsRekeySowProgCommand extends Command
                 'programmeId' => $matches[1],
                 'dateId' => $matches[2] ?? null,
                 'name' => (string) $row['name'],
-                'startDate' => self::day($row['startDate']),
-                'endDate' => self::day($row['endDate'] ?? $row['startDate']),
+                'startDate' => $this->day($row['startDate']),
+                'endDate' => $this->day($row['endDate'] ?? $row['startDate']),
             ];
         }
 
@@ -269,7 +269,7 @@ final class EventsRekeySowProgCommand extends Command
             $data = $this->sowprogClient->request('GET', 'events', ['query' => ['page' => $page, 'pageSize' => 200, 'modifiedSince' => 0]])->toArray();
             foreach ($data['data'] ?? [] as $event) {
                 foreach ($event['dates'] ?? [] as $date) {
-                    $feed[self::normalize(html_entity_decode((string) $event['title'], \ENT_QUOTES | \ENT_HTML5, 'UTF-8'))][(string) $event['id']] = substr((string) $date['date'], 0, 10);
+                    $feed[$this->normalize(html_entity_decode((string) $event['title'], \ENT_QUOTES | \ENT_HTML5, 'UTF-8'))][(string) $event['id']] = substr((string) $date['date'], 0, 10);
                 }
             }
         } while ($page++ < ($data['meta']['totalPages'] ?? 0));
@@ -277,12 +277,12 @@ final class EventsRekeySowProgCommand extends Command
         return $feed;
     }
 
-    private static function normalize(string $title): string
+    private function normalize(string $title): string
     {
         return trim((string) preg_replace('/[^\p{L}\p{N}]+/u', ' ', mb_strtolower($title)));
     }
 
-    private static function day(mixed $date): string
+    private function day(mixed $date): string
     {
         return $date instanceof DateTimeInterface ? $date->format('Y-m-d') : substr((string) $date, 0, 10);
     }

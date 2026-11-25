@@ -611,7 +611,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
             // Basic event data
             $dto->name = \sprintf('Événement Test #%d - Festival de Musique', $i);
             $dto->description = \sprintf(
-                'Description détaillée de l\'événement numéro %d. ' .
+                "Description détaillée de l'événement numéro %d. " .
                 'Cet événement propose une programmation riche et variée ' .
                 'pour tous les publics. Venez nombreux découvrir les artistes.',
                 $i
@@ -854,6 +854,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         // Event 91 has no valid date, it is rejected
         $rejected = $this->makeEventWithPlace('91', 'Le Bikini', '12', 'slug-test-parser');
         $rejected->endDate = new DateTimeImmutable('-1 year');
+
         $this->handler->handleOne($rejected);
         $this->assertSame(0, EventFactory::count(['externalId' => '91']));
 
@@ -870,6 +871,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $dto = $this->makeEventWithPlace('fixed-later', 'Le Bikini', 'bikini', 'slug-test-parser');
         $dto->description = 'Soon';
+
         $this->handler->handleOne($dto);
         $this->assertSame(0, EventFactory::count(['externalId' => 'fixed-later']));
 
@@ -902,10 +904,12 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $dto = $this->makeEventWithPlace('still-bad', 'Le Bikini', 'bikini', 'slug-test-parser');
         $dto->description = 'Soon';
+
         $this->handler->handleOne($dto);
 
         $dto = $this->makeEventWithPlace('still-bad', 'Le Bikini', 'bikini', 'slug-test-parser');
         $dto->description = 'Soon';
+
         $this->handler->handleOne($dto);
 
         $this->assertSame(0, EventFactory::count(['externalId' => 'still-bad']));
@@ -927,6 +931,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = $this->makeEventWithPlace('tag-accents', 'Le Bikini');
         $dto->category = TagDto::fromString('THEATRE');
         $dto->themes = [TagDto::fromString('theatre')];
+
         $this->handler->handleOne($dto);
 
         $event = EventFactory::find(['externalId' => 'tag-accents']);
@@ -947,6 +952,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $dto = $this->makeEventWithPlace('tag-no-break-space', 'Le Bikini');
         $dto->category = TagDto::fromString('Humour');
+
         $this->handler->handleOne($dto);
 
         $this->assertSame($humour->getId(), EventFactory::find(['externalId' => 'tag-no-break-space'])->getCategory()?->getId());
@@ -960,8 +966,10 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $first = $this->makeEventWithPlace('tag-spelling-1', 'Le Bikini');
         $first->category = TagDto::fromString('Café-concert');
+
         $second = $this->makeEventWithPlace('tag-spelling-2', 'Le Zénith');
         $second->category = TagDto::fromString('CAFE-CONCERT');
+
         $this->handler->handleMany([$first, $second]);
 
         $this->assertSame(2, EventFactory::count(['externalId' => ['tag-spelling-1', 'tag-spelling-2']]));
@@ -982,6 +990,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = $this->makeEventWithPlace('tag-form-theme', 'Le Bikini');
         $dto->category = TagDto::fromString('Spectacle');
         $dto->themes = [TagDto::fromString('humour')];
+
         $this->handler->handleOne($dto);
 
         $event = EventFactory::find(['externalId' => 'tag-form-theme']);
@@ -1002,6 +1011,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = $this->makeEventWithPlace('tag-form-edit', 'Le Bikini');
         $dto->category = TagDto::fromEntity($soiree);
         $dto->themes = [TagDto::fromString('Soirée'), TagDto::fromString('SOIREE')];
+
         $this->handler->handleOne($dto);
 
         $event = EventFactory::find(['externalId' => 'tag-form-edit']);
@@ -1018,6 +1028,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $dto = $this->makeEventWithPlace('tag-form-spellings', 'Le Bikini');
         $dto->category = TagDto::fromString('Soirée');
         $dto->themes = [TagDto::fromString('soiree'), TagDto::fromString('Humour'), TagDto::fromString('humour ')];
+
         $this->handler->handleOne($dto);
 
         $event = EventFactory::find(['externalId' => 'tag-form-spellings']);
@@ -1040,10 +1051,12 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         \assert(null !== $inPrefecture->place?->city);
         $inPrefecture->place->city->name = 'Pau';
         $inPrefecture->place->city->postalCode = '64000';
+
         $inHamlet = $this->makeEventWithPlace('pau-73', 'Salle du hameau', 'salle-hameau', 'slug-test-parser');
         \assert(null !== $inHamlet->place?->city);
         $inHamlet->place->city->name = 'Pau';
         $inHamlet->place->city->postalCode = '73100';
+
         $this->handler->handleMany([$inHamlet, $inPrefecture]);
 
         $this->assertSame($prefecture->getId(), EventFactory::find(['externalId' => 'pau-64'])->getPlace()?->getCity()?->getId());
@@ -1097,6 +1110,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
 
         $country = new CountryDto();
         $country->code = 'FR';
+
         $place->country = $place->city?->country ?? $country;
 
         return $place;
@@ -1473,6 +1487,7 @@ final class DoctrineEventHandlerTest extends AppKernelTestCase
         $timesheet->startAt = new DateTimeImmutable($date . ' 20:30:00');
         $timesheet->endAt = new DateTimeImmutable($date . ' 22:30:00');
         $timesheet->startTime = new DateTimeImmutable('20:30');
+
         $dto->timesheets = [$timesheet];
 
         $placeDto = new PlaceDto();

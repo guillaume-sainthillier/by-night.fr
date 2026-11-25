@@ -160,7 +160,7 @@ final class FeverImpactParserTest extends TestCase
             '⭐ Candlelight, à la bougie. Infos 📍 Lieu : Hôtel Carlton 📅 Dates et heures : sélectionne tes dates ❓ Consulte la FAQ de cet événement ici Description Imagine-toi au concert. Plan de la salle',
             "<p>⭐ Candlelight, à la bougie.</p>\n<p><strong>Infos</strong></p>\n<p>📍 Lieu : Hôtel Carlton<br>📅 Dates et heures : sélectionne tes dates</p>\n<p><strong>Description</strong></p>\n<p>Imagine-toi au concert.</p>",
         ];
-        yield 'Fever\'s promotion left out' => [
+        yield "Fever's promotion left out" => [
             '📱 Billets sur ton smartphone ⚡ Accès instantané à tes billets Embarque sur le Léman. Ce qui est inclus ✔️ Bateau aller-retour Pourquoi choisir Fever ? ✔️ Des millions de réservations ✔️ Service client 24/7 BlackFriday2026',
             "<p>Embarque sur le Léman.</p>\n<p><strong>Ce qui est inclus</strong></p>\n<p>✔️ Bateau aller-retour</p>",
         ];
@@ -168,7 +168,7 @@ final class FeverImpactParserTest extends TestCase
             '* { box-sizing: border-box; } /* mobile */ @media (max-width: 48rem) { .tje-break { display: inline; } } .tje-wrap { max-width: 100%; } ⚖️ Au cœur du drame | 🗳️ Exprime ton vote',
             '<p>⚖️ Au cœur du drame<br>🗳️ Exprime ton vote</p>',
         ];
-        yield 'a non-breaking space before a heading\'s line' => [
+        yield "a non-breaking space before a heading's line" => [
             'Offre spéciale&nbsp; 🎂 -15&nbsp;% le 1er novembre',
             "<p><strong>Offre spéciale</strong></p>\n<p>🎂 -15\u{a0}% le 1er novembre</p>",
         ];

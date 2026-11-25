@@ -46,6 +46,7 @@ final class EventsDownloadImagesCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->title('Handling event image download');
+
         $batchSize = max(1, (int) $input->getOption('batch-size'));
         $endingFrom = $input->getOption('upcoming') ? new DateTimeImmutable('today') : null;
 

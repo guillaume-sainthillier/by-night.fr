@@ -640,7 +640,7 @@ final class EventControllerTest extends AppWebTestCase
         $client->loginUser($event->getUser());
 
         $crawler = $client->request('GET', self::organizerPath($event->getUser(), 'evenements/' . $event->getId()));
-        $client->submit($crawler->selectButton('Publier l\'événement')->form());
+        $client->submit($crawler->selectButton("Publier l'événement")->form());
 
         self::assertResponseRedirects(self::organizerPath($event->getUser()));
         self::assertFalse(EventFactory::find(['id' => $event->getId()])->isDraft());
@@ -660,7 +660,7 @@ final class EventControllerTest extends AppWebTestCase
 
         // The delete button sits in the bar but belongs to the delete form (its form attribute)
         $buttons = $crawler->filter('form[name="app_event"] button[type="submit"]:not([form])');
-        self::assertSame('Publier l\'événement', $buttons->first()->text());
+        self::assertSame("Publier l'événement", $buttons->first()->text());
         self::assertSame('app_event[saveDraft]', $buttons->eq(1)->attr('name'));
     }
 

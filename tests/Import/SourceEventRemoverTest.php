@@ -29,7 +29,7 @@ final class SourceEventRemoverTest extends AppKernelTestCase
 
         $event = EventFactory::find(['id' => $id]);
         self::assertSame(EventStatus::Removed, $event->getStatus());
-        self::assertNull($event->getStatusMessage(), 'The source\'s former message no longer applies');
+        self::assertNull($event->getStatusMessage(), "The source's former message no longer applies");
         self::assertTrue($event->isDraft(), 'Out of the listings');
         self::assertFalse($event->isIndexable());
     }

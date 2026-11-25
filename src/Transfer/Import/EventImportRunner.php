@@ -78,7 +78,7 @@ final readonly class EventImportRunner
         try {
             $format = $import->getFormat() ?? throw new InvalidSheetException('Format inconnu.');
             $local = $this->files->download($import->getSuccessFilePath() ?? throw new InvalidSheetException('Le fichier vérifié manque : vérifiez le fichier à nouveau.'), $format);
-            $groups = $this->grouper->group(self::originalRows($this->reader->read($local, $format)['rows'], $import->getKeptRows()));
+            $groups = $this->grouper->group($this->originalRows($this->reader->read($local, $format)['rows'], $import->getKeptRows()));
 
             // The events the member chose not to import (warned of on the check) come out skipped, by their reference
             // as EventRowGrouper tells events apart
@@ -128,7 +128,7 @@ final readonly class EventImportRunner
      *
      * @return list<SheetRow>
      */
-    private static function originalRows(array $rows, array $keptRows): array
+    private function originalRows(array $rows, array $keptRows): array
     {
         if (\count($rows) !== \count($keptRows)) {
             return $rows;
@@ -149,9 +149,9 @@ final readonly class EventImportRunner
         foreach ($groups as $group) {
             $mapped = $this->mapper->map($group, $user, $publisher);
             if (!$mapped->isValid()) {
-                $outcomes[] = self::outcome($mapped, null, 'failed');
+                $outcomes[] = $this->outcome($mapped, null, 'failed');
             } elseif (!$mapped->changed && null !== $mapped->eventId) {
-                $outcomes[] = self::outcome($mapped, $mapped->eventId, 'unchanged');
+                $outcomes[] = $this->outcome($mapped, $mapped->eventId, 'unchanged');
             } else {
                 $toSave[] = $mapped;
             }
@@ -162,14 +162,14 @@ final readonly class EventImportRunner
         }
 
         try {
-            $ids = $this->memberEventPublisher->saveImported($user, $publisher, array_map(self::item(...), $toSave));
+            $ids = $this->memberEventPublisher->saveImported($user, $publisher, array_map($this->item(...), $toSave));
         } catch (Throwable $e) {
             $this->logger->warning('A batch of the event import failed, its events are saved one by one: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
             $this->resetClosedManager();
             $ids = [];
             foreach ($toSave as $mapped) {
                 try {
-                    $ids[] = $this->memberEventPublisher->saveImported($user, $publisher, [self::item($this->mapper->map($mapped->group, $user, $publisher))])[0];
+                    $ids[] = $this->memberEventPublisher->saveImported($user, $publisher, [$this->item($this->mapper->map($mapped->group, $user, $publisher))])[0];
                 } catch (Throwable $e) {
                     $this->logger->error('An event of an import could not be saved: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
                     $this->resetClosedManager();
@@ -179,7 +179,7 @@ final readonly class EventImportRunner
         }
 
         foreach ($toSave as $i => $mapped) {
-            $outcomes[] = self::outcome($mapped, $ids[$i], null === $ids[$i] ? 'failed' : (null === $mapped->eventId ? 'created' : 'updated'));
+            $outcomes[] = $this->outcome($mapped, $ids[$i], null === $ids[$i] ? 'failed' : (null === $mapped->eventId ? 'created' : 'updated'));
         }
 
         return $outcomes;
@@ -188,7 +188,7 @@ final readonly class EventImportRunner
     /**
      * @return array{dto: EventDto, new: bool, draft: ?bool, reference: ?string}
      */
-    private static function item(MappedEvent $mapped): array
+    private function item(MappedEvent $mapped): array
     {
         return ['dto' => $mapped->dto, 'new' => null === $mapped->eventId, 'draft' => $mapped->draft, 'reference' => $mapped->reference];
     }
@@ -196,13 +196,13 @@ final readonly class EventImportRunner
     /**
      * @return array{row: int, reference: ?string, id: ?int, name: string, outcome: string}
      */
-    private static function outcome(MappedEvent $mapped, ?int $id, string $outcome): array
+    private function outcome(MappedEvent $mapped, ?int $id, string $outcome): array
     {
         return [
             'row' => $mapped->group->first()->number,
             'reference' => $mapped->reference,
             'id' => $id,
-            'name' => (string) ($mapped->dto->name ?? $mapped->group->first()->get(EventColumn::Name)),
+            'name' => $mapped->dto->name ?? $mapped->group->first()->get(EventColumn::Name),
             'outcome' => $outcome,
         ];
     }

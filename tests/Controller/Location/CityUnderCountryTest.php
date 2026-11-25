@@ -85,7 +85,7 @@ final class CityUnderCountryTest extends AppWebTestCase
         $geneva = $this->geneva();
         CityLegacySlugFactory::createOne(['city' => $geneva, 'slug' => 'geneve-1']);
         $place = PlaceFactory::createOne(['city' => $geneva, 'country' => $geneva->getCountry()]);
-        $event = EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['name' => 'Fête de l\'Escalade', 'place' => $place]);
+        $event = EventFactory::new()->withDates(new DateTimeImmutable('tomorrow'))->create(['name' => "Fête de l'Escalade", 'place' => $place]);
 
         $client->request('GET', \sprintf('/geneve-1/soiree/%s--%d', $event->getSlug(), $event->getId()));
 
@@ -108,7 +108,7 @@ final class CityUnderCountryTest extends AppWebTestCase
 
         // Thrown by AppContextSubscriber, not by the lazy city the agenda reads (LazyLocationFactory)
         $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage("La location 'toulouse/k' est introuvable");
+        $this->expectExceptionMessageIsOrContains("La location 'toulouse/k' est introuvable");
 
         $client->request('GET', '/toulouse/k');
     }

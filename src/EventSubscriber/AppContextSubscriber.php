@@ -18,7 +18,7 @@ use App\Entity\Country;
 use App\Exception\CityMovedException;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -34,7 +34,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Uses PHP 8.4 LazyObject to defer database loading of City/Country entities
  * until their properties are actually accessed.
  */
-final readonly class AppContextSubscriber implements EventSubscriberInterface
+final readonly class AppContextSubscriber
 {
     /**
      * The events filed in no country answered on "/unknown". The ones located since redirect to their city from
@@ -51,14 +51,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::REQUEST => 'onKernelRequest',
-            KernelEvents::EXCEPTION => 'onKernelException',
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::REQUEST)]
     public function onKernelRequest(KernelEvent $event): void
     {
         if (!$event->isMainRequest()) {
@@ -113,7 +106,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
                 $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
                 // A redirect that would not read the city (the former agenda, the router's trailing slash) reads it
                 // now: a city named by a former slug then takes a single redirect, to its current page
-                if (self::onlyRedirects($request)) {
+                if ($this->onlyRedirects($request)) {
                     $location->getCity()?->getId();
                 }
             }
@@ -124,7 +117,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
         }
     }
 
-    private static function onlyRedirects(Request $request): bool
+    private function onlyRedirects(Request $request): bool
     {
         return 'app_agenda_legacy' === $request->attributes->getString('_route')
             || str_starts_with((string) $request->attributes->get('_controller'), RedirectController::class);
@@ -137,6 +130,7 @@ final readonly class AppContextSubscriber implements EventSubscriberInterface
      * ("/nowhere") would fail there again, and the error page with it, and "/unknown" is nowhere. That page takes the
      * member's city instead.
      */
+    #[AsEventListener(event: KernelEvents::EXCEPTION)]
     public function onKernelException(ExceptionEvent $event): void
     {
         if (!$event->isMainRequest()) {

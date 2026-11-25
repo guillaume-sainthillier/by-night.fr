@@ -144,6 +144,7 @@ final class OutingControllerTest extends AppWebTestCase
         $member = UserFactory::createOne();
         $client->loginUser($member);
         $client->request('GET', '/espace-perso/mes-sorties');
+
         $token = UserFactory::find(['id' => $member->getId()])->getCalendarToken();
 
         $client->request('POST', '/espace-perso/mes-sorties/calendrier', ['_token' => 'forged']);

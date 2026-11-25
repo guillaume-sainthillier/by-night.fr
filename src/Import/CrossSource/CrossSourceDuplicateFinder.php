@@ -64,7 +64,7 @@ final readonly class CrossSourceDuplicateFinder
             foreach ($this->eventRepository->findImportedRowsAtPlaces($chunk, $from) as $row) {
                 $eventPlaces[$row['id']] = $row['placeId'];
                 $identityHashes[$row['id']] = $row['identityHash'];
-                if (self::isComparable($row)) {
+                if ($this->isComparable($row)) {
                     $rowsByPlace[$row['placeId']][] = $row;
                 }
             }
@@ -76,7 +76,7 @@ final readonly class CrossSourceDuplicateFinder
                     $left = $rows[$i];
                     for ($j = $i + 1; $j < $count; ++$j) {
                         $right = $rows[$j];
-                        if ($left['fromData'] === $right['fromData'] || !self::rangesOverlap($left, $right)) {
+                        if ($left['fromData'] === $right['fromData'] || !$this->rangesOverlap($left, $right)) {
                             continue;
                         }
 
@@ -140,7 +140,7 @@ final readonly class CrossSourceDuplicateFinder
      *
      * @param array{duplicateOfId: int|null, duplicateReason: DuplicateReason|null, identityHash: string|null, canonicalIdentityHash: string|null, status: EventStatus|null, draft: bool} $row
      */
-    private static function isComparable(array $row): bool
+    private function isComparable(array $row): bool
     {
         if (EventStatus::Removed === $row['status'] || $row['draft']) {
             return false;
@@ -155,7 +155,7 @@ final readonly class CrossSourceDuplicateFinder
      * @param array{startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null} $left
      * @param array{startDate: DateTimeImmutable|null, endDate: DateTimeImmutable|null} $right
      */
-    private static function rangesOverlap(array $left, array $right): bool
+    private function rangesOverlap(array $left, array $right): bool
     {
         if (null === $left['startDate'] || null === $right['startDate']) {
             return false;

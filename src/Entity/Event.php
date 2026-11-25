@@ -1735,7 +1735,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
         $upcoming = array_values(array_filter($sessions, static fn (EventTimesheet $session): bool => self::sessionEndDay($session) >= $fromDay));
         foreach ($upcoming as $session) {
-            if (null === $toDay || self::sessionStartDay($session) <= $toDay) {
+            if (null === $toDay || $this->sessionStartDay($session) <= $toDay) {
                 return $session;
             }
         }
@@ -1753,7 +1753,7 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
         return \count(array_filter($this->getSessions(), static fn (EventTimesheet $session): bool => self::sessionEndDay($session) >= $fromDay));
     }
 
-    private static function sessionStartDay(EventTimesheet $session): string
+    private function sessionStartDay(EventTimesheet $session): string
     {
         return $session->getStartAt()?->format('Y-m-d') ?? '';
     }

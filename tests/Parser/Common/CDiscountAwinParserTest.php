@@ -39,7 +39,7 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
 
     public function testARowMapsToAnEvent(): void
     {
-        $event = $this->invoke(self::row());
+        $event = $this->invoke($this->row());
 
         self::assertInstanceOf(EventDto::class, $event);
         self::assertSame('CDiscount', $event->fromData);
@@ -59,8 +59,8 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
 
     public function testTheSamePlaceGetsTheSameExternalId(): void
     {
-        $first = $this->invoke(self::row());
-        $second = $this->invoke(self::row(['merchant_product_id' => '46008799593', 'custom_1' => 'le 15/02/2027 à 18h']));
+        $first = $this->invoke($this->row());
+        $second = $this->invoke($this->row(['merchant_product_id' => '46008799593', 'custom_1' => 'le 15/02/2027 à 18h']));
 
         self::assertNotNull($first?->place?->externalId);
         self::assertSame($first->place->externalId, $second?->place?->externalId);
@@ -69,7 +69,7 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
     public function testAZeroPriceIsNoPrice(): void
     {
         // An affiliate feed says 0 when it has no price, not when the entry is free
-        $event = $this->invoke(self::row(['search_price' => '0.00']));
+        $event = $this->invoke($this->row(['search_price' => '0.00']));
 
         self::assertInstanceOf(EventDto::class, $event);
         self::assertNull($event->prices);
@@ -77,9 +77,9 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
 
     public function testRowsThatCannotBeDatedOrPlacedAreLeftOut(): void
     {
-        self::assertNull($this->invoke(self::row(['custom_6' => ''])), 'No venue');
-        self::assertNull($this->invoke(self::row(['custom_1' => ''])), 'No date');
-        self::assertNull($this->invoke(self::row(['custom_1' => 'Date à venir'])), 'No parsable date');
+        self::assertNull($this->invoke($this->row(['custom_6' => ''])), 'No venue');
+        self::assertNull($this->invoke($this->row(['custom_1' => ''])), 'No date');
+        self::assertNull($this->invoke($this->row(['custom_1' => 'Date à venir'])), 'No parsable date');
     }
 
     public function testTicketmasterGivesTheShowAllItsDatesItsPictureAndItsVenueCoordinates(): void
@@ -88,10 +88,10 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
             'https://s1.ticketm.net/dam/a/1/nico_TABLET_LANDSCAPE_LARGE_16_9.jpg',
             43.5517,
             1.4826,
-            [self::performance('2027-02-14 20:00'), self::performance('2027-02-15 18:30'), self::performance('2027-03-01 20:00')],
+            [$this->performance('2027-02-14 20:00'), $this->performance('2027-02-15 18:30'), $this->performance('2027-03-01 20:00')],
         )]);
 
-        $event = $this->invoke(self::row());
+        $event = $this->invoke($this->row());
 
         self::assertInstanceOf(EventDto::class, $event);
         self::assertSame('https://s1.ticketm.net/dam/a/1/nico_TABLET_LANDSCAPE_LARGE_16_9.jpg', $event->imageUrl);
@@ -115,14 +115,14 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
     public function testCancelledPerformancesAreNoSessions(): void
     {
         $this->setTicketmasterShows(['46008799592' => new TicketmasterShow(null, null, null, [
-            self::performance('2027-02-14 20:00', 'cancelled'),
-            self::performance('2027-02-15 20:00', 'offsale'),
-            self::performance('2027-02-16 20:00', 'rescheduled'),
-            self::performance('2027-02-17 20:00', 'onsale'),
-            self::performance('2027-02-18 20:00', 'postponed'),
+            $this->performance('2027-02-14 20:00', 'cancelled'),
+            $this->performance('2027-02-15 20:00', 'offsale'),
+            $this->performance('2027-02-16 20:00', 'rescheduled'),
+            $this->performance('2027-02-17 20:00', 'onsale'),
+            $this->performance('2027-02-18 20:00', 'postponed'),
         ])]);
 
-        $event = $this->invoke(self::row());
+        $event = $this->invoke($this->row());
 
         self::assertSame('2027-02-15', $event?->startDate?->format('Y-m-d'));
         self::assertSame('2027-02-17', $event->endDate?->format('Y-m-d'));
@@ -133,11 +133,11 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
     public function testAShowCancelledOnEveryDateIsCancelled(): void
     {
         $this->setTicketmasterShows(['46008799592' => new TicketmasterShow(null, null, null, [
-            self::performance('2027-02-14 20:00', 'cancelled'),
-            self::performance('2027-02-15 20:00', 'cancelled'),
+            $this->performance('2027-02-14 20:00', 'cancelled'),
+            $this->performance('2027-02-15 20:00', 'cancelled'),
         ])]);
 
-        $event = $this->invoke(self::row());
+        $event = $this->invoke($this->row());
 
         self::assertSame(EventStatus::Cancelled, $event?->status);
         self::assertSame('2027-02-14', $event->startDate?->format('Y-m-d'), "CDiscount's own date");
@@ -146,9 +146,9 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
 
     public function testAShowTicketmasterDoesNotKnowKeepsWhatCDiscountSays(): void
     {
-        $this->setTicketmasterShows(['1' => new TicketmasterShow('https://s1.ticketm.net/other.jpg', 1.0, 2.0, [self::performance('2027-05-01 20:00')])]);
+        $this->setTicketmasterShows(['1' => new TicketmasterShow('https://s1.ticketm.net/other.jpg', 1.0, 2.0, [$this->performance('2027-05-01 20:00')])]);
 
-        $event = $this->invoke(self::row());
+        $event = $this->invoke($this->row());
 
         self::assertSame('https://images2.productserve.com/?w=200&h=200&url=a.jpg', $event?->imageUrl);
         self::assertNull($event->place?->latitude);
@@ -160,9 +160,9 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
 
     public function testAShowWithoutPictureOrCoordinatesKeepsCDiscountsOnes(): void
     {
-        $this->setTicketmasterShows(['46008799592' => new TicketmasterShow(null, null, null, [self::performance('2027-02-14 20:00')])]);
+        $this->setTicketmasterShows(['46008799592' => new TicketmasterShow(null, null, null, [$this->performance('2027-02-14 20:00')])]);
 
-        $event = $this->invoke(self::row());
+        $event = $this->invoke($this->row());
 
         self::assertSame('https://images2.productserve.com/?w=200&h=200&url=a.jpg', $event?->imageUrl);
         self::assertNull($event->place?->latitude);
@@ -177,7 +177,7 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
         new ReflectionProperty(CDiscountAwinParser::class, 'ticketmasterShows')->setValue($this->parser, $shows);
     }
 
-    private static function performance(string $dateTime, string $status = 'onsale'): TicketmasterPerformance
+    private function performance(string $dateTime, string $status = 'onsale'): TicketmasterPerformance
     {
         $moment = new DateTimeImmutable($dateTime);
 
@@ -197,7 +197,7 @@ final class CDiscountAwinParserTest extends AppKernelTestCase
      *
      * @return array<string, string>
      */
-    private static function row(array $overrides = []): array
+    private function row(array $overrides = []): array
     {
         return array_replace([
             'aw_deep_link' => 'https://www.awin1.com/pclick.php?p=46008799592&a=660995&m=19627',

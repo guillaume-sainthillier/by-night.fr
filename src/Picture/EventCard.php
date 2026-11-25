@@ -38,26 +38,34 @@ final readonly class EventCard
     private const string REVISION = '1';
 
     private const string INK = '#191c22';
+
     private const string MUTED = '#5a413b';
+
     private const string PRIMARY = '#c43d1d';
+
     private const string PRIMARY_SOFT = '#ffdad2';
+
     private const string SURFACE_LOW = '#f2f3fd';
 
     /** The box of the name, the date and the venue: (72, 140), 668 × 330 */
     private const int TEXT_X = 72;
+
     private const int TEXT_TOP = 140;
+
     private const int TEXT_WIDTH = 668;
+
     private const int TEXT_HEIGHT = 330;
 
     /** The card: the poster in (804, 156) 308 × 150, the venue and its city centred on x 958 */
     private const int CARD_CENTER = 958;
+
     private const array FIGURE_CENTERS = [845, 958, 1071];
 
     public function __construct(
         private EventSEO $eventSEO,
         private EventProfilePicture $eventProfilePicture,
         private StorageInterface $storage,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private string $projectDir,
         #[Target('og.storage')]
         private FilesystemOperator $ogStorage,
@@ -192,6 +200,7 @@ final readonly class EventCard
         $card->setImageCompressionQuality(88);
         $card->setInterlaceScheme(Imagick::INTERLACE_PLANE);
         $card->stripImage();
+
         $jpeg = $card->getImageBlob();
         $card->clear();
 
@@ -274,11 +283,14 @@ final readonly class EventCard
         $poster->cropThumbnailImage(308, 150);
         $poster->setImagePage(0, 0, 0, 0);
         $poster->setImageAlphaChannel(Imagick::ALPHACHANNEL_SET);
+
         $mask = new Imagick();
         $mask->newImage(308, 150, new ImagickPixel('transparent'));
+
         $shape = new ImagickDraw();
         $shape->setFillColor(new ImagickPixel('white'));
         $shape->roundRectangle(0, 0, 307, 149, 12, 12);
+
         $mask->drawImage($shape);
         $poster->compositeImage($mask, Imagick::COMPOSITE_DSTIN, 0, 0);
         $card->compositeImage($poster, Imagick::COMPOSITE_OVER, 804, 156);

@@ -15,12 +15,12 @@ use App\Entity\User;
 use App\Storage\ImageCachePurger;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
-final class ImageSubscriber implements EventSubscriberInterface, BatchResetInterface
+final class ImageSubscriber implements BatchResetInterface
 {
     /** @var array<string, array{string, string, string}> their VichUploader mapping, its public path, and their path there; one purge per file */
     private array $deletedImages = [];
@@ -31,19 +31,8 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            Events::PRE_REMOVE => 'onImageDelete',
-            Events::POST_REMOVE => 'onImageDeleted',
-            Events::PRE_UPLOAD => 'onImageUpload',
-        ];
-    }
-
     // Remove manual uploads from container
+    #[AsEventListener(event: Events::PRE_UPLOAD)]
     public function onImageUpload(Event $event): void
     {
         // file become an instance of File just after upload, we have to track it before the change
@@ -70,6 +59,7 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
         }
     }
 
+    #[AsEventListener(event: Events::PRE_REMOVE)]
     public function onImageDelete(Event $event): void
     {
         $object = $event->getObject();
@@ -82,6 +72,7 @@ final class ImageSubscriber implements EventSubscriberInterface, BatchResetInter
         $this->deletedImages[$mapping->getMappingName() . '|' . $path] = [$mapping->getMappingName(), $mapping->getUriPrefix(), $path];
     }
 
+    #[AsEventListener(event: Events::POST_REMOVE)]
     public function onImageDeleted(): void
     {
         foreach ($this->deletedImages as [$mappingName, $uriPrefix, $path]) {

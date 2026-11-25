@@ -217,7 +217,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         /** @var array<string, true> $existingKeys */
         $existingKeys = [];
         foreach ($existingTimesheets as $existing) {
-            $existingKeys[self::timesheetKey($existing)] = true;
+            $existingKeys[$this->timesheetKey($existing)] = true;
         }
 
         /** @var array<string, true> $wantedKeys */
@@ -242,7 +242,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         }
 
         foreach ($existingTimesheets as $existing) {
-            if (isset($wantedKeys[self::timesheetKey($existing)])) {
+            if (isset($wantedKeys[$this->timesheetKey($existing)])) {
                 continue;
             }
 
@@ -253,7 +253,7 @@ final readonly class EventEntityFactory implements EntityFactoryInterface
         return $changed;
     }
 
-    private static function timesheetKey(EventTimesheet $timesheet): string
+    private function timesheetKey(EventTimesheet $timesheet): string
     {
         return ObjectKey::timesheet($timesheet->getStartAt(), $timesheet->getEndAt(), $timesheet->getStartTime(), $timesheet->getEndTime(), $timesheet->getHours());
     }

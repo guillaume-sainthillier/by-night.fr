@@ -212,15 +212,15 @@ final readonly class EventJsonLd
 
         return match (\count($offers)) {
             0 => $this->buildOfferSchema($event),
-            1 => null === $offers[0]->startingPrice && !$offers[0]->soldOut ? null : self::ticketOfferSchema($offers[0]),
-            default => array_map(self::ticketOfferSchema(...), $offers),
+            1 => null === $offers[0]->startingPrice && !$offers[0]->soldOut ? null : $this->ticketOfferSchema($offers[0]),
+            default => array_map($this->ticketOfferSchema(...), $offers),
         };
     }
 
     /**
      * @return array<string, mixed>
      */
-    private static function ticketOfferSchema(TicketOffer $offer): array
+    private function ticketOfferSchema(TicketOffer $offer): array
     {
         $schema = [
             '@type' => 'Offer',

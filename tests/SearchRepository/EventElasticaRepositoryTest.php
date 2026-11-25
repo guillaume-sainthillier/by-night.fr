@@ -133,7 +133,7 @@ final class EventElasticaRepositoryTest extends TestCase
 
         $bool = $this->repository->createSearchQuery($search)->toArray()['query']['bool'];
 
-        self::assertSame('jazz', self::keywordsOf($bool['must'][0]));
+        self::assertSame('jazz', $this->keywordsOf($bool['must'][0]));
         self::assertEquals($this->typeFilterOf(AgendaType::Concert), $bool['filter'][1], 'The keywords used to replace the type');
     }
 
@@ -155,7 +155,7 @@ final class EventElasticaRepositoryTest extends TestCase
         $filters = $dates['filter']['bool']['filter'];
         self::assertContains(['terms' => ['place.id' => [12]]], $filters, 'A venue page counts its own dates');
         self::assertEquals($this->typeFilterOf(AgendaType::Concert), $filters[1]);
-        self::assertSame('jazz', self::keywordsOf($filters[2]));
+        self::assertSame('jazz', $this->keywordsOf($filters[2]));
         self::assertSame(7, $filters[3]['bool']['should'][0]['term']['category.id']);
         self::assertCount(4, $filters, 'The window of the page is left out: each date is its own window');
 
@@ -196,7 +196,7 @@ final class EventElasticaRepositoryTest extends TestCase
             ['range' => ['sessions.endAt' => ['gte' => '2026-10-10']]],
         ]]]]], $filters[0]);
         self::assertEquals(['terms' => ['place.id' => [12]]], $filters[1]);
-        self::assertSame('jazz', self::keywordsOf($filters[2]));
+        self::assertSame('jazz', $this->keywordsOf($filters[2]));
         self::assertEquals(['term' => ['category.id' => 7]], $filters[3]['bool']['should'][0]);
 
         $counts = $types['aggs']['types']['filters']['filters'];
@@ -223,7 +223,7 @@ final class EventElasticaRepositoryTest extends TestCase
         $filters = $categories['filter']['bool']['filter'];
         self::assertCount(3, $filters, 'The category of the page is left out');
         self::assertEquals(['terms' => ['place.id' => [12]]], $filters[1]);
-        self::assertSame('jazz', self::keywordsOf($filters[2]));
+        self::assertSame('jazz', $this->keywordsOf($filters[2]));
         self::assertSame(['concert', 'show', 'exhibition', 'family', 'student'], array_keys($categories['aggs']['types']['filters']['filters']));
         self::assertSame(['terms' => ['field' => 'category.id', 'size' => 4]], $categories['aggs']['types']['aggs']['categories']);
     }
@@ -254,7 +254,7 @@ final class EventElasticaRepositoryTest extends TestCase
         ], $query['query']['bool']['filter']);
         self::assertSame(['concert', 'show', 'exhibition', 'family', 'student'], array_map(static fn (array $clause): string => $clause['bool']['_name'], $query['query']['bool']['should']));
         // The full-text search of the concert page, named
-        self::assertContains('concert musique artiste', array_map(self::keywordsOf(...), $query['query']['bool']['should'][0]['bool']['should']));
+        self::assertContains('concert musique artiste', array_map($this->keywordsOf(...), $query['query']['bool']['should'][0]['bool']['should']));
         self::assertFalse($query['_source']);
     }
 
@@ -279,7 +279,7 @@ final class EventElasticaRepositoryTest extends TestCase
             ['nested' => ['path' => 'themes', 'query' => ['match_phrase' => ['themes.name' => 'soirée']]]],
             $anyTerm['should'],
         );
-        self::assertContains('soirée étudiant bar discothèque boîte de nuit after work', array_map(self::keywordsOf(...), $anyTerm['should']), 'What the keywords query found stays classified');
+        self::assertContains('soirée étudiant bar discothèque boîte de nuit after work', array_map($this->keywordsOf(...), $anyTerm['should']), 'What the keywords query found stays classified');
     }
 
     /**
@@ -300,7 +300,7 @@ final class EventElasticaRepositoryTest extends TestCase
         $filters = $places['filter']['bool']['filter'];
         self::assertCount(4, $filters, 'The venue of the page is left out');
         self::assertEquals($this->typeFilterOf(AgendaType::Concert), $filters[1]);
-        self::assertSame('jazz', self::keywordsOf($filters[2]));
+        self::assertSame('jazz', $this->keywordsOf($filters[2]));
         self::assertEquals(['term' => ['category.id' => 7]], $filters[3]['bool']['should'][0]);
         self::assertSame(['field' => 'place.id', 'size' => 6], $places['aggs']['ids']['terms']);
     }
@@ -433,7 +433,7 @@ final class EventElasticaRepositoryTest extends TestCase
         ], $near['function_score']['functions'][1]);
         self::assertSame(['weight' => 1.0], $near['function_score']['functions'][0]);
         self::assertSame('multiply', $near['function_score']['boost_mode']);
-        self::assertSame('jazz', self::keywordsOf($anywhere));
+        self::assertSame('jazz', $this->keywordsOf($anywhere));
     }
 
     /**
@@ -478,7 +478,7 @@ final class EventElasticaRepositoryTest extends TestCase
     {
         $query = $this->headerQuery('marché de noël');
 
-        self::assertSame('marché de noël', self::keywordsOf($query['query']['bool']['must'][0]));
+        self::assertSame('marché de noël', $this->keywordsOf($query['query']['bool']['must'][0]));
         self::assertEquals([['nested' => [
             'path' => 'sessions',
             'query' => ['bool' => ['filter' => [['range' => ['sessions.endAt' => ['gte' => new DateTimeImmutable('today')->format('Y-m-d')]]]]]],
@@ -608,7 +608,7 @@ final class EventElasticaRepositoryTest extends TestCase
      *
      * @param array<string, mixed> $clause
      */
-    private static function keywordsOf(array $clause): ?string
+    private function keywordsOf(array $clause): ?string
     {
         return $clause['dis_max']['queries'][0]['multi_match']['query'] ?? null;
     }

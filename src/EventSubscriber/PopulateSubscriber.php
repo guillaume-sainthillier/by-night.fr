@@ -18,10 +18,10 @@ use FOS\ElasticaBundle\Event\AbstractIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PostIndexPopulateEvent;
 use FOS\ElasticaBundle\Event\PreIndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final readonly class PopulateSubscriber implements EventSubscriberInterface
+final readonly class PopulateSubscriber
 {
     public function __construct(
         private IndexManager $indexManager,
@@ -32,6 +32,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
     ) {
     }
 
+    #[AsEventListener(event: PreIndexPopulateEvent::class)]
     public function preIndexPopulate(PreIndexPopulateEvent $event): void
     {
         $index = $this->indexManager->getIndex($event->getIndex());
@@ -46,6 +47,7 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
         }
     }
 
+    #[AsEventListener(event: PostIndexPopulateEvent::class)]
     public function postIndexPopulate(PostIndexPopulateEvent $event): void
     {
         if ($this->isAsync($event)) {
@@ -62,16 +64,5 @@ final readonly class PopulateSubscriber implements EventSubscriberInterface
     private function isAsync(AbstractIndexPopulateEvent $event): bool
     {
         return 'async' === $event->getOption('pager_persister');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            PreIndexPopulateEvent::class => 'preIndexPopulate',
-            PostIndexPopulateEvent::class => 'postIndexPopulate',
-        ];
     }
 }

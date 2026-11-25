@@ -318,7 +318,7 @@ final class SecurityControllerTest extends AppWebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
-        self::assertSelectorTextContains('form', 'n\'a pas pu être vérifiée');
+        self::assertSelectorTextContains('form', "n'a pas pu être vérifiée");
         WebauthnKeyFactory::assert()->empty();
     }
 
@@ -337,7 +337,7 @@ final class SecurityControllerTest extends AppWebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
-        self::assertSelectorTextContains('form', 'déjà une clé d\'accès de ce nom');
+        self::assertSelectorTextContains('form', "déjà une clé d'accès de ce nom");
         WebauthnKeyFactory::assert()->count(1);
     }
 

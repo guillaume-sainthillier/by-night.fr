@@ -33,12 +33,12 @@ final class OutingAlertRun
 
     public function recordFailure(UserEvent $outing, string $error): void
     {
-        $this->failures[] = self::row($outing, $error);
+        $this->failures[] = $this->row($outing, $error);
     }
 
     public function recordSkipped(UserEvent $outing, string $error): void
     {
-        $this->skipped[] = self::row($outing, $error);
+        $this->skipped[] = $this->row($outing, $error);
     }
 
     public function getSent(): int
@@ -65,7 +65,7 @@ final class OutingAlertRun
     /**
      * @return array{event: ?int, member: ?int, email: ?string, error: string}
      */
-    private static function row(UserEvent $outing, string $error): array
+    private function row(UserEvent $outing, string $error): array
     {
         return [
             'event' => $outing->getEvent()?->getId(),

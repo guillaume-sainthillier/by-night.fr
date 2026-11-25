@@ -170,7 +170,7 @@ final class LocationPageTest extends AppWebTestCase
         $crawler = $client->request('GET', '/aix-en-provence');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextSame('#neighbours h3.h4', 'Tout près d\'Aix-en-Provence');
+        self::assertSelectorTextSame('#neighbours h3.h4', "Tout près d'Aix-en-Provence");
         self::assertSame(['Bouc-Bel-Air'], $crawler->filter('#neighbours .btn-chip')->each(static fn ($chip): string => trim($chip->text())));
         self::assertSelectorExists('#neighbours .btn-chip[href="/bouc-bel-air"]');
     }

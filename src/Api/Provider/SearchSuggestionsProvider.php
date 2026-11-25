@@ -34,6 +34,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final readonly class SearchSuggestionsProvider implements ProviderInterface
 {
     private const int CHIPS = 8;
+
     private const int EVENTS = 5;
 
     /**

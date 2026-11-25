@@ -32,7 +32,7 @@ final class LoginTargetPath
     public function saveFromQuery(Request $request): void
     {
         $path = $request->query->getString('_target_path');
-        if (self::isLocalPath($path) && $request->hasSession()) {
+        if ($this->isLocalPath($path) && $request->hasSession()) {
             $this->saveTargetPath($request->getSession(), self::FIREWALL, $path);
         }
     }
@@ -48,7 +48,7 @@ final class LoginTargetPath
         return $path;
     }
 
-    private static function isLocalPath(string $path): bool
+    private function isLocalPath(string $path): bool
     {
         return str_starts_with($path, '/')
             && !str_starts_with($path, '//')

@@ -151,7 +151,7 @@ final class CityComparator extends AbstractComparator
      */
     private function getCityOfGluedName(iterable $entities, CityDto $dto): ?MatchingInterface
     {
-        $namesakes = $this->getNamesakes($entities, $dto, self::glued($this->slug((string) $dto->name)), true);
+        $namesakes = $this->getNamesakes($entities, $dto, $this->glued($this->slug((string) $dto->name)), true);
 
         return [] === $namesakes ? null : new Matching($this->best($namesakes, $dto), 100.0);
     }
@@ -333,7 +333,7 @@ final class CityComparator extends AbstractComparator
 
         $citySlug = $this->citySlugs[$city] ??= $this->slug($city->getName());
 
-        return ($glued ? self::glued($citySlug) : $citySlug) === $slug;
+        return ($glued ? $this->glued($citySlug) : $citySlug) === $slug;
     }
 
     private function slug(string $name): string
@@ -345,7 +345,7 @@ final class CityComparator extends AbstractComparator
      * A slug without its separators: "bourg-saint-maurice" and "bourgsaintmaurice" (what
      * "Bourg-Saint-Maurice" gives) are the same words.
      */
-    private static function glued(string $slug): string
+    private function glued(string $slug): string
     {
         return str_replace('-', '', $slug);
     }
