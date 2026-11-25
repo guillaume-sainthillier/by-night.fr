@@ -106,7 +106,7 @@ final class CityUnderCountryTest extends AppWebTestCase
         $client = self::createClient();
         $client->catchExceptions(false);
 
-        // Thrown by AppContextSubscriber, not by the lazy city the agenda reads (LazyLocationFactory)
+        // Thrown by AppContextListener, not by the lazy city the agenda reads (LazyLocationFactory)
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessageIsOrContains("La location 'toulouse/k' est introuvable");
 

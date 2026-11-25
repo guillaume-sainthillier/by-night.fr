@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Controller\Location\AgendaController;
 use App\Repository\CityRepository;
@@ -29,10 +29,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Every query reads the counts UpcomingEventCounter stores, never the events themselves: light enough to build the
  * file on the fly.
  */
-final readonly class LlmsTxtSubscriber
+final readonly class LlmsTxtListener
 {
     /**
-     * A city needs a full agenda page of events to come to be listed, the threshold SitemapSuscriber sets for its
+     * A city needs a full agenda page of events to come to be listed, the threshold SitemapListener sets for its
      * per-category pages: a few hundred busy cities instead of thousands of villages with an event or two.
      */
     public const int CITY_MIN_EVENTS = AgendaController::EVENT_PER_PAGE;

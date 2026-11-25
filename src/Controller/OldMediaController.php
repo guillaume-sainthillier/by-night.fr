@@ -21,7 +21,7 @@ final class OldMediaController extends AbstractController
 {
     /**
      * Bots keep requesting these legacy URLs: Cloudflare and browsers keep the redirect a month
-     * (like PicassoOriginRedirectSubscriber) instead of asking the database again each time.
+     * (like PicassoOriginRedirectListener) instead of asking the database again each time.
      * The target is the mapping's URI (/uploads/documents/…, /uploads/users/…), which mirrors
      * the S3 prefix of its storage: the bare storage path has no such prefix on the data host.
      */

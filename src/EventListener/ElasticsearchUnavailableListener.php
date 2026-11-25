@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Exception\ElasticsearchUnavailableException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
@@ -23,7 +23,7 @@ use Throwable;
  * A restart of Elasticsearch fails every agenda, search and autocomplete for a minute or two: those pages answer 503
  * Service Unavailable, to be retried in a while, rather than 500.
  */
-final class ElasticsearchUnavailableSubscriber
+final class ElasticsearchUnavailableListener
 {
     /** Seconds: an Elasticsearch restart, shards included. */
     private const int RETRY_AFTER = 120;

@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Exception\CityMovedException;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -25,7 +25,7 @@ use Throwable;
  * current one ("/suisse/geneve/agenda/sortir/concert"), with its query string, in one redirect: the former agenda goes
  * straight to the city's page, and a URL the router was about to strip of its trailing slash takes no extra step.
  */
-final readonly class MovedCitySubscriber
+final readonly class MovedCityListener
 {
     public function __construct(private RouterInterface $router)
     {

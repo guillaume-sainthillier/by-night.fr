@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Contracts\BatchResetInterface;
 use App\Entity\User;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
-final class ImageSubscriber implements BatchResetInterface
+final class ImageListener implements BatchResetInterface
 {
     /** @var array<string, array{string, string, string}> their VichUploader mapping, its public path, and their path there; one purge per file */
     private array $deletedImages = [];

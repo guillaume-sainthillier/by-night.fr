@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Utils\Monitor;
 use Symfony\Component\Console\ConsoleEvents;
@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-final class ConsoleSubscriber
+final class ConsoleListener
 {
     /** @var array<Stopwatch|null> */
     private array $stopwatches = [];

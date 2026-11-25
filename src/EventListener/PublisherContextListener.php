@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\App\PublisherContext;
 use App\Repository\PublisherRepository;
@@ -28,7 +28,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
  *
  * After the firewall (priority 8), which has authenticated the member by then.
  */
-final readonly class PublisherContextSubscriber
+final readonly class PublisherContextListener
 {
     public const string ROUTE_PARAMETER = 'publisher';
 

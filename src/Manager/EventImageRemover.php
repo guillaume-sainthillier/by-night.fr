@@ -16,7 +16,7 @@ use Vich\UploaderBundle\Handler\UploadHandler;
 
 /**
  * Takes an event's images down (content removal): the files, their thumbnails and CDN copies
- * (ImageSubscriber, on Vich's removal), and the source's image for good.
+ * (ImageListener, on Vich's removal), and the source's image for good.
  *
  * Emptying the file properties, as the takedown action did, removes nothing: Vich only deletes a
  * file along with its entity or when a new one replaces it, so the image stayed online, and an

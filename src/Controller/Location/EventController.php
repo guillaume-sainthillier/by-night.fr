@@ -30,7 +30,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EventController extends BaseController
 {
-    // Shared by the CDN for visitors only (SharedCacheSubscriber); never by a browser, which would keep it after a login.
+    // Shared by the CDN for visitors only (SharedCacheListener); never by a browser, which would keep it after a login.
     // EventPageCache sets the lifetime of an event page (a day, a week once ended) and the tags that purge it;
     // Cloudflare serves the cached page while it asks again, or while the origin is down (a deploy)
     #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]

@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +29,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Members always carry one of those cookies, so the Cloudflare cache rule must not serve them from the cache
  * (it bypasses requests sending either cookie).
  */
-final readonly class SharedCacheSubscriber
+final readonly class SharedCacheListener
 {
     /** The remember-me authenticator's default cookie (security.yaml sets no other name). */
     private const string REMEMBER_ME_COOKIE = 'REMEMBERME';

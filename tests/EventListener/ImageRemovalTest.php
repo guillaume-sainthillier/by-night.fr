@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\EventSubscriber;
+namespace App\Tests\EventListener;
 
 use App\Cdn\CloudflareCdnPurger;
 use App\Entity\Event;
@@ -37,7 +37,7 @@ use function Zenstruck\Foundry\Persistence\save;
 /**
  * An image leaves everywhere it is served from once removed (event deleted, image replaced or taken down): the file
  * from the bucket, its rendered thumbnails from the thumbs storage, and both from Cloudflare, which keeps the
- * original and the thumbnails for a year. The whole chain runs here: the messages ImageSubscriber queues, then their
+ * original and the thumbnails for a year. The whole chain runs here: the messages ImageListener queues, then their
  * handlers, down to the purge requests sent to Cloudflare.
  */
 final class ImageRemovalTest extends AppKernelTestCase
