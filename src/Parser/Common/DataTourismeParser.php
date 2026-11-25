@@ -263,7 +263,7 @@ final class DataTourismeParser extends AbstractParser
         $cityName = $this->string($address['addressLocality'] ?? null) ?? $this->text($address['hasAddressCity']['label'] ?? null);
         $postalCode = $this->string($address['postalCode'] ?? null);
 
-        ['name' => $venueName, 'street' => $street] = self::venue($streetLines, $cityName);
+        ['name' => $venueName, 'street' => $street] = $this->venue($streetLines, $cityName);
 
         // The flux identified an address with a uuid the API dropped, so the normalised
         // address itself is now the venue identity: same lines at the same postal code,
@@ -428,7 +428,7 @@ final class DataTourismeParser extends AbstractParser
      *
      * @return array{name: ?string, street: ?string}
      */
-    private static function venue(array $lines, ?string $town): array
+    private function venue(array $lines, ?string $town): array
     {
         $venues = [];
         $streets = [];
