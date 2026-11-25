@@ -31,7 +31,7 @@ final class NextSessionLabel
         }
 
         if ($start < $today) {
-            return 'Jusqu\'au ' . self::format($session->getEndAt() ?? $start, 'd MMM');
+            return "Jusqu'au " . self::format($session->getEndAt() ?? $start, 'd MMM');
         }
 
         $time = SessionHours::start($session);

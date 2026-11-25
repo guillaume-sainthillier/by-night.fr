@@ -49,6 +49,6 @@ final class RefreshElasticaIndexHandlerTest extends TestCase
         $configManager = $this->createStub(ConfigManager::class);
         $configManager->method('getIndexConfiguration')->willReturn($indexConfig);
 
-        (new RefreshElasticaIndexHandler($indexManager, $configManager))(new RefreshElasticaIndex('event'));
+        new RefreshElasticaIndexHandler($indexManager, $configManager)(new RefreshElasticaIndex('event'));
     }
 }

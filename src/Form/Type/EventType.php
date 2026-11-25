@@ -248,7 +248,7 @@ final class EventType extends AbstractType
             return;
         }
 
-        $slots = array_unique(array_map(self::slot(...), $data->timesheets));
+        $slots = array_unique(array_map($this->slot(...), $data->timesheets));
         $shared = 1 === \count($slots) && '|' !== reset($slots) ? $data->timesheets[0] : null;
         $data->startTime = $shared?->startTime;
         $data->endTime = $shared?->endTime;
@@ -332,7 +332,7 @@ final class EventType extends AbstractType
         }
     }
 
-    private static function slot(EventTimesheetDto $timesheet): string
+    private function slot(EventTimesheetDto $timesheet): string
     {
         return \sprintf('%s|%s', $timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i'));
     }

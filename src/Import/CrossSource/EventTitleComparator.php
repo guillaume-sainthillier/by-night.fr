@@ -93,20 +93,20 @@ final class EventTitleComparator
         $a = $this->tokens($left, $contextWords);
         $b = $this->tokens($right, $contextWords);
 
-        if (self::subset($a, self::PRODUCTS) !== self::subset($b, self::PRODUCTS)) {
+        if ($this->subset($a, self::PRODUCTS) !== $this->subset($b, self::PRODUCTS)) {
             return MatchVerdict::OtherProduct;
         }
 
-        if (([] === self::subset($a, self::TRIBUTES)) !== ([] === self::subset($b, self::TRIBUTES))) {
+        if (([] === $this->subset($a, self::TRIBUTES)) !== ([] === $this->subset($b, self::TRIBUTES))) {
             return MatchVerdict::Tribute;
         }
 
-        if (self::numbers($a) !== self::numbers($b)) {
+        if ($this->numbers($a) !== $this->numbers($b)) {
             return MatchVerdict::OtherNumber;
         }
 
-        $distinctiveA = self::distinctive($a);
-        $distinctiveB = self::distinctive($b);
+        $distinctiveA = $this->distinctive($a);
+        $distinctiveB = $this->distinctive($b);
         if ([] === $distinctiveA || [] === $distinctiveB) {
             return MatchVerdict::Generic;
         }
@@ -121,12 +121,12 @@ final class EventTitleComparator
         }
 
         // The longer title names another outing around the same name: a visit, a workshop, a kids' version
-        if ([] !== self::subset(array_diff($long, $short), self::FORMATS)) {
+        if ([] !== $this->subset(array_diff($long, $short), self::FORMATS)) {
             return MatchVerdict::Different;
         }
 
-        $distinctiveShort = self::distinctive($short);
-        $distinctiveLong = self::distinctive($long);
+        $distinctiveShort = $this->distinctive($short);
+        $distinctiveLong = $this->distinctive($long);
 
         // The shorter title must name the show on its own, and say at least half of what the longer one does
         if (\count($distinctiveShort) * 2 < \count($distinctiveLong)) {
@@ -201,7 +201,7 @@ final class EventTitleComparator
      *
      * @return list<string>
      */
-    private static function distinctive(array $tokens): array
+    private function distinctive(array $tokens): array
     {
         return array_values(array_filter(
             $tokens,
@@ -216,7 +216,7 @@ final class EventTitleComparator
      *
      * @return list<string>
      */
-    private static function numbers(array $tokens): array
+    private function numbers(array $tokens): array
     {
         return array_values(array_filter(
             $tokens,
@@ -230,7 +230,7 @@ final class EventTitleComparator
      *
      * @return list<string>
      */
-    private static function subset(array $tokens, array $words): array
+    private function subset(array $tokens, array $words): array
     {
         return array_values(array_intersect($tokens, $words));
     }

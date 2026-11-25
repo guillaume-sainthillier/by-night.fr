@@ -30,7 +30,7 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
         parent::setUp();
 
         // As on the site: the personal space or the back office
-        $requestStack = self::getContainer()->get('request_stack');
+        $requestStack = self::getContainer()->get(RequestStack::class);
         self::assertInstanceOf(RequestStack::class, $requestStack);
         $requestStack->push(Request::create('/'));
     }
@@ -42,7 +42,7 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
 
         EventFactory::createOne(['place' => $place]);
 
-        self::assertEquals([new RecountUpcomingEvents([self::id($place)])], $this->sentRecounts());
+        self::assertEquals([new RecountUpcomingEvents([$this->id($place)])], $this->sentRecounts());
     }
 
     public function testANewEventAndItsNewVenueRecountTheVenueOnceItHasAnId(): void
@@ -51,7 +51,7 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
 
         $event = EventFactory::createOne();
 
-        self::assertEquals([new RecountUpcomingEvents([self::id($event->getPlace())])], $this->sentRecounts());
+        self::assertEquals([new RecountUpcomingEvents([$this->id($event->getPlace())])], $this->sentRecounts());
     }
 
     public function testAnEventMovedToAnotherVenueRecountsBothVenues(): void
@@ -64,7 +64,7 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
         $event->setPlace($to);
         save($event);
 
-        self::assertEquals([new RecountUpcomingEvents([self::id($from), self::id($to)])], $this->sentRecounts());
+        self::assertEquals([new RecountUpcomingEvents([$this->id($from), $this->id($to)])], $this->sentRecounts());
     }
 
     public function testAnEventSavedAsDraftRecountsItsVenue(): void
@@ -75,7 +75,7 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
         $event->setDraft(true);
         save($event);
 
-        self::assertEquals([new RecountUpcomingEvents([self::id($event->getPlace())])], $this->sentRecounts());
+        self::assertEquals([new RecountUpcomingEvents([$this->id($event->getPlace())])], $this->sentRecounts());
     }
 
     public function testAChangeThatDoesNotMoveTheCountsRecountsNothing(): void
@@ -101,12 +101,12 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
             }
         });
 
-        self::assertEquals([new RecountUpcomingEvents([self::id($place)])], $this->sentRecounts());
+        self::assertEquals([new RecountUpcomingEvents([$this->id($place)])], $this->sentRecounts());
     }
 
     public function testChangesOutsideARequestAreLeftToTheNightlyCount(): void
     {
-        $requestStack = self::getContainer()->get('request_stack');
+        $requestStack = self::getContainer()->get(RequestStack::class);
         self::assertInstanceOf(RequestStack::class, $requestStack);
         $requestStack->pop();
         $this->transport()->reset();
@@ -119,7 +119,7 @@ final class UpcomingEventCountListenerTest extends AppKernelTestCase
         self::assertSame([], $this->sentRecounts());
     }
 
-    private static function id(?Place $place): int
+    private function id(?Place $place): int
     {
         self::assertNotNull($place?->getId());
 

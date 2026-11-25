@@ -110,7 +110,7 @@ final class UserCrudController extends AbstractCrudController
         $isVerified = BooleanField::new('verified');
         $panel2 = FormField::addFieldset('Médias');
         $image = VichImageField::new('imageFile', 'Image utilisateur')
-            ->setHelp('Photo de profil envoyée par l\'utilisateur, prioritaire sur l\'image système.');
+            ->setHelp("Photo de profil envoyée par l'utilisateur, prioritaire sur l'image système.");
         $imageSystem = VichImageField::new('imageSystemFile', 'Image système')
             ->setHelp("Photo récupérée depuis le réseau social connecté\u{a0}: une prochaine synchronisation peut la remplacer.");
         $imageName = TextField::new('image.name')->onlyOnDetail();

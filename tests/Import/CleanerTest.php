@@ -146,6 +146,7 @@ final class CleanerTest extends AppKernelTestCase
         $place = new PlaceDto();
         $place->name = str_repeat('Salle ', 60);
         $place->street = str_repeat('Chemin de Mi-Chemin ', 10);
+
         $city = new CityDto();
         $city->name = str_repeat('Saint-', 30);
 
@@ -223,6 +224,7 @@ final class CleanerTest extends AppKernelTestCase
         $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->latitude = $latitude;
         $dto->longitude = $longitude;
+
         $place = new PlaceDto();
         $place->latitude = $latitude;
         $place->longitude = $longitude;
@@ -403,7 +405,7 @@ final class CleanerTest extends AppKernelTestCase
         $this->cleaner->cleanEventTimesheet($dto);
 
         self::assertNull($dto->hours);
-        self::assertSame(['20:00', '23:00'], self::times($dto));
+        self::assertSame(['20:00', '23:00'], $this->times($dto));
     }
 
     public function testTheTimesGivenWinOverAPlainSlotLabel(): void
@@ -415,7 +417,7 @@ final class CleanerTest extends AppKernelTestCase
         $this->cleaner->cleanEventTimesheet($dto);
 
         self::assertNull($dto->hours);
-        self::assertSame(['20:30', null], self::times($dto));
+        self::assertSame(['20:30', null], $this->times($dto));
     }
 
     /**
@@ -430,7 +432,7 @@ final class CleanerTest extends AppKernelTestCase
 
         $this->cleaner->cleanEventTimesheet($dto);
 
-        self::assertSame($expected, self::times($dto));
+        self::assertSame($expected, $this->times($dto));
     }
 
     /**
@@ -468,10 +470,10 @@ final class CleanerTest extends AppKernelTestCase
         $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->startTime = new DateTimeImmutable('09:00');
         $dto->timesheets = [
-            self::session('2024-01-16', '10:00', '12:00'),
-            self::session('2024-01-15', '20:30', '23:00'),
-            self::session('2024-01-15', '15:00', '17:00'),
-            self::session('2024-01-16', '14:00', '18:00'),
+            $this->session('2024-01-16', '10:00', '12:00'),
+            $this->session('2024-01-15', '20:30', '23:00'),
+            $this->session('2024-01-15', '15:00', '17:00'),
+            $this->session('2024-01-16', '14:00', '18:00'),
         ];
 
         $this->cleaner->cleanEvent($dto);
@@ -485,8 +487,8 @@ final class CleanerTest extends AppKernelTestCase
         $dto = new EventDto();
         $dto->startDate = new DateTimeImmutable('2024-01-15');
         $dto->timesheets = [
-            self::session('2024-01-15', null, null),
-            self::session('2024-01-16', '20:00', null),
+            $this->session('2024-01-15', null, null),
+            $this->session('2024-01-16', '20:00', null),
         ];
 
         $this->cleaner->cleanEvent($dto);
@@ -537,7 +539,7 @@ final class CleanerTest extends AppKernelTestCase
         self::assertNull($dto->timesheets[1]->hours);
     }
 
-    private static function session(string $day, ?string $start, ?string $end): EventTimesheetDto
+    private function session(string $day, ?string $start, ?string $end): EventTimesheetDto
     {
         $timesheet = new EventTimesheetDto();
         $timesheet->startAt = new DateTimeImmutable($day);
@@ -551,7 +553,7 @@ final class CleanerTest extends AppKernelTestCase
     /**
      * @return array{0: string|null, 1: string|null}
      */
-    private static function times(EventTimesheetDto $timesheet): array
+    private function times(EventTimesheetDto $timesheet): array
     {
         return [$timesheet->startTime?->format('H:i'), $timesheet->endTime?->format('H:i')];
     }

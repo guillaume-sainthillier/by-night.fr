@@ -13,7 +13,6 @@ namespace App\Tests\Api\Provider;
 use ApiPlatform\Metadata\GetCollection;
 use App\Api\ApiResource\SearchResult;
 use App\Api\Provider\SearchSuggestionsProvider;
-use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Tag;
@@ -56,7 +55,7 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
         self::assertSame([
             ['tags', 'Catégories', 'Concert', '2', null, \sprintf('/toulouse/agenda/tag/%s--%d', $concert->getSlug(), $concert->getId())],
             ['tags', 'Catégories', 'Théâtre', '1', null, \sprintf('/toulouse/agenda/tag/%s--%d', $theatre->getSlug(), $theatre->getId())],
-            ['events', 'Cette semaine à Toulouse', 'Soirée électro', 'Le Bikini', self::day('EEE d MMM'), \sprintf('/toulouse/soiree/%s--%d', $tonight->getSlug(), $tonight->getId())],
+            ['events', 'Cette semaine à Toulouse', 'Soirée électro', 'Le Bikini', $this->day('EEE d MMM'), \sprintf('/toulouse/soiree/%s--%d', $tonight->getSlug(), $tonight->getId())],
         ], $this->summarize($this->suggest('toulouse')));
     }
 
@@ -79,7 +78,7 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
 
         $events = array_values(array_filter($this->suggest('toulouse'), static fn (SearchResult $result): bool => 'events' === $result->type));
 
-        self::assertSame('Jusqu\'au ' . self::day('d MMM'), $events[0]->description);
+        self::assertSame("Jusqu'au " . $this->day('d MMM'), $events[0]->description);
     }
 
     public function testWithoutACityTheBiggestCitiesOfFranceThenItsTopEventsOfTheWeek(): void
@@ -126,14 +125,14 @@ final class SearchSuggestionsProviderTest extends AppKernelTestCase
         $events = array_values(array_filter($this->suggest('toulouse'), static fn (SearchResult $result): bool => 'events' === $result->type));
 
         self::assertCount(5, $events);
-        self::assertStringStartsWith(self::day('EEE d MMM'), (string) $events[0]->description, 'the next session');
+        self::assertStringStartsWith($this->day('EEE d MMM'), (string) $events[0]->description, 'the next session');
         self::assertCount(4, $queries->getData()['default'] ?? [], 'the city, its categories, its events of the week, their sessions');
     }
 
     /**
      * Today as the suggestions write it
      */
-    private static function day(string $pattern): string
+    private function day(string $pattern): string
     {
         return (string) new IntlDateFormatter('fr_FR', IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, $pattern)->format(new DateTimeImmutable('today'));
     }

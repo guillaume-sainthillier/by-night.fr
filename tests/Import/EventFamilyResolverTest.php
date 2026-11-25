@@ -176,7 +176,7 @@ final class EventFamilyResolverTest extends AppKernelTestCase
         self::assertNull($freed->getDuplicateOf());
         self::assertSame(['2026-10-10' => null], $this->datesBySource($freed));
         self::assertSame(['2026-10-03' => null], $this->datesBySource($canonical));
-        self::assertSame('2026-10-03', $canonical->getEndDate()?->format('Y-m-d'), 'The range shrinks back to the canonical\'s own date.');
+        self::assertSame('2026-10-03', $canonical->getEndDate()?->format('Y-m-d'), "The range shrinks back to the canonical's own date.");
     }
 
     public function testASiblingRemovedAtTheSourceNoLongerLendsItsDates(): void

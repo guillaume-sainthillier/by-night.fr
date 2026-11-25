@@ -177,8 +177,10 @@ final readonly class CityOfficialDataImporter
             $parameters = [];
             $types = [];
             foreach ($chunk as $id => $code) {
-                array_push($parameters, $id, $code);
-                array_push($types, ParameterType::INTEGER, ParameterType::STRING);
+                $parameters[] = $id;
+                $parameters[] = $code;
+                $types[] = ParameterType::INTEGER;
+                $types[] = ParameterType::STRING;
             }
 
             $saved += (int) $this->connection->executeStatement(

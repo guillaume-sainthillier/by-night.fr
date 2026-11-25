@@ -28,7 +28,7 @@ final class LoginRateLimiter extends AbstractRequestRateLimiter
     public function __construct(
         #[Autowire(service: 'limiter.login')]
         private readonly RateLimiterFactoryInterface $limiterFactory,
-        #[Autowire('%kernel.secret%')]
+        #[Autowire(param: 'kernel.secret')]
         #[SensitiveParameter]
         private readonly string $secret,
     ) {

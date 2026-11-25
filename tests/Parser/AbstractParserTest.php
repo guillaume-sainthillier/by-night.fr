@@ -138,6 +138,7 @@ final class AbstractParserTest extends AppKernelTestCase
             }
         };
         $parser->setPublicationGuard($container->get(EventPublicationGuard::class));
+
         $transport = $container->get('messenger.transport.parser');
         self::assertInstanceOf(InMemoryTransport::class, $transport);
 

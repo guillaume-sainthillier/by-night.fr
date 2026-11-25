@@ -275,7 +275,7 @@ final class EventJsonLdTest extends AppKernelTestCase
         $event = $this->createEvent(['publisher' => null]);
 
         self::assertSame('Person', $this->schema($event)['organizer']['@type']);
-        self::assertSame($event->getUser()?->getUsername(), $this->schema($event)['organizer']['name']);
+        self::assertSame($event->getUser()?->getUserIdentifier(), $this->schema($event)['organizer']['name']);
     }
 
     public function testAnImportedEventHasNoOrganizer(): void

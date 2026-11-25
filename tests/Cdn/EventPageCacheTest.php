@@ -84,6 +84,7 @@ final class EventPageCacheTest extends TestCase
     {
         $picture = new EmbeddedFile();
         $picture->setName('cdiscount.jpg');
+
         $lender = new Event()->setImageSystem($picture);
         new ReflectionProperty(Event::class, 'id')->setValue($lender, 42);
 

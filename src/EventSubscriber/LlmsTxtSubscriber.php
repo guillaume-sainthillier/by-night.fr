@@ -17,7 +17,7 @@ use App\Repository\PageRepository;
 use Generator;
 use Silarhi\LlmsTxtBundle\Event\LlmsTxtPopulateEvent;
 use Silarhi\LlmsTxtBundle\Model\Link;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -29,7 +29,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Every query reads the counts UpcomingEventCounter stores, never the events themselves: light enough to build the
  * file on the fly.
  */
-final readonly class LlmsTxtSubscriber implements EventSubscriberInterface
+final readonly class LlmsTxtSubscriber
 {
     /**
      * A city needs a full agenda page of events to come to be listed, the threshold SitemapSuscriber sets for its
@@ -45,13 +45,7 @@ final readonly class LlmsTxtSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            LlmsTxtPopulateEvent::class => 'populate',
-        ];
-    }
-
+    #[AsEventListener(event: LlmsTxtPopulateEvent::class)]
     public function populate(LlmsTxtPopulateEvent $event): void
     {
         $event->getDocument()

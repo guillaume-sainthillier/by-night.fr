@@ -25,7 +25,7 @@ final class RecoveryCodesType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('saved', CheckboxType::class, [
-            'label' => 'J\'ai conservé ces codes en lieu sûr',
+            'label' => "J'ai conservé ces codes en lieu sûr",
             'constraints' => [new IsTrue(message: 'Conservez vos codes avant de continuer.')],
         ]);
     }

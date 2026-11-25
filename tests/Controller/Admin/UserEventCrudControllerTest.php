@@ -25,6 +25,7 @@ final class UserEventCrudControllerTest extends AppWebTestCase
         // createClient() first: factories boot the kernel and WebTestCase refuses a late client
         $client = self::createClient();
         $client->loginUser(UserFactory::new()->admin()->create());
+
         $userEvent = UserEventFactory::createOne(['going' => true, 'wish' => false]);
         $eventId = $userEvent->getEvent()->getId();
 

@@ -27,6 +27,7 @@ use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
+use Twig\Environment;
 
 final class ContentControllerTest extends AppWebTestCase
 {
@@ -199,7 +200,7 @@ final class ContentControllerTest extends AppWebTestCase
     {
         self::bootKernel();
 
-        $html = self::getContainer()->get('twig')->render('fragments/_google-tags.html.twig');
+        $html = self::getContainer()->get(Environment::class)->render('fragments/_google-tags.html.twig');
         $consentDefault = strpos($html, "gtag('consent', 'default'");
         $gtmLoader = strpos($html, 'CONSENT_MODE_DATA_READY');
         $adsense = strpos($html, 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js');

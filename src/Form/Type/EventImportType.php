@@ -38,13 +38,13 @@ final class EventImportType extends AbstractType
                 new NotNull(message: 'Choisissez un fichier.'),
                 new File(
                     maxSize: self::MAX_SIZE,
+                    maxSizeMessage: 'Le fichier pèse {{ size }} {{ suffix }}, 2 Mo au plus : découpez-le en plusieurs imports.',
                     // Browsers and systems name a CSV's type in many ways: its extension decides
                     extensions: [
                         'csv' => ['text/csv', 'text/plain', 'application/csv', 'text/x-csv', 'application/vnd.ms-excel'],
                         'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/octet-stream'],
                     ],
                     extensionsMessage: 'Importez un fichier CSV ou Excel (XLSX).',
-                    maxSizeMessage: 'Le fichier pèse {{ size }} {{ suffix }}, 2 Mo au plus : découpez-le en plusieurs imports.',
                 ),
             ],
         ]);

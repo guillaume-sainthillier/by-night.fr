@@ -46,17 +46,17 @@ final readonly class EventRowFormatter
         // A single session: the event's own dates and times
         $rows = \count($sessions) <= 1
             ? [$this->eventValues($event) + [
-                EventColumn::StartDate->value => self::date($event->getStartDate()),
-                EventColumn::EndDate->value => self::date($event->getEndDate()),
-                EventColumn::StartTime->value => self::time($event->getStartTime()),
-                EventColumn::EndTime->value => self::time($event->getEndTime()),
+                EventColumn::StartDate->value => $this->date($event->getStartDate()),
+                EventColumn::EndDate->value => $this->date($event->getEndDate()),
+                EventColumn::StartTime->value => $this->time($event->getStartTime()),
+                EventColumn::EndTime->value => $this->time($event->getEndTime()),
                 EventColumn::Hours->value => (string) $event->getHours(),
             ]]
-            : array_map(fn (EventTimesheet $session, int $i): array => (0 === $i ? $this->eventValues($event) : self::keyValues($event)) + [
-                EventColumn::StartDate->value => self::date($session->getStartAt()),
-                EventColumn::EndDate->value => self::date($session->getEndAt()),
-                EventColumn::StartTime->value => self::time($session->getStartTime()),
-                EventColumn::EndTime->value => self::time($session->getEndTime()),
+            : array_map(fn (EventTimesheet $session, int $i): array => (0 === $i ? $this->eventValues($event) : $this->keyValues($event)) + [
+                EventColumn::StartDate->value => $this->date($session->getStartAt()),
+                EventColumn::EndDate->value => $this->date($session->getEndAt()),
+                EventColumn::StartTime->value => $this->time($session->getStartTime()),
+                EventColumn::EndTime->value => $this->time($session->getEndTime()),
                 EventColumn::Hours->value => (string) $session->getHours(),
             ], $sessions, array_keys($sessions));
 
@@ -66,7 +66,7 @@ final readonly class EventRowFormatter
     /**
      * @return array<string, string>
      */
-    private static function keyValues(Event $event): array
+    private function keyValues(Event $event): array
     {
         return [
             EventColumn::Id->value => (string) $event->getId(),
@@ -79,7 +79,7 @@ final readonly class EventRowFormatter
      */
     private function eventValues(Event $event): array
     {
-        return self::keyValues($event) + [
+        return $this->keyValues($event) + [
             EventColumn::Name->value => (string) $event->getName(),
             EventColumn::Description->value => (string) $event->getDescription(),
             EventColumn::Place->value => (string) $event->getPlaceName(),
@@ -114,12 +114,12 @@ final readonly class EventRowFormatter
         return null === $event->getImage()->getName() ? '' : $this->eventProfilePicture->getOriginalPicture($event, own: true);
     }
 
-    private static function date(?DateTimeInterface $date): string
+    private function date(?DateTimeInterface $date): string
     {
         return (string) $date?->format('d/m/Y');
     }
 
-    private static function time(?DateTimeInterface $time): string
+    private function time(?DateTimeInterface $time): string
     {
         return (string) $time?->format('H:i');
     }

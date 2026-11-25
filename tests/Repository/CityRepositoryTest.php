@@ -113,6 +113,7 @@ final class CityRepositoryTest extends AppKernelTestCase
         // An arrondissement's code stands for its city's
         $opera = $this->createCityDto('75009', 'Opéra');
         $opera->officialCode = '75109';
+
         $cities = self::getContainer()->get(CityRepository::class)->findAllByDtos([$orée, $opera], false);
 
         self::assertEqualsCanonicalizing([$lire->getId(), $drain->getId(), $paris->getId()], array_map(static fn (City $city) => $city->getId(), $cities));

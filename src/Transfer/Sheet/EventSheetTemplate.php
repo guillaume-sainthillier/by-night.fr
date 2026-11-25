@@ -36,7 +36,7 @@ final readonly class EventSheetTemplate
             $path,
             $format,
             array_map(static fn (EventColumn $column): string => $column->getLabel(), EventColumn::cases()),
-            array_map(self::row(...), $this->examples()),
+            array_map($this->row(...), $this->examples()),
             TransferFormat::Xlsx === $format ? [EventColumn::Category->value => $this->categories()] : [],
         );
     }
@@ -72,7 +72,7 @@ final readonly class EventSheetTemplate
      *
      * @return list<string>
      */
-    private static function row(array $values): array
+    private function row(array $values): array
     {
         return array_map(static fn (EventColumn $column): string => $values[$column->value] ?? '', EventColumn::cases());
     }

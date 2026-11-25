@@ -68,8 +68,8 @@ final class EventVisitSyncTest extends AppKernelTestCase
         self::assertStringStartsWith('https://umami.test/api/websites/' . self::WEBSITE_ID . '/metrics?', $this->requests[1]['url']);
         self::assertSame('path', $query['type']);
         self::assertSame('c./soiree/', $query['path']);
-        self::assertSame((string) new DateTimeImmutable('2026-10-20 00:00:00')->format('Uv'), $query['startAt']);
-        self::assertSame((string) new DateTimeImmutable('2026-10-20 23:59:59.999')->format('Uv'), $query['endAt']);
+        self::assertSame(new DateTimeImmutable('2026-10-20 00:00:00')->format('Uv'), $query['startAt']);
+        self::assertSame(new DateTimeImmutable('2026-10-20 23:59:59.999')->format('Uv'), $query['endAt']);
         parse_str((string) parse_url($this->requests[2]['url'], \PHP_URL_QUERY), $query);
         self::assertSame('ticket-click', $query['event']);
         self::assertCount(3, $this->requests, 'One login for both reads');

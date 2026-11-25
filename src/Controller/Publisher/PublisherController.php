@@ -56,8 +56,8 @@ final class PublisherController extends BaseController
         ]);
     }
 
-    #[Route(path: '/{slug<%patterns.slug%>}/a-venir/{page<%patterns.page%>}', name: 'app_publisher_events_next', methods: ['GET'], defaults: ['upcoming' => true])]
-    #[Route(path: '/{slug<%patterns.slug%>}/passes/{page<%patterns.page%>}', name: 'app_publisher_events_previous', methods: ['GET'], defaults: ['upcoming' => false])]
+    #[Route(path: '/{slug<%patterns.slug%>}/a-venir/{page<%patterns.page%>}', name: 'app_publisher_events_next', defaults: ['upcoming' => true], methods: ['GET'])]
+    #[Route(path: '/{slug<%patterns.slug%>}/passes/{page<%patterns.page%>}', name: 'app_publisher_events_previous', defaults: ['upcoming' => false], methods: ['GET'])]
     public function eventsList(#[MapEntity(mapping: ['slug' => 'slug'])] Publisher $publisher, EventRepository $eventRepository, bool $upcoming, int $page): Response
     {
         return $this->render('publisher/events_list.html.twig', [

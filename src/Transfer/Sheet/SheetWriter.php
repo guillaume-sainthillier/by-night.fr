@@ -44,11 +44,12 @@ final class SheetWriter
     {
         $writer = match ($format) {
             TransferFormat::Csv => new CsvWriter(new CsvOptions(FIELD_DELIMITER: ';')),
-            TransferFormat::Xlsx => new XlsxWriter(self::xlsxOptions($headers, $suggestions)),
+            TransferFormat::Xlsx => new XlsxWriter($this->xlsxOptions($headers, $suggestions)),
             TransferFormat::Ics => throw new InvalidArgumentException('A calendar is not a spreadsheet.'),
         };
 
         $writer->openToFile($path);
+
         $count = 0;
 
         try {
@@ -71,7 +72,7 @@ final class SheetWriter
      * @param list<string>                $headers
      * @param array<string, list<string>> $suggestions
      */
-    private static function xlsxOptions(array $headers, array $suggestions): XlsxOptions
+    private function xlsxOptions(array $headers, array $suggestions): XlsxOptions
     {
         $options = new XlsxOptions();
         $options->setColumnWidth(18, ...range(1, max(1, \count($headers))));
@@ -88,7 +89,7 @@ final class SheetWriter
                 continue;
             }
 
-            $offered = self::fitting($suggestions[EventColumn::fromHeader($header)?->value ?? ''] ?? []);
+            $offered = $this->fitting($suggestions[EventColumn::fromHeader($header)?->value ?? ''] ?? []);
             if ([] !== $offered) {
                 // A suggestion only: Excel says so but keeps another value
                 $options->addValidation($index, 2, $index, self::VALIDATED_ROWS + 1, new ListValidationRule($offered), new ValidationDisplay(errorStyle: ErrorStyle::Information, errorTitle: $header, error: 'Cette valeur n’est pas dans la liste : elle sera tout de même importée.'));
@@ -105,7 +106,7 @@ final class SheetWriter
      *
      * @return list<non-empty-string>
      */
-    private static function fitting(array $values): array
+    private function fitting(array $values): array
     {
         $fitting = [];
         $length = 0;

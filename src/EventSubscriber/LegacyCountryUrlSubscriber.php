@@ -12,7 +12,7 @@ namespace App\EventSubscriber;
 
 use App\Exception\RedirectException;
 use App\Manager\EventRedirectManager;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -28,7 +28,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
  * straight to the URL the event answers to (EventRedirectManager): that of the page its duplicate redirects to, or its
  * city's since its place got one.
  */
-final readonly class LegacyCountryUrlSubscriber implements EventSubscriberInterface
+final readonly class LegacyCountryUrlSubscriber
 {
     /** The routes of an event's pages, which EventRedirectManager leads to the event's own URL */
     private const array EVENT_ROUTES = ['app_event_details', 'app_widget_next_events', 'app_widget_similar_events'];
@@ -39,12 +39,7 @@ final readonly class LegacyCountryUrlSubscriber implements EventSubscriberInterf
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        // The router listens at 32
-        return [KernelEvents::REQUEST => ['onKernelRequest', 64]];
-    }
-
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: 64)]
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();

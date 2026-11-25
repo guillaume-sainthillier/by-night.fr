@@ -97,7 +97,7 @@ final class EventNameMatcher
                 continue;
             }
 
-            $word = self::singular($word);
+            $word = $this->singular($word);
             if (!\in_array($word, self::GENERIC_WORDS, true)) {
                 $words[] = $word;
             }
@@ -125,7 +125,7 @@ final class EventNameMatcher
         )));
     }
 
-    private static function singular(string $word): string
+    private function singular(string $word): string
     {
         return \strlen($word) > 3 && \in_array($word[-1], ['s', 'x'], true) ? substr($word, 0, -1) : $word;
     }

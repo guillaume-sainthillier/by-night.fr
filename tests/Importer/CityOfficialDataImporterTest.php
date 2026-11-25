@@ -59,7 +59,7 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
         refresh($rapperswil);
         self::assertSame('75056', $paris->getOfficialCode(), 'The INSEE code, admin4');
         self::assertSame('3340', $rapperswil->getOfficialCode(), 'The OFS number, admin3');
-        self::assertSame('Paris', $paris->getName(), 'GeoNames\' name is not taken');
+        self::assertSame('Paris', $paris->getName(), "GeoNames' name is not taken");
         self::assertSame('Paris', refresh($department)->getName());
     }
 
@@ -72,8 +72,8 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
 
         $this->import(['FR', 'CH']);
 
-        self::assertSame([$pire->getId()], $this->aliasCities('Piré-Chancé'), 'A commune nouvelle, from the INSEE\'s list');
-        self::assertSame([$rapperswil->getId()], $this->aliasCities('Rapperswil-Jona'), 'A Swiss commune, from GeoNames\' ADM3');
+        self::assertSame([$pire->getId()], $this->aliasCities('Piré-Chancé'), "A commune nouvelle, from the INSEE's list");
+        self::assertSame([$rapperswil->getId()], $this->aliasCities('Rapperswil-Jona'), "A Swiss commune, from GeoNames' ADM3");
         self::assertNotContains($jona->getId(), $this->aliasCities('Rapperswil-Jona'));
     }
 
@@ -84,7 +84,7 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
 
         $this->import(['FR']);
 
-        self::assertSame([$village->getId()], $this->aliasCities('Saint-Georges-de-Montaigu'), 'Not the commune\'s biggest town');
+        self::assertSame([$village->getId()], $this->aliasCities('Saint-Georges-de-Montaigu'), "Not the commune's biggest town");
         self::assertSame([$montaigu->getId()], $this->aliasCities('Montaigu-Vendée'));
     }
 
@@ -95,8 +95,8 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
 
         $this->import(['FR']);
 
-        self::assertSame('49126', refresh($lire)->getOfficialCode(), 'Orée d\'Anjou\'s, not Champtoceaux\'s 49069');
-        self::assertSame([$lire->getId()], $this->aliasCities('Orée d\'Anjou'));
+        self::assertSame('49126', refresh($lire)->getOfficialCode(), "Orée d'Anjou's, not Champtoceaux's 49069");
+        self::assertSame([$lire->getId()], $this->aliasCities("Orée d'Anjou"));
         self::assertSame([$champtoceaux->getId()], $this->aliasCities('Champtoceaux'));
     }
 
@@ -120,7 +120,7 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
 
         $this->import(['FR']);
 
-        self::assertSame([$segre->getId()], $this->aliasCities('Segré-en-Anjou Bleu'), 'Not the commune\'s most populated village');
+        self::assertSame([$segre->getId()], $this->aliasCities('Segré-en-Anjou Bleu'), "Not the commune's most populated village");
     }
 
     public function testACommuneOfUnpeopledHamletsLeadsNowhere(): void
@@ -208,7 +208,7 @@ final class CityOfficialDataImporterTest extends AppKernelTestCase
                 ['nom' => 'Pointe-à-Pitre', 'code' => '97120', 'type' => 'commune-actuelle'],
                 ['nom' => 'Segré-en-Anjou Bleu', 'code' => '49331', 'type' => 'commune-actuelle'],
                 ['nom' => 'Val-des-Hameaux', 'code' => '49999', 'type' => 'commune-actuelle'],
-                ['nom' => 'Orée d\'Anjou', 'code' => '49126', 'type' => 'commune-actuelle'],
+                ['nom' => "Orée d'Anjou", 'code' => '49126', 'type' => 'commune-actuelle'],
             ]),
             CityOfficialDataImporter::DELEGATED_COMMUNES_URL === $url => new JsonMockResponse([
                 ['nom' => 'Saint-Georges-de-Montaigu', 'code' => '85214', 'chefLieu' => '85146', 'type' => 'commune-deleguee'],

@@ -375,6 +375,7 @@ final class FirewallTest extends AppKernelTestCase
         // A feed's ISO code, then the personal-space form's resolved country
         $byCode = new CountryDto();
         $byCode->code = 'FR';
+
         $byId = new CountryDto();
         $byId->entityId = 'FR';
 

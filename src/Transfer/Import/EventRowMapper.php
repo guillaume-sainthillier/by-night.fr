@@ -83,7 +83,7 @@ final class EventRowMapper
 
         $event = [] === $errors ? $this->findEvent($group, $publisher, $errors) : null;
         $dto = null === $event ? $this->memberEventPublisher->createDto($user) : $this->eventDtoFactory->create($event);
-        $before = null === $event ? null : self::signature($dto);
+        $before = null === $event ? null : $this->signature($dto);
         $draft = null;
 
         if ([] === $errors) {
@@ -102,7 +102,7 @@ final class EventRowMapper
             $errors = $this->judge($dto, $first);
         }
 
-        $changed = null === $before || self::signature($dto) !== $before || (null !== $draft && $draft !== $event?->isDraft())
+        $changed = null === $before || $this->signature($dto) !== $before || (null !== $draft && $draft !== $event?->isDraft())
             || (null !== $reference && $reference !== $event?->getExternalReference());
 
         return new MappedEvent($group, $dto, $event?->getId(), $reference, $draft, $changed, $errors);
@@ -177,7 +177,7 @@ final class EventRowMapper
      */
     private function applyEventValues(EventDto $dto, array $values, bool $new): void
     {
-        $value = static fn (EventColumn $column): ?string => \array_key_exists($column->value, $values) ? $values[$column->value] : null;
+        $value = static fn (EventColumn $column): ?string => $values[$column->value] ?? null;
         $text = static fn (EventColumn $column, ?string $current): ?string => match ($value($column)) {
             null => $current,
             '' => null,
@@ -250,6 +250,7 @@ final class EventRowMapper
         $city = $place->city ?? new CityDto();
         $place->name = $value(EventColumn::Place) ?? $place->name;
         $place->street = $value(EventColumn::Street) ?? $place->street;
+
         $city->name = $value(EventColumn::City) ?? $city->name;
         $city->postalCode = $value(EventColumn::PostalCode) ?? $city->postalCode;
         foreach ([&$place->name, &$place->street, &$city->name, &$city->postalCode] as &$field) {
@@ -359,12 +360,12 @@ final class EventRowMapper
             $this->countries = [];
             foreach ($this->countryRepository->findAll() as $country) {
                 foreach ([$country->getId(), $country->getName(), $country->getDisplayName()] as $name) {
-                    $this->countries[self::fold((string) $name)] = $country;
+                    $this->countries[$this->fold((string) $name)] = $country;
                 }
             }
         }
 
-        return $this->countries[self::fold($value)] ?? null;
+        return $this->countries[$this->fold($value)] ?? null;
     }
 
     private function isOwnImage(string $url): bool
@@ -372,7 +373,7 @@ final class EventRowMapper
         return parse_url($url, \PHP_URL_HOST) === parse_url($this->imagesUrl, \PHP_URL_HOST);
     }
 
-    private static function fold(string $value): string
+    private function fold(string $value): string
     {
         return mb_strtolower((string) transliterator_transliterate('Any-Latin; Latin-ASCII', trim($value)));
     }
@@ -380,7 +381,7 @@ final class EventRowMapper
     /**
      * What the spreadsheet can change on an event, to tell whether the rows change it.
      */
-    private static function signature(EventDto $dto): string
+    private function signature(EventDto $dto): string
     {
         $date = static fn (?DateTimeImmutable $date, string $format = 'Y-m-d'): ?string => $date?->format($format);
 

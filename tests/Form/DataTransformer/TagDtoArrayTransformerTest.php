@@ -31,7 +31,7 @@ final class TagDtoArrayTransformerTest extends TestCase
 
     public function testTypedNamesBecomeThemes(): void
     {
-        self::assertSame(['Jazz', 'Concert'], self::names(new TagDtoArrayTransformer()->reverseTransform(' Jazz , Concert ,, ')));
+        self::assertSame(['Jazz', 'Concert'], $this->names(new TagDtoArrayTransformer()->reverseTransform(' Jazz , Concert ,, ')));
         self::assertSame([], new TagDtoArrayTransformer()->reverseTransform('  '));
         self::assertSame([], new TagDtoArrayTransformer()->reverseTransform(null));
     }
@@ -49,7 +49,7 @@ final class TagDtoArrayTransformerTest extends TestCase
         $shown = $transformer->transform($themes);
 
         self::assertCount(2, explode(',', (string) $shown), 'The widget shows two themes');
-        self::assertSame(['Peintures, arts graphiques', 'Jazz'], self::names($transformer->reverseTransform($shown)));
+        self::assertSame(['Peintures, arts graphiques', 'Jazz'], $this->names($transformer->reverseTransform($shown)));
     }
 
     public function testTheCategoryIsOneName(): void
@@ -67,7 +67,7 @@ final class TagDtoArrayTransformerTest extends TestCase
      *
      * @return list<string|null>
      */
-    private static function names(array $tags): array
+    private function names(array $tags): array
     {
         return array_values(array_map(static fn (TagDto $tag): ?string => $tag->name, $tags));
     }

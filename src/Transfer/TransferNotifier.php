@@ -29,6 +29,7 @@ use Throwable;
 final readonly class TransferNotifier
 {
     public const string IMPORT_EVENT = 'event-import';
+
     public const string EXPORT_EVENT = 'event-export';
 
     public function __construct(

@@ -49,19 +49,19 @@ final class PurgeCdnCacheTagsHandlerTest extends TestCase
 
         // 60 + 40 distinct tags fill a request: the first 60 are repeated, so 60 + 50 would not fit
         $first = new Acknowledger(PurgeCdnCacheTagsHandler::class);
-        $handler(new PurgeCdnCacheTags(self::tags(0, 60)), $first);
-        $handler(new PurgeCdnCacheTags(self::tags(0, 100)), new Acknowledger(PurgeCdnCacheTagsHandler::class));
+        $handler(new PurgeCdnCacheTags($this->tags(0, 60)), $first);
+        $handler(new PurgeCdnCacheTags($this->tags(0, 100)), new Acknowledger(PurgeCdnCacheTagsHandler::class));
         self::assertSame([], $this->requests);
 
         $last = new Acknowledger(PurgeCdnCacheTagsHandler::class);
-        $handler(new PurgeCdnCacheTags(self::tags(100, 110)), $last);
+        $handler(new PurgeCdnCacheTags($this->tags(100, 110)), $last);
 
-        self::assertSame([self::tags(0, 100)], $this->requests, 'the pending tags go first');
+        self::assertSame([$this->tags(0, 100)], $this->requests, 'the pending tags go first');
         self::assertTrue($first->isAcknowledged());
         self::assertFalse($last->isAcknowledged());
 
         $handler->flush(true);
-        self::assertSame([self::tags(0, 100), self::tags(100, 110)], $this->requests);
+        self::assertSame([$this->tags(0, 100), $this->tags(100, 110)], $this->requests);
         self::assertTrue($last->isAcknowledged());
     }
 
@@ -105,7 +105,7 @@ final class PurgeCdnCacheTagsHandlerTest extends TestCase
     /**
      * @return non-empty-list<string>
      */
-    private static function tags(int $from, int $to): array
+    private function tags(int $from, int $to): array
     {
         return array_map(static fn (int $i): string => "event-$i", range($from, $to - 1));
     }

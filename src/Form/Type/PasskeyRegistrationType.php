@@ -35,7 +35,7 @@ final class PasskeyRegistrationType extends AbstractType
             ])
             ->add('credential', HiddenType::class, [
                 'attr' => ['data-webauthn-response' => true],
-                'constraints' => [new NotBlank(message: 'Votre navigateur n\'a pas créé de clé d\'accès : réessayez.')],
+                'constraints' => [new NotBlank(message: "Votre navigateur n'a pas créé de clé d'accès : réessayez.")],
             ]);
     }
 }

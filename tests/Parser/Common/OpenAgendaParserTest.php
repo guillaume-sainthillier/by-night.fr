@@ -276,7 +276,7 @@ final class OpenAgendaParserTest extends AppKernelTestCase
             'key',
         );
 
-        $events = iterator_to_array((new ReflectionMethod($parser, 'getAgendaEvents'))->invoke($parser, null, false, 42), false);
+        $events = iterator_to_array(new ReflectionMethod($parser, 'getAgendaEvents')->invoke($parser, null, false, 42), false);
 
         self::assertCount(1, $events);
         self::assertSame(2, $requests);
@@ -300,7 +300,7 @@ final class OpenAgendaParserTest extends AppKernelTestCase
         );
 
         try {
-            iterator_to_array((new ReflectionMethod($parser, 'getAgendaEvents'))->invoke($parser, null, false, 42));
+            iterator_to_array(new ReflectionMethod($parser, 'getAgendaEvents')->invoke($parser, null, false, 42));
             self::fail('An event page the API keeps refusing must fail the run');
         } catch (ClientExceptionInterface) {
         }
@@ -394,7 +394,7 @@ final class OpenAgendaParserTest extends AppKernelTestCase
             'key',
         );
 
-        $events = iterator_to_array((new ReflectionMethod($parser, 'getAgendaEvents'))->invoke($parser, null, false, 42), false);
+        $events = iterator_to_array(new ReflectionMethod($parser, 'getAgendaEvents')->invoke($parser, null, false, 42), false);
 
         self::assertCount(1, $events);
         self::assertSame("Concert au parc \u{FFFD}", $events[0]['title']);

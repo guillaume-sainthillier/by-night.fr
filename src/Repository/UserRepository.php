@@ -186,7 +186,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     public function findWeekendDigestRecipientIds(string $week): array
     {
         /* @var list<int> */
-        return array_map('intval', $this->andWhereDeliverableEmail($this->createQueryBuilder('u'))
+        return array_map(intval(...), $this->andWhereDeliverableEmail($this->createQueryBuilder('u'))
             ->select('u.id')
             ->andWhere('u.weekendDigest = true')
             ->andWhere('u.enabled = true')

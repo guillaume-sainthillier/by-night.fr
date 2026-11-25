@@ -8,14 +8,10 @@
  * with this source code in the file LICENSE.
  */
 
-use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
-use Rector\CodeQuality\Rector\If_\CombineIfRector;
-use Rector\CodeQuality\Rector\If_\SimplifyIfElseToTernaryRector;
+use Rector\CodeQuality\Rector\If_\ExplicitNullableObjectInstanceRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
-use Rector\Symfony\CodeQuality\Rector\Class_\ControllerMethodInjectionToConstructorRector;
-use Rector\Symfony\CodeQuality\Rector\Class_\InlineClassRoutePrefixRector;
 
 return RectorConfig::configure()
     ->withImportNames(removeUnusedImports: true)
@@ -34,30 +30,18 @@ return RectorConfig::configure()
         doctrineCodeQuality: true,
         symfonyCodeQuality: true
     )
-    ->withComposerBased(
-        twig: true,
-        doctrine: true,
-        phpunit: true,
-        symfony: true,
-    )
+    ->withComposerBased()
     ->withSets([
         Zenstruck\Foundry\Utils\Rector\FoundrySetList::FOUNDRY_2_7,
         Zenstruck\Foundry\Utils\Rector\FoundrySetList::FOUNDRY_2_9,
     ])
     ->withSkip([
+        ExplicitNullableObjectInstanceRector::class,
         Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector::class,
-        ControllerMethodInjectionToConstructorRector::class,
-        InlineClassRoutePrefixRector::class,
-        FlipTypeControlToUseExclusiveTypeRector::class,
         CatchExceptionNameMatchingTypeRector::class,
-        SimplifyIfElseToTernaryRector::class => [
-            __DIR__ . '/src/Image/Helper/ImageHelper.php',
-        ],
-        CombineIfRector::class => [
-            __DIR__ . '/src/Entity/*',
-        ],
         ClassPropertyAssignToConstructorPromotionRector::class => [
-            __DIR__ . '/src/Entity/*',
+            __DIR__ . '/src/Entity/ResetPasswordRequest.php',
         ],
     ])
+    ->reportUnusedSkips()
 ;

@@ -32,14 +32,14 @@ final class EventTitleComparatorTest extends TestCase
         yield '"dans" the show' => ['Elie Semoun dans Cactus', 'Elie Semoun - Cactus - Tournée', MatchVerdict::Same];
         yield 'punctuation' => ['Moche, Moche... et Rigolote !', 'Moche moche et rigolote', MatchVerdict::Same];
         yield 'HTML entities' => ['Bigflo & Oli', 'BIGFLO &amp; OLI', MatchVerdict::Same];
-        yield 'the venue and the town' => ['Changer l\'eau des fleurs', 'Changer l\'Eau des Fleurs - Théâtre des Salinières, Bordeaux', MatchVerdict::Same, ['Théâtre Des Salinières', 'Bordeaux']];
+        yield 'the venue and the town' => ["Changer l'eau des fleurs", "Changer l'Eau des Fleurs - Théâtre des Salinières, Bordeaux", MatchVerdict::Same, ['Théâtre Des Salinières', 'Bordeaux']];
         yield 'the opening act' => ['Jontavious Willis', 'Jontavious Willis (USA) + 1ère partie', MatchVerdict::Contained];
         yield 'a date in the title' => ['Nous Etions une Armée', 'NOUS ÉTIONS UNE ARMÉE | Lieu Chéri - 04 décembre 2026', MatchVerdict::Same, ['Lieu Chéri', 'Paris']];
         yield 'both sold out' => ['Orelsan (complet)', 'Orelsan - Tournée', MatchVerdict::Same];
 
         // One title names the artist, the other adds the show
         yield 'the artist and the show' => ['Stephan eicher', 'Stephan Eicher - Poussière d’Or Tour', MatchVerdict::Contained];
-        yield 'a two-word artist and the show' => ['ANNE ROUMANOFF', 'Anne Roumanoff - L\'Âge Libre - Tournée', MatchVerdict::Contained];
+        yield 'a two-word artist and the show' => ['ANNE ROUMANOFF', "Anne Roumanoff - L'Âge Libre - Tournée", MatchVerdict::Contained];
         yield 'a lone word long enough' => ['NINHO', 'Ninho - Quattro Tour', MatchVerdict::Contained];
 
         // Never the same show
@@ -47,9 +47,9 @@ final class EventTitleComparatorTest extends TestCase
         yield 'two shows of one artist' => ['Chantal Ladesou - Iconique', 'Chantal Ladesou - Forever', MatchVerdict::Different];
         yield 'two shows' => ['Le Dîner de Cons', 'Le Prénom', MatchVerdict::Different];
         yield 'the shorter says too little of the longer' => ['Kev Adams', 'Kev Adams et Gad Elmaleh - Tout est Possible Rodage', MatchVerdict::Different];
-        yield 'a visit of the exhibition' => ['Exposition Picasso', 'Visite guidée de l\'exposition Picasso', MatchVerdict::Different];
+        yield 'a visit of the exhibition' => ['Exposition Picasso', "Visite guidée de l'exposition Picasso", MatchVerdict::Different];
         yield 'a workshop around the show' => ['Le Petit Prince', 'Atelier Le Petit Prince', MatchVerdict::Different];
-        yield 'the kids\' version' => ['Le Lac des Cygnes', 'Le Lac des Cygnes pour enfants', MatchVerdict::Different];
+        yield "the kids' version" => ['Le Lac des Cygnes', 'Le Lac des Cygnes pour enfants', MatchVerdict::Different];
         yield 'a parking' => ['Mylène Farmer', 'Parking - Mylène Farmer', MatchVerdict::OtherProduct];
         yield 'a package' => ['Mask Singer', 'Package Mask Singer', MatchVerdict::OtherProduct];
         yield 'a dinner show' => ['Cirque Arlette Gruss', 'Cirque Arlette Gruss - Dîner-Spectacle', MatchVerdict::OtherProduct];

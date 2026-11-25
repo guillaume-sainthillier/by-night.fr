@@ -177,11 +177,11 @@ final class SowProgParser extends AbstractParser
      */
     private function timesheet(array $date): EventTimesheetDto
     {
-        $startTime = self::fromFormat('H:i', $date['startTime'] ?? null);
-        $endTime = self::fromFormat('H:i', $date['endTime'] ?? null);
+        $startTime = $this->fromFormat('H:i', $date['startTime'] ?? null);
+        $endTime = $this->fromFormat('H:i', $date['endTime'] ?? null);
 
         $timesheet = new EventTimesheetDto();
-        $timesheet->startAt = self::fromFormat('Y-m-d', $date['date']);
+        $timesheet->startAt = $this->fromFormat('Y-m-d', $date['date']);
         // A night that goes past midnight ("De 23h00 à 05h00") ends the next day, as the v1.2 feed had it
         $timesheet->endAt = null !== $startTime && null !== $endTime && $endTime < $startTime ? $timesheet->startAt->modify('+1 day') : $timesheet->startAt;
         $timesheet->startTime = $startTime;
@@ -193,7 +193,7 @@ final class SowProgParser extends AbstractParser
     /**
      * @return ($value is null ? null : DateTimeImmutable)
      */
-    private static function fromFormat(string $format, ?string $value): ?DateTimeImmutable
+    private function fromFormat(string $format, ?string $value): ?DateTimeImmutable
     {
         if (null === $value) {
             return null;

@@ -13,7 +13,7 @@ namespace App\EventSubscriber;
 use App\Exception\ElasticsearchUnavailableException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
 use Elastic\Transport\Exception\NoNodeAvailableException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -23,20 +23,15 @@ use Throwable;
  * A restart of Elasticsearch fails every agenda, search and autocomplete for a minute or two: those pages answer 503
  * Service Unavailable, to be retried in a while, rather than 500.
  */
-final class ElasticsearchUnavailableSubscriber implements EventSubscriberInterface
+final class ElasticsearchUnavailableSubscriber
 {
     /** Seconds: an Elasticsearch restart, shards included. */
     private const int RETRY_AFTER = 120;
 
-    public static function getSubscribedEvents(): array
-    {
-        // Before ErrorListener::logKernelException (0), which logs the exception it is handed
-        return [KernelEvents::EXCEPTION => ['onKernelException', 8]];
-    }
-
+    #[AsEventListener(event: KernelEvents::EXCEPTION, priority: 8)]
     public function onKernelException(ExceptionEvent $event): void
     {
-        $outage = self::find($event->getThrowable());
+        $outage = $this->find($event->getThrowable());
         if (null !== $outage) {
             $event->setThrowable(new ElasticsearchUnavailableException(self::RETRY_AFTER, $outage));
         }
@@ -47,7 +42,7 @@ final class ElasticsearchUnavailableSubscriber implements EventSubscriberInterfa
      * refused connection ends there too, once the transport has marked the only node dead), or it is up without the
      * shards of the index yet.
      */
-    private static function find(?Throwable $throwable): ?Throwable
+    private function find(?Throwable $throwable): ?Throwable
     {
         for (; null !== $throwable; $throwable = $throwable->getPrevious()) {
             if ($throwable instanceof NoNodeAvailableException
