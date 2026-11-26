@@ -57,6 +57,8 @@ parameters:
         - '#^Unused App\\Api\\Model\\\w+Input::__construct#'
         # referenced by string in config/packages/fos_elastica.yaml (query_builder_method)
         - '#^Unused App\\Repository\\EventRepository::createIsActiveQueryBuilder#'
+        # the #[AsLlmsTxtLinkProvider] methods, which only silarhi/llms-txt-bundle calls
+        - '#^Unused App\\LlmsTxt\\\w+::get\w+Links#'
         - identifier: shipmonk.deadProperty.neverRead
           paths:
               - src/Api
