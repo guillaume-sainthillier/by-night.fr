@@ -1,5 +1,5 @@
-import { formView } from '@silarhi/app-js/form'
-import { getHtml, postForm } from '@silarhi/app-js/http'
+import { formView, showViolations } from '@silarhi/app-js/form'
+import { getHtml, postForm, violationsOf } from '@silarhi/app-js/http'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import type { SweetAlertIcon } from 'sweetalert2'
 import type { CommentForm } from '@/js/forms/CommentForm'
@@ -12,14 +12,12 @@ import { plural } from '@/js/utils/plural'
 /**
  * What CommentController::new answers to a comment posted: the comment rendered, or the form with its errors
  */
-type CommentResponse =
-    | { success: true; comment: string; count: number; header: string }
-    | { success: false; post: string }
+type CommentResponse = { success: true; comment: string; count: number; header: string }
 
 /**
  * What ReplyController::new answers to a reply posted: the reply rendered, or the form with its errors
  */
-type ReplyResponse = { success: true; comment: string; reply_count: number } | { success: false; post: string }
+type ReplyResponse = { success: true; comment: string; reply_count: number }
 
 /** The comment of a comment or reply form (CommentType), read through its form view */
 const commentField = (form: HTMLFormElement | null) =>
@@ -217,6 +215,7 @@ export default class CommentApp {
         })
 
         const form = answerPostContainer.querySelector('form')
+        let clearViolations = () => {}
         form?.addEventListener('submit', async (event) => {
             event.preventDefault()
             const textarea = commentField(form)
@@ -225,12 +224,20 @@ export default class CommentApp {
                 return
             }
             loadingButtons(form)
+            clearViolations()
 
             let response: ReplyResponse | null
             try {
                 response = await postForm<ReplyResponse>(form.action, form)
-            } catch {
-                this.showToast('error', 'Une erreur est survenue')
+            } catch (error) {
+                // Refused (a 422): its errors on the fields of the form
+                const violations = violationsOf(error)
+                if (violations.length > 0) {
+                    clearViolations = showViolations(formView(form), violations)
+                    this.showToast('error', "Erreur lors de l'envoi de la réponse")
+                } else {
+                    this.showToast('error', 'Une erreur est survenue')
+                }
                 return
             } finally {
                 resetButtons(form)
@@ -272,16 +279,6 @@ export default class CommentApp {
 
                 // Update reply count
                 this.update_reply_count(mainAnswerContainer, String(response.reply_count))
-            } else if (response) {
-                // Error - show toast notification
-                this.showToast('error', "Erreur lors de l'envoi de la réponse")
-
-                // Replace form content with error form
-                answerPostContainer.innerHTML = response.post
-
-                // Re-initialize form handlers and page events
-                window.App.mount(answerPostContainer)
-                this.init_reply_form(answerPostContainer)
             }
         })
     }
@@ -290,15 +287,24 @@ export default class CommentApp {
         for (const form of comment.querySelectorAll('form')) {
             const textarea = commentField(form)
 
+            let clearViolations = () => {}
             form.addEventListener('submit', async (event) => {
                 event.preventDefault()
                 loadingButtons(comment)
+                clearViolations()
 
                 let response: CommentResponse | null
                 try {
                     response = await postForm<CommentResponse>(form.action, form)
-                } catch {
-                    this.showToast('error', 'Une erreur est survenue')
+                } catch (error) {
+                    // Refused (a 422): its errors on the fields of the form
+                    const violations = violationsOf(error)
+                    if (violations.length > 0) {
+                        clearViolations = showViolations(formView(form), violations)
+                        this.showToast('error', "Erreur lors de l'envoi du commentaire")
+                    } else {
+                        this.showToast('error', 'Une erreur est survenue')
+                    }
                     return
                 } finally {
                     resetButtons(comment)
@@ -368,16 +374,6 @@ export default class CommentApp {
                         // Remove animation class after animation completes
                         setTimeout(() => newComment.classList.remove('message-sent'), 500)
                     }, 100)
-                } else {
-                    // Error - show toast notification
-                    this.showToast('error', "Erreur lors de l'envoi du commentaire")
-
-                    // Replace form content with error form
-                    postCommentContainer.innerHTML = response.post
-
-                    // Re-initialize form handlers and page events
-                    window.App.mount(postCommentContainer)
-                    this.init_new_comment(postCommentContainer)
                 }
             })
         }

@@ -15,6 +15,7 @@ use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use App\Security\Voter\EventVoter;
+use Silarhi\AppJsBundle\Http\FormViolationsResponse;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,14 +76,9 @@ final class ReplyController extends BaseController
                 'reply_count' => \count($comment->getChildren()),
             ]);
         }
+        // A refused reply: its errors by field, which the page shows on the form (CommentApp)
         if ($form->isSubmitted()) {
-            return new JsonResponse([
-                'success' => false,
-                'post' => $this->renderView('comment/reply/form.html.twig', [
-                    'comment' => $comment,
-                    'form' => $form,
-                ]),
-            ]);
+            return new FormViolationsResponse($form);
         }
 
         return $this->render('comment/reply/form.html.twig', [

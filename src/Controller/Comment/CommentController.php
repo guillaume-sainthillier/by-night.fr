@@ -16,6 +16,7 @@ use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use App\Security\Voter\EventVoter;
+use Silarhi\AppJsBundle\Http\FormViolationsResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -85,6 +86,11 @@ final class CommentController extends BaseController
                     'comments' => $comments,
                 ]),
             ]);
+        }
+
+        // A refused comment: its errors by field, which the page shows on the form (CommentApp)
+        if ($form->isSubmitted()) {
+            return new FormViolationsResponse($form);
         }
 
         return new JsonResponse([

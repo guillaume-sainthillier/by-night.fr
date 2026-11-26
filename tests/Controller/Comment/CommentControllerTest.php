@@ -63,4 +63,21 @@ final class CommentControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('body', 'Pensez à réserver');
     }
+
+    public function testARefusedReplyAnswersItsErrorsByField(): void
+    {
+        $client = self::createClient();
+        $comment = CommentFactory::createOne(['comment' => 'Qui vient ce soir ?']);
+        $client->loginUser(UserFactory::createOne());
+
+        $crawler = $client->request('GET', \sprintf('/commentaire/%d/repondre', $comment->getId()));
+        $form = $crawler->filter('form')->form();
+        $field = $crawler->filter('form textarea')->attr('name');
+        $client->submit($form, [(string) $field => '']);
+
+        // The errors the page shows on the form (CommentApp, showViolations()), by the paths formView() reads
+        self::assertResponseStatusCodeSame(422);
+        $violations = json_decode((string) $client->getResponse()->getContent(), true, flags: \JSON_THROW_ON_ERROR)['violations'];
+        self::assertSame(['comment'], array_column($violations, 'path'));
+    }
 }
