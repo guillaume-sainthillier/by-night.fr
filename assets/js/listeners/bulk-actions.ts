@@ -1,4 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
+import EventBulkAction from '@/js/enums/EventBulkAction'
 import { plural } from '@/js/utils/plural'
 
 /**
@@ -58,7 +59,7 @@ export default defineListener<HTMLFormElement>({
             if (!(e.submitter instanceof HTMLButtonElement || e.submitter instanceof HTMLInputElement)) {
                 return
             }
-            if ('delete' !== e.submitter.value) {
+            if (EventBulkAction.Delete !== e.submitter.value) {
                 return
             }
 
@@ -78,7 +79,7 @@ export default defineListener<HTMLFormElement>({
             const action = document.createElement('input')
             action.type = 'hidden'
             action.name = 'action'
-            action.value = 'delete'
+            action.value = EventBulkAction.Delete
             form.append(action)
             form.submit()
         }

@@ -1,0 +1,10 @@
+silarhi_app_js:
+    # The PHP values the scripts share, committed like the icons and the routes, so the frontend builds without PHP.
+    # Dumped by `bin/console app-js:dump-enums` and `app-js:dump-constants` (CI fails when they are stale)
+    enums:
+        output_dir: '%kernel.project_dir%/assets/js/enums'
+    constants:
+        output_dir: '%kernel.project_dir%/assets/js/constants'
+        # The classes marked #[ConstantsToJs] that no service resource loads (config/services.yaml excludes them)
+        paths:
+            '%kernel.project_dir%/src/Search': 'App\Search'

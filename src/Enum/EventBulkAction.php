@@ -10,9 +10,12 @@
 
 namespace App\Enum;
 
+use Silarhi\AppJsBundle\Attribute\EnumToJs;
+
 /**
  * What a member does at once with several of their events (their list, an import's report).
  */
+#[EnumToJs]
 enum EventBulkAction: string
 {
     case Publish = 'publish';

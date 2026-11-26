@@ -3387,6 +3387,22 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     dump_typescript?: bool|Param, // Control whether TypeScript types are dumped alongside routes. Disable this if you do not use TypeScript (e.g. in production when using AssetMapper). // Default: true
  *     routes?: Param|string|list<scalar|Param|null>,
  * }
+ * @psalm-type SilarhiAppJsConfig = array{
+ *     enums?: array{
+ *         output_dir?: scalar|Param|null, // The directory of the dumped enums, owned by app-js:dump-enums. // Default: "%kernel.project_dir%/assets/js/enums"
+ *         format?: "ts"|"js"|Param, // ts: .ts modules, js: .js modules (the same code). // Default: "ts"
+ *         paths?: array<string, scalar|Param|null>,
+ *     },
+ *     constants?: array{
+ *         output_dir?: scalar|Param|null, // The directory of the dumped constants, owned by app-js:dump-constants. // Default: "%kernel.project_dir%/assets/js/constants"
+ *         format?: "ts"|"js"|Param, // ts: .ts modules, js: .js modules (the same code). // Default: "ts"
+ *         paths?: array<string, scalar|Param|null>,
+ *     },
+ *     forms?: array{
+ *         output_dir?: scalar|Param|null, // The directory of the dumped form shapes, owned by app-js:dump-forms. // Default: "%kernel.project_dir%/assets/js/forms"
+ *         format?: "ts"|"js"|Param, // ts: .ts files, js: .d.ts declarations for JSDoc (a shape is a type only). // Default: "ts"
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -3424,6 +3440,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     cap?: CapConfig,
  *     mcp?: McpConfig,
  *     ux_router?: UxRouterConfig,
+ *     silarhi_app_js?: SilarhiAppJsConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -3466,6 +3483,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         cap?: CapConfig,
  *         mcp?: McpConfig,
  *         ux_router?: UxRouterConfig,
+ *         silarhi_app_js?: SilarhiAppJsConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -3505,6 +3523,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         cap?: CapConfig,
  *         mcp?: McpConfig,
  *         ux_router?: UxRouterConfig,
+ *         silarhi_app_js?: SilarhiAppJsConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -3548,6 +3567,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         cap?: CapConfig,
  *         mcp?: McpConfig,
  *         ux_router?: UxRouterConfig,
+ *         silarhi_app_js?: SilarhiAppJsConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

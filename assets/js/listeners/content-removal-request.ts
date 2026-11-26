@@ -1,6 +1,7 @@
 import { defineListener } from '@silarhi/app-js'
 import { errorBody, sendJson } from '@silarhi/app-js/http'
 import { Modal } from '@tabler/core'
+import { MESSAGE_MIN_LENGTH } from '@/js/constants/ContentRemovalRequestInput'
 import { path } from '@/js/router'
 
 /**
@@ -94,7 +95,7 @@ export default defineListener<HTMLElement>({
                 isValid = false
             }
 
-            if (!messageInput.value.trim() || messageInput.value.trim().length < 10) {
+            if (!messageInput.value.trim() || messageInput.value.trim().length < MESSAGE_MIN_LENGTH) {
                 messageInput.classList.add('is-invalid')
                 isValid = false
             }

@@ -1,5 +1,6 @@
 import { byId, definePage } from '@silarhi/app-js'
 import { Offcanvas } from '@tabler/core'
+import { DEFAULT_RANGE, MAX_RANGE } from '@/js/constants/SearchEvent'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
 import { groupByVenue, type MapEvent } from '@/js/utils/venues'
@@ -59,11 +60,11 @@ function initDatepickers(markDirty: () => void, container: ParentNode = document
 }
 
 /**
- * The radius slider: evenly spaced stops the handle snaps to, 25 km being SearchEvent's default and 100 km
- * SearchEvent::MAX_RANGE. See https://refreshless.com/nouislider/slider-values/
+ * The radius slider: evenly spaced stops the handle snaps to, SearchEvent's default in the middle and its widest radius
+ * last. See https://refreshless.com/nouislider/slider-values/
  */
 const RADIUS_SCALE = {
-    range: { min: 5, '25%': 10, '50%': 25, '75%': 50, max: 100 },
+    range: { min: 5, '25%': 10, '50%': DEFAULT_RANGE, '75%': 50, max: MAX_RANGE },
     snap: true,
 }
 

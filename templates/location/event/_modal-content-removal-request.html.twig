@@ -24,8 +24,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="removal-message" class="form-label">Motif de la demande <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="removal-message" rows="4" required placeholder="Expliquez la raison de votre demande (min. 10 caractères)"></textarea>
-                        <div class="invalid-feedback">Votre message doit faire au moins 10 caractères</div>
+                        {% set min_length = constant('App\\Api\\Model\\ContentRemovalRequestInput::MESSAGE_MIN_LENGTH') %}
+                        <textarea class="form-control" id="removal-message" rows="4" required placeholder="Expliquez la raison de votre demande (min. {{ min_length }} caractères)"></textarea>
+                        <div class="invalid-feedback">Votre message doit faire au moins {{ min_length }} caractères</div>
                     </div>
                     <div class="mb-3">
                         <label for="removal-urls" class="form-label">URLs de l'événement (optionnel)</label>

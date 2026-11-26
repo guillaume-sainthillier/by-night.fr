@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d099af82ea03b6edef44bc45823aa195",
+    "content-hash": "b7ff82c2a8e9b5def85159e93ab3abdd",
     "packages": [
         {
             "name": "api-platform/core",
@@ -7163,6 +7163,88 @@
             ],
             "time": "2026-11-19T14:41:16+00:00",
             "published-time": "2026-11-19T14:44:57+00:00"
+        },
+        {
+            "name": "silarhi/app-js-bundle",
+            "version": "v0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silarhi/app-js-bundle.git",
+                "reference": "a0e2cbf2d6105710d6c4727d2ff762a24cc7093a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silarhi/app-js-bundle/zipball/a0e2cbf2d6105710d6c4727d2ff762a24cc7093a",
+                "reference": "a0e2cbf2d6105710d6c4727d2ff762a24cc7093a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/config": "^6.4 || ^7.0 || ^8.0",
+                "symfony/console": "^6.4 || ^7.0 || ^8.0",
+                "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
+                "symfony/filesystem": "^6.4 || ^7.0 || ^8.0",
+                "symfony/finder": "^6.4 || ^7.0 || ^8.0",
+                "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
+                "symfony/string": "^6.4 || ^7.0 || ^8.0"
+            },
+            "conflict": {
+                "symfony/form": "<6.4",
+                "twig/twig": "<3.8"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.57.0",
+                "friendsofphp/php-cs-fixer": "^3.95.32",
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.3.6",
+                "phpstan/phpstan-strict-rules": "^2.1.1",
+                "phpstan/phpstan-symfony": "^2.1.1",
+                "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
+                "rector/rector": "^2.8.5",
+                "symfony/error-handler": "^6.4 || ^7.0 || ^8.0",
+                "symfony/form": "^6.4 || ^7.0 || ^8.0",
+                "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/security-csrf": "^6.4 || ^7.0 || ^8.0",
+                "symfony/twig-bundle": "^6.4 || ^7.0 || ^8.0",
+                "twig/twig": "^3.30.0"
+            },
+            "suggest": {
+                "symfony/form": "Enables the form shapes (app-js:dump-forms)",
+                "twig/twig": "Enables the load_page Twig function"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Silarhi\\AppJsBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SILARHI",
+                    "email": "dev@silarhi.fr"
+                }
+            ],
+            "description": "load_page Twig function, TypeScript enums and typed form shapes for Symfony — the PHP companion to @silarhi/app-js",
+            "homepage": "https://github.com/silarhi/app-js-bundle",
+            "keywords": [
+                "code-generation",
+                "enum",
+                "form",
+                "symfony",
+                "symfony-bundle",
+                "twig",
+                "typescript"
+            ],
+            "support": {
+                "issues": "https://github.com/silarhi/app-js-bundle/issues",
+                "source": "https://github.com/silarhi/app-js-bundle"
+            },
+            "time": "2026-11-25T12:18:03+00:00",
+            "published-time": "2026-11-25T12:18:19+00:00"
         },
         {
             "name": "silarhi/cap-bundle",
