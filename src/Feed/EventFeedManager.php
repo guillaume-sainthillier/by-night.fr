@@ -16,6 +16,7 @@ use App\Entity\Place;
 use App\Entity\Publisher;
 use App\Repository\EventRepository;
 use App\Transfer\Export\EventCalendarWriter;
+use App\Utils\Utm;
 use DateInterval;
 use DateTimeImmutable;
 use Psr\Clock\ClockInterface;
@@ -59,7 +60,7 @@ final readonly class EventFeedManager
     public function createCalendarResponse(Publisher|Place $owner): Response
     {
         $events = $this->findEvents($owner, $this->clock->now()->modify(self::CALENDAR_PAST), self::CALENDAR_EVENTS);
-        $calendar = $this->calendarWriter->render($events, \sprintf('%s · By Night', $owner->getName()), ttl: new DateInterval(self::CALENDAR_REFRESH));
+        $calendar = $this->calendarWriter->render($events, \sprintf('%s · By Night', $owner->getName()), ttl: new DateInterval(self::CALENDAR_REFRESH), utm: Utm::link('calendar', 'calendar', self::campaignOf($owner)));
 
         $filename = \sprintf('%s.ics', $owner->getSlug());
         $response = new Response($calendar, Response::HTTP_OK, [
@@ -85,6 +86,8 @@ final readonly class EventFeedManager
             'place' => $owner instanceof Place ? $owner : null,
             'events' => $events,
             'dark' => $dark,
+            // Its frame is ours: a click from it would count as a visit from By Night itself
+            'utm' => Utm::link('widget', 'embed', self::campaignOf($owner)),
         ]));
         // Any website may frame it: it is made for that
         $response->headers->set('Content-Security-Policy', 'frame-ancestors *');
@@ -110,6 +113,14 @@ final readonly class EventFeedManager
         $this->eventRepository->loadAllEager($events, ['view' => 'events:agenda:list']);
 
         return $events;
+    }
+
+    /**
+     * Whose widget or calendar a visit comes from: "publisher-le-bikini", "place-le-bikini"
+     */
+    private static function campaignOf(Publisher|Place $owner): string
+    {
+        return ($owner instanceof Publisher ? 'publisher-' : 'place-') . $owner->getSlug();
     }
 
     private function share(Response $response, Publisher|Place $owner): Response

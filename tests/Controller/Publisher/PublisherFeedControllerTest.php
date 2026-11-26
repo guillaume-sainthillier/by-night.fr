@@ -44,6 +44,8 @@ final class PublisherFeedControllerTest extends AppWebTestCase
         $calendar = (string) $client->getResponse()->getContent();
         self::assertStringContainsString('X-WR-CALNAME:Le Bikini · By Night', $calendar);
         self::assertStringContainsString('SUMMARY:Concert de jazz', $calendar);
+        // Tagged: a calendar app sends no referrer (the lines of a calendar fold at 75 octets)
+        self::assertStringContainsString('?utm_source=calendar&utm_medium=calendar&utm_campaign=publisher-le-bikini', preg_replace("/\r\n[ \t]/", '', $calendar));
         // A week ago stays, the app would otherwise drop it; two months ago is gone
         self::assertStringContainsString('SUMMARY:La semaine dernière', $calendar);
         self::assertStringNotContainsString('Il y a deux mois', $calendar);
@@ -81,8 +83,9 @@ final class PublisherFeedControllerTest extends AppWebTestCase
         self::assertResponseHeaderSame('X-Robots-Tag', 'noindex');
         self::assertSame(['Concert de jazz', 'Concert de rock'], $crawler->filter('.list-group-item strong')->each(static fn ($name): string => trim($name->text())));
         self::assertSelectorExists('base[target="_blank"]');
-        self::assertSelectorExists(\sprintf('a[href="https://by-night.test/%s/soiree/%s--%d"]', $concert->getLocationSlug(), $concert->getSlug(), $concert->getId()));
-        self::assertSelectorExists('a[href="https://by-night.test/organisateurs/le-bikini"]');
+        // Tagged: its frame is ours, a click would count as a visit from By Night itself
+        self::assertSelectorExists(\sprintf('a[href="https://by-night.test/%s/soiree/%s--%d?utm_source=widget&utm_medium=embed&utm_campaign=publisher-le-bikini&utm_content=event"]', $concert->getLocationSlug(), $concert->getSlug(), $concert->getId()));
+        self::assertSelectorExists('a[href="https://by-night.test/organisateurs/le-bikini?utm_source=widget&utm_medium=embed&utm_campaign=publisher-le-bikini&utm_content=agenda"]');
         self::assertSelectorExists('html[data-bs-theme="light"]');
         self::assertSame([], $client->getResponse()->headers->getCookies());
     }

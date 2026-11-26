@@ -17,6 +17,7 @@ use App\Api\Model\EventVenue;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Utils\PriceLabel;
+use App\Utils\Utm;
 use DateTimeInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -36,10 +37,25 @@ final readonly class EventOutputFactory
     }
 
     /**
-     * @param ?DateTimeInterface $from the first day asked for: the session given is the first from then
-     * @param ?DateTimeInterface $to   its last day
+     * The UTM parameters of the event pages an answer links to: an assistant (an MCP tool) or an API client gives the
+     * link without a referrer.
+     *
+     * @param array<string, mixed> $context the context of the provider
+     * @param string               $tool    the MCP tool, which the GET shares: "search_events", "get_event"
+     *
+     * @return array<string, string>
      */
-    public function createSummary(Event $event, ?DateTimeInterface $from = null, ?DateTimeInterface $to = null): EventSummary
+    public static function utmOf(array $context, string $tool): array
+    {
+        return isset($context['mcp_request']) ? Utm::link('mcp', 'assistant', $tool) : Utm::link('api', 'api', $tool);
+    }
+
+    /**
+     * @param ?DateTimeInterface    $from the first day asked for: the session given is the first from then
+     * @param ?DateTimeInterface    $to   its last day
+     * @param array<string, string> $utm  the UTM parameters of its URL (utmOf())
+     */
+    public function createSummary(Event $event, ?DateTimeInterface $from = null, ?DateTimeInterface $to = null, array $utm = []): EventSummary
     {
         $price = PriceLabel::fromPrices($event->getPrices(), $event->getStartingPrice());
         $session = $event->getSessionFor($from, $to);
@@ -47,7 +63,7 @@ final readonly class EventOutputFactory
         return new EventSummary(
             id: (int) $event->getId(),
             name: (string) $event->getName(),
-            url: $this->urlGenerator->generate('app_event_details', ['slug' => $event->getSlug(), 'id' => $event->getId(), 'location' => $event->getLocationSlug()], UrlGeneratorInterface::ABSOLUTE_URL),
+            url: Utm::tag($this->urlGenerator->generate('app_event_details', ['slug' => $event->getSlug(), 'id' => $event->getId(), 'location' => $event->getLocationSlug()], UrlGeneratorInterface::ABSOLUTE_URL), $utm),
             category: $event->getCategory()?->getName(),
             nextSession: null === $session ? null : EventSession::of($session),
             upcomingSessions: $event->countUpcomingSessions($from),
@@ -61,8 +77,10 @@ final readonly class EventOutputFactory
 
     /**
      * The card, its description, the sessions to come and the prices as the page lists them.
+     *
+     * @param array<string, string> $utm the UTM parameters of its URL (utmOf())
      */
-    public function createDetails(Event $event, DateTimeInterface $today): EventDetails
+    public function createDetails(Event $event, DateTimeInterface $today, array $utm = []): EventDetails
     {
         $day = $today->format('Y-m-d');
         $sessions = array_filter(
@@ -72,7 +90,7 @@ final readonly class EventOutputFactory
         $description = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) $event->getDescription()), \ENT_QUOTES | \ENT_HTML5)) ?? '');
 
         return new EventDetails(
-            event: $this->createSummary($event, $today),
+            event: $this->createSummary($event, $today, utm: $utm),
             description: '' === $description ? null : (mb_strlen($description) > self::DESCRIPTION_LENGTH ? mb_substr($description, 0, self::DESCRIPTION_LENGTH) . '…' : $description),
             sessions: array_values(array_filter(array_map(EventSession::of(...), \array_slice(array_values($sessions), 0, self::MAX_SESSIONS)))),
             prices: $event->getPrices(),

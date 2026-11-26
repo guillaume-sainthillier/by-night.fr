@@ -10,17 +10,18 @@
 
 namespace App\Twig;
 
-use App\Utils\EmailUtm;
+use App\Utils\Utm;
 use Twig\Attribute\AsTwigFilter;
 
 final readonly class UtmExtension
 {
     /**
-     * Tags a link of an e-mail with the UTM parameters of its campaign, the "utm" of its context (EmailUtm): a link of
-     * an e-mail without one stays as it is, so that the layouts tag theirs whatever the e-mail.
+     * Tags a link with the UTM parameters of its template, the "utm" of its context (Utm): an e-mail worth measuring,
+     * a widget. A template without one leaves its links as they are, so that the e-mail layouts tag theirs whatever
+     * the e-mail.
      *
      * @param array<string, mixed> $context
-     * @param string|null          $content which link of the e-mail it is: "event", "cta"
+     * @param string|null          $content which link it is: "event", "cta"
      */
     #[AsTwigFilter(name: 'utm', needsContext: true)]
     public function utm(array $context, string $url, ?string $content = null): string
@@ -30,6 +31,6 @@ final readonly class UtmExtension
             return $url;
         }
 
-        return EmailUtm::tag($url, null === $content ? $utm : $utm + ['utm_content' => $content]);
+        return Utm::tag($url, null === $content ? $utm : $utm + ['utm_content' => $content]);
     }
 }

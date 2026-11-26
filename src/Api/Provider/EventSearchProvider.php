@@ -69,13 +69,14 @@ final readonly class EventSearchProvider implements ProviderInterface
         $events = iterator_to_array($pager->getCurrentPageResults(), false);
         $this->eventRepository->loadAllEager($events, ['view' => 'events:agenda:list']);
         $range = $search->getDateRange();
+        $utm = EventOutputFactory::utmOf($context, 'search_events');
 
         return new EventSearchResult(
             city: $location->getCity()?->getName(),
             from: $range->from->format('Y-m-d'),
             to: $range->to?->format('Y-m-d'),
             total: $pager->getNbResults(),
-            events: array_map(fn (Event $event) => $this->eventOutputFactory->createSummary($event, $range->from, $range->to), $events),
+            events: array_map(fn (Event $event) => $this->eventOutputFactory->createSummary($event, $range->from, $range->to, $utm), $events),
         );
     }
 

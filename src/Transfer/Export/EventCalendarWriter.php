@@ -13,6 +13,7 @@ namespace App\Transfer\Export;
 use App\Entity\Event;
 use App\Entity\EventTimesheet;
 use App\Enum\EventStatus;
+use App\Utils\Utm;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -52,22 +53,23 @@ final readonly class EventCalendarWriter
      */
     public function write(string $path, iterable $events): void
     {
-        file_put_contents($path, $this->render($events, 'Mes événements By Night'));
+        file_put_contents($path, $this->render($events, 'Mes événements By Night', utm: Utm::link('calendar', 'calendar', 'export')));
     }
 
     /**
-     * @param iterable<Event> $events
-     * @param list<int>       $tentative the events to mark as maybe (TENTATIVE): the others take place (CONFIRMED),
-     *                                   unless cancelled
-     * @param ?DateInterval   $ttl       how often a subscribed app should read the calendar again
+     * @param iterable<Event>       $events
+     * @param list<int>             $tentative the events to mark as maybe (TENTATIVE): the others take place (CONFIRMED),
+     *                                         unless cancelled
+     * @param ?DateInterval         $ttl       how often a subscribed app should read the calendar again
+     * @param array<string, string> $utm       the UTM parameters of the events' URLs: a calendar app sends no referrer
      */
-    public function render(iterable $events, string $name, array $tentative = [], ?DateInterval $ttl = null): string
+    public function render(iterable $events, string $name, array $tentative = [], ?DateInterval $ttl = null, array $utm = []): string
     {
         $entries = [];
         $first = null;
         $last = null;
         foreach ($events as $event) {
-            foreach ($this->entries($event, \in_array($event->getId(), $tentative, true)) as [$entry, $start, $end]) {
+            foreach ($this->entries($event, \in_array($event->getId(), $tentative, true), $utm) as [$entry, $start, $end]) {
                 $entries[] = $entry;
                 $first = null === $first || $start < $first ? $start : $first;
                 $last = null === $last || $end > $last ? $end : $last;
@@ -89,9 +91,11 @@ final readonly class EventCalendarWriter
     }
 
     /**
+     * @param array<string, string> $utm
+     *
      * @return list<array{0: CalendarEvent, 1: DateTimeInterface, 2: DateTimeInterface}> an entry per session, with its first and last day
      */
-    private function entries(Event $event, bool $tentative): array
+    private function entries(Event $event, bool $tentative, array $utm): array
     {
         $entries = [];
         $sessions = $event->getOwnTimesheets()->toArray();
@@ -99,7 +103,7 @@ final readonly class EventCalendarWriter
             ? [[$event->getStartDate(), $event->getEndDate(), $event->getStartTime(), $event->getEndTime()]]
             : array_map(static fn (EventTimesheet $session): array => [$session->getStartAt(), $session->getEndAt(), $session->getStartTime(), $session->getEndTime()], $sessions);
 
-        $url = $this->urlGenerator->generate('app_event_details', ['slug' => $event->getSlug(), 'id' => $event->getId(), 'location' => $event->getLocationSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $url = Utm::tag($this->urlGenerator->generate('app_event_details', ['slug' => $event->getSlug(), 'id' => $event->getId(), 'location' => $event->getLocationSlug()], UrlGeneratorInterface::ABSOLUTE_URL), $utm);
         foreach ($sessions as $i => [$start, $end, $startTime, $endTime]) {
             if (null === $start) {
                 continue;

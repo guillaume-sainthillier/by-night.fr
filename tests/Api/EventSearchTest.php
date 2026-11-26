@@ -45,7 +45,8 @@ final class EventSearchTest extends AppWebTestCase
         self::assertSame('Toulouse', $answer['city']);
         self::assertSame(1, $answer['total']);
         self::assertSame($concert->getId(), $answer['events'][0]['id']);
-        self::assertSame(\sprintf('https://by-night.test/toulouse/soiree/%s--%d', $concert->getSlug(), $concert->getId()), $answer['events'][0]['url']);
+        // Tagged: an API client gives the link without a referrer
+        self::assertSame(\sprintf('https://by-night.test/toulouse/soiree/%s--%d?utm_source=api&utm_medium=api&utm_campaign=search_events', $concert->getSlug(), $concert->getId()), $answer['events'][0]['url']);
         self::assertSame([], $client->getResponse()->headers->getCookies(), 'No session');
     }
 
