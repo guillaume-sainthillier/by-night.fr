@@ -5,11 +5,11 @@
     forms (assets/js/pages/profile.ts previews the chosen file).
 #}
 {%- block _profile_form_imageFile_row -%}
-    <div class="card form-panel mb-4">
-        <div class="card-body d-flex flex-column flex-sm-row align-items-center gap-3 text-center text-sm-start">
-            <span class="avatar avatar-xl avatar-rounded flex-shrink-0" data-avatar-preview>
+    <twig:Tabler:Card class="form-panel mb-4">
+        <twig:Tabler:Card:Body class="d-flex flex-column flex-sm-row align-items-center gap-3 text-center text-sm-start">
+            <twig:Tabler:Avatar size="xl" class="avatar-rounded flex-shrink-0" data-avatar-preview="">
                 <twig:User:Thumb user="{{ form.parent.vars.data }}" width="{{ 96 }}" height="{{ 96 }}" />
-            </span>
+            </twig:Tabler:Avatar>
             <div class="flex-fill min-w-0">
                 <div class="fw-bold mb-1">{{ label }}</div>
                 <p class="text-secondary small mb-3">{{ help }}</p>
@@ -26,6 +26,6 @@
                 {{ form_errors(form) }}
                 {{ form_errors(form.file) }}
             </div>
-        </div>
-    </div>
+        </twig:Tabler:Card:Body>
+    </twig:Tabler:Card>
 {%- endblock -%}

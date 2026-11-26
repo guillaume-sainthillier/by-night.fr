@@ -66,9 +66,7 @@
                 </div>
                 {% if not disabled and allow_delete %}
                     <div class="col-auto">
-                        <button class="btn btn-icon btn-ghost-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="Supprimer cette date&nbsp;?" data-bs-toggle="tooltip" title="Supprimer cette date">
-                            <twig:Tabler:Icon name="lucide:trash-2" />
-                        </button>
+                        <twig:Tabler:Button variant="danger" appearance="ghost" iconOnly icon="lucide:trash-2" tooltip="Supprimer cette date" class="remove-collection" data-item=".collection-item" data-confirm-message="{{ 'Supprimer cette date ?' }}" />
                     </div>
                 {% endif %}
             </div>

@@ -34,10 +34,7 @@
                             <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
                         {% endif %}
                         <twig:Tabler:Alert variant="warning" data-webauthn-error hidden />
-                        <button type="submit" class="btn btn-primary btn-lg w-100" {% if not hasTotp %}autofocus{% endif %}>
-                            <twig:Tabler:Icon name="lucide:fingerprint" />
-                            Utiliser ma clé d’accès
-                        </button>
+                        <twig:Tabler:Button variant="primary" size="lg" block type="submit" icon="lucide:fingerprint" autofocus="{{ not hasTotp }}">Utiliser ma clé d’accès</twig:Tabler:Button>
                     </form>
                 {% endif %}
 

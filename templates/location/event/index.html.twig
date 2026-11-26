@@ -188,10 +188,7 @@
                             <div class="fw-bold">Aperçu&nbsp;: cet événement n'est pas encore publié</div>
                             Seuls son auteur et les administrateurs le voient. Publiez-le pour qu'il apparaisse dans l'agenda.
                         </div>
-                        <button type="button" class="btn btn-primary" data-publish-event="{{ event.id }}"{% if event.publisher %} data-publisher="{{ event.publisher.slug }}"{% endif %}>
-                            <twig:Tabler:Icon name="lucide:rocket" />
-                            Publier l'événement
-                        </button>
+                        <twig:Tabler:Button variant="primary" icon="lucide:rocket" data-publish-event="{{ event.id }}" data-publisher="{{ event.publisher?.slug }}">Publier l'événement</twig:Tabler:Button>
                     </div>
                 </twig:Tabler:Alert>
             {% endif %}

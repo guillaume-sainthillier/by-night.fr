@@ -160,33 +160,33 @@
                             </ul>
                         </div>
                         <div class="col-lg-6">
-                            <div class="card mb-0">
-                                <div class="card-body">
+                            <twig:Tabler:Card class="mb-0">
+                                <twig:Tabler:Card:Body>
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <h3 class="mb-0">Nos principes techniques</h3>
                                         <span class="subheader text-teal">Sobriété & vitesse</span>
                                     </div>
                                     <div class="row row-cards row-deck">
                                         <div class="col-sm-6">
-                                            <div class="card card-sm mb-0">
-                                                <div class="card-body">
+                                            <twig:Tabler:Card size="sm" class="mb-0">
+                                                <twig:Tabler:Card:Body>
                                                     <div class="subheader mb-1">Hébergement</div>
                                                     <div class="fw-semibold">Hébergeur français</div>
                                                     <p class="text-secondary small mb-0">By Night est hébergé par OVH.</p>
-                                                </div>
-                                            </div>
+                                                </twig:Tabler:Card:Body>
+                                            </twig:Tabler:Card>
                                         </div>
                                         <div class="col-sm-6">
-                                            <a class="card card-sm card-link mb-0" href="https://github.com/guillaume-sainthillier/by-night.fr" target="_blank" rel="noopener">
-                                                <div class="card-body">
+                                            <twig:Tabler:Card size="sm" link href="https://github.com/guillaume-sainthillier/by-night.fr" class="mb-0" target="_blank" rel="noopener">
+                                                <twig:Tabler:Card:Body>
                                                     <div class="d-flex justify-content-between">
                                                         <div class="subheader mb-1">Code source</div>
                                                         <twig:Tabler:Icon name="lucide:external-link" class="text-secondary" />
                                                     </div>
                                                     <div class="fw-semibold">Open source</div>
                                                     <p class="text-secondary small mb-0">Code ouvert sous licence MIT, consultable sur GitHub.</p>
-                                                </div>
-                                            </a>
+                                                </twig:Tabler:Card:Body>
+                                            </twig:Tabler:Card>
                                         </div>
                                         <div class="col-12">
                                             <figure class="card card-sm mb-0">
@@ -199,8 +199,8 @@
                                             </figure>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                </twig:Tabler:Card:Body>
+                            </twig:Tabler:Card>
                         </div>
                     </div>
                 </twig:Tabler:Card:Body>
@@ -245,13 +245,13 @@
                                     {when: 'Aujourd\'hui', title: 'Version 5', text: 'Un nouveau design, plus clair et plus rapide, sur mobile comme sur ordinateur.'},
                                 ] %}
                                     <div class="col-md-4">
-                                        <div class="card card-sm form-panel border-0 mb-0">
-                                            <div class="card-body">
+                                        <twig:Tabler:Card size="sm" class="form-panel border-0 mb-0">
+                                            <twig:Tabler:Card:Body>
                                                 <div class="subheader text-primary mb-1">{{ step.when }}</div>
                                                 <div class="fw-semibold">{{ step.title }}</div>
                                                 <p class="text-secondary small mb-0">{{ step.text }}</p>
-                                            </div>
-                                        </div>
+                                            </twig:Tabler:Card:Body>
+                                        </twig:Tabler:Card>
                                     </div>
                                 {% endfor %}
                             </div>
