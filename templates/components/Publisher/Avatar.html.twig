@@ -1,6 +1,6 @@
 {# @var publisher \App\Entity\Publisher #}
 {# @var size int the side of the picture, in pixels #}
-{# The publisher's logo, else its initials #}
+{# The publisher's logo, else its initials (Tabler:Avatar's name) #}
 {% props publisher, size = 40, priority = false %}
 {% if publisher.hasLogo %}
     {% set logoContext = {entity: publisher, field: 'logoFile'} %}
@@ -16,7 +16,5 @@
         />
     </span>
 {% else %}
-    <span {{ attributes.defaults({class: 'avatar bg-primary-lt fw-bold', title: publisher.name}) }}>
-        {{- publisher.name|split(' ')|filter(word => word is not empty)|slice(0, 2)|map(word => word|first|upper)|join -}}
-    </span>
+    <twig:Tabler:Avatar name="{{ publisher.name }}" variant="primary" {{ ...attributes.defaults({class: 'fw-bold'}) }} />
 {% endif %}

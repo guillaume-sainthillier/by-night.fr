@@ -6,8 +6,7 @@
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         {% if location.isCity %}
                             {% if location.city.parent %}
-                                <twig:Tabler:Badge variant="primary" light>
-                                    <twig:Tabler:Icon name="lucide:map-pin" />
+                                <twig:Tabler:Badge variant="primary" light icon="lucide:map-pin">
                                     {{ location.city|department }}{% if location.city.parent.parent ?? null %} · {{ location.city.parent.parent.name }}{% endif %}
                                 </twig:Tabler:Badge>
                             {% endif %}

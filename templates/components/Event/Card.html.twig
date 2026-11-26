@@ -36,8 +36,7 @@
             {% if session or price %}
                 <twig:Tabler:Card:ImgOverlay class="{{ compact ? 'd-none d-md-flex' : 'd-flex' }} align-items-start justify-content-between gap-2 p-3">
                     {% if session %}
-                        <twig:Tabler:Badge variant="" class="bg-white text-primary text-truncate min-w-0">
-                            <twig:Tabler:Icon name="lucide:calendar-days" />
+                        <twig:Tabler:Badge variant="" class="bg-white text-primary text-truncate min-w-0" icon="lucide:calendar-days">
                             {{- when -}}
                         </twig:Tabler:Badge>
                     {% endif %}

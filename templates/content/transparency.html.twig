@@ -118,7 +118,7 @@
                                 <twig:Tabler:Card size="sm" class="form-panel border-0 mb-0">
                                     <twig:Tabler:Card:Body>
                                         <div class="hstack gap-2 mb-2">
-                                            <twig:Tabler:Avatar size="sm" class="bg-teal-lt"><twig:Tabler:Icon name="lucide:ticket" /></twig:Tabler:Avatar>
+                                            <twig:Tabler:Avatar color="teal" size="sm"><twig:Tabler:Icon name="lucide:ticket" /></twig:Tabler:Avatar>
                                             <h3 class="h4 mb-0">Les liens affiliés</h3>
                                         </div>
                                         <p class="small mb-0">
@@ -228,7 +228,7 @@
                                             {% if label.code ?? false %}
                                                 <code class="d-inline-block mb-2">{{ label.sample }}</code>
                                             {% else %}
-                                                <twig:Tabler:Badge variant="" class="bg-yellow-lt mb-2"><twig:Tabler:Icon name="lucide:info" /> {{ label.sample }}</twig:Tabler:Badge>
+                                                <twig:Tabler:Badge variant="" class="bg-yellow-lt mb-2" icon="lucide:info">{{ label.sample }}</twig:Tabler:Badge>
                                             {% endif %}
                                             <div class="fw-semibold">{{ label.where }}</div>
                                             <p class="small text-secondary mb-0">{{ label.text }}</p>
@@ -269,7 +269,7 @@
                 <twig:Tabler:Card:Body>
                     <div class="row g-4 g-lg-5 align-items-center">
                         <div class="col-lg-5">
-                            <twig:Tabler:Badge variant="primary" light class="mb-3"><twig:Tabler:Icon name="lucide:shield" /> Nos engagements</twig:Tabler:Badge>
+                            <twig:Tabler:Badge variant="primary" light class="mb-3" icon="lucide:shield">Nos engagements</twig:Tabler:Badge>
                             <h2 class="h1 text-start mb-3">Ce qui n'est pas à vendre.</h2>
                             <p class="lead text-secondary mb-0">
                                 Organisateurs, billetteries et marques peuvent travailler avec By Night&nbsp;: voici ce

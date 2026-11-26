@@ -24,7 +24,7 @@
                 <div class="col-lg-4 d-grid gap-3">
                     <twig:Tabler:Card size="sm" class="shadow-sm mb-0">
                         <twig:Tabler:Card:Body class="d-flex align-items-center gap-3">
-                            <twig:Tabler:Avatar class="bg-teal-lt"><twig:Tabler:Icon name="lucide:history" /></twig:Tabler:Avatar>
+                            <twig:Tabler:Avatar color="teal"><twig:Tabler:Icon name="lucide:history" /></twig:Tabler:Avatar>
                             <div>
                                 <div class="subheader">Genèse</div>
                                 <div class="fw-semibold">{{ '{years, plural, one {# an} other {# ans}}'|trans({years: 'now'|date('Y') - since}, 'messages+intl-icu') }} d'exploration des sorties</div>
@@ -61,7 +61,7 @@
                         des milliers d'événements pour que vous n'ayez plus qu'à choisir celui qui vous correspond.
                     </p>
                     <div class="d-flex align-items-center gap-3 mt-4">
-                        <twig:Tabler:Avatar class="bg-teal-lt"><twig:Tabler:Icon name="lucide:badge-check" /></twig:Tabler:Avatar>
+                        <twig:Tabler:Avatar color="teal"><twig:Tabler:Icon name="lucide:badge-check" /></twig:Tabler:Avatar>
                         <div>
                             <div class="fw-semibold">Ouvert à tous</div>
                             <div class="text-secondary small">Consultation libre, sans abonnement ni inscription</div>
@@ -140,7 +140,7 @@
                 <twig:Tabler:Card:Body>
                     <div class="row g-4 g-lg-5 align-items-center">
                         <div class="col-lg-6">
-                            <twig:Tabler:Badge variant="primary" light class="mb-3"><twig:Tabler:Icon name="lucide:shield" /> Nos engagements</twig:Tabler:Badge>
+                            <twig:Tabler:Badge variant="primary" light class="mb-3" icon="lucide:shield">Nos engagements</twig:Tabler:Badge>
                             <h2 class="h1 text-start mb-3">Un agenda qui vous renvoie vers le monde réel.</h2>
                             <p class="lead text-secondary">
                                 Pas de fil sans fin conçu pour retenir votre attention&nbsp;: By Night vous aide à choisir une sortie, puis à

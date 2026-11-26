@@ -175,8 +175,7 @@
                         {% if not intro %}
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                                 {% if location.isCity and location.city.parent %}
-                                    <twig:Tabler:Badge variant="" class="bg-teal-lt">
-                                        <twig:Tabler:Icon name="lucide:map-pin" />
+                                    <twig:Tabler:Badge variant="" class="bg-teal-lt" icon="lucide:map-pin">
                                         {{ location.city|department }}
                                     </twig:Tabler:Badge>
                                 {% elseif location.isCountry %}

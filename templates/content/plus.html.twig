@@ -95,9 +95,9 @@
                     <article class="card card-lg h-100 mb-0">
                         <twig:Tabler:Card:Body class="d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <twig:Tabler:Avatar class="bg-teal-lt fw-bold">03</twig:Tabler:Avatar>
+                                <twig:Tabler:Avatar color="teal" class="fw-bold">03</twig:Tabler:Avatar>
                                 <h2 class="h1 text-start flex-fill mb-0">Contrôlez</h2>
-                                <twig:Tabler:Avatar class="bg-teal-lt"><twig:Tabler:Icon name="lucide:layout-dashboard" /></twig:Tabler:Avatar>
+                                <twig:Tabler:Avatar color="teal"><twig:Tabler:Icon name="lucide:layout-dashboard" /></twig:Tabler:Avatar>
                             </div>
                             <p class="text-secondary">
                                 Gardez la main sur vos événements à tout moment&nbsp;: corrigez leur fiche, masquez-les le temps de les
@@ -105,9 +105,9 @@
                                 communauté.
                             </p>
                             <div class="d-flex flex-wrap gap-2 mt-auto">
-                                <twig:Tabler:Badge variant="secondary" light><twig:Tabler:Icon name="lucide:pencil" /> Modification à tout moment</twig:Tabler:Badge>
-                                <twig:Tabler:Badge variant="secondary" light><twig:Tabler:Icon name="lucide:eye-off" /> Visible ou masqué</twig:Tabler:Badge>
-                                <twig:Tabler:Badge variant="secondary" light><twig:Tabler:Icon name="lucide:calendar-x" /> Reporté, annulé ou complet</twig:Tabler:Badge>
+                                <twig:Tabler:Badge variant="secondary" light icon="lucide:pencil">Modification à tout moment</twig:Tabler:Badge>
+                                <twig:Tabler:Badge variant="secondary" light icon="lucide:eye-off">Visible ou masqué</twig:Tabler:Badge>
+                                <twig:Tabler:Badge variant="secondary" light icon="lucide:calendar-x">Reporté, annulé ou complet</twig:Tabler:Badge>
                             </div>
                         </twig:Tabler:Card:Body>
                     </article>
@@ -117,9 +117,9 @@
                     <article class="card card-lg h-100 mb-0">
                         <twig:Tabler:Card:Body class="d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <twig:Tabler:Avatar class="bg-yellow-lt fw-bold">04</twig:Tabler:Avatar>
+                                <twig:Tabler:Avatar color="yellow" class="fw-bold">04</twig:Tabler:Avatar>
                                 <h2 class="h1 text-start flex-fill mb-0">Suivez</h2>
-                                <twig:Tabler:Avatar class="bg-yellow-lt"><twig:Tabler:Icon name="lucide:chart-line" /></twig:Tabler:Avatar>
+                                <twig:Tabler:Avatar color="yellow"><twig:Tabler:Icon name="lucide:chart-line" /></twig:Tabler:Avatar>
                             </div>
                             <p class="text-secondary">
                                 Votre espace «&nbsp;Mes événements&nbsp;» rassemble tout ce que vous avez publié, en ligne ou masqué, et la
@@ -161,7 +161,7 @@
                                     'Plusieurs dates et horaires pour un même événement',
                                 ] %}
                                     <li class="d-flex align-items-center gap-2">
-                                        <twig:Tabler:Avatar size="xs" rounded class="bg-teal-lt flex-shrink-0"><twig:Tabler:Icon name="lucide:check" /></twig:Tabler:Avatar>
+                                        <twig:Tabler:Avatar color="teal" size="xs" rounded class="flex-shrink-0"><twig:Tabler:Icon name="lucide:check" /></twig:Tabler:Avatar>
                                         {{ feature }}
                                     </li>
                                 {% endfor %}
@@ -202,7 +202,7 @@
                 <twig:Tabler:Card:Body class="py-lg-6">
                     <div class="row">
                         <div class="col-lg-8">
-                            <twig:Tabler:Badge variant="" class="bg-white text-primary mb-3"><twig:Tabler:Icon name="lucide:party-popper" /> C'est gratuit et sans engagement</twig:Tabler:Badge>
+                            <twig:Tabler:Badge variant="" class="bg-white text-primary mb-3" icon="lucide:party-popper">C'est gratuit et sans engagement</twig:Tabler:Badge>
                             <h2 class="h1 text-start text-white mb-3">Prêt à donner vie à votre prochain événement&nbsp;?</h2>
                             <p class="lead mb-4">
                                 Rejoignez les {{ '{count, plural, one {# membre} other {# membres}}'|trans({count: members.organizers}, 'messages+intl-icu') }}

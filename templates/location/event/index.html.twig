@@ -131,13 +131,11 @@
                         </twig:Tabler:Badge>
                     {% endif %}
                     {% if price and price.free %}
-                        <twig:Tabler:Badge variant="" class="bg-teal-lt">
-                            <twig:Tabler:Icon name="lucide:badge-check" />
+                        <twig:Tabler:Badge variant="" class="bg-teal-lt" icon="lucide:badge-check">
                             Entrée gratuite
                         </twig:Tabler:Badge>
                     {% endif %}
-                    <twig:Tabler:Badge variant="secondary" light href="{{ agenda }}" title="Sortir {{ place.location.atName }}">
-                        <twig:Tabler:Icon name="lucide:map-pin" />
+                    <twig:Tabler:Badge variant="secondary" light href="{{ agenda }}" title="Sortir {{ place.location.atName }}" icon="lucide:map-pin">
                         Sortir {{ place.location.atName }}
                     </twig:Tabler:Badge>
                 </div>
