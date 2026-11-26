@@ -11,14 +11,14 @@
 namespace App\Tests\Twig;
 
 use App\Twig\UtmExtension;
-use App\Utils\EmailUtm;
+use App\Utils\Utm;
 use PHPUnit\Framework\TestCase;
 
 final class UtmExtensionTest extends TestCase
 {
     public function testTheLinksOfACampaignAreTagged(): void
     {
-        $context = ['utm' => EmailUtm::campaign('publisher-news', '2026-10')];
+        $context = ['utm' => Utm::email('publisher-news', '2026-10')];
 
         self::assertSame(
             'https://by-night.test/espace-perso/mes-soirees?utm_source=publisher-news&utm_medium=email&utm_campaign=2026-10&utm_content=cta',

@@ -110,6 +110,7 @@ final class EventExporterTest extends AppKernelTestCase
         self::assertStringContainsString('BEGIN:VCALENDAR', $ics);
         self::assertSame(1, substr_count($ics, 'BEGIN:VEVENT'));
         self::assertStringContainsString('SUMMARY:Soirée jazz', $ics);
+        self::assertStringContainsString('?utm_source=calendar&utm_medium=calendar&utm_campaign=export', preg_replace("/\r\n[ \t]/", '', $ics));
         self::assertStringContainsString('DTSTART;TZID=Europe/Paris:' . $day->format('Ymd') . 'T203000', $ics);
         // Ending at 1:00, the night goes on into the next day
         self::assertStringContainsString('DTEND;TZID=Europe/Paris:' . $day->modify('+1 day')->format('Ymd') . 'T010000', $ics);

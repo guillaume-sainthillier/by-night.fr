@@ -88,7 +88,8 @@ final class McpServerTest extends AppWebTestCase
         $event = $content['events'][0];
         self::assertSame($concert->getId(), $event['id']);
         self::assertSame('Concert de jazz', $event['name']);
-        self::assertSame(\sprintf('https://by-night.test/toulouse/soiree/%s--%d', $concert->getSlug(), $concert->getId()), $event['url']);
+        // Tagged: an assistant gives the link without a referrer
+        self::assertSame(\sprintf('https://by-night.test/toulouse/soiree/%s--%d?utm_source=mcp&utm_medium=assistant&utm_campaign=search_events', $concert->getSlug(), $concert->getId()), $event['url']);
         self::assertSame(['name' => 'Le Bikini', 'city' => 'Toulouse'], array_intersect_key($event['venue'], ['name' => 1, 'city' => 1]));
         self::assertTrue($event['free']);
         self::assertSame('Le Collectif', $event['organizer']);

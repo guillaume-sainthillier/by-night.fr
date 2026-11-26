@@ -15,6 +15,7 @@ use App\Entity\UserEvent;
 use App\Repository\UserEventRepository;
 use App\Repository\UserRepository;
 use App\Transfer\Export\EventCalendarWriter;
+use App\Utils\Utm;
 use DateInterval;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,6 +58,7 @@ final class OutingCalendarController extends BaseController
             'Mes sorties By Night',
             $tentative,
             new DateInterval(self::REFRESH),
+            Utm::link('calendar', 'calendar', 'outings'),
         );
 
         $response = new Response($calendar, Response::HTTP_OK, [

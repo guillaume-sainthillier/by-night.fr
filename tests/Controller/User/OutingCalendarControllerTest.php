@@ -48,6 +48,7 @@ final class OutingCalendarControllerTest extends AppWebTestCase
         $calendar = (string) $client->getResponse()->getContent();
         self::assertStringContainsString('X-WR-CALNAME:Mes sorties By Night', $calendar);
         self::assertStringContainsString('X-PUBLISHED-TTL:PT3H', $calendar);
+        self::assertStringContainsString('?utm_source=calendar&utm_medium=calendar&utm_campaign=outings', preg_replace("/\r\n[ \t]/", '', $calendar));
         self::assertStringContainsString('SUMMARY:Concert demain', $calendar);
         self::assertStringContainsString('SUMMARY:Expo peut-être', $calendar);
         // A week ago stays, the app would otherwise drop it; two months ago is gone

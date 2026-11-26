@@ -23,7 +23,7 @@ use App\Outing\OutingChange;
 use App\Outing\OutingChangeWording;
 use App\Outing\OutingState;
 use App\Search\DateRange;
-use App\Utils\EmailUtm;
+use App\Utils\Utm;
 use DateTimeImmutable;
 use LogicException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -92,7 +92,7 @@ final readonly class MailerManager
                 'weekend' => $weekend,
                 'events' => $events,
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'utm' => EmailUtm::campaign('weekend-digest', WeekendDigestSender::weekOf($weekend)),
+                'utm' => Utm::email('weekend-digest', WeekendDigestSender::weekOf($weekend)),
             ]);
 
         $email->getHeaders()
@@ -123,7 +123,7 @@ final readonly class MailerManager
                 'events' => $events,
                 'count' => $count,
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'utm' => EmailUtm::campaign('follow-alert', $user->getFollowAlertsSentAt()?->format('Y-m-d') ?? 'first'),
+                'utm' => Utm::email('follow-alert', $user->getFollowAlertsSentAt()?->format('Y-m-d') ?? 'first'),
             ]);
 
         $email->getHeaders()
@@ -156,7 +156,7 @@ final readonly class MailerManager
                 'headline' => $changes[0]->getSubject(),
                 'sentences' => array_map(static fn (OutingChange $change): string => OutingChangeWording::sentence($change, $known, $now), $changes),
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'utm' => EmailUtm::campaign('outing-alert', $changes[0]->value),
+                'utm' => Utm::email('outing-alert', $changes[0]->value),
             ]);
 
         $email->getHeaders()
@@ -268,7 +268,7 @@ final readonly class MailerManager
                 'user' => $user,
                 'publisher' => $publisher,
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'utm' => EmailUtm::campaign('publisher-news', $edition->value),
+                'utm' => Utm::email('publisher-news', $edition->value),
             ]);
 
         $email->getHeaders()

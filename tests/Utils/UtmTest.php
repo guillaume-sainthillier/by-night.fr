@@ -10,17 +10,25 @@
 
 namespace App\Tests\Utils;
 
-use App\Utils\EmailUtm;
+use App\Utils\Utm;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class EmailUtmTest extends TestCase
+final class UtmTest extends TestCase
 {
     public function testACampaignIsAnEmail(): void
     {
         self::assertSame(
             ['utm_source' => 'weekend-digest', 'utm_medium' => 'email', 'utm_campaign' => '2026-W43'],
-            EmailUtm::campaign('weekend-digest', '2026-W43'),
+            Utm::email('weekend-digest', '2026-W43'),
+        );
+    }
+
+    public function testALinkSaysWhereItWasGiven(): void
+    {
+        self::assertSame(
+            ['utm_source' => 'mcp', 'utm_medium' => 'assistant', 'utm_campaign' => 'get_event'],
+            Utm::link('mcp', 'assistant', 'get_event'),
         );
     }
 
@@ -30,7 +38,7 @@ final class EmailUtmTest extends TestCase
     #[DataProvider('provideUrls')]
     public function testTag(string $url, array $utm, string $expected): void
     {
-        self::assertSame($expected, EmailUtm::tag($url, $utm));
+        self::assertSame($expected, Utm::tag($url, $utm));
     }
 
     /**
@@ -38,7 +46,7 @@ final class EmailUtmTest extends TestCase
      */
     public static function provideUrls(): iterable
     {
-        $utm = EmailUtm::campaign('outing-alert', 'cancelled');
+        $utm = Utm::email('outing-alert', 'cancelled');
 
         yield 'no query' => ['https://by-night.test/toulouse', $utm, 'https://by-night.test/toulouse?utm_source=outing-alert&utm_medium=email&utm_campaign=cancelled'];
         yield 'after the query' => ['https://by-night.test/toulouse/agenda?page=2', $utm, 'https://by-night.test/toulouse/agenda?page=2&utm_source=outing-alert&utm_medium=email&utm_campaign=cancelled'];

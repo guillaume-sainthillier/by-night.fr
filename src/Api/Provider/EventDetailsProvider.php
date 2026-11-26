@@ -45,6 +45,6 @@ final readonly class EventDetailsProvider implements ProviderInterface
             return NotFound::answer(\sprintf('No event %d.', $id), $context);
         }
 
-        return $this->eventOutputFactory->createDetails($event, $this->clock->now());
+        return $this->eventOutputFactory->createDetails($event, $this->clock->now(), EventOutputFactory::utmOf($context, 'get_event'));
     }
 }

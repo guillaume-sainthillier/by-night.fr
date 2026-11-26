@@ -73,7 +73,7 @@ final class PlaceFeedControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Security-Policy', 'frame-ancestors *');
         self::assertSame(['Concert de jazz'], $crawler->filter('.list-group-item strong')->each(static fn ($name): string => trim($name->text())));
-        self::assertSelectorExists('a[href="https://by-night.test/toulouse/agenda/sortir-a/le-bikini"]');
+        self::assertSelectorExists('a[href="https://by-night.test/toulouse/agenda/sortir-a/le-bikini?utm_source=widget&utm_medium=embed&utm_campaign=place-le-bikini&utm_content=agenda"]');
         self::assertSame([], $client->getResponse()->headers->getCookies());
     }
 
