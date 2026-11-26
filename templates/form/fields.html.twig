@@ -1,6 +1,12 @@
 {% use 'form_div_layout.html.twig' with checkbox_widget as base_checkbox_widget %}
-{% use 'bootstrap_5_layout.html.twig' %}
-{% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label %}
+{% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label, form_help as bootstrap_form_help %}
+{# Last, so that its blocks win: Bootstrap 5's theme with the widgets of tabler-ux-components (icon, stepper, choice_style, switch) #}
+{% use '@TablerUxComponents/form/tabler_layout.html.twig' %}
+
+{# Bootstrap's help: the Tabler theme writes .form-hint, an alias Tabler 1.7 deprecates and _core.scss leaves out ($enable-deprecated) #}
+{%- block form_help -%}
+    {{- block('bootstrap_form_help') -}}
+{%- endblock form_help -%}
 
 {# Stateless CSRF protection - add Stimulus controller to CSRF token field #}
 {%- block csrf_token_widget -%}
