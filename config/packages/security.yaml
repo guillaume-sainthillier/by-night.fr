@@ -26,6 +26,10 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|bundles|thumb|thumb-asset|media|uploads|p/image)/
             security: false
+        # The MCP server (config/packages/mcp.yaml): public, its clients carry no cookie
+        mcp:
+            pattern: ^/mcp$
+            security: false
         main:
             lazy: true
             provider: users

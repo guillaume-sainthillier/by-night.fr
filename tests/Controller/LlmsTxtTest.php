@@ -57,6 +57,7 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringContainsString('- [Accueil](https://by-night.test/): Découvrez des milliers', $content);
         self::assertStringContainsString('- [Recherche](https://by-night.test/recherche/): Trouvez des événements', $content);
         self::assertStringContainsString('- [Annonceurs et partenaires](https://by-night.test/annonceurs): Organisateurs, salles, billetteries et marques', $content);
+        self::assertStringContainsString("## Pour les assistants\n\n- [Serveur MCP](https://by-night.test/mcp): L'agenda en Model Context Protocol", $content);
         // The busiest first
         $events = LlmsTxtListener::CITY_MIN_EVENTS;
         self::assertStringContainsString(\sprintf("## Agendas par pays\n\n- [France](https://by-night.test/france): %d sorties à venir\n- [Belgique](https://by-night.test/belgique): 1 sortie à venir\n", 2 * $events - 1), $content);

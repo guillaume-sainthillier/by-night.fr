@@ -12,10 +12,11 @@ namespace App\Api\ApiResource;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\Metadata\McpTool;
 use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
+use App\Api\Model\CitySearchInput;
+use App\Api\Model\CitySearchResult;
 use App\Api\Provider\CityAutocompleteProvider;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     shortName: 'City',
@@ -24,9 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/cities',
             // The same for every visitor: never opens a session
             stateless: true,
+            // A day: the events to come are counted again each night
             cacheHeaders: [
-                'max_age' => 31536000,
-                'shared_max_age' => 31536000,
+                'max_age' => 86400,
+                'shared_max_age' => 86400,
             ],
             openapi: new OpenApiOperation(
                 summary: 'Search for cities by name',
@@ -37,26 +39,34 @@ use Symfony\Component\Validator\Constraints as Assert;
             paginationMaximumItemsPerPage: 50,
             paginationClientItemsPerPage: true,
             name: 'api_cities',
+            input: CitySearchInput::class,
             provider: CityAutocompleteProvider::class,
-            parameters: [
-                'q' => new QueryParameter(
-                    key: 'q',
-                    schema: ['type' => 'string', 'minLength' => 1, 'maxLength' => 100],
-                    description: 'Search query for city name autocomplete',
-                    required: false,
-                    constraints: [
-                        new Assert\Length(min: 1, max: 100),
-                    ],
-                ),
-            ],
+        ),
+    ],
+    mcp: [
+        // The same cities as GET /api/cities, in an object: a tool answers one
+        'find_cities' => new McpTool(
+            title: 'Find a city',
+            description: 'Finds the cities of the By Night agenda whose name or postal code matches, the most populated first, with the slug search_events takes and how many events are to come there.',
+            annotations: ['readOnlyHint' => true, 'openWorldHint' => false],
+            // The assistant reads the text: accents and slashes as they are
+            normalizationContext: ['json_encode_options' => \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES],
+            paginationItemsPerPage: 10,
+            input: CitySearchInput::class,
+            output: CitySearchResult::class,
+            provider: CityAutocompleteProvider::class,
         ),
     ],
 )]
 final readonly class CityAutocomplete
 {
     public function __construct(
+        /** What search_events and the agenda's URLs name the city by */
         public string $slug,
+        /** Its name, its region and its country: "Toulouse (Occitanie, France)" */
         public string $name,
+        /** How many events are to come there */
+        public int $upcomingEvents = 0,
     ) {
     }
 }

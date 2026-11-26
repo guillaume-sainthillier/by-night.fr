@@ -153,6 +153,12 @@ final readonly class AppContextListener
             return;
         }
 
+        // No location in the URL: nothing to load, and the member's city would open their session, which a stateless
+        // read (the API's) refuses
+        if (!$event->getRequest()->attributes->has('location')) {
+            return;
+        }
+
         try {
             // Loads the city or the country of the URL, which were only lazy so far
             $this->appContext->getLocation()?->getName();

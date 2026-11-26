@@ -40,9 +40,9 @@ abstract readonly class AbstractElasticaAutocompleteProvider implements Provider
     /**
      * @return iterable<TOutput>
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array
     {
-        $term = trim((string) ($context['filters']['q'] ?? ''));
+        $term = $this->getTerm($operation, $context);
         if ('' === $term) {
             return [];
         }
@@ -58,6 +58,16 @@ abstract readonly class AbstractElasticaAutocompleteProvider implements Provider
         $results->setCurrentPage($page);
 
         return new PagerfantaPaginator($results, $this->transformer());
+    }
+
+    /**
+     * The term searched: "?q=..." of the query string.
+     *
+     * @param array<string, mixed> $context the context of the provider
+     */
+    protected function getTerm(Operation $operation, array $context): string
+    {
+        return trim((string) ($context['filters']['q'] ?? ''));
     }
 
     /**
